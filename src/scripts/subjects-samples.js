@@ -94,15 +94,23 @@ function addSubjectIDtoTable(newSubject) {
 
 function addSampleIDtoTable(newSample) {
   table = document.getElementById("table-samples");
+  var duplicate = false;
   var rowcount = table.rows.length;
-  /// append row to table from the bottom
-  var rowIndex = rowcount;
-  var indexNumber = rowIndex;
-  var currentRow = table.rows[table.rows.length - 1];
-  // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-sample", rowIndex);
-  var row = (table.insertRow(rowIndex).outerHTML =
+  for (var i=1;i<rowcount;i++) {
+    if (newSample === table.rows[i].cells[1].innerText) {
+      duplicate = true
+      break
+    }
+  }
+  if (!duplicate) {
+    var rowIndex = rowcount;
+    var indexNumber = rowIndex;
+    var currentRow = table.rows[table.rows.length - 1];
+    // check for unique row id in case users delete old rows and append new rows (same IDs!)
+    var newRowIndex = checkForUniqueRowID("row-current-sample", rowIndex);
+    var row = (table.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-sample" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSample+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='view_current_sample_id(this)'><i class='eye outline icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='edit_current_sample_id(this)'><i class='pen icon' style='color: black'></i></button><button class='ui button' onclick='delete_current_sample_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  }
 }
 
 function addSubjectIDtoDataBase(bootb) {
