@@ -173,12 +173,12 @@ body.waiting * {
   align-items: left;
   margin: 10px;
   width: 18%;
-  float: left;
+  float: right;
   font-size: 14px;
   margin: 10px 0;
   /* padding-right: 10px; */
   padding: 4px 6px;
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
   color: #a0a0a0;
   font: bold;

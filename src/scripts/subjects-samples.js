@@ -62,6 +62,7 @@ function hideSamplesForm() {
 
 function addSubjectIDtoTable(newSubject) {
   table = document.getElementById("table-subjects");
+  var duplicate = false;
   var rowcount = table.rows.length;
   for (var i=1;i<rowcount;i++) {
     if (newSubject === table.rows[i].cells[1].innerText) {
@@ -175,11 +176,9 @@ function addSampleIDtoDataBase() {
 function clearAllSubjectFormFields(form) {
   for (var field of $(form).children().find("input")) {
     $(field).val("");
-    $(field).prop("disabled", false)
   }
   for (var field of $(form).children().find("select")) {
     $(field).val("Select");
-    $(field).prop("disabled", false)
   }
 }
 
@@ -194,10 +193,18 @@ function addSubjectIDToJSON(subjectID) {
         field.value = null
       }
       headersArrSubjects.push(field.name);
-      valuesArr.push(field.value);
+      var new_value = "";
+      // if it's age, then add age info input (day/week/month/year)
+      if (field.name === "Age") {
+        new_value = field.value + " " + $("#bootbox-subject-age-info").val()
+      } else {
+        new_value = field.value
+      }
+      valuesArr.push(new_value);
     }
     subjectsTableData[0] = headersArrSubjects
     if (valuesArr !== undefined && valuesArr.length !== 0) {
+      console.log(valuesArr)
       if (subjectsTableData[dataLength] !== undefined) {
         subjectsTableData[dataLength + 1] = valuesArr
       } else {
@@ -216,7 +223,14 @@ function addSampleIDtoJSON(sampleID) {
         field.value = null
       }
       headersArrSamples.push(field.name);
-      valuesArr.push(field.value);
+      var new_value = "";
+      // if it's age, then add age info input (day/week/month/year)
+      if (field.name === "Age") {
+        new_value = field.value + " " + $("#bootbox-subject-age-info").val()
+      } else {
+        new_value = field.value
+      }
+      valuesArr.push(new_value);
     }
     samplesTableData[0] = headersArrSamples
     if (valuesArr !== undefined && valuesArr.length !== 0) {
@@ -243,7 +257,7 @@ function edit_current_sample_id(ev) {
 
 function loadSubjectInformation(ev, subjectID) {
   // 1. load fields for form
-  showForm("edit");
+  showForm("display");
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
   var infoJson = [];
@@ -261,12 +275,23 @@ function loadSubjectInformation(ev, subjectID) {
   var c = fieldArr.map(function(i, field) {
     if (infoJson[i]) {
       if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
-        field.value = infoJson[i];
+        if (field.name === "Age") {
+          var fullAge = infoJson[i].split(" ");
+          field.value = fullAge[0]
+          if (["day", "month", "year", "week"].includes(fullAge[1])) {
+            $("#bootbox-subject-age-info").val(fullAge[1])
+          } else {
+            $("#bootbox-subject-age-info").val("Select")
+          }
+        } else {
+          field.value = infoJson[i];
+        }
       } else {
         field.value = "";
       }
     }
   });
+  $("#btn-edit-subject").unbind( "click" );
   $("#btn-edit-subject").click(function() {
     editSubject(ev, subjectID)
   })
@@ -285,7 +310,7 @@ function loadSubjectInformation(ev, subjectID) {
    // 1. load fields for form
    // 2. For type===view: make all fields contenteditable=false
    // 3. For type===edit: make all fields contenteditable=true
-   showFormSamples("edit");
+   showFormSamples("display");
    $("#btn-edit-sample").css("display", "inline-block");
    $("#btn-add-sample").css("display", "none");
    var infoJson = [];
@@ -309,6 +334,7 @@ function loadSubjectInformation(ev, subjectID) {
        }
      }
    });
+   $("#btn-edit-sample").unbind( "click" );
    $("#btn-edit-sample").click(function() {
      editSample(ev, subjectID)
    })
@@ -325,13 +351,25 @@ function loadSubjectInformation(ev, subjectID) {
 function editSubject(ev, subjectID) {
  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
    if (field.value !== "" && field.value !== undefined) {
-     subjectsFileData.push(field.value)
+     var new_value = "";
+     // if it's age, then add age info input (day/week/month/year)
+     if (field.name === "Age") {
+       if ($("#bootbox-subject-age-info").val() !== "Select") {
+         new_value = field.value + " " + $("#bootbox-subject-age-info").val()
+       } else {
+         new_value = field.value
+       }
+     } else {
+       new_value = field.value
+     }
+     subjectsFileData.push(new_value)
    } else {
      subjectsFileData.push("")
    }
  }
  var currentRow = $(ev).parents()[2];
- if ($("#bootbox-subject-id").val() === subjectID) {
+ var newID = $("#bootbox-subject-id").val();
+ if (newID === subjectID) {
    for (var i=1; i<subjectsTableData.length;i++) {
      if (subjectsTableData[i][0] === subjectID) {
        subjectsTableData[i] = subjectsFileData
@@ -340,7 +378,6 @@ function editSubject(ev, subjectID) {
    }
    hideSubjectsForm()
  } else {
-    var newID = $("#bootbox-subject-id").val();
     var table = document.getElementById("table-subjects");
     var duplicate = false;
     var error = "";
@@ -371,13 +408,24 @@ function editSubject(ev, subjectID) {
 function editSample(ev, bootbox, sampleID) {
  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
    if (field.value !== "" && field.value !== undefined) {
-     samplesFileData.push(field.value)
+     var new_value = "";
+     // if it's age, then add age info input (day/week/month/year)
+     if (field.name === "Age") {
+       if ($("#bootbox-sample-age-info").val() !== "Select") {
+         new_value = field.value + " " + $("#bootbox-sample-age-info").val()
+       } else {
+         new_value = field.value
+       }
+     } else {
+       new_value = field.value
+     }
+     samplesFileData.push(new_value)
    } else {
      samplesFileData.push("")
    }
  }
  var currentRow = $(ev).parents()[2];
- if ($("#bootbox-subject-id").val() === sampleID) {
+ if ($("#bootbox-sample-id").val() === sampleID) {
    for (var i=1; i<samplesTableData.length;i++) {
      if (samplesTableData[i][0] === sampleID) {
        samplesTableData[i] = samplesFileData

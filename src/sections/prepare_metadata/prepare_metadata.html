@@ -3825,7 +3825,7 @@
           <!-- main tabs' closing div -->
         </div>
         <!-- back button -->
-        <div class="footer-div" id="footer-div-subjects">
+        <div class="footer-div" id="footer-div-subjects" style="display:flex">
           <!-- <div style="display: flex; flex-direction: row; width: 110px"> -->
             <button
               type="button"
@@ -3846,10 +3846,9 @@
 
         <div
           style="
-            width: 100%;
+            width: 90%;
             position: relative;
-            margin-top: 50px;
-            margin-bottom: 2em;
+            margin: 50px auto;
             display: none;
             flex-direction: column;
             overflow-y: auto;
@@ -3999,11 +3998,24 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
+                  style="margin-right:20px"
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-age"
                     name="Age"
+                    type="number"
                   >
                   </input>
+                  <select
+                    class="form-container-input-bf"
+                    id="bootbox-subject-age-info"
+                    name="Age-info"
+                  >
+                  <option value="Select">Select a unit</option>
+                  <option value="day">day</option>
+                  <option value="week">week</option>
+                  <option value="month">month</option>
+                  <option value="year">year</option>
+                </select>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4973,7 +4985,7 @@
           <!-- main tabs' closing div -->
         </div>
         <!-- back button -->
-        <div class="footer-div" id="footer-div-samples">
+        <div class="footer-div" id="footer-div-samples" style="display: flex">
             <button
               type="button"
               class="transition-btn prev"
@@ -4992,10 +5004,9 @@
 
         <div
           style="
-          width: 100%;
+          width: 90%;
           position: relative;
-          margin-top: 50px;
-          margin-bottom: 2em;
+          margin: 50px auto;
           display: none;
           flex-direction: column;
           overflow-y: auto;
@@ -5198,7 +5209,7 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf samples-form-entry"
-                    id="bootbox-sample-age"
+                    id="bootbox-sample-specimen-type"
                     name="specimen type"
                   >
                   </input>
@@ -5342,11 +5353,24 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
+                  style="margin-right:20px"
                     class="form-container-input-bf samples-form-entry"
                     id="bootbox-sample-age"
                     name="Age"
+                    type="number"
                   >
                   </input>
+                  <select
+                    class="form-container-input-bf"
+                    id="bootbox-sample-age-info"
+                    name="Age-info"
+                  >
+                  <option value="Select">Select a unit</option>
+                  <option value="day">day</option>
+                  <option value="week">week</option>
+                  <option value="month">month</option>
+                  <option value="year">year</option>
+                </select>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
