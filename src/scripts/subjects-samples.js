@@ -339,6 +339,7 @@ function loadSubjectInformation(ev, subjectID) {
          } else {
            field.value = infoJson[i];
          }
+       }
      }
    });
    $("#btn-edit-sample").unbind( "click" );
