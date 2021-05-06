@@ -455,3 +455,7 @@ input[name="dataset_status_radio"]:checked ~ label {
   margin-right: -10px;
   padding-top: 10px;
 }
+
+.swal-wide {
+  width: 500px !important;
+}

@@ -772,7 +772,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       }
     } else if (bfAccountSwal === false) {
       // // else, if users click Add account
-      showBFAddAccountBootbox();
+      showBFAddAccountSweetalert();
     }
   } else if (dropdown === "dataset") {
     $(".svg-change-current-account.dataset").css("display", "none");

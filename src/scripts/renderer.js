@@ -3826,7 +3826,72 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   datasetPermissionStatusPI.innerHTML = "";
   // bfCurrentPermissionProgress.style.display = "block";
   // bfAddEditCurrentPermissionProgress.style.display = "block";
-  ipcRenderer.send("warning-add-permission-owner-PI");
+  // ipcRenderer.send("warning-add-permission-owner-PI");
+  Swal.fire({
+    icon: "warning",
+    text: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
+    heightAuto: false,
+    showCancelButton: 'No',
+    confirmButtonText: 'Yes',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $("#bf-add-permission-pi-spinner").css("visibility", "visible");
+  datasetPermissionStatusPI.innerHTML = "";
+  //disableform(bfPermissionForm);
+
+  var selectedBfAccount = defaultBfAccount;
+  var selectedBfDataset = defaultBfDataset;
+  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
+  var selectedRole = "owner";
+
+  if (true) {
+    client.invoke(
+      "api_bf_add_permission",
+      selectedBfAccount,
+      selectedBfDataset,
+      selectedUser,
+      selectedRole,
+      (error, res) => {
+        if (error) {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Change PI Owner",
+            selectedBfDataset
+          );
+          $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+          log.error(error);
+          console.error(error);
+          var emessage = userError(error);
+          datasetPermissionStatusPI.innerHTML =
+            "<span style='color: red;'> " + emessage + "</span>";
+          // bfCurrentPermissionProgress.style.display = "none";
+          // bfAddEditCurrentPermissionProgress.style.display = "none";
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Manage Dataset - Change PI Owner",
+            selectedBfDataset
+          );
+          let nodeStorage = new JSONStorage(app.getPath("userData"));
+          nodeStorage.setItem("previously_selected_PI", selectedUser);
+          $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+          datasetPermissionStatusPI.innerHTML = res;
+          showCurrentPermission();
+          changeDatasetRolePI(selectedBfDataset);
+        }
+      }
+    );
+  } else {
+    // bfCurrentPermissionProgress.style.display = "none";
+    // bfAddEditCurrentPermissionProgress.style.display = "none";
+    $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+  }
+    }
+  });
+
 });
 ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
   $("#bf-add-permission-pi-spinner").css("visibility", "visible");
@@ -4874,77 +4939,159 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   if (slashCount !== 1) {
     var newFolderName = "New Folder";
     // show prompt for name
-    bootbox.prompt({
+    // bootbox.prompt({
+    //   title: "Add new folder...",
+    //   message: "Enter a name below:",
+    //   centerVertical: true,
+    //   callback: function (result) {
+    //     if (result !== null && result !== "") {
+    //       newFolderName = result.trim();
+    //       // check for duplicate or files with the same name
+    //       var duplicate = false;
+    //       var itemDivElements = document.getElementById("items").children;
+    //       for (var i = 0; i < itemDivElements.length; i++) {
+    //         if (newFolderName === itemDivElements[i].innerText) {
+    //           duplicate = true;
+    //           break;
+    //         }
+    //       }
+    //       if (duplicate) {
+    //         bootbox.alert({
+    //           message: "Duplicate folder name: " + newFolderName,
+    //           centerVertical: true,
+    //         });
+    //       } else {
+    //         var appendString = "";
+    //         appendString =
+    //           appendString +
+    //           '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+    //           newFolderName +
+    //           "</div></div>";
+    //         $(appendString).appendTo("#items");
+
+    //         /// update datasetStructureJSONObj
+    //         var currentPath = organizeDSglobalPath.value;
+    //         var jsonPathArray = currentPath.split("/");
+    //         var filtered = jsonPathArray.slice(1).filter(function (el) {
+    //           return el != "";
+    //         });
+
+    //         var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+    //         // update Json object with new folder created
+    //         var renamedNewFolder = newFolderName;
+    //         myPath["folders"][renamedNewFolder] = {
+    //           folders: {},
+    //           files: {},
+    //           type: "virtual",
+    //           action: ["new"],
+    //         };
+
+    //         listItems(myPath, "#items");
+    //         getInFolder(
+    //           ".single-item",
+    //           "#items",
+    //           organizeDSglobalPath,
+    //           datasetStructureJSONObj
+    //         );
+    //         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    //         hideMenu(
+    //           "high-level-folder",
+    //           menuFolder,
+    //           menuHighLevelFolders,
+    //           menuFile
+    //         );
+    //       }
+    //     }
+    //   },
+    // });
+    Swal.fire({
       title: "Add new folder...",
-      message: "Enter a name below:",
-      centerVertical: true,
-      callback: function (result) {
-        if (result !== null && result !== "") {
-          newFolderName = result.trim();
-          // check for duplicate or files with the same name
-          var duplicate = false;
-          var itemDivElements = document.getElementById("items").children;
-          for (var i = 0; i < itemDivElements.length; i++) {
-            if (newFolderName === itemDivElements[i].innerText) {
-              duplicate = true;
-              break;
-            }
-          }
-          if (duplicate) {
-            bootbox.alert({
-              message: "Duplicate folder name: " + newFolderName,
-              centerVertical: true,
-            });
-          } else {
-            var appendString = "";
-            appendString =
-              appendString +
-              '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-              newFolderName +
-              "</div></div>";
-            $(appendString).appendTo("#items");
-
-            /// update datasetStructureJSONObj
-            var currentPath = organizeDSglobalPath.value;
-            var jsonPathArray = currentPath.split("/");
-            var filtered = jsonPathArray.slice(1).filter(function (el) {
-              return el != "";
-            });
-
-            var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-            // update Json object with new folder created
-            var renamedNewFolder = newFolderName;
-            myPath["folders"][renamedNewFolder] = {
-              folders: {},
-              files: {},
-              type: "virtual",
-              action: ["new"],
-            };
-
-            listItems(myPath, "#items");
-            getInFolder(
-              ".single-item",
-              "#items",
-              organizeDSglobalPath,
-              datasetStructureJSONObj
-            );
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-            hideMenu(
-              "high-level-folder",
-              menuFolder,
-              menuHighLevelFolders,
-              menuFile
-            );
+      text: "Enter a name below:",
+      heightAuto: false,
+      input: "text",
+      showCancelButton: "Cancel",
+      confirmButtonText: "OK",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.value) {
+      if (result.value !== null && result.value !== "") {
+        newFolderName = result.value.trim();
+        // check for duplicate or files with the same name
+        var duplicate = false;
+        var itemDivElements = document.getElementById("items").children;
+        for (var i = 0; i < itemDivElements.length; i++) {
+          if (newFolderName === itemDivElements[i].innerText) {
+            duplicate = true;
+            break;
           }
         }
-      },
-    });
+        if (duplicate) {
+          // bootbox.alert({
+          //   message: "Duplicate folder name: " + newFolderName,
+          //   centerVertical: true,
+          // });
+          Swal.fire({
+            icon: "warning",
+            text: "Duplicate folder name: " + newFolderName,
+            confirmButtonText: "OK",
+            heightAuto: false
+          })
+        } else {
+          var appendString = "";
+          appendString =
+            appendString +
+            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+            newFolderName +
+            "</div></div>";
+          $(appendString).appendTo("#items");
+
+          /// update datasetStructureJSONObj
+          var currentPath = organizeDSglobalPath.value;
+          var jsonPathArray = currentPath.split("/");
+          var filtered = jsonPathArray.slice(1).filter(function (el) {
+            return el != "";
+          });
+
+          var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+          // update Json object with new folder created
+          var renamedNewFolder = newFolderName;
+          myPath["folders"][renamedNewFolder] = {
+            folders: {},
+            files: {},
+            type: "virtual",
+            action: ["new"],
+          };
+
+          listItems(myPath, "#items");
+          getInFolder(
+            ".single-item",
+            "#items",
+            organizeDSglobalPath,
+            datasetStructureJSONObj
+          );
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+          hideMenu(
+            "high-level-folder",
+            menuFolder,
+            menuHighLevelFolders,
+            menuFile
+          );
+        }
+      }
+    }
+    })
   } else {
-    bootbox.alert({
-      message:
-        "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
-      centerVertical: true,
-    });
+    // bootbox.alert({
+    //   message:
+    //     "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
+    //   centerVertical: true,
+    // });
+    Swal.fire({
+      icon: "warning",
+      text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
+      confirmButtonText: "OK",
+      heightAuto: false
+    })
   }
 });
 
@@ -6909,25 +7056,50 @@ document
 
           if (message) {
             message += "Would you like to continue?";
-            var bootboxDialog = bootbox.confirm({
-              message: message,
-              buttons: {
-                confirm: {
-                  label: "Yes",
-                  className: "btn-success",
-                },
-                cancel: {
-                  label: "No",
-                  className: "btn-danger",
-                },
-              },
-              centerVertical: true,
-              callback: function (result) {
-                if (result) {
-                  console.log("Continue");
+            // var bootboxDialog = bootbox.confirm({
+            //   message: message,
+            //   buttons: {
+            //     confirm: {
+            //       label: "Yes",
+            //       className: "btn-success",
+            //     },
+            //     cancel: {
+            //       label: "No",
+            //       className: "btn-danger",
+            //     },
+            //   },
+            //   centerVertical: true,
+            //   callback: function (result) {
+            //     if (result) {
+            //       console.log("Continue");
+            //       initiate_generate();
+            //     } else {
+            //       console.log("Stop");
+            //       // then show the sidebar again
+            //       forceActionSidebar("show");
+            //       document.getElementById(
+            //         "para-please-wait-new-curate"
+            //       ).innerHTML = "Return to make changes";
+            //       document.getElementById(
+            //         "div-generate-comeback"
+            //       ).style.display = "flex";
+            //     }
+            //   },
+            // });
+            message = "<div style='text-align: left'>" + message + "</div>"
+            Swal.fire({
+              icon: "warning",
+              html: message,
+              showCancelButton: "No",
+              showConfirmButton: "Yes",
+              reverseButtons: true,
+              heightAuto: false
+            }).then((result) => {
+              if (result.isConfirmed) {
+                console.log("Continue");
                   initiate_generate();
-                } else {
-                  console.log("Stop");
+              } else {
+                console.log("Stop");
                   // then show the sidebar again
                   forceActionSidebar("show");
                   document.getElementById(
@@ -6936,9 +7108,8 @@ document
                   document.getElementById(
                     "div-generate-comeback"
                   ).style.display = "flex";
-                }
-              },
-            });
+              }
+            })
             // ipcRenderer.send('warning-empty-files-folders-generate', message)
           } else {
             initiate_generate();
@@ -7775,3 +7946,122 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
     );
   }
 });
+
+function showBFAddAccountSweetalert() {
+  var bootb = Swal.fire({
+    title: bfaddaccountTitle,
+    html: bfAddAccountBootboxMessage,
+    showCancelButton: 'Cancel',
+    confirmButtonText: 'Add',
+    customClass: 'swal-wide',
+    reverseButtons: true,
+    heightAuto: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      addBFAccountInsideSweetalert(bootb);
+    }
+  })
+}
+
+function addBFAccountInsideSweetalert(myBootboxDialog) {
+  var name = $("#bootbox-key-name").val();
+  var apiKey = $("#bootbox-api-key").val();
+  var apiSecret = $("#bootbox-api-secret").val();
+  client.invoke("api_bf_add_account", name, apiKey, apiSecret, (error, res) => {
+    if (error) {
+      Swal.fire({
+        icon: "error",
+        html: '<span>' + error + '</span>',
+        heightAuto: false,
+        backdrop:"rgba(0,0,0,0.4)",
+        showClass: {
+          popup: ''
+        },
+        hideClass: {
+          popup: ''
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          showBFAddAccountSweetalert2()
+        }
+      });
+      log.error(error);
+      console.error(error);
+    } else {
+      $("#bootbox-key-name").val("");
+      $("#bootbox-api-key").val("");
+      $("#bootbox-api-secret").val("");
+      bfAccountOptions[name] = name;
+      defaultBfAccount = name;
+      defaultBfDataset = "Select dataset";
+      updateBfAccountList();
+      client.invoke("api_bf_account_details", name, (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong!",
+            heightAuto: false,
+            backdrop:"rgba(0,0,0, 0.4)",
+            footer:
+              '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+          });
+          showHideDropdownButtons("account", "hide");
+          confirm_click_account_function();
+        } else {
+          $("#para-account-detail-curate").html(res);
+          $("#current-bf-account").text(name);
+          $("#current-bf-account-generate").text(name);
+          $("#create_empty_dataset_BF_account_span").text(name);
+          $(".bf-account-span").text(name);
+          $("#current-bf-dataset").text("None");
+          $("#current-bf-dataset-generate").text("None");
+          $(".bf-dataset-span").html("None");
+          $("#para-account-detail-curate-generate").html(res);
+          $("#para_create_empty_dataset_BF_account").html(res);
+          $(".bf-account-details-span").html(res);
+          $("#para-continue-bf-dataset-getting-started").text("");
+          showHideDropdownButtons("account", "show");
+          confirm_click_account_function();
+        }
+      });
+      // myBootboxDialog.modal("hide");
+      Swal.fire({
+        title: "Successfully added! <br/>Loading your account details...",
+        timer: 3000,
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        heightAuto: false,
+        backdrop:"rgba(0,0,0, 0.9)",
+        showConfirmButton: false,
+      });
+      // bootbox.alert({
+      //   message: "Successfully added!",
+      //   centerVertical: true,
+      // });
+    }
+  });
+}
+
+function showBFAddAccountSweetalert2() {
+  var bootb2 = Swal.fire({
+    title: bfaddaccountTitle,
+    html: bfAddAccountBootboxMessage,
+    showCancelButton: 'Cancel',
+    confirmButtonText: 'Add',
+    customClass: 'swal-wide',
+    reverseButtons: true,
+    heightAuto: false,
+    showClass: {
+      popup: ''
+    },
+    hideClass: {
+      popup: ''
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      addBFAccountInsideSweetalert(bootb2);
+    }
+  })
+}

@@ -1,5 +1,6 @@
 const { rgba } = require("jimp");
 const { relative } = require("path");
+// const { default: Swal } = require("sweetalert2");
 
 // JSON object of all the tabs
 var allParentStepsJSON = {
@@ -580,31 +581,50 @@ const nextPrev = (n) => {
       withoutExtMetadataArray.includes(val)
     );
     if (!subArrayBoolean) {
-      bootbox.confirm({
-        message:
-          "You did not include all of the following required metadata files: <br><ol><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?",
-        buttons: {
-          confirm: {
-            label: "Continue",
-            className: "btn-success",
-          },
-          cancel: {
-            label: "No",
-            className: "btn-danger",
-          },
-        },
-        centerVertical: true,
-        callback: (result) => {
-          if (result !== null && result === true) {
+      // bootbox.confirm({
+      //   message:
+      //     "You did not include all of the following required metadata files: <br><ol><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?",
+      //   buttons: {
+      //     confirm: {
+      //       label: "Continue",
+      //       className: "btn-success",
+      //     },
+      //     cancel: {
+      //       label: "No",
+      //       className: "btn-danger",
+      //     },
+      //   },
+      //   centerVertical: true,
+      //   callback: (result) => {
+      //     if (result !== null && result === true) {
+      //       // Hide the current tab:
+      //       $(x[currentTab]).removeClass("tab-active");
+      //       // Increase or decrease the current tab by 1:
+      //       currentTab = currentTab + n;
+      //       // Display the correct tab:
+      //       showParentTab(currentTab, n);
+      //     }
+      //   },
+      // });
+      var notIncludedMessage = "<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?</div>"
+      Swal.fire({
+        icon: "warning",
+        html: notIncludedMessage,
+        showConfirmButton: "Continue",
+        showCancelButton: "No",
+        reverseButtons: true,
+        heightAuto: false,
+        customClass: "swal-wide"
+        }).then((result) => {
+          if (result.isConfirmed) {
             // Hide the current tab:
             $(x[currentTab]).removeClass("tab-active");
             // Increase or decrease the current tab by 1:
             currentTab = currentTab + n;
             // Display the correct tab:
             showParentTab(currentTab, n);
-          }
-        },
-      });
+        }
+      })
     } else {
       // Hide the current tab:
       $(x[currentTab]).removeClass("tab-active");
@@ -816,30 +836,46 @@ const raiseWarningGettingStarted = (ev) => {
           '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
       )
     ) {
-      bootbox.confirm({
-        message:
-          "This will reset your progress so far. Are you sure you want to continue?",
-        buttons: {
-          confirm: {
-            label: "Yes",
-            className: "btn-success",
-          },
-          cancel: {
-            label: "No",
-            className: "btn-danger",
-          },
-        },
-        centerVertical: true,
-        callback: (result) => {
-          if (result) {
-            globalGettingStarted1stQuestionBool = true;
-            resolve(globalGettingStarted1stQuestionBool);
-          } else {
-            globalGettingStarted1stQuestionBool = false;
-            resolve(globalGettingStarted1stQuestionBool);
-          }
-        },
-      });
+      // bootbox.confirm({
+      //   message:
+      //     "This will reset your progress so far. Are you sure you want to continue?",
+      //   buttons: {
+      //     confirm: {
+      //       label: "Yes",
+      //       className: "btn-success",
+      //     },
+      //     cancel: {
+      //       label: "No",
+      //       className: "btn-danger",
+      //     },
+      //   },
+      //   centerVertical: true,
+      //   callback: (result) => {
+      //     if (result) {
+      //       globalGettingStarted1stQuestionBool = true;
+      //       resolve(globalGettingStarted1stQuestionBool);
+      //     } else {
+      //       globalGettingStarted1stQuestionBool = false;
+      //       resolve(globalGettingStarted1stQuestionBool);
+      //     }
+      //   },
+      // });
+      Swal.fire({
+        icon: "warning",
+        text: "This will reset your progress so far. Are you sure you want to continue?",
+        showCancelButton: "No",
+        confirmButtonText: "Yes",
+        reverseButtons: true,
+        heightAuto: false
+      }).then((result) => {
+        if (result.isConfirmed) {
+          globalGettingStarted1stQuestionBool = true;
+          resolve(globalGettingStarted1stQuestionBool);
+        } else {
+          globalGettingStarted1stQuestionBool = false;
+          resolve(globalGettingStarted1stQuestionBool);
+        }
+      })
     } else {
       globalGettingStarted1stQuestionBool = true;
       resolve(globalGettingStarted1stQuestionBool);
@@ -2542,29 +2578,45 @@ var generateExitButtonBool = false;
 function raiseWarningExit(message) {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
-    bootbox.confirm({
-      message: message,
-      buttons: {
-        confirm: {
-          label: "Yes",
-          className: "btn-success",
-        },
-        cancel: {
-          label: "No",
-          className: "btn-danger",
-        },
-      },
-      centerVertical: true,
-      callback: (result) => {
-        if (result) {
-          generateExitButtonBool = true;
-          resolve(generateExitButtonBool);
-        } else {
-          generateExitButtonBool = false;
-          resolve(generateExitButtonBool);
-        }
-      },
-    });
+    // bootbox.confirm({
+    //   message: message,
+    //   buttons: {
+    //     confirm: {
+    //       label: "Yes",
+    //       className: "btn-success",
+    //     },
+    //     cancel: {
+    //       label: "No",
+    //       className: "btn-danger",
+    //     },
+    //   },
+    //   centerVertical: true,
+    //   callback: (result) => {
+    //     if (result) {
+    //       generateExitButtonBool = true;
+    //       resolve(generateExitButtonBool);
+    //     } else {
+    //       generateExitButtonBool = false;
+    //       resolve(generateExitButtonBool);
+    //     }
+    //   },
+    // });
+    Swal.fire({
+      icon: "warning",
+      text: message,
+      showCancelButton: "No",
+      confirmButtonText: "Yes",
+      reverseButtons: true,
+      heightAuto: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        generateExitButtonBool = true;
+        resolve(generateExitButtonBool);
+      } else {
+        generateExitButtonBool = false;
+        resolve(generateExitButtonBool);
+      }
+    })
   });
 }
 
@@ -2734,10 +2786,16 @@ const saveSODAJSONProgress = (progressFileName) => {
     }
   }
   fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj));
-  bootbox.alert({
-    message:
-      "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
-    centerVertical: true,
+  // bootbox.alert({
+  //   message:
+  //     "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
+  //   centerVertical: true,
+  // });
+  Swal.fire({
+    icon: "success",
+    text: "Successfully saved progress!",
+    showConfirmButton: "OK",
+    heightAuto: false
   });
 };
 
@@ -2750,21 +2808,42 @@ const saveOrganizeProgressPrompt = () => {
     saveSODAJSONProgress(sodaJSONObj["save-progress"]);
     // if no, ask users what to name it, and create file
   } else {
-    bootbox.prompt({
+    // bootbox.prompt({
+    //   title: "Saving progress as...",
+    //   message: "Enter a name for your progress below:",
+    //   centerVertical: true,
+    //   callback: (result) => {
+    //     if (result !== null && result !== "") {
+    //       sodaJSONObj["save-progress"] = result.trim();
+    //       saveSODAJSONProgress(result.trim());
+    //       addOption(
+    //         progressFileDropdown,
+    //         result.trim(),
+    //         result.trim() + ".json"
+    //       );
+    //     }
+    //   },
+    // });
+    Swal.fire({
       title: "Saving progress as...",
-      message: "Enter a name for your progress below:",
-      centerVertical: true,
-      callback: (result) => {
-        if (result !== null && result !== "") {
-          sodaJSONObj["save-progress"] = result.trim();
-          saveSODAJSONProgress(result.trim());
+      text: "Enter a name for your progress below:",
+      heightAuto: false,
+      input: "text",
+      showCancelButton: "Cancel",
+      confirmButtonText: "OK",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.value) {
+        if (result.value !== null && result.value !== "") {
+          sodaJSONObj["save-progress"] = result.value.trim();
+          saveSODAJSONProgress(result.value.trim());
           addOption(
             progressFileDropdown,
-            result.trim(),
-            result.trim() + ".json"
+            result.value.trim(),
+            result.value.trim() + ".json"
           );
         }
-      },
+      }
     });
   }
 };
