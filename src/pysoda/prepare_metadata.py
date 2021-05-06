@@ -287,21 +287,24 @@ def save_subjects_file(filepath, datastructure):
     orangeFill = PatternFill(start_color='FFD965',
                        end_color='FFD965',
                        fill_type='solid')
-    if headers_no > 18:
-        for i, header in enumerate(datastructure[0][18:]):
-            # if there are too many custom headers, we might have invalid columns
-            cell = chr(83 + i) + str(1)
-            ws1[cell] = header
-            ws1[cell].fill = orangeFill
-            ws1[cell].font = Font(bold=True, size=12, name='Calibri')
+
+    for column, header in zip(excel_columns(start_index=18), datastructure[0][18:]):
+        cell = column + str(1)
+        ws1[cell] = header
+        ws1[cell].fill = orangeFill
+        ws1[cell].font = Font(bold=True, size=12, name='Calibri')
 
     # 3. populate matrices
     for i, item in enumerate(datastructure):
         if i == 0:
             continue
-        for j in range(len(item)):
-            cell = chr(65 + j) + str(i + 1)
-            ws1[cell] = datastructure[i][j]
+        for column, j in zip(excel_columns(start_index=0), range(len(item))):
+            cell = column + str(i + 1)
+            if datastructure[i][j]:
+                ws1[cell] = datastructure[i][j]
+            else:
+                ws1[cell] = ""
+                
             ws1[cell].font = Font(bold=False, size=11, name='Arial')
 
     # 4. delete empty columns
@@ -345,9 +348,8 @@ def save_samples_file(filepath, datastructure):
                        end_color='FFD965',
                        fill_type='solid')
     if headers_no > 22:
-        for i, header in enumerate(datastructure[0][22:]):
-            # if there are too many custom headers, we might have invalid columns
-            cell = chr(87 + i) + str(1)
+        for column, header in zip(excel_columns(start_index=22), datastructure[0][22:]):
+            cell = column + str(1)
             ws1[cell] = header
             ws1[cell].fill = orangeFill
             ws1[cell].font = Font(bold=True, size=12, name='Calibri')
@@ -356,10 +358,12 @@ def save_samples_file(filepath, datastructure):
     for i, item in enumerate(datastructure):
         if i == 0:
             continue
-        for j in range(len(item)):
-            cell = chr(65 + j) + str(i + 1)
+        for column, j in zip(excel_columns(start_index=0), range(len(item))):
+            cell = column + str(i + 1)
             ws1[cell] = datastructure[i][j]
             ws1[cell].font = Font(bold=False, size=11, name='Arial')
+
+    wb.save(destination)
 
 def column_check(x):
     if 'unnamed' in x.lower():

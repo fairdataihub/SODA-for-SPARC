@@ -701,10 +701,13 @@ function loadSubjectsDataToTable() {
   for (var i=1; i<subjectsTableData.length; i++) {
     addSubjectIDtoTable(subjectsTableData[i][0])
   }
-  Swal.fire(
-  'Loaded successfully!',
-  'Please add or edit your subject_id(s) in the following subjects table.',
-  'success')
+  Swal.fire({
+  title: 'Loaded successfully!',
+  text: 'Please add or edit your subject_id(s) in the following subjects table.',
+  icon: 'success',
+  showConfirmButton: false,
+  timer: 1200
+})
   $("#button-generate-subjects").css("display", "block");
 }
 
@@ -715,10 +718,13 @@ function loadSamplesDataToTable() {
   for (var i=1; i<samplesTableData.length; i++) {
     addSampleIDtoTable(samplesTableData[i][1])
   }
-  Swal.fire(
-  'Loaded successfully!',
-  'Please add or edit your sample_id(s) in the following samples table.',
-  'success')
+  Swal.fire({
+  title: 'Loaded successfully!',
+  text: 'Please add or edit your sample_id(s) in the following samples table.',
+  icon: 'success',
+  showConfirmButton: false,
+  timer: 1200
+  })
   $("#button-generate-samples").css("display", "block");
 }
 
