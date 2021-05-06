@@ -7,89 +7,78 @@ var samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
 
-function showForm() {
-  clearAllSubjectFormFields(subjectsFormDiv);
-  subjectsFormDiv.style.display = "block"
+function showForm(type) {
+  if (type !== "edit") {
+    clearAllSubjectFormFields(subjectsFormDiv);
+  }
+  subjectsFormDiv.style.display = "flex"
+  $("#create_subjects-tab").removeClass("show");
+  $("#create_subjects-tab").css("display", "none");
+  $("#footer-div-subjects").css("display", "none");
   $("#btn-add-custom-field").show();
-  var bootb = bootbox.dialog({
-    title: "<p style='text-align=center'>Adding a subject</p>",
-    message: subjectsFormDiv,
-    buttons: {
-      cancel: {
-        label: "Cancel",
-      },
-      confirm: {
-        label: "Add",
-        className: "btn btn-primary bootbox-add-bf-class",
-        callback: function () {
-          addSubjectIDtoDataBase(bootb);
-          return false;
-        },
-      },
-    },
-    size: "large",
-    centerVertical: true,
-    onShown: function (e) {
-      // auto-click first area (mandatory fields) when opening the form
-      $(subjectsFormDiv).find("#subjects-mandatory-fields").click();
-      $(".popover-tooltip").each(function () {
-        var $this = $(this);
-        $this.popover({
-          trigger: "hover",
-          container: $this,
-        });
-      });
-    },
-  });
+  $("#sidebarCollapse").prop("disabled", "true")
+}
+function showFormSamples(type) {
+  if (type !== "edit") {
+    clearAllSubjectFormFields(samplesFormDiv);
+  }
+  samplesFormDiv.style.display = "flex"
+  $("#create_samples-tab").removeClass("show");
+  $("#create_samples-tab").css("display", "none");
+  $("#footer-div-samples").css("display", "none");
+  $("#btn-add-custom-field-samples").show();
+  $("#sidebarCollapse").prop("disabled", "true")
 }
 
-function showFormSamples() {
-  clearAllSubjectFormFields(samplesFormDiv);
-  samplesFormDiv.style.display = "block"
-  $("#btn-add-custom-field-samples").show();
-  var bootb = bootbox.dialog({
-    title: "<p style='text-align=center'>Adding a sample</p>",
-    message: samplesFormDiv,
-    buttons: {
-      cancel: {
-        label: "Cancel",
-      },
-      confirm: {
-        label: "Add",
-        className: "btn btn-primary bootbox-add-bf-class",
-        callback: function () {
-          addSampleIDtoDataBase(bootb);
-          return false;
-        },
-      },
-    },
-    size: "large",
-    centerVertical: true,
-    onShown: function (e) {
-      // auto-click first area (mandatory fields) when opening the form
-      $(samplesFormDiv).find("#samples-mandatory-fields").click();
-      $(".popover-tooltip").each(function () {
-        var $this = $(this);
-        $this.popover({
-          trigger: "hover",
-          container: $this,
-        });
-      });
-    },
-  });
+// for "Done adding" button - subjects
+function addSubject() {
+  addSubjectIDtoDataBase();
+}
+
+// for "Done adding" button - samples
+function addSample() {
+  addSampleIDtoDataBase();
+}
+
+function hideSubjectsForm() {
+  subjectsFormDiv.style.display = "none";
+  $("#create_subjects-tab").addClass("show");
+  $("#create_subjects-tab").css("display", "flex");
+  $("#footer-div-subjects").css("display", "flex");
+  $("#sidebarCollapse").prop("disabled", false);
+  $("#btn-edit-subject").css("display", "none");
+  $("#btn-add-subject").css("display", "inline-block");
+}
+
+function hideSamplesForm() {
+  samplesFormDiv.style.display = "none";
+  $("#create_samples-tab").addClass("show");
+  $("#create_samples-tab").css("display", "flex");
+  $("#footer-div-samples").css("display", "flex");
+  $("#sidebarCollapse").prop("disabled", false);
+  $("#btn-edit-sample").css("display", "none");
+  $("#btn-add-sample").css("display", "inline-block");
 }
 
 function addSubjectIDtoTable(newSubject) {
   table = document.getElementById("table-subjects");
   var rowcount = table.rows.length;
-  /// append row to table from the bottom
-  var rowIndex = rowcount;
-  var indexNumber = rowIndex;
-  var currentRow = table.rows[table.rows.length - 1];
-  // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-subject", rowIndex);
-  var row = (table.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-subject" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSubject+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='view_current_subject_id(this)'><i class='eye outline icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='edit_current_subject_id(this)'><i class='pen icon' style='color: black'></i></button><button class='ui button' onclick='delete_current_subject_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  for (var i=1;i<rowcount;i++) {
+    if (newSubject === table.rows[i].cells[1].innerText) {
+      duplicate = true
+      break
+    }
+  }
+  if (!duplicate) {
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+    var indexNumber = rowIndex;
+    var currentRow = table.rows[table.rows.length - 1];
+    // check for unique row id in case users delete old rows and append new rows (same IDs!)
+    var newRowIndex = checkForUniqueRowID("row-current-subject", rowIndex);
+    var row = (table.insertRow(rowIndex).outerHTML =
+    "<tr id='row-current-subject" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSubject+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_subject_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_subject_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  }
 }
 
 function addSampleIDtoTable(newSample) {
@@ -109,11 +98,11 @@ function addSampleIDtoTable(newSample) {
     // check for unique row id in case users delete old rows and append new rows (same IDs!)
     var newRowIndex = checkForUniqueRowID("row-current-sample", rowIndex);
     var row = (table.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-sample" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSample+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='view_current_sample_id(this)'><i class='eye outline icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='edit_current_sample_id(this)'><i class='pen icon' style='color: black'></i></button><button class='ui button' onclick='delete_current_sample_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "<tr id='row-current-sample" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSample+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_sample_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_sample_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   }
 }
 
-function addSubjectIDtoDataBase(bootb) {
+function addSubjectIDtoDataBase() {
   var subjectID = $("#bootbox-subject-id").val();
   var poolID = $("#bootbox-subject-pool-id").val();
   var expGroup = $("#bootbox-subject-exp-group").val();
@@ -132,29 +121,22 @@ function addSubjectIDtoDataBase(bootb) {
     if (!duplicate) {
       addSubjectIDtoTable(subjectID)
       addSubjectIDToJSON(subjectID);
-      bootb.modal("hide");
-      $("#table-subjects").css("display", "block");
+      // $("#table-subjects").css("display", "block");
       $("#button-generate-subjects").css("display", "block");
       clearAllSubjectFormFields(subjectsFormDiv)
+      hideSubjectsForm()
     } else {
       error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
     }
   } else {
     error = "Please fill in all of the required fields!"
-    }
-  if (error !== "") {
-    $(bootb).find(".modal-footer span").remove();
-    bootb
-      .find(".modal-footer")
-      .prepend(
-        "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-          error +
-          "</span>"
-      );
+  }
+    if (error !== "") {
+    Swal.fire("Failed to add the subject!", error, "error")
   }
 }
 
-function addSampleIDtoDataBase(bootb) {
+function addSampleIDtoDataBase() {
   var sampleID = $("#bootbox-sample-id").val();
   var subjectID = $("#bootbox-subject-id-samples").val();
   var wasDerivedFromSample = $("#bootbox-wasDerivedFromSample").val();
@@ -175,10 +157,10 @@ function addSampleIDtoDataBase(bootb) {
     if (!duplicate) {
       addSampleIDtoTable(sampleID)
       addSampleIDtoJSON(sampleID);
-      bootb.modal("hide");
       $("#table-samples").css("display", "block");
       $("#button-generate-samples").css("display", "block");
       clearAllSubjectFormFields(samplesFormDiv)
+      hideSamplesForm()
     } else {
       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
     }
@@ -186,14 +168,7 @@ function addSampleIDtoDataBase(bootb) {
     error = "Please fill in all of the required fields!"
     }
   if (error !== "") {
-    $(bootb).find(".modal-footer span").remove();
-    bootb
-      .find(".modal-footer")
-      .prepend(
-        "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-          error +
-          "</span>"
-      );
+    Swal.fire("Failed to add the sample!", error, "error")
   }
 }
 
@@ -254,36 +229,23 @@ function addSampleIDtoJSON(sampleID) {
   }
 }
 
-// associated with the view icon (view a subject)
-function view_current_subject_id(ev) {
-  var currentRow = $(ev).parents()[2];
-  var subjectID = $(currentRow)[0].cells[1].innerText;
-  loadSubjectInformation(ev, subjectID, "view")
-}
-// associated with the view icon (view a subject)
-function view_current_sample_id(ev) {
-  var currentRow = $(ev).parents()[2];
-  var sampleID = $(currentRow)[0].cells[1].innerText;
-  loadSampleInformation(ev, sampleID, "view")
-}
-
 // associated with the edit icon (edit a subject)
 function edit_current_subject_id(ev) {
   var currentRow = $(ev).parents()[2];
   var subjectID = $(currentRow)[0].cells[1].innerText;
-  loadSubjectInformation(ev, subjectID, "edit")
+  loadSubjectInformation(ev, subjectID)
 }
 function edit_current_sample_id(ev) {
   var currentRow = $(ev).parents()[2];
   var sampleID = $(currentRow)[0].cells[1].innerText;
-  loadSampleInformation(ev, sampleID, "edit")
+  loadSampleInformation(ev, sampleID)
 }
 
-function loadSubjectInformation(ev, subjectID, type) {
+function loadSubjectInformation(ev, subjectID) {
   // 1. load fields for form
-  // 2. For type===view: make all fields contenteditable=false
-  // 3. For type===edit: make all fields contenteditable=true
-  subjectsFormDiv.style.display = "block"
+  showForm("edit");
+  $("#btn-edit-subject").css("display", "inline-block");
+  $("#btn-add-subject").css("display", "none");
   var infoJson = [];
   if (subjectsTableData.length > 1) {
     for (var i=1; i<subjectsTableData.length;i++) {
@@ -304,67 +266,28 @@ function loadSubjectInformation(ev, subjectID, type) {
         field.value = "";
       }
     }
-    if (type === "view") {
-      $(field).prop("disabled", true);
-    } else if (type === "edit") {
-      $(field).prop("disabled", false);
-    }
   });
-  if (type === "view") {
-    var label1 = "View";
-    var label2 = "Done"
-    // $("#btn-add-custom-field").hide();
-  } else {
-    var label1 = "Edit"
-    var label2 = "Confirm"
-    $("#btn-add-custom-field").show();
-  }
-  var bootb = bootbox.dialog({
-    title: "<p style='text-align=center'>"+label1+"ing a subject</p>",
-    message: subjectsFormDiv,
-    buttons: {
-      cancel: {
-        label: "Cancel",
-      },
-      confirm: {
-        label: label2,
-        className: "btn btn-primary bootbox-add-bf-class",
-        callback: function () {
-          if (type === "edit") {
-            editSubject(ev, bootb, subjectID);
-            return false;
-          }
-        },
-      },
-    },
-    size: "large",
-    centerVertical: true,
-    onShown: function (e) {
-      $(".popover-tooltip").each(function () {
-        var $this = $(this);
-        $this.popover({
-          trigger: "hover",
-          container: $this,
-        });
-      });
-      $("#new-custom-header-name").keyup(function () {
-        var customName = $(this).val();
-        if (customName !== "") {
-          $("#button-confirm-custom-header-name").show();
-        } else {
-          $("#button-confirm-custom-header-name").hide();
-        }
-      })
-    },
-  });
- }
+  $("#btn-edit-subject").click(function() {
+    editSubject(ev, subjectID)
+  })
 
+  $("#new-custom-header-name").keyup(function () {
+    var customName = $(this).val();
+    if (customName !== "") {
+      $("#button-confirm-custom-header-name").show();
+    } else {
+      $("#button-confirm-custom-header-name").hide();
+    }
+  })
+ }
 
  function loadSampleInformation(ev, sampleID, type) {
    // 1. load fields for form
    // 2. For type===view: make all fields contenteditable=false
    // 3. For type===edit: make all fields contenteditable=true
-   samplesFormDiv.style.display = "block"
+   showFormSamples("edit");
+   $("#btn-edit-sample").css("display", "inline-block");
+   $("#btn-add-sample").css("display", "none");
    var infoJson = [];
    if (samplesTableData.length > 1) {
      for (var i=1; i<samplesTableData.length;i++) {
@@ -385,62 +308,21 @@ function loadSubjectInformation(ev, subjectID, type) {
          field.value = "";
        }
      }
-     if (type === "view") {
-       $(field).prop("disabled", true);
-     } else if (type === "edit") {
-       $(field).prop("disabled", false);
+   });
+   $("#btn-edit-sample").click(function() {
+     editSample(ev, subjectID)
+   })
+   $("#new-custom-header-name-samples").keyup(function () {
+     var customName = $(this).val();
+     if (customName !== "") {
+       $("#button-confirm-custom-header-name-samples").show();
+     } else {
+       $("#button-confirm-custom-header-name-samples").hide();
      }
-   });
-   if (type === "view") {
-     var label1 = "View";
-     var label2 = "Done"
-     // $("#btn-add-custom-field").hide();
-   } else {
-     var label1 = "Edit"
-     var label2 = "Confirm"
-     $("#btn-add-custom-field-samples").show();
-   }
-   var bootb = bootbox.dialog({
-     title: "<p style='text-align=center'>"+label1+"ing a sample</p>",
-     message: samplesFormDiv,
-     buttons: {
-       cancel: {
-         label: "Cancel",
-       },
-       confirm: {
-         label: label2,
-         className: "btn btn-primary bootbox-add-bf-class",
-         callback: function () {
-           if (type === "edit") {
-             editSample(ev, bootb, sampleID);
-             return false;
-           }
-         },
-       },
-     },
-     size: "large",
-     centerVertical: true,
-     onShown: function (e) {
-       $(".popover-tooltip").each(function () {
-         var $this = $(this);
-         $this.popover({
-           trigger: "hover",
-           container: $this,
-         });
-       });
-       $("#new-custom-header-name-samples").keyup(function () {
-         var customName = $(this).val();
-         if (customName !== "") {
-           $("#button-confirm-custom-header-name-samples").show();
-         } else {
-           $("#button-confirm-custom-header-name-samples").hide();
-         }
-       })
-     },
-   });
+   })
   }
 
-function editSubject(ev, bootbox, subjectID) {
+function editSubject(ev, subjectID) {
  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
    if (field.value !== "" && field.value !== undefined) {
      subjectsFileData.push(field.value)
@@ -456,7 +338,7 @@ function editSubject(ev, bootbox, subjectID) {
        break
      }
    }
-  bootbox.modal("hide");
+   hideSubjectsForm()
  } else {
     var newID = $("#bootbox-subject-id").val();
     var table = document.getElementById("table-subjects");
@@ -471,14 +353,7 @@ function editSubject(ev, bootbox, subjectID) {
     }
     if (duplicate) {
       error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
-      $(bootbox).find(".modal-footer span").remove();
-      bootbox
-        .find(".modal-footer")
-        .prepend(
-          "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-            error +
-            "</span>"
-        );
+      Swal.fire("Duplicate subject_id!", error, "error")
     } else {
       for (var i=1; i<subjectsTableData.length;i++) {
         if (subjectsTableData[i][0] === subjectID) {
@@ -487,7 +362,7 @@ function editSubject(ev, bootbox, subjectID) {
         }
       }
       $(currentRow)[0].cells[1].innerText = newID;
-      bootbox.modal("hide");
+      hideSubjectsForm()
     }
   }
   subjectsFileData = []
@@ -509,7 +384,7 @@ function editSample(ev, bootbox, sampleID) {
        break
      }
    }
-  bootbox.modal("hide");
+   hideSamplesForm()
  } else {
     var newID = $("#bootbox-sample-id").val();
     var table = document.getElementById("table-samples");
@@ -523,15 +398,8 @@ function editSample(ev, bootbox, sampleID) {
       }
     }
     if (duplicate) {
-      error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
-      $(bootbox).find(".modal-footer span").remove();
-      bootbox
-        .find(".modal-footer")
-        .prepend(
-          "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-            error +
-            "</span>"
-        );
+      error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!";
+      Swal.fire("Duplicate sample_id!", error, "error")
     } else {
       for (var i=1; i<samplesTableData.length;i++) {
         if (samplesTableData[i][0] === sampleID) {
@@ -540,7 +408,7 @@ function editSample(ev, bootbox, sampleID) {
         }
       }
       $(currentRow)[0].cells[1].innerText = newID;
-      bootbox.modal("hide");
+      hideSamplesForm()
     }
   }
   samplesFileData = []

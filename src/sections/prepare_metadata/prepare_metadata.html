@@ -3661,7 +3661,7 @@
                       <div class="tooltipnew contributor">
                         <img class="info" src="assets/img/info.png" />
                         <span class="tooltiptext contributor">
-                          Click on each symbol (View, Edit, Delete) to view/edit/delete a subject id.
+                          Click on each symbol (Edit, Delete) to edit/delete a subject id.
 
                         </span>
                       </div>
@@ -3680,7 +3680,7 @@
                 "
               >
                 <button
-                  onclick="showForm()"
+                  onclick="showForm('display')"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -3728,16 +3728,136 @@
           </div>
         </div>
 
+        <!-- Question 4: Ask for existing subjects.xlsx file -->
+        <div
+          class="individual-question prepare-subjects"
+          id="Question-prepare-subjects-5"
+          style="width: 85%"
+        >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Browse for your <i>subjects.xlsx</i> file below:
+            </label>
+            <div
+              class="field"
+              style="
+                margin: 15px auto;
+                display: flex;
+                justify-content: center;
+              "
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="showExistingSubjectsFile()"
+                id="existing-subjects-file-destination"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-existing-subjects-import"
+            >
+              <button
+                onclick="importExistingSubjectsFile()"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-5', 'create_subjects-tab', 'delete', 'individual-question prepare-subjects')"
+                data-next="Question-prepare-subjects-3"
+                id="button-fake-confirm-existing-subjects-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display:none;
+                "
+              >
+                Fake Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+        </div>
+
+          <!-- Question 4: Show table -->
+          <div
+            class="individual-question prepare-subjects"
+            id="Question-prepare-subjects-main-section"
+            style="width: 85%"
+          >
+          </div>
+
+
+          <!-- main tabs' closing div -->
+        </div>
+        <!-- back button -->
+        <div class="footer-div" id="footer-div-subjects">
+          <!-- <div style="display: flex; flex-direction: row; width: 110px"> -->
+            <button
+              type="button"
+              class="transition-btn prev"
+              data-section="main_tabs"
+            >
+              <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+            </button>
+            <button onclick="resetSubjects()" class="start-over">
+              <i
+                class="fas fa-sync-alt"
+                style="margin-right: 10px; font-size: inherit"
+              ></i>
+              Start over
+            </button>
+          <!-- </div> -->
+        </div>
+
         <div
           style="
             width: 100%;
             position: relative;
-            margin-top: 1em;
+            margin-top: 50px;
             margin-bottom: 2em;
             display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            height:100%
           "
           id="form-add-a-subject"
         >
+        <h3 style="text-align:center;font-size:18px;padding-bottom:0">ADD A SUBJECT</h3>
           <div class="multisteps-form__progress" style="margin: 40px 20px">
             <button
               id="subjects-mandatory-fields"
@@ -4348,127 +4468,23 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-
-          </div>
-
-        <!-- Question 4: Ask for existing subjects.xlsx file -->
-        <div
-          class="individual-question prepare-subjects"
-          id="Question-prepare-subjects-5"
-          style="width: 85%"
-        >
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                text-align: center;
-              "
-              >Browse for your <i>subjects.xlsx</i> file below:
-            </label>
-            <div
-              class="field"
-              style="
-                margin: 15px auto;
-                display: flex;
-                justify-content: center;
-              "
-            >
-              <input
-                class="form-control"
-                style="width: 450px !important"
-                onclick="showExistingSubjectsFile()"
-                id="existing-subjects-file-destination"
-                type="text"
-                readonly
-                placeholder="Browse here"
-              />
-            </div>
-            <div
-              style="
-                display: none;
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-              "
-              id="div-confirm-existing-subjects-import"
-            >
-              <button
-                onclick="importExistingSubjectsFile()"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
-              >
-                Confirm
-              </button>
-              <button
-                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-5', 'create_subjects-tab', 'delete', 'individual-question prepare-subjects')"
-                data-next="Question-prepare-subjects-3"
-                id="button-fake-confirm-existing-subjects-file-load"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                  display:none;
-                "
-              >
-                Fake Confirm
-              </button>
-            </div>
-          </div>
+        <div style="display:flex;flex-direction: row;justify-content: center;margin:40px auto;width:100%;margin-left: 30px">
+          <button class="btn_animated" id="btn-edit-subject"
+          style="width: 140px; border: none !important;display:none">
+          <i class="fas fa-check" style="margin-right: 7px"></i>
+          Edit</button>
+          <button class="btn_animated" onclick="addSubject()" id="btn-add-subject"
+          style="width: 140px; border: none !important;display:inline-block">
+          <i class="fas fa-check" style="margin-right: 7px"></i>
+          Done</button>
+          <button class="start-over" onclick="hideSubjectsForm()"
+          style="width: 120px; background: #fff;color:red;border:1px solid red;display:block">
+          <i class="fas fa-times" style="margin-right: 7px"></i>
+          Cancel</button>
         </div>
-        </div>
-
-          <!-- Question 4: Show table -->
-          <div
-            class="individual-question prepare-subjects"
-            id="Question-prepare-subjects-main-section"
-            style="width: 85%"
-          >
-          </div>
-
-
-          <!-- main tabs' closing div -->
-        </div>
-        <!-- back button -->
-        <div class="footer-div">
-          <!-- <div style="display: flex; flex-direction: row; width: 110px"> -->
-            <button
-              type="button"
-              class="transition-btn prev"
-              data-section="main_tabs"
-            >
-              <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-            </button>
-            <button onclick="resetSubjects()" class="start-over">
-              <i
-                class="fas fa-sync-alt"
-                style="margin-right: 10px; font-size: inherit"
-              ></i>
-              Start over
-            </button>
-          <!-- </div> -->
-        </div>
+      </div>
       </section>
 
       <section
@@ -4802,7 +4818,7 @@
                       <div class="tooltipnew contributor">
                         <img class="info" src="assets/img/info.png" />
                         <span class="tooltiptext contributor">
-                          Click on each symbol (View, Edit, Delete) to view/edit/delete a sample id.
+                          Click on each symbol (Edit, Delete) to edit/delete a sample id.
                         </span>
                       </div>
                     </th>
@@ -4820,7 +4836,7 @@
                 "
               >
                 <button
-                  onclick="showFormSamples()"
+                  onclick="showFormSamples('display')"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -4868,16 +4884,126 @@
           </div>
         </div>
 
+        <!-- Question 4: Ask for existing samples.xlsx file -->
+        <div
+          class="individual-question prepare-samples"
+          id="Question-prepare-samples-5"
+          style="width: 85%"
+        >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Browse for your <i>samples.xlsx</i> file below:
+            </label>
+            <div
+              class="field"
+              style="
+                margin: 15px auto;
+                display: flex;
+                justify-content: center;
+              "
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="showExistingSamplesFile()"
+                id="existing-samples-file-destination"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-existing-samples-import"
+            >
+              <button
+                onclick="importExistingSamplesFile()"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-5', 'create_samples-tab', 'delete', 'individual-question prepare-samples')"
+                data-next="Question-prepare-samples-3"
+                id="button-fake-confirm-existing-samples-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display:none;
+                "
+              >
+                Fake Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+        </div>
+
+
+          <!-- main tabs' closing div -->
+        </div>
+        <!-- back button -->
+        <div class="footer-div" id="footer-div-samples">
+            <button
+              type="button"
+              class="transition-btn prev"
+              data-section="main_tabs"
+            >
+              <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+            </button>
+            <button onclick="resetSamples()" class="start-over">
+              <i
+                class="fas fa-sync-alt"
+                style="margin-right: 10px; font-size: inherit"
+              ></i>
+              Start over
+            </button>
+        </div>
+
         <div
           style="
-            width: 100%;
-            position: relative;
-            margin-top: 1em;
-            margin-bottom: 2em;
-            display: none;
+          width: 100%;
+          position: relative;
+          margin-top: 50px;
+          margin-bottom: 2em;
+          display: none;
+          flex-direction: column;
+          overflow-y: auto;
+          height:100%
           "
           id="form-add-a-sample"
         >
+        <h3 style="text-align:center;font-size:18px;padding-bottom:0">ADD A SAMPLE</h3>
           <div class="multisteps-form__progress" style="margin: 40px 20px">
             <button
               id="samples-mandatory-fields"
@@ -5595,114 +5721,22 @@
 
           </div>
         </div>
-
-          </div>
-
-        <!-- Question 4: Ask for existing samples.xlsx file -->
-        <div
-          class="individual-question prepare-samples"
-          id="Question-prepare-samples-5"
-          style="width: 85%"
-        >
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                text-align: center;
-              "
-              >Browse for your <i>samples.xlsx</i> file below:
-            </label>
-            <div
-              class="field"
-              style="
-                margin: 15px auto;
-                display: flex;
-                justify-content: center;
-              "
-            >
-              <input
-                class="form-control"
-                style="width: 450px !important"
-                onclick="showExistingSamplesFile()"
-                id="existing-samples-file-destination"
-                type="text"
-                readonly
-                placeholder="Browse here"
-              />
-            </div>
-            <div
-              style="
-                display: none;
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-              "
-              id="div-confirm-existing-samples-import"
-            >
-              <button
-                onclick="importExistingSamplesFile()"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
-              >
-                Confirm
-              </button>
-              <button
-                onclick="transitionFreeFormMode(this, 'Question-prepare-samples-5', 'create_samples-tab', 'delete', 'individual-question prepare-samples')"
-                data-next="Question-prepare-samples-3"
-                id="button-fake-confirm-existing-samples-file-load"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                  display:none;
-                "
-              >
-                Fake Confirm
-              </button>
-            </div>
-          </div>
+        <div style="display:flex;flex-direction: row;justify-content: center;margin:40px auto;width:100%;margin-left: 30px">
+          <button class="btn_animated" id="btn-edit-sample"
+          style="width: 140px; border: none !important;display:none">
+          <i class="fas fa-check" style="margin-right: 7px"></i>
+          Edit</button>
+          <button class="btn_animated" onclick="addSample()" id="btn-add-sample"
+          style="width: 140px; border: none !important;display:inline-block">
+          <i class="fas fa-check" style="margin-right: 7px"></i>
+          Done</button>
+          <button class="start-over" onclick="hideSamplesForm()"
+          style="width: 120px; background: #fff;color:red;border:1px solid red;display:block">
+          <i class="fas fa-times" style="margin-right: 7px"></i>
+          Cancel</button>
         </div>
-        </div>
+      </div>
 
-
-          <!-- main tabs' closing div -->
-        </div>
-        <!-- back button -->
-        <div class="footer-div">
-            <button
-              type="button"
-              class="transition-btn prev"
-              data-section="main_tabs"
-            >
-              <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-            </button>
-            <button onclick="resetSamples()" class="start-over">
-              <i
-                class="fas fa-sync-alt"
-                style="margin-right: 10px; font-size: inherit"
-              ></i>
-              Start over
-            </button>
-        </div>
       </section>
 
   <script>window.$ = window.jQuery = require('jquery');</script>
