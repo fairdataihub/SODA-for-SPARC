@@ -141,7 +141,7 @@ const notyf = new Notyf({
     },
     {
       type: "success",
-      background: "green",
+      background: "#13716D",
       icon: {
         className: "fas fa-check-circle",
         tagName: "i",
@@ -151,7 +151,7 @@ const notyf = new Notyf({
     },
     {
       type: "final",
-      background: "green",
+      background: "#13716D",
       icon: {
         className: "fas fa-check-circle",
         tagName: "i",
@@ -181,7 +181,7 @@ const notyf = new Notyf({
     },
     {
       type: "error",
-      background: "indianred",
+      background: "#B80D49",
       icon: {
         className: "fas fa-times-circle",
         tagName: "i",
@@ -312,6 +312,9 @@ const run_pre_flight_checks = async (check_update = true) => {
           }
         }
       } else {
+        if (check_update) {
+          checkNewAppVersion();
+        }
         // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
         Swal.fire({
           icon: "warning",
@@ -570,7 +573,7 @@ ipcRenderer.on("update_downloaded", () => {
     "Update Downloaded",
     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
   );
-  update_available_notification.dismiss();
+  notyf.dismiss(update_available_notification)
   if (process.platform == "darwin") {
     update_downloaded_notification = notyf.open({
       type: "app_update_warning",
@@ -579,7 +582,7 @@ ipcRenderer.on("update_downloaded", () => {
     });
   } else {
     update_downloaded_notification = notyf.open({
-      type: "app_update",
+      type: "app_update_warning",
       message:
         "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
     });
