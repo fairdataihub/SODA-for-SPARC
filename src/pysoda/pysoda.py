@@ -38,6 +38,9 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from docx import Document
 
+import boto3
+import requests
+
 from string import ascii_uppercase
 import itertools
 
@@ -71,6 +74,7 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
+SODA_SPARC_API_KEY = "SODA-Pennsieve"
 
 DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 
@@ -133,7 +137,7 @@ def bf_keep_only_account(keyname):
             config.write(configfile)
 
 ### Manage datasets (Pennsieve interface)
-def bf_add_account(keyname, key, secret):
+def bf_add_account_api_key(keyname, key, secret):
     """
     Associated with 'Add account' button in 'Login to your Pennsieve account' section of SODA
 
@@ -145,7 +149,7 @@ def bf_add_account(keyname, key, secret):
         Adds account to the Pennsieve configuration file (local machine)
     """
     try:
-        error, c = '', 0
+        error= ''
         keyname = keyname.strip()
         if (not keyname) or (not key) or (not secret):
             raise Exception('Error: Please enter valid keyname, key, and/or secret')
@@ -219,13 +223,115 @@ def bf_add_account(keyname, key, secret):
             config.write(configfile)
 
         # CHANGE BACK
-        bf_keep_only_account(keyname)
+        # bf_keep_only_account(keyname)
 
         return 'Successfully added account ' + str(bf)
 
     except Exception as e:
         bf_delete_account(keyname)
         raise e
+
+def bf_add_account_username(keyname, key, secret):
+    """
+    Associated with 'Add account' button in 'Login to your Pennsieve account' section of SODA
+
+    Args:
+        keyname: Name of the account to be associated with the given credentials (string)
+        key: API key (string)
+        secret: API Secret (string)
+    Action:
+        Adds account to the Pennsieve configuration file (local machine)
+    """
+    temp_keyname = "SODA_temp_generated"
+    try:
+        keyname = keyname.strip()
+        # if (not keyname) or (not key) or (not secret):
+        #     raise Exception('Error: Please enter valid keyname, key, and/or secret')
+
+        # if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
+        #     raise Exception('Error: Please enter valid keyname, key, and/or secret')
+
+        bfpath = join(userpath, '.pennsieve')
+        # Load existing or create new config file
+        config = ConfigParser()
+        if exists(configpath):
+            config.read(configpath)
+            # if config.has_section(keyname):
+            #     raise Exception('Error: Key name already exists')
+        else:
+            if not exists(bfpath):
+                mkdir(bfpath)
+            if not exists(join(bfpath, 'cache')):
+                mkdir(join(bfpath, 'cache'))
+
+        # Add agent section
+        agentkey = 'agent'
+        if not config.has_section(agentkey):
+            config.add_section(agentkey)
+            config.set(agentkey, 'proxy_local_port', '8080')
+            # config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
+            config.set(agentkey, 'uploader', 'true')
+            config.set(agentkey, 'cache_hard_cache_size', '10000000000')
+            config.set(agentkey, 'status_port', '11235')
+            config.set(agentkey, 'metrics', 'true')
+            config.set(agentkey, 'cache_page_size', '100000')
+            config.set(agentkey, 'proxy', 'true')
+            config.set(agentkey, 'cache_soft_cache_size', '5000000000')
+            config.set(agentkey, 'timeseries_local_port', '9090')
+            config.set(agentkey, 'timeseries', 'true')
+
+        # Add new account
+        config.add_section(temp_keyname)
+        config.set(temp_keyname, 'api_token', key)
+        config.set(temp_keyname, 'api_secret', secret)
+
+        with open(configpath, 'w') as configfile:
+            config.write(configfile)
+
+    except Exception as e:
+        raise e
+
+    # Check key and secret are valid, if not delete account from config
+    try:
+        bf = Pennsieve(temp_keyname)
+    except:
+        bf_delete_account(temp_keyname)
+        raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
+
+    # Check that the Pennsieve account is in the SPARC Consortium organization
+    try:
+        acc_details = bf.context.name
+
+        # CHANGE BACK
+        if acc_details.find('SPARC Consortium') == -1:
+            raise Exception('Error: Please check that your account is within the SPARC Consortium Organization')
+
+        if not config.has_section("global"):
+            config.add_section("global")
+
+        default_acc = config["global"]
+        default_acc["default_profile"] = SODA_SPARC_API_KEY
+
+        if not config.has_section(SODA_SPARC_API_KEY):
+            config.add_section(SODA_SPARC_API_KEY)
+
+        config.set(SODA_SPARC_API_KEY, 'api_token', key)
+        config.set(SODA_SPARC_API_KEY, 'api_secret', secret)
+        
+
+        with open(configpath, 'w+') as configfile:
+            config.write(configfile)
+
+        bf_delete_account(temp_keyname)
+        # # CHANGE BACK
+        # bf_keep_only_account(keyname)
+
+        return 'Successfully added account ' + str(bf)
+
+    except Exception as e:
+        bf_delete_account(temp_keyname)
+        raise e
+
 
 def check_forbidden_characters(my_string):
     """
@@ -274,45 +380,82 @@ def bf_delete_account(keyname):
         config.write(configfile)
 
 
-def bf_remove_additional_accounts():
+# def bf_remove_additional_accounts():
+def bf_get_accounts():
     """
     Args:
-        none
+        None
     Action:
-        Removes any non consortium accounts from the config file
+        Gets the appropriate SPARC account from the config file
     """
-    first_consortium_found = False
-    consortium_keyname = "agent"
-
     config = ConfigParser()
     config.read(configpath)
-    config_sections = config.sections()
+    accountname = config.sections()
 
-    for section in config_sections:
-        print(section)
-        if (section != 'agent' and section != 'global'):
-            try:
-                bf = Pennsieve(section)
-                acc_details = bf.context.name
+    if SODA_SPARC_API_KEY in accountname:
+        try:
+            ps = Pennsieve(SODA_SPARC_API_KEY)
+            return SODA_SPARC_API_KEY
+        except:
+            pass
+    elif "global" in accountname:
+        if "default_profile" in config["global"]:
+            default_profile = config["global"]["default_profile"]
+            if default_profile in accountname:
+                try:
+                    ps = Pennsieve(default_profile)
+                    return default_profile
+                except Exception as e:
+                    pass
+    else:
+        for account in accountname:
+            ps = Pennsieve(account)
+            acc_details = ps.context.name
+            if acc_details.find('SPARC Consortium') != -1:
+                if not config.has_section("global"):
+                    config.add_section("global")
 
-                if acc_details.find('SPARC Consortium') != -1:
-                    first_consortium_found = True
-                    consortium_keyname = section
+                default_acc = config["global"]
+                default_acc["default_profile"] = account
+            
+                with open(configpath, 'w+') as configfile:
+                    config.write(configfile)
 
-                    if not config.has_section("global"):
-                        config.add_section("global")
+                return account
+    return ""
 
-                    default_acc = config["global"]
-                    default_acc["default_profile"] = consortium_keyname
+    # first_consortium_found = False
+    # consortium_keyname = "agent"
 
-                    with open(configpath, 'w+') as configfile:
-                        config.write(configfile)
-            except Exception as e:
-                pass
-        if first_consortium_found == True:
-            break
+    # config = ConfigParser()
+    # config.read(configpath)
+    # config_sections = config.sections()
 
-    bf_keep_only_account(consortium_keyname)
+    # for section in config_sections:
+    #     print(section)
+    #     if (section != 'agent' and section != 'global'):
+    #         try:
+    #             bf = Pennsieve(section)
+    #             acc_details = bf.context.name
+
+    #             if acc_details.find('SPARC Consortium') != -1:
+    #                 first_consortium_found = True
+    #                 consortium_keyname = section
+
+    #                 if not config.has_section("global"):
+    #                     config.add_section("global")
+
+    #                 default_acc = config["global"]
+    #                 default_acc["default_profile"] = consortium_keyname
+
+    #                 with open(configpath, 'w+') as configfile:
+    #                     config.write(configfile)
+    #         except Exception as e:
+    #             pass
+    #     if first_consortium_found == True:
+    #         break
+
+    # bf_keep_only_account(consortium_keyname)
 
 def bf_account_list():
     """
@@ -322,21 +465,34 @@ def bf_account_list():
     try:
         accountlist = ['Select']
         if exists(configpath):
-            # CHANGE BACK
-            bf_remove_additional_accounts() # remove non consortium accounts
-            config = ConfigParser()
-            config.read(configpath)
-            accountname = config.sections()
-            accountnamenoglobal = [n for n in accountname]
-            # if accountnamenoglobal:
-            for n in accountnamenoglobal:
-                try:
-                    bfn = Pennsieve(n)
-                    accountlist.append(n)
-                except Exception as e:
-                    pass
-            with open(configpath, 'w') as configfile:
-                config.write(configfile)
+            # # CHANGE BACK
+            valid_account = bf_get_accounts()
+            if valid_account != "":
+                accountlist.append(valid_account)
+            # config = ConfigParser()
+            # config.read(configpath)
+            # accountname = config.sections()
+
+            # if (SODA_SPARC_API_KEY in accountname):
+            #     try:
+            #         bfn = Pennsieve(SODA_SPARC_API_KEY)
+            #         accountlist.append(SODA_SPARC_API_KEY)
+            #         with open(configpath, 'w') as configfile:
+            #             config.write(configfile)
+            #         return accountlist
+            #     except Exception as e:
+            #         pass
+            # else:
+            #     accountnamenoglobal = [n for n in accountname]
+            #     # if accountnamenoglobal:
+            #     for n in accountnamenoglobal:
+            #         try:
+            #             bfn = Pennsieve(n)
+            #             accountlist.append(n)
+            #         except Exception as e:
+            #             pass
+            #     with open(configpath, 'w') as configfile:
+            #         config.write(configfile)
         return accountlist
         # My accountlist
 
@@ -352,21 +508,24 @@ def bf_default_account_load():
     try:
         accountlist = []
         if exists(configpath):
-            # CHANGE BACK
-            bf_remove_additional_accounts() # remove non consortium accounts
-            config = ConfigParser()
-            config.read(configpath)
-            keys = config.sections()
-            accountlist = []
-            if "global" in keys:
-                default_acc = config["global"]
-                if "default_profile" in default_acc:
-                    n = default_acc["default_profile"]
-                    try:
-                        bfn = Pennsieve(n)
-                        accountlist.append(n)
-                    except Exception as e:
-                        return accountlist
+            valid_account = bf_get_accounts()
+            if valid_account != "":
+                accountlist.append(valid_account)
+            # # CHANGE BACK
+            # bf_remove_additional_accounts() # remove non consortium accounts
+            # config = ConfigParser()
+            # config.read(configpath)
+            # keys = config.sections()
+            # accountlist = []
+            # if "global" in keys:
+            #     default_acc = config["global"]
+            #     if "default_profile" in default_acc:
+            #         n = default_acc["default_profile"]
+            #         try:
+            #             bfn = Pennsieve(n)
+            #             accountlist.append(n)
+            #         except Exception as e:
+            #             return accountlist
             # accountnamenoglobal = [n for n in accountname]
             # if accountnamenoglobal:
             #     for n in accountnamenoglobal:
@@ -400,10 +559,10 @@ def bf_dataset_account(accountname):
     # return dataset_list
 
     bf = Pennsieve(accountname)
-    bfaccountname = bf.profile.id
+    # bfaccountname = bf.profile.id
     datasets_list = bf.datasets()
 
-    all_bf_datasets = []
+    # all_bf_datasets = []
 
     def filter_dataset(datasets_list, store=None):
         if store is None:
@@ -838,7 +997,7 @@ def bf_get_users(selected_bfaccount):
     try:
         # def get_users_list():
         bf = Pennsieve(selected_bfaccount)
-        organization_name = bf.context.name
+        # organization_name = bf.context.name
         organization_id = bf.context.id
         list_users = bf._api._get('/organizations/' + str(organization_id) + '/members')
         list_users_first_last = []
@@ -868,7 +1027,7 @@ def bf_get_teams(selected_bfaccount):
     """
     try:
         bf = Pennsieve(selected_bfaccount)
-        organization_name = bf.context.name
+        # organization_name = bf.context.name
         organization_id = bf.context.id
         list_teams = bf._api._get('/organizations/' + str(organization_id) + '/teams')
         list_teams_name = []
@@ -1000,7 +1159,7 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
         c += 1
 
     try:
-        organization_name = bf.context.name
+        # organization_name = bf.context.name
         organization_id = bf.context.id
         list_users = bf._api._get('/organizations/' + str(organization_id) + '/members')
         # dict_users = {}
@@ -1115,7 +1274,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
         c += 1
 
     try:
-        organization_name = bf.context.name
+        # organization_name = bf.context.name
         organization_id = bf.context.id
         list_teams = bf._api._get('/organizations/' + str(organization_id) + '/teams')
         dict_teams = {}
@@ -1150,7 +1309,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
             first_name = list_dataset_permission[i]['firstName']
             last_name = list_dataset_permission[i]['lastName']
             role = list_dataset_permission[i]['role']
-            user_id = list_dataset_permission[i]['id']
+            # user_id = list_dataset_permission[i]['id']
             if (first_name == first_name_current_user and last_name == last_name_current_user):
                 if role not in ['owner', 'manager']:
                     raise Exception('Error: you must be dataset owner or manager to change its permissions')
@@ -1204,7 +1363,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
         if "description" in dataset_info['content']:
             res = dataset_info['content']['description']
         return res
-        return json.dumps(dataset_info)
+        # return json.dumps(dataset_info)
     except Exception as e:
         raise Exception(e)
 
@@ -1612,3 +1771,81 @@ def get_number_of_files_and_folders_locally(filepath):
             totalFiles += 1
 
     return (totalFiles, totalDir)
+
+def get_pennsieve_api_key_secret(email, password, keyname):
+
+    PENNSIEVE_URL = "https://api.pennsieve.io"
+
+    try:
+        response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+        response.raise_for_status()
+        cognito_app_client_id = response.json()["userPool"]["appClientId"]
+        cognito_region = response.json()["userPool"]["region"]
+        cognito_client = boto3.client("cognito-idp",region_name=cognito_region,aws_access_key_id="",aws_secret_access_key="")
+    except Exception as e:
+        raise Exception(e)
+
+    try:
+        login_response = cognito_client.initiate_auth(AuthFlow="USER_PASSWORD_AUTH",AuthParameters={"USERNAME": email, "PASSWORD": password},ClientId=cognito_app_client_id)
+    except Exception as e:
+        error = 'Error: Username or password was incorrect.'
+        raise Exception(error)
+
+    try:
+        api_key = login_response["AuthenticationResult"]["AccessToken"]
+        response = requests.get(f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"})
+        response.raise_for_status()
+    except Exception as e:
+        raise e
+
+    try:
+        url = "https://api.pennsieve.io/session/switch-organization"
+
+        sparc_org_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+        querystring = {"organization_id":"N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"}
+
+        headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
+
+        response = requests.request("PUT", url, headers=headers, params=querystring)
+    except Exception as e:
+        raise e
+
+    try:
+        url = "https://api.pennsieve.io/session/switch-organization"
+
+        querystring = {"organization_id":"N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"}
+
+        headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
+
+        response = requests.request("PUT", url, headers=headers, params=querystring)
+
+        response = requests.get(f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"})
+        response.raise_for_status()
+        response = response.json()
+        if ("preferredOrganization" in response):
+            if (response["preferredOrganization"] != sparc_org_id):
+                error = "Error: Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+                raise Exception(error)
+        else:
+            error = "Error: Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+            raise Exception(error)
+    except Exception as error:
+        error = "Error: Could not switch to the SPARC Consortium organization. Please log in and switch to the organization and try again."
+        raise error
+
+    try:
+        url = "https://api.pennsieve.io/token/"
+
+        payload = {"name": f"{keyname}"}
+        headers = {
+            "Accept": "*/*",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        }
+
+        response = requests.request("POST", url, json=payload, headers=headers)
+        response.raise_for_status()
+        response = response.json()
+        return ("success" , response["key"], response["secret"], response["name"])
+    except Exception as e:
+        raise e

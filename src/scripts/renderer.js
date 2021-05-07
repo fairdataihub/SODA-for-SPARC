@@ -82,6 +82,7 @@ client.invoke("echo", "server ready", (error, res) => {
 log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
+const SODA_SPARC_API_KEY = "SODA-Pennsieve"
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
@@ -311,7 +312,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           }
         }
       } else {
-        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable. 
+        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
         Swal.fire({
           icon: "warning",
           text:
@@ -385,7 +386,7 @@ const check_api_key = async () => {
     message: "Checking for pre-existing API keys...",
   });
   await wait(800);
-  // If no accounts are found, return false. 
+  // If no accounts are found, return false.
   return new Promise((resolve) => {
     client.invoke("api_bf_account_list", (error, res) => {
       if (error) {
@@ -5035,7 +5036,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
   var apiKey = $("#bootbox-api-key").val();
   var apiSecret = $("#bootbox-api-secret").val();
-  client.invoke("api_bf_add_account", name, apiKey, apiSecret, (error, res) => {
+  client.invoke("api_bf_add_account_api_key", name, apiKey, apiSecret, (error, res) => {
     if (error) {
       $(myBootboxDialog).find(".modal-footer span").remove();
       myBootboxDialog
