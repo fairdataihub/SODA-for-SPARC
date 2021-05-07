@@ -161,7 +161,7 @@ const notyf = new Notyf({
     },
     {
       type: "warning",
-      background: "#ffcc00",
+      background: "#fa8c16",
       icon: {
         className: "fas fa-exclamation-triangle",
         tagName: "i",
@@ -171,7 +171,7 @@ const notyf = new Notyf({
     },
     {
       type: "app_update_warning",
-      background: "#ffcc00",
+      background: "#fa8c16",
       icon: {
         className: "fas fa-tools",
         tagName: "i",
