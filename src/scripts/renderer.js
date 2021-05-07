@@ -82,7 +82,7 @@ client.invoke("echo", "server ready", (error, res) => {
 log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
-const SODA_SPARC_API_KEY = "SODA-Pennsieve"
+const SODA_SPARC_API_KEY = "SODA-Pennsieve";
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
@@ -573,7 +573,7 @@ ipcRenderer.on("update_downloaded", () => {
     "Update Downloaded",
     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
   );
-  notyf.dismiss(update_available_notification)
+  notyf.dismiss(update_available_notification);
   if (process.platform == "darwin") {
     update_downloaded_notification = notyf.open({
       type: "app_update_warning",
@@ -5039,73 +5039,79 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
   var apiKey = $("#bootbox-api-key").val();
   var apiSecret = $("#bootbox-api-secret").val();
-  client.invoke("api_bf_add_account_api_key", name, apiKey, apiSecret, (error, res) => {
-    if (error) {
-      $(myBootboxDialog).find(".modal-footer span").remove();
-      myBootboxDialog
-        .find(".modal-footer")
-        .prepend(
-          "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-            error +
-            "</span>"
-        );
-      log.error(error);
-      console.error(error);
-    } else {
-      $("#bootbox-key-name").val("");
-      $("#bootbox-api-key").val("");
-      $("#bootbox-api-secret").val("");
-      bfAccountOptions[name] = name;
-      defaultBfAccount = name;
-      defaultBfDataset = "Select dataset";
-      updateBfAccountList();
-      client.invoke("api_bf_account_details", name, (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            icon: "error",
-            text: "Something went wrong!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            footer:
-              '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-          });
-          showHideDropdownButtons("account", "hide");
-          confirm_click_account_function();
-        } else {
-          $("#para-account-detail-curate").html(res);
-          $("#current-bf-account").text(name);
-          $("#current-bf-account-generate").text(name);
-          $("#create_empty_dataset_BF_account_span").text(name);
-          $(".bf-account-span").text(name);
-          $("#current-bf-dataset").text("None");
-          $("#current-bf-dataset-generate").text("None");
-          $(".bf-dataset-span").html("None");
-          $("#para-account-detail-curate-generate").html(res);
-          $("#para_create_empty_dataset_BF_account").html(res);
-          $(".bf-account-details-span").html(res);
-          $("#para-continue-bf-dataset-getting-started").text("");
-          showHideDropdownButtons("account", "show");
-          confirm_click_account_function();
-        }
-      });
-      myBootboxDialog.modal("hide");
-      Swal.fire({
-        title: "Successfully added! <br/>Loading your account details...",
-        timer: 3000,
-        timerProgressBar: true,
-        allowEscapeKey: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.9)",
-        showConfirmButton: false,
-      });
-      // bootbox.alert({
-      //   message: "Successfully added!",
-      //   centerVertical: true,
-      // });
+  client.invoke(
+    "api_bf_add_account_api_key",
+    name,
+    apiKey,
+    apiSecret,
+    (error, res) => {
+      if (error) {
+        $(myBootboxDialog).find(".modal-footer span").remove();
+        myBootboxDialog
+          .find(".modal-footer")
+          .prepend(
+            "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+              error +
+              "</span>"
+          );
+        log.error(error);
+        console.error(error);
+      } else {
+        $("#bootbox-key-name").val("");
+        $("#bootbox-api-key").val("");
+        $("#bootbox-api-secret").val("");
+        bfAccountOptions[name] = name;
+        defaultBfAccount = name;
+        defaultBfDataset = "Select dataset";
+        updateBfAccountList();
+        client.invoke("api_bf_account_details", name, (error, res) => {
+          if (error) {
+            log.error(error);
+            console.error(error);
+            Swal.fire({
+              icon: "error",
+              text: "Something went wrong!",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              footer:
+                '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+            });
+            showHideDropdownButtons("account", "hide");
+            confirm_click_account_function();
+          } else {
+            $("#para-account-detail-curate").html(res);
+            $("#current-bf-account").text(name);
+            $("#current-bf-account-generate").text(name);
+            $("#create_empty_dataset_BF_account_span").text(name);
+            $(".bf-account-span").text(name);
+            $("#current-bf-dataset").text("None");
+            $("#current-bf-dataset-generate").text("None");
+            $(".bf-dataset-span").html("None");
+            $("#para-account-detail-curate-generate").html(res);
+            $("#para_create_empty_dataset_BF_account").html(res);
+            $(".bf-account-details-span").html(res);
+            $("#para-continue-bf-dataset-getting-started").text("");
+            showHideDropdownButtons("account", "show");
+            confirm_click_account_function();
+          }
+        });
+        myBootboxDialog.modal("hide");
+        Swal.fire({
+          title: "Successfully added! <br/>Loading your account details...",
+          timer: 3000,
+          timerProgressBar: true,
+          allowEscapeKey: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.9)",
+          showConfirmButton: false,
+        });
+        // bootbox.alert({
+        //   message: "Successfully added!",
+        //   centerVertical: true,
+        // });
+      }
     }
-  });
+  );
 }
 
 function showBFAddAccountBootbox() {
@@ -6567,7 +6573,14 @@ $("#bf-new-dataset-name").keyup(function () {
   }
 });
 
+$("#inputNewNameDataset").on("click", () => {
+  $("#nextBtn").prop("disabled", true);
+  $("#inputNewNameDataset").keyup();
+});
+
 $("#inputNewNameDataset").keyup(function () {
+  $("#nextBtn").prop("disabled", true);
+
   var newName = $("#inputNewNameDataset").val().trim();
 
   $("#Question-generate-dataset-generate-div").removeClass("show");
@@ -6585,33 +6598,10 @@ $("#inputNewNameDataset").keyup(function () {
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
-      $("#nextBtn").prop("disabled", true);
+      // $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
-    } else {
-      $("#div-confirm-inputNewNameDataset").css("display", "flex");
-      $("#btn-confirm-new-dataset-name").show();
-      $("#Question-generate-dataset-generate-div").show();
-      $("#Question-generate-dataset-generate-div").children().show();
-
-      $("#Question-generate-dataset-generate-div-old").addClass("show");
-      document.getElementById("para-new-name-dataset-message").innerHTML = "";
-      $("#nextBtn").prop("disabled", false);
-    }
-  } else {
-    $("#nextBtn").prop("disabled", true);
-  }
-});
-
-$("#inputNewNameDataset").click(function () {
-  var newName = $("#inputNewNameDataset").val().trim();
-
-  if (newName !== "") {
-    if (check_forbidden_characters_bf(newName)) {
-      document.getElementById("div-confirm-inputNewNameDataset").style.display =
-        "none";
+      $("#div-confirm-inputNewNameDataset").css("display", "none");
       $("#btn-confirm-new-dataset-name").hide();
-      $("#nextBtn").prop("disabled", true);
-      $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
       $("#div-confirm-inputNewNameDataset").css("display", "flex");
       $("#btn-confirm-new-dataset-name").show();
@@ -6620,12 +6610,40 @@ $("#inputNewNameDataset").click(function () {
 
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
-      $("#nextBtn").prop("disabled", false);
+      // $("#nextBtn").prop("disabled", false);
     }
   } else {
-    $("#nextBtn").prop("disabled", true);
+    $("#div-confirm-inputNewNameDataset").css("display", "none");
+    $("#btn-confirm-new-dataset-name").hide();
+    // $("#nextBtn").prop("disabled", true);
   }
 });
+
+// Defined above
+// $("#inputNewNameDataset").click(function () {
+//   var newName = $("#inputNewNameDataset").val().trim();
+
+//   if (newName !== "") {
+//     if (check_forbidden_characters_bf(newName)) {
+//       document.getElementById("div-confirm-inputNewNameDataset").style.display =
+//         "none";
+//       $("#btn-confirm-new-dataset-name").hide();
+//       $("#nextBtn").prop("disabled", true);
+//       $("#Question-generate-dataset-generate-div-old").removeClass("show");
+//     } else {
+//       $("#div-confirm-inputNewNameDataset").css("display", "flex");
+//       $("#btn-confirm-new-dataset-name").show();
+//       $("#Question-generate-dataset-generate-div").show();
+//       $("#Question-generate-dataset-generate-div").children().show();
+
+//       $("#Question-generate-dataset-generate-div-old").addClass("show");
+//       document.getElementById("para-new-name-dataset-message").innerHTML = "";
+//       $("#nextBtn").prop("disabled", false);
+//     }
+//   } else {
+//     $("#nextBtn").prop("disabled", true);
+//   }
+// });
 
 //// Select to choose a local dataset (getting started)
 document

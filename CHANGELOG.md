@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bug fixes:
 - Fixed a bug where SODA was unable to update on macOS through the built in buttons. The new update notification will be less intrusive and take up less space on your screen.
 - When you request a database from Pennsieve, SODA will now generate a timestamp that is inline with the curation team's requirements.
+- Fixed a visual bug where users would have been able to continue through certain datasets on a dataset that did not have a valid name.
 
 ## v4.2.1 - 2021-04-23
 
