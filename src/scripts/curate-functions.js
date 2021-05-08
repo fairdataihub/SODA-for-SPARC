@@ -875,10 +875,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                       confirm_click_account_function();
                     } else {
                       $("#para-account-detail-curate").html(res);
-                      $("#current-bf-account").text(name);
-                      $("#current-bf-account-generate").text(name);
-                      $("#create_empty_dataset_BF_account_span").text(name);
-                      $(".bf-account-span").text(name);
+                      $("#current-bf-account").text(key_name);
+                      $("#current-bf-account-generate").text(key_name);
+                      $("#create_empty_dataset_BF_account_span").text(key_name);
+                      $(".bf-account-span").text(key_name);
                       $("#current-bf-dataset").text("None");
                       $("#current-bf-dataset-generate").text("None");
                       $(".bf-dataset-span").html("None");
@@ -886,6 +886,8 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                       $("#para_create_empty_dataset_BF_account").html(res);
                       $(".bf-account-details-span").html(res);
                       $("#para-continue-bf-dataset-getting-started").text("");
+                      $("#current_curation_team_status").text("None");
+                      $("#curation-team-share-btn").hide();
                       showHideDropdownButtons("account", "show");
                       confirm_click_account_function();
                     }
