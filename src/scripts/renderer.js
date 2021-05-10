@@ -4088,7 +4088,7 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 
 function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
-  var selectedBfAccount = $("#current-bf-dataset").text();
+  var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
