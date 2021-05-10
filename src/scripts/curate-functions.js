@@ -888,6 +888,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                       $("#para-continue-bf-dataset-getting-started").text("");
                       $("#current_curation_team_status").text("None");
                       $("#curation-team-share-btn").hide();
+                      $("#curation-team-unshare-btn").hide();
+                      $("#current_sparc_consortium_status").text("None");
+                      $("#sparc-consortium-share-btn").hide();
+                      $("#sparc-consortium-unshare-btn").hide();
                       showHideDropdownButtons("account", "show");
                       confirm_click_account_function();
                     }
