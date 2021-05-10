@@ -3876,7 +3876,7 @@
                 <div class="div-dd-info">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
-                    <font color="black"> subject_id*: </font>
+                    <font color="black"> subject_id <span style="color:red">*</span>: </font>
                   </div>
                   </div>
                   <div class="demo-controls-body">
@@ -3899,7 +3899,7 @@
                 <div class="div-dd-info">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
-                    <font color="black"> pool_id*: </font>
+                    <font color="black"> pool_id<span style="color:red">*</span>: </font>
                   </div>
                   </div>
                   <div class="demo-controls-body">
@@ -3928,7 +3928,7 @@
                 <div class="div-dd-info">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
-                    <font color="black"> experimental group*: </font>
+                    <font color="black"> experimental group<span style="color:red">*</span>: </font>
                   </div>
                   </div>
                   <div class="demo-controls-body">
@@ -3960,48 +3960,6 @@
               style="width: 90%; margin: 0 auto; font-size: 13px;"
             >
               <div>
-                <div class="div-dd-info" style="display:none">
-                  <div class="demo-controls-head">
-                    <div style="width: 100%;">
-                    <font color="black"> Age: </font>
-                  </div>
-                  </div>
-                  <div class="demo-controls-body">
-                    <div class="ui input">
-                      <input type="number" id="bootbox-subject-age" name="Age" class="subjects-form-entry" placeholder="Type here...">
-                    </div>
-                    <input
-                    style="margin-right:20px"
-                      class="form-container-input-bf subjects-form-entry"
-                      id="bootbox-subject-age"
-
-                      type="number"
-                    >
-                    </input>
-                    <select
-                      class="form-container-input-bf"
-                      id="bootbox-subject-age-info"
-                      name="Age-info"
-                    >
-                    <option value="Select">Select a unit</option>
-                    <option value="day">day</option>
-                    <option value="week">week</option>
-                    <option value="month">month</option>
-                    <option value="year">year</option>
-                  </select>
-                  </div>
-                  <div class="tooltipnew demo-controls-end">
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
-                  </div>
-                </div>
-
                 <div class="div-dd-info">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
@@ -4017,17 +3975,6 @@
                         <option value="Unknown">Unknown</option>
                       </select>
                     </div>
-                    <!-- <select
-                      class="form-container-input-bf subjects-form-entry"
-                      style="font-size: 13px; line-height: 2"
-                      id="bootbox-subject-sex"
-                      name="Sex"
-                    >
-                      <option value="Select">Select an option</option>
-                      <option value="Female">Female</option>
-                      <option value="Male">Male</option>
-                      <option value="Unknown">Unknown</option>
-                    </select> -->
                   </div>
                   <div class="tooltipnew demo-controls-end">
                     <i
@@ -4051,12 +3998,6 @@
                     <div class="ui input">
                       <input type="number" id="bootbox-subject-species" name="Species" class="subjects-form-entry" placeholder="Type here...">
                     </div>
-                    <!-- <input
-                      class="form-container-input-bf subjects-form-entry"
-                      id="bootbox-subject-species"
-                      name="Species"
-                    >
-                    </input> -->
                   </div>
                   <div class="tooltipnew demo-controls-end">
                     <i
@@ -4080,12 +4021,6 @@
                     <div class="ui input">
                       <input type="number" id="bootbox-subject-strain" name="Strain" class="subjects-form-entry" placeholder="Type here...">
                     </div>
-                    <!-- <input
-                      class="form-container-input-bf subjects-form-entry"
-                      id="bootbox-subject-strain"
-                      name="Strain"
-                    >
-                    </input> -->
                   </div>
                   <div class="tooltipnew demo-controls-end">
                     <i
@@ -4123,39 +4058,40 @@
               </div>
             </div>
           </div>
-        <!-- </div> -->
-        <div class="title" style="background:#FFD965">
+        <div class="title" style="background:#A8D08D">
           <i class="dropdown icon"></i>
-          Optional/Custom fields
+          Age
         </div>
         <div class="content">
-          <!-- Optional fields -->
           <div
-            id="div-subjects-optional-fields"
             style="width: 90%; margin: 0 auto; font-size: 13px;"
           >
             <div>
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> Additional Fields: </font>
+                  <font color="black"> Age: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <div class="ui input">
-                    <input type="text" id="bootbox-subject-additional-fields" name="Additional Fields (e.g. MINDS)" class="subjects-form-entry" placeholder="Type here...">
+                  <div class="ui input" style="margin-right:5px">
+                    <input type="text" id="bootbox-subject-age" name="Age" class="subjects-form-entry" placeholder="Type here...">
                   </div>
-                  <!-- <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-additional-fields"
-                    name=""
-                  >
-                  </input> -->
+                  <div class="ui input">
+                    <select type="number" id="bootbox-subject-age-info" name="Age-info" class="ui selection dropdown subjects-form-entry" placeholder="Select here...">
+                      <option value="Select">Select a unit</option>
+                      <option value="day">day</option>
+                      <option value="week">week</option>
+                      <option value="month">month</option>
+                      <option value="year">year</option>
+                      <option value="N/A">N/A</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="For example: MINDS."
+                    data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -4163,7 +4099,6 @@
                   ></i>
                 </div>
               </div>
-
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
@@ -4210,12 +4145,6 @@
                       <option value="zygote stage">zygote stage</option>
                     </select>
                   </div>
-                  <!-- <select
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-age-category"
-                    name="Age category"
-                  >
-                </select> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4239,12 +4168,6 @@
                   <div class="ui input">
                     <input type="text" id="bootbox-subject-age-range-min" name="Age range (min)" class="subjects-form-entry" placeholder="Type here...">
                   </div>
-                  <!-- <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-age-range-min"
-                    name=""
-                  >
-                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4257,7 +4180,6 @@
                   ></i>
                 </div>
               </div>
-
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
@@ -4268,12 +4190,6 @@
                   <div class="ui input">
                     <input type="text" id="bootbox-subject-age-range-max" name="Age range (max)" class="subjects-form-entry" placeholder="Type here...">
                   </div>
-                  <!-- <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-age-range-max"
-                    name="Age range (max)"
-                  >
-                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4287,6 +4203,112 @@
                 </div>
               </div>
 
+            </div>
+          </div>
+        </div>
+
+        <div class="title" style="background:#FFD965">
+          <i class="dropdown icon"></i>
+          Protocol information
+        </div>
+        <div class="content">
+          <div
+            style="width: 90%; margin: 0 auto; font-size: 13px;"
+          >
+            <div>
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Protocol title: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-protocol-title" name="Protocol title" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Once the research protocol is uploaded to Protocols.io, the title of the protocol within Protocols.io must be noted in this field."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info" style="display:none">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> protocol.io location: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-protocol-location" name="Protocol.io location" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    The Protocol.io URL for the protocol. Once the protocol is uploaded to Protocols.io, the protocol must be shared with the SPARC group and the Protocol.io URL is noted in this field. Please share with the SPARC group.
+                  </span>
+                </div>
+              </div>
+
+              <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px">
+                <a id="a-add-custom-headers-subjects"
+                  >Help me with my protocol information</a
+                >
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Connecting SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="title" style="background:#FFD965">
+          <i class="dropdown icon"></i>
+          Optional/Custom fields
+        </div>
+        <div class="content">
+          <!-- Optional fields -->
+          <div
+            id="div-subjects-optional-fields"
+            style="width: 90%; margin: 0 auto; font-size: 13px;"
+          >
+            <div>
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Additional Fields: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-additional-fields" name="Additional Fields (e.g. MINDS)" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="For example: MINDS."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
@@ -4297,12 +4319,6 @@
                   <div class="ui input">
                     <input type="text" id="bootbox-subject-handedness" name="Handedness" class="subjects-form-entry" placeholder="Type here...">
                   </div>
-                  <!-- <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-handedness"
-                    name="Handedness"
-                  >
-                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4326,12 +4342,6 @@
                   <div class="ui input">
                     <input type="text" id="bootbox-subject-genotype" name="Genotype" class="subjects-form-entry" placeholder="Type here...">
                   </div>
-                  <!-- <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-genotype"
-                    name="Genotype"
-                  >
-                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4355,12 +4365,6 @@
                   <div class="ui input">
                     <input type="text" id="bootbox-subject-reference-atlas" name="Reference atlas" class="subjects-form-entry" placeholder="Type here...">
                   </div>
-                  <!-- <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-reference-atlas"
-                    name="Reference atlas"
-                  >
-                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4373,58 +4377,6 @@
                   ></i>
                 </div>
               </div>
-
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> Protocol title: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <div class="ui input">
-                    <input type="text" id="bootbox-subject-protocol-title" name="Protocol title" class="subjects-form-entry" placeholder="Type here...">
-                  </div>
-                  <!-- <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-protocol-title"
-                    name="Protocol title"
-                  >
-                  </input> -->
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Once the research protocol is uploaded to Protocols.io, the title of the protocol within Protocols.io must be noted in this field."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
-
-              <div class="div-dd-info" style="display: none">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> protocol.io location: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-protocol-location"
-                    name="Protocol.io location"
-                  >
-                  </input>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
-                  <span class="tooltiptext">
-                    The Protocol.io URL for the protocol. Once the protocol is uploaded to Protocols.io, the protocol must be shared with the SPARC group and the Protocol.io URL is noted in this field. Please share with the SPARC group.
-                  </span>
-                </div>
-              </div>
-
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
@@ -4435,12 +4387,6 @@
                   <div class="ui input">
                     <input type="text" id="bootbox-subject-experimental-log-file-name" name="Experimental log file name" class="subjects-form-entry" placeholder="Type here...">
                   </div>
-                  <!-- <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-experimental-log-file-name"
-                    name="Experimental log file name"
-                  >
-                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4453,6 +4399,13 @@
                   ></i>
                 </div>
               </div>
+
+              <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px">
+                <a id="a-add-custom-headers-subjects"
+                  >Add a custom field not listed above</a
+                >
+              </div>
+
             </div>
             <!-- Custom fields -->
             <div
@@ -4536,43 +4489,8 @@
           </div>
         </div>
       </div>
-          <div class="multisteps-form__progress" style="display:none;margin: 40px 20px">
-            <button
-              id="subjects-mandatory-fields"
-              class="multisteps-form__progress-btn subjects js-active1"
-              style="font-size: 15px"
-              type="button"
-            >
-              <b>Mandatory fields</b>
-            </button>
-            <button
-              id="subjects-recommended-fields"
-              class="multisteps-form__progress-btn subjects"
-              style="font-size: 15px"
-              type="button"
-            >
-              <b>Recommended fields</b>
-            </button>
-            <button
-              id="subjects-optional-fields"
-              class="multisteps-form__progress-btn subjects"
-              style="font-size: 15px"
-              type="button"
-            >
-              <b>Optional fields</b>
-            </button>
-            <button
-              id="subjects-custom-fields"
-              class="multisteps-form__progress-btn subjects"
-              style="font-size: 15px"
-              type="button"
-            >
-              <b>Custom fields</b>
-            </button>
-      </div>
 
-
-        <div style="display:flex;flex-direction: row;justify-content: center;margin:40px auto;width:100%;margin-left: 30px">
+        <div style="display:flex;flex-direction: row;justify-content: center;margin:40px auto;width:90%">
           <button class="btn_animated" id="btn-edit-subject"
           style="width: 140px; border: none !important;display:none">
           <i class="fas fa-check" style="margin-right: 7px"></i>
@@ -5155,7 +5073,7 @@
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> subject_id*: </font>
+                  <font color="black"> subject_id <span color='red'>*</span>: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body">
