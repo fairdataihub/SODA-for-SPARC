@@ -3857,291 +3857,282 @@
           id="form-add-a-subject"
         >
         <h3 style="text-align:center;font-size:18px;padding-bottom:0">ADD A SUBJECT</h3>
-          <div class="multisteps-form__progress" style="margin: 40px 20px">
-            <button
-              id="subjects-mandatory-fields"
-              class="multisteps-form__progress-btn subjects js-active1"
-              style="font-size: 15px"
-              type="button"
-            >
-              <b>Mandatory fields</b>
-            </button>
-            <button
-              id="subjects-recommended-fields"
-              class="multisteps-form__progress-btn subjects"
-              style="font-size: 15px"
-              type="button"
-            >
-              <b>Recommended fields</b>
-            </button>
-            <button
-              id="subjects-optional-fields"
-              class="multisteps-form__progress-btn subjects"
-              style="font-size: 15px"
-              type="button"
-            >
-              <b>Optional fields</b>
-            </button>
-            <button
-              id="subjects-custom-fields"
-              class="multisteps-form__progress-btn subjects"
-              style="font-size: 15px"
-              type="button"
-            >
-              <b>Custom fields</b>
-            </button>
+        <div class="ui styled accordion">
+          <div class="title" style="background: var(--color-bg-light-green-button)">
+            <i class="dropdown icon"></i>
+            Mandatory fields
           </div>
+          <div class="active content">
+            <div
+              style="
+                display: block;
+                width: 90%;
+                margin: 0 auto;
+                font-size: 13px;
+              "
+              id="div-subjects-mandatory-fields"
+            >
+              <div>
+                <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%;">
+                    <font color="black"> subject_id*: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input">
+                      <input type="text" id="bootbox-subject-id" name="subject_id" class="subjects-form-entry" placeholder="Type here...">
+                    </div>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Lab-based schema for identifying each subject, should match folder names"
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
 
-          <!-- Mandatory -->
-          <div
-            style="
-              display: block;
-              width: 90%;
-              margin: 0 auto;
-              font-size: 13px;
-            "
-            id="div-subjects-mandatory-fields"
-            class="datasetsaveoption"
-          >
-            <div>
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> subject_id*: </font>
+                <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%;">
+                    <font color="black"> pool_id*: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input">
+                      <input type="text" id="bootbox-subject-pool-id" name="pool_id" class="subjects-form-entry" placeholder="Type here...">
+                    </div>
+                    <!-- <input
+                      class="form-container-input-bf subjects-form-entry"
+                      id=""
+                      name="pool_id"
+                    >
+                    </input> -->
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
                 </div>
-                </div>
-                <div class="demo-controls-body">
-                  <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-id"
-                    name="subject_id"
-                  >
-                  </input>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Lab-based schema for identifying each subject, should match folder names"
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
 
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> pool_id*: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-pool-id"
-                    name="pool_id"
-                  >
-                  </input>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
-
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> experimental group*: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-exp-group"
-                    name="experimental group"
-                  >
-                  </input>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Experimental group subject is assigned to in research project."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
+                <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%;">
+                    <font color="black"> experimental group*: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input">
+                      <input type="text" id="bootbox-subject-exp-group" name="experimental group" class="subjects-form-entry" placeholder="Type here...">
+                    </div>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Experimental group subject is assigned to in research project."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+          <div class="title" style="background: #A8D08D">
+            <i class="dropdown icon"></i>
+            Recommended fields
+          </div>
+          <div class="content">
+            <div
+              id="div-subjects-recommended-fields"
+              style="width: 90%; margin: 0 auto; font-size: 13px;"
+            >
+              <div>
+                <div class="div-dd-info" style="display:none">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%;">
+                    <font color="black"> Age: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input">
+                      <input type="number" id="bootbox-subject-age" name="Age" class="subjects-form-entry" placeholder="Type here...">
+                    </div>
+                    <input
+                    style="margin-right:20px"
+                      class="form-container-input-bf subjects-form-entry"
+                      id="bootbox-subject-age"
 
-          <div
-            id="div-subjects-recommended-fields"
-            style="width: 90%; margin: 0 auto; font-size: 13px;"
-            class="datasetsaveoption"
-          >
-            <div>
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> Age: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <input
-                  style="margin-right:20px"
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-age"
-                    name="Age"
-                    type="number"
-                  >
-                  </input>
-                  <select
-                    class="form-container-input-bf"
-                    id="bootbox-subject-age-info"
-                    name="Age-info"
-                  >
-                  <option value="Select">Select a unit</option>
-                  <option value="day">day</option>
-                  <option value="week">week</option>
-                  <option value="month">month</option>
-                  <option value="year">year</option>
-                </select>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
-
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> Sex: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <select
-                    class="form-container-input-bf subjects-form-entry"
-                    style="font-size: 13px; line-height: 2"
-                    id="bootbox-subject-sex"
-                    name="Sex"
-                  >
-                    <option value="Select">Select an option</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                    <option value="Unknown">Unknown</option>
+                      type="number"
+                    >
+                    </input>
+                    <select
+                      class="form-container-input-bf"
+                      id="bootbox-subject-age-info"
+                      name="Age-info"
+                    >
+                    <option value="Select">Select a unit</option>
+                    <option value="day">day</option>
+                    <option value="week">week</option>
+                    <option value="month">month</option>
+                    <option value="year">year</option>
                   </select>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
                 </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Sex of the subject, or if unknown fill in with “Unknown”."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
+
+                <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%;">
+                    <font color="black"> Sex: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input">
+                      <select type="number" id="bootbox-subject-sex" name="Sex" class="ui selection dropdown subjects-form-entry" placeholder="Select here...">
+                        <option value="Select">Select an option</option>
+                        <option value="Female">Female</option>
+                        <option value="Male">Male</option>
+                        <option value="Unknown">Unknown</option>
+                      </select>
+                    </div>
+                    <!-- <select
+                      class="form-container-input-bf subjects-form-entry"
+                      style="font-size: 13px; line-height: 2"
+                      id="bootbox-subject-sex"
+                      name="Sex"
+                    >
+                      <option value="Select">Select an option</option>
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                      <option value="Unknown">Unknown</option>
+                    </select> -->
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Sex of the subject, or if unknown fill in with “Unknown”."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+
+                <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%;">
+                    <font color="black"> Species: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input">
+                      <input type="number" id="bootbox-subject-species" name="Species" class="subjects-form-entry" placeholder="Type here...">
+                    </div>
+                    <!-- <input
+                      class="form-container-input-bf subjects-form-entry"
+                      id="bootbox-subject-species"
+                      name="Species"
+                    >
+                    </input> -->
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Subject species."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+
+                <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%;">
+                    <font color="black"> Strain: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input">
+                      <input type="number" id="bootbox-subject-strain" name="Strain" class="subjects-form-entry" placeholder="Type here...">
+                    </div>
+                    <!-- <input
+                      class="form-container-input-bf subjects-form-entry"
+                      id="bootbox-subject-strain"
+                      name="Strain"
+                    >
+                    </input> -->
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Organism strain of the subject."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+
+                <div class="div-dd-info" style="display: none">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%;">
+                    <font color="black"> RRID for strain: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <input
+                      class="form-container-input-bf subjects-form-entry"
+                      id="bootbox-subject-strain-RRID"
+                      name="RRID for strain"
+                    >
+                    </input>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                    <span class="tooltiptext">
+                      Research Resource Identifier Identification (RRID) for the strain For this field.
+                    </span>
+                  </div>
                 </div>
               </div>
-
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> Species: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-species"
-                    name="Species"
-                  >
-                  </input>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Subject species."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
-
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> Strain: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-strain"
-                    name="Strain"
-                  >
-                  </input>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Organism strain of the subject."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
-
-              <div class="div-dd-info" style="display: none">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> RRID for strain: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <input
-                    class="form-container-input-bf subjects-form-entry"
-                    id="bootbox-subject-strain-RRID"
-                    name="RRID for strain"
-                  >
-                  </input>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
-                  <span class="tooltiptext">
-                    Research Resource Identifier Identification (RRID) for the strain For this field.
-                  </span>
-                </div>
-              </div>
-
             </div>
           </div>
-
+        <!-- </div> -->
+        <div class="title" style="background:#FFD965">
+          <i class="dropdown icon"></i>
+          Optional/Custom fields
+        </div>
+        <div class="content">
           <!-- Optional fields -->
           <div
             id="div-subjects-optional-fields"
             style="width: 90%; margin: 0 auto; font-size: 13px;"
-            class="datasetsaveoption"
           >
             <div>
               <div class="div-dd-info">
@@ -4151,12 +4142,15 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <input
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-additional-fields" name="Additional Fields (e.g. MINDS)" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                  <!-- <input
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-additional-fields"
-                    name="Additional Fields (e.g. MINDS)"
+                    name=""
                   >
-                  </input>
+                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4177,47 +4171,51 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <select
+                  <div class="ui input">
+                    <select type="number" id="bootbox-subject-age-category" name="Age category" class="ui selection dropdown subjects-form-entry" placeholder="Select here...">
+                      <option value="Select">Select a stage</option>
+                      <option value="2 cell stage">2 cell stage</option>
+                      <option value="4 cell stage">4 cell stage</option>
+                      <option value="8 cell stage">8 cell stage</option>
+                      <option value="blastula stage">blastula stage</option>
+                      <option value="cleavage stage">cleavage stage</option>
+                      <option value="copepodite stage">copepodite stage</option>
+                      <option value="crustacean post-larval stage">crustacean post-larval stage</option>
+                      <option value="cysticercus stage">cysticercus stage</option>
+                      <option value="death stage">death stage</option>
+                      <option value="embryo stage">embryo stage</option>
+                      <option value="fully formed stage">fully formed stage</option>
+                      <option value="gastrula stage">gastrula stage</option>
+                      <option value="glaucothoe stage">glaucothoe stage</option>
+                      <option value="infant stage">infant stage</option>
+                      <option value="juvenile stage">juvenile stage</option>
+                      <option value="larval stage">larval stage</option>
+                      <option value="late adult stage">late adult stage</option>
+                      <option value="late embryonic stage">late embryonic stage</option>
+                      <option value="nauplius stage">nauplius stage</option>
+                      <option value="neonate stage">neonate stage</option>
+                      <option value="neurula stage">neurula stage</option>
+                      <option value="nursing stage">nursing stage</option>
+                      <option value="organogenesis stage">organogenesis stage</option>
+                      <option value="perinatal stage">perinatal stage</option>
+                      <option value="pharyngula stage">pharyngula stage</option>
+                      <option value="post-embryonic stage">post-embryonic stage</option>
+                      <option value="post-juvenile adult stage">post-juvenile adult stage</option>
+                      <option value="prime adult stage">prime adult stage</option>
+                      <option value="pupal stage">pupal stage</option>
+                      <option value="sexually immature stage">sexually immature stage</option>
+                      <option value="trochophore stage">trochophore stage</option>
+                      <option value="veliger stage">veliger stage</option>
+                      <option value="zoea stage">zoea stage</option>
+                      <option value="zygote stage">zygote stage</option>
+                    </select>
+                  </div>
+                  <!-- <select
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-age-category"
                     name="Age category"
                   >
-                  <option value="Select">Select a stage</option>
-                  <option value="2 cell stage">2 cell stage</option>
-                  <option value="4 cell stage">4 cell stage</option>
-                  <option value="8 cell stage">8 cell stage</option>
-                  <option value="blastula stage">blastula stage</option>
-                  <option value="cleavage stage">cleavage stage</option>
-                  <option value="copepodite stage">copepodite stage</option>
-                  <option value="crustacean post-larval stage">crustacean post-larval stage</option>
-                  <option value="cysticercus stage">cysticercus stage</option>
-                  <option value="death stage">death stage</option>
-                  <option value="embryo stage">embryo stage</option>
-                  <option value="fully formed stage">fully formed stage</option>
-                  <option value="gastrula stage">gastrula stage</option>
-                  <option value="glaucothoe stage">glaucothoe stage</option>
-                  <option value="infant stage">infant stage</option>
-                  <option value="juvenile stage">juvenile stage</option>
-                  <option value="larval stage">larval stage</option>
-                  <option value="late adult stage">late adult stage</option>
-                  <option value="late embryonic stage">late embryonic stage</option>
-                  <option value="nauplius stage">nauplius stage</option>
-                  <option value="neonate stage">neonate stage</option>
-                  <option value="neurula stage">neurula stage</option>
-                  <option value="nursing stage">nursing stage</option>
-                  <option value="organogenesis stage">organogenesis stage</option>
-                  <option value="perinatal stage">perinatal stage</option>
-                  <option value="pharyngula stage">pharyngula stage</option>
-                  <option value="post-embryonic stage">post-embryonic stage</option>
-                  <option value="post-juvenile adult stage">post-juvenile adult stage</option>
-                  <option value="prime adult stage">prime adult stage</option>
-                  <option value="pupal stage">pupal stage</option>
-                  <option value="sexually immature stage">sexually immature stage</option>
-                  <option value="trochophore stage">trochophore stage</option>
-                  <option value="veliger stage">veliger stage</option>
-                  <option value="zoea stage">zoea stage</option>
-                  <option value="zygote stage">zygote stage</option>
-                </select>
+                </select> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4238,12 +4236,15 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <input
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-age-range-min" name="Age range (min)" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                  <!-- <input
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-age-range-min"
-                    name="Age range (min)"
+                    name=""
                   >
-                  </input>
+                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4264,12 +4265,15 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <input
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-age-range-max" name="Age range (max)" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                  <!-- <input
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-age-range-max"
                     name="Age range (max)"
                   >
-                  </input>
+                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4290,12 +4294,15 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <input
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-handedness" name="Handedness" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                  <!-- <input
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-handedness"
                     name="Handedness"
                   >
-                  </input>
+                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4316,12 +4323,15 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <input
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-genotype" name="Genotype" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                  <!-- <input
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-genotype"
                     name="Genotype"
                   >
-                  </input>
+                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4342,12 +4352,15 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <input
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-reference-atlas" name="Reference atlas" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                  <!-- <input
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-reference-atlas"
                     name="Reference atlas"
                   >
-                  </input>
+                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4368,12 +4381,15 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <input
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-protocol-title" name="Protocol title" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                  <!-- <input
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-protocol-title"
                     name="Protocol title"
                   >
-                  </input>
+                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4416,12 +4432,15 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <input
+                  <div class="ui input">
+                    <input type="text" id="bootbox-subject-experimental-log-file-name" name="Experimental log file name" class="subjects-form-entry" placeholder="Type here...">
+                  </div>
+                  <!-- <input
                     class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-experimental-log-file-name"
                     name="Experimental log file name"
                   >
-                  </input>
+                  </input> -->
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -4434,89 +4453,125 @@
                   ></i>
                 </div>
               </div>
-
             </div>
-          </div>
+            <!-- Custom fields -->
+            <div
+              id="div-subjects-custom-fields"
+              style="width: 90%; margin: 0 auto; font-size: 13px;"
+              class="datasetsaveoption"
+            >
+            <div>
+              <div style="display: flex; justify-content: center;flex-direction:column" id="div-new-custom-headers">
+                <button class="btn_animated" style="width:140px;font-size:14px;margin:0 auto" id="btn-add-custom-field" onclick="showEnterCustomHeaderDiv(this, 'show')">
+                  <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                  </svg>
+                  Add a field</button>
+              </div>
 
-          <!-- Custom fields -->
-          <div
-            id="div-subjects-custom-fields"
-            style="width: 90%; margin: 0 auto; font-size: 13px;"
-            class="datasetsaveoption"
-          >
-          <div>
-            <div style="display: flex; justify-content: center;flex-direction:column" id="div-new-custom-headers">
-              <button class="btn_animated" style="width:140px;font-size:14px;margin:0 auto" id="btn-add-custom-field" onclick="showEnterCustomHeaderDiv(this, 'show')">
-                <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                </svg>
-                Add a field</button>
-            </div>
-
-            <div style="display: none" id="div-enter-custom-header-name">
-              <div class="ui form" style="width: 450px">
-                <div class="grouped fields">
-                  <label
-                    style="
-                      font-size: 17px;
-                      color: var(--color-bg-plum);
-                      width: 100%;
-                      text-align: center;
-                    "
-                    >What is the name of the header?
-                    <i
-                      class="fas fa-info-circle popover-tooltip"
-                      data-content="Enter a desired name for the new header. This field will be added as a new column to the subjects.xlsx file. Please make sure that you do not enter a header name already listed under the previous three fields."
-                      rel="popover"
-                      data-html="true"
-                      data-placement="right"
-                      data-trigger="hover"
-                    ></i>
-                  </label>
-                  <div
-                    class="field"
-                    style="display: flex; justify-content: center; width: 100%"
-                  >
-                    <input
-                      type="text"
-                      class="form-control"
-                      style="background: #fff !important; width: 450px"
-                      id="new-custom-header-name"
-                      placeholder="Type here"
-                    />
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: center;
-                      align-items: center;
-                      margin: 0 auto;
-                      margin-top: 20px;
-                    "
-                  >
-                    <button
-                      id="button-cancel-custom-header-name"
-                      onclick="showEnterCustomHeaderDiv(this, 'hide')"
-                      class="start-over"
-                      style="width: 140px; background: #fff;color:red;border:1px solid red;display:block"
+              <div style="display: none" id="div-enter-custom-header-name">
+                <div class="ui form" style="width: 450px">
+                  <div class="grouped fields">
+                    <label
+                      style="
+                        font-size: 17px;
+                        color: var(--color-bg-plum);
+                        width: 100%;
+                        text-align: center;
+                      "
+                      >What is the name of the header?
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="Enter a desired name for the new header. This field will be added as a new column to the subjects.xlsx file. Please make sure that you do not enter a header name already listed under the previous three fields."
+                        rel="popover"
+                        data-html="true"
+                        data-placement="right"
+                        data-trigger="hover"
+                      ></i>
+                    </label>
+                    <div
+                      class="field"
+                      style="display: flex; justify-content: center; width: 100%"
                     >
-                      Cancel
-                    </button>
-                    <button
-                      id="button-confirm-custom-header-name"
-                      onclick="addCustomHeader(this)"
-                      class="btn_animated"
-                      style="width: 140px; border: none !important;display:none"
+                      <input
+                        type="text"
+                        class="form-control"
+                        style="background: #fff !important; width: 450px"
+                        id="new-custom-header-name"
+                        placeholder="Type here"
+                      />
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 0 auto;
+                        margin-top: 20px;
+                      "
                     >
-                      Confirm
-                    </button>
+                      <button
+                        id="button-cancel-custom-header-name"
+                        onclick="showEnterCustomHeaderDiv(this, 'hide')"
+                        class="start-over"
+                        style="width: 140px; background: #fff;color:red;border:1px solid red;display:block"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        id="button-confirm-custom-header-name"
+                        onclick="addCustomHeader(this)"
+                        class="btn_animated"
+                        style="width: 140px; border: none !important;display:none"
+                      >
+                        Confirm
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          </div>
         </div>
+      </div>
+          <div class="multisteps-form__progress" style="display:none;margin: 40px 20px">
+            <button
+              id="subjects-mandatory-fields"
+              class="multisteps-form__progress-btn subjects js-active1"
+              style="font-size: 15px"
+              type="button"
+            >
+              <b>Mandatory fields</b>
+            </button>
+            <button
+              id="subjects-recommended-fields"
+              class="multisteps-form__progress-btn subjects"
+              style="font-size: 15px"
+              type="button"
+            >
+              <b>Recommended fields</b>
+            </button>
+            <button
+              id="subjects-optional-fields"
+              class="multisteps-form__progress-btn subjects"
+              style="font-size: 15px"
+              type="button"
+            >
+              <b>Optional fields</b>
+            </button>
+            <button
+              id="subjects-custom-fields"
+              class="multisteps-form__progress-btn subjects"
+              style="font-size: 15px"
+              type="button"
+            >
+              <b>Custom fields</b>
+            </button>
+      </div>
+
+
         <div style="display:flex;flex-direction: row;justify-content: center;margin:40px auto;width:100%;margin-left: 30px">
           <button class="btn_animated" id="btn-edit-subject"
           style="width: 140px; border: none !important;display:none">
@@ -5513,7 +5568,6 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf samples-form-entry"
                     id="bootbox-sample-age-range-max"
                     name="Age range (max)"
                   >
@@ -5834,6 +5888,7 @@
 
   <script>window.$ = window.jQuery = require('jquery');</script>
   <script src="node_modules/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
   <script
   src="./scripts/disseminate-and-metadata.js"
   type="text/javascript">

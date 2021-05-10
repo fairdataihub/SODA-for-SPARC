@@ -792,6 +792,9 @@ function addExistingCustomHeaderSamples(customName) {
 }
 
 $(document).ready(function() {
+  $('.ui.accordion')
+  .accordion();
+
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null

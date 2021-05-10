@@ -168,6 +168,24 @@ body.waiting * {
   margin: 10px 0
 }
 
+.ui.accordion .content.active {
+  display: contents;
+}
+
+.ui.styled.accordion {
+  width: 90% !important;
+  margin: 0 auto
+}
+
+.ui.input {
+  width: 100%
+}
+
+.ui.selection.dropdown {
+  height: auto !important;
+  width: 100% !important;
+}
+
 .demo-controls-head {
   display: flex;
   align-items: left;
@@ -178,7 +196,7 @@ body.waiting * {
   margin: 10px 0;
   /* padding-right: 10px; */
   padding: 4px 6px;
-  text-align: center;
+  text-align: right;
   vertical-align: middle;
   color: #a0a0a0;
   font: bold;
@@ -1158,7 +1176,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .multisteps-form__progress {
-  display: grid;
+  display: none;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   margin-bottom: 30px;
 }
