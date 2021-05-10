@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When you request a database from Pennsieve, SODA will now generate a timestamp that is inline with the curation team's requirements.
 - Fixed a visual bug where users would have been able to continue through certain datasets on a dataset that did not have a valid name.
 
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must do it for you. This is an issue with Pennsieve's backend system and will be updated soon. 
+
 ## v4.2.1 - 2021-04-23
 
 ### Bug fixes:

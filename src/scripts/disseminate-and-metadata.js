@@ -519,8 +519,8 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
 });
 
 /*
-                  The below is for Prepare metadata section
-                  */
+  The below is for Prepare metadata section
+*/
 
 // Main function to check Airtable status upon loading soda
 ///// config and load live data from Airtable
