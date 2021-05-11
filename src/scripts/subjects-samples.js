@@ -17,9 +17,9 @@ function showForm(type) {
     Swal.fire({
       title: 'Would you like to re-use information from previous subject(s)?',
       showCancelButton: true,
+      cancelButtonText: `No, start fresh!`,
+      cancelButtonColor: "#f44336",
       confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      cancelButtonText: 'No, start fresh!',
       confirmButtonText: 'Yes!'
     }).then((boolean) => {
       if (boolean.isConfirmed) {
@@ -38,8 +38,9 @@ function showForm(type) {
   $("#create_subjects-tab").css("display", "none");
   $("#footer-div-subjects").css("display", "none");
   $("#btn-add-custom-field").show();
-  $("#sidebarCollapse").prop("disabled", "true")
+  $("#sidebarCollapse").prop("disabled", "true");
 }
+
 function showFormSamples(type) {
   if (type !== "edit") {
     clearAllSubjectFormFields(samplesFormDiv);

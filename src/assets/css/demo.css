@@ -174,7 +174,8 @@ body.waiting * {
 
 .ui.styled.accordion {
   width: 90% !important;
-  margin: 0 auto
+  margin: 0 auto;
+  max-width: 850px
 }
 
 .ui.input {
@@ -219,6 +220,10 @@ body.waiting * {
   display: flex;
   width: 30px;
   height:30px;
+}
+
+.tooltipnew.demo-controls-end.subjects {
+  display: none
 }
 
 .demo-button-next-step {
