@@ -250,6 +250,10 @@ const run_pre_flight_checks = async (check_update = true) => {
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
             if (result.isConfirmed) {
+              [
+                browser_download_url,
+                latest_agent_version,
+              ] = await get_latest_agent_version();
               shell.openExternal(browser_download_url);
               shell.openExternal(
                 "https://docs.pennsieve.io/docs/the-pennsieve-agent"
@@ -319,7 +323,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         Swal.fire({
           icon: "warning",
           text:
-            "We could not find a pre-existing API key or account. Would you like to enter your API key now? <add link for docs>",
+            "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
@@ -386,7 +390,7 @@ const check_api_key = async () => {
   let notification = null;
   notification = notyf.open({
     type: "api_key_search",
-    message: "Checking for pre-existing API keys...",
+    message: "Checking for Pennsieve account...",
   });
   await wait(800);
   // If no accounts are found, return false.
@@ -414,7 +418,7 @@ const check_api_key = async () => {
           notyf.dismiss(notification);
           notyf.open({
             type: "success",
-            message: "API key found",
+            message: "Connected to Pennsieve",
           });
           resolve(true);
         }
@@ -466,6 +470,10 @@ const check_agent_installed_version = async (agent_version) => {
     browser_download_url,
     latest_agent_version,
   ] = await get_latest_agent_version();
+  console.log(agent_version)
+  console.log(typeof agent_version)
+  console.log(latest_agent_version)
+  console.log(typeof agent_version)
   if (latest_agent_version != agent_version) {
     notyf.dismiss(notification);
     notyf.open({
@@ -478,6 +486,7 @@ const check_agent_installed_version = async (agent_version) => {
       type: "success",
       message: "You have the latest Pennsieve agent!",
     });
+    browser_download_url = ""
   }
   return [browser_download_url, latest_agent_version];
 };
@@ -5122,6 +5131,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
 }
 
 function showBFAddAccountBootbox() {
+  Swal.close();
   var bootb = bootbox.dialog({
     title: bfaddaccountTitle,
     message: bfAddAccountBootboxMessage,

@@ -792,16 +792,22 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       }
     } else if (bfAccountSwal === false) {
       Swal.fire({
-        title: "Please enter your Pennsieve account details",
+        title:
+          "Connect your Pennsieve account using your email and password <i class='fas fa-info-circle popover-tooltip swal-popover' data-content='Your email and password will not be saved and not seen by anyone' rel='popover' data-placement='bottom' data-html='true' data-trigger='hover'></i>",
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
         <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
         confirmButtonText: "Connect to Pennsieve",
-        showCancelButton: true,
-        cancelButtonText: "I have my own API key",
+        showCancelButton: false,
+        cancelButtonText: "Use my API key instead",
         focusConfirm: false,
         heightAuto: false,
         reverseButtons: true,
         backdrop: "rgba(0,0,0, 0.4)",
+        footer:
+          '<a onclick="showBFAddAccountBootbox()">I want to connect with an API key instead</a>',
+        didOpen: () => {
+          $(".swal-popover").popover();
+        },
         preConfirm: async () => {
           Swal.resetValidationMessage();
           Swal.showLoading();
@@ -815,7 +821,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             let response = await get_api_key(login, password, key_name);
             if (response[0] == "failed") {
               Swal.hideLoading();
-              Swal.showValidationMessage(response[1]);
+              Swal.showValidationMessage(userError(response[1]));
             } else if (response[0] == "success") {
               return {
                 key: response[1],
@@ -831,7 +837,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             title: "Adding account...",
             allowEscapeKey: false,
             heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.9)",
+            backdrop: "rgba(0,0,0, 0.4)",
             showConfirmButton: false,
             didOpen: () => {
               Swal.showLoading();
@@ -886,12 +892,14 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                       $("#para_create_empty_dataset_BF_account").html(res);
                       $(".bf-account-details-span").html(res);
                       $("#para-continue-bf-dataset-getting-started").text("");
+
                       $("#current_curation_team_status").text("None");
                       $("#curation-team-share-btn").hide();
                       $("#curation-team-unshare-btn").hide();
                       $("#current_sparc_consortium_status").text("None");
                       $("#sparc-consortium-share-btn").hide();
                       $("#sparc-consortium-unshare-btn").hide();
+
                       showHideDropdownButtons("account", "show");
                       confirm_click_account_function();
                     }
@@ -904,19 +912,19 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                   timerProgressBar: true,
                   allowEscapeKey: false,
                   heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.9)",
+                  backdrop: "rgba(0,0,0, 0.4)",
                   showConfirmButton: false,
                 });
               }
             }
           );
         }
-        if (result.isDismissed) {
-          if (result.dismiss === Swal.DismissReason.cancel) {
-            // else, if users click Add account
-            showBFAddAccountBootbox();
-          }
-        }
+        // if (result.isDismissed) {
+        //   if (result.dismiss === Swal.DismissReason.cancel) {
+        //     // else, if users click Add account
+        //     showBFAddAccountBootbox();
+        //   }
+        // }
       });
     }
   } else if (dropdown === "dataset") {
