@@ -131,7 +131,7 @@
   transform: translate(-50%, -50%);
   position: absolute;
   top: 50%;
-  left: 50%; 
+  left: 50%;
 } */
 
 .flex-row-container {
@@ -219,7 +219,7 @@
   padding: 15px 10px 10px 10px;
   margin-bottom: 10px;
   height: 50px;
-  display: none;
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
   width: 95%;

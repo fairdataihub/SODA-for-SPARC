@@ -923,6 +923,18 @@
   text-align: center;
 }
 
+.ui.input>input {
+  border-bottom: 1px solid rgba(34,36,38,.15) !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-radius: 0 !important;
+}
+
+.ui.input>input:focus {
+  border-bottom: 1px solid var(--color-light-green) !important;
+}
+
 .invalid {
   border-color: #e0b4b4 !important;
   background: #fff6f6 !important;
