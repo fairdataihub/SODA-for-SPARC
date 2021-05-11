@@ -470,10 +470,6 @@ const check_agent_installed_version = async (agent_version) => {
     browser_download_url,
     latest_agent_version,
   ] = await get_latest_agent_version();
-  console.log(agent_version)
-  console.log(typeof agent_version)
-  console.log(latest_agent_version)
-  console.log(typeof agent_version)
   if (latest_agent_version != agent_version) {
     notyf.dismiss(notification);
     notyf.open({
