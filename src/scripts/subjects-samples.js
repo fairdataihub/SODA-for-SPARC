@@ -8,9 +8,21 @@ var headersArrSubjects = [];
 var headersArrSamples = [];
 
 function showForm(type) {
-  if (type !== "edit") {
-    clearAllSubjectFormFields(subjectsFormDiv);
-  }
+  // prompt users if they want to import entries from previous sub_ids
+  Swal.fire({
+  title: 'Would you like to re-use information from previous subject(s)?',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  cancelButtonText: 'No, start fresh!',
+  confirmButtonText: 'Yes!'
+  }).then((boolean) => {
+    if (boolean.isConfirmed) {
+      promptImportPrevInfo();
+    } else {
+      clearAllSubjectFormFields(subjectsFormDiv);
+    }
+  })
   subjectsFormDiv.style.display = "flex"
   $("#create_subjects-tab").removeClass("show");
   $("#create_subjects-tab").css("display", "none");
@@ -28,6 +40,37 @@ function showFormSamples(type) {
   $("#footer-div-samples").css("display", "none");
   $("#btn-add-custom-field-samples").show();
   $("#sidebarCollapse").prop("disabled", "true")
+}
+
+// helper function to show Import entries from prev sub_ids popup
+async function promptImportPrevInfo() {
+  // show dropdown with existing sub_ids
+  const { value: previousSubject } = await Swal.fire({
+    title: 'Choose a previous subject:',
+    input: 'select',
+    inputOptions: {
+      "sub-1": 'Apples',
+      guavas: 'Guavas',
+    },
+    inputValidator: (value) => {
+      return new Promise((resolve) => {
+        if (value === '') {
+          resolve('Please select a subject!')
+        } else {
+          resolve()
+        }
+      })
+    },
+    inputPlaceholder: 'Select here',
+    showCancelButton: true,
+    cancelButtonText: 'Cancel',
+    confirmButtonText: 'Confirm'
+  });
+  if (previousSubject) {
+    populateForms(previousSubject);
+  } else {
+    clearAllSubjectFormFields(subjectsFormDiv);
+  }
 }
 
 // for "Done adding" button - subjects
@@ -260,42 +303,12 @@ function loadSubjectInformation(ev, subjectID) {
   showForm("display");
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
-  var infoJson = [];
-  if (subjectsTableData.length > 1) {
-    for (var i=1; i<subjectsTableData.length;i++) {
-      if (subjectsTableData[i][0] === subjectID) {
-        infoJson = subjectsTableData[i];
-        break
-      }
-    }
-  }
-  // populate form
-  var fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry")
-  var emptyEntries = ["nan", "nat"]
-  var c = fieldArr.map(function(i, field) {
-    if (infoJson[i]) {
-      if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
-        if (field.name === "Age") {
-          var fullAge = infoJson[i].split(" ");
-          field.value = fullAge[0]
-          if (["day", "month", "year", "week"].includes(fullAge[1])) {
-            $("#bootbox-subject-age-info").val(fullAge[1])
-          } else {
-            $("#bootbox-subject-age-info").val("Select")
-          }
-        } else {
-          field.value = infoJson[i];
-        }
-      } else {
-        field.value = "";
-      }
-    }
-  });
+
+  populateForms(subjectID);
   $("#btn-edit-subject").unbind( "click" );
   $("#btn-edit-subject").click(function() {
     editSubject(ev, subjectID)
   })
-
   $("#new-custom-header-name").keyup(function () {
     var customName = $(this).val();
     if (customName !== "") {
@@ -304,6 +317,43 @@ function loadSubjectInformation(ev, subjectID) {
       $("#button-confirm-custom-header-name").hide();
     }
   })
+ }
+
+
+ function populateForms(subjectID) {
+   if (subjectID !== "clear" && subjectID !== "") {
+     var infoJson = [];
+     if (subjectsTableData.length > 1) {
+       for (var i=1; i<subjectsTableData.length;i++) {
+         if (subjectsTableData[i][0] === subjectID) {
+           infoJson = subjectsTableData[i];
+           break
+         }
+       }
+     }
+     // populate form
+     var fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry")
+     var emptyEntries = ["nan", "nat"]
+     var c = fieldArr.map(function(i, field) {
+       if (infoJson[i]) {
+         if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
+           if (field.name === "Age") {
+             var fullAge = infoJson[i].split(" ");
+             field.value = fullAge[0]
+             if (["day", "month", "year", "week"].includes(fullAge[1])) {
+               $("#bootbox-subject-age-info").val(fullAge[1])
+             } else {
+               $("#bootbox-subject-age-info").val("Select")
+             }
+           } else {
+             field.value = infoJson[i];
+           }
+         } else {
+           field.value = "";
+         }
+       }
+     });
+   }
  }
 
  function loadSampleInformation(ev, sampleID, type) {
