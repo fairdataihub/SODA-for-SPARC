@@ -8,21 +8,31 @@ var headersArrSubjects = [];
 var headersArrSamples = [];
 
 function showForm(type) {
-  // prompt users if they want to import entries from previous sub_ids
-  Swal.fire({
-  title: 'Would you like to re-use information from previous subject(s)?',
-  showCancelButton: true,
-  confirmButtonColor: '#3085d6',
-  cancelButtonColor: '#d33',
-  cancelButtonText: 'No, start fresh!',
-  confirmButtonText: 'Yes!'
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      promptImportPrevInfo();
-    } else {
+  if (subjectsTableData.length > 1) {
+    var subjectsDropdownOptions = {};
+    for (var i=1; i<subjectsTableData.length;i++) {
+      subjectsDropdownOptions[subjectsTableData[i][0]] = subjectsTableData[i][0]
+    }
+    // prompt users if they want to import entries from previous sub_ids
+    Swal.fire({
+      title: 'Would you like to re-use information from previous subject(s)?',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'No, start fresh!',
+      confirmButtonText: 'Yes!'
+    }).then((boolean) => {
+      if (boolean.isConfirmed) {
+        promptImportPrevInfo(subjectsDropdownOptions);
+      } else {
+        clearAllSubjectFormFields(subjectsFormDiv);
+      }
+    })
+  } else {
+    if (type !== "edit") {
       clearAllSubjectFormFields(subjectsFormDiv);
     }
-  })
+  }
   subjectsFormDiv.style.display = "flex"
   $("#create_subjects-tab").removeClass("show");
   $("#create_subjects-tab").css("display", "none");
@@ -43,15 +53,12 @@ function showFormSamples(type) {
 }
 
 // helper function to show Import entries from prev sub_ids popup
-async function promptImportPrevInfo() {
+async function promptImportPrevInfo(object) {
   // show dropdown with existing sub_ids
   const { value: previousSubject } = await Swal.fire({
     title: 'Choose a previous subject:',
     input: 'select',
-    inputOptions: {
-      "sub-1": 'Apples',
-      guavas: 'Guavas',
-    },
+    inputOptions: object,
     inputValidator: (value) => {
       return new Promise((resolve) => {
         if (value === '') {
