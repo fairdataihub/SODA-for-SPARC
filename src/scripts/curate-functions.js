@@ -792,8 +792,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       }
     } else if (bfAccountSwal === false) {
       Swal.fire({
-        title:
-          "Connect your Pennsieve account using your email and password <i class='fas fa-info-circle popover-tooltip swal-popover' data-content='Your email and password will not be saved and not seen by anyone' rel='popover' data-placement='bottom' data-html='true' data-trigger='hover'></i>",
+        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password <i class="fas fa-info-circle swal-popover" data-content="Your email and password will not be saved and not seen by anyone." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></span>`,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
         <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
         confirmButtonText: "Connect to Pennsieve",
