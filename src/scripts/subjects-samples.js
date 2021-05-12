@@ -255,7 +255,6 @@ function addSubjectIDToJSON(subjectID) {
     }
     subjectsTableData[0] = headersArrSubjects
     if (valuesArr !== undefined && valuesArr.length !== 0) {
-      console.log(valuesArr)
       if (subjectsTableData[dataLength] !== undefined) {
         subjectsTableData[dataLength + 1] = valuesArr
       } else {
@@ -777,65 +776,61 @@ function resetSamples() {
 }
 
 // functions below are to show/add/cancel a custom header
-function showEnterCustomHeaderDiv(ev, action) {
-  if (action === "show") {
-    $(ev).hide();
-    $("#div-new-custom-headers").hide()
-    $("#div-enter-custom-header-name").show();
-    $($("#div-enter-custom-header-name button")[0]).show()
-  } else if (action === "hide") {
-    $("#btn-add-custom-field").show()
-    $("#div-new-custom-headers").show()
-    $("#btn-add-custom-field").parents().show()
-    $("#new-custom-header-name").val("");
-    $(ev).hide();
-    $(ev).nextAll().hide();
-    $("#div-enter-custom-header-name").hide()
+async function addCustomField(type) {
+  if (type === "subjects") {
+    var lowercaseCasedArray = $.map(headersArrSubjects, function(item, index) {
+      return item.toLowerCase();
+    });
+    const { value: customField } = await Swal.fire({
+            title: 'Enter a custom field:',
+            input: 'text',
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return "Please enter a custom field!"
+              } else {
+                  if (lowercaseCasedArray.includes(value.toLowerCase())) {
+                    return "Duplicate field name! <br> You entered a custom field that is already listed."
+                  }
+              }
+            }
+          })
+    if (customField) {
+      addCustomHeader("subjects", customField)
+    }
+  } else if (type === "samples") {
+
   }
 }
 
-// functions below are to show/add/cancel a custom header
-function showEnterCustomHeaderDivSamples(ev, action) {
-  if (action === "show") {
-    $(ev).hide();
-    $("#div-new-custom-headers-samples").hide()
-    $("#div-enter-custom-header-name-samples").show();
-    $($("#div-enter-custom-header-name-samples button")[0]).show()
-  } else if (action === "hide") {
-    $("#btn-add-custom-field-samples").show()
-    $("#div-new-custom-headers-samples").show()
-    $("#btn-add-custom-field-samples").parents().show()
-    $("#new-custom-header-name-samples").val("");
-    $(ev).hide();
-    $(ev).nextAll().hide();
-    $("#div-enter-custom-header-name-samples").hide()
-  }
-}
-
-function addCustomHeader(ev) {
-  var customName = $("#new-custom-header-name").val();
-  var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><input class="form-container-input-bf subjects-form-entry" id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div>'
-  showEnterCustomHeaderDiv(ev, "hide");
-  if (!headersArrSubjects.includes(customName)) {
-    $("#div-new-custom-headers").append(divElement);
+function addCustomHeader(type, customHeaderValue) {
+  var customName = customHeaderValue.trim();
+  if (type === "subjects") {
+    var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \''+customName+'\')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>'
+    $("#accordian-custom-fields").append(divElement);
     headersArrSubjects.push(customName);
-  } else {
-    Swal.fire("Duplicate header name!", "You entered a name that is already listed under the current fields", "error");
-    $("#button-confirm-custom-header-name").hide();
+  } else if (type === "samples") {
+
   }
 }
 
-function addCustomHeaderSamples(ev) {
-  var customName = $("#new-custom-header-name-samples").val();
-  var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><input class="form-container-input-bf samples-form-entry" id="bootbox-sample-'+customName+'" name='+customName+'></input></div></div>'
-  showEnterCustomHeaderDivSamples(ev, "hide");
-  if (!headersArrSamples.includes(customName)) {
-    $("#div-new-custom-headers-samples").append(divElement);
-    headersArrSamples.push(customName);
-  } else {
-    Swal.fire("Duplicate header name!", "You entered a name that is already listed under the current fields", "error");
-    $("#button-confirm-custom-header-name-samples").hide();
-  }
+function deleteCustomField(ev, customField) {
+  Swal.fire({
+    text: "Are you sure you want to delete this custom field?",
+    icon: "warning",
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Yes!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $(ev).parents()[1].remove();
+      if (headersArrSubjects.includes(customField)) {
+        headersArrSubjects.splice(headersArrSubjects.indexOf(customField), 1)
+      }
+      console.log(headersArrSubjects)
+    }
+  })
 }
 
 

@@ -759,6 +759,31 @@
   display: inline-block;
 } */
 
+.bi.bi-trash.custom-fields:hover {
+  animation: shakingeffect 0.4s;
+}
+
+@keyframes shakingeffect {
+  0% {
+      transform: translateY(0px) rotate(0deg);
+  }
+  20% {
+      transform: translateY(-2px) rotate(-4deg);
+  }
+  40% {
+      transform: translateY(-2px) rotate(-2deg);
+  }
+  60% {
+      transform: translateY(2px) rotate(4deg);
+  }
+  80% {
+      transform: translateY(2px) rotate(2deg);
+  }
+  100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+}
+
 .individual-question {
   display: none;
   visibility: visible;
@@ -1289,7 +1314,7 @@
   /* font-size: 14px !important;
   padding: 8px 10px !important;
   background: #fff !important;
-} */ 
+} */
 
 /* .swal2-cancel {
   width: 120px !important;

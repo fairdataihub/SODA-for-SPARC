@@ -164,8 +164,9 @@ body.waiting * {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  margin: 10px 0
+  justify-content: safe;
+  margin: 10px 0;
+  background-color: white;
 }
 
 .ui.accordion .content.active {
