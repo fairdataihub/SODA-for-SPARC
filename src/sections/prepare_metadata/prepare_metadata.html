@@ -3857,7 +3857,7 @@
         <div class="ui styled accordion">
           <div class="title active" style="background: var(--color-bg-light-green-button)">
             <i class="dropdown icon"></i>
-            Mandatory fields
+            Mandatory Information
           </div>
           <div class="active content">
             <div
@@ -3874,12 +3874,12 @@
                   <div class="row">
                     <div class="col" style="padding:0">
                       <div class="div-dd-info">
-                        <div class="demo-controls-head">
+                        <div class="demo-controls-head" style="width: 30%;">
                           <div style="width: 100%;">
                           <font color="black"> subject_id <span style="color:red">*</span>: </font>
                         </div>
                         </div>
-                        <div class="demo-controls-body">
+                        <div class="demo-controls-body" style="width: fit-content">
                           <div class="ui input">
                             <input type="text" id="bootbox-subject-id" name="subject_id" class="subjects-form-entry" placeholder="Type here...">
                           </div>
@@ -3897,40 +3897,13 @@
                       </div>
                     </div>
                     <div class="col" style="padding:0">
-                    <div class="div-dd-info">
-                      <div class="demo-controls-head">
-                        <div style="width: 100%;">
-                          <font color="black"> experimental group<span style="color:red">*</span>: </font>
-                        </div>
-                      </div>
-                      <div class="demo-controls-body">
-                        <div class="ui input">
-                          <input type="text" id="bootbox-subject-exp-group" name="experimental group" class="subjects-form-entry" placeholder="Type here...">
-                        </div>
-                      </div>
-                      <div class="tooltipnew demo-controls-end subjects">
-                        <i
-                        class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Experimental group subject is assigned to in research project."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                        ></i>
-                      </div>
-                    </div>
-                  </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col" style="padding:0">
                         <div class="div-dd-info">
-                          <div class="demo-controls-head">
+                          <div class="demo-controls-head" style="width: 30%;">
                             <div style="width: 100%;">
                             <font color="black"> pool_id<span style="color:red">*</span>: </font>
                           </div>
                           </div>
-                          <div class="demo-controls-body">
+                          <div class="demo-controls-body" style="width: fit-content">
                             <div class="ui input">
                               <input type="text" id="bootbox-subject-pool-id" name="pool_id" class="subjects-form-entry" placeholder="Type here...">
                             </div>
@@ -3948,13 +3921,41 @@
                         </div>
                     </div>
                   </div>
+
+                  <div class="row">
+                    <div class="col" style="padding:0">
+                    <div class="div-dd-info" style="justify-content: flex-start;margin-bottom: 10px; margin:0">
+                      <div class="demo-controls-head" style="width: fit-content;">
+                        <div style="width: 100%;">
+                          <font color="black"> experimental group<span style="color:red">*</span>: </font>
+                        </div>
+                      </div>
+                      <div class="demo-controls-body" style="width: fit-content">
+                        <div class="ui input">
+                          <input type="text" id="bootbox-subject-exp-group" name="experimental group" class="subjects-form-entry" placeholder="Type here...">
+                        </div>
+                      </div>
+                      <div class="tooltipnew demo-controls-end subjects">
+                        <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="Experimental group subject is assigned to in research project."
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  </div>
                 </form>
               </div>
             </div>
           </div>
           <div class="title" style="background: #A8D08D">
             <i class="dropdown icon"></i>
-            Recommended fields
+            Species Information
           </div>
           <div class="content">
             <div
@@ -3978,7 +3979,7 @@
                       </select>
                     </div>
                   </div>
-                  <div class="tooltipnew demo-controls-end subjects">
+                  <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Sex of the subject, or if unknown fill in with “Unknown”."
@@ -3998,10 +3999,10 @@
                   </div>
                   <div class="demo-controls-body">
                     <div class="ui input">
-                      <input type="number" id="bootbox-subject-species" name="Species" class="subjects-form-entry" placeholder="Type here...">
+                      <input type="text" id="bootbox-subject-species" name="Species" class="subjects-form-entry" placeholder="Type here...">
                     </div>
                   </div>
-                  <div class="tooltipnew demo-controls-end subjects">
+                  <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Subject species."
@@ -4082,10 +4083,10 @@
                   <div class="ui input">
                     <select type="number" id="bootbox-subject-age-info" name="Age-info" class="ui selection dropdown subjects-form-entry" placeholder="Select here...">
                       <option value="Select">Select a unit</option>
-                      <option value="day">day</option>
-                      <option value="week">week</option>
-                      <option value="month">month</option>
-                      <option value="year">year</option>
+                      <option value="day">day(s)</option>
+                      <option value="week">weeks(s)</option>
+                      <option value="month">month(s)</option>
+                      <option value="year">year(s)</option>
                       <option value="N/A">N/A</option>
                     </select>
                   </div>
@@ -4163,18 +4164,21 @@
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> Age range (min): </font>
+                  <font color="black"> Age range: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body">
+                  <div class="ui input" style="margin-right:5px">
+                    <input type="text" id="bootbox-subject-age-range-min" name="Age range (min)" class="subjects-form-entry" placeholder="Minimum age">
+                  </div>
                   <div class="ui input">
-                    <input type="text" id="bootbox-subject-age-range-min" name="Age range (min)" class="subjects-form-entry" placeholder="Type here...">
+                    <input type="text" id="bootbox-subject-age-range-max" name="Age range (max)" class="subjects-form-entry" placeholder="Maximum age">
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="The minimal age (youngest) of the research subjects. The format for this field: numerical value + space + unit (spelled out)."
+                    data-content="The minimal age (youngest) and  maximal age (oldest) of the research subjects. The format for this field: numerical value + space + unit (spelled out)."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -4182,29 +4186,6 @@
                   ></i>
                 </div>
               </div>
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> Age range (max): </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <div class="ui input">
-                    <input type="text" id="bootbox-subject-age-range-max" name="Age range (max)" class="subjects-form-entry" placeholder="Type here...">
-                  </div>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="The maximal age (oldest) of the research subjects. The format for this field: numerical value + space + unit (spelled out)."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
-
             </div>
           </div>
         </div>
@@ -4265,7 +4246,7 @@
               </div>
 
               <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px">
-                <a id="a-add-custom-headers-subjects"
+                <a onclick="connectProtocol()"
                   >Help me with my protocol information</a
                 >
                 <i
@@ -4415,25 +4396,8 @@
         </div>
         <div class="content">
           <div id="accordian-custom-fields"></div>
-            <div class="ui secondary submit button" style="margin: 20px;" onclick="addCustomField('subjects')">
-              Add custom field</div>
-            <!--  id="new-custom-header-name" -->
-            <!--           <button
-                        id="button-confirm-custom-header-name"
-                        onclick="addCustomHeader(this)"
-                        class="btn_animated"
-                        style="width: 140px; border: none !important;display:none"
-                      >
-                        Confirm
-                      </button> -->
-            <!-- What is the name of the header?  <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="Enter a desired name for the new header. This field will be added as a new column to the subjects.xlsx file. Please make sure that you do not enter a header name already listed under the previous three fields."
-                rel="popover"
-                data-html="true"
-                data-placement="right"
-                data-trigger="hover"
-              ></i> -->
+          <div class="ui secondary submit button" style="margin: 20px;" onclick="addCustomField('subjects')">
+            Add custom field</div>
         </div>
       </div>
 

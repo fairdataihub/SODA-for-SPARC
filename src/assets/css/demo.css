@@ -164,7 +164,7 @@ body.waiting * {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: safe;
+  justify-content: flex-start;
   margin: 10px 0;
   background-color: white;
 }
