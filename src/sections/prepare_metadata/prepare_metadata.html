@@ -1480,8 +1480,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
     <div
       class="individual-question prepare-submission"
@@ -1942,8 +1940,8 @@
       </div>
     </div>
 
+  </div>
     <div class="footer-div">
-      <!-- <div style="display: flex; flex-direction: row; width: 120px"> -->
       <button
         type="button"
         class="transition-btn prev"
@@ -1958,7 +1956,6 @@
         ></i>
         Start over
       </button>
-      <!-- </div> -->
     </div>
   </section>
 
@@ -3636,7 +3633,7 @@
               </div>
               <table
                 class="ui celled table"
-                style="text-align: center;display:none"
+                style="text-align: center;display:none;max-width:750px;margin: 10px auto"
                 id="table-subjects"
               >
                 <style>
@@ -3858,7 +3855,7 @@
         >
         <h3 style="text-align:center;font-size:18px;padding-bottom:0">ADD A SUBJECT</h3>
         <div class="ui styled accordion">
-          <div class="title" style="background: var(--color-bg-light-green-button)">
+          <div class="title active" style="background: var(--color-bg-light-green-button)">
             <i class="dropdown icon"></i>
             Mandatory fields
           </div>
@@ -3873,80 +3870,85 @@
               id="div-subjects-mandatory-fields"
             >
               <div>
-                <div class="div-dd-info">
-                  <div class="demo-controls-head">
-                    <div style="width: 100%;">
-                    <font color="black"> subject_id <span style="color:red">*</span>: </font>
-                  </div>
-                  </div>
-                  <div class="demo-controls-body">
-                    <div class="ui input">
-                      <input type="text" id="bootbox-subject-id" name="subject_id" class="subjects-form-entry" placeholder="Type here...">
+                <form>
+                  <div class="row">
+                    <div class="col" style="padding:0">
+                      <div class="div-dd-info">
+                        <div class="demo-controls-head">
+                          <div style="width: 100%;">
+                          <font color="black"> subject_id <span style="color:red">*</span>: </font>
+                        </div>
+                        </div>
+                        <div class="demo-controls-body">
+                          <div class="ui input">
+                            <input type="text" id="bootbox-subject-id" name="subject_id" class="subjects-form-entry" placeholder="Type here...">
+                          </div>
+                        </div>
+                        <div class="tooltipnew demo-controls-end subjects">
+                          <i
+                            class="fas fa-info-circle popover-tooltip subjects-form"
+                            data-content="Lab-based schema for identifying each subject, should match folder names"
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col" style="padding:0">
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head">
+                        <div style="width: 100%;">
+                          <font color="black"> experimental group<span style="color:red">*</span>: </font>
+                        </div>
+                      </div>
+                      <div class="demo-controls-body">
+                        <div class="ui input">
+                          <input type="text" id="bootbox-subject-exp-group" name="experimental group" class="subjects-form-entry" placeholder="Type here...">
+                        </div>
+                      </div>
+                      <div class="tooltipnew demo-controls-end subjects">
+                        <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="Experimental group subject is assigned to in research project."
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                        ></i>
+                      </div>
                     </div>
                   </div>
-                  <div class="tooltipnew demo-controls-end">
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Lab-based schema for identifying each subject, should match folder names"
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
                   </div>
-                </div>
 
-                <div class="div-dd-info">
-                  <div class="demo-controls-head">
-                    <div style="width: 100%;">
-                    <font color="black"> pool_id<span style="color:red">*</span>: </font>
-                  </div>
-                  </div>
-                  <div class="demo-controls-body">
-                    <div class="ui input">
-                      <input type="text" id="bootbox-subject-pool-id" name="pool_id" class="subjects-form-entry" placeholder="Type here...">
-                    </div>
-                    <!-- <input
-                      class="form-container-input-bf subjects-form-entry"
-                      id=""
-                      name="pool_id"
-                    >
-                    </input> -->
-                  </div>
-                  <div class="tooltipnew demo-controls-end">
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary."
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
-                  </div>
-                </div>
-
-                <div class="div-dd-info">
-                  <div class="demo-controls-head">
-                    <div style="width: 100%;">
-                    <font color="black"> experimental group<span style="color:red">*</span>: </font>
-                  </div>
-                  </div>
-                  <div class="demo-controls-body">
-                    <div class="ui input">
-                      <input type="text" id="bootbox-subject-exp-group" name="experimental group" class="subjects-form-entry" placeholder="Type here...">
+                  <div class="row">
+                    <div class="col" style="padding:0">
+                        <div class="div-dd-info">
+                          <div class="demo-controls-head">
+                            <div style="width: 100%;">
+                            <font color="black"> pool_id<span style="color:red">*</span>: </font>
+                          </div>
+                          </div>
+                          <div class="demo-controls-body">
+                            <div class="ui input">
+                              <input type="text" id="bootbox-subject-pool-id" name="pool_id" class="subjects-form-entry" placeholder="Type here...">
+                            </div>
+                          </div>
+                          <div class="tooltipnew demo-controls-end subjects">
+                            <i
+                              class="fas fa-info-circle popover-tooltip subjects-form"
+                              data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                            ></i>
+                          </div>
+                        </div>
                     </div>
                   </div>
-                  <div class="tooltipnew demo-controls-end">
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Experimental group subject is assigned to in research project."
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
-                  </div>
-                </div>
+                </form>
               </div>
             </div>
           </div>
@@ -3976,7 +3978,7 @@
                       </select>
                     </div>
                   </div>
-                  <div class="tooltipnew demo-controls-end">
+                  <div class="tooltipnew demo-controls-end subjects">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Sex of the subject, or if unknown fill in with “Unknown”."
@@ -3999,7 +4001,7 @@
                       <input type="number" id="bootbox-subject-species" name="Species" class="subjects-form-entry" placeholder="Type here...">
                     </div>
                   </div>
-                  <div class="tooltipnew demo-controls-end">
+                  <div class="tooltipnew demo-controls-end subjects">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Subject species."
@@ -4219,7 +4221,7 @@
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> Protocol title: </font>
+                  <font color="black"> protocol title: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body">
@@ -4239,10 +4241,10 @@
                 </div>
               </div>
 
-              <div class="div-dd-info" style="display:none">
+              <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> protocol.io location: </font>
+                  <font color="black"> protocol.io links: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body">
@@ -4251,10 +4253,14 @@
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
-                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
-                  <span class="tooltiptext">
-                    The Protocol.io URL for the protocol. Once the protocol is uploaded to Protocols.io, the protocol must be shared with the SPARC group and the Protocol.io URL is noted in this field. Please share with the SPARC group.
-                  </span>
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="The Protocol.io URL for the protocol. Once the protocol is uploaded to Protocols.io, the protocol must be shared with the SPARC group and the Protocol.io URL is noted in this field. Please share with the SPARC group."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
                 </div>
               </div>
 
