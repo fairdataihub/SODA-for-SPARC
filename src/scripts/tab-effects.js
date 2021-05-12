@@ -2814,7 +2814,9 @@ $(document).ready(() => {
 
   $(".footer-div div button").click(() => {
     $("#main-nav").removeClass("active");
-    $("#sidebarCollapse").removeClass("active");
+    if ($("#sidebarCollapse").hasClass("active")) {
+      $("#sidebarCollapse").removeClass("active");
+    }
     $(".section").removeClass("fullShown");
   });
 
