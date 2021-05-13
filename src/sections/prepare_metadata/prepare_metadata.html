@@ -4067,11 +4067,18 @@
         </div>
         <div class="content">
           <div
-            style="width: 90%; margin: 0 auto; font-size: 13px;"
+            style="width: 90%; margin: 0 auto; font-size: 13px;margin-top:20px"
           >
-            <div>
-              <div class="div-dd-info">
-                <div class="demo-controls-head">
+          <div class="ui buttons" style="width:100%;margin: 10px auto;">
+            <button class="ui button">Provide exact age</button>
+            <div class="or"></div>
+            <button class="ui positive button active">Provide age category</button>
+            <div class="or"></div>
+            <button class="ui button">Provide age range</button>
+          </div>
+            <div style="margin-bottom:20px">
+              <div class="div-dd-info" style="display:none;">
+                <div class="demo-controls-head" style="text-align:center;">
                   <div style="width: 100%;">
                   <font color="black"> Age: </font>
                 </div>
@@ -4102,7 +4109,7 @@
                   ></i>
                 </div>
               </div>
-              <div class="div-dd-info">
+              <div class="div-dd-info"  style="text-align:center">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Age category: </font>
@@ -4161,7 +4168,7 @@
                 </div>
               </div>
 
-              <div class="div-dd-info">
+              <div class="div-dd-info"  style="display:none">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Age range: </font>
@@ -4205,7 +4212,7 @@
                   <font color="black"> protocol title: </font>
                 </div>
                 </div>
-                <div class="demo-controls-body">
+                <div class="demo-controls-body" id="subjects-protocol-titles">
                   <div class="ui input">
                     <input type="text" id="bootbox-subject-protocol-title" name="Protocol title" class="subjects-form-entry" placeholder="Type here...">
                   </div>
@@ -4230,7 +4237,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <div class="ui input">
-                    <input type="text" id="bootbox-subject-protocol-location" name="Protocol.io location" class="subjects-form-entry" placeholder="Type here...">
+                    <input type="text" id="bootbox-subject-protocol-location" name="Protocol.io location" class="subjects-form-entry" placeholder="Type here..." style="font-size:1rem">
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">

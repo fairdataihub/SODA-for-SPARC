@@ -481,10 +481,12 @@ var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
 var awardFileName = "awards.json";
 var milestoneFileName = "milestones.json";
 var airtableConfigFileName = "airtable-config.json";
+var protocolConfigFileName = "protocol-config.json";
 var awardPath = path.join(metadataPath, awardFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
+var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -4772,10 +4774,6 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
         backdrop: "rgba(0,0,0, 0.9)",
         showConfirmButton: false,
       });
-      // bootbox.alert({
-      //   message: "Successfully added!",
-      //   centerVertical: true,
-      // });
     }
   });
 }

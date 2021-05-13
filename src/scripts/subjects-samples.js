@@ -845,8 +845,7 @@ function addExistingCustomHeaderSamples(customName) {
 }
 
 $(document).ready(function() {
-  $('.ui.accordion')
-  .accordion();
+  loadExistingProtocolInfo()
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null
@@ -989,4 +988,137 @@ function loadDataFrametoUISamples() {
   loadSamplesDataToTable()
   $("#table-samples").show();
   $("#button-fake-confirm-existing-samples-file-load").click();
+}
+
+async function connectProtocol() {
+  //data-content="Please visit the <a target=\"_blank\" href=\"https://www.protocols.io/developers\"> protocol.io site</a> to log in and obtain your Private Access token."
+  const { value: protocolCredentials } = await Swal.fire({
+  title: 'Enter your procotol information: <i class="fas fa-info-circle popover-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i>',
+  html:
+    // '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="envelope outline icon"></i><input type="text" id="protocol-username" class="subjects-form-entry" placeholder="Protocol username" style="padding-left:5px"></div>' +
+    '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="lock icon"></i><input type="text" id="protocol-password" class="subjects-form-entry" placeholder="Private access token" style="padding-left:5px"></div>',
+  focusConfirm: false,
+  confirmButtonText: "Connect",
+  showLoaderOnConfirm: true,
+  preConfirm: () => {
+    var res =
+      // document.getElementById('protocol-username').value,
+      document.getElementById('protocol-password').value;
+    if (res) {
+      return res
+    } else {
+      Swal.showValidationMessage("Please provide a access token to connect!");
+      return false
+    }
+  }
+  })
+  if (protocolCredentials) {
+    sendHttpsRequestProtocol(protocolCredentials, "first-time")
+  }
+}
+
+const protocolHostname = "protocols.io";
+var protocolResearcherList = {};
+
+function sendHttpsRequestProtocol(accessToken, type) {
+  var protocolList = {}
+  var protocolInfo = {
+    hostname: protocolHostname,
+    port: 443,
+    path: `/api/v3/session/profile`,
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  https.get(protocolInfo, (res) => {
+    if (res.statusCode === 200) {
+      res.setEncoding('utf8');
+      res.on('data', async function (body) {
+        var bodyRes = JSON.parse(body)
+        saveProtocolInfo(accessToken);
+        await grabResearcherProtocolList(bodyRes.user.username, accessToken, type)
+      });
+    } else {
+      if (type === "first-time") {
+        Swal.fire("Failed to connect with protocol.io!", "Please check your access token and try again.", "error")
+      }
+    }
+  })
+}
+
+function grabResearcherProtocolList(username, token, type) {
+  var protocolInfoList = {
+    hostname: protocolHostname,
+    port: 443,
+    path: `/api/v3/researchers/${username}/protocols?filter="user_all"`,
+    headers: { Authorization: `Bearer ${token}` },
+  };
+  https.get(protocolInfoList, (res) => {
+    if (res.statusCode === 200) {
+      res.setEncoding('utf8');
+      res.on('data', function (body) {
+        var result = JSON.parse(body)
+        protocolResearcherList = {};
+        $("#bootbox-subject-protocol-location").val("")
+        for (var item of result["items"]) {
+          protocolResearcherList[item.title] = "https://www.protocols.io/view/" + item.uri
+        }
+        if (Object.keys(protocolResearcherList).length > 0) {
+          populateProtocolDropdown("subjects")
+          if (type==="first-time") {
+            Swal.fire({
+              title: "Successfully connected! <br/>Loading your protocol information...",
+              timer: 2000,
+              timerProgressBar: true,
+              allowEscapeKey: false,
+              heightAuto: false,
+              showConfirmButton: false,
+            })
+          }
+        } else {
+          if (type==="first-time") {
+            Swal.fire("Successfully connected!", "However, at this moment, you do not have any protocol information for SODA to extract.", "success")
+          }
+        }
+      });
+    }
+  })
+}
+
+function populateProtocolDropdown(type) {
+  if (type === "subjects") {
+    $($("#bootbox-subject-protocol-title").parents()[0]).remove();
+    var divElement = '<div class="ui input"><select id="bootbox-subject-protocol-title" class="ui selection dropdown subjects-form-entry" onchange="autoPopulateProtocolLink(this)" name="Protocol title"></select></div>'
+    $("#subjects-protocol-titles").prepend(divElement);
+    // populate dropdown with protocolResearcherList
+    removeOptions(document.getElementById("bootbox-subject-protocol-title"));
+    addOption(document.getElementById("bootbox-subject-protocol-title"), "Select protocol", "Select")
+    for (var key of Object.keys(protocolResearcherList)) {
+      $('#bootbox-subject-protocol-title').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
+    }
+  }
+}
+
+function autoPopulateProtocolLink(ev) {
+  var linkVal = $(ev).val();
+  if (linkVal && linkVal !== "Select") {
+    $("#bootbox-subject-protocol-location").val(linkVal)
+  } else {
+    $("#bootbox-subject-protocol-location").val("")
+  }
+}
+
+function saveProtocolInfo(token){
+  var content = parseJson(protocolConfigPath);
+  content["access-token"] = token;
+  fs.writeFileSync(protocolConfigPath, JSON.stringify(content));
+}
+
+function loadExistingProtocolInfo() {
+  //// config and load live data from Airtable
+  var protocolTokenContent = parseJson(protocolConfigPath);
+  if (JSON.stringify(protocolTokenContent) !== "{}") {
+    var protocolToken = protocolTokenContent["access-token"];
+    if (protocolToken !== "") {
+      sendHttpsRequestProtocol(protocolToken, "upon-loading")
+    }
+  }
 }

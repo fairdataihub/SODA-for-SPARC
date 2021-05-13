@@ -2794,6 +2794,7 @@ $("input:radio[name=main_tabs]").click(function () {
 });
 
 $(document).ready(() => {
+  $('.ui.accordion').accordion();
   $(".content-button").click(function () {
     let section = $(this).data("section");
 

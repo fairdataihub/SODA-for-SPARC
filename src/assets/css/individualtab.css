@@ -784,6 +784,11 @@
     }
 }
 
+.ui.positive.button.active {
+  background: #e7f1ff !important;
+  color: #0c63e4 !important;
+}
+
 .individual-question {
   display: none;
   visibility: visible;
