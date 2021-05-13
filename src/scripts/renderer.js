@@ -2473,6 +2473,7 @@ const tuiInstance = new Editor({
     "italic",
     "strike",
     "link",
+    "hr",
     "divider",
     "ul",
     "ol",
