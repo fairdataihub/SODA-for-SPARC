@@ -7,27 +7,29 @@ var samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
 
-function showForm(type) {
+function showForm(type, editBoolean) {
   if (subjectsTableData.length > 1) {
     var subjectsDropdownOptions = {};
     for (var i=1; i<subjectsTableData.length;i++) {
       subjectsDropdownOptions[subjectsTableData[i][0]] = subjectsTableData[i][0]
     }
-    // prompt users if they want to import entries from previous sub_ids
-    Swal.fire({
-      title: 'Would you like to re-use information from previous subject(s)?',
-      showCancelButton: true,
-      cancelButtonText: `No, start fresh!`,
-      cancelButtonColor: "#f44336",
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Yes!'
-    }).then((boolean) => {
-      if (boolean.isConfirmed) {
-        promptImportPrevInfo(subjectsDropdownOptions);
-      } else {
-        clearAllSubjectFormFields(subjectsFormDiv);
-      }
-    })
+    if (!editBoolean) {
+      // prompt users if they want to import entries from previous sub_ids
+      Swal.fire({
+        title: 'Would you like to re-use information from previous subject(s)?',
+        showCancelButton: true,
+        cancelButtonText: `No, start fresh!`,
+        cancelButtonColor: "#f44336",
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Yes!'
+      }).then((boolean) => {
+        if (boolean.isConfirmed) {
+          promptImportPrevInfo(subjectsDropdownOptions);
+        } else {
+          clearAllSubjectFormFields(subjectsFormDiv);
+        }
+      })
+    }
   } else {
     if (type !== "edit") {
       clearAllSubjectFormFields(subjectsFormDiv);
@@ -41,7 +43,7 @@ function showForm(type) {
   $("#sidebarCollapse").prop("disabled", "true");
 }
 
-function showFormSamples(type) {
+function showFormSamples(type, editBoolean) {
   if (type !== "edit") {
     clearAllSubjectFormFields(samplesFormDiv);
   }
@@ -173,7 +175,7 @@ function addSubjectIDtoDataBase() {
     if (!duplicate) {
       addSubjectIDtoTable(subjectID)
       addSubjectIDToJSON(subjectID);
-      // $("#table-subjects").css("display", "block");
+      $("#table-subjects").css("display", "block");
       $("#button-generate-subjects").css("display", "block");
       clearAllSubjectFormFields(subjectsFormDiv)
       hideSubjectsForm()
@@ -307,7 +309,7 @@ function edit_current_sample_id(ev) {
 
 function loadSubjectInformation(ev, subjectID) {
   // 1. load fields for form
-  showForm("display");
+  showForm("display", true);
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
 
@@ -367,7 +369,7 @@ function loadSubjectInformation(ev, subjectID) {
    // 1. load fields for form
    // 2. For type===view: make all fields contenteditable=false
    // 3. For type===edit: make all fields contenteditable=true
-   showFormSamples("display");
+   showFormSamples("display", true);
    $("#btn-edit-sample").css("display", "inline-block");
    $("#btn-add-sample").css("display", "none");
    var infoJson = [];

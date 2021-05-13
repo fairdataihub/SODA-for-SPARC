@@ -1072,7 +1072,7 @@ function loadTaxonomySpecies() {
         log.error(error);
         console.error(error);
       } else {
-        console.log(res);
+        // console.log(res);
       }
     }
   );
