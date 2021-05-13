@@ -4070,14 +4070,14 @@
             style="width: 90%; margin: 0 auto; font-size: 13px;margin-top:20px"
           >
           <div class="ui buttons" style="width:100%;margin: 10px auto;">
-            <button class="ui button">Provide exact age</button>
+            <button class="age ui positive button active" onclick="showAgeSection(this, 'div-exact-age')">Provide exact age</button>
             <div class="or"></div>
-            <button class="ui positive button active">Provide age category</button>
+            <button class="age ui button" onclick="showAgeSection(this, 'div-age-category')">Provide age category</button>
             <div class="or"></div>
-            <button class="ui button">Provide age range</button>
+            <button class="age ui button" onclick="showAgeSection(this, 'div-age-range')">Provide age range</button>
           </div>
             <div style="margin-bottom:20px">
-              <div class="div-dd-info" style="display:none;">
+              <div class="div-dd-info" id="div-exact-age">
                 <div class="demo-controls-head" style="text-align:center;">
                   <div style="width: 100%;">
                   <font color="black"> Age: </font>
@@ -4109,7 +4109,7 @@
                   ></i>
                 </div>
               </div>
-              <div class="div-dd-info"  style="text-align:center">
+              <div class="div-dd-info hidden" style="text-align:center;" id="div-age-category">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Age category: </font>
@@ -4168,7 +4168,7 @@
                 </div>
               </div>
 
-              <div class="div-dd-info"  style="display:none">
+              <div class="div-dd-info hidden" id="div-age-range">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Age range: </font>

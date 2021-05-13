@@ -169,6 +169,10 @@ body.waiting * {
   background-color: white;
 }
 
+.div-dd-info.hidden {
+  display: none
+}
+
 .ui.accordion .content.active {
   display: contents;
 }

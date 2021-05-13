@@ -1122,3 +1122,16 @@ function loadExistingProtocolInfo() {
     }
   }
 }
+
+function showAgeSection(ev, div) {
+  var allDivsArr = ["div-exact-age", "div-age-category", "div-age-range"];
+  allDivsArr.splice(allDivsArr.indexOf(div), 1);
+  if ($("#"+div).hasClass("hidden")) {
+    $("#"+div).removeClass("hidden")
+  }
+  $(".age.ui").removeClass("positive active");
+  $(ev).addClass("positive active")
+  for (var divEle of allDivsArr) {
+    $("#"+divEle).addClass("hidden")
+  }
+}
