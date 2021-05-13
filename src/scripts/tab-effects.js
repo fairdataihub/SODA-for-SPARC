@@ -3019,9 +3019,16 @@ $("#edit_banner_image_button").click(async () => {
         } else {
           log.error(`An error happened: ${img_src}`);
           console.log(`An error happened: ${img_src}`);
-          bootbox.alert(
-            `An error occured when importing the image. Please try again later.`
-          );
+          // bootbox.alert(
+          //   `An error occured when importing the image. Please try again later.`
+          // );
+          Swal.fire({
+            icon: "error",
+            text: "An error occured when importing the image. Please try again later.",
+            showConfirmButton: "OK",
+            heightAuto: false
+          })
+
           ipcRenderer.send(
             "track-event",
             "Error",
@@ -3033,9 +3040,16 @@ $("#edit_banner_image_button").click(async () => {
       } else {
         log.error(`An error happened: ${img_src}`);
         console.log(`An error happened: ${img_src}`);
-        bootbox.alert(
-          `An error occured when importing the image. Please try again later.`
-        );
+        // bootbox.alert(
+        //   `An error occured when importing the image. Please try again later.`
+        // );
+        Swal.fire({
+            icon: "error",
+            text: "An error occured when importing the image. Please try again later.",
+            showConfirmButton: "OK",
+            heightAuto: false
+          })
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3047,9 +3061,16 @@ $("#edit_banner_image_button").click(async () => {
     } else {
       log.error(`An error happened: ${img_src}`);
       console.log(`An error happened: ${img_src}`);
-      bootbox.alert(
-        `An error occured when importing the image. Please try again later.`
-      );
+      // bootbox.alert(
+      //   `An error occured when importing the image. Please try again later.`
+      // );
+      Swal.fire({
+            icon: "error",
+            text: "An error occured when importing the image. Please try again later.",
+            showConfirmButton: "OK",
+            heightAuto: false
+          })
+
       ipcRenderer.send(
         "track-event",
         "Error",

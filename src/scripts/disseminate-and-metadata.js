@@ -26,14 +26,52 @@ const disseminateDataset = (option) => {
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
     $("#para-share-curation_team-status").text("");
-    ipcRenderer.send(
-      "warning-share-with-curation-team",
-      formBannerHeight.value
-    );
+    // ipcRenderer.send(
+    //   "warning-share-with-curation-team",
+    //   formBannerHeight.value
+    // );
+    Swal.fire({
+      icon: "warning",
+      text:
+        "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        var account = $("#current-bf-account").text();
+        var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+        disseminateCurationTeam(account, dataset);
+      } else {
+        $("#share-curation-team-spinner").hide();
+      }
+    })
   } else if (option === "share-with-sparc-consortium") {
     $("#share-with-sparc-consortium-spinner").show();
     $("#para-share-with-sparc-consortium-status").text("");
-    ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
+    // ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
+    Swal.fire({
+      icon: "warning",
+      text:
+        "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        var account = $("#current-bf-account").text();
+        var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+        disseminateConsortium(account, dataset);
+      } else {
+        $("#share-with-sparc-consortium-spinner").hide();
+      }
+    })
   } else if (option === "submit-pre-publishing") {
     $("#submit_prepublishing_review-spinner").show();
     $("#para-submit_prepublishing_review-status").text("");

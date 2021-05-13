@@ -2328,10 +2328,32 @@ generateDSBtn.addEventListener("click", (event) => {
 
   /// raise a warning if empty required fields are found
   if (allFieldsSatisfied === false) {
-    ipcRenderer.send(
-      "warning-missing-items-ds-description",
-      errorMessage.join("\n")
-    );
+    // ipcRenderer.send(
+    //   "warning-missing-items-ds-description",
+    //   errorMessage.join("\n")
+    // );
+    var textErrorMessage = ""
+    for(var i = 0; i < errorMessage.length; i++) {
+      textErrorMessage += errorMessage[i] + "<br>"
+    }
+    var messageMissingFields = "<div>The following mandatory item(s) is/are missing:<br>" + textErrorMessage + "<br>Would you still like to generate the dataset description file?</div>"
+    Swal.fire({
+      icon: "warning",
+      html: messageMissingFields,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        ipcRenderer.send(
+          "open-folder-dialog-save-ds-description",
+          "dataset_description.xlsx"
+        );
+      }
+    })
   } else {
     ipcRenderer.send(
       "open-folder-dialog-save-ds-description",
@@ -3267,41 +3289,70 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           $(".pulse-blue").removeClass("pulse-blue");
         }, 4000);
       } else {
-        var bootboxDialog = bootbox.confirm({
-          message:
-            "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-          buttons: {
-            confirm: {
-              label: "Yes",
-              className: "btn-success",
-            },
-            cancel: {
-              label: "Cancel",
-              className: "btn-danger",
-            },
-          },
-          centerVertical: true,
-          callback: (result) => {
-            if (result) {
-              $("#button_upload_local_folder_confirm").click();
-              $("#button-submit-dataset").show();
-              $("#button-submit-dataset").addClass("pulse-blue");
-              // remove pulse class after 4 seconds
-              // pulse animation lasts 2 seconds => 2 pulses
-              setTimeout(() => {
-                $(".pulse-blue").removeClass("pulse-blue");
-              }, 4000);
-            } else {
-              document.getElementById(
-                "input-destination-getting-started-locally"
-              ).placeholder = "Browse here";
-              $("#selected-local-dataset-submit").attr(
-                "placeholder",
-                "Browse here"
-              );
-            }
-          },
-        });
+        // var bootboxDialog = bootbox.confirm({
+        //   message:
+        //     "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+        //   buttons: {
+        //     confirm: {
+        //       label: "Yes",
+        //       className: "btn-success",
+        //     },
+        //     cancel: {
+        //       label: "Cancel",
+        //       className: "btn-danger",
+        //     },
+        //   },
+        //   centerVertical: true,
+        //   callback: (result) => {
+        //     if (result) {
+        //       $("#button_upload_local_folder_confirm").click();
+        //       $("#button-submit-dataset").show();
+        //       $("#button-submit-dataset").addClass("pulse-blue");
+        //       // remove pulse class after 4 seconds
+        //       // pulse animation lasts 2 seconds => 2 pulses
+        //       setTimeout(() => {
+        //         $(".pulse-blue").removeClass("pulse-blue");
+        //       }, 4000);
+        //     } else {
+        //       document.getElementById(
+        //         "input-destination-getting-started-locally"
+        //       ).placeholder = "Browse here";
+        //       $("#selected-local-dataset-submit").attr(
+        //         "placeholder",
+        //         "Browse here"
+        //       );
+        //     }
+        //   },
+        // });
+        Swal.fire({
+          icon: "warning",
+          text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "Cancel",
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $("#button_upload_local_folder_confirm").click();
+            $("#button-submit-dataset").show();
+            $("#button-submit-dataset").addClass("pulse-blue");
+            // remove pulse class after 4 seconds
+            // pulse animation lasts 2 seconds => 2 pulses
+            setTimeout(() => {
+              $(".pulse-blue").removeClass("pulse-blue");
+            }, 4000);
+          } else {
+            document.getElementById(
+              "input-destination-getting-started-locally"
+            ).placeholder = "Browse here";
+            $("#selected-local-dataset-submit").attr(
+              "placeholder",
+              "Browse here"
+            );
+          }
+        })
       }
     }
   }
@@ -3745,10 +3796,27 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
   if (bfViewImportedImage.src.length > 0) {
     if (formBannerHeight.value > 511) {
       if (formBannerHeight.value < 1024) {
-        ipcRenderer.send(
-          "warning-banner-image-below-1024",
-          formBannerHeight.value
-        );
+        // ipcRenderer.send(
+        //   "warning-banner-image-below-1024",
+        //   formBannerHeight.value
+        // );
+        Swal.fire({
+          icon: "warning",
+          text:
+          "Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is " +
+          formBannerHeight.value +
+          " px. Would you like to continue?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            uploadBannerImage();
+          }
+        })
       } else {
         uploadBannerImage();
       }
@@ -4057,9 +4125,41 @@ function submitReviewDatasetCheck(res) {
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
     $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
-    ipcRenderer.send("warning-publish-dataset-again");
+    // ipcRenderer.send("warning-publish-dataset-again");
+    Swal.fire({
+      icon: "warning",
+      text: "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        submitReviewDataset();
+      } else {
+        $("#submit_prepublishing_review-spinner").hide();
+      }
+    })
   } else {
-    ipcRenderer.send("warning-publish-dataset");
+    // ipcRenderer.send("warning-publish-dataset");
+    Swal.fire({
+      icon: "warning",
+      text: "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        submitReviewDataset();
+      } else {
+        $("#submit_prepublishing_review-spinner").hide();
+      }
+    })
   }
 }
 
@@ -4136,7 +4236,23 @@ function withdrawDatasetCheck(res) {
     $("#para-submit_prepublishing_review-status").text(emessage);
     $("#submit_prepublishing_review-spinner").hide();
   } else {
-    ipcRenderer.send("warning-withdraw-dataset");
+    // ipcRenderer.send("warning-withdraw-dataset");
+    Swal.fire({
+      icon: "warning",
+      text: "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        withdrawReviewDataset();
+      } else {
+        $("#submit_prepublishing_review-spinner").hide();
+      }
+    })
   }
 }
 
@@ -6819,35 +6935,58 @@ ipcRenderer.on(
             );
             $("#nextBtn").prop("disabled", false);
           } else {
-            var bootboxDialog = bootbox.confirm({
-              message:
-                "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-              buttons: {
-                confirm: {
-                  label: "Yes",
-                  className: "btn-success",
-                },
-                cancel: {
-                  label: "Cancel",
-                  className: "btn-danger",
-                },
-              },
-              centerVertical: true,
-              callback: (result) => {
-                if (result) {
-                  $("#nextBtn").prop("disabled", false);
+            // var bootboxDialog = bootbox.confirm({
+            //   message:
+            //     "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+            //   buttons: {
+            //     confirm: {
+            //       label: "Yes",
+            //       className: "btn-success",
+            //     },
+            //     cancel: {
+            //       label: "Cancel",
+            //       className: "btn-danger",
+            //     },
+            //   },
+            //   centerVertical: true,
+            //   callback: (result) => {
+            //     if (result) {
+            //       $("#nextBtn").prop("disabled", false);
+            //       $("#para-continue-location-dataset-getting-started").text(
+            //         "Please continue below."
+            //       );
+            //     } else {
+            //       document.getElementById(
+            //         "input-destination-getting-started-locally"
+            //       ).placeholder = "Browse here";
+            //       sodaJSONObj["starting-point"]["local-path"] = "";
+            //       $("#para-continue-location-dataset-getting-started").text("");
+            //     }
+            //   },
+            // });
+            Swal.fire({
+              icon: "warning",
+              text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showCancelButton: true,
+              confirmButtonText: "Yes",
+              cancelButtonText: "Cancel",
+              reverseButtons: true
+            }).then((result) => {
+              if (result.isConfirmed) {
+                $("#nextBtn").prop("disabled", false);
                   $("#para-continue-location-dataset-getting-started").text(
                     "Please continue below."
                   );
-                } else {
-                  document.getElementById(
+              } else {
+                document.getElementById(
                     "input-destination-getting-started-locally"
                   ).placeholder = "Browse here";
                   sodaJSONObj["starting-point"]["local-path"] = "";
                   $("#para-continue-location-dataset-getting-started").text("");
-                }
-              },
-            });
+              }
+            })
           }
         }
       }
@@ -8065,3 +8204,37 @@ function showBFAddAccountSweetalert2() {
     }
   })
 }
+
+// function showAddAirtableAccountSweetalert() {
+//   var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+
+//   var bootb = Swal.fire({
+//     title: htmlTitle,
+//     html: airtableAccountBootboxMessage,
+//     buttons: {
+//       cancel: {
+//         label: "Cancel",
+//       },
+//       confirm: {
+//         label: "Add",
+//         className: "btn btn-primary bootbox-add-airtable-class",
+//         callback: function () {
+//           addAirtableAccountInsideBootbox(bootb);
+//           return false;
+//         },
+//       },
+//     },
+//     size: "medium",
+//     class: "api-width",
+//     centerVertical: true,
+//     onShown: function (e) {
+//       $(".popover-tooltip").each(function () {
+//         var $this = $(this);
+//         $this.popover({
+//           trigger: "hover",
+//           container: $this,
+//         });
+//       });
+//     },
+//   });
+// }
