@@ -8205,36 +8205,239 @@ function showBFAddAccountSweetalert2() {
   })
 }
 
-// function showAddAirtableAccountSweetalert() {
-//   var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+function showAddAirtableAccountSweetalert() {
+  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
-//   var bootb = Swal.fire({
-//     title: htmlTitle,
-//     html: airtableAccountBootboxMessage,
-//     buttons: {
-//       cancel: {
-//         label: "Cancel",
-//       },
-//       confirm: {
-//         label: "Add",
-//         className: "btn btn-primary bootbox-add-airtable-class",
-//         callback: function () {
-//           addAirtableAccountInsideBootbox(bootb);
-//           return false;
-//         },
-//       },
-//     },
-//     size: "medium",
-//     class: "api-width",
-//     centerVertical: true,
-//     onShown: function (e) {
-//       $(".popover-tooltip").each(function () {
-//         var $this = $(this);
-//         $this.popover({
-//           trigger: "hover",
-//           container: $this,
-//         });
-//       });
-//     },
-//   });
-// }
+  var bootb = Swal.fire({
+    title: htmlTitle,
+    html: airtableAccountBootboxMessage,
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Add",
+    heightAuto: false,
+    reverseButtons: true,
+    customClass: "swal-wide"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      addAirtableAccountInsideSweetalert(bootb);
+    }
+  })
+}
+
+function showAddAirtableAccountSweetalert2() {
+  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+
+  var bootb = Swal.fire({
+    title: htmlTitle,
+    html: airtableAccountBootboxMessage,
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Add",
+    heightAuto: false,
+    reverseButtons: true,
+    customClass: "swal-wide",
+    showClass: {
+      popup: ''
+    },
+    hideClass: {
+      popup: ''
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      addAirtableAccountInsideSweetalert(bootb);
+    }
+  })
+}
+
+function addAirtableAccountInsideSweetalert(myBootboxD) {
+  var name = $("#bootbox-airtable-key-name").val();
+  var key = $("#bootbox-airtable-key").val();
+  if (name.length === 0 || key.length === 0) {
+    var errorMessage =
+      "<span>Please fill in both required fields to add.</span>";
+    // $(myBootboxD).find(".modal-footer span").remove();
+    // myBootboxD
+    //   .find(".modal-footer")
+    //   .prepend(
+    //     "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+    //       error +
+    //       "</span>"
+    //   );
+    Swal.fire({
+      icon: "error",
+      html: errorMessage,
+      heightAuto: false,
+      backdrop:"rgba(0,0,0,0.4)",
+      showClass: {
+        popup: ''
+      },
+      hideClass: {
+        popup: ''
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        showAddAirtableAccountSweetalert2()
+      }
+    });
+  } else {
+    Swal.fire({
+      title: "Connect to Airtable",
+      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      heightAuto: false,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "OK",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const optionsSparcTable = {
+          hostname: airtableHostname,
+          port: 443,
+          path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+          headers: { Authorization: `Bearer ${key}` },
+        };
+        var sparcTableSuccess;
+        https.get(optionsSparcTable, (res) => {
+          if (res.statusCode === 200) {
+            /// updating api key in SODA's storage
+            createMetadataDir();
+            var content = parseJson(airtableConfigPath);
+            content["api-key"] = key;
+            content["key-name"] = name;
+            fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+            checkAirtableStatus();
+            document.getElementById(
+              "para-generate-description-status"
+            ).innerHTML = "";
+            $("#submission-connect-Airtable").text("Loading...");
+            $("#dd-connect-Airtable").text("Loading...");
+            $("#submission-connect-Airtable").prop("disabled", "true");
+            $("#dd-connect-Airtable").prop("disabled", "true");
+            $("#submission-no-airtable-mode").prop("disabled", "true");
+            $("#dataset-description-no-airtable-mode").prop(
+              "disabled",
+              "true"
+            );
+            $("#current-airtable-account").text(name);
+            $("#current-airtable-account-dd").text(name);
+            $("#bootbox-airtable-key-name").val("");
+            $("#bootbox-airtable-key").val("");
+            loadAwardData();
+            ddNoAirtableMode("Off");
+            // myBootboxD.modal("hide");
+            $("#Question-prepare-submission-1")
+              .nextAll()
+              .removeClass("show")
+              .removeClass("prev");
+            $("#Question-prepare-dd-1")
+              .nextAll()
+              .removeClass("show")
+              .removeClass("prev");
+            Swal.fire({
+              title:
+                "Successfully connected. Loading your Airtable account...",
+              timer: 2500,
+              timerProgressBar: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              allowEscapeKey: false,
+              showConfirmButton: false,
+            });
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Add Airtable account",
+              defaultBfAccount
+            );
+          } else if (res.statusCode === 403) {
+            // $(myBootboxD).find(".modal-footer span").remove();
+            // myBootboxD
+            //   .find(".modal-footer")
+            //   .prepend(
+            //     "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
+            //   );
+            Swal.fire({
+              icon: "error",
+              text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
+              heightAuto: false,
+              backdrop:"rgba(0,0,0,0.4)",
+              showClass: {
+                popup: ''
+              },
+              hideClass: {
+                popup: ''
+              }
+            }).then((result) => {
+              if (result.isConfirmed) {
+                showAddAirtableAccountSweetalert2()
+              }
+            });
+          } else {
+            log.error(res);
+            console.error(res);
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Add Airtable account",
+              defaultBfAccount
+            );
+            // $(myBootboxD).find(".modal-footer span").remove();
+            // myBootboxD
+            //   .find(".modal-footer")
+            //   .prepend(
+            //     "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+            //   );
+            Swal.fire({
+              icon: "error",
+              text: "Failed to connect to Airtable. Please check your API Key and try again!",
+              heightAuto: false,
+              backdrop:"rgba(0,0,0,0.4)",
+              showClass: {
+                popup: ''
+              },
+              hideClass: {
+                popup: ''
+              }
+            }).then((result) => {
+              if (result.isConfirmed) {
+                showAddAirtableAccountSweetalert2()
+              }
+            });
+          }
+          res.on("error", (error) => {
+            log.error(error);
+            console.error(error);
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Add Airtable account",
+              defaultBfAccount
+            );
+            // $(myBootboxD).find(".modal-footer span").remove();
+            // myBootboxD
+            //   .find(".modal-footer")
+            //   .prepend(
+            //     "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+            //   );
+            Swal.fire({
+              icon: "error",
+              text: "Failed to connect to Airtable. Please check your API Key and try again!",
+              heightAuto: false,
+              backdrop:"rgba(0,0,0,0.4)",
+              showClass: {
+                popup: ''
+              },
+              hideClass: {
+                popup: ''
+              }
+            }).then((result) => {
+              if (result.isConfirmed) {
+                showAddAirtableAccountSweetalert2()
+              }
+            });
+          });
+        });
+      }
+    })
+  }
+}
