@@ -42,6 +42,8 @@ from docx import Document
 
 from datetime import datetime, timezone
 
+from Bio import Entrez
+
 userpath = expanduser("~")
 metadatapath = join(userpath, 'SODA', 'SODA_metadata')
 DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
@@ -407,3 +409,14 @@ def convert_subjects_samples_file_to_df(type, filepath):
 
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
+
+def load_taxonomy_species(animalList):
+    animalDict = {}
+    for animal in animalList:
+        handle = Entrez.esearch(db="Taxonomy", term=animal)
+        record = Entrez.read(handle)
+        id = record['IdList'][0]
+        handle = Entrez.efetch(db="Taxonomy", id=id)
+        result = Entrez.read(handle)
+        animalDict[animal] = {"ScientificName": result[0]['ScientificName'], "OtherNames": result[0]['OtherNames']}
+    return animalDict

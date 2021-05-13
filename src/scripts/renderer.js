@@ -1062,6 +1062,24 @@ function createMetadataDir() {
 
 createMetadataDir();
 
+var commonSpeciesArray = ["dog", "rat", "mouse"]
+function loadTaxonomySpecies() {
+  client.invoke(
+    "api_load_taxonomy_species",
+    commonSpeciesArray,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        console.log(res);
+      }
+    }
+  );
+}
+
+loadTaxonomySpecies()
+
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {
   var opt = document.createElement("OPTION");
