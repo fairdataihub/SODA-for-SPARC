@@ -1062,7 +1062,7 @@ function createMetadataDir() {
 
 createMetadataDir();
 
-var commonSpeciesArray = ["dog", "rat", "mouse"]
+var commonSpeciesArray = ["dogs", "rats", "mice", "ferret", "pigs", "domestic pigs"];
 function loadTaxonomySpecies() {
   client.invoke(
     "api_load_taxonomy_species",
@@ -1072,7 +1072,7 @@ function loadTaxonomySpecies() {
         log.error(error);
         console.error(error);
       } else {
-        // console.log(res);
+        console.log(res);
       }
     }
   );
