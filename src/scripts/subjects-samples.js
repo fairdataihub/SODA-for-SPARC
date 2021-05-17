@@ -995,19 +995,44 @@ function loadDataFrametoUISamples() {
   $("#button-fake-confirm-existing-samples-file-load").click();
 }
 
+function preliminaryProtocolStep() {
+  Swal.fire({
+    title: 'Do you have an account with protocol.io?',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, I do!',
+    cancelButtonText: "No, I don't!",
+  }).then((result) => {
+  if (result.isConfirmed) {
+    Swal.fire({
+       title: 'Please log in to your account <a target="_blank" href="https://www.protocols.io/developers">here</a>',
+       confirmButtonText: "I have logged in!",
+       showCancelButton: true
+    }).then((confirm) => {
+      if (confirm.isConfirmed) {
+        connectProtocol()
+      }
+    })
+  } else {
+    Swal.fire("At this point, SODA cannot help with your protocol information", "Please create an account with protocol.io!", "warning")
+  }
+})
+}
+
 async function connectProtocol() {
-  //data-content="Please visit the <a target=\"_blank\" href=\"https://www.protocols.io/developers\"> protocol.io site</a> to log in and obtain your Private Access token."
   const { value: protocolCredentials } = await Swal.fire({
-  title: 'Enter your procotol information: <i class="fas fa-info-circle popover-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i>',
+  width: "fit-content",
+  title: 'Nice! Now grab your <i>private access token</i> and enter it below: ',
   html:
-    // '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="envelope outline icon"></i><input type="text" id="protocol-username" class="subjects-form-entry" placeholder="Protocol username" style="padding-left:5px"></div>' +
     '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="lock icon"></i><input type="text" id="protocol-password" class="subjects-form-entry" placeholder="Private access token" style="padding-left:5px"></div>',
+  imageUrl: '../docs/documentation/Prepare-metadata/subjects/protocol-info.png',
+  imageWidth: 450,
+  imageHeight: 200,
+  imageAlt: 'Custom image',
   focusConfirm: false,
-  confirmButtonText: "Connect",
+  confirmButtonText: "Let's connect",
   showLoaderOnConfirm: true,
   preConfirm: () => {
     var res =
-      // document.getElementById('protocol-username').value,
       document.getElementById('protocol-password').value;
     if (res) {
       return res

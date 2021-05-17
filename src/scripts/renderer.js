@@ -1105,24 +1105,24 @@ $(document).ready(function() {
     },
   });
 })
-
-var commonSpeciesArray = ["dogs", "rats", "mice", "ferret", "pigs", "domestic pigs", "mouse"];
-function loadTaxonomySpecies() {
-  client.invoke(
-    "api_load_taxonomy_species",
-    commonSpeciesArray,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-      } else {
-        console.log(res);
-      }
-    }
-  );
-}
-
-loadTaxonomySpecies()
+// 
+// var commonSpeciesArray = ["dogs", "rats", "mice", "ferret", "pigs", "domestic pigs", "mouse"];
+// function loadTaxonomySpecies() {
+//   client.invoke(
+//     "api_load_taxonomy_species",
+//     commonSpeciesArray,
+//     (error, res) => {
+//       if (error) {
+//         log.error(error);
+//         console.error(error);
+//       } else {
+//         console.log(res)
+//       }
+//     }
+//   );
+// }
+//
+// loadTaxonomySpecies()
 
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {
