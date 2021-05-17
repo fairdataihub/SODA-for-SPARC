@@ -804,22 +804,45 @@ async function addCustomField(type) {
       addCustomHeader("subjects", customField)
     }
   } else if (type === "samples") {
-
+    var lowercaseCasedArray = $.map(headersArrSamples, function(item, index) {
+      return item.toLowerCase();
+    });
+    const { value: customField } = await Swal.fire({
+            title: 'Enter a custom field:',
+            input: 'text',
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return "Please enter a custom field!"
+              } else {
+                  if (headersArrSamples.includes(value.toLowerCase())) {
+                    return "Duplicate field name! <br> You entered a custom field that is already listed."
+                  }
+              }
+            }
+          })
+    if (customField) {
+      addCustomHeader("samples", customField)
+    }
   }
 }
 
 function addCustomHeader(type, customHeaderValue) {
   var customName = customHeaderValue.trim();
   if (type === "subjects") {
-    var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \''+customName+'\')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>'
+    var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \''+customName+'\', 0)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>'
     $("#accordian-custom-fields").append(divElement);
     headersArrSubjects.push(customName);
   } else if (type === "samples") {
-
+    var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \''+customName+'\', 1)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>'
+    $("#accordian-custom-fields").append(divElement);
+    headersArrSamples.push(customName);
   }
 }
 
-function deleteCustomField(ev, customField) {
+function deleteCustomField(ev, customField, category) {
+  //  category 0 => subjects;
+  // category 1 => samples
   Swal.fire({
     text: "Are you sure you want to delete this custom field?",
     icon: "warning",
@@ -830,10 +853,15 @@ function deleteCustomField(ev, customField) {
   }).then((result) => {
     if (result.isConfirmed) {
       $(ev).parents()[1].remove();
-      if (headersArrSubjects.includes(customField)) {
-        headersArrSubjects.splice(headersArrSubjects.indexOf(customField), 1)
+      if (category === 0) {
+        if (headersArrSubjects.includes(customField)) {
+          headersArrSubjects.splice(headersArrSubjects.indexOf(customField), 1)
+        }
+      } else {
+        if (headersArrSamples.includes(customField)) {
+          headersArrSamples.splice(headersArrSamples.indexOf(customField), 1)
+        }
       }
-      console.log(headersArrSubjects)
     }
   })
 }
@@ -1087,7 +1115,8 @@ function grabResearcherProtocolList(username, token, type) {
       res.on('data', function (body) {
         var result = JSON.parse(body)
         protocolResearcherList = {};
-        $("#bootbox-subject-protocol-location").val("")
+        $("#bootbox-subject-protocol-location").val("");
+        $("#bootbox-sample-protocol-location").val("")
         for (var item of result["items"]) {
           protocolResearcherList[item.title] = "https://www.protocols.io/view/" + item.uri
         }
@@ -1123,6 +1152,16 @@ function populateProtocolDropdown(type) {
     addOption(document.getElementById("bootbox-subject-protocol-title"), "Select protocol", "Select")
     for (var key of Object.keys(protocolResearcherList)) {
       $('#bootbox-subject-protocol-title').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
+    }
+  } else {
+    $($("#bootbox-sample-protocol-title").parents()[0]).remove();
+    var divElement = '<div class="ui input"><select id="bootbox-sample-protocol-title" class="ui selection dropdown samples-form-entry" onchange="autoPopulateProtocolLink(this)" name="Protocol title"></select></div>'
+    $("#samples-protocol-titles").prepend(divElement);
+    // populate dropdown with protocolResearcherList
+    removeOptions(document.getElementById("bootbox-sample-protocol-title"));
+    addOption(document.getElementById("bootbox-sample-protocol-title"), "Select protocol", "Select")
+    for (var key of Object.keys(protocolResearcherList)) {
+      $('#bootbox-sample-protocol-title').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
     }
   }
 }

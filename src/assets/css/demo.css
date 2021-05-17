@@ -214,6 +214,16 @@ body.waiting * {
   font-weight: 500;
 }
 
+.demo-controls-head.mandatory {
+  width: fit-content;
+  padding: 0;
+  margin: 0;
+}
+
+.row.mandatory {
+  line-height: 1
+}
+
 .demo-controls-body {
   display: flex;
   width: 75%;
@@ -507,7 +517,6 @@ input[type="checkbox"].with-style:checked ~ label {
 }
 
 .datasetsaveoption {
-  display: none;
 }
 
 .filepath {
