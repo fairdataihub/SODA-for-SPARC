@@ -1192,8 +1192,13 @@ function loadExistingProtocolInfo() {
   }
 }
 
-function showAgeSection(ev, div) {
-  var allDivsArr = ["div-exact-age", "div-age-category", "div-age-range"];
+function showAgeSection(ev, div, type) {
+  var allDivsArr = [];
+  if (type === "subjects") {
+    allDivsArr = ["div-exact-age", "div-age-category", "div-age-range"];
+  } else {
+    allDivsArr = ["div-exact-age-samples", "div-age-category-samples", "div-age-range-samples"];
+  }
   allDivsArr.splice(allDivsArr.indexOf(div), 1);
   if ($("#"+div).hasClass("hidden")) {
     $("#"+div).removeClass("hidden")

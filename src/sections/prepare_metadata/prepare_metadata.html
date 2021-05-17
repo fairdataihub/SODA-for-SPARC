@@ -3871,10 +3871,10 @@
             >
               <div>
                 <form>
-                  <div class="row">
+                  <div class="row mandatory">
                     <div class="col" style="padding:0">
                       <div class="div-dd-info">
-                        <div class="demo-controls-head" style="width: 30%;">
+                        <div class="demo-controls-head mandatory" style="width: 30%;">
                           <div style="width: 100%;">
                           <font color="black"> subject_id <span style="color:red">*</span>: </font>
                         </div>
@@ -3898,7 +3898,7 @@
                     </div>
                     <div class="col" style="padding:0">
                         <div class="div-dd-info">
-                          <div class="demo-controls-head" style="width: 30%;">
+                          <div class="demo-controls-head mandatory" style="width: 30%;">
                             <div style="width: 100%;">
                             <font color="black"> pool_id<span style="color:red">*</span>: </font>
                           </div>
@@ -3922,10 +3922,10 @@
                     </div>
                   </div>
 
-                  <div class="row">
+                  <div class="row mandatory">
                     <div class="col" style="padding:0">
                     <div class="div-dd-info" style="justify-content: flex-start;margin-bottom: 10px; margin:0">
-                      <div class="demo-controls-head" style="width: fit-content;">
+                      <div class="demo-controls-head mandatory" style="width: fit-content;">
                         <div style="width: 100%;">
                           <font color="black"> experimental group<span style="color:red">*</span>: </font>
                         </div>
@@ -3955,7 +3955,7 @@
           </div>
           <div class="title" style="background: #A8D08D">
             <i class="dropdown icon"></i>
-            Species Information
+            Species
           </div>
           <div class="content">
             <div
@@ -4070,11 +4070,11 @@
             style="width: 90%; margin: 0 auto; font-size: 13px;margin-top:20px"
           >
           <div class="ui buttons" style="width:100%;margin: 10px auto;">
-            <button class="age ui positive button active" onclick="showAgeSection(this, 'div-exact-age')">Provide exact age</button>
+            <button class="age ui positive button active" onclick="showAgeSection(this, 'div-exact-age', 'subjects')">Provide exact age</button>
             <div class="or"></div>
-            <button class="age ui button" onclick="showAgeSection(this, 'div-age-category')">Provide age category</button>
+            <button class="age ui button" onclick="showAgeSection(this, 'div-age-category', 'subjects')">Provide age category</button>
             <div class="or"></div>
-            <button class="age ui button" onclick="showAgeSection(this, 'div-age-range')">Provide age range</button>
+            <button class="age ui button" onclick="showAgeSection(this, 'div-age-range', 'subjects')">Provide age range</button>
           </div>
             <div style="margin-bottom:20px">
               <div class="div-dd-info" id="div-exact-age">
@@ -4199,7 +4199,7 @@
 
         <div class="title" style="background:#FFD965">
           <i class="dropdown icon"></i>
-          Protocol information
+          Protocol(s)
         </div>
         <div class="content">
           <div
@@ -5095,7 +5095,7 @@
 
             <div class="title" style="background: #A8D08D">
               <i class="dropdown icon"></i>
-              Specimen Information
+              Specimen
             </div>
             <div class="content">
               <div
@@ -5228,14 +5228,14 @@
                 style="width: 90%; margin: 0 auto; font-size: 13px;margin-top:20px"
               >
               <div class="ui buttons" style="width:100%;margin: 10px auto;">
-                <button class="age ui positive button active" onclick="showAgeSection(this, 'div-exact-age')">Provide exact age</button>
+                <button class="age ui positive button active" onclick="showAgeSection(this, 'div-exact-age-samples', 'samples')">Provide exact age</button>
                 <div class="or"></div>
-                <button class="age ui button" onclick="showAgeSection(this, 'div-age-category')">Provide age category</button>
+                <button class="age ui button" onclick="showAgeSection(this, 'div-age-category-samples', 'samples')">Provide age category</button>
                 <div class="or"></div>
-                <button class="age ui button" onclick="showAgeSection(this, 'div-age-range')">Provide age range</button>
+                <button class="age ui button" onclick="showAgeSection(this, 'div-age-range-samples', 'samples')">Provide age range</button>
               </div>
                 <div style="margin-bottom:20px">
-                  <div class="div-dd-info" id="div-exact-age">
+                  <div class="div-dd-info" id="div-exact-age-samples">
                     <div class="demo-controls-head" style="text-align:center;">
                       <div style="width: 100%;">
                       <font color="black"> Age: </font>
@@ -5267,7 +5267,7 @@
                       ></i>
                     </div>
                   </div>
-                  <div class="div-dd-info hidden" style="text-align:center;" id="div-age-category">
+                  <div class="div-dd-info hidden" style="text-align:center;" id="div-age-category-samples">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Age category: </font>
@@ -5326,7 +5326,7 @@
                     </div>
                   </div>
 
-                  <div class="div-dd-info hidden" id="div-age-range">
+                  <div class="div-dd-info hidden" id="div-age-range-samples">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Age range: </font>
@@ -5357,7 +5357,7 @@
 
             <div class="title" style="background:#FFD965">
               <i class="dropdown icon"></i>
-              Protocol information
+              Protocol
             </div>
             <div class="content">
               <div
