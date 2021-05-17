@@ -13,6 +13,8 @@ function showForm(type, editBoolean) {
     for (var i=1; i<subjectsTableData.length;i++) {
       subjectsDropdownOptions[subjectsTableData[i][0]] = subjectsTableData[i][0]
     }
+
+
     if (!editBoolean) {
       // prompt users if they want to import entries from previous sub_ids
       Swal.fire({
@@ -41,6 +43,7 @@ function showForm(type, editBoolean) {
   $("#footer-div-subjects").css("display", "none");
   $("#btn-add-custom-field").show();
   $("#sidebarCollapse").prop("disabled", "true");
+
 }
 
 function showFormSamples(type, editBoolean) {

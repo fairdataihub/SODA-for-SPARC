@@ -1062,7 +1062,51 @@ function createMetadataDir() {
 
 createMetadataDir();
 
-var commonSpeciesArray = ["dogs", "rats", "mice", "ferret", "pigs", "domestic pigs"];
+$(document).ready(function() {
+  var autoCompleteJS = new autoComplete({
+    selector: "#bootbox-subject-species",
+    placeHolder: "Search for species...",
+    data: {
+      src: [{"Canis lupus familiaris": "dog, beagle dog",
+    "Mustela putorius furo": "ferret, black ferret",
+    "Mus sp.": "mice",
+    "Mus musculus": "mouse, house mouse",
+    "Rattus norvegicus": "Norway rat",
+    "Rattus": "rats",
+    "Sus scrofa": "pigs, swine, wild boar"}
+    ],
+      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Rattus", "Rattus norvegicus"]
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.key;
+      document.querySelector("#bootbox-subject-species").value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"]
+    },
+    resultItem: {
+      destination: "#bootbox-subject-species",
+      highlight: {
+        render: true
+      },
+      content: (data, element) => {
+         // Modify Results Item Style
+         element.style = "display: flex; justify-content: space-between;";
+         // Modify Results Item Content
+         element.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+           ${data.match}</span>
+           <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
+         ${data.key}</span>`;
+       }
+    },
+    noResults: (list, query) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#bootbox-subject-species").value = selection;
+    },
+  });
+})
+
+var commonSpeciesArray = ["dogs", "rats", "mice", "ferret", "pigs", "domestic pigs", "mouse"];
 function loadTaxonomySpecies() {
   client.invoke(
     "api_load_taxonomy_species",
