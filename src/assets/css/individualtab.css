@@ -953,7 +953,7 @@
   text-align: center;
 }
 
-.ui.input>input {
+.ui.input.modified>input {
   border-bottom: 1px solid rgba(34,36,38,.15) !important;
   border-left: none !important;
   border-right: none !important;
@@ -961,7 +961,7 @@
   border-radius: 0 !important;
 }
 
-.ui.input>input:focus {
+.ui.input.modified>input:focus {
   border-bottom: 1px solid var(--color-light-green) !important;
 }
 

@@ -183,6 +183,15 @@ body.waiting * {
   max-width: 850px
 }
 
+.sub.accordion {
+  box-shadow: none !important
+}
+
+#title-optional-age{
+  background: #fff !important;
+  padding-top: 0 !important
+}
+
 .ui.input {
   width: 100%
 }
@@ -517,6 +526,7 @@ input[type="checkbox"].with-style:checked ~ label {
 }
 
 .datasetsaveoption {
+  display: none
 }
 
 .filepath {

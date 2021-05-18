@@ -1027,13 +1027,15 @@ function preliminaryProtocolStep() {
   Swal.fire({
     title: 'Do you have an account with protocol.io?',
     showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: 'Yes, I do!',
     cancelButtonText: "No, I don't!",
   }).then((result) => {
   if (result.isConfirmed) {
     Swal.fire({
-       title: 'Please log in to your account <a target="_blank" href="https://www.protocols.io/developers">here</a>',
-       confirmButtonText: "I have logged in!",
+       title: 'Please sign in to your account <a target="_blank" href="https://www.protocols.io/developers">here</a>',
+       confirmButtonText: "I have signed in!",
        showCancelButton: true
     }).then((confirm) => {
       if (confirm.isConfirmed) {
@@ -1058,7 +1060,10 @@ async function connectProtocol() {
   imageAlt: 'Custom image',
   focusConfirm: false,
   confirmButtonText: "Let's connect",
+  showCancelButton: true,
   showLoaderOnConfirm: true,
+  heightAuto: false,
+  backdrop: "rgba(0,0,0, 0.4)",
   preConfirm: () => {
     var res =
       document.getElementById('protocol-password').value;
@@ -1118,7 +1123,7 @@ function grabResearcherProtocolList(username, token, type) {
         $("#bootbox-subject-protocol-location").val("");
         $("#bootbox-sample-protocol-location").val("")
         for (var item of result["items"]) {
-          protocolResearcherList[item.title] = "https://www.protocols.io/view/" + item.uri
+          protocolResearcherList[item.title] = "https://www.protocols.io/view/" + item.uri;
         }
         if (Object.keys(protocolResearcherList).length > 0) {
           populateProtocolDropdown("subjects")
@@ -1129,6 +1134,7 @@ function grabResearcherProtocolList(username, token, type) {
               timerProgressBar: true,
               allowEscapeKey: false,
               heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
               showConfirmButton: false,
             })
           }

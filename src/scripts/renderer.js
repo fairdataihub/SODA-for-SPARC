@@ -1063,6 +1063,7 @@ function createMetadataDir() {
 createMetadataDir();
 
 $(document).ready(function() {
+
   var autoCompleteJS = new autoComplete({
     selector: "#bootbox-subject-species",
     placeHolder: "Search for species...",
@@ -1071,7 +1072,7 @@ $(document).ready(function() {
     "Mustela putorius furo": "ferret, black ferret",
     "Mus sp.": "mice",
     "Mus musculus": "mouse, house mouse",
-    "Rattus norvegicus": "Norway rat",
+    "Rattus norvegicus": "Norway rats",
     "Rattus": "rats",
     "Sus scrofa": "pigs, swine, wild boar"}
     ],
@@ -1105,7 +1106,7 @@ $(document).ready(function() {
     },
   });
 })
-// 
+//
 // var commonSpeciesArray = ["dogs", "rats", "mice", "ferret", "pigs", "domestic pigs", "mouse"];
 // function loadTaxonomySpecies() {
 //   client.invoke(
