@@ -3877,11 +3877,11 @@
           </div>
         </div>
         <div class="ui styled accordion">
-          <div class="title active" style="background: var(--color-bg-light-green-button)">
+          <div class="title" style="background: var(--color-bg-light-green-button)">
             <i class="dropdown icon"></i>
             Experimental Setup <span style="font-style: italic;opacity:0.8">(Mandatory if available)</span>
           </div>
-          <div class="active content">
+          <div class="content">
             <div
               style="
                 display: block;
@@ -3957,7 +3957,39 @@
               style="width: 90%; margin: 0 auto; font-size: 13px;"
             >
               <div>
-                <div class="div-dd-info">
+                <div class="div-dd-info subjects" style="margin-top:10px">
+                  <div class="demo-controls-head" style="text-align:center;">
+                    <div style="width: 100%;">
+                    <font color="black"> Exact age at the start of experiment: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input modified" style="margin-right:5px">
+                      <input type="text" id="bootbox-subject-age" name="Age" class="subjects-form-entry" placeholder="Type here...">
+                    </div>
+                    <div class="ui input modified">
+                      <select type="number" id="bootbox-subject-age-info" name="Age-info" class="ui selection dropdown" placeholder="Select here...">
+                        <option value="Select">Select a unit</option>
+                        <option value="day">day(s)</option>
+                        <option value="week">weeks(s)</option>
+                        <option value="month">month(s)</option>
+                        <option value="year">year(s)</option>
+                        <option value="N/A">N/A</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+                <div class="div-dd-info subjects">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> Sex: </font>
@@ -3985,7 +4017,7 @@
                   </div>
                 </div>
 
-                <div class="div-dd-info">
+                <div class="div-dd-info subjects">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> Species: </font>
@@ -3993,7 +4025,7 @@
                   </div>
                   <div class="demo-controls-body">
                     <div class="ui input modified">
-                      <input type="text" id="bootbox-subject-species" name="Species" class="subjects-form-entry" placeholder="Type here..." style="font-size:14px">
+                      <input type="text" id="bootbox-subject-species" name="Species" class="subjects-form-entry" placeholder="Search for species..." style="font-size:14px">
                     </div>
                   </div>
                   <div class="tooltipnew demo-controls-end">
@@ -4008,7 +4040,7 @@
                   </div>
                 </div>
 
-                <div class="div-dd-info">
+                <div class="div-dd-info subjects">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> Strain: </font>
@@ -4031,7 +4063,7 @@
                   </div>
                 </div>
 
-                <div class="div-dd-info" style="display: none">
+                <div class="div-dd-info subjects" style="display: none">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> RRID for strain: </font>
@@ -4053,54 +4085,13 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        <div class="title" style="background:#A8D08D">
-          <i class="dropdown icon"></i>
-          Exact age at the start of experiment <span style="font-style: italic;opacity:0.8">(Mandatory if available)</span>
-        </div>
-        <div class="content">
-          <div class="ui segment">
-            <div class="ui fluid form">
-              <div class="div-dd-info" style="margin:0">
-                <div class="demo-controls-head" style="text-align:center;">
-                  <div style="width: 100%;">
-                  <font color="black"> Age: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <div class="ui input modified" style="margin-right:5px">
-                    <input type="text" id="bootbox-subject-age" name="Age" class="subjects-form-entry" placeholder="Type here...">
-                  </div>
-                  <div class="ui input modified">
-                    <select type="number" id="bootbox-subject-age-info" name="Age-info" class="ui selection dropdown" placeholder="Select here...">
-                      <option value="Select">Select a unit</option>
-                      <option value="day">day(s)</option>
-                      <option value="week">weeks(s)</option>
-                      <option value="month">month(s)</option>
-                      <option value="year">year(s)</option>
-                      <option value="N/A">N/A</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
               <div class="sub accordion" style="width: 100%">
                 <div class="title" id="title-optional-age">
                   <i class="icon dropdown"></i>
                   Optional Details
                 </div>
                 <div class="content">
-                  <div class="div-dd-info" style="text-align:center;">
+                  <div class="div-dd-info subjects" style="text-align:center;">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Age category: </font>
@@ -4158,7 +4149,7 @@
                       ></i>
                     </div>
                   </div>
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects" style="margin-bottom: 20px">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Age range: </font>
@@ -4187,7 +4178,6 @@
               </div>
             </div>
           </div>
-      </div>
 
         <div class="title" style="background:#FFD965">
           <i class="dropdown icon"></i>
@@ -4198,7 +4188,7 @@
             style="width: 90%; margin: 0 auto; font-size: 13px;"
           >
             <div>
-              <div class="div-dd-info">
+              <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> protocol title: </font>
@@ -4221,7 +4211,7 @@
                 </div>
               </div>
 
-              <div class="div-dd-info">
+              <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> protocol.io links: </font>
@@ -4244,7 +4234,7 @@
                 </div>
               </div>
 
-              <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px">
+              <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
                 <a onclick="preliminaryProtocolStep()"
                   >Help me with my protocol information</a
                 >
@@ -4273,7 +4263,7 @@
             style="width: 90%; margin: 0 auto; font-size: 13px;"
           >
             <div>
-              <div class="div-dd-info">
+              <div class="div-dd-info subjects" style="margin-top:10px">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Additional Fields: </font>
@@ -4295,7 +4285,7 @@
                   ></i>
                 </div>
               </div>
-              <div class="div-dd-info">
+              <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Handedness: </font>
@@ -4318,7 +4308,7 @@
                 </div>
               </div>
 
-              <div class="div-dd-info">
+              <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Genotype: </font>
@@ -4341,7 +4331,7 @@
                 </div>
               </div>
 
-              <div class="div-dd-info">
+              <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Reference atlas: </font>
@@ -4363,7 +4353,7 @@
                   ></i>
                 </div>
               </div>
-              <div class="div-dd-info">
+              <div class="div-dd-info subjects" style="margin-bottom:10px">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
                   <font color="black"> Experimental log file name: </font>
@@ -5056,7 +5046,7 @@
 
                 <div class="row mandatory">
                   <div class="col" style="padding:0"  style="width: fit-content">
-                    <div class="div-dd-info">
+                    <div class="div-dd-info subjects">
                       <div class="demo-controls-head mandatory">
                         <div style="width: 100%;">
                         <font color="black"> experimental group <span style="color='red'">*</span>: </font>
@@ -5095,7 +5085,7 @@
                 style="width: 90%; margin: 0 auto; font-size: 13px;"
               >
                 <div>
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> specimen type: </font>
@@ -5118,7 +5108,7 @@
                     </div>
                   </div>
 
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> specimen anatomical location: </font>
@@ -5140,7 +5130,7 @@
                       ></i>
                     </div>
                   </div>
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Species: </font>
@@ -5162,7 +5152,7 @@
                       ></i>
                     </div>
                   </div>
-                <div class="div-dd-info">
+                <div class="div-dd-info subjects">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> Strain: </font>
@@ -5185,7 +5175,7 @@
                   </div>
                 </div>
 
-                <div class="div-dd-info" style="display: none">
+                <div class="div-dd-info subjects" style="display: none">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> RRID for strain: </font>
@@ -5218,7 +5208,7 @@
             <div class="content">
               <div class="ui segment">
                 <div class="ui fluid form">
-                  <div class="div-dd-info" style="margin:0">
+                  <div class="div-dd-info subjects" style="margin:0">
                     <div class="demo-controls-head" style="text-align:center;">
                       <div style="width: 100%;">
                       <font color="black"> Age: </font>
@@ -5256,7 +5246,7 @@
                       Optional Details
                     </div>
                     <div class="content">
-                      <div class="div-dd-info" style="text-align:center;">
+                      <div class="div-dd-info subjects" style="text-align:center;">
                         <div class="demo-controls-head">
                           <div style="width: 100%;">
                           <font color="black"> Age category: </font>
@@ -5314,7 +5304,7 @@
                           ></i>
                         </div>
                       </div>
-                      <div class="div-dd-info">
+                      <div class="div-dd-info subjects">
                         <div class="demo-controls-head">
                           <div style="width: 100%;">
                           <font color="black"> Age range: </font>
@@ -5354,7 +5344,7 @@
                 style="width: 90%; margin: 0 auto; font-size: 13px;"
               >
                 <div>
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> protocol title: </font>
@@ -5377,7 +5367,7 @@
                     </div>
                   </div>
 
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> protocol.io links: </font>
@@ -5429,7 +5419,7 @@
                 class="datasetsaveoption"
               >
                 <div>
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Additional Fields: </font>
@@ -5452,7 +5442,7 @@
                     </div>
                   </div>
 
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Sex: </font>
@@ -5479,7 +5469,7 @@
                       ></i>
                     </div>
                   </div>
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Handedness: </font>
@@ -5502,7 +5492,7 @@
                     </div>
                   </div>
 
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Genotype: </font>
@@ -5524,7 +5514,7 @@
                       ></i>
                     </div>
                   </div>
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Reference atlas: </font>
@@ -5547,7 +5537,7 @@
                     </div>
                   </div>
 
-                  <div class="div-dd-info">
+                  <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Experimental log file name: </font>

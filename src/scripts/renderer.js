@@ -1066,17 +1066,19 @@ $(document).ready(function() {
 
   var autoCompleteJS = new autoComplete({
     selector: "#bootbox-subject-species",
-    placeHolder: "Search for species...",
     data: {
-      src: [{"Canis lupus familiaris": "dog, beagle dog",
-    "Mustela putorius furo": "ferret, black ferret",
+      src: [{"Canis lupus familiaris": "dogs, beagle dogs",
+    "Mustela putorius furo": "ferrets, black ferrets",
     "Mus sp.": "mice",
     "Mus musculus": "mouse, house mouse",
     "Rattus norvegicus": "Norway rats",
     "Rattus": "rats",
-    "Sus scrofa": "pigs, swine, wild boar"}
+    "Sus scrofa": "pigs, swine, wild boar",
+    "Sus scrofa domesticus": "domestic pigs",
+    "Homo sapiens": "humans",
+    "Felis catus": "domestic cat"}
     ],
-      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Rattus", "Rattus norvegicus"]
+      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus", "Homo sapiens",  "Rattus", "Felis catus", "Rattus norvegicus"]
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.key;
