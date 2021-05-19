@@ -161,8 +161,6 @@ function addSampleIDtoTable(newSample) {
 
 function addSubjectIDtoDataBase() {
   var subjectID = $("#bootbox-subject-id").val();
-  var poolID = $("#bootbox-subject-pool-id").val();
-  var expGroup = $("#bootbox-subject-exp-group").val();
 
   var table = document.getElementById("table-subjects");
   var duplicate = false;
@@ -174,7 +172,7 @@ function addSubjectIDtoDataBase() {
       break
     }
   }
-  if (subjectID !== "" && poolID !== "" && expGroup !== "") {
+  if (subjectID !== "") {
     if (!duplicate) {
       addSubjectIDtoTable(subjectID)
       addSubjectIDToJSON(subjectID);
@@ -186,7 +184,7 @@ function addSubjectIDtoDataBase() {
       error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
     }
   } else {
-    error = "Please fill in all of the required fields!"
+    error = "The subject_id is required to add a subject!"
   }
     if (error !== "") {
     Swal.fire("Failed to add the subject!", error, "error")
@@ -197,8 +195,6 @@ function addSampleIDtoDataBase() {
   var sampleID = $("#bootbox-sample-id").val();
   var subjectID = $("#bootbox-subject-id-samples").val();
   var wasDerivedFromSample = $("#bootbox-wasDerivedFromSample").val();
-  var poolID = $("#bootbox-sample-pool-id").val();
-  var expGroup = $("#bootbox-sample-exp-group").val();
 
   var table = document.getElementById("table-samples");
   var duplicate = false;
@@ -210,7 +206,7 @@ function addSampleIDtoDataBase() {
       break
     }
   }
-  if (sampleID !== "" && subjectID !== "" && wasDerivedFromSample !== "" && poolID !== "" && expGroup !== "") {
+  if (sampleID !== "" && subjectID !== "" && wasDerivedFromSample !== "") {
     if (!duplicate) {
       addSampleIDtoTable(sampleID)
       addSampleIDtoJSON(sampleID);
@@ -222,7 +218,7 @@ function addSampleIDtoDataBase() {
       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
     }
   } else {
-    error = "Please fill in all of the required fields!"
+    error = "The subject_id, sample_id, and wasDerivedFromSample are required to add a sample!"
     }
   if (error !== "") {
     Swal.fire("Failed to add the sample!", error, "error")
@@ -245,18 +241,20 @@ function addSubjectIDToJSON(subjectID) {
     var valuesArr = [];
     headersArrSubjects = [];
     for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+      // var new_value = "";
       if (field.value === "" || field.value === undefined || field.value === "Select") {
-        field.value = null
+        field.value  = null;
       }
       headersArrSubjects.push(field.name);
-      var new_value = "";
       // if it's age, then add age info input (day/week/month/year)
       if (field.name === "Age") {
-        new_value = field.value + " " + $("#bootbox-subject-age-info").val()
-      } else {
-        new_value = field.value
+        if (field.value === "Select" || field.value === "") {
+          field.value  = null
+        } else {
+          field.value = field.value + " " + $("#bootbox-subject-age-info").val()
+        }
       }
-      valuesArr.push(new_value);
+      valuesArr.push(field.value);
     }
     subjectsTableData[0] = headersArrSubjects
     if (valuesArr !== undefined && valuesArr.length !== 0) {
