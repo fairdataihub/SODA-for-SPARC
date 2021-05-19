@@ -241,7 +241,6 @@ function addSubjectIDToJSON(subjectID) {
     var valuesArr = [];
     headersArrSubjects = [];
     for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
-      // var new_value = "";
       if (field.value === "" || field.value === undefined || field.value === "Select") {
         field.value  = null;
       }
@@ -313,7 +312,7 @@ function loadSubjectInformation(ev, subjectID) {
   showForm("display", true);
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
-
+  clearAllSubjectFormFields(subjectsFormDiv)
   populateForms(subjectID);
   $("#btn-edit-subject").unbind( "click" );
   $("#btn-edit-subject").click(function() {
@@ -419,18 +418,13 @@ function loadSubjectInformation(ev, subjectID) {
 function editSubject(ev, subjectID) {
  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
    if (field.value !== "" && field.value !== undefined) {
-     var new_value = "";
      // if it's age, then add age info input (day/week/month/year)
      if (field.name === "Age") {
        if ($("#bootbox-subject-age-info").val() !== "Select") {
-         new_value = field.value + " " + $("#bootbox-subject-age-info").val()
-       } else {
-         new_value = field.value
+         field.value = field.value + " " + $("#bootbox-subject-age-info").val()
        }
-     } else {
-       new_value = field.value
-     }
-     subjectsFileData.push(new_value)
+     } 
+     subjectsFileData.push(field.value)
    } else {
      subjectsFileData.push("")
    }
