@@ -8219,7 +8219,7 @@ function showAddAirtableAccountSweetalert() {
     customClass: "swal-wide"
   }).then((result) => {
     if (result.isConfirmed) {
-      addAirtableAccountInsideSweetalert(bootb);
+      addAirtableAccountInsideSweetalert();
     }
   })
 }
@@ -8227,7 +8227,7 @@ function showAddAirtableAccountSweetalert() {
 function showAddAirtableAccountSweetalert2() {
   var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
-  var bootb = Swal.fire({
+  Swal.fire({
     title: htmlTitle,
     html: airtableAccountBootboxMessage,
     showCancelButton: true,
@@ -8244,12 +8244,12 @@ function showAddAirtableAccountSweetalert2() {
     }
   }).then((result) => {
     if (result.isConfirmed) {
-      addAirtableAccountInsideSweetalert(bootb);
+      addAirtableAccountInsideSweetalert();
     }
   })
 }
 
-function addAirtableAccountInsideSweetalert(myBootboxD) {
+function addAirtableAccountInsideSweetalert() {
   var name = $("#bootbox-airtable-key-name").val();
   var key = $("#bootbox-airtable-key").val();
   if (name.length === 0 || key.length === 0) {
