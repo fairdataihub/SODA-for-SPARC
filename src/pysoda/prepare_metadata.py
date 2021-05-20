@@ -281,51 +281,46 @@ def save_subjects_file(filepath, datastructure):
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
 
+    transposeDatastructure = transposeMatrix(datastructure)
+
+    mandatoryFields = transposeDatastructure[:8]
+    optionalFields = transposeDatastructure[8:]
+    refinedOptionalFields = processMetadataCustomFields(optionalFields)
+
+    if refinedOptionalFields:
+        refinedDatastructure = transposeMatrix(np.concatenate((mandatoryFields, refinedOptionalFields)))
+    else:
+        refinedDatastructure = transposeMatrix(mandatoryFields)
+
     # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     ws1.delete_rows(2, 2)
+    # delete all optional columns first (from the template)
+    ws1.delete_cols(9, 10)
 
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
-    headers_no = len(datastructure[0])
+    headers_no = len(refinedDatastructure[0])
     orangeFill = PatternFill(start_color='FFD965',
                        end_color='FFD965',
                        fill_type='solid')
 
-    for column, header in zip(excel_columns(start_index=18), datastructure[0][18:]):
+    for column, header in zip(excel_columns(start_index=8), refinedDatastructure[0][8:headers_no]):
         cell = column + str(1)
         ws1[cell] = header
         ws1[cell].fill = orangeFill
         ws1[cell].font = Font(bold=True, size=12, name='Calibri')
 
     # 3. populate matrices
-    for i, item in enumerate(datastructure):
+    for i, item in enumerate(refinedDatastructure):
         if i == 0:
             continue
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
+            # import pdb; pdb.set_trace()
             cell = column + str(i + 1)
-            if datastructure[i][j]:
-                ws1[cell] = datastructure[i][j]
+            if refinedDatastructure[i][j]:
+                ws1[cell] = refinedDatastructure[i][j]
             else:
                 ws1[cell] = ""
             ws1[cell].font = Font(bold=False, size=11, name='Arial')
-
-    # 4. delete empty columns
-    deletedCols = []
-    # # For row in range(datastructure): if row[cell].value !== None, break. If all None, delete entire column
-    for col_cells in ws1.iter_cols(min_col=4, max_col=len(datastructure[0]), min_row=2, max_row=len(datastructure)):
-        for cell in col_cells:
-            if cell.value != "":
-                break
-            deletedCols.append(cell.col_idx)
-
-    deletedColumnNumber = 0
-    deletedCols = list(set(deletedCols))
-    for ind, col in enumerate(deletedCols):
-        if ind == 0:
-            ws1.delete_cols(col)
-        else:
-            col = col - deletedColumnNumber
-            ws1.delete_cols(col)
-        deletedColumnNumber += 1
 
     wb.save(destination)
 
@@ -409,6 +404,14 @@ def convert_subjects_samples_file_to_df(type, filepath):
 
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
+
+def processMetadataCustomFields(matrix):
+    refined_matrix = []
+    for column in matrix:
+        if any(column[1:]):
+            refined_matrix.append(column)
+
+    return refined_matrix
 
 def load_taxonomy_species(animalList):
     animalDict = {}

@@ -38,7 +38,7 @@ var jstreePreview = document.getElementById("div-dataset-tree-preview");
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-let client = new zerorpc.Client({ timeout: 300000 });
+let client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000 });
 client.connect("tcp://127.0.0.1:4242");
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
