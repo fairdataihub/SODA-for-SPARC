@@ -615,6 +615,7 @@ const nextPrev = (n) => {
         reverseButtons: true,
         heightAuto: false,
         customClass: "swal-wide",
+        backdrop:"rgba(0,0,0, 0.4)",
         showClass: {
           popup: 'animate__animated animate__zoomIn animate__faster'
         },
@@ -873,6 +874,7 @@ const raiseWarningGettingStarted = (ev) => {
         confirmButtonText: "Yes",
         reverseButtons: true,
         heightAuto: false,
+        backdrop:"rgba(0,0,0, 0.4)",
         showClass: {
           popup: 'animate__animated animate__zoomIn animate__faster'
         },
@@ -2620,6 +2622,7 @@ function raiseWarningExit(message) {
       confirmButtonText: "Yes",
       reverseButtons: true,
       heightAuto: false,
+      backdrop:"rgba(0,0,0, 0.4)",
       showClass: {
         popup: 'animate__animated animate__zoomIn animate__faster'
       },
@@ -2814,6 +2817,7 @@ const saveSODAJSONProgress = (progressFileName) => {
     text: "Successfully saved progress!",
     showConfirmButton: "OK",
     heightAuto: false,
+    backdrop:"rgba(0,0,0, 0.4)",
     showClass: {
       popup: 'animate__animated animate__fadeInDown animate__faster'
     },
@@ -2856,6 +2860,7 @@ const saveOrganizeProgressPrompt = () => {
       showCancelButton: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
+      backdrop:"rgba(0,0,0, 0.4)",
       showClass: {
         popup: 'animate__animated animate__fadeInDown animate__faster'
       },
@@ -3062,6 +3067,7 @@ $("#edit_banner_image_button").click(async () => {
             icon: "error",
             text: "An error occured when importing the image. Please try again later.",
             showConfirmButton: "OK",
+            backdrop:"rgba(0,0,0, 0.4)",
             heightAuto: false
           })
 
@@ -3083,6 +3089,7 @@ $("#edit_banner_image_button").click(async () => {
             icon: "error",
             text: "An error occured when importing the image. Please try again later.",
             showConfirmButton: "OK",
+            backdrop:"rgba(0,0,0, 0.4)",
             heightAuto: false
           })
 
@@ -3104,6 +3111,7 @@ $("#edit_banner_image_button").click(async () => {
             icon: "error",
             text: "An error occured when importing the image. Please try again later.",
             showConfirmButton: "OK",
+            backdrop:"rgba(0,0,0, 0.4)",
             heightAuto: false
           })
 

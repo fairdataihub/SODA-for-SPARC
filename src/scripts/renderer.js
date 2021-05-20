@@ -3947,6 +3947,7 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     heightAuto: false,
     showCancelButton: 'No',
     confirmButtonText: 'Yes',
+    backdrop:"rgba(0,0,0, 0.4)",
     reverseButtons: true,
     showClass: {
       popup: 'animate__animated animate__zoomIn animate__faster'
@@ -5195,6 +5196,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       text: "Enter a name below:",
       heightAuto: false,
       input: "text",
+      backdrop:"rgba(0,0,0, 0.4)",
       showCancelButton: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
@@ -5226,6 +5228,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             icon: "warning",
             text: "Duplicate folder name: " + newFolderName,
             confirmButtonText: "OK",
+            backdrop:"rgba(0,0,0, 0.4)",
             heightAuto: false,
             showClass: {
               popup: 'animate__animated animate__zoomIn animate__faster'
@@ -5288,6 +5291,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       icon: "warning",
       text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       confirmButtonText: "OK",
+      backdrop:"rgba(0,0,0, 0.4)",
       heightAuto: false,
       showClass: {
         popup: 'animate__animated animate__zoomIn animate__faster'
@@ -7357,6 +7361,7 @@ document
               html: message,
               showCancelButton: "No",
               showConfirmButton: "Yes",
+              backdrop:"rgba(0,0,0, 0.4)",
               reverseButtons: true,
               heightAuto: false,
               showClass: {
@@ -8224,6 +8229,7 @@ function showBFAddAccountSweetalert() {
     html: bfAddAccountBootboxMessage,
     showCancelButton: 'Cancel',
     confirmButtonText: 'Add',
+    backdrop:"rgba(0,0,0, 0.4)",
     customClass: 'swal-wide',
     reverseButtons: true,
     heightAuto: false,
@@ -8313,7 +8319,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
         timerProgressBar: true,
         allowEscapeKey: false,
         heightAuto: false,
-        backdrop:"rgba(0,0,0, 0.9)",
+        backdrop:"rgba(0,0,0, 0.4)",
         showConfirmButton: false,
       });
       // bootbox.alert({
@@ -8333,6 +8339,7 @@ function showAddAirtableAccountSweetalert() {
     showCancelButton: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Add",
+    backdrop:"rgba(0,0,0, 0.4)",
     heightAuto: false,
     reverseButtons: true,
     customClass: "swal-wide",
@@ -8389,6 +8396,7 @@ function addAirtableAccountInsideSweetalert() {
       text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
       heightAuto: false,
       showCancelButton: true,
+      backdrop:"rgba(0,0,0, 0.4)",
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,

@@ -555,6 +555,7 @@ function checkValidRenameInput(
       Swal.fire({
         icon: "error",
         text: "The file name: "+ newName + " already exists, please rename to a different name!",
+        backdrop:"rgba(0,0,0, 0.4)",
         heightAuto: false
       })
       newName = "";
@@ -581,6 +582,7 @@ function checkValidRenameInput(
       Swal.fire({
         icon: "error",
         text: "The folder name: "+ newName + " already exists, please rename to a different name!",
+        backdrop:"rgba(0,0,0, 0.4)",
         heightAuto: false
       })
       newName = "";
