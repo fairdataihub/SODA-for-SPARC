@@ -1075,10 +1075,10 @@ $(document).ready(function() {
     "Rattus": "rats",
     "Sus scrofa": "pigs, swine, wild boar",
     "Sus scrofa domesticus": "domestic pigs",
-    "Homo sapiens": "humans",
+    // "Homo sapiens": "humans",
     "Felis catus": "domestic cat"}
     ],
-      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus", "Homo sapiens",  "Rattus", "Felis catus", "Rattus norvegicus"]
+      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus", "Rattus", "Felis catus", "Rattus norvegicus"]
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.key;
@@ -1102,30 +1102,59 @@ $(document).ready(function() {
          ${data.key}</span>`;
        }
     },
-    noResults: (list, query) => {
-      var selection = feedback.selection.value;
-      document.querySelector("#bootbox-subject-species").value = selection;
-    },
+    resultsList: {
+      noResults: (list, query) => {
+        // Create "No Results" message element
+          const message = document.createElement("div");
+          // Add class to the created element
+          message.setAttribute("class", "no_results_species");
+          // Add an onclick event
+          message.setAttribute("onclick", "loadTaxonomySpecies('"+query+"')");
+          // Add message text content
+          message.innerHTML = `<span>Find the scientific name for "${query}"</span>`;
+          // Append message element to the results list
+          list.appendChild(message);
+      },
+    }
   });
 })
-//
-// var commonSpeciesArray = ["dogs", "rats", "mice", "ferret", "pigs", "domestic pigs", "mouse"];
-// function loadTaxonomySpecies() {
-//   client.invoke(
-//     "api_load_taxonomy_species",
-//     commonSpeciesArray,
-//     (error, res) => {
-//       if (error) {
-//         log.error(error);
-//         console.error(error);
-//       } else {
-//         console.log(res)
-//       }
-//     }
-//   );
-// }
-//
-// loadTaxonomySpecies()
+
+async function loadTaxonomySpecies(commonName) {
+  Swal.fire({
+    title: "Finding the scientific name for " + commonName + "...",
+    html:
+      "Please wait...",
+    timer: 1500,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {
+    /* Read more about handling dismissals below */
+    if (result.dismiss === Swal.DismissReason.timer) {
+      //console.log("I was closed by the timer");
+    }
+  });
+  await client.invoke(
+    "api_load_taxonomy_species",
+    [commonName],
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        console.log(res)
+        if (Object.keys(res).length === 0) {
+          Swal.fire("Cannot find a scientific name for '"+commonName+"'", "Make sure you enter a correct species name.", "error")
+        } else {
+          $("#bootbox-subject-species").val(res[commonName]["ScientificName"])
+        }
+      }
+    }
+  );
+}
 
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {
