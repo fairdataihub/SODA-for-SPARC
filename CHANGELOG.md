@@ -8,10 +8,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Feature additions:
 - Added support for toast style notifications to better show relevant information. When you open the app, SODA will run through a checklist of items so that you can see if you are missing any components required for the workflow. This includes checking for Pennsieve agent updates and SODA application updates as well.
-- When you request a database from Blackfynn, SODA will now generate a timestamp that is inline with the curation team's requirements.
+- You can now use your Pennsieve login details to connect your Pennsieve account to SODA. This will replace the default API key based login. The original login method will be present as a secondary login alternative in the meantime.  
+- Added better warning messages to functions that were not descriptive enough so now you will have a better idea of what they do.
 
 ### Bug fixes:
 - Fixed a bug where SODA was unable to update on macOS through the built in buttons. The new update notification will be less intrusive and take up less space on your screen.
+- When you request a database from Pennsieve, SODA will now generate a timestamp that is inline with the curation team's requirements.
+- Fixed a visual bug where users would have been able to continue through certain datasets on a dataset that did not have a valid name.
+
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
 
 ## v4.2.1 - 2021-04-23
 

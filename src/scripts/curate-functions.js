@@ -636,6 +636,26 @@ $(document).ready(function () {
   });
 });
 
+const get_api_key = async (login, password, key_name) => {
+  return new Promise((resolve) => {
+    client.invoke(
+      "api_get_pennsieve_api_key_secret",
+      login,
+      password,
+      key_name,
+      (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          resolve(["failed", error]);
+        } else {
+          resolve(res);
+        }
+      }
+    );
+  });
+};
+
 async function openDropdownPrompt(dropdown, show_timer = true) {
   // if users edit current account
   if (dropdown === "bf") {
@@ -771,8 +791,146 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         Swal.showValidationMessage("Please select an account!");
       }
     } else if (bfAccountSwal === false) {
-      // // else, if users click Add account
-      showBFAddAccountSweetalert();
+      Swal.fire({
+        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password <i class="fas fa-info-circle swal-popover" data-content="Your email and password will not be saved and not seen by anyone." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></span>`,
+        html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
+        <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
+        confirmButtonText: "Connect to Pennsieve",
+        showCancelButton: false,
+        cancelButtonText: "Use my API key instead",
+        focusConfirm: false,
+        heightAuto: false,
+        reverseButtons: true,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__fadeOutUp'
+        },
+        footer:
+          '<a onclick="showBFAddAccountSweetalert()">I want to connect with an API key instead</a>',
+        didOpen: () => {
+          $(".swal-popover").popover();
+        },
+        preConfirm: async () => {
+          Swal.resetValidationMessage();
+          Swal.showLoading();
+          const login = Swal.getPopup().querySelector("#ps_login").value;
+          const password = Swal.getPopup().querySelector("#ps_password").value;
+          if (!login || !password) {
+            Swal.hideLoading();
+            Swal.showValidationMessage(`Please enter login and password`);
+          } else {
+            let key_name = SODA_SPARC_API_KEY;
+            let response = await get_api_key(login, password, key_name);
+            if (response[0] == "failed") {
+              Swal.hideLoading();
+              Swal.showValidationMessage(userError(response[1]));
+            } else if (response[0] == "success") {
+              return {
+                key: response[1],
+                secret: response[2],
+                name: response[3],
+              };
+            }
+          }
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Adding account...",
+            allowEscapeKey: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+          let key_name = result.value.name;
+          let apiKey = result.value.key;
+          let apiSecret = result.value.secret;
+          client.invoke(
+            "api_bf_add_account_username",
+            key_name,
+            apiKey,
+            apiSecret,
+            (error, res) => {
+              if (error) {
+                log.error(error);
+                console.error(error);
+                Swal.showValidationMessage(userError(error));
+                Swal.close();
+              } else {
+                bfAccountOptions[key_name] = key_name;
+                defaultBfAccount = key_name;
+                defaultBfDataset = "Select dataset";
+                updateBfAccountList();
+                client.invoke(
+                  "api_bf_account_details",
+                  key_name,
+                  (error, res) => {
+                    if (error) {
+                      log.error(error);
+                      console.error(error);
+                      Swal.fire({
+                        icon: "error",
+                        text: "Something went wrong!",
+                        heightAuto: false,
+                        backdrop: "rgba(0,0,0, 0.4)",
+                        footer:
+                          '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+                      });
+                      showHideDropdownButtons("account", "hide");
+                      confirm_click_account_function();
+                    } else {
+                      $("#para-account-detail-curate").html(res);
+                      $("#current-bf-account").text(key_name);
+                      $("#current-bf-account-generate").text(key_name);
+                      $("#create_empty_dataset_BF_account_span").text(key_name);
+                      $(".bf-account-span").text(key_name);
+                      $("#current-bf-dataset").text("None");
+                      $("#current-bf-dataset-generate").text("None");
+                      $(".bf-dataset-span").html("None");
+                      $("#para-account-detail-curate-generate").html(res);
+                      $("#para_create_empty_dataset_BF_account").html(res);
+                      $(".bf-account-details-span").html(res);
+                      $("#para-continue-bf-dataset-getting-started").text("");
+
+                      $("#current_curation_team_status").text("None");
+                      $("#curation-team-share-btn").hide();
+                      $("#curation-team-unshare-btn").hide();
+                      $("#current_sparc_consortium_status").text("None");
+                      $("#sparc-consortium-share-btn").hide();
+                      $("#sparc-consortium-unshare-btn").hide();
+
+                      showHideDropdownButtons("account", "show");
+                      confirm_click_account_function();
+                    }
+                  }
+                );
+                Swal.fire({
+                  title:
+                    "Successfully added! <br/>Loading your account details...",
+                  timer: 3000,
+                  timerProgressBar: true,
+                  allowEscapeKey: false,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  showConfirmButton: false,
+                });
+              }
+            }
+          );
+        }
+        // if (result.isDismissed) {
+        //   if (result.dismiss === Swal.DismissReason.cancel) {
+        //     // else, if users click Add account
+        //     showBFAddAccountBootbox();
+        //   }
+        // }
+      });
     }
   } else if (dropdown === "dataset") {
     $(".svg-change-current-account.dataset").css("display", "none");

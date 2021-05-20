@@ -5,7 +5,9 @@ function disseminatePublish() {
 
 function refreshDatasetStatus() {
   var account = $("#current-bf-account").text();
-  var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+  var dataset = $(".bf-dataset-span")
+    .html()
+    .replace(/^\s+|\s+$/g, "");
   disseminateShowPublishingStatus("", account, dataset);
 }
 
@@ -93,14 +95,34 @@ const disseminateDataset = (option) => {
 };
 
 const unshareDataset = (option) => {
-  $(".spinner.post-curation").show();
+  let message_text = "";
   if (option === "share-with-curation-team") {
-    $("#para-share-curation_team-status").text("");
-    disseminateCurationTeam(defaultBfAccount, defaultBfDataset, "unshare");
+    message_text =
+      "Are you sure you want to remove SPARC Data Curation Team from this dataset and revert the status of this dataset back to 'Work In Progress (Investigator)'?";
   } else if (option === "share-with-sparc-consortium") {
-    $("#para-share-with-sparc-consortium-status").text("");
-    disseminateConsortium(defaultBfAccount, defaultBfDataset, "unshare");
+    message_text =
+      "Are you sure you want to remove SPARC Embargoed Data Sharing Group from this dataset and revert the status of this dataset back to 'Curated & Awaiting PI Approval (Curators)'?";
   }
+
+  Swal.fire({
+    text: message_text,
+    icon: "warning",
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $(".spinner.post-curation").show();
+      if (option === "share-with-curation-team") {
+        $("#para-share-curation_team-status").text("");
+        disseminateCurationTeam(defaultBfAccount, defaultBfDataset, "unshare");
+      } else if (option === "share-with-sparc-consortium") {
+        $("#para-share-with-sparc-consortium-status").text("");
+        disseminateConsortium(defaultBfAccount, defaultBfDataset, "unshare");
+      }
+    }
+  });
 };
 
 $(document).ready(function () {
@@ -119,7 +141,9 @@ $(document).ready(function () {
     (event, index) => {
       if (index === 0) {
         var account = $("#current-bf-account").text();
-        var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+        var dataset = $(".bf-dataset-span")
+          .html()
+          .replace(/^\s+|\s+$/g, "");
         disseminateCurationTeam(account, dataset);
       } else {
         $("#share-curation-team-spinner").hide();
@@ -129,7 +153,9 @@ $(document).ready(function () {
   ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
     if (index === 0) {
       var account = $("#current-bf-account").text();
-      var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+      var dataset = $(".bf-dataset-span")
+        .html()
+        .replace(/^\s+|\s+$/g, "");
       disseminateConsortium(account, dataset);
     } else {
       $("#share-with-sparc-consortium-spinner").show();
@@ -141,13 +167,10 @@ $(document).ready(function () {
       $("#generate-submission-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
-        var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+        var emessage =
+          "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        Swal.fire(
-          'Metadata file already exists',
-          `${emessage}`,
-          'error'
-        )
+        Swal.fire("Metadata file already exists", `${emessage}`, "error");
         $("#generate-submission-spinner").hide();
       } else {
         var awardRes = $("#submission-SPARC-award-span").text();
@@ -220,7 +243,7 @@ $(document).ready(function () {
       if (filepath != null) {
         // used to communicate value to button-import-milestone click event-listener
         document.getElementById("input-milestone-select-reupload").placeholder =
-        filepath[0];
+          filepath[0];
         $("#div-confirm-select-SPARC-awards").show();
         $("#div-cancel-reupload-DDD").hide();
         ipcRenderer.send(
@@ -237,6 +260,9 @@ $(document).ready(function () {
 const disseminateCurationTeam = (account, dataset, share_status = "") => {
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
+
+  $("#curation-team-share-btn").prop("disabled", true);
+  $("#curation-team-unshare-btn").prop("disabled", true);
 
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
@@ -256,6 +282,9 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
         $("#para-share-curation_team-status").text(emessage);
         $("#share-curation-team-spinner").hide();
         $(".spinner.post-curation").hide();
+        $("#curation-team-share-btn").prop("disabled", false);
+        $("#curation-team-unshare-btn").prop("disabled", false);
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -283,6 +312,9 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
               $("#para-share-curation_team-status").css("color", "red");
               $("#para-share-curation_team-status").text(emessage);
               $("#share-curation-team-spinner").hide();
+              $("#curation-team-share-btn").prop("disabled", false);
+              $("#curation-team-unshare-btn").prop("disabled", false);
+
               ipcRenderer.send(
                 "track-event",
                 "Error",
@@ -324,6 +356,8 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
               );
               disseminiateShowCurrentDatasetStatus("", account, dataset);
               $(".spinner.post-curation").hide();
+              $("#curation-team-share-btn").prop("disabled", false);
+              $("#curation-team-unshare-btn").prop("disabled", false);
             }
           }
         );
@@ -335,6 +369,10 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
 function disseminateConsortium(bfAcct, bfDS, share_status = "") {
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
+
+  $("#sparc-consortium-share-btn").prop("disabled", true);
+  $("#sparc-consortium-unshare-btn").prop("disabled", true);
+
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
   }
@@ -353,6 +391,8 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         $("#para-share-with-sparc-consortium-status").text(emessage);
         $("#share-with-sparc-consortium-spinner").hide();
         $(".spinner.post-curation").hide();
+        $("#sparc-consortium-share-btn").prop("disabled", false);
+        $("#sparc-consortium-unshare-btn").prop("disabled", false);
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -385,6 +425,8 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               $("#para-share-with-sparc-consortium-status").css("color", "red");
               $("#para-share-with-sparc-consortium-status").text(emessage);
               $("#share-with-sparc-consortium-spinner").hide();
+              $("#sparc-consortium-share-btn").prop("disabled", false);
+              $("#sparc-consortium-unshare-btn").prop("disabled", false);
               $(".spinner.post-curation").hide();
             } else {
               $("#para-share-with-sparc-consortium-status").css(
@@ -411,6 +453,8 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               showCurrentPermission();
               showCurrentDatasetStatus();
               disseminiateShowCurrentDatasetStatus("", bfAcct, bfDS);
+              $("#sparc-consortium-share-btn").prop("disabled", false);
+              $("#sparc-consortium-unshare-btn").prop("disabled", false);
               $("#share-with-sparc-consortium-spinner").hide();
               $(".spinner.post-curation").hide();
             }
@@ -500,7 +544,11 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
 }
 
 function checkDatasetDisseminate() {
-  if ($(".bf-dataset-span.disseminate").html().replace(/^\s+|\s+$/g, '') !== "None") {
+  if (
+    $(".bf-dataset-span.disseminate")
+      .html()
+      .replace(/^\s+|\s+$/g, "") !== "None"
+  ) {
     if (
       $("#Post-curation-question-1").hasClass("prev") &&
       !$("#Post-curation-question-4").hasClass("show")
@@ -520,9 +568,9 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   }
 });
 
-                  /*
-                  The below is for Prepare metadata section
-                  */
+/*
+  The below is for Prepare metadata section
+*/
 
 // Main function to check Airtable status upon loading soda
 ///// config and load live data from Airtable
@@ -857,9 +905,9 @@ $("#input-milestone-date-raw").change(function () {
   }
 });
 
-$(document).ready(function() {
+$(document).ready(function () {
   $("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
-})
+});
 
 // Preview submission file entries before Generating
 function showPreviewSubmission() {
@@ -953,8 +1001,14 @@ function addNewRow(table) {
       return;
     }
     if ($(currentRow).find("label").find("input")[0].checked) {
-      var currentContactPersonIDNumber = $($(currentRow).find("label").find("input")[0]).prop("id").slice(-1);
-      var contactPersonBoolean = contactPersonCheck(currentContactPersonIDNumber);
+      var currentContactPersonIDNumber = $(
+        $(currentRow).find("label").find("input")[0]
+      )
+        .prop("id")
+        .slice(-1);
+      var contactPersonBoolean = contactPersonCheck(
+        currentContactPersonIDNumber
+      );
       if (contactPersonBoolean) {
         $("#para-save-contributor-status").text(
           "One contact person is already added above. Only one contact person is allowed for a dataset."
@@ -1436,7 +1490,7 @@ function resetDD() {
     icon: "warning",
     showCancelButton: true,
     heightAuto: false,
-    backdrop:"rgba(0,0,0, 0.4)",
+    backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
     showClass: {
       popup: 'animate__animated animate__zoomIn animate__faster'
