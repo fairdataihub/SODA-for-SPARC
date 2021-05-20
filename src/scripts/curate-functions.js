@@ -803,10 +803,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         reverseButtons: true,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__fadeInDown'
+          popup: 'animate__animated animate__fadeInDown animate__faster'
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp'
+          popup: 'animate__animated animate__fadeOutUp animate__faster'
         },
         footer:
           '<a onclick="showBFAddAccountSweetalert()">I want to connect with an API key instead</a>',
