@@ -614,7 +614,13 @@ const nextPrev = (n) => {
         showCancelButton: "No",
         reverseButtons: true,
         heightAuto: false,
-        customClass: "swal-wide"
+        customClass: "swal-wide",
+        showClass: {
+          popup: 'animate__animated animate__zoomIn animate__faster'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__zoomOut animate__faster'
+        }
         }).then((result) => {
           if (result.isConfirmed) {
             // Hide the current tab:
@@ -866,7 +872,13 @@ const raiseWarningGettingStarted = (ev) => {
         showCancelButton: "No",
         confirmButtonText: "Yes",
         reverseButtons: true,
-        heightAuto: false
+        heightAuto: false,
+        showClass: {
+          popup: 'animate__animated animate__zoomIn animate__faster'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__zoomOut animate__faster'
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           globalGettingStarted1stQuestionBool = true;
@@ -2607,7 +2619,13 @@ function raiseWarningExit(message) {
       showCancelButton: "No",
       confirmButtonText: "Yes",
       reverseButtons: true,
-      heightAuto: false
+      heightAuto: false,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         generateExitButtonBool = true;
@@ -2795,7 +2813,13 @@ const saveSODAJSONProgress = (progressFileName) => {
     icon: "success",
     text: "Successfully saved progress!",
     showConfirmButton: "OK",
-    heightAuto: false
+    heightAuto: false,
+    showClass: {
+      popup: 'animate__animated animate__fadeInDown'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutUp'
+    }
   });
 };
 
@@ -2832,6 +2856,12 @@ const saveOrganizeProgressPrompt = () => {
       showCancelButton: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__fadeInDown'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOutUp'
+      }
     }).then((result) => {
       if (result.value) {
         if (result.value !== null && result.value !== "") {
@@ -2910,6 +2940,12 @@ $(document).ready(() => {
           heightAuto: false,
           backdrop:"rgba(0,0,0, 0.4)",
           html: `${warning_obj["warning-message"]}`,
+          showClass: {
+            popup: 'animate__animated animate__zoomIn animate__faster'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__zoomOut animate__faster'
+          }
         });
       }
     });

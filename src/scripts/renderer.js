@@ -273,6 +273,12 @@ const run_pre_flight_checks = async (check_update = true) => {
               showCancelButton: true,
               confirmButtonText: "Download now",
               cancelButtonText: "Skip for now",
+              showClass: {
+                popup: 'animate__animated animate__zoomIn animate__faster'
+              },
+              hideClass: {
+                popup: 'animate__animated animate__zoomOut animate__faster'
+              }
             }).then(async (result) => {
               if (result.isConfirmed) {
                 // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
@@ -321,6 +327,12 @@ const run_pre_flight_checks = async (check_update = true) => {
           confirmButtonText: "Yes",
           showCancelButton: true,
           cancelButtonText: "I'll do it later",
+          showClass: {
+            popup: 'animate__animated animate__zoomIn animate__faster'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__zoomOut animate__faster'
+          }
         }).then(async (result) => {
           if (result.isConfirmed) {
             openDropdownPrompt("bf");
@@ -2345,7 +2357,13 @@ generateDSBtn.addEventListener("click", (event) => {
       showCancelButton: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         ipcRenderer.send(
@@ -3332,7 +3350,13 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           showCancelButton: true,
           confirmButtonText: "Yes",
           cancelButtonText: "Cancel",
-          reverseButtons: true
+          reverseButtons: true,
+          showClass: {
+            popup: 'animate__animated animate__zoomIn animate__faster'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__zoomOut animate__faster'
+          }
         }).then((result) => {
           if (result.isConfirmed) {
             $("#button_upload_local_folder_confirm").click();
@@ -3616,6 +3640,12 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
         timer: 4000,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__fadeOutUp'
+        },
         timerProgressBar: true,
         didOpen: () => {
           Swal.showLoading();
@@ -3811,7 +3841,13 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
           showCancelButton: true,
           confirmButtonText: "Yes",
           cancelButtonText: "No",
-          reverseButtons: true
+          reverseButtons: true,
+          showClass: {
+            popup: 'animate__animated animate__zoomIn animate__faster'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__zoomOut animate__faster'
+          }
         }).then((result) => {
           if (result.isConfirmed) {
             uploadBannerImage();
@@ -3901,7 +3937,13 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     heightAuto: false,
     showCancelButton: 'No',
     confirmButtonText: 'Yes',
-    reverseButtons: true
+    reverseButtons: true,
+    showClass: {
+      popup: 'animate__animated animate__zoomIn animate__faster'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__zoomOut animate__faster'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       $("#bf-add-permission-pi-spinner").css("visibility", "visible");
@@ -4134,7 +4176,13 @@ function submitReviewDatasetCheck(res) {
       showCancelButton: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         submitReviewDataset();
@@ -4152,7 +4200,13 @@ function submitReviewDatasetCheck(res) {
       showCancelButton: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         submitReviewDataset();
@@ -4245,7 +4299,13 @@ function withdrawDatasetCheck(res) {
       showCancelButton: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         withdrawReviewDataset();
@@ -5128,6 +5188,12 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       showCancelButton: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__fadeInDown'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOutUp'
+      }
     }).then((result) => {
       if (result.value) {
       if (result.value !== null && result.value !== "") {
@@ -5150,7 +5216,13 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             icon: "warning",
             text: "Duplicate folder name: " + newFolderName,
             confirmButtonText: "OK",
-            heightAuto: false
+            heightAuto: false,
+            showClass: {
+              popup: 'animate__animated animate__zoomIn animate__faster'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__zoomOut animate__faster'
+            }
           })
         } else {
           var appendString = "";
@@ -5206,7 +5278,13 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       icon: "warning",
       text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       confirmButtonText: "OK",
-      heightAuto: false
+      heightAuto: false,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     })
   }
 });
@@ -5821,6 +5899,12 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
       text: "We found some hidden files. These will be ignored when importing.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     });
     // bootbox.alert({
     //   message:
@@ -6972,7 +7056,13 @@ ipcRenderer.on(
               showCancelButton: true,
               confirmButtonText: "Yes",
               cancelButtonText: "Cancel",
-              reverseButtons: true
+              reverseButtons: true,
+              showClass: {
+                popup: 'animate__animated animate__zoomIn animate__faster'
+              },
+              hideClass: {
+                popup: 'animate__animated animate__zoomOut animate__faster'
+              }
             }).then((result) => {
               if (result.isConfirmed) {
                 $("#nextBtn").prop("disabled", false);
@@ -7232,7 +7322,13 @@ document
               showCancelButton: "No",
               showConfirmButton: "Yes",
               reverseButtons: true,
-              heightAuto: false
+              heightAuto: false,
+              showClass: {
+                popup: 'animate__animated animate__zoomIn animate__faster'
+              },
+              hideClass: {
+                popup: 'animate__animated animate__zoomOut animate__faster'
+              }
             }).then((result) => {
               if (result.isConfirmed) {
                 console.log("Continue");
@@ -8094,7 +8190,13 @@ function showBFAddAccountSweetalert() {
     confirmButtonText: 'Add',
     customClass: 'swal-wide',
     reverseButtons: true,
-    heightAuto: false
+    heightAuto: false,
+    showClass: {
+      popup: 'animate__animated animate__fadeInDown'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutUp'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       addBFAccountInsideSweetalert(bootb);
@@ -8113,12 +8215,12 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
         html: '<span>' + error + '</span>',
         heightAuto: false,
         backdrop:"rgba(0,0,0,0.4)",
-        showClass: {
-          popup: ''
-        },
-        hideClass: {
-          popup: ''
-        }
+        // showClass: {
+        //   popup: ''
+        // },
+        // hideClass: {
+        //   popup: ''
+        // }
       }).then((result) => {
         if (result.isConfirmed) {
           showBFAddAccountSweetalert2()
@@ -8193,10 +8295,10 @@ function showBFAddAccountSweetalert2() {
     reverseButtons: true,
     heightAuto: false,
     showClass: {
-      popup: ''
+      popup: 'animate__animated animate__fadeInDown'
     },
     hideClass: {
-      popup: ''
+      popup: 'animate__animated animate__fadeOutUp'
     }
   }).then((result) => {
     if (result.isConfirmed) {
@@ -8216,7 +8318,13 @@ function showAddAirtableAccountSweetalert() {
     confirmButtonText: "Add",
     heightAuto: false,
     reverseButtons: true,
-    customClass: "swal-wide"
+    customClass: "swal-wide",
+    showClass: {
+      popup: 'animate__animated animate__fadeInDown'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutUp'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       addAirtableAccountInsideSweetalert();
@@ -8237,10 +8345,10 @@ function showAddAirtableAccountSweetalert2() {
     reverseButtons: true,
     customClass: "swal-wide",
     showClass: {
-      popup: ''
+      popup: 'animate__animated animate__fadeInDown'
     },
     hideClass: {
-      popup: ''
+      popup: 'animate__animated animate__fadeOutUp'
     }
   }).then((result) => {
     if (result.isConfirmed) {
@@ -8268,12 +8376,12 @@ function addAirtableAccountInsideSweetalert() {
       html: errorMessage,
       heightAuto: false,
       backdrop:"rgba(0,0,0,0.4)",
-      showClass: {
-        popup: ''
-      },
-      hideClass: {
-        popup: ''
-      }
+      // showClass: {
+      //   popup: ''
+      // },
+      // hideClass: {
+      //   popup: ''
+      // }
     }).then((result) => {
       if (result.isConfirmed) {
         showAddAirtableAccountSweetalert2()
@@ -8281,13 +8389,20 @@ function addAirtableAccountInsideSweetalert() {
     });
   } else {
     Swal.fire({
+      icon: "warning",
       title: "Connect to Airtable",
       text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
       heightAuto: false,
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         const optionsSparcTable = {
@@ -8361,12 +8476,12 @@ function addAirtableAccountInsideSweetalert() {
               text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
               heightAuto: false,
               backdrop:"rgba(0,0,0,0.4)",
-              showClass: {
-                popup: ''
-              },
-              hideClass: {
-                popup: ''
-              }
+              // showClass: {
+              //   popup: ''
+              // },
+              // hideClass: {
+              //   popup: ''
+              // }
             }).then((result) => {
               if (result.isConfirmed) {
                 showAddAirtableAccountSweetalert2()
@@ -8392,12 +8507,12 @@ function addAirtableAccountInsideSweetalert() {
               text: "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
               backdrop:"rgba(0,0,0,0.4)",
-              showClass: {
-                popup: ''
-              },
-              hideClass: {
-                popup: ''
-              }
+              // showClass: {
+              //   popup: ''
+              // },
+              // hideClass: {
+              //   popup: ''
+              // }
             }).then((result) => {
               if (result.isConfirmed) {
                 showAddAirtableAccountSweetalert2()
@@ -8424,12 +8539,12 @@ function addAirtableAccountInsideSweetalert() {
               text: "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
               backdrop:"rgba(0,0,0,0.4)",
-              showClass: {
-                popup: ''
-              },
-              hideClass: {
-                popup: ''
-              }
+              // showClass: {
+              //   popup: ''
+              // },
+              // hideClass: {
+              //   popup: ''
+              // }
             }).then((result) => {
               if (result.isConfirmed) {
                 showAddAirtableAccountSweetalert2()

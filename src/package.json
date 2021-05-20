@@ -69,6 +69,7 @@
     "@toast-ui/editor": "^2.5.1",
     "@yaireo/tagify": "^3.23.1",
     "airtable": "^0.8.1",
+    "animate.css": "^4.1.1",
     "axios": "^0.19.2",
     "bootbox": "^5.5.2",
     "bootstrap-icons": "^1.4.1",

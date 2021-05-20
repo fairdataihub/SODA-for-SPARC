@@ -39,7 +39,13 @@ const disseminateDataset = (option) => {
       showCancelButton: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         var account = $("#current-bf-account").text();
@@ -62,7 +68,13 @@ const disseminateDataset = (option) => {
       showCancelButton: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         var account = $("#current-bf-account").text();
@@ -1356,6 +1368,12 @@ function resetSubmission() {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
+    showClass: {
+      popup: 'animate__animated animate__zoomIn animate__faster'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__zoomOut animate__faster'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
@@ -1420,6 +1438,12 @@ function resetDD() {
     heightAuto: false,
     backdrop:"rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
+    showClass: {
+      popup: 'animate__animated animate__zoomIn animate__faster'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__zoomOut animate__faster'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one

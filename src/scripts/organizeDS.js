@@ -108,6 +108,12 @@ function delFolder(
           "You can only restore one file at a time. Please select a single file for restoration.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: 'animate__animated animate__zoomIn animate__faster'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__zoomOut animate__faster'
+        }
       });
       // bootbox.alert({
       //   title: "Restore " + type,
@@ -127,6 +133,12 @@ function delFolder(
           "The parent folder for this item has been marked for deletion. Please restore that folder to recover this item.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: 'animate__animated animate__zoomIn animate__faster'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__zoomOut animate__faster'
+        }
       });
       // bootbox.alert({
       //   title: "Restore " + type,
@@ -173,6 +185,12 @@ function delFolder(
                   "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
                 heightAuto: false,
                 backdrop: "rgba(0,0,0, 0.4)",
+                showClass: {
+                  popup: 'animate__animated animate__zoomIn animate__faster'
+                },
+                hideClass: {
+                  popup: 'animate__animated animate__zoomOut animate__faster'
+                }
               });
               // bootbox.alert({
               //   title: "Unable to restore " + promptVar,
@@ -310,7 +328,13 @@ function delFolder(
         showCancelButton: true,
         confirmButtonText: "OK",
         cancelButtonText: "Cancel",
-        reverseButtons: true
+        reverseButtons: true,
+        showClass: {
+          popup: 'animate__animated animate__zoomIn animate__faster'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__zoomOut animate__faster'
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           var filtered = getGlobalPath(organizeCurrentLocation);
@@ -417,7 +441,13 @@ function delFolder(
         showCancelButton: true,
         confirmButtonText: "OK",
         cancelButtonText: "Cancel",
-        reverseButtons: true
+        reverseButtons: true,
+        showClass: {
+          popup: 'animate__animated animate__zoomIn animate__faster'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__zoomOut animate__faster'
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           /// get current location of folders or files
@@ -626,6 +656,12 @@ function renameFolder(
       text: "High-level SPARC folders cannot be renamed!",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     });
     // bootbox.alert({
     //   message: "High-level SPARC folders cannot be renamed!",
@@ -711,7 +747,13 @@ function renameFolder(
       showCancelButton: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__fadeInDown'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOutUp'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         var returnedName = checkValidRenameInput(
@@ -730,6 +772,12 @@ function renameFolder(
             text: "Successfully renamed!.",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
+            showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+            }
           });
           // bootbox.alert({
           //   message: "Successfully renamed!",
@@ -897,6 +945,12 @@ function addFilesfunction(
           "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: 'animate__animated animate__zoomIn animate__faster'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__zoomOut animate__faster'
+        }
       });
       // bootbox.alert({
       //   message:
@@ -989,6 +1043,12 @@ function addFilesfunction(
       backdrop: "rgba(0,0,0, 0.4)",
       customClass: {
         content: "swal-left-align"
+      },
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
       }
     });
     // bootbox.alert({

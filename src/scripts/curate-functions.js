@@ -830,6 +830,12 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         confirmButtonText: "Confirm",
         cancelButtonText: "Cancel",
         focusCancel: true,
+        showClass: {
+          popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__fadeOutUp'
+        },
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
           $("#curatebfdatasetlist").selectpicker("refresh");
@@ -1455,6 +1461,12 @@ async function moveItems(ev, category) {
     confirmButtonText: "Confirm",
     cancelButtonText: "Cancel",
     customClass: { content: "swal-left-align" },
+    showClass: {
+      popup: 'animate__animated animate__fadeInDown'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutUp'
+    },
     preConfirm: () => {
       Swal.resetValidationMessage();
       if (!selectedPath) {
@@ -1477,6 +1489,7 @@ async function moveItems(ev, category) {
   });
   if (folderDestination) {
     Swal.fire({
+      icon: "warning",
       title:
         "Are you sure you want to move selected item(s) to: " +
         selectedPath +
@@ -1485,6 +1498,12 @@ async function moveItems(ev, category) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         // loading effect
