@@ -2815,10 +2815,10 @@ const saveSODAJSONProgress = (progressFileName) => {
     showConfirmButton: "OK",
     heightAuto: false,
     showClass: {
-      popup: 'animate__animated animate__fadeInDown'
+      popup: 'animate__animated animate__fadeInDown animate__faster'
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp'
+      popup: 'animate__animated animate__fadeOutUp animate__faster'
     }
   });
 };
@@ -2857,10 +2857,10 @@ const saveOrganizeProgressPrompt = () => {
       confirmButtonText: "OK",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__fadeInDown'
+        popup: 'animate__animated animate__fadeInDown animate__faster'
       },
       hideClass: {
-        popup: 'animate__animated animate__fadeOutUp'
+        popup: 'animate__animated animate__fadeOutUp animate__faster'
       }
     }).then((result) => {
       if (result.value) {

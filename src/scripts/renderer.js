@@ -3651,10 +3651,10 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__fadeInDown'
+          popup: 'animate__animated animate__fadeInDown animate__faster'
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp'
+          popup: 'animate__animated animate__fadeOutUp animate__faster'
         },
         timerProgressBar: true,
         didOpen: () => {
@@ -5199,10 +5199,10 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       confirmButtonText: "OK",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__fadeInDown'
+        popup: 'animate__animated animate__fadeInDown animate__faster'
       },
       hideClass: {
-        popup: 'animate__animated animate__fadeOutUp'
+        popup: 'animate__animated animate__fadeOutUp animate__faster'
       }
     }).then((result) => {
       if (result.value) {
@@ -8231,10 +8231,10 @@ function showBFAddAccountSweetalert() {
       $(".swal-popover").popover();
     },
     showClass: {
-      popup: 'animate__animated animate__fadeInDown'
+      popup: 'animate__animated animate__fadeInDown animate__faster'
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp'
+      popup: 'animate__animated animate__fadeOutUp animate__faster'
     }
   }).then((result) => {
     if (result.isConfirmed) {
@@ -8337,10 +8337,10 @@ function showAddAirtableAccountSweetalert() {
     reverseButtons: true,
     customClass: "swal-wide",
     showClass: {
-      popup: 'animate__animated animate__fadeInDown'
+      popup: 'animate__animated animate__fadeInDown animate__faster'
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp'
+      popup: 'animate__animated animate__fadeOutUp animate__faster'
     },
     didOpen: () => {
       $(".swal-popover").popover();

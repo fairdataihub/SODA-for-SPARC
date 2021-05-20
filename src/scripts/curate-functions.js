@@ -989,10 +989,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         cancelButtonText: "Cancel",
         focusCancel: true,
         showClass: {
-          popup: 'animate__animated animate__fadeInDown'
+          popup: 'animate__animated animate__fadeInDown animate__faster'
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp'
+          popup: 'animate__animated animate__fadeOutUp animate__faster'
         },
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
@@ -1620,10 +1620,10 @@ async function moveItems(ev, category) {
     cancelButtonText: "Cancel",
     customClass: { content: "swal-left-align" },
     showClass: {
-      popup: 'animate__animated animate__fadeInDown'
+      popup: 'animate__animated animate__fadeInDown animate__faster'
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp'
+      popup: 'animate__animated animate__fadeOutUp animate__faster'
     },
     preConfirm: () => {
       Swal.resetValidationMessage();

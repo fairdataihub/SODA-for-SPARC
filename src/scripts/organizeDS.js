@@ -749,10 +749,10 @@ function renameFolder(
       cancelButtonText: "Cancel",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__fadeInDown'
+        popup: 'animate__animated animate__fadeInDown animate__faster'
       },
       hideClass: {
-        popup: 'animate__animated animate__fadeOutUp'
+        popup: 'animate__animated animate__fadeOutUp animate__faster'
       }
     }).then((result) => {
       if (result.isConfirmed) {
@@ -773,10 +773,10 @@ function renameFolder(
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showClass: {
-              popup: 'animate__animated animate__fadeInDown'
+              popup: 'animate__animated animate__fadeInDown animate__faster'
             },
             hideClass: {
-              popup: 'animate__animated animate__fadeOutUp'
+              popup: 'animate__animated animate__fadeOutUp animate__faster'
             }
           });
           // bootbox.alert({
