@@ -423,7 +423,7 @@ function editSubject(ev, subjectID) {
        if ($("#bootbox-subject-age-info").val() !== "Select") {
          field.value = field.value + " " + $("#bootbox-subject-age-info").val()
        }
-     } 
+     }
      subjectsFileData.push(field.value)
    } else {
      subjectsFileData.push("")
@@ -1135,35 +1135,39 @@ function grabResearcherProtocolList(username, token, type) {
 }
 
 function populateProtocolDropdown(type) {
+  var keyword = "";
   if (type === "subjects") {
-    $($("#bootbox-subject-protocol-title").parents()[0]).remove();
-    var divElement = '<div class="ui input"><select id="bootbox-subject-protocol-title" class="ui selection dropdown subjects-form-entry" onchange="autoPopulateProtocolLink(this)" name="Protocol title"></select></div>'
-    $("#subjects-protocol-titles").prepend(divElement);
-    // populate dropdown with protocolResearcherList
-    removeOptions(document.getElementById("bootbox-subject-protocol-title"));
-    addOption(document.getElementById("bootbox-subject-protocol-title"), "Select protocol", "Select")
-    for (var key of Object.keys(protocolResearcherList)) {
-      $('#bootbox-subject-protocol-title').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
-    }
-  } else {
-    $($("#bootbox-sample-protocol-title").parents()[0]).remove();
-    var divElement = '<div class="ui input"><select id="bootbox-sample-protocol-title" class="ui selection dropdown samples-form-entry" onchange="autoPopulateProtocolLink(this)" name="Protocol title"></select></div>'
-    $("#samples-protocol-titles").prepend(divElement);
-    // populate dropdown with protocolResearcherList
-    removeOptions(document.getElementById("bootbox-sample-protocol-title"));
-    addOption(document.getElementById("bootbox-sample-protocol-title"), "Select protocol", "Select")
-    for (var key of Object.keys(protocolResearcherList)) {
-      $('#bootbox-sample-protocol-title').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
-    }
+    keyword = "subject";
+  } else if (type === "samples") {
+    keyword = "sample"
+  }
+  $($("#bootbox-"+keyword+"-protocol-title").parents()[0]).remove();
+  var divElement = '<div class="ui input"><select id="bootbox-'+keyword+'-protocol-title" class="ui selection dropdown '+keyword+'s-form-entry" onchange="autoPopulateProtocolLink(this, "'+keyword+'")" name="Protocol title"></select></div>'
+  $("#"+keyword+"s-protocol-titles").prepend(divElement);
+  // populate dropdown with protocolResearcherList
+  removeOptions(document.getElementById("bootbox-"+keyword+"-protocol-title"));
+  addOption(document.getElementById("bootbox-"+keyword+"-protocol-title"), "Select protocol", "Select")
+  for (var key of Object.keys(protocolResearcherList)) {
+    $('#bootbox-'+keyword+'-protocol-title').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
   }
 }
 
-function autoPopulateProtocolLink(ev) {
+function autoPopulateProtocolLink(ev, type) {
   var linkVal = $(ev).val();
+  var parentele = $(ev).parents()[0];
   if (linkVal && linkVal !== "Select") {
-    $("#bootbox-subject-protocol-location").val(linkVal)
+    if (type === "subject" || type === "sample") {
+      $("#bootbox-"+type+"-protocol-location").val(linkVal)
+    } else {
+      // set protocol link input field to be the value of link title
+      $($($(parentele).siblings()[0]).children()[0]).val(linkVal)
+    }
   } else {
-    $("#bootbox-subject-protocol-location").val("")
+    if (type === "subject" || type === "sample") {
+      $("#bootbox-"+type+"-protocol-location").val("")
+    } else {
+      $($($(parentele).siblings()[0]).children()[0]).val("")
+    }
   }
 }
 
