@@ -1075,10 +1075,10 @@ $(document).ready(function() {
     "Rattus": "rats",
     "Sus scrofa": "pigs, swine, wild boar",
     "Sus scrofa domesticus": "domestic pigs",
-    // "Homo sapiens": "humans",
+    "Homo sapiens": "humans",
     "Felis catus": "domestic cat"}
     ],
-      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus", "Rattus", "Felis catus", "Rattus norvegicus"]
+      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus","Homo sapiens", "Rattus", "Felis catus", "Rattus norvegicus"]
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.key;
