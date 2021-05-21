@@ -1316,7 +1316,7 @@ body.swal2-shown > [aria-hidden="true"] {
 .swal2-input:focus {
   outline: none !important;
   border-width: 0 0 2px !important;
-  border-color: #13716D !important;
+  border-color: #13716d !important;
 }
 
 .swal2-input::-webkit-input-placeholder {
@@ -1342,9 +1342,9 @@ body.swal2-shown > [aria-hidden="true"] {
   width: 70% !important;
 }
 
-.swal2-header {
-  /* margin-bottom: 15px !important; */
-}
+/* .swal2-header {
+  margin-bottom: 15px !important; 
+} */
 
 .jstree-default .jstree-themeicon-custom {
   color: var(--color-bg-yellow) !important;
@@ -1371,6 +1371,11 @@ body.swal2-shown > [aria-hidden="true"] {
 /* .swal2-content {
   text-align: left !important;
 } */
+
+/* Use this for any hide animations on sweet alert. Seems to look okay and makes the message disappear faster */
+.animate_fastest {
+  --animate-duration: 0.3s;
+}
 
 #data {
   font-size: 14px !important;

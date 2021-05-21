@@ -992,7 +992,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           popup: 'animate__animated animate__fadeInDown animate__faster'
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp animate__faster'
+          popup: 'animate__animated animate__fadeOutUp animate__faster animate_fastest'
         },
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
