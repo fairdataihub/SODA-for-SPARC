@@ -6277,18 +6277,29 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
 //////////////////////////////////////////////////////////////////////////////
 
+onmousemove = function(e){console.log("mouse location:", e.clientX, e.clientY)}
+
 //// helper functions for hiding/showing context menus
 function showmenu(ev, category, deleted = false) {
   //stop the real right click menu
   ev.preventDefault();
   var mouseX;
   let element = "";
+  let x = 0;
   if (ev.pageX <= 200) {
     mouseX = ev.pageX + 10;
   } else {
-    mouseX = ev.pageX - 210;
+    let active_class = $("#sidebarCollapse").attr("class");
+    if (active_class.search("active") == -1) {
+      mouseX = ev.pageX - 210;
+      x = 210;
+    } else {
+      mouseX = ev.pageX - 50;
+      x = 50;
+    }
   }
-  var mouseY = ev.pageY - 15;
+  var mouseY = ev.pageY - 10;
+  console.log(mouseX, mouseY, x);
 
   if (category === "folder") {
     if (deleted) {
