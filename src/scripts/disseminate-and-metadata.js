@@ -1040,7 +1040,7 @@ function populateProtocolLink(ev) {
     if ($("#select-misc-links").length > 0) {
       $("#select-misc-links").css("display", "block")
     } else {
-      var divElement = '<select id="select-misc-links" class="form-container-input-bf" style="font-size:13px; line-height:2;margin-top: 20px" onchange="autoPopulateProtocolLink(this, \'dd\')"></select>'
+      var divElement = '<select id="select-misc-links" class="form-container-input-bf" style="font-size:13px; line-height:2;margin-top: 20px" onchange="autoPopulateProtocolLink(this, \'\', \'dd\')"></select>'
       $($(ev).parents()[0]).append(divElement);
       // populate dropdown with protocolResearcherList
       removeOptions(document.getElementById("select-misc-links"));

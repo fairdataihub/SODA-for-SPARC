@@ -369,7 +369,7 @@ def column_check(x):
 subjectsTemplateHeaderList = ["subject_id", "pool_id", "experimental group", "age", "sex", "species", "strain", "rrid for strain", "additional fields (e.g. minds)", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
 samplesTemplateHeaderList = ["subject_id", "sample_id", "wasderivedfromsample", "pool_id", "experimental group", "specimen type", "specimen anatomical location", "additional fields (e.g. minds)", "species", "sex", "age", "age category", "age range (min)", "age range (max)", "handedness", "strain", "rrid for strain",  "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
 
-def convert_subjects_samples_file_to_df(type, filepath):
+def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
     if type == "subjects":
         templateHeaderList = subjectsTemplateHeaderList
     else:
@@ -400,7 +400,18 @@ def convert_subjects_samples_file_to_df(type, filepath):
             column.extend([""]*len(subjects_df))
         transpose.append(column)
 
-    return transposeMatrix(transpose)
+    sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
+
+    return transposeMatrix(sortMatrix)
+
+def sortedSubjectsTableData(matrix, fields):
+    sortedMatrix = []
+    for field in fields:
+        for column in matrix:
+            if column[0] == field:
+                sortedMatrix.append(column)
+                break
+    return sortedMatrix
 
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]

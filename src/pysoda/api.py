@@ -40,8 +40,8 @@ class SodaApi(object):
     def api_save_subjects_file(self, filepath, datastructure):
         return save_subjects_file(filepath, datastructure)
 
-    def api_convert_subjects_samples_file_to_df(self, type, filepath):
-        return convert_subjects_samples_file_to_df(type, filepath)
+    def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
+        return convert_subjects_samples_file_to_df(type, filepath, fields)
 
     ### Save samples file
     def api_save_samples_file(self, filepath, datastructure):

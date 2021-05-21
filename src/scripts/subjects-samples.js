@@ -970,12 +970,12 @@ function importExistingSamplesFile() {
 }
 
 function loadDataFrametoUI() {
-  // separate regular headers and custom headers
-  const lowercasedHeaders = subjectsTableData[0].map(header => header.toLowerCase());
   var fieldSubjectEntries = []
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase())
   }
+  // separate regular headers and custom headers
+  const lowercasedHeaders = subjectsTableData[0].map(header => header.toLowerCase());
   const customHeaders = [];
   for (var field of lowercasedHeaders) {
     if (!fieldSubjectEntries.includes(field)) {
@@ -1141,26 +1141,47 @@ function populateProtocolDropdown(type) {
   } else if (type === "samples") {
     keyword = "sample"
   }
-  $($("#bootbox-"+keyword+"-protocol-title").parents()[0]).remove();
-  var divElement = '<div class="ui input"><select id="bootbox-'+keyword+'-protocol-title" class="ui selection dropdown '+keyword+'s-form-entry" onchange="autoPopulateProtocolLink(this, "'+keyword+'")" name="Protocol title"></select></div>'
-  $("#"+keyword+"s-protocol-titles").prepend(divElement);
-  // populate dropdown with protocolResearcherList
-  removeOptions(document.getElementById("bootbox-"+keyword+"-protocol-title"));
-  addOption(document.getElementById("bootbox-"+keyword+"-protocol-title"), "Select protocol", "Select")
-  for (var key of Object.keys(protocolResearcherList)) {
-    $('#bootbox-'+keyword+'-protocol-title').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
-  }
+  var autoCompleteJSProtocol = new autoComplete({
+    selector: "#bootbox-"+keyword+"-protocol-title",
+    data: {
+      src: [protocolResearcherList],
+      key: Object.keys(protocolResearcherList)
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.key;
+      document.querySelector("#bootbox-"+keyword+"-protocol-title").value = selection;
+      autoPopulateProtocolLink("", protocolResearcherList[selection], keyword)
+    },
+    trigger: {
+      event: ["input", "focus"]
+    },
+    resultItem: {
+      destination: "#bootbox-"+keyword+"-protocol-title",
+      highlight: {
+        render: true
+      },
+      content: (data, element) => {
+         // Modify Results Item Style
+         element.style = "display: flex; justify-content: space-between;";
+         // Modify Results Item Content
+         element.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+           ${data.key}</span>`;
+       }
+    },
+  });
 }
 
-function autoPopulateProtocolLink(ev, type) {
-  var linkVal = $(ev).val();
-  var parentele = $(ev).parents()[0];
-  if (linkVal && linkVal !== "Select") {
+function autoPopulateProtocolLink(ev, title, type) {
+  if (ev !== "") {
+    var parentele = $(ev).parents()[0];
+    title = $(ev).val()
+  }
+  if (title && title !== "") {
     if (type === "subject" || type === "sample") {
-      $("#bootbox-"+type+"-protocol-location").val(linkVal)
+      $("#bootbox-"+type+"-protocol-location").val(title)
     } else {
       // set protocol link input field to be the value of link title
-      $($($(parentele).siblings()[0]).children()[0]).val(linkVal)
+      $($($(parentele).siblings()[0]).children()[0]).val(title)
     }
   } else {
     if (type === "subject" || type === "sample") {

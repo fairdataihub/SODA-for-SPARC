@@ -992,9 +992,13 @@ ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPat
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
 function loadSubjectsFileToDataframe(filePath) {
+  var fieldSubjectEntries = [];
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    fieldSubjectEntries.push(field.name.toLowerCase())
+  }
   client.invoke(
     "api_convert_subjects_samples_file_to_df",
-    "subjects", filePath,
+    "subjects", filePath, fieldSubjectEntries,
     (error, res) => {
       if (error) {
         log.error(error);
@@ -1014,9 +1018,13 @@ function loadSubjectsFileToDataframe(filePath) {
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
 function loadSamplesFileToDataframe(filePath) {
+  var fieldSampleEntries = [];
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    fieldSampleEntries.push(field.name.toLowerCase())
+  }
   client.invoke(
     "api_convert_subjects_samples_file_to_df",
-    "samples", filePath,
+    "samples", filePath, fieldSampleEntries,
     (error, res) => {
       if (error) {
         log.error(error);
@@ -1025,6 +1033,7 @@ function loadSamplesFileToDataframe(filePath) {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
           samplesTableData = res
+
           loadDataFrametoUISamples()
         } else {
           Swal.fire("Couldn't load existing samples.xlsx file!", "Please make sure there are at least a header row in the samples file.", "error")
@@ -1116,6 +1125,29 @@ $(document).ready(function() {
           list.appendChild(message);
       },
     }
+  });
+
+  var autoCompleteJS = new autoComplete({
+    selector: "#bootbox-subject-age-category",
+    data: {
+      src: ["2 cell stage", "4 cell stage", "8 cell stage", "blastula stage", "cleavage stage", "copepodite stage", "crustacean post-larval stage", "cysticercus stage", "death stage",
+            "embryo stage", "fully formed stage", "gastrula stage", "glaucothoe stage", "infant stage", "juvenile stage", "larval stage", "late adult stage", "late embryonic stage", "nauplius stage", "neonate stage",
+            "neurula stage", "nursing stage", "organogenesis stage", "perinatal stage", "pharyngula stage", "post-embryonic stage", "post-juvenile adult stage", "prime adult stage", "pupal stage", "sexually immature stage",
+            "trochophore stage", "veliger stage", "zoea stage", "zygote stage"]
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#bootbox-subject-age-category").value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"]
+    },
+    resultItem: {
+      destination: "#bootbox-subject-age-category",
+      highlight: {
+        render: true
+      },
+    },
   });
 })
 
