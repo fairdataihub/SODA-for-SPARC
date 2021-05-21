@@ -279,11 +279,11 @@ const run_pre_flight_checks = async (check_update = true) => {
               confirmButtonText: "Download now",
               cancelButtonText: "Skip for now",
               showClass: {
-                popup: 'animate__animated animate__zoomIn animate__faster'
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: 'animate__animated animate__zoomOut animate__faster'
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then(async (result) => {
               if (result.isConfirmed) {
                 // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
@@ -336,11 +336,11 @@ const run_pre_flight_checks = async (check_update = true) => {
           showCancelButton: true,
           cancelButtonText: "I'll do it later",
           showClass: {
-            popup: 'animate__animated animate__zoomIn animate__faster'
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: 'animate__animated animate__zoomOut animate__faster'
-          }
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then(async (result) => {
           if (result.isConfirmed) {
             openDropdownPrompt("bf");
@@ -494,7 +494,7 @@ const check_agent_installed_version = async (agent_version) => {
       type: "success",
       message: "You have the latest Pennsieve agent!",
     });
-    browser_download_url = ""
+    browser_download_url = "";
   }
   return [browser_download_url, latest_agent_version];
 };
@@ -2353,11 +2353,14 @@ generateDSBtn.addEventListener("click", (event) => {
     //   "warning-missing-items-ds-description",
     //   errorMessage.join("\n")
     // );
-    var textErrorMessage = ""
-    for(var i = 0; i < errorMessage.length; i++) {
-      textErrorMessage += errorMessage[i] + "<br>"
+    var textErrorMessage = "";
+    for (var i = 0; i < errorMessage.length; i++) {
+      textErrorMessage += errorMessage[i] + "<br>";
     }
-    var messageMissingFields = "<div>The following mandatory item(s) is/are missing:<br>" + textErrorMessage + "<br>Would you still like to generate the dataset description file?</div>"
+    var messageMissingFields =
+      "<div>The following mandatory item(s) is/are missing:<br>" +
+      textErrorMessage +
+      "<br>Would you still like to generate the dataset description file?</div>";
     Swal.fire({
       icon: "warning",
       html: messageMissingFields,
@@ -2368,11 +2371,11 @@ generateDSBtn.addEventListener("click", (event) => {
       cancelButtonText: "No",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         ipcRenderer.send(
@@ -2380,7 +2383,7 @@ generateDSBtn.addEventListener("click", (event) => {
           "dataset_description.xlsx"
         );
       }
-    })
+    });
   } else {
     ipcRenderer.send(
       "open-folder-dialog-save-ds-description",
@@ -3354,7 +3357,8 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
         // });
         Swal.fire({
           icon: "warning",
-          text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+          text:
+            "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showCancelButton: true,
@@ -3362,11 +3366,11 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           cancelButtonText: "Cancel",
           reverseButtons: true,
           showClass: {
-            popup: 'animate__animated animate__zoomIn animate__faster'
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: 'animate__animated animate__zoomOut animate__faster'
-          }
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then((result) => {
           if (result.isConfirmed) {
             $("#button_upload_local_folder_confirm").click();
@@ -3386,7 +3390,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
               "Browse here"
             );
           }
-        })
+        });
       }
     }
   }
@@ -3651,10 +3655,10 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__fadeInDown animate__faster'
+          popup: "animate__animated animate__fadeInDown animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp animate__faster'
+          popup: "animate__animated animate__fadeOutUp animate__faster",
         },
         timerProgressBar: true,
         didOpen: () => {
@@ -3843,9 +3847,9 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
         Swal.fire({
           icon: "warning",
           text:
-          "Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is " +
-          formBannerHeight.value +
-          " px. Would you like to continue?",
+            "Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is " +
+            formBannerHeight.value +
+            " px. Would you like to continue?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showCancelButton: true,
@@ -3853,16 +3857,16 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
           cancelButtonText: "No",
           reverseButtons: true,
           showClass: {
-            popup: 'animate__animated animate__zoomIn animate__faster'
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: 'animate__animated animate__zoomOut animate__faster'
-          }
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then((result) => {
           if (result.isConfirmed) {
             uploadBannerImage();
           }
-        })
+        });
       } else {
         uploadBannerImage();
       }
@@ -3943,75 +3947,76 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   // ipcRenderer.send("warning-add-permission-owner-PI");
   Swal.fire({
     icon: "warning",
-    text: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
+    text:
+      "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
     heightAuto: false,
-    showCancelButton: 'No',
-    confirmButtonText: 'Yes',
+    showCancelButton: "No",
+    confirmButtonText: "Yes",
     reverseButtons: true,
     showClass: {
-      popup: 'animate__animated animate__zoomIn animate__faster'
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__zoomOut animate__faster'
-    }
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       $("#bf-add-permission-pi-spinner").css("visibility", "visible");
-  datasetPermissionStatusPI.innerHTML = "";
-  //disableform(bfPermissionForm);
+      datasetPermissionStatusPI.innerHTML = "";
+      //disableform(bfPermissionForm);
 
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
-  var selectedRole = "owner";
+      var selectedBfAccount = defaultBfAccount;
+      var selectedBfDataset = defaultBfDataset;
+      var selectedUser =
+        bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
+      var selectedRole = "owner";
 
-  if (true) {
-    client.invoke(
-      "api_bf_add_permission",
-      selectedBfAccount,
-      selectedBfDataset,
-      selectedUser,
-      selectedRole,
-      (error, res) => {
-        if (error) {
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Manage Dataset - Change PI Owner",
-            selectedBfDataset
-          );
-          $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-          datasetPermissionStatusPI.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentPermissionProgress.style.display = "none";
-          // bfAddEditCurrentPermissionProgress.style.display = "none";
-        } else {
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Manage Dataset - Change PI Owner",
-            selectedBfDataset
-          );
-          let nodeStorage = new JSONStorage(app.getPath("userData"));
-          nodeStorage.setItem("previously_selected_PI", selectedUser);
-          $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-          datasetPermissionStatusPI.innerHTML = res;
-          showCurrentPermission();
-          changeDatasetRolePI(selectedBfDataset);
-        }
+      if (true) {
+        client.invoke(
+          "api_bf_add_permission",
+          selectedBfAccount,
+          selectedBfDataset,
+          selectedUser,
+          selectedRole,
+          (error, res) => {
+            if (error) {
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Manage Dataset - Change PI Owner",
+                selectedBfDataset
+              );
+              $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+              log.error(error);
+              console.error(error);
+              var emessage = userError(error);
+              datasetPermissionStatusPI.innerHTML =
+                "<span style='color: red;'> " + emessage + "</span>";
+              // bfCurrentPermissionProgress.style.display = "none";
+              // bfAddEditCurrentPermissionProgress.style.display = "none";
+            } else {
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Manage Dataset - Change PI Owner",
+                selectedBfDataset
+              );
+              let nodeStorage = new JSONStorage(app.getPath("userData"));
+              nodeStorage.setItem("previously_selected_PI", selectedUser);
+              $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+              datasetPermissionStatusPI.innerHTML = res;
+              showCurrentPermission();
+              changeDatasetRolePI(selectedBfDataset);
+            }
+          }
+        );
+      } else {
+        // bfCurrentPermissionProgress.style.display = "none";
+        // bfAddEditCurrentPermissionProgress.style.display = "none";
+        $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
       }
-    );
-  } else {
-    // bfCurrentPermissionProgress.style.display = "none";
-    // bfAddEditCurrentPermissionProgress.style.display = "none";
-    $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-  }
     }
   });
-
 });
 ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
   $("#bf-add-permission-pi-spinner").css("visibility", "visible");
@@ -4180,7 +4185,8 @@ function submitReviewDatasetCheck(res) {
     // ipcRenderer.send("warning-publish-dataset-again");
     Swal.fire({
       icon: "warning",
-      text: "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
+      text:
+        "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -4188,23 +4194,24 @@ function submitReviewDatasetCheck(res) {
       cancelButtonText: "No",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         submitReviewDataset();
       } else {
         $("#submit_prepublishing_review-spinner").hide();
       }
-    })
+    });
   } else {
     // ipcRenderer.send("warning-publish-dataset");
     Swal.fire({
       icon: "warning",
-      text: "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
+      text:
+        "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -4212,18 +4219,18 @@ function submitReviewDatasetCheck(res) {
       cancelButtonText: "No",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         submitReviewDataset();
       } else {
         $("#submit_prepublishing_review-spinner").hide();
       }
-    })
+    });
   }
 }
 
@@ -4303,7 +4310,8 @@ function withdrawDatasetCheck(res) {
     // ipcRenderer.send("warning-withdraw-dataset");
     Swal.fire({
       icon: "warning",
-      text: "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
+      text:
+        "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -4311,18 +4319,18 @@ function withdrawDatasetCheck(res) {
       cancelButtonText: "No",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         withdrawReviewDataset();
       } else {
         $("#submit_prepublishing_review-spinner").hide();
       }
-    })
+    });
   }
 }
 
@@ -5061,17 +5069,17 @@ var highLevelFolders = [
 ];
 var highLevelFolderToolTip = {
   code:
-    "code: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
+    "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
   derivative:
-    "derivative: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
+    "<b>derivative</b>: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
   docs:
-    "docs: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
+    "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
   source:
-    "source: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
+    "<b>source</b>: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
   primary:
-    "primary: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
+    "<b>primary</b>: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
   protocol:
-    "protocol: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
+    "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
 listItems(datasetStructureJSONObj, "#items");
@@ -5199,85 +5207,85 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       confirmButtonText: "OK",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__fadeInDown animate__faster'
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__fadeOutUp animate__faster'
-      }
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
     }).then((result) => {
       if (result.value) {
-      if (result.value !== null && result.value !== "") {
-        newFolderName = result.value.trim();
-        // check for duplicate or files with the same name
-        var duplicate = false;
-        var itemDivElements = document.getElementById("items").children;
-        for (var i = 0; i < itemDivElements.length; i++) {
-          if (newFolderName === itemDivElements[i].innerText) {
-            duplicate = true;
-            break;
+        if (result.value !== null && result.value !== "") {
+          newFolderName = result.value.trim();
+          // check for duplicate or files with the same name
+          var duplicate = false;
+          var itemDivElements = document.getElementById("items").children;
+          for (var i = 0; i < itemDivElements.length; i++) {
+            if (newFolderName === itemDivElements[i].innerText) {
+              duplicate = true;
+              break;
+            }
+          }
+          if (duplicate) {
+            // bootbox.alert({
+            //   message: "Duplicate folder name: " + newFolderName,
+            //   centerVertical: true,
+            // });
+            Swal.fire({
+              icon: "warning",
+              text: "Duplicate folder name: " + newFolderName,
+              confirmButtonText: "OK",
+              heightAuto: false,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            });
+          } else {
+            var appendString = "";
+            appendString =
+              appendString +
+              '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+              newFolderName +
+              "</div></div>";
+            $(appendString).appendTo("#items");
+
+            /// update datasetStructureJSONObj
+            var currentPath = organizeDSglobalPath.value;
+            var jsonPathArray = currentPath.split("/");
+            var filtered = jsonPathArray.slice(1).filter(function (el) {
+              return el != "";
+            });
+
+            var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+            // update Json object with new folder created
+            var renamedNewFolder = newFolderName;
+            myPath["folders"][renamedNewFolder] = {
+              folders: {},
+              files: {},
+              type: "virtual",
+              action: ["new"],
+            };
+
+            listItems(myPath, "#items");
+            getInFolder(
+              ".single-item",
+              "#items",
+              organizeDSglobalPath,
+              datasetStructureJSONObj
+            );
+            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+            hideMenu(
+              "high-level-folder",
+              menuFolder,
+              menuHighLevelFolders,
+              menuFile
+            );
           }
         }
-        if (duplicate) {
-          // bootbox.alert({
-          //   message: "Duplicate folder name: " + newFolderName,
-          //   centerVertical: true,
-          // });
-          Swal.fire({
-            icon: "warning",
-            text: "Duplicate folder name: " + newFolderName,
-            confirmButtonText: "OK",
-            heightAuto: false,
-            showClass: {
-              popup: 'animate__animated animate__zoomIn animate__faster'
-            },
-            hideClass: {
-              popup: 'animate__animated animate__zoomOut animate__faster'
-            }
-          })
-        } else {
-          var appendString = "";
-          appendString =
-            appendString +
-            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-            newFolderName +
-            "</div></div>";
-          $(appendString).appendTo("#items");
-
-          /// update datasetStructureJSONObj
-          var currentPath = organizeDSglobalPath.value;
-          var jsonPathArray = currentPath.split("/");
-          var filtered = jsonPathArray.slice(1).filter(function (el) {
-            return el != "";
-          });
-
-          var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-          // update Json object with new folder created
-          var renamedNewFolder = newFolderName;
-          myPath["folders"][renamedNewFolder] = {
-            folders: {},
-            files: {},
-            type: "virtual",
-            action: ["new"],
-          };
-
-          listItems(myPath, "#items");
-          getInFolder(
-            ".single-item",
-            "#items",
-            organizeDSglobalPath,
-            datasetStructureJSONObj
-          );
-          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-          hideMenu(
-            "high-level-folder",
-            menuFolder,
-            menuHighLevelFolders,
-            menuFile
-          );
-        }
       }
-    }
-    })
+    });
   } else {
     // bootbox.alert({
     //   message:
@@ -5286,16 +5294,17 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
     // });
     Swal.fire({
       icon: "warning",
-      text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
+      text:
+        "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       confirmButtonText: "OK",
       heightAuto: false,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
-    })
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
   }
 });
 
@@ -5924,11 +5933,11 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
     // bootbox.alert({
     //   message:
@@ -5969,11 +5978,18 @@ function addFoldersfunction(folderArray, currentLocation) {
 
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
-    bootbox.alert({
-      message:
+    Swal.fire({
+      icon: "error",
+      text:
         "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
-      centerVertical: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     });
+    // bootbox.alert({
+    //   message:
+    //     "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
+    //   centerVertical: true,
+    // });
   } else {
     // check for duplicates/folders with the same name
     for (var i = 0; i < folderArray.length; i++) {
@@ -7086,7 +7102,8 @@ ipcRenderer.on(
             // });
             Swal.fire({
               icon: "warning",
-              text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+              text:
+                "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
@@ -7094,25 +7111,25 @@ ipcRenderer.on(
               cancelButtonText: "Cancel",
               reverseButtons: true,
               showClass: {
-                popup: 'animate__animated animate__zoomIn animate__faster'
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: 'animate__animated animate__zoomOut animate__faster'
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then((result) => {
               if (result.isConfirmed) {
                 $("#nextBtn").prop("disabled", false);
-                  $("#para-continue-location-dataset-getting-started").text(
-                    "Please continue below."
-                  );
+                $("#para-continue-location-dataset-getting-started").text(
+                  "Please continue below."
+                );
               } else {
                 document.getElementById(
-                    "input-destination-getting-started-locally"
-                  ).placeholder = "Browse here";
-                  sodaJSONObj["starting-point"]["local-path"] = "";
-                  $("#para-continue-location-dataset-getting-started").text("");
+                  "input-destination-getting-started-locally"
+                ).placeholder = "Browse here";
+                sodaJSONObj["starting-point"]["local-path"] = "";
+                $("#para-continue-location-dataset-getting-started").text("");
               }
-            })
+            });
           }
         }
       }
@@ -7351,7 +7368,7 @@ document
             //     }
             //   },
             // });
-            message = "<div style='text-align: left'>" + message + "</div>"
+            message = "<div style='text-align: left'>" + message + "</div>";
             Swal.fire({
               icon: "warning",
               html: message,
@@ -7360,27 +7377,26 @@ document
               reverseButtons: true,
               heightAuto: false,
               showClass: {
-                popup: 'animate__animated animate__zoomIn animate__faster'
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: 'animate__animated animate__zoomOut animate__faster'
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then((result) => {
               if (result.isConfirmed) {
                 console.log("Continue");
-                  initiate_generate();
+                initiate_generate();
               } else {
                 console.log("Stop");
-                  // then show the sidebar again
-                  forceActionSidebar("show");
-                  document.getElementById(
-                    "para-please-wait-new-curate"
-                  ).innerHTML = "Return to make changes";
-                  document.getElementById(
-                    "div-generate-comeback"
-                  ).style.display = "flex";
+                // then show the sidebar again
+                forceActionSidebar("show");
+                document.getElementById(
+                  "para-please-wait-new-curate"
+                ).innerHTML = "Return to make changes";
+                document.getElementById("div-generate-comeback").style.display =
+                  "flex";
               }
-            })
+            });
             // ipcRenderer.send('warning-empty-files-folders-generate', message)
           } else {
             initiate_generate();
@@ -8222,25 +8238,25 @@ function showBFAddAccountSweetalert() {
   var bootb = Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
-    showCancelButton: 'Cancel',
-    confirmButtonText: 'Add',
-    customClass: 'swal-wide',
+    showCancelButton: "Cancel",
+    confirmButtonText: "Add",
+    customClass: "swal-wide",
     reverseButtons: true,
     heightAuto: false,
     didOpen: () => {
       $(".swal-popover").popover();
     },
     showClass: {
-      popup: 'animate__animated animate__fadeInDown animate__faster'
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp animate__faster'
-    }
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       addBFAccountInsideSweetalert(bootb);
     }
-  })
+  });
 }
 
 function addBFAccountInsideSweetalert(myBootboxDialog) {
@@ -8251,9 +8267,9 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
     if (error) {
       Swal.fire({
         icon: "error",
-        html: '<span>' + error + '</span>',
+        html: "<span>" + error + "</span>",
         heightAuto: false,
-        backdrop:"rgba(0,0,0,0.4)",
+        backdrop: "rgba(0,0,0,0.4)",
         // showClass: {
         //   popup: ''
         // },
@@ -8262,7 +8278,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
         // }
       }).then((result) => {
         if (result.isConfirmed) {
-          showBFAddAccountSweetalert()
+          showBFAddAccountSweetalert();
         }
       });
       log.error(error);
@@ -8283,7 +8299,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
             icon: "error",
             text: "Something went wrong!",
             heightAuto: false,
-            backdrop:"rgba(0,0,0, 0.4)",
+            backdrop: "rgba(0,0,0, 0.4)",
             footer:
               '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
           });
@@ -8313,7 +8329,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
         timerProgressBar: true,
         allowEscapeKey: false,
         heightAuto: false,
-        backdrop:"rgba(0,0,0, 0.9)",
+        backdrop: "rgba(0,0,0, 0.9)",
         showConfirmButton: false,
       });
       // bootbox.alert({
@@ -8337,10 +8353,10 @@ function showAddAirtableAccountSweetalert() {
     reverseButtons: true,
     customClass: "swal-wide",
     showClass: {
-      popup: 'animate__animated animate__fadeInDown animate__faster'
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp animate__faster'
+      popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     didOpen: () => {
       $(".swal-popover").popover();
@@ -8349,7 +8365,7 @@ function showAddAirtableAccountSweetalert() {
     if (result.isConfirmed) {
       addAirtableAccountInsideSweetalert();
     }
-  })
+  });
 }
 
 function addAirtableAccountInsideSweetalert() {
@@ -8370,7 +8386,7 @@ function addAirtableAccountInsideSweetalert() {
       icon: "error",
       html: errorMessage,
       heightAuto: false,
-      backdrop:"rgba(0,0,0,0.4)",
+      backdrop: "rgba(0,0,0,0.4)",
       // showClass: {
       //   popup: ''
       // },
@@ -8379,25 +8395,26 @@ function addAirtableAccountInsideSweetalert() {
       // }
     }).then((result) => {
       if (result.isConfirmed) {
-        showAddAirtableAccountSweetalert()
+        showAddAirtableAccountSweetalert();
       }
     });
   } else {
     Swal.fire({
       icon: "warning",
       title: "Connect to Airtable",
-      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      text:
+        "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
       heightAuto: false,
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         const optionsSparcTable = {
@@ -8424,10 +8441,7 @@ function addAirtableAccountInsideSweetalert() {
             $("#submission-connect-Airtable").prop("disabled", "true");
             $("#dd-connect-Airtable").prop("disabled", "true");
             $("#submission-no-airtable-mode").prop("disabled", "true");
-            $("#dataset-description-no-airtable-mode").prop(
-              "disabled",
-              "true"
-            );
+            $("#dataset-description-no-airtable-mode").prop("disabled", "true");
             $("#current-airtable-account").text(name);
             $("#current-airtable-account-dd").text(name);
             $("#bootbox-airtable-key-name").val("");
@@ -8444,8 +8458,7 @@ function addAirtableAccountInsideSweetalert() {
               .removeClass("show")
               .removeClass("prev");
             Swal.fire({
-              title:
-                "Successfully connected. Loading your Airtable account...",
+              title: "Successfully connected. Loading your Airtable account...",
               timer: 2500,
               timerProgressBar: true,
               heightAuto: false,
@@ -8468,9 +8481,10 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
+              text:
+                "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
               heightAuto: false,
-              backdrop:"rgba(0,0,0,0.4)",
+              backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
               //   popup: ''
               // },
@@ -8479,7 +8493,7 @@ function addAirtableAccountInsideSweetalert() {
               // }
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert()
+                showAddAirtableAccountSweetalert();
               }
             });
           } else {
@@ -8499,9 +8513,10 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text: "Failed to connect to Airtable. Please check your API Key and try again!",
+              text:
+                "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
-              backdrop:"rgba(0,0,0,0.4)",
+              backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
               //   popup: ''
               // },
@@ -8510,7 +8525,7 @@ function addAirtableAccountInsideSweetalert() {
               // }
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert()
+                showAddAirtableAccountSweetalert();
               }
             });
           }
@@ -8531,9 +8546,10 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text: "Failed to connect to Airtable. Please check your API Key and try again!",
+              text:
+                "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
-              backdrop:"rgba(0,0,0,0.4)",
+              backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
               //   popup: ''
               // },
@@ -8542,12 +8558,12 @@ function addAirtableAccountInsideSweetalert() {
               // }
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert()
+                showAddAirtableAccountSweetalert();
               }
             });
           });
         });
       }
-    })
+    });
   }
 }

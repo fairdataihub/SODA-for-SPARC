@@ -5,15 +5,26 @@
 //// option to show tool-tips for high-level folders
 function showTooltips(ev) {
   var folderName = ev.parentElement.innerText;
-  bootbox.alert({
-    message: highLevelFolderToolTip[folderName],
-    button: {
-      ok: {
-        className: "btn-primary",
-      },
+  Swal.fire({
+    html: highLevelFolderToolTip[folderName],
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showClass: {
+      popup: 'animate__animated animate__fadeInDown animate__faster'
     },
-    centerVertical: true,
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutUp animate_fastest'
+    }
   });
+  // bootbox.alert({
+  //   message: highLevelFolderToolTip[folderName],
+  //   button: {
+  //     ok: {
+  //       className: "btn-primary",
+  //     },
+  //   },
+  //   centerVertical: true,
+  // });
 }
 
 const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
