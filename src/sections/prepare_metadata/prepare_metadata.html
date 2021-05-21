@@ -4100,43 +4100,6 @@
                     <div class="demo-controls-body">
                       <div class="ui input modified">
                         <input type="text" id="bootbox-subject-age-category" name="Age category" class="subjects-form-entry" placeholder="Search here...">
-                        <!-- <select type="number" id="bootbox-subject-age-category" name="Age category" class="ui selection dropdown subjects-form-entry" placeholder="Select here...">
-                          <option value="Select">Select a stage</option>
-                          <option value="2 cell stage">2 cell stage</option>
-                          <option value="4 cell stage">4 cell stage</option>
-                          <option value="8 cell stage">8 cell stage</option>
-                          <option value="blastula stage">blastula stage</option>
-                          <option value="cleavage stage">cleavage stage</option>
-                          <option value="copepodite stage">copepodite stage</option>
-                          <option value="crustacean post-larval stage">crustacean post-larval stage</option>
-                          <option value="cysticercus stage">cysticercus stage</option>
-                          <option value="death stage">death stage</option>
-                          <option value="embryo stage">embryo stage</option>
-                          <option value="fully formed stage">fully formed stage</option>
-                          <option value="gastrula stage">gastrula stage</option>
-                          <option value="glaucothoe stage">glaucothoe stage</option>
-                          <option value="infant stage">infant stage</option>
-                          <option value="juvenile stage">juvenile stage</option>
-                          <option value="larval stage">larval stage</option>
-                          <option value="late adult stage">late adult stage</option>
-                          <option value="late embryonic stage">late embryonic stage</option>
-                          <option value="nauplius stage">nauplius stage</option>
-                          <option value="neonate stage">neonate stage</option>
-                          <option value="neurula stage">neurula stage</option>
-                          <option value="nursing stage">nursing stage</option>
-                          <option value="organogenesis stage">organogenesis stage</option>
-                          <option value="perinatal stage">perinatal stage</option>
-                          <option value="pharyngula stage">pharyngula stage</option>
-                          <option value="post-embryonic stage">post-embryonic stage</option>
-                          <option value="post-juvenile adult stage">post-juvenile adult stage</option>
-                          <option value="prime adult stage">prime adult stage</option>
-                          <option value="pupal stage">pupal stage</option>
-                          <option value="sexually immature stage">sexually immature stage</option>
-                          <option value="trochophore stage">trochophore stage</option>
-                          <option value="veliger stage">veliger stage</option>
-                          <option value="zoea stage">zoea stage</option>
-                          <option value="zygote stage">zygote stage</option>
-                        </select> -->
                       </div>
                     </div>
                     <div class="tooltipnew demo-controls-end">
@@ -4924,79 +4887,77 @@
           id="form-add-a-sample"
         >
         <h3 style="text-align:center;font-size:18px;padding-bottom:0">ADD A SAMPLE</h3>
-          <div class="ui styled accordion">
-            <div class="title active" style="background: var(--color-bg-light-green-button)">
-              <i class="dropdown icon"></i>
-              Mandatory Information
+        <div class="row mandatory" style="width:90%; max-width:850px; margin: 10px auto">
+          <div class="col" style="padding:0;">
+            <div class="div-dd-info" style="margin: 20px auto;margin-top: 5px">
+              <div class="demo-controls-head mandatory" style="width: 30%;">
+                <div style="width: 100%;">
+                <font color="black" style="font-weight: 600"> subject_id <span style="color:red">*</span>: </font>
+              </div>
+              </div>
+              <div class="demo-controls-body" style="width: fit-content">
+                <div class="ui input" style="margin-left: 10px">
+                  <input type="text" id="bootbox-subject-id-samples" name="subject_id" class="samples-form-entry" placeholder="Type here...">
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Lab-based schema for identifying each subject, should match folder names"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
             </div>
-            <div class="active content">
+          </div>
+          <div class="col" style="padding:0;">
+            <div class="div-dd-info" style="margin: 20px auto;margin-top: 5px">
+              <div class="demo-controls-head mandatory" style="width: fit-content">
+                <div style="width: 100%;">
+                <font color="black" style="font-weight: 600"> sample_id <span style="color:red">*</span>:</font>
+              </div>
+              </div>
+              <div class="demo-controls-body" style="width: fit-content">
+                <div class="ui input" style="margin-left: 10px">
+                  <input type="text" id="bootbox-sample-id" name="sample_id" class="samples-form-entry" placeholder="Type here...">
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Lab-based schema for identifying each sample, must be unique"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+          </div>
+        </div>
+          <div class="ui styled accordion">
+            <div class="title" style="background: var(--color-bg-light-green-button)">
+              <i class="dropdown icon"></i>
+              Experimental Setup <span style="font-style: italic;opacity:0.8">(Mandatory if available)</span>
+            </div>
+            <div class="content">
               <!-- Mandatory -->
               <div
                 style="
-                  display: block;
                   width: 90%;
                   margin: 0 auto;
                   font-size: 13px;
                 "
                 id="div-samples-mandatory-fields"
-                class="datasetsaveoption"
               >
               <div>
                 <form>
-                  <div class="row mandatory">
-                    <div class="col" style="padding:0">
-                      <div class="div-dd-info">
-                        <div class="demo-controls-head mandatory" style="width: fit-content">
-                          <div style="width: 100%;">
-                          <font color="black"> subject_id <span style="color='red'">*</span>: </font>
-                        </div>
-                        </div>
-                        <div class="demo-controls-body" style="width: fit-content">
-                          <div class="ui input modified">
-                            <input type="text" id="bootbox-subject-id-samples" name="subject_id" class="samples-form-entry" placeholder="Type here...">
-                          </div>
-                        </div>
-                        <div class="tooltipnew demo-controls-end">
-                          <i
-                            class="fas fa-info-circle popover-tooltip subjects-form"
-                            data-content="Lab-based schema for identifying each subject, should match folder names"
-                            rel="popover"
-                            data-placement="right"
-                            data-html="true"
-                            data-trigger="hover"
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
-                  <div class="col" style="padding:0">
-                    <div class="div-dd-info">
-                      <div class="demo-controls-head mandatory" style="width: fit-content">
-                        <div style="width: 100%;">
-                        <font color="black"> sample_id <span style="color='red'">*</span>:</font>
-                      </div>
-                      </div>
-                      <div class="demo-controls-body" style="width: fit-content">
-                        <div class="ui input modified">
-                          <input type="text" id="bootbox-sample-id" name="sample_id" class="samples-form-entry" placeholder="Type here...">
-                        </div>
-                      </div>
-                      <div class="tooltipnew demo-controls-end">
-                        <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
-                          data-content="Lab-based schema for identifying each sample, must be unique"
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 <div class="row mandatory">
                   <div class="col" style="padding:0">
-                    <div class="div-dd-info">
+                    <div class="div-dd-info" style="margin-top:10px">
                       <div class="demo-controls-head mandatory"  style="width: fit-content">
                         <div style="width: 100%;">
                         <font color="black"> wasDerivedFromSample <span style="color='red'">*</span>: </font>
@@ -5047,7 +5008,7 @@
 
                 <div class="row mandatory">
                   <div class="col" style="padding:0"  style="width: fit-content">
-                    <div class="div-dd-info subjects">
+                    <div class="div-dd-info subjects" style="margin-bottom: 20px">
                       <div class="demo-controls-head mandatory">
                         <div style="width: 100%;">
                         <font color="black"> experimental group <span style="color='red'">*</span>: </font>
@@ -5078,7 +5039,7 @@
 
             <div class="title" style="background: #A8D08D">
               <i class="dropdown icon"></i>
-              Specimen
+              Specimen Information
             </div>
             <div class="content">
               <div
@@ -5153,7 +5114,7 @@
                       ></i>
                     </div>
                   </div>
-                <div class="div-dd-info subjects">
+                <div class="div-dd-info subjects" style="margin-bottom: 20px">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> Strain: </font>
@@ -5305,7 +5266,7 @@
                           ></i>
                         </div>
                       </div>
-                      <div class="div-dd-info subjects">
+                      <div class="div-dd-info subjects" style="margin-bottom: 20px">
                         <div class="demo-controls-head">
                           <div style="width: 100%;">
                           <font color="black"> Age range: </font>
@@ -5338,7 +5299,7 @@
 
             <div class="title" style="background:#FFD965">
               <i class="dropdown icon"></i>
-              Protocol
+              Protocol Information <span style="font-style: italic;opacity:0.8">(Optional)</span>
             </div>
             <div class="content">
               <div
@@ -5368,7 +5329,7 @@
                     </div>
                   </div>
 
-                  <div class="div-dd-info subjects">
+                  <div class="div-dd-info subjects" style="margin-bottom: 10px">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> protocol.io links: </font>
@@ -5411,16 +5372,15 @@
 
             <div class="title" style="background: #A8D08D">
               <i class="dropdown icon"></i>
-              Optional fields
+              Additional fields  <span style="font-style: italic;opacity:0.8">(Optional)</span>
             </div>
             <div class="content">
               <div
                 id="div-samples-optional-fields"
                 style="width: 90%; margin: 0 auto; font-size: 13px;"
-                class="datasetsaveoption"
               >
                 <div>
-                  <div class="div-dd-info subjects">
+                  <div class="div-dd-info subjects" style="margin-top:20px">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Additional Fields: </font>
@@ -5538,7 +5498,7 @@
                     </div>
                   </div>
 
-                  <div class="div-dd-info subjects">
+                  <div class="div-dd-info subjects"  style="margin-bottom:20px">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
                       <font color="black"> Experimental log file name: </font>
@@ -5566,7 +5526,7 @@
 
             <div class="title" style="background: #A8D08D">
               <i class="dropdown icon"></i>
-              Custom fields
+                Custom fields  <span style="font-style: italic;opacity:0.8">(Optional)</span>
             </div>
             <div class="content">
               <div id="accordian-custom-fields-samples"></div>
