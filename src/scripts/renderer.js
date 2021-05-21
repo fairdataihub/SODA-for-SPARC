@@ -2367,6 +2367,7 @@ generateDSBtn.addEventListener("click", (event) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
+      focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
       reverseButtons: true,
@@ -3362,6 +3363,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showCancelButton: true,
+          focusCancel: true,
           confirmButtonText: "Yes",
           cancelButtonText: "Cancel",
           reverseButtons: true,
@@ -3853,6 +3855,7 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showCancelButton: true,
+          focusCancel: true,
           confirmButtonText: "Yes",
           cancelButtonText: "No",
           reverseButtons: true,
@@ -3950,7 +3953,9 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     text:
       "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
     heightAuto: false,
-    showCancelButton: "No",
+    showCancelButton: true,
+    cancelButtonText: "No",
+    focusCancel: true,
     confirmButtonText: "Yes",
     reverseButtons: true,
     showClass: {
@@ -4190,6 +4195,7 @@ function submitReviewDatasetCheck(res) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
+      focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
       reverseButtons: true,
@@ -4215,6 +4221,7 @@ function submitReviewDatasetCheck(res) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
+      focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
       reverseButtons: true,
@@ -4315,6 +4322,7 @@ function withdrawDatasetCheck(res) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
+      focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
       reverseButtons: true,
@@ -6886,24 +6894,47 @@ function addDetailsForFile(ev) {
   }
   /// if at least 1 checkbox is checked, then confirm with users
   if (checked) {
-    bootbox.confirm({
+    Swal.fire({
+      icon: "warning",
       title: "Adding additional metadata for files",
-      message:
-        "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
-      centerVertical: true,
-      button: {
-        ok: {
-          label: "Yes",
-          className: "btn-primary",
-        },
+      text:
+        "Metadata will be modified for all files in the folder. Would you like to continue?",
+      showCancelButton: true,
+      focusCancel: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
-      callback: function (r) {
-        if (r !== null && r === true) {
-          updateFileDetails(ev);
-          $("#button-confirm-display-details-file").html("Added");
-        }
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate_fastest",
       },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateFileDetails(ev);
+        $("#button-confirm-display-details-file").html("Added");
+      }
     });
+
+    // bootbox.confirm({
+    //   title: "Adding additional metadata for files",
+    //   message:
+    //     "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
+    //   centerVertical: true,
+    //   button: {
+    //     ok: {
+    //       label: "Yes",
+    //       className: "btn-primary",
+    //     },
+    //   },
+    //   callback: function (r) {
+    //     if (r !== null && r === true) {
+    //       updateFileDetails(ev);
+    //       $("#button-confirm-display-details-file").html("Added");
+    //     }
+    //   },
+    // });
   } else {
     updateFileDetails(ev);
     $("#button-confirm-display-details-file").html("Added");
@@ -7107,6 +7138,7 @@ ipcRenderer.on(
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
+              focusCancel: true,
               confirmButtonText: "Yes",
               cancelButtonText: "Cancel",
               reverseButtons: true,
@@ -7372,7 +7404,9 @@ document
             Swal.fire({
               icon: "warning",
               html: message,
-              showCancelButton: "No",
+              showCancelButton: true,
+              cancelButtonText: "No",
+              focusCancel: true,
               showConfirmButton: "Yes",
               reverseButtons: true,
               heightAuto: false,
@@ -8238,7 +8272,9 @@ function showBFAddAccountSweetalert() {
   var bootb = Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
-    showCancelButton: "Cancel",
+    showCancelButton: true,
+    focusCancel: true,
+    cancelButtonText: "Cancel",
     confirmButtonText: "Add",
     customClass: "swal-wide",
     reverseButtons: true,
@@ -8332,10 +8368,6 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
         backdrop: "rgba(0,0,0, 0.9)",
         showConfirmButton: false,
       });
-      // bootbox.alert({
-      //   message: "Successfully added!",
-      //   centerVertical: true,
-      // });
     }
   });
 }
@@ -8347,6 +8379,7 @@ function showAddAirtableAccountSweetalert() {
     title: htmlTitle,
     html: airtableAccountBootboxMessage,
     showCancelButton: true,
+    focusCancel: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Add",
     heightAuto: false,
@@ -8406,6 +8439,7 @@ function addAirtableAccountInsideSweetalert() {
         "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
       heightAuto: false,
       showCancelButton: true,
+      focusCancel: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,

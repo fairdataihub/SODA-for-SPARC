@@ -820,7 +820,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           const password = Swal.getPopup().querySelector("#ps_password").value;
           if (!login || !password) {
             Swal.hideLoading();
-            Swal.showValidationMessage(`Please enter login and password`);
+            Swal.x(`Please enter login and password`);
           } else {
             let key_name = SODA_SPARC_API_KEY;
             let response = await get_api_key(login, password, key_name);
@@ -1655,6 +1655,7 @@ async function moveItems(ev, category) {
       showCancelButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      focusCancel: true,
       confirmButtonText: "Yes",
       showClass: {
         popup: 'animate__animated animate__zoomIn animate__faster'
