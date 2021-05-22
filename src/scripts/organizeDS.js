@@ -877,6 +877,8 @@ function loadFileFolder(myPath) {
           "txt",
           "jpg",
           "JPG",
+          "jpeg",
+          "JPEG",
           "xlsx",
           "xls",
           "csv",
@@ -891,7 +893,7 @@ function loadFileFolder(myPath) {
     }
     appendString =
       appendString +
-      '<div class="single-item"><h1 class="myFile ' +
+      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
       extension +
       '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
       item +
@@ -1035,7 +1037,7 @@ function addFilesfunction(
         ].push("renamed");
       }
       var appendString =
-        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         regularFiles[element]["basename"] +
         "</div></div>";
       $(uiItem).html(appendString);

@@ -5343,7 +5343,10 @@ function populateJSONObjFolder(jsonObject, folderPath) {
   });
 }
 
+let full_name_show = false;
+
 function hideFullName() {
+  full_name_show = false;
   fullNameValue.style.display = "none";
   fullNameValue.style.top = "-250%";
   fullNameValue.style.left = "-250%";
@@ -5352,15 +5355,21 @@ function hideFullName() {
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
 function showFullName(ev, element, text) {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
+  full_name_show = true;
   var isOverflowing =
     element.clientWidth < element.scrollWidth ||
     element.clientHeight < element.scrollHeight;
   if (isOverflowing) {
     var mouseX = ev.pageX - 200;
     var mouseY = ev.pageY;
-    fullNameValue.style.display = "block";
     fullNameValue.innerHTML = text;
-    $(".hoverFullName").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+    $(".hoverFullName").css({ top: mouseY, left: mouseX });
+    setTimeout(() => {
+      if (full_name_show) {
+        // fullNameValue.style.display = "block";
+        $(".hoverFullName").fadeIn("slow");
+      }
+    }, 800);
   }
 }
 
@@ -6203,7 +6212,7 @@ async function drop(ev) {
         );
       }
       var appendString =
-        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         importedFiles[element]["basename"] +
         "</div></div>";
       $(appendString).appendTo(ev.target);
@@ -6230,7 +6239,7 @@ async function drop(ev) {
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(myPath["folders"][element]["path"]).name;
       let placeholderString =
-        '<div id="placeholder_element" class="single-item"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
+        '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
         element +
         "... </div></div>";
       $(placeholderString).appendTo(ev.target);
@@ -6243,7 +6252,7 @@ async function drop(ev) {
         importedFolders[element]["path"]
       );
       var appendString =
-        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         element +
         "</div></div>";
       $("#placeholder_element").remove();
@@ -6277,29 +6286,24 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
 //////////////////////////////////////////////////////////////////////////////
 
-onmousemove = function(e){console.log("mouse location:", e.clientX, e.clientY)}
-
 //// helper functions for hiding/showing context menus
 function showmenu(ev, category, deleted = false) {
   //stop the real right click menu
   ev.preventDefault();
   var mouseX;
   let element = "";
-  let x = 0;
   if (ev.pageX <= 200) {
     mouseX = ev.pageX + 10;
   } else {
     let active_class = $("#sidebarCollapse").attr("class");
     if (active_class.search("active") == -1) {
       mouseX = ev.pageX - 210;
-      x = 210;
     } else {
       mouseX = ev.pageX - 50;
-      x = 50;
     }
   }
+
   var mouseY = ev.pageY - 10;
-  console.log(mouseX, mouseY, x);
 
   if (category === "folder") {
     if (deleted) {
@@ -6737,6 +6741,8 @@ function listItems(jsonObj, uiItem) {
           "txt",
           "jpg",
           "JPG",
+          "jpeg",
+          "JPEG",
           "xlsx",
           "xls",
           "csv",
@@ -6785,7 +6791,7 @@ function listItems(jsonObj, uiItem) {
 
     appendString =
       appendString +
-      '<div class="single-item"><h1 class="myFile ' +
+      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
       extension +
       '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc' +
       cloud_item +

@@ -1547,6 +1547,12 @@ $(document).ready(function () {
       "file JPEG": {
         icon: "./assets/img/jpeg-file.png",
       },
+      "file jpg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
       "file other": {
         icon: "./assets/img/other-file.png",
       },
