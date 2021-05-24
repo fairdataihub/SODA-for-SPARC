@@ -601,8 +601,8 @@ function checkAirtableStatus() {
         endpointUrl: "https://" + airtableHostname,
         apiKey: airKeyInput,
       });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      base("sparc_members")
+      var base = Airtable.base("appW7lVO177HpnrP2");
+      base("soda_sparc_members")
         .select({
           view: "All members (ungrouped)",
         })
