@@ -195,7 +195,6 @@ function addSubjectIDtoDataBase() {
 function addSampleIDtoDataBase() {
   var sampleID = $("#bootbox-sample-id").val();
   var subjectID = $("#bootbox-subject-id-samples").val();
-  var wasDerivedFromSample = $("#bootbox-wasDerivedFromSample").val();
 
   var table = document.getElementById("table-samples");
   var duplicate = false;
@@ -207,7 +206,7 @@ function addSampleIDtoDataBase() {
       break
     }
   }
-  if (sampleID !== "" && subjectID !== "" && wasDerivedFromSample !== "") {
+  if (sampleID !== "" && subjectID !== "") {
     if (!duplicate) {
       addSampleIDtoTable(sampleID)
       addSampleIDtoJSON(sampleID);
@@ -219,7 +218,7 @@ function addSampleIDtoDataBase() {
       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
     }
   } else {
-    error = "The subject_id, sample_id, and wasDerivedFromSample are required to add a sample!"
+    error = "The subject_id and sample_id are required to add a sample!"
     }
   if (error !== "") {
     Swal.fire("Failed to add the sample!", error, "error")
@@ -366,45 +365,52 @@ function loadSubjectInformation(ev, subjectID) {
    }
  }
 
- function loadSampleInformation(ev, sampleID, type) {
-   // 1. load fields for form
-   // 2. For type===view: make all fields contenteditable=false
-   // 3. For type===edit: make all fields contenteditable=true
-   showFormSamples("display", true);
-   $("#btn-edit-sample").css("display", "inline-block");
-   $("#btn-add-sample").css("display", "none");
-   var infoJson = [];
-   if (samplesTableData.length > 1) {
-     for (var i=1; i<samplesTableData.length;i++) {
-       if (samplesTableData[i][1] === sampleID) {
-         infoJson = samplesTableData[i];
-         break
-       }
-     }
-   }
-   // populate form
-   var fieldArr = $(samplesFormDiv).children().find(".samples-form-entry")
-   var emptyEntries = ["nan", "nat"]
-   var c = fieldArr.map(function(i, field) {
-     if (infoJson[i]) {
-       if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
-         if (field.name === "Age") {
-           var fullAge = infoJson[i].split(" ");
-           field.value = fullAge[0]
-           if (["day", "month", "year", "week"].includes(fullAge[1])) {
-             $("#bootbox-sample-age-info").val(fullAge[1])
-           } else {
-             $("#bootbox-sample-age-info").val("Select")
-           }
-         } else {
-           field.value = infoJson[i];
+ function populateFormsSamples(sampleID) {
+   if (sampleID !== "clear" && sampleID !== "") {
+     var infoJson = [];
+     if (samplesTableData.length > 1) {
+       for (var i=1; i<subjectsTableData.length;i++) {
+         if (samplesTableData[i][0] === sampleID) {
+           infoJson = samplesTableData[i];
+           break
          }
        }
      }
-   });
+     // populate form
+     var fieldArr = $(samplesFormDiv).children().find(".samples-form-entry")
+     var emptyEntries = ["nan", "nat"]
+     var c = fieldArr.map(function(i, field) {
+       if (infoJson[i]) {
+         if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
+           if (field.name === "Age") {
+             var fullAge = infoJson[i].split(" ");
+             field.value = fullAge[0]
+             if (["day", "month", "year", "week"].includes(fullAge[1])) {
+               $("#bootbox-sample-age-info").val(fullAge[1])
+             } else {
+               $("#bootbox-sample-age-info").val("Select")
+             }
+           } else {
+             field.value = infoJson[i];
+           }
+         } else {
+           field.value = "";
+         }
+       }
+     });
+   }
+ }
+
+ function loadSampleInformation(ev, sampleID) {
+   // 1. load fields for form
+   showFormSamples("display", true);
+   $("#btn-edit-sample").css("display", "inline-block");
+   $("#btn-add-sample").css("display", "none");
+   clearAllSubjectFormFields(samplesFormDiv)
+   populateFormsSamples(sampleID);
    $("#btn-edit-sample").unbind( "click" );
    $("#btn-edit-sample").click(function() {
-     editSample(ev, subjectID)
+     editSample(ev, sampleID)
    })
    $("#new-custom-header-name-samples").keyup(function () {
      var customName = $(this).val();
@@ -414,7 +420,7 @@ function loadSubjectInformation(ev, subjectID) {
        $("#button-confirm-custom-header-name-samples").hide();
      }
    })
-  }
+}
 
 function editSubject(ev, subjectID) {
  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
@@ -470,60 +476,55 @@ function editSubject(ev, subjectID) {
 
 // TODO: fix this
 function editSample(ev, bootbox, sampleID) {
- for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
-   if (field.value !== "" && field.value !== undefined) {
-     var new_value = "";
-     // if it's age, then add age info input (day/week/month/year)
-     if (field.name === "Age") {
-       if ($("#bootbox-sample-age-info").val() !== "Select") {
-         new_value = field.value + " " + $("#bootbox-sample-age-info").val()
-       } else {
-         new_value = field.value
-       }
-     } else {
-       new_value = field.value
-     }
-     samplesFileData.push(new_value)
-   } else {
-     samplesFileData.push("")
-   }
- }
- var currentRow = $(ev).parents()[2];
- if ($("#bootbox-sample-id").val() === sampleID) {
-   for (var i=1; i<samplesTableData.length;i++) {
-     if (samplesTableData[i][0] === sampleID) {
-       samplesTableData[i] = samplesFileData
-       break
-     }
-   }
-   hideSamplesForm()
- } else {
-    var newID = $("#bootbox-sample-id").val();
-    var table = document.getElementById("table-samples");
-    var duplicate = false;
-    var error = "";
-    var rowcount = table.rows.length;
-    for (var i=1;i<rowcount;i++) {
-      if (newID === table.rows[i].cells[1].innerText) {
-        duplicate = true
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    if (field.value !== "" && field.value !== undefined) {
+      // if it's age, then add age info input (day/week/month/year)
+      if (field.name === "Age") {
+        if ($("#bootbox-sample-age-info").val() !== "Select") {
+          field.value = field.value + " " + $("#bootbox-sample-age-info").val()
+        }
+      }
+      samplesFileData.push(field.value)
+    } else {
+      samplesFileData.push("")
+    }
+  }
+  var currentRow = $(ev).parents()[2];
+  var newID = $("#bootbox-sample-id").val();
+  if (newID === sampleID) {
+    for (var i=1; i<samplesTableData.length;i++) {
+      if (samplesTableData[i][0] === sampleID) {
+        samplesTableData[i] = samplesFileData
         break
       }
     }
-    if (duplicate) {
-      error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!";
-      Swal.fire("Duplicate sample_id!", error, "error")
-    } else {
-      for (var i=1; i<samplesTableData.length;i++) {
-        if (samplesTableData[i][0] === sampleID) {
-          samplesTableData[i] = samplesFileData
-          break
-        }
-      }
-      $(currentRow)[0].cells[1].innerText = newID;
-      hideSamplesForm()
-    }
-  }
-  samplesFileData = []
+    hideSubjectsForm()
+  } else {
+     var table = document.getElementById("table-subjects");
+     var duplicate = false;
+     var error = "";
+     var rowcount = table.rows.length;
+     for (var i=1;i<rowcount;i++) {
+       if (newID === table.rows[i].cells[1].innerText) {
+         duplicate = true
+         break
+       }
+     }
+     if (duplicate) {
+       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
+       Swal.fire("Duplicate sample_id!", error, "error")
+     } else {
+       for (var i=1; i<samplesTableData.length;i++) {
+         if (samplesTableData[i][0] === sampleID) {
+           samplesTableData[i] = samplesFileData
+           break
+         }
+       }
+       $(currentRow)[0].cells[1].innerText = newID;
+       hideSamplesForm()
+     }
+   }
+   samplesFileData = []
 }
 
 function delete_current_subject_id(ev) {
