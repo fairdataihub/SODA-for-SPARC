@@ -5319,7 +5319,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
     //   centerVertical: true,
     // });
     Swal.fire({
-      icon: "warning",
+      icon: "error",
       text:
         "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       confirmButtonText: "OK",
@@ -6134,6 +6134,7 @@ async function drop(ev) {
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
         Swal.fire({
+          icon: "error",
           html:
             "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           heightAuto: false,
@@ -6182,6 +6183,7 @@ async function drop(ev) {
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
         Swal.fire({
+          icon: "error",
           text:
             "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           heightAuto: false,
@@ -6208,13 +6210,19 @@ async function drop(ev) {
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
     Swal.fire({
-      icon: "error",
+      icon: "warning",
       html:
         "The following files are already imported into the current location of your dataset: <p><ul>" +
         listElements +
         "</ul></p>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
   }
   // // now append to UI files and folders
@@ -8404,6 +8412,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
       });
       // myBootboxDialog.modal("hide");
       Swal.fire({
+        icon: "success",
         title: "Successfully added! <br/>Loading your account details...",
         timer: 3000,
         timerProgressBar: true,
@@ -8538,6 +8547,7 @@ function addAirtableAccountInsideSweetalert() {
               .removeClass("show")
               .removeClass("prev");
             Swal.fire({
+              icon: "success",
               title: "Successfully connected. Loading your Airtable account...",
               timer: 2500,
               timerProgressBar: true,

@@ -912,6 +912,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                   }
                 );
                 Swal.fire({
+                  icon: "success",
                   title:
                     "Successfully added! <br/>Loading your account details...",
                   timer: 3000,
@@ -1624,6 +1625,7 @@ async function moveItems(ev, category) {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     focusConfirm: false,
+    focusCancel: true,
     confirmButtonText: "Confirm",
     cancelButtonText: "Cancel",
     customClass: { content: "swal-left-align" },
@@ -1631,7 +1633,7 @@ async function moveItems(ev, category) {
       popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
+      popup: "animate__animated animate__fadeOutUp animate_fastest",
     },
     preConfirm: () => {
       Swal.resetValidationMessage();

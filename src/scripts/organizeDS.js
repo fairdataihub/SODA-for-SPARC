@@ -2,6 +2,7 @@
 function showTooltips(ev) {
   var folderName = ev.parentElement.innerText;
   Swal.fire({
+    icon: "info",
     html: highLevelFolderToolTip[folderName],
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -961,17 +962,11 @@ function addFilesfunction(
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {
       Swal.fire({
-        icon: "warning",
+        icon: "error",
         html:
           "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
       });
       // bootbox.alert({
       //   message:

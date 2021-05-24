@@ -536,6 +536,7 @@ const nextPrev = (n) => {
     sodaJSONObj["dataset-structure"] === { folders: {} }
   ) {
     Swal.fire({
+      icon: "warning",
       text:
         "The current dataset folder is empty. Are you sure you want to continue?",
       showCancelButton: true,
@@ -1123,6 +1124,7 @@ async function transitionSubQuestions(
       //   centerVertical: true,
       // });
       Swal.fire({
+        icon: "info",
         text: `The following local folder '${starting_point}' will be modified as instructed.`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -1511,6 +1513,7 @@ async function transitionSubQuestionsButton(
 
     if (!result[0]) {
       Swal.fire({
+        icon: "error",
         html:
           "<p style='color:red'>" +
           result[1] +
@@ -2864,6 +2867,7 @@ const saveOrganizeProgressPrompt = () => {
     //   },
     // });
     Swal.fire({
+      icon: "info",
       title: "Saving progress as...",
       text: "Enter a name for your progress below:",
       heightAuto: false,
