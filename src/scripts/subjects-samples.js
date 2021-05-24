@@ -1135,12 +1135,17 @@ function grabResearcherProtocolList(username, token, type) {
         var result = JSON.parse(body)
         protocolResearcherList = {};
         $("#bootbox-subject-protocol-location").val("");
-        $("#bootbox-sample-protocol-location").val("")
+        $("#bootbox-subject-protocol-title").prop("placeholder", "Search here");
+        $("#bootbox-sample-protocol-title").val("");
+        $("#bootbox-sample-protocol-location").prop("placeholder", "Search here");
+        $("#bootbox-subject-protocol-title").val("");
+        $("#bootbox-sample-protocol-title").val("");
         for (var item of result["items"]) {
           protocolResearcherList[item.title] = "https://www.protocols.io/view/" + item.uri;
         }
         if (Object.keys(protocolResearcherList).length > 0) {
-          populateProtocolDropdown("subjects")
+          populateProtocolDropdown("subjects");
+          populateProtocolDropdown("samples")
           if (type==="first-time") {
             Swal.fire({
               title: "Successfully connected! <br/>Loading your protocol information...",
