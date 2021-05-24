@@ -1,5 +1,7 @@
 // const { default: Swal } = require("sweetalert2");
 
+const { default: Swal } = require("sweetalert2");
+
 // const { default: Swal } = require("sweetalert2");
 
 //// option to show tool-tips for high-level folders
@@ -152,9 +154,10 @@ function delFolder(
     }
 
     // Handle file/folder restore
-    bootbox.confirm({
+    Swal.fire({
+      icon: "warning",
       title: "Restore " + promptVar,
-      message:
+      text:
         "Are you sure you want to restore this " +
         promptVar +
         "? If any " +
@@ -162,12 +165,15 @@ function delFolder(
         " of the same name has been added, this restored " +
         promptVar +
         " will be renamed.",
-      onEscape: true,
-      centerVertical: true,
-      callback: function (result) {
-        if (result !== null && result === true) {
-          /// get current location of folders or files
-          let itemToRestore = itemToDelete;
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "OK",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let itemToRestore = itemToDelete;
           var filtered = getGlobalPath(organizeCurrentLocation);
 
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
@@ -256,8 +262,7 @@ function delFolder(
             organizeCurrentLocation,
             inputGlobal
           );
-        }
-      },
+      }
     });
   } else {
     if (type === "items") {
