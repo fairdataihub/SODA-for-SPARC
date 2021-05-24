@@ -5262,17 +5262,11 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             //   centerVertical: true,
             // });
             Swal.fire({
-              icon: "warning",
+              icon: "error",
               text: "Duplicate folder name: " + newFolderName,
               confirmButtonText: "OK",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
             });
           } else {
             var appendString = "";
@@ -6214,6 +6208,7 @@ async function drop(ev) {
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
     Swal.fire({
+      icon: "error",
       html:
         "The following files are already imported into the current location of your dataset: <p><ul>" +
         listElements +

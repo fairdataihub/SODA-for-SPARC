@@ -336,7 +336,7 @@ function delFolder(
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
         focusCancel: true,
-        confirmButtonText: "OK",
+        confirmButtonText: `Delete ${type}`,
         cancelButtonText: "Cancel",
         reverseButtons: true,
         showClass: {
@@ -449,7 +449,7 @@ function delFolder(
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
         focusCancel: true,
-        confirmButtonText: "OK",
+        confirmButtonText: `Delete ${promptVar}`,
         cancelButtonText: "Cancel",
         reverseButtons: true,
         showClass: {
@@ -759,6 +759,7 @@ function renameFolder(
       title: "Rename " + promptVar,
       text: "Please enter a new name:",
       input: "text",
+      inputValue: nameWithoutExtension,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
