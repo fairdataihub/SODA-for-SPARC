@@ -1,6 +1,6 @@
 const { rgba } = require("jimp");
 const { relative } = require("path");
-const { default: Swal } = require("sweetalert2");
+// const { default: Swal } = require("sweetalert2");
 // const { default: Swal } = require("sweetalert2");
 
 // JSON object of all the tabs

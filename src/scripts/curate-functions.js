@@ -1,4 +1,4 @@
-const { default: Swal } = require("sweetalert2");
+// const { default: Swal } = require("sweetalert2");
 
 var metadataFile = "";
 
@@ -473,6 +473,7 @@ const verify_missing_files = (mode) => {
   message_text += "</ul>";
 
   Swal.fire({
+    icon: "warning",
     text: message_text,
     showCancelButton: true,
     cancelButtonText: "Cancel",
