@@ -13,8 +13,6 @@ function showForm(type, editBoolean) {
     for (var i=1; i<subjectsTableData.length;i++) {
       subjectsDropdownOptions[subjectsTableData[i][0]] = subjectsTableData[i][0]
     }
-
-
     if (!editBoolean) {
       // prompt users if they want to import entries from previous sub_ids
       Swal.fire({
@@ -26,7 +24,7 @@ function showForm(type, editBoolean) {
         confirmButtonText: 'Yes!'
       }).then((boolean) => {
         if (boolean.isConfirmed) {
-          promptImportPrevInfo(subjectsDropdownOptions);
+          promptImportPrevInfo(subjectsDropdownOptions, "subject");
         } else {
           clearAllSubjectFormFields(subjectsFormDiv);
         }
@@ -43,12 +41,35 @@ function showForm(type, editBoolean) {
   $("#footer-div-subjects").css("display", "none");
   $("#btn-add-custom-field").show();
   $("#sidebarCollapse").prop("disabled", "true");
-
 }
 
 function showFormSamples(type, editBoolean) {
-  if (type !== "edit") {
-    clearAllSubjectFormFields(samplesFormDiv);
+  if (samplesTableData.length > 1) {
+    var samplesDropdownOptions = {};
+    for (var i=1; i<samplesTableData.length;i++) {
+      samplesDropdownOptions[samplesTableData[i][0]] = samplesTableData[i][0]
+    }
+    if (!editBoolean) {
+      // prompt users if they want to import entries from previous sub_ids
+      Swal.fire({
+        title: 'Would you like to re-use information from previous sample(s)?',
+        showCancelButton: true,
+        cancelButtonText: `No, start fresh!`,
+        cancelButtonColor: "#f44336",
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Yes!'
+      }).then((boolean) => {
+        if (boolean.isConfirmed) {
+          promptImportPrevInfo(samplesDropdownOptions, "sample");
+        } else {
+          clearAllSubjectFormFields(samplesFormDiv);
+        }
+      })
+    }
+  } else {
+    if (type !== "edit") {
+      clearAllSubjectFormFields(samplesFormDiv);
+    }
   }
   samplesFormDiv.style.display = "flex"
   $("#create_samples-tab").removeClass("show");
@@ -59,16 +80,16 @@ function showFormSamples(type, editBoolean) {
 }
 
 // helper function to show Import entries from prev sub_ids popup
-async function promptImportPrevInfo(object) {
+async function promptImportPrevInfo(object, type) {
   // show dropdown with existing sub_ids
-  const { value: previousSubject } = await Swal.fire({
+  const { value: previousEntry } = await Swal.fire({
     title: 'Choose a previous subject:',
     input: 'select',
     inputOptions: object,
     inputValidator: (value) => {
       return new Promise((resolve) => {
         if (value === '') {
-          resolve('Please select a subject!')
+          resolve(`Please select a ${type}!`)
         } else {
           resolve()
         }
@@ -79,10 +100,18 @@ async function promptImportPrevInfo(object) {
     cancelButtonText: 'Cancel',
     confirmButtonText: 'Confirm'
   });
-  if (previousSubject) {
-    populateForms(previousSubject);
+  if (previousEntry) {
+    if (type === "subject") {
+      populateForms(previousEntry);
+    } else {
+      populateFormsSamples(previousEntry);
+    }
   } else {
-    clearAllSubjectFormFields(subjectsFormDiv);
+    if (type === "subject") {
+      clearAllSubjectFormFields(subjectsFormDiv);
+    } else {
+      clearAllSubjectFormFields(samplesFormDiv);
+    }
   }
 }
 
@@ -116,34 +145,18 @@ function hideSamplesForm() {
   $("#btn-add-sample").css("display", "inline-block");
 }
 
-function addSubjectIDtoTable(newSubject) {
-  table = document.getElementById("table-subjects");
+function addNewIDToTable(newID, type) {
+  if (type === "subjects") {
+    var keyword = "subject";
+    var table = document.getElementById("table-subjects");
+  } else if (type === "samples") {
+    var keyword = "sample";
+    var table = document.getElementById("table-samples");
+  }
   var duplicate = false;
   var rowcount = table.rows.length;
   for (var i=1;i<rowcount;i++) {
-    if (newSubject === table.rows[i].cells[1].innerText) {
-      duplicate = true
-      break
-    }
-  }
-  if (!duplicate) {
-    /// append row to table from the bottom
-    var rowIndex = rowcount;
-    var indexNumber = rowIndex;
-    var currentRow = table.rows[table.rows.length - 1];
-    // check for unique row id in case users delete old rows and append new rows (same IDs!)
-    var newRowIndex = checkForUniqueRowID("row-current-subject", rowIndex);
-    var row = (table.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-subject" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSubject+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_subject_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_subject_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-  }
-}
-
-function addSampleIDtoTable(newSample) {
-  table = document.getElementById("table-samples");
-  var duplicate = false;
-  var rowcount = table.rows.length;
-  for (var i=1;i<rowcount;i++) {
-    if (newSample === table.rows[i].cells[1].innerText) {
+    if (newID === table.rows[i].cells[1].innerText) {
       duplicate = true
       break
     }
@@ -153,9 +166,9 @@ function addSampleIDtoTable(newSample) {
     var indexNumber = rowIndex;
     var currentRow = table.rows[table.rows.length - 1];
     // check for unique row id in case users delete old rows and append new rows (same IDs!)
-    var newRowIndex = checkForUniqueRowID("row-current-sample", rowIndex);
+    var newRowIndex = checkForUniqueRowID("row-current-"+keyword, rowIndex);
     var row = (table.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-sample" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSample+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_sample_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_sample_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "<tr id='row-current-"+ keyword + newRowIndex +"' class='row-" +type+"'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newID+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_"+keyword+"_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_"+keyword+"_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   }
 }
 
@@ -175,7 +188,7 @@ function addSubjectIDtoDataBase() {
   }
   if (subjectID !== "") {
     if (!duplicate) {
-      addSubjectIDtoTable(subjectID)
+      addNewIDToTable(subjectID, "subjects")
       addSubjectIDToJSON(subjectID);
       $("#table-subjects").css("display", "block");
       $("#button-generate-subjects").css("display", "block");
@@ -208,7 +221,7 @@ function addSampleIDtoDataBase() {
   }
   if (sampleID !== "" && subjectID !== "") {
     if (!duplicate) {
-      addSampleIDtoTable(sampleID)
+      addNewIDToTable(sampleID, "samples")
       addSampleIDtoJSON(sampleID);
       $("#table-samples").css("display", "block");
       $("#button-generate-samples").css("display", "block");
@@ -326,7 +339,7 @@ function loadSubjectInformation(ev, subjectID) {
       $("#button-confirm-custom-header-name").hide();
     }
   })
- }
+}
 
 
  function populateForms(subjectID) {
@@ -376,8 +389,8 @@ function loadSubjectInformation(ev, subjectID) {
    if (sampleID !== "clear" && sampleID !== "") {
      var infoJson = [];
      if (samplesTableData.length > 1) {
-       for (var i=1; i<subjectsTableData.length;i++) {
-         if (samplesTableData[i][0] === sampleID) {
+       for (var i=1; i<samplesTableData.length;i++) {
+         if (samplesTableData[i][1] === sampleID) {
            infoJson = samplesTableData[i];
            break
          }
@@ -488,7 +501,6 @@ function editSubject(ev, subjectID) {
   subjectsFileData = []
 }
 
-// TODO: fix this
 function editSample(ev, bootbox, sampleID) {
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value !== "" && field.value !== undefined) {
@@ -512,18 +524,18 @@ function editSample(ev, bootbox, sampleID) {
         break
       }
     }
-    hideSubjectsForm()
+    hideSamplesForm()
   } else {
-     var table = document.getElementById("table-subjects");
-     var duplicate = false;
-     var error = "";
-     var rowcount = table.rows.length;
-     for (var i=1;i<rowcount;i++) {
-       if (newID === table.rows[i].cells[1].innerText) {
-         duplicate = true
-         break
-       }
-     }
+    var table = document.getElementById("table-samples");
+    var duplicate = false;
+    var error = "";
+    var rowcount = table.rows.length;
+    for (var i=1;i<rowcount;i++) {
+      if (newID === table.rows[i].cells[1].innerText) {
+        duplicate = true
+        break
+      }
+    }
      if (duplicate) {
        error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
        Swal.fire("Duplicate sample_id!", error, "error")
@@ -693,7 +705,7 @@ function loadSubjectsDataToTable() {
   // delete table rows except headers
   $("#table-subjects tr:gt(0)").remove();
   for (var i=1; i<subjectsTableData.length; i++) {
-    addSubjectIDtoTable(subjectsTableData[i][0])
+    addNewIDToTable(subjectsTableData[i][0], "subjects")
   }
   Swal.fire({
   title: 'Loaded successfully!',
@@ -710,7 +722,7 @@ function loadSamplesDataToTable() {
   $("#table-samples tr:gt(0)").remove();
 
   for (var i=1; i<samplesTableData.length; i++) {
-    addSampleIDtoTable(samplesTableData[i][1])
+    addNewIDToTable(samplesTableData[i][1], "samples")
   }
   Swal.fire({
   title: 'Loaded successfully!',
