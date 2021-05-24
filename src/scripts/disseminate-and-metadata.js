@@ -117,7 +117,7 @@ const unshareDataset = (option) => {
     focusCancel: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over!",
+    confirmButtonText: "Continue",
   }).then((result) => {
     if (result.isConfirmed) {
       $(".spinner.post-curation").show();
