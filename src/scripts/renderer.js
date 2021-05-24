@@ -70,14 +70,6 @@ client.invoke("echo", "server ready", (error, res) => {
 // App launch actions
 //////////////////////////////////
 
-// $(window).load(function () {
-//   run_pre_flight_checks();
-// });
-
-// $(document).ready(function () {
-//   run_pre_flight_checks()d
-// });
-
 // Log file settings //
 log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
@@ -299,7 +291,7 @@ const run_pre_flight_checks = async (check_update = true) => {
               }
               if (result.isDismissed) {
                 if (check_update) {
-                  checkNewAppVersion();
+                  // checkNewAppVersion();
                 }
                 await wait(500);
                 notyf.open({
@@ -311,7 +303,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             });
           } else {
             if (check_update) {
-              checkNewAppVersion();
+              // checkNewAppVersion();
             }
             await wait(500);
             notyf.open({
@@ -323,7 +315,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         }
       } else {
         if (check_update) {
-          checkNewAppVersion();
+          // checkNewAppVersion();
         }
         // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
         Swal.fire({
@@ -3082,6 +3074,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
 
 // Submit dataset to bf //
 bfSubmitDatasetBtn.addEventListener("click", async () => {
+  // Check that all 
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;

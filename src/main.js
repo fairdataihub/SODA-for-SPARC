@@ -14,7 +14,7 @@ const { fstat } = require("fs");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = "latest";
+autoUpdater.channel = "alpha";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
@@ -114,7 +114,7 @@ function initialize() {
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
-        autoUpdater.checkForUpdatesAndNotify();
+        // autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
@@ -200,7 +200,7 @@ function initialize() {
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
         }
-        autoUpdater.checkForUpdatesAndNotify();
+        // autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
