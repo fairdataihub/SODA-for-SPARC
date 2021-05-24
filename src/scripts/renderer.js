@@ -1070,14 +1070,28 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     var emessage =
       "File '" + templateItem + "' already exists in " + destinationFolder;
     //ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    Swal.fire("Metadata file already exists", `${emessage}`, "error");
+    // Swal.fire("Metadata file already exists", `${emessage}`, "error");
+    Swal.fire({
+      icon: "error",
+      title: "Metadata file already exists",
+      text: `${emessage}`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
   } else {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
     );
     var emessage =
       "Successfully saved '" + templateItem + "' to " + destinationFolder;
-    Swal.fire("Download successful", `${emessage}`, "success");
+    // Swal.fire("Download successful", `${emessage}`, "success");
+    Swal.fire({
+      icon: "success",
+      title: "Download successful",
+      text: `${emessage}`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -2412,7 +2426,14 @@ ipcRenderer.on(
         var emessage =
           "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        // Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        Swal.fire({
+          icon: "error",
+          title: "Metadata file already exists",
+          text: `${emessage}`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         $("#generate-dd-spinner").hide();
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
@@ -3957,6 +3978,7 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     cancelButtonText: "No",
     focusCancel: true,
     confirmButtonText: "Yes",
+    backdrop: "rgba(0,0,0, 0.4)",
     reverseButtons: true,
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
@@ -5211,7 +5233,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       text: "Enter a name below:",
       heightAuto: false,
       input: "text",
-      backdrop:"rgba(0,0,0, 0.4)",
+      backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
@@ -5244,6 +5266,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               text: "Duplicate folder name: " + newFolderName,
               confirmButtonText: "OK",
               heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
               },
@@ -5306,7 +5329,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       text:
         "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       confirmButtonText: "OK",
-      backdrop:"rgba(0,0,0, 0.4)",
+      backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -5871,7 +5894,7 @@ function generateDataset(button) {
       },
       hideClass: {
         popup: "animate__animated animate__zoomOut animate_fastest",
-      }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         newDSName = result.value.trim();
@@ -6120,6 +6143,7 @@ async function drop(ev) {
           html:
             "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
         });
         break;
       } else {
@@ -6167,6 +6191,7 @@ async function drop(ev) {
           text:
             "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
         });
       } else {
         var j = 1;
@@ -6194,6 +6219,7 @@ async function drop(ev) {
         listElements +
         "</ul></p>",
       heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     });
   }
   // // now append to UI files and folders
@@ -7429,7 +7455,7 @@ document
               cancelButtonText: "No",
               focusCancel: true,
               showConfirmButton: "Yes",
-              backdrop:"rgba(0,0,0, 0.4)",
+              backdrop: "rgba(0,0,0, 0.4)",
               reverseButtons: true,
               heightAuto: false,
               showClass: {
@@ -8300,6 +8326,7 @@ function showBFAddAccountSweetalert() {
     confirmButtonText: "Add",
     customClass: "swal-wide",
     reverseButtons: true,
+    backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     didOpen: () => {
       $(".swal-popover").popover();
@@ -8404,7 +8431,7 @@ function showAddAirtableAccountSweetalert() {
     focusCancel: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Add",
-    backdrop:"rgba(0,0,0, 0.4)",
+    backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     reverseButtons: true,
     customClass: "swal-wide",

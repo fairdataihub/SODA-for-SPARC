@@ -44,20 +44,22 @@ const disseminateDataset = (option) => {
       focusCancel: true,
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         var account = $("#current-bf-account").text();
-        var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+        var dataset = $(".bf-dataset-span")
+          .html()
+          .replace(/^\s+|\s+$/g, "");
         disseminateCurationTeam(account, dataset);
       } else {
         $("#share-curation-team-spinner").hide();
       }
-    })
+    });
   } else if (option === "share-with-sparc-consortium") {
     $("#share-with-sparc-consortium-spinner").show();
     $("#para-share-with-sparc-consortium-status").text("");
@@ -74,20 +76,22 @@ const disseminateDataset = (option) => {
       cancelButtonText: "No",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         var account = $("#current-bf-account").text();
-        var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+        var dataset = $(".bf-dataset-span")
+          .html()
+          .replace(/^\s+|\s+$/g, "");
         disseminateConsortium(account, dataset);
       } else {
         $("#share-with-sparc-consortium-spinner").hide();
       }
-    })
+    });
   } else if (option === "submit-pre-publishing") {
     $("#submit_prepublishing_review-spinner").show();
     $("#para-submit_prepublishing_review-status").text("");
@@ -173,7 +177,14 @@ $(document).ready(function () {
         var emessage =
           "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        // Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        Swal.fire({
+          icon: "error",
+          title: "Metadata file already exists",
+          text: `${emessage}`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         $("#generate-submission-spinner").hide();
       } else {
         var awardRes = $("#submission-SPARC-award-span").text();
@@ -1427,11 +1438,11 @@ function resetSubmission() {
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
     showClass: {
-      popup: 'animate__animated animate__zoomIn animate__faster'
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__zoomOut animate__faster'
-    }
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
@@ -1498,11 +1509,11 @@ function resetDD() {
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
     showClass: {
-      popup: 'animate__animated animate__zoomIn animate__faster'
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__zoomOut animate__faster'
-    }
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one

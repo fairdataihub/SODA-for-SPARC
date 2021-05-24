@@ -1122,6 +1122,7 @@ async function transitionSubQuestions(
       Swal.fire({
         text: `The following local folder '${starting_point}' will be modified as instructed.`,
         heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
       })
       $("#para-continue-replace-local-generate").show();
       $("#para-continue-replace-local-generate").text("Please continue below.");
