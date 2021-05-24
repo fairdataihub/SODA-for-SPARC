@@ -5211,6 +5211,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       text: "Enter a name below:",
       heightAuto: false,
       input: "text",
+      backdrop:"rgba(0,0,0, 0.4)",
       showCancelButton: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
@@ -5305,6 +5306,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       text:
         "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       confirmButtonText: "OK",
+      backdrop:"rgba(0,0,0, 0.4)",
       heightAuto: false,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -5854,25 +5856,27 @@ function generateDataset(button) {
   if (button.id === "btn-generate-locally") {
     $("#btn-generate-BF").removeClass("active");
     $(button).toggleClass("active");
-    bootbox.prompt({
+    Swal.fire({
       title: "Generate dataset locally",
-      message: "Enter a name for the dataset:",
-      buttons: {
-        cancel: {
-          label: '<i class="fa fa-times"></i> Cancel',
-        },
-        confirm: {
-          label: '<i class="fa fa-check"></i> Confirm and Choose location',
-          className: "btn-success",
-        },
+      text: "Enter a name for the dataset:",
+      input: "text",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Confirm and Choose Location",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
-      centerVertical: true,
-      callback: function (r) {
-        if (r !== null && r.trim() !== "") {
-          newDSName = r.trim();
-          ipcRenderer.send("open-file-dialog-newdataset");
-        }
-      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate_fastest",
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        newDSName = result.value.trim();
+        ipcRenderer.send("open-file-dialog-newdataset");
+      }
     });
   } else {
     $("#btn-generate-locally").removeClass("active");
@@ -6112,10 +6116,10 @@ async function drop(ev) {
     if (statsObj.isFile()) {
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
-        bootbox.alert({
-          message:
+        Swal.fire({
+          html:
             "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-          centerVertical: true,
+          heightAuto: false,
         });
         break;
       } else {
@@ -6159,10 +6163,10 @@ async function drop(ev) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
-        bootbox.alert({
-          message:
+        Swal.fire({
+          text:
             "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
-          centerVertical: true,
+          heightAuto: false,
         });
       } else {
         var j = 1;
@@ -6184,12 +6188,12 @@ async function drop(ev) {
   }
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
-    bootbox.alert({
-      message:
+    Swal.fire({
+      html:
         "The following files are already imported into the current location of your dataset: <p><ul>" +
         listElements +
         "</ul></p>",
-      centerVertical: true,
+      heightAuto: false,
     });
   }
   // // now append to UI files and folders
@@ -7425,6 +7429,7 @@ document
               cancelButtonText: "No",
               focusCancel: true,
               showConfirmButton: "Yes",
+              backdrop:"rgba(0,0,0, 0.4)",
               reverseButtons: true,
               heightAuto: false,
               showClass: {
@@ -8382,7 +8387,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
         timerProgressBar: true,
         allowEscapeKey: false,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.9)",
+        backdrop: "rgba(0,0,0, 0.4)",
         showConfirmButton: false,
       });
     }
@@ -8399,6 +8404,7 @@ function showAddAirtableAccountSweetalert() {
     focusCancel: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Add",
+    backdrop:"rgba(0,0,0, 0.4)",
     heightAuto: false,
     reverseButtons: true,
     customClass: "swal-wide",
@@ -8460,6 +8466,7 @@ function addAirtableAccountInsideSweetalert() {
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
+      backdrop: "rgba(0,0,0,0.4)",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },

@@ -1,6 +1,5 @@
 const { rgba } = require("jimp");
 const { relative } = require("path");
-// const { default: Swal } = require("sweetalert2");
 
 // JSON object of all the tabs
 var allParentStepsJSON = {
@@ -536,24 +535,23 @@ const nextPrev = (n) => {
     x[currentTab].id === "organize-dataset-tab" &&
     sodaJSONObj["dataset-structure"] === { folders: {} }
   ) {
-    bootbox.confirm({
-      message:
-        "The current dataset folder is empty. Are you sure you want to continue?",
-      buttons: {
-        confirm: {
-          label: "Continue",
-          className: "btn-success",
-        },
-        cancel: {
-          label: "No",
-          className: "btn-danger",
-        },
+    Swal.fire({
+      text: "The current dataset folder is empty. Are you sure you want to continue?",
+      showCancelButton: true,
+      cancelButtonText: "No",
+      confirmButtonText: "Continue",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
       },
-      centerVertical: true,
-      callback: (result) => {
-        if (result !== null && result === true) {
-          // Hide the current tab:
-          $(x[currentTab]).removeClass("tab-active");
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
+    }).then((result) =>{
+      if (result.isConfirmed) {
+        $(x[currentTab]).removeClass("tab-active");
           // Increase or decrease the current tab by 1:
           currentTab = currentTab + n;
           // For step 1,2,3, check for High level folders input to disable Continue button
@@ -562,8 +560,7 @@ const nextPrev = (n) => {
           }
           // Display the correct tab:
           showParentTab(currentTab, n);
-        }
-      },
+      }
     });
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
@@ -617,6 +614,7 @@ const nextPrev = (n) => {
         reverseButtons: true,
         heightAuto: false,
         customClass: "swal-wide",
+        backdrop:"rgba(0,0,0, 0.4)",
         showClass: {
           popup: 'animate__animated animate__zoomIn animate__faster'
         },
@@ -876,6 +874,7 @@ const raiseWarningGettingStarted = (ev) => {
         confirmButtonText: "Yes",
         reverseButtons: true,
         heightAuto: false,
+        backdrop:"rgba(0,0,0, 0.4)",
         showClass: {
           popup: 'animate__animated animate__zoomIn animate__faster'
         },
@@ -1116,10 +1115,14 @@ async function transitionSubQuestions(
       currentDiv === "Question-generate-dataset"
     ) {
       let starting_point = sodaJSONObj["starting-point"]["local-path"];
-      bootbox.alert({
-        message: `The following local folder '${starting_point}' will be modified as instructed.`,
-        centerVertical: true,
-      });
+      // bootbox.alert({
+      //   message: `The following local folder '${starting_point}' will be modified as instructed.`,
+      //   centerVertical: true,
+      // });
+      Swal.fire({
+        text: `The following local folder '${starting_point}' will be modified as instructed.`,
+        heightAuto: false,
+      })
       $("#para-continue-replace-local-generate").show();
       $("#para-continue-replace-local-generate").text("Please continue below.");
     } else {
@@ -1538,22 +1541,24 @@ async function transitionSubQuestionsButton(
         }
         message_text += "</ul>";
 
-        bootbox.confirm({
-          message: message_text,
-          buttons: {
-            confirm: {
-              label: "Continue",
-              className: "btn-success",
-            },
-            cancel: {
-              label: "No",
-              className: "btn-danger",
-            },
+        Swal.fire({
+          icon: "warning",
+          text: message_text,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Continue",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          reverseButtons: true,
+          showClass: {
+            popup: 'animate__animated animate__zoomIn animate__faster'
           },
-          centerVertical: true,
-          callback: (response) => {
-            if (response !== null && response === true) {
-              sodaJSONObj = result[1][0];
+          hideClass: {
+            popup: 'animate__animated animate__zoomOut animate__faster'
+          }
+        }).then((response) => {
+          if (response.isConfirmed){
+            sodaJSONObj = result[1][0];
               if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
                 datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
               } else {
@@ -1566,11 +1571,10 @@ async function transitionSubQuestionsButton(
                 "Please continue below."
               );
               showHideDropdownButtons("dataset", "show");
-            } else {
-              exitCurate();
-            }
-          },
-        });
+          } else {
+            exitCurate();
+          }
+        })
       } else {
         sodaJSONObj = result[1][0];
         if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
@@ -2625,6 +2629,7 @@ function raiseWarningExit(message) {
       confirmButtonText: "Yes",
       reverseButtons: true,
       heightAuto: false,
+      backdrop:"rgba(0,0,0, 0.4)",
       showClass: {
         popup: 'animate__animated animate__zoomIn animate__faster'
       },
@@ -2819,6 +2824,7 @@ const saveSODAJSONProgress = (progressFileName) => {
     text: "Successfully saved progress!",
     showConfirmButton: "OK",
     heightAuto: false,
+    backdrop:"rgba(0,0,0, 0.4)",
     showClass: {
       popup: 'animate__animated animate__fadeInDown animate__faster'
     },
@@ -2862,6 +2868,7 @@ const saveOrganizeProgressPrompt = () => {
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
+      backdrop:"rgba(0,0,0, 0.4)",
       showClass: {
         popup: 'animate__animated animate__fadeInDown animate__faster'
       },
@@ -3068,6 +3075,7 @@ $("#edit_banner_image_button").click(async () => {
             icon: "error",
             text: "An error occured when importing the image. Please try again later.",
             showConfirmButton: "OK",
+            backdrop:"rgba(0,0,0, 0.4)",
             heightAuto: false
           })
 
@@ -3089,6 +3097,7 @@ $("#edit_banner_image_button").click(async () => {
             icon: "error",
             text: "An error occured when importing the image. Please try again later.",
             showConfirmButton: "OK",
+            backdrop:"rgba(0,0,0, 0.4)",
             heightAuto: false
           })
 
@@ -3110,6 +3119,7 @@ $("#edit_banner_image_button").click(async () => {
             icon: "error",
             text: "An error occured when importing the image. Please try again later.",
             showConfirmButton: "OK",
+            backdrop:"rgba(0,0,0, 0.4)",
             heightAuto: false
           })
 

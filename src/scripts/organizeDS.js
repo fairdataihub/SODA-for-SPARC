@@ -1,6 +1,4 @@
-// const { default: Swal } = require("sweetalert2");
 
-// const { default: Swal } = require("sweetalert2");
 
 //// option to show tool-tips for high-level folders
 function showTooltips(ev) {
@@ -163,9 +161,10 @@ function delFolder(
     }
 
     // Handle file/folder restore
-    bootbox.confirm({
+    Swal.fire({
+      icon: "warning",
       title: "Restore " + promptVar,
-      message:
+      text:
         "Are you sure you want to restore this " +
         promptVar +
         "? If any " +
@@ -173,12 +172,21 @@ function delFolder(
         " of the same name has been added, this restored " +
         promptVar +
         " will be renamed.",
-      onEscape: true,
-      centerVertical: true,
-      callback: function (result) {
-        if (result !== null && result === true) {
-          /// get current location of folders or files
-          let itemToRestore = itemToDelete;
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "OK",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let itemToRestore = itemToDelete;
           var filtered = getGlobalPath(organizeCurrentLocation);
 
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
@@ -267,8 +275,7 @@ function delFolder(
             organizeCurrentLocation,
             inputGlobal
           );
-        }
-      },
+      }
     });
   } else {
     if (type === "items") {
@@ -568,6 +575,7 @@ function checkValidRenameInput(
       Swal.fire({
         icon: "error",
         text: "The file name: "+ newName + " already exists, please rename to a different name!",
+        backdrop:"rgba(0,0,0, 0.4)",
         heightAuto: false
       })
       newName = "";
@@ -594,6 +602,7 @@ function checkValidRenameInput(
       Swal.fire({
         icon: "error",
         text: "The folder name: "+ newName + " already exists, please rename to a different name!",
+        backdrop:"rgba(0,0,0, 0.4)",
         heightAuto: false
       })
       newName = "";

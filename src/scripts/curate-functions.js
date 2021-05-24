@@ -1,3 +1,5 @@
+
+
 var metadataFile = "";
 
 // Function to clear the confirm options in the curate feature
@@ -470,22 +472,24 @@ const verify_missing_files = (mode) => {
 
   message_text += "</ul>";
 
-  bootbox.confirm({
-    message: message_text,
-    centerVertical: true,
-    buttons: {
-      confirm: {
-        label: "Yes",
-        className: "btn-success",
-      },
-      cancel: {
-        label: "No",
-        className: "btn-danger",
-      },
+  Swal.fire({
+    icon: "warning",
+    text: message_text,
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "OK",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    reverseButtons: true,
+    showClass: {
+      popup: 'animate__animated animate__zoomIn animate__faster'
     },
-    callback: (result) => {
-      if (result == true) {
-        remove_missing_files();
+    hideClass: {
+      popup: 'animate__animated animate__zoomOut animate__faster'
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      remove_missing_files();
         if (mode === "pre-existing") {
           document.getElementById("div-progress-file-loader").style.display =
             "none";
@@ -499,14 +503,13 @@ const verify_missing_files = (mode) => {
           $("body").removeClass("waiting");
           document.getElementById("para-progress-file-status").innerHTML = "";
         }
-      } else {
-        document.getElementById("div-progress-file-loader").style.display =
-          "none";
-        $("body").removeClass("waiting");
-        document.getElementById("para-progress-file-status").innerHTML = "";
-      }
-    },
-  });
+    } else {
+      document.getElementById("div-progress-file-loader").style.display =
+        "none";
+      $("body").removeClass("waiting");
+      document.getElementById("para-progress-file-status").innerHTML = "";
+    }
+  })
 };
 
 const remove_missing_files = () => {
