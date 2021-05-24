@@ -348,11 +348,18 @@ function loadSubjectInformation(ev, subjectID) {
          if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
            if (field.name === "Age") {
              var fullAge = infoJson[i].split(" ");
-             field.value = fullAge[0]
-             if (["day", "month", "year", "week"].includes(fullAge[1])) {
-               $("#bootbox-subject-age-info").val(fullAge[1])
-             } else {
-               $("#bootbox-subject-age-info").val("Select")
+             var unitArr = ["days", "weeks", "months", "years"];
+             var breakBoolean = false;
+             field.value = fullAge[0];
+             for (var unit of unitArr) {
+               if (unit.includes(fullAge[1].toLowerCase())) {
+                 $("#bootbox-subject-age-info").val(unit);
+                 breakBoolean = true
+                 break
+               }
+               if (!breakBoolean) {
+                 $("#bootbox-subject-age-info").val("N/A")
+               }
              }
            } else {
              field.value = infoJson[i];
@@ -384,11 +391,18 @@ function loadSubjectInformation(ev, subjectID) {
          if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
            if (field.name === "Age") {
              var fullAge = infoJson[i].split(" ");
-             field.value = fullAge[0]
-             if (["day", "month", "year", "week"].includes(fullAge[1])) {
-               $("#bootbox-sample-age-info").val(fullAge[1])
-             } else {
-               $("#bootbox-sample-age-info").val("Select")
+             var unitArr = ["days", "weeks", "months", "years"];
+             var breakBoolean = false;
+             field.value = fullAge[0];
+             for (var unit of unitArr) {
+               if (unit.includes(fullAge[1].toLowerCase())) {
+                 $("#bootbox-sample-age-info").val(unit);
+                 breakBoolean = true
+                 break
+               }
+               if (!breakBoolean) {
+                 $("#bootbox-sample-age-info").val("N/A")
+               }
              }
            } else {
              field.value = infoJson[i];
@@ -678,7 +692,6 @@ function importPrimaryFolderSamples() {
 function loadSubjectsDataToTable() {
   // delete table rows except headers
   $("#table-subjects tr:gt(0)").remove();
-
   for (var i=1; i<subjectsTableData.length; i++) {
     addSubjectIDtoTable(subjectsTableData[i][0])
   }
