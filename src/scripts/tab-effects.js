@@ -536,7 +536,8 @@ const nextPrev = (n) => {
     sodaJSONObj["dataset-structure"] === { folders: {} }
   ) {
     Swal.fire({
-      text: "The current dataset folder is empty. Are you sure you want to continue?",
+      text:
+        "The current dataset folder is empty. Are you sure you want to continue?",
       showCancelButton: true,
       cancelButtonText: "No",
       confirmButtonText: "Continue",
@@ -544,22 +545,22 @@ const nextPrev = (n) => {
       backdrop: "rgba(0,0,0, 0.4)",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
-    }).then((result) =>{
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
       if (result.isConfirmed) {
         $(x[currentTab]).removeClass("tab-active");
-          // Increase or decrease the current tab by 1:
-          currentTab = currentTab + n;
-          // For step 1,2,3, check for High level folders input to disable Continue button
-          if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
-            highLevelFoldersDisableOptions();
-          }
-          // Display the correct tab:
-          showParentTab(currentTab, n);
+        // Increase or decrease the current tab by 1:
+        currentTab = currentTab + n;
+        // For step 1,2,3, check for High level folders input to disable Continue button
+        if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+          highLevelFoldersDisableOptions();
+        }
+        // Display the correct tab:
+        showParentTab(currentTab, n);
       }
     });
     // check if required metadata files are included
@@ -603,7 +604,8 @@ const nextPrev = (n) => {
       //     }
       //   },
       // });
-      var notIncludedMessage = "<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?</div>"
+      var notIncludedMessage =
+        "<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?</div>";
       Swal.fire({
         icon: "warning",
         html: notIncludedMessage,
@@ -614,23 +616,23 @@ const nextPrev = (n) => {
         reverseButtons: true,
         heightAuto: false,
         customClass: "swal-wide",
-        backdrop:"rgba(0,0,0, 0.4)",
+        backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__zoomIn animate__faster'
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__zoomOut animate__faster'
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Hide the current tab:
+          $(x[currentTab]).removeClass("tab-active");
+          // Increase or decrease the current tab by 1:
+          currentTab = currentTab + n;
+          // Display the correct tab:
+          showParentTab(currentTab, n);
         }
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // Hide the current tab:
-            $(x[currentTab]).removeClass("tab-active");
-            // Increase or decrease the current tab by 1:
-            currentTab = currentTab + n;
-            // Display the correct tab:
-            showParentTab(currentTab, n);
-        }
-      })
+      });
     } else {
       // Hide the current tab:
       $(x[currentTab]).removeClass("tab-active");
@@ -868,19 +870,20 @@ const raiseWarningGettingStarted = (ev) => {
       // });
       Swal.fire({
         icon: "warning",
-        text: "This will reset your progress so far. Are you sure you want to continue?",
+        text:
+          "This will reset your progress so far. Are you sure you want to continue?",
         showCancelButton: "No",
         focusCancel: true,
         confirmButtonText: "Yes",
         reverseButtons: true,
         heightAuto: false,
-        backdrop:"rgba(0,0,0, 0.4)",
+        backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__zoomIn animate__faster'
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__zoomOut animate__faster'
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((result) => {
         if (result.isConfirmed) {
           globalGettingStarted1stQuestionBool = true;
@@ -889,7 +892,7 @@ const raiseWarningGettingStarted = (ev) => {
           globalGettingStarted1stQuestionBool = false;
           resolve(globalGettingStarted1stQuestionBool);
         }
-      })
+      });
     } else {
       globalGettingStarted1stQuestionBool = true;
       resolve(globalGettingStarted1stQuestionBool);
@@ -1041,9 +1044,9 @@ async function transitionSubQuestions(
         $(ev).siblings().hide();
         // auto-scroll to bottom of div
         if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-          document.getElementById(parentDiv).scrollTop = document.getElementById(
+          document.getElementById(
             parentDiv
-          ).scrollHeight;
+          ).scrollTop = document.getElementById(parentDiv).scrollHeight;
         }
       }, delay);
     }
@@ -1123,7 +1126,7 @@ async function transitionSubQuestions(
         text: `The following local folder '${starting_point}' will be modified as instructed.`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-      })
+      });
       $("#para-continue-replace-local-generate").show();
       $("#para-continue-replace-local-generate").text("Please continue below.");
     } else {
@@ -1512,8 +1515,8 @@ async function transitionSubQuestionsButton(
           "<p style='color:red'>" +
           result[1] +
           ".<br>Please choose another dataset!</p>",
-          heightAuto: false,
-          backdrop:"rgba(0,0,0, 0.4)"
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
       });
       $("#nextBtn").prop("disabled", true);
       $("#para-continue-bf-dataset-getting-started").text("");
@@ -1552,30 +1555,30 @@ async function transitionSubQuestionsButton(
           backdrop: "rgba(0,0,0, 0.4)",
           reverseButtons: true,
           showClass: {
-            popup: 'animate__animated animate__zoomIn animate__faster'
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: 'animate__animated animate__zoomOut animate__faster'
-          }
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then((response) => {
-          if (response.isConfirmed){
+          if (response.isConfirmed) {
             sodaJSONObj = result[1][0];
-              if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-              } else {
-                datasetStructureJSONObj = { folders: {}, files: {} };
-              }
-              populate_existing_folders(datasetStructureJSONObj);
-              populate_existing_metadata(sodaJSONObj);
-              $("#nextBtn").prop("disabled", false);
-              $("#para-continue-bf-dataset-getting-started").text(
-                "Please continue below."
-              );
-              showHideDropdownButtons("dataset", "show");
+            if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+            } else {
+              datasetStructureJSONObj = { folders: {}, files: {} };
+            }
+            populate_existing_folders(datasetStructureJSONObj);
+            populate_existing_metadata(sodaJSONObj);
+            $("#nextBtn").prop("disabled", false);
+            $("#para-continue-bf-dataset-getting-started").text(
+              "Please continue below."
+            );
+            showHideDropdownButtons("dataset", "show");
           } else {
             exitCurate();
           }
-        })
+        });
       } else {
         sodaJSONObj = result[1][0];
         if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
@@ -1765,9 +1768,9 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
         $(ev).siblings().hide();
         // auto-scroll to bottom of div
         if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-          document.getElementById(parentDiv).scrollTop = document.getElementById(
+          document.getElementById(
             parentDiv
-          ).scrollHeight;
+          ).scrollTop = document.getElementById(parentDiv).scrollHeight;
         }
       }, delay);
     }
@@ -2630,13 +2633,13 @@ function raiseWarningExit(message) {
       confirmButtonText: "Yes",
       reverseButtons: true,
       heightAuto: false,
-      backdrop:"rgba(0,0,0, 0.4)",
+      backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         generateExitButtonBool = true;
@@ -2645,7 +2648,7 @@ function raiseWarningExit(message) {
         generateExitButtonBool = false;
         resolve(generateExitButtonBool);
       }
-    })
+    });
   });
 }
 
@@ -2825,13 +2828,13 @@ const saveSODAJSONProgress = (progressFileName) => {
     text: "Successfully saved progress!",
     showConfirmButton: "OK",
     heightAuto: false,
-    backdrop:"rgba(0,0,0, 0.4)",
+    backdrop: "rgba(0,0,0, 0.4)",
     showClass: {
-      popup: 'animate__animated animate__fadeInDown animate__faster'
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp animate__faster'
-    }
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
   });
 };
 
@@ -2869,13 +2872,13 @@ const saveOrganizeProgressPrompt = () => {
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
       reverseButtons: true,
-      backdrop:"rgba(0,0,0, 0.4)",
+      backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: 'animate__animated animate__fadeInDown animate__faster'
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__fadeOutUp animate__faster'
-      }
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
     }).then((result) => {
       if (result.value) {
         if (result.value !== null && result.value !== "") {
@@ -2952,14 +2955,14 @@ $(document).ready(() => {
         Swal.fire({
           icon: "info",
           heightAuto: false,
-          backdrop:"rgba(0,0,0, 0.4)",
+          backdrop: "rgba(0,0,0, 0.4)",
           html: `${warning_obj["warning-message"]}`,
           showClass: {
-            popup: 'animate__animated animate__zoomIn animate__faster'
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: 'animate__animated animate__zoomOut animate__faster'
-          }
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         });
       }
     });
@@ -3074,11 +3077,12 @@ $("#edit_banner_image_button").click(async () => {
           // );
           Swal.fire({
             icon: "error",
-            text: "An error occured when importing the image. Please try again later.",
+            text:
+              "An error occured when importing the image. Please try again later.",
             showConfirmButton: "OK",
-            backdrop:"rgba(0,0,0, 0.4)",
-            heightAuto: false
-          })
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+          });
 
           ipcRenderer.send(
             "track-event",
@@ -3095,12 +3099,13 @@ $("#edit_banner_image_button").click(async () => {
         //   `An error occured when importing the image. Please try again later.`
         // );
         Swal.fire({
-            icon: "error",
-            text: "An error occured when importing the image. Please try again later.",
-            showConfirmButton: "OK",
-            backdrop:"rgba(0,0,0, 0.4)",
-            heightAuto: false
-          })
+          icon: "error",
+          text:
+            "An error occured when importing the image. Please try again later.",
+          showConfirmButton: "OK",
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+        });
 
         ipcRenderer.send(
           "track-event",
@@ -3117,12 +3122,13 @@ $("#edit_banner_image_button").click(async () => {
       //   `An error occured when importing the image. Please try again later.`
       // );
       Swal.fire({
-            icon: "error",
-            text: "An error occured when importing the image. Please try again later.",
-            showConfirmButton: "OK",
-            backdrop:"rgba(0,0,0, 0.4)",
-            heightAuto: false
-          })
+        icon: "error",
+        text:
+          "An error occured when importing the image. Please try again later.",
+        showConfirmButton: "OK",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+      });
 
       ipcRenderer.send(
         "track-event",
@@ -3160,33 +3166,41 @@ $(".popover-tooltip").each(function () {
   });
 });
 
-initRipple = function(buttonEle){
-  var inside = document.createElement('div');
-  inside.classList.add('btn_animated-inside');
+initRipple = function (buttonEle) {
+  var inside = document.createElement("div");
+  inside.classList.add("btn_animated-inside");
   inside.innerHTML = buttonEle.innerHTML;
-  buttonEle.innerHTML = '';
+  buttonEle.innerHTML = "";
   buttonEle.appendChild(inside);
-  inside.addEventListener('mousedown', function(){
-     ripple(event, this);
+  inside.addEventListener("mousedown", function () {
+    ripple(event, this);
   });
-}
-ripple = function(event, buttonEle){
-  var rippleEle = document.createElement('span');
-  rippleEle.setAttribute('class', 'ripple');
-  rippleEle.style.top = event.offsetY + 'px';
-  rippleEle.style.left = event.offsetX + 'px';
+};
+ripple = function (event, buttonEle) {
+  var rippleEle = document.createElement("span");
+  rippleEle.setAttribute("class", "ripple");
+  rippleEle.style.top = event.offsetY + "px";
+  rippleEle.style.left = event.offsetX + "px";
   buttonEle.appendChild(rippleEle);
-  setTimeout(function(){
-     rippleEle.classList.add('effect');
-  }, 0, rippleEle);
+  setTimeout(
+    function () {
+      rippleEle.classList.add("effect");
+    },
+    0,
+    rippleEle
+  );
 
-  setTimeout(function(){
-     rippleEle.remove();
-  }, 1000, rippleEle);
-}
+  setTimeout(
+    function () {
+      rippleEle.remove();
+    },
+    1000,
+    rippleEle
+  );
+};
 
-var buttons = document.getElementsByClassName('btn_animated');
-for(var i = 0; i < buttons.length; i++){
+var buttons = document.getElementsByClassName("btn_animated");
+for (var i = 0; i < buttons.length; i++) {
   button = buttons[i];
   initRipple(button);
 }

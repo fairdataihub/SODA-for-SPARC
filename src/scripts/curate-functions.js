@@ -1,5 +1,3 @@
-
-
 var metadataFile = "";
 
 // Function to clear the confirm options in the curate feature
@@ -482,34 +480,34 @@ const verify_missing_files = (mode) => {
     backdrop: "rgba(0,0,0, 0.4)",
     reverseButtons: true,
     showClass: {
-      popup: 'animate__animated animate__zoomIn animate__faster'
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__zoomOut animate__faster'
-    }
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       remove_missing_files();
-        if (mode === "pre-existing") {
-          document.getElementById("div-progress-file-loader").style.display =
-            "none";
-          $("body").removeClass("waiting");
-          document.getElementById("nextBtn").disabled = false;
-          document.getElementById("para-progress-file-status").innerHTML =
-            "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
-        } else if (mode === "new") {
-          document.getElementById("div-progress-file-loader").style.display =
-            "none";
-          $("body").removeClass("waiting");
-          document.getElementById("para-progress-file-status").innerHTML = "";
-        }
+      if (mode === "pre-existing") {
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
+        $("body").removeClass("waiting");
+        document.getElementById("nextBtn").disabled = false;
+        document.getElementById("para-progress-file-status").innerHTML =
+          "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+      } else if (mode === "new") {
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
+        $("body").removeClass("waiting");
+        document.getElementById("para-progress-file-status").innerHTML = "";
+      }
     } else {
       document.getElementById("div-progress-file-loader").style.display =
         "none";
       $("body").removeClass("waiting");
       document.getElementById("para-progress-file-status").innerHTML = "";
     }
-  })
+  });
 };
 
 const remove_missing_files = () => {
@@ -806,10 +804,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         reverseButtons: true,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__fadeInDown animate__faster'
+          popup: "animate__animated animate__fadeInDown animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp animate__faster'
+          popup: "animate__animated animate__fadeOutUp animate__faster",
         },
         footer:
           '<a onclick="showBFAddAccountSweetalert()">I want to connect with an API key instead</a>',
@@ -992,10 +990,11 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         cancelButtonText: "Cancel",
         focusCancel: true,
         showClass: {
-          popup: 'animate__animated animate__fadeInDown animate__faster'
+          popup: "animate__animated animate__fadeInDown animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp animate__faster animate_fastest'
+          popup:
+            "animate__animated animate__fadeOutUp animate__faster animate_fastest",
         },
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
@@ -1629,10 +1628,10 @@ async function moveItems(ev, category) {
     cancelButtonText: "Cancel",
     customClass: { content: "swal-left-align" },
     showClass: {
-      popup: 'animate__animated animate__fadeInDown animate__faster'
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp animate__faster'
+      popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     preConfirm: () => {
       Swal.resetValidationMessage();
@@ -1667,11 +1666,11 @@ async function moveItems(ev, category) {
       focusCancel: true,
       confirmButtonText: "Yes",
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         // loading effect

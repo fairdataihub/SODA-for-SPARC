@@ -1,5 +1,3 @@
-
-
 //// option to show tool-tips for high-level folders
 function showTooltips(ev) {
   var folderName = ev.parentElement.innerText;
@@ -8,11 +6,11 @@ function showTooltips(ev) {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showClass: {
-      popup: 'animate__animated animate__fadeInDown animate__faster'
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp animate_fastest'
-    }
+      popup: "animate__animated animate__fadeOutUp animate_fastest",
+    },
   });
   // bootbox.alert({
   //   message: highLevelFolderToolTip[folderName],
@@ -118,11 +116,11 @@ function delFolder(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__zoomIn animate__faster'
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__zoomOut animate__faster'
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       });
       // bootbox.alert({
       //   title: "Restore " + type,
@@ -143,11 +141,11 @@ function delFolder(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__zoomIn animate__faster'
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__zoomOut animate__faster'
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       });
       // bootbox.alert({
       //   title: "Restore " + type,
@@ -179,102 +177,95 @@ function delFolder(
       backdrop: "rgba(0,0,0, 0.4)",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         let itemToRestore = itemToDelete;
-          var filtered = getGlobalPath(organizeCurrentLocation);
+        var filtered = getGlobalPath(organizeCurrentLocation);
 
-          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+        var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
-          if (filtered.length == 1) {
-            let itemToRestore_new_key = itemToRestore.substring(
-              0,
-              itemToRestore.lastIndexOf("-")
-            );
-            if (itemToRestore_new_key in myPath[type]) {
-              Swal.fire({
-                title: `Unable to restore ${type}`,
-                icon: "warning",
-                text:
-                  "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                showClass: {
-                  popup: 'animate__animated animate__zoomIn animate__faster'
-                },
-                hideClass: {
-                  popup: 'animate__animated animate__zoomOut animate__faster'
-                }
-              });
-              // bootbox.alert({
-              //   title: "Unable to restore " + promptVar,
-              //   message:
-              //     "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
-              //   onEscape: true,
-              //   centerVertical: true,
-              // });
-              return;
-            }
-          }
-
-          if (type === "folders") {
-            recursive_mark_sub_files_deleted(
-              myPath[type][itemToDelete],
-              "restore"
-            );
-          }
-
-          // update Json object with the restored object
-          let index = myPath[type][itemToRestore]["action"].indexOf("deleted");
-          myPath[type][itemToRestore]["action"].splice(index, 1);
+        if (filtered.length == 1) {
           let itemToRestore_new_key = itemToRestore.substring(
             0,
             itemToRestore.lastIndexOf("-")
           );
-
-          // Add a (somenumber) if the file name already exists
-          // Done using a loop to avoid a case where the same file number exists
           if (itemToRestore_new_key in myPath[type]) {
-            myPath[type][itemToRestore]["action"].push("renamed");
-            itemToRestore_new_key_file_name = path.parse(itemToRestore_new_key)
-              .name;
-            itemToRestore_new_key_file_ext = path.parse(itemToRestore_new_key)
-              .ext;
-            file_number = 1;
-            while (true) {
-              itemToRestore_potential_new_key =
-                itemToRestore_new_key_file_name +
-                " (" +
-                file_number +
-                ")" +
-                itemToRestore_new_key_file_ext;
-              if (
-                !myPath[type].hasOwnProperty(itemToRestore_potential_new_key)
-              ) {
-                itemToRestore_new_key = itemToRestore_potential_new_key;
-                break;
-              }
-              file_number++;
-            }
+            Swal.fire({
+              title: `Unable to restore ${type}`,
+              icon: "warning",
+              text:
+                "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            });
+            // bootbox.alert({
+            //   title: "Unable to restore " + promptVar,
+            //   message:
+            //     "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
+            //   onEscape: true,
+            //   centerVertical: true,
+            // });
+            return;
           }
+        }
 
-          // Add the restored item with the new file name back into the object.
-          myPath[type][itemToRestore_new_key] = myPath[type][itemToRestore];
-          delete myPath[type][itemToRestore];
-
-          // update UI with updated jsonobj
-          listItems(myPath, uiItem);
-          getInFolder(
-            singleUIItem,
-            uiItem,
-            organizeCurrentLocation,
-            inputGlobal
+        if (type === "folders") {
+          recursive_mark_sub_files_deleted(
+            myPath[type][itemToDelete],
+            "restore"
           );
+        }
+
+        // update Json object with the restored object
+        let index = myPath[type][itemToRestore]["action"].indexOf("deleted");
+        myPath[type][itemToRestore]["action"].splice(index, 1);
+        let itemToRestore_new_key = itemToRestore.substring(
+          0,
+          itemToRestore.lastIndexOf("-")
+        );
+
+        // Add a (somenumber) if the file name already exists
+        // Done using a loop to avoid a case where the same file number exists
+        if (itemToRestore_new_key in myPath[type]) {
+          myPath[type][itemToRestore]["action"].push("renamed");
+          itemToRestore_new_key_file_name = path.parse(itemToRestore_new_key)
+            .name;
+          itemToRestore_new_key_file_ext = path.parse(itemToRestore_new_key)
+            .ext;
+          file_number = 1;
+          while (true) {
+            itemToRestore_potential_new_key =
+              itemToRestore_new_key_file_name +
+              " (" +
+              file_number +
+              ")" +
+              itemToRestore_new_key_file_ext;
+            if (!myPath[type].hasOwnProperty(itemToRestore_potential_new_key)) {
+              itemToRestore_new_key = itemToRestore_potential_new_key;
+              break;
+            }
+            file_number++;
+          }
+        }
+
+        // Add the restored item with the new file name back into the object.
+        myPath[type][itemToRestore_new_key] = myPath[type][itemToRestore];
+        delete myPath[type][itemToRestore];
+
+        // update UI with updated jsonobj
+        listItems(myPath, uiItem);
+        getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
       }
     });
   } else {
@@ -349,11 +340,11 @@ function delFolder(
         cancelButtonText: "Cancel",
         reverseButtons: true,
         showClass: {
-          popup: 'animate__animated animate__zoomIn animate__faster'
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__zoomOut animate__faster'
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((result) => {
         if (result.isConfirmed) {
           var filtered = getGlobalPath(organizeCurrentLocation);
@@ -386,8 +377,7 @@ function delFolder(
                 myPath[type][itemToDelete]["action"].push("existing");
                 myPath[type][itemToDelete]["action"].push("deleted");
                 let itemToDelete_new_key = itemToDelete + "-DELETED";
-                myPath[type][itemToDelete_new_key] =
-                  myPath[type][itemToDelete];
+                myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
                 delete myPath[type][itemToDelete];
               }
             } else {
@@ -404,7 +394,7 @@ function delFolder(
             inputGlobal
           );
         }
-      })
+      });
     } else {
       // bootbox.confirm({
       //   title: "Delete " + promptVar,
@@ -463,11 +453,11 @@ function delFolder(
         cancelButtonText: "Cancel",
         reverseButtons: true,
         showClass: {
-          popup: 'animate__animated animate__zoomIn animate__faster'
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__zoomOut animate__faster'
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((result) => {
         if (result.isConfirmed) {
           /// get current location of folders or files
@@ -506,7 +496,7 @@ function delFolder(
             inputGlobal
           );
         }
-      })
+      });
     }
   }
 }
@@ -574,10 +564,13 @@ function checkValidRenameInput(
       //   );
       Swal.fire({
         icon: "error",
-        text: "The file name: "+ newName + " already exists, please rename to a different name!",
-        backdrop:"rgba(0,0,0, 0.4)",
-        heightAuto: false
-      })
+        text:
+          "The file name: " +
+          newName +
+          " already exists, please rename to a different name!",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+      });
       newName = "";
     }
     //// if renaming a folder
@@ -601,10 +594,13 @@ function checkValidRenameInput(
       //   );
       Swal.fire({
         icon: "error",
-        text: "The folder name: "+ newName + " already exists, please rename to a different name!",
-        backdrop:"rgba(0,0,0, 0.4)",
-        heightAuto: false
-      })
+        text:
+          "The folder name: " +
+          newName +
+          " already exists, please rename to a different name!",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+      });
       newName = "";
     }
   }
@@ -679,11 +675,11 @@ function renameFolder(
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
     // bootbox.alert({
     //   message: "High-level SPARC folders cannot be renamed!",
@@ -761,8 +757,7 @@ function renameFolder(
     // });
     Swal.fire({
       title: "Rename " + promptVar,
-      text:
-        "Please enter a new name:",
+      text: "Please enter a new name:",
       input: "text",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -772,11 +767,11 @@ function renameFolder(
       cancelButtonText: "Cancel",
       reverseButtons: true,
       showClass: {
-        popup: 'animate__animated animate__fadeInDown animate__faster'
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__fadeOutUp animate__faster'
-      }
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         var returnedName = checkValidRenameInput(
@@ -796,11 +791,11 @@ function renameFolder(
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showClass: {
-              popup: 'animate__animated animate__fadeInDown animate__faster'
+              popup: "animate__animated animate__fadeInDown animate__faster",
             },
             hideClass: {
-              popup: 'animate__animated animate__fadeOutUp animate__faster'
-            }
+              popup: "animate__animated animate__fadeOutUp animate__faster",
+            },
           });
           // bootbox.alert({
           //   message: "Successfully renamed!",
@@ -971,11 +966,11 @@ function addFilesfunction(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__zoomIn animate__faster'
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__zoomOut animate__faster'
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       });
       // bootbox.alert({
       //   message:
@@ -1067,14 +1062,14 @@ function addFilesfunction(
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       customClass: {
-        content: "swal-left-align"
+        content: "swal-left-align",
       },
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
     // bootbox.alert({
     //   message:
