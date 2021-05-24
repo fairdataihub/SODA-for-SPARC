@@ -160,6 +160,7 @@ function addSampleIDtoTable(newSample) {
 }
 
 function addSubjectIDtoDataBase() {
+  console.log("here")
   var subjectID = $("#bootbox-subject-id").val();
 
   var table = document.getElementById("table-subjects");
@@ -467,6 +468,7 @@ function editSubject(ev, subjectID) {
   subjectsFileData = []
 }
 
+// TODO: fix this
 function editSample(ev, bootbox, sampleID) {
  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
    if (field.value !== "" && field.value !== undefined) {
