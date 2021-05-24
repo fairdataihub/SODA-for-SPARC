@@ -1,8 +1,4 @@
-// const { default: Swal } = require("sweetalert2");
 
-// const { default: Swal } = require("sweetalert2");
-
-// const { default: Swal } = require("sweetalert2");
 
 //// option to show tool-tips for high-level folders
 function showTooltips(ev) {
