@@ -9,6 +9,7 @@ const path = require("path");
 const { ipcRenderer } = require("electron");
 const Editor = require("@toast-ui/editor");
 const remote = require("electron").remote;
+const { Notyf } = require("notyf");
 const imageDataURI = require("image-data-uri");
 const log = require("electron-log");
 const Airtable = require("airtable");
@@ -16,9 +17,9 @@ require("v8-compile-cache");
 const Tagify = require("@yaireo/tagify");
 const https = require("https");
 const $ = require("jquery");
-const PDFDocument = require("pdfkit");
-const html2canvas = require("html2canvas");
-const removeMd = require("remove-markdown");
+// const PDFDocument = require("pdfkit");
+// const html2canvas = require("html2canvas");
+// const removeMd = require("remove-markdown");
 const electron = require("electron");
 const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
@@ -27,9 +28,10 @@ const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
 
-const prevent_sleep_id = "";
+// const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
+const shell = electron.shell;
 var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
@@ -58,6 +60,9 @@ client.invoke("echo", "server ready", (error, res) => {
       "Success",
       "Establishing Python Connection"
     );
+
+    //Load Default/global Pennsieve account if available
+    updateBfAccountList();
   }
 });
 
@@ -65,10 +70,19 @@ client.invoke("echo", "server ready", (error, res) => {
 // App launch actions
 //////////////////////////////////
 
+// $(window).load(function () {
+//   run_pre_flight_checks();
+// });
+
+// $(document).ready(function () {
+//   run_pre_flight_checks()d
+// });
+
 // Log file settings //
 log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
+const SODA_SPARC_API_KEY = "SODA-Pennsieve";
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
@@ -79,25 +93,467 @@ const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
-//check user's internet connection and connect to default Pennsieve account //
-require("dns").resolve("www.google.com", (err) => {
-  if (err) {
-    console.error("No internet connection");
-    log.error("No internet connection");
-    ipcRenderer.send("warning-no-internet-connection");
-  } else {
-    console.log("Connected to the internet");
-    log.info("Connected to the internet");
-    //Check new app version
-    checkNewAppVersion(); // changed this function definition
-    //Load Default/global Pennsieve account if available
-    updateBfAccountList();
-  }
+const notyf = new Notyf({
+  position: { x: "right", y: "bottom" },
+  ripple: true,
+  dismissible: true,
+  ripple: false,
+  types: [
+    {
+      type: "loading_internet",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 10000,
+    },
+    {
+      type: "ps_agent",
+      background: "grey",
+      icon: {
+        className: "fas fa-cogs",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 5000,
+    },
+    {
+      type: "app_update",
+      background: "grey",
+      icon: {
+        className: "fas fa-sync-alt",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 0,
+    },
+    {
+      type: "api_key_search",
+      background: "grey",
+      icon: {
+        className: "fas fa-users-cog",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 0,
+    },
+    {
+      type: "success",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 800,
+    },
+    {
+      type: "final",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+    {
+      type: "warning",
+      background: "#fa8c16",
+      icon: {
+        className: "fas fa-exclamation-triangle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+    {
+      type: "app_update_warning",
+      background: "#fa8c16",
+      icon: {
+        className: "fas fa-tools",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 0,
+    },
+    {
+      type: "error",
+      background: "#B80D49",
+      icon: {
+        className: "fas fa-times-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+  ],
 });
 
-const notification = document.getElementById("notification");
-const message = document.getElementById("message");
-const restartButton = document.getElementById("restart-button");
+let connected_to_internet = false;
+let update_available_notification = "";
+let update_downloaded_notification = "";
+
+// Check app version on current app and display in the side bar
+ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
+  run_pre_flight_checks();
+});
+
+// Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
+const run_pre_flight_checks = async (check_update = true) => {
+  return new Promise(async (resolve) => {
+    let connection_response = "";
+    let agent_installed_response = "";
+    let agent_version_response = "";
+    let account_present = false;
+
+    // Check the internet connection and if available check the rest.
+    connection_response = await check_internet_connection();
+    if (!connection_response) {
+      Swal.fire({
+        icon: "error",
+        text:
+          "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "I understand",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          // Do nothing
+        }
+      });
+      resolve(false);
+    } else {
+      await wait(500);
+
+      // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+      account_present = await check_api_key();
+      if (account_present) {
+        // Check for an installed Pennsieve agent
+        await wait(500);
+        [
+          agent_installed_response,
+          agent_version_response,
+        ] = await check_agent_installed();
+        // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
+        if (!agent_installed_response) {
+          Swal.fire({
+            icon: "error",
+            title: "Pennsieve Agent error!",
+            html: agent_version_response,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
+            confirmButtonText: "Download now",
+            cancelButtonText: "Skip for now",
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              [
+                browser_download_url,
+                latest_agent_version,
+              ] = await get_latest_agent_version();
+              shell.openExternal(browser_download_url);
+              shell.openExternal(
+                "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+              );
+            }
+          });
+          resolve(false);
+        } else {
+          await wait(500);
+          // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
+          [
+            browser_download_url,
+            latest_agent_version,
+          ] = await check_agent_installed_version(agent_version_response);
+          if (browser_download_url != "") {
+            Swal.fire({
+              icon: "warning",
+              text:
+                "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showCancelButton: true,
+              confirmButtonText: "Download now",
+              cancelButtonText: "Skip for now",
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
+                [
+                  browser_download_url,
+                  latest_agent_version,
+                ] = await get_latest_agent_version();
+                shell.openExternal(browser_download_url);
+                shell.openExternal(
+                  "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+                );
+                resolve(false);
+              }
+              if (result.isDismissed) {
+                if (check_update) {
+                  checkNewAppVersion();
+                }
+                await wait(500);
+                notyf.open({
+                  type: "final",
+                  message: "You're all set!",
+                });
+                resolve(true);
+              }
+            });
+          } else {
+            if (check_update) {
+              checkNewAppVersion();
+            }
+            await wait(500);
+            notyf.open({
+              type: "final",
+              message: "You're all set!",
+            });
+            resolve(true);
+          }
+        }
+      } else {
+        if (check_update) {
+          checkNewAppVersion();
+        }
+        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
+        Swal.fire({
+          icon: "warning",
+          text:
+            "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Yes",
+          showCancelButton: true,
+          cancelButtonText: "I'll do it later",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            openDropdownPrompt("bf");
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        });
+        resolve(false);
+      }
+    }
+  });
+};
+
+const wait = async (delay) => {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+};
+
+const check_internet_connection = async (show_notification = true) => {
+  let notification = null;
+  if (show_notification) {
+    notification = notyf.open({
+      type: "loading_internet",
+      message: "Checking Internet status...",
+    });
+  }
+  await wait(800);
+  return require("dns").resolve("www.google.com", (err) => {
+    if (err) {
+      console.error("No internet connection");
+      log.error("No internet connection");
+      ipcRenderer.send("warning-no-internet-connection");
+      if (show_notification) {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "error",
+          message: "Not connected to internet",
+        });
+      }
+      connected_to_internet = false;
+      return connected_to_internet;
+    } else {
+      console.log("Connected to the internet");
+      log.info("Connected to the internet");
+      if (show_notification) {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "success",
+          message: "Connected to the internet",
+        });
+      }
+      connected_to_internet = true;
+      return connected_to_internet;
+    }
+  });
+};
+
+const check_api_key = async () => {
+  let notification = null;
+  notification = notyf.open({
+    type: "api_key_search",
+    message: "Checking for Pennsieve account...",
+  });
+  await wait(800);
+  // If no accounts are found, return false.
+  return new Promise((resolve) => {
+    client.invoke("api_bf_account_list", (error, res) => {
+      if (error) {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "error",
+          message: "No account was found",
+        });
+        log.error(error);
+        console.error(error);
+        resolve(false);
+      } else {
+        if (res[0] === "Select" && res.length === 1) {
+          //no api key found
+          notyf.dismiss(notification);
+          notyf.open({
+            type: "error",
+            message: "No account was found",
+          });
+          resolve(false);
+        } else {
+          notyf.dismiss(notification);
+          notyf.open({
+            type: "success",
+            message: "Connected to Pennsieve",
+          });
+          resolve(true);
+        }
+      }
+    });
+  });
+};
+
+const check_agent_installed = async () => {
+  let notification = null;
+  notification = notyf.open({
+    type: "ps_agent",
+    message: "Searching for Pennsieve Agent...",
+  });
+  await wait(800);
+  return new Promise((resolve) => {
+    client.invoke("api_check_agent_install", (error, res) => {
+      if (error) {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "error",
+          message: "Pennsieve agent not found",
+        });
+        console.log(error);
+        var emessage = userError(error);
+        resolve([false, emessage]);
+      } else {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "success",
+          message: "Pennsieve agent found",
+        });
+        resolve([true, res]);
+      }
+    });
+  });
+};
+
+const check_agent_installed_version = async (agent_version) => {
+  let notification = null;
+  notification = notyf.open({
+    type: "ps_agent",
+    message: "Checking Pennsieve Agent version...",
+  });
+  await wait(800);
+  let latest_agent_version = "";
+  let browser_download_url = "";
+  [
+    browser_download_url,
+    latest_agent_version,
+  ] = await get_latest_agent_version();
+  if (latest_agent_version != agent_version) {
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "warning",
+      message: "A newer Pennsieve agent was found!",
+    });
+  } else {
+    notyf.dismiss(notification);
+    notyf.open({
+      type: "success",
+      message: "You have the latest Pennsieve agent!",
+    });
+    browser_download_url = "";
+  }
+  return [browser_download_url, latest_agent_version];
+};
+
+const get_latest_agent_version = async () => {
+  return new Promise((resolve) => {
+    $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
+      (release_res) => {
+        let release = release_res[0];
+        let latest_agent_version = release.tag_name;
+        if (process.platform == "darwin") {
+          release.assets.forEach((asset, index) => {
+            let file_name = asset.name;
+            if (path.extname(file_name) == ".pkg") {
+              browser_download_url = asset.browser_download_url;
+            }
+          });
+        }
+        if (process.platform == "win32") {
+          release.assets.forEach((asset, index) => {
+            let file_name = asset.name;
+            if (
+              path.extname(file_name) == ".msi" ||
+              path.extname(file_name) == ".exe"
+            ) {
+              browser_download_url = asset.browser_download_url;
+            }
+          });
+        }
+        if (process.platform == "linux") {
+          release.assets.forEach((asset, index) => {
+            let file_name = asset.name;
+            if (path.extname(file_name) == ".deb") {
+              browser_download_url = asset.browser_download_url;
+            }
+          });
+        }
+
+        resolve([browser_download_url, latest_agent_version]);
+      }
+    );
+  });
+};
+
+// //check user's internet connection and connect to default Pennsieve account //
+// require("dns").resolve("www.google.com", (err) => {
+//   if (err) {
+//     console.error("No internet connection");
+//     log.error("No internet connection");
+//     // ipcRenderer.send("warning-no-internet-connection");
+//   } else {
+//     console.log("Connected to the internet");
+//     log.info("Connected to the internet");
+//     //Check new app version
+//     checkNewAppVersion(); // changed this function definition
+//     //Load Default/global Pennsieve account if available
+//     updateBfAccountList();
+//   }
+// });
 
 const checkNewAppVersion = () => {
   ipcRenderer.send("app_version");
@@ -119,11 +575,13 @@ ipcRenderer.on("update_available", () => {
     "Update Requested",
     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
   );
-  message.innerText = "A new update is available. Downloading now...";
-  notification.classList.remove("hidden");
+  update_available_notification = notyf.open({
+    type: "app_update",
+    message: "A new update is available. Downloading now...",
+  });
 });
 
-// When the update is downloaded, show the restart message
+// When the update is downloaded, show the restart notification
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   ipcRenderer.send(
@@ -132,32 +590,38 @@ ipcRenderer.on("update_downloaded", () => {
     "Update Downloaded",
     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
   );
+  notyf.dismiss(update_available_notification);
   if (process.platform == "darwin") {
-    message.innerText =
-      "Update downloaded. It will be installed when you close and relaunch the app. Close the app now?";
-    document.getElementById("restart-button").innerText = "Close SODA";
+    update_downloaded_notification = notyf.open({
+      type: "app_update_warning",
+      message:
+        "Update downloaded. It will be installed when you close and relaunch the app. Click here to close SODA now.",
+    });
   } else {
-    message.innerText =
-      "Update downloaded. It will be installed on the restart of the app. Restart the app now?";
+    update_downloaded_notification = notyf.open({
+      type: "app_update_warning",
+      message:
+        "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
+    });
   }
-  restartButton.classList.remove("hidden");
-  notification.classList.remove("hidden");
+  update_downloaded_notification.on("click", ({ target, event }) => {
+    restartApp();
+  });
 });
-
-// Close the app update notification
-const closeNotification = () => {
-  notification.classList.add("hidden");
-};
 
 // Restart the app for update. Does not restart on macos
 const restartApp = () => {
+  notyf.open({
+    type: "app_update_warning",
+    message: "Closing SODA now...",
+  });
+
   ipcRenderer.send(
     "track-event",
     "App Update",
     "App Restarted",
     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
   );
-  document.getElementById("restart_loader").style.display = "inline-block";
   ipcRenderer.send("restart_app");
 };
 
@@ -606,14 +1070,28 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     var emessage =
       "File '" + templateItem + "' already exists in " + destinationFolder;
     //ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    Swal.fire("Metadata file already exists", `${emessage}`, "error");
+    // Swal.fire("Metadata file already exists", `${emessage}`, "error");
+    Swal.fire({
+      icon: "error",
+      title: "Metadata file already exists",
+      text: `${emessage}`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
   } else {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
     );
     var emessage =
       "Successfully saved '" + templateItem + "' to " + destinationFolder;
-    Swal.fire("Download successful", `${emessage}`, "success");
+    // Swal.fire("Download successful", `${emessage}`, "success");
+    Swal.fire({
+      icon: "success",
+      title: "Download successful",
+      text: `${emessage}`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -1581,7 +2059,7 @@ const contactPersonCheck = (no) => {
   var rowcount = currentConTable.rows.length;
 
   if (no === 0) {
-    currentContactPersonID = ""
+    currentContactPersonID = "";
   } else {
     currentContactPersonID = "ds-contact-person-" + no;
   }
@@ -1592,7 +2070,10 @@ const contactPersonCheck = (no) => {
     )
       .find("label")
       .find("input")[0];
-    if ($(contactLabel).prop("id") && $(contactLabel).prop("id") !== currentContactPersonID) {
+    if (
+      $(contactLabel).prop("id") &&
+      $(contactLabel).prop("id") !== currentContactPersonID
+    ) {
       if (contactLabel.checked) {
         contactPersonExists = true;
         break;
@@ -1882,10 +2363,42 @@ generateDSBtn.addEventListener("click", (event) => {
 
   /// raise a warning if empty required fields are found
   if (allFieldsSatisfied === false) {
-    ipcRenderer.send(
-      "warning-missing-items-ds-description",
-      errorMessage.join("\n")
-    );
+    // ipcRenderer.send(
+    //   "warning-missing-items-ds-description",
+    //   errorMessage.join("\n")
+    // );
+    var textErrorMessage = "";
+    for (var i = 0; i < errorMessage.length; i++) {
+      textErrorMessage += errorMessage[i] + "<br>";
+    }
+    var messageMissingFields =
+      "<div>The following mandatory item(s) is/are missing:<br>" +
+      textErrorMessage +
+      "<br>Would you still like to generate the dataset description file?</div>";
+    Swal.fire({
+      icon: "warning",
+      html: messageMissingFields,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      focusCancel: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        ipcRenderer.send(
+          "open-folder-dialog-save-ds-description",
+          "dataset_description.xlsx"
+        );
+      }
+    });
   } else {
     ipcRenderer.send(
       "open-folder-dialog-save-ds-description",
@@ -1913,7 +2426,14 @@ ipcRenderer.on(
         var emessage =
           "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        // Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        Swal.fire({
+          icon: "error",
+          title: "Metadata file already exists",
+          text: `${emessage}`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         $("#generate-dd-spinner").hide();
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
@@ -2018,6 +2538,7 @@ const tuiInstance = new Editor({
     "italic",
     "strike",
     "link",
+    "hr",
     "divider",
     "ul",
     "ol",
@@ -2581,7 +3102,12 @@ bfRenameDatasetBtn.addEventListener("click", () => {
 });
 
 // Submit dataset to bf //
-bfSubmitDatasetBtn.addEventListener("click", () => {
+bfSubmitDatasetBtn.addEventListener("click", async () => {
+  let supplementary_checks = await run_pre_flight_checks(false);
+  if (!supplementary_checks) {
+    return;
+  }
+
   var totalFileSize;
 
   document.getElementById("para-please-wait-manage-dataset").innerHTML =
@@ -2816,40 +3342,77 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           $(".pulse-blue").removeClass("pulse-blue");
         }, 4000);
       } else {
-        var bootboxDialog = bootbox.confirm({
-          message:
+        // var bootboxDialog = bootbox.confirm({
+        //   message:
+        //     "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+        //   buttons: {
+        //     confirm: {
+        //       label: "Yes",
+        //       className: "btn-success",
+        //     },
+        //     cancel: {
+        //       label: "Cancel",
+        //       className: "btn-danger",
+        //     },
+        //   },
+        //   centerVertical: true,
+        //   callback: (result) => {
+        //     if (result) {
+        //       $("#button_upload_local_folder_confirm").click();
+        //       $("#button-submit-dataset").show();
+        //       $("#button-submit-dataset").addClass("pulse-blue");
+        //       // remove pulse class after 4 seconds
+        //       // pulse animation lasts 2 seconds => 2 pulses
+        //       setTimeout(() => {
+        //         $(".pulse-blue").removeClass("pulse-blue");
+        //       }, 4000);
+        //     } else {
+        //       document.getElementById(
+        //         "input-destination-getting-started-locally"
+        //       ).placeholder = "Browse here";
+        //       $("#selected-local-dataset-submit").attr(
+        //         "placeholder",
+        //         "Browse here"
+        //       );
+        //     }
+        //   },
+        // });
+        Swal.fire({
+          icon: "warning",
+          text:
             "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-          buttons: {
-            confirm: {
-              label: "Yes",
-              className: "btn-success",
-            },
-            cancel: {
-              label: "Cancel",
-              className: "btn-danger",
-            },
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          focusCancel: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "Cancel",
+          reverseButtons: true,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
-          centerVertical: true,
-          callback: (result) => {
-            if (result) {
-              $("#button_upload_local_folder_confirm").click();
-              $("#button-submit-dataset").show();
-              $("#button-submit-dataset").addClass("pulse-blue");
-              // remove pulse class after 4 seconds
-              // pulse animation lasts 2 seconds => 2 pulses
-              setTimeout(() => {
-                $(".pulse-blue").removeClass("pulse-blue");
-              }, 4000);
-            } else {
-              document.getElementById(
-                "input-destination-getting-started-locally"
-              ).placeholder = "Browse here";
-              $("#selected-local-dataset-submit").attr(
-                "placeholder",
-                "Browse here"
-              );
-            }
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
           },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $("#button_upload_local_folder_confirm").click();
+            $("#button-submit-dataset").show();
+            $("#button-submit-dataset").addClass("pulse-blue");
+            // remove pulse class after 4 seconds
+            // pulse animation lasts 2 seconds => 2 pulses
+            setTimeout(() => {
+              $(".pulse-blue").removeClass("pulse-blue");
+            }, 4000);
+          } else {
+            document.getElementById(
+              "input-destination-getting-started-locally"
+            ).placeholder = "Browse here";
+            $("#selected-local-dataset-submit").attr(
+              "placeholder",
+              "Browse here"
+            );
+          }
         });
       }
     }
@@ -3042,6 +3605,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
 // upload banner image //
 const Cropper = require("cropperjs");
 const { default: Swal } = require("sweetalert2");
+const { waitForDebugger } = require("inspector");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -3113,6 +3677,12 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
         timer: 4000,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
         timerProgressBar: true,
         didOpen: () => {
           Swal.showLoading();
@@ -3293,10 +3863,34 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
   if (bfViewImportedImage.src.length > 0) {
     if (formBannerHeight.value > 511) {
       if (formBannerHeight.value < 1024) {
-        ipcRenderer.send(
-          "warning-banner-image-below-1024",
-          formBannerHeight.value
-        );
+        // ipcRenderer.send(
+        //   "warning-banner-image-below-1024",
+        //   formBannerHeight.value
+        // );
+        Swal.fire({
+          icon: "warning",
+          text:
+            "Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is " +
+            formBannerHeight.value +
+            " px. Would you like to continue?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          focusCancel: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+          reverseButtons: true,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            uploadBannerImage();
+          }
+        });
       } else {
         uploadBannerImage();
       }
@@ -3374,7 +3968,82 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   datasetPermissionStatusPI.innerHTML = "";
   // bfCurrentPermissionProgress.style.display = "block";
   // bfAddEditCurrentPermissionProgress.style.display = "block";
-  ipcRenderer.send("warning-add-permission-owner-PI");
+  // ipcRenderer.send("warning-add-permission-owner-PI");
+  Swal.fire({
+    icon: "warning",
+    text:
+      "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
+    heightAuto: false,
+    showCancelButton: true,
+    cancelButtonText: "No",
+    focusCancel: true,
+    confirmButtonText: "Yes",
+    backdrop: "rgba(0,0,0, 0.4)",
+    reverseButtons: true,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $("#bf-add-permission-pi-spinner").css("visibility", "visible");
+      datasetPermissionStatusPI.innerHTML = "";
+      //disableform(bfPermissionForm);
+
+      var selectedBfAccount = defaultBfAccount;
+      var selectedBfDataset = defaultBfDataset;
+      var selectedUser =
+        bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
+      var selectedRole = "owner";
+
+      if (true) {
+        client.invoke(
+          "api_bf_add_permission",
+          selectedBfAccount,
+          selectedBfDataset,
+          selectedUser,
+          selectedRole,
+          (error, res) => {
+            if (error) {
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Manage Dataset - Change PI Owner",
+                selectedBfDataset
+              );
+              $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+              log.error(error);
+              console.error(error);
+              var emessage = userError(error);
+              datasetPermissionStatusPI.innerHTML =
+                "<span style='color: red;'> " + emessage + "</span>";
+              // bfCurrentPermissionProgress.style.display = "none";
+              // bfAddEditCurrentPermissionProgress.style.display = "none";
+            } else {
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Manage Dataset - Change PI Owner",
+                selectedBfDataset
+              );
+              let nodeStorage = new JSONStorage(app.getPath("userData"));
+              nodeStorage.setItem("previously_selected_PI", selectedUser);
+              $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+              datasetPermissionStatusPI.innerHTML = res;
+              showCurrentPermission();
+              changeDatasetRolePI(selectedBfDataset);
+            }
+          }
+        );
+      } else {
+        // bfCurrentPermissionProgress.style.display = "none";
+        // bfAddEditCurrentPermissionProgress.style.display = "none";
+        $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+      }
+    }
+  });
 });
 ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
   $("#bf-add-permission-pi-spinner").css("visibility", "visible");
@@ -3540,9 +4209,57 @@ function submitReviewDatasetCheck(res) {
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
     $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
-    ipcRenderer.send("warning-publish-dataset-again");
+    // ipcRenderer.send("warning-publish-dataset-again");
+    Swal.fire({
+      icon: "warning",
+      text:
+        "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      focusCancel: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        submitReviewDataset();
+      } else {
+        $("#submit_prepublishing_review-spinner").hide();
+      }
+    });
   } else {
-    ipcRenderer.send("warning-publish-dataset");
+    // ipcRenderer.send("warning-publish-dataset");
+    Swal.fire({
+      icon: "warning",
+      text:
+        "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      focusCancel: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        submitReviewDataset();
+      } else {
+        $("#submit_prepublishing_review-spinner").hide();
+      }
+    });
   }
 }
 
@@ -3619,7 +4336,31 @@ function withdrawDatasetCheck(res) {
     $("#para-submit_prepublishing_review-status").text(emessage);
     $("#submit_prepublishing_review-spinner").hide();
   } else {
-    ipcRenderer.send("warning-withdraw-dataset");
+    // ipcRenderer.send("warning-withdraw-dataset");
+    Swal.fire({
+      icon: "warning",
+      text:
+        "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      focusCancel: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        withdrawReviewDataset();
+      } else {
+        $("#submit_prepublishing_review-spinner").hide();
+      }
+    });
   }
 }
 
@@ -3632,7 +4373,7 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 
 function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
-  var selectedBfAccount = $("#current-bf-dataset").text();
+  var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
@@ -4358,17 +5099,17 @@ var highLevelFolders = [
 ];
 var highLevelFolderToolTip = {
   code:
-    "code: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
+    "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
   derivative:
-    "derivative: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
+    "<b>derivative</b>: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
   docs:
-    "docs: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
+    "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
   source:
-    "source: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
+    "<b>source</b>: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
   primary:
-    "primary: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
+    "<b>primary</b>: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
   protocol:
-    "protocol: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
+    "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
 listItems(datasetStructureJSONObj, "#items");
@@ -4422,13 +5163,90 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   if (slashCount !== 1) {
     var newFolderName = "New Folder";
     // show prompt for name
-    bootbox.prompt({
+    // bootbox.prompt({
+    //   title: "Add new folder...",
+    //   message: "Enter a name below:",
+    //   centerVertical: true,
+    //   callback: function (result) {
+    //     if (result !== null && result !== "") {
+    //       newFolderName = result.trim();
+    //       // check for duplicate or files with the same name
+    //       var duplicate = false;
+    //       var itemDivElements = document.getElementById("items").children;
+    //       for (var i = 0; i < itemDivElements.length; i++) {
+    //         if (newFolderName === itemDivElements[i].innerText) {
+    //           duplicate = true;
+    //           break;
+    //         }
+    //       }
+    //       if (duplicate) {
+    //         bootbox.alert({
+    //           message: "Duplicate folder name: " + newFolderName,
+    //           centerVertical: true,
+    //         });
+    //       } else {
+    //         var appendString = "";
+    //         appendString =
+    //           appendString +
+    //           '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+    //           newFolderName +
+    //           "</div></div>";
+    //         $(appendString).appendTo("#items");
+
+    //         /// update datasetStructureJSONObj
+    //         var currentPath = organizeDSglobalPath.value;
+    //         var jsonPathArray = currentPath.split("/");
+    //         var filtered = jsonPathArray.slice(1).filter(function (el) {
+    //           return el != "";
+    //         });
+
+    //         var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+    //         // update Json object with new folder created
+    //         var renamedNewFolder = newFolderName;
+    //         myPath["folders"][renamedNewFolder] = {
+    //           folders: {},
+    //           files: {},
+    //           type: "virtual",
+    //           action: ["new"],
+    //         };
+
+    //         listItems(myPath, "#items");
+    //         getInFolder(
+    //           ".single-item",
+    //           "#items",
+    //           organizeDSglobalPath,
+    //           datasetStructureJSONObj
+    //         );
+    //         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    //         hideMenu(
+    //           "high-level-folder",
+    //           menuFolder,
+    //           menuHighLevelFolders,
+    //           menuFile
+    //         );
+    //       }
+    //     }
+    //   },
+    // });
+    Swal.fire({
       title: "Add new folder...",
-      message: "Enter a name below:",
-      centerVertical: true,
-      callback: function (result) {
-        if (result !== null && result !== "") {
-          newFolderName = result.trim();
+      text: "Enter a name below:",
+      heightAuto: false,
+      input: "text",
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: "Cancel",
+      confirmButtonText: "Add folder",
+      reverseButtons: true,
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    }).then((result) => {
+      if (result.value) {
+        if (result.value !== null && result.value !== "") {
+          newFolderName = result.value.trim();
           // check for duplicate or files with the same name
           var duplicate = false;
           var itemDivElements = document.getElementById("items").children;
@@ -4439,9 +5257,16 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             }
           }
           if (duplicate) {
-            bootbox.alert({
-              message: "Duplicate folder name: " + newFolderName,
-              centerVertical: true,
+            // bootbox.alert({
+            //   message: "Duplicate folder name: " + newFolderName,
+            //   centerVertical: true,
+            // });
+            Swal.fire({
+              icon: "error",
+              text: "Duplicate folder name: " + newFolderName,
+              confirmButtonText: "OK",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
             });
           } else {
             var appendString = "";
@@ -4485,13 +5310,27 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             );
           }
         }
-      },
+      }
     });
   } else {
-    bootbox.alert({
-      message:
+    // bootbox.alert({
+    //   message:
+    //     "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
+    //   centerVertical: true,
+    // });
+    Swal.fire({
+      icon: "error",
+      text:
         "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
-      centerVertical: true,
+      confirmButtonText: "OK",
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
   }
 });
@@ -4523,7 +5362,10 @@ function populateJSONObjFolder(jsonObject, folderPath) {
   });
 }
 
+let full_name_show = false;
+
 function hideFullName() {
+  full_name_show = false;
   fullNameValue.style.display = "none";
   fullNameValue.style.top = "-250%";
   fullNameValue.style.left = "-250%";
@@ -4532,15 +5374,21 @@ function hideFullName() {
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
 function showFullName(ev, element, text) {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
+  full_name_show = true;
   var isOverflowing =
     element.clientWidth < element.scrollWidth ||
     element.clientHeight < element.scrollHeight;
   if (isOverflowing) {
     var mouseX = ev.pageX - 200;
     var mouseY = ev.pageY;
-    fullNameValue.style.display = "block";
     fullNameValue.innerHTML = text;
-    $(".hoverFullName").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+    $(".hoverFullName").css({ top: mouseY, left: mouseX });
+    setTimeout(() => {
+      if (full_name_show) {
+        // fullNameValue.style.display = "block";
+        $(".hoverFullName").fadeIn("slow");
+      }
+    }, 800);
   }
 }
 
@@ -4577,280 +5425,294 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
-function addBFAccountInsideBootbox(myBootboxDialog) {
-  var name = $("#bootbox-key-name").val();
-  var apiKey = $("#bootbox-api-key").val();
-  var apiSecret = $("#bootbox-api-secret").val();
-  client.invoke("api_bf_add_account", name, apiKey, apiSecret, (error, res) => {
-    if (error) {
-      $(myBootboxDialog).find(".modal-footer span").remove();
-      myBootboxDialog
-        .find(".modal-footer")
-        .prepend(
-          "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-            error +
-            "</span>"
-        );
-      log.error(error);
-      console.error(error);
-    } else {
-      $("#bootbox-key-name").val("");
-      $("#bootbox-api-key").val("");
-      $("#bootbox-api-secret").val("");
-      bfAccountOptions[name] = name;
-      defaultBfAccount = name;
-      defaultBfDataset = "Select dataset";
-      updateBfAccountList();
-      client.invoke("api_bf_account_details", name, (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            icon: "error",
-            text: "Something went wrong!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            footer:
-              '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-          });
-          showHideDropdownButtons("account", "hide");
-          confirm_click_account_function();
-        } else {
-          $("#para-account-detail-curate").html(res);
-          $("#current-bf-account").text(name);
-          $("#current-bf-account-generate").text(name);
-          $("#create_empty_dataset_BF_account_span").text(name);
-          $(".bf-account-span").text(name);
-          $("#current-bf-dataset").text("None");
-          $("#current-bf-dataset-generate").text("None");
-          $(".bf-dataset-span").html("None");
-          $("#para-account-detail-curate-generate").html(res);
-          $("#para_create_empty_dataset_BF_account").html(res);
-          $(".bf-account-details-span").html(res);
-          $("#para-continue-bf-dataset-getting-started").text("");
-          showHideDropdownButtons("account", "show");
-          confirm_click_account_function();
-        }
-      });
-      myBootboxDialog.modal("hide");
-      Swal.fire({
-        title: "Successfully added! <br/>Loading your account details...",
-        timer: 3000,
-        timerProgressBar: true,
-        allowEscapeKey: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.9)",
-        showConfirmButton: false,
-      });
-      // bootbox.alert({
-      //   message: "Successfully added!",
-      //   centerVertical: true,
-      // });
-    }
-  });
-}
+// function addBFAccountInsideBootbox(myBootboxDialog) {
+//   var name = $("#bootbox-key-name").val();
+//   var apiKey = $("#bootbox-api-key").val();
+//   var apiSecret = $("#bootbox-api-secret").val();
+//   client.invoke(
+//     "api_bf_add_account_api_key",
+//     name,
+//     apiKey,
+//     apiSecret,
+//     (error, res) => {
+//       if (error) {
+//         $(myBootboxDialog).find(".modal-footer span").remove();
+//         myBootboxDialog
+//           .find(".modal-footer")
+//           .prepend(
+//             "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+//               error +
+//               "</span>"
+//           );
+//         log.error(error);
+//         console.error(error);
+//       } else {
+//         $("#bootbox-key-name").val("");
+//         $("#bootbox-api-key").val("");
+//         $("#bootbox-api-secret").val("");
+//         bfAccountOptions[name] = name;
+//         defaultBfAccount = name;
+//         defaultBfDataset = "Select dataset";
+//         updateBfAccountList();
+//         client.invoke("api_bf_account_details", name, (error, res) => {
+//           if (error) {
+//             log.error(error);
+//             console.error(error);
+//             Swal.fire({
+//               icon: "error",
+//               text: "Something went wrong!",
+//               heightAuto: false,
+//               backdrop: "rgba(0,0,0, 0.4)",
+//               footer:
+//                 '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+//             });
+//             showHideDropdownButtons("account", "hide");
+//             confirm_click_account_function();
+//           } else {
+//             $("#para-account-detail-curate").html(res);
+//             $("#current-bf-account").text(name);
+//             $("#current-bf-account-generate").text(name);
+//             $("#create_empty_dataset_BF_account_span").text(name);
+//             $(".bf-account-span").text(name);
+//             $("#current-bf-dataset").text("None");
+//             $("#current-bf-dataset-generate").text("None");
+//             $(".bf-dataset-span").html("None");
+//             $("#para-account-detail-curate-generate").html(res);
+//             $("#para_create_empty_dataset_BF_account").html(res);
+//             $(".bf-account-details-span").html(res);
+//             $("#para-continue-bf-dataset-getting-started").text("");
+//             $("#current_curation_team_status").text("None");
+//             $("#curation-team-share-btn").hide();
+//             $("#curation-team-unshare-btn").hide();
+//             $("#current_sparc_consortium_status").text("None");
+//             $("#sparc-consortium-share-btn").hide();
+//             $("#sparc-consortium-unshare-btn").hide();
+//             showHideDropdownButtons("account", "show");
+//             showHideDropdownButtons("account", "show");
+//             confirm_click_account_function();
+//           }
+//         });
+//         myBootboxDialog.modal("hide");
+//         Swal.fire({
+//           title: "Successfully added! <br/>Loading your account details...",
+//           timer: 3000,
+//           timerProgressBar: true,
+//           allowEscapeKey: false,
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0, 0.9)",
+//           showConfirmButton: false,
+//         });
+//         // bootbox.alert({
+//         //   message: "Successfully added!",
+//         //   centerVertical: true,
+//         // });
+//       }
+//     }
+//   );
+// }
 
-function showBFAddAccountBootbox() {
-  var bootb = bootbox.dialog({
-    title: bfaddaccountTitle,
-    message: bfAddAccountBootboxMessage,
-    buttons: {
-      cancel: {
-        label: "Cancel",
-      },
-      confirm: {
-        label: "Add",
-        className: "btn btn-primary bootbox-add-bf-class",
-        callback: function () {
-          addBFAccountInsideBootbox(bootb);
-          return false;
-        },
-      },
-    },
-    size: "medium",
-    centerVertical: true,
-    onShown: function (e) {
-      $(".popover-tooltip").each(function () {
-        var $this = $(this);
-        $this.popover({
-          trigger: "hover",
-          container: $this,
-        });
-      });
-    },
-  });
-}
+// function showBFAddAccountBootbox() {
+//   Swal.close();
+//   var bootb = bootbox.dialog({
+//     title: bfaddaccountTitle,
+//     message: bfAddAccountBootboxMessage,
+//     buttons: {
+//       cancel: {
+//         label: "Cancel",
+//       },
+//       confirm: {
+//         label: "Add",
+//         className: "btn btn-primary bootbox-add-bf-class",
+//         callback: function () {
+//           addBFAccountInsideBootbox(bootb);
+//           return false;
+//         },
+//       },
+//     },
+//     size: "medium",
+//     centerVertical: true,
+//     onShown: function (e) {
+//       $(".popover-tooltip").each(function () {
+//         var $this = $(this);
+//         $this.popover({
+//           trigger: "hover",
+//           container: $this,
+//         });
+//       });
+//     },
+//   });
+// }
 
-function showAddAirtableAccountBootbox() {
-  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+// function showAddAirtableAccountBootbox() {
+//   var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
-  var bootb = bootbox.dialog({
-    title: htmlTitle,
-    message: airtableAccountBootboxMessage,
-    buttons: {
-      cancel: {
-        label: "Cancel",
-      },
-      confirm: {
-        label: "Add",
-        className: "btn btn-primary bootbox-add-airtable-class",
-        callback: function () {
-          addAirtableAccountInsideBootbox(bootb);
-          return false;
-        },
-      },
-    },
-    size: "medium",
-    class: "api-width",
-    centerVertical: true,
-    onShown: function (e) {
-      $(".popover-tooltip").each(function () {
-        var $this = $(this);
-        $this.popover({
-          trigger: "hover",
-          container: $this,
-        });
-      });
-    },
-  });
-}
+//   var bootb = bootbox.dialog({
+//     title: htmlTitle,
+//     message: airtableAccountBootboxMessage,
+//     buttons: {
+//       cancel: {
+//         label: "Cancel",
+//       },
+//       confirm: {
+//         label: "Add",
+//         className: "btn btn-primary bootbox-add-airtable-class",
+//         callback: function () {
+//           addAirtableAccountInsideBootbox(bootb);
+//           return false;
+//         },
+//       },
+//     },
+//     size: "medium",
+//     class: "api-width",
+//     centerVertical: true,
+//     onShown: function (e) {
+//       $(".popover-tooltip").each(function () {
+//         var $this = $(this);
+//         $this.popover({
+//           trigger: "hover",
+//           container: $this,
+//         });
+//       });
+//     },
+//   });
+// }
 
-function addAirtableAccountInsideBootbox(myBootboxD) {
-  var name = $("#bootbox-airtable-key-name").val();
-  var key = $("#bootbox-airtable-key").val();
-  if (name.length === 0 || key.length === 0) {
-    var errorMessage =
-      "<span style='color: red;'>Please fill in both required fields to add.</span>";
-    $(myBootboxD).find(".modal-footer span").remove();
-    myBootboxD
-      .find(".modal-footer")
-      .prepend(
-        "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-          error +
-          "</span>"
-      );
-  } else {
-    bootbox.confirm({
-      title: "Connect to Airtable",
-      message:
-        "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
-      centerVertical: true,
-      size: "large",
-      button: {
-        ok: {
-          label: "Yes",
-          className: "btn-primary",
-        },
-      },
-      callback: function (r) {
-        if (r !== null && r === true) {
-          // test connection
-          const optionsSparcTable = {
-            hostname: airtableHostname,
-            port: 443,
-            path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-            headers: { Authorization: `Bearer ${key}` },
-          };
-          var sparcTableSuccess;
-          https.get(optionsSparcTable, (res) => {
-            if (res.statusCode === 200) {
-              /// updating api key in SODA's storage
-              createMetadataDir();
-              var content = parseJson(airtableConfigPath);
-              content["api-key"] = key;
-              content["key-name"] = name;
-              fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-              checkAirtableStatus();
-              document.getElementById(
-                "para-generate-description-status"
-              ).innerHTML = "";
-              $("#submission-connect-Airtable").text("Loading...");
-              $("#dd-connect-Airtable").text("Loading...");
-              $("#submission-connect-Airtable").prop("disabled", "true");
-              $("#dd-connect-Airtable").prop("disabled", "true");
-              $("#submission-no-airtable-mode").prop("disabled", "true");
-              $("#dataset-description-no-airtable-mode").prop(
-                "disabled",
-                "true"
-              );
-              $("#current-airtable-account").text(name);
-              $("#current-airtable-account-dd").text(name);
-              $("#bootbox-airtable-key-name").val("");
-              $("#bootbox-airtable-key").val("");
-              loadAwardData();
-              ddNoAirtableMode("Off");
-              myBootboxD.modal("hide");
-              $("#Question-prepare-submission-1")
-                .nextAll()
-                .removeClass("show")
-                .removeClass("prev");
-              $("#Question-prepare-dd-1")
-                .nextAll()
-                .removeClass("show")
-                .removeClass("prev");
-              Swal.fire({
-                title:
-                  "Successfully connected. Loading your Airtable account...",
-                timer: 2500,
-                timerProgressBar: true,
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                allowEscapeKey: false,
-                showConfirmButton: false,
-              });
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Prepare Metadata - Add Airtable account",
-                defaultBfAccount
-              );
-            } else if (res.statusCode === 403) {
-              $(myBootboxD).find(".modal-footer span").remove();
-              myBootboxD
-                .find(".modal-footer")
-                .prepend(
-                  "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
-                );
-            } else {
-              log.error(res);
-              console.error(res);
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Add Airtable account",
-                defaultBfAccount
-              );
-              $(myBootboxD).find(".modal-footer span").remove();
-              myBootboxD
-                .find(".modal-footer")
-                .prepend(
-                  "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-                );
-            }
-            res.on("error", (error) => {
-              log.error(error);
-              console.error(error);
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Add Airtable account",
-                defaultBfAccount
-              );
-              $(myBootboxD).find(".modal-footer span").remove();
-              myBootboxD
-                .find(".modal-footer")
-                .prepend(
-                  "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-                );
-            });
-          });
-        }
-      },
-    });
-  }
-}
+// function addAirtableAccountInsideBootbox(myBootboxD) {
+//   var name = $("#bootbox-airtable-key-name").val();
+//   var key = $("#bootbox-airtable-key").val();
+//   if (name.length === 0 || key.length === 0) {
+//     var errorMessage =
+//       "<span style='color: red;'>Please fill in both required fields to add.</span>";
+//     $(myBootboxD).find(".modal-footer span").remove();
+//     myBootboxD
+//       .find(".modal-footer")
+//       .prepend(
+//         "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+//           error +
+//           "</span>"
+//       );
+//   } else {
+//     bootbox.confirm({
+//       title: "Connect to Airtable",
+//       message:
+//         "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+//       centerVertical: true,
+//       size: "large",
+//       button: {
+//         ok: {
+//           label: "Yes",
+//           className: "btn-primary",
+//         },
+//       },
+//       callback: function (r) {
+//         if (r !== null && r === true) {
+//           // test connection
+//           const optionsSparcTable = {
+//             hostname: airtableHostname,
+//             port: 443,
+//             path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+//             headers: { Authorization: `Bearer ${key}` },
+//           };
+//           var sparcTableSuccess;
+//           https.get(optionsSparcTable, (res) => {
+//             if (res.statusCode === 200) {
+//               /// updating api key in SODA's storage
+//               createMetadataDir();
+//               var content = parseJson(airtableConfigPath);
+//               content["api-key"] = key;
+//               content["key-name"] = name;
+//               fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+//               checkAirtableStatus();
+//               document.getElementById(
+//                 "para-generate-description-status"
+//               ).innerHTML = "";
+//               $("#submission-connect-Airtable").text("Loading...");
+//               $("#dd-connect-Airtable").text("Loading...");
+//               $("#submission-connect-Airtable").prop("disabled", "true");
+//               $("#dd-connect-Airtable").prop("disabled", "true");
+//               $("#submission-no-airtable-mode").prop("disabled", "true");
+//               $("#dataset-description-no-airtable-mode").prop(
+//                 "disabled",
+//                 "true"
+//               );
+//               $("#current-airtable-account").text(name);
+//               $("#current-airtable-account-dd").text(name);
+//               $("#bootbox-airtable-key-name").val("");
+//               $("#bootbox-airtable-key").val("");
+//               loadAwardData();
+//               ddNoAirtableMode("Off");
+//               myBootboxD.modal("hide");
+//               $("#Question-prepare-submission-1")
+//                 .nextAll()
+//                 .removeClass("show")
+//                 .removeClass("prev");
+//               $("#Question-prepare-dd-1")
+//                 .nextAll()
+//                 .removeClass("show")
+//                 .removeClass("prev");
+//               Swal.fire({
+//                 title:
+//                   "Successfully connected. Loading your Airtable account...",
+//                 timer: 2500,
+//                 timerProgressBar: true,
+//                 heightAuto: false,
+//                 backdrop: "rgba(0,0,0, 0.4)",
+//                 allowEscapeKey: false,
+//                 showConfirmButton: false,
+//               });
+//               ipcRenderer.send(
+//                 "track-event",
+//                 "Success",
+//                 "Prepare Metadata - Add Airtable account",
+//                 defaultBfAccount
+//               );
+//             } else if (res.statusCode === 403) {
+//               $(myBootboxD).find(".modal-footer span").remove();
+//               myBootboxD
+//                 .find(".modal-footer")
+//                 .prepend(
+//                   "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
+//                 );
+//             } else {
+//               log.error(res);
+//               console.error(res);
+//               ipcRenderer.send(
+//                 "track-event",
+//                 "Error",
+//                 "Prepare Metadata - Add Airtable account",
+//                 defaultBfAccount
+//               );
+//               $(myBootboxD).find(".modal-footer span").remove();
+//               myBootboxD
+//                 .find(".modal-footer")
+//                 .prepend(
+//                   "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+//                 );
+//             }
+//             res.on("error", (error) => {
+//               log.error(error);
+//               console.error(error);
+//               ipcRenderer.send(
+//                 "track-event",
+//                 "Error",
+//                 "Prepare Metadata - Add Airtable account",
+//                 defaultBfAccount
+//               );
+//               $(myBootboxD).find(".modal-footer span").remove();
+//               myBootboxD
+//                 .find(".modal-footer")
+//                 .prepend(
+//                   "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+//                 );
+//             });
+//           });
+//         }
+//       },
+//     });
+//   }
+// }
 
 var editSPARCAwardsTitle =
   "<h3 style='text-align:center'> Add/Remove your SPARC Award(s) below: <i class='fas fa-info-circle popover-tooltip' data-content='The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on Add to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.' rel='popover' data-placement='right' data-html='true' data-trigger='hover'></i></h3>";
@@ -5011,25 +5873,27 @@ function generateDataset(button) {
   if (button.id === "btn-generate-locally") {
     $("#btn-generate-BF").removeClass("active");
     $(button).toggleClass("active");
-    bootbox.prompt({
+    Swal.fire({
       title: "Generate dataset locally",
-      message: "Enter a name for the dataset:",
-      buttons: {
-        cancel: {
-          label: '<i class="fa fa-times"></i> Cancel',
-        },
-        confirm: {
-          label: '<i class="fa fa-check"></i> Confirm and Choose location',
-          className: "btn-success",
-        },
+      text: "Enter a name for the dataset:",
+      input: "text",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Confirm and Choose Location",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
-      centerVertical: true,
-      callback: function (r) {
-        if (r !== null && r.trim() !== "") {
-          newDSName = r.trim();
-          ipcRenderer.send("open-file-dialog-newdataset");
-        }
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate_fastest",
       },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        newDSName = result.value.trim();
+        ipcRenderer.send("open-file-dialog-newdataset");
+      }
     });
   } else {
     $("#btn-generate-locally").removeClass("active");
@@ -5106,6 +5970,12 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
       text: "We found some hidden files. These will be ignored when importing.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
     // bootbox.alert({
     //   message:
@@ -5146,11 +6016,18 @@ function addFoldersfunction(folderArray, currentLocation) {
 
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
-    bootbox.alert({
-      message:
+    Swal.fire({
+      icon: "error",
+      text:
         "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
-      centerVertical: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     });
+    // bootbox.alert({
+    //   message:
+    //     "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
+    //   centerVertical: true,
+    // });
   } else {
     // check for duplicates/folders with the same name
     for (var i = 0; i < folderArray.length; i++) {
@@ -5256,10 +6133,12 @@ async function drop(ev) {
     if (statsObj.isFile()) {
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
-        bootbox.alert({
-          message:
+        Swal.fire({
+          icon: "error",
+          html:
             "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-          centerVertical: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
         });
         break;
       } else {
@@ -5303,10 +6182,12 @@ async function drop(ev) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
-        bootbox.alert({
-          message:
+        Swal.fire({
+          icon: "error",
+          text:
             "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
-          centerVertical: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
         });
       } else {
         var j = 1;
@@ -5328,12 +6209,20 @@ async function drop(ev) {
   }
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
-    bootbox.alert({
-      message:
+    Swal.fire({
+      icon: "warning",
+      html:
         "The following files are already imported into the current location of your dataset: <p><ul>" +
         listElements +
         "</ul></p>",
-      centerVertical: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
   }
   // // now append to UI files and folders
@@ -5356,7 +6245,7 @@ async function drop(ev) {
         );
       }
       var appendString =
-        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         importedFiles[element]["basename"] +
         "</div></div>";
       $(appendString).appendTo(ev.target);
@@ -5383,7 +6272,7 @@ async function drop(ev) {
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(myPath["folders"][element]["path"]).name;
       let placeholderString =
-        '<div id="placeholder_element" class="single-item"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
+        '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
         element +
         "... </div></div>";
       $(placeholderString).appendTo(ev.target);
@@ -5396,7 +6285,7 @@ async function drop(ev) {
         importedFolders[element]["path"]
       );
       var appendString =
-        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         element +
         "</div></div>";
       $("#placeholder_element").remove();
@@ -5439,9 +6328,15 @@ function showmenu(ev, category, deleted = false) {
   if (ev.pageX <= 200) {
     mouseX = ev.pageX + 10;
   } else {
-    mouseX = ev.pageX - 210;
+    let active_class = $("#sidebarCollapse").attr("class");
+    if (active_class.search("active") == -1) {
+      mouseX = ev.pageX - 210;
+    } else {
+      mouseX = ev.pageX - 50;
+    }
   }
-  var mouseY = ev.pageY - 15;
+
+  var mouseY = ev.pageY - 10;
 
   if (category === "folder") {
     if (deleted) {
@@ -5879,6 +6774,8 @@ function listItems(jsonObj, uiItem) {
           "txt",
           "jpg",
           "JPG",
+          "jpeg",
+          "JPEG",
           "xlsx",
           "xls",
           "csv",
@@ -5927,7 +6824,7 @@ function listItems(jsonObj, uiItem) {
 
     appendString =
       appendString +
-      '<div class="single-item"><h1 class="myFile ' +
+      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
       extension +
       '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc' +
       cloud_item +
@@ -6047,24 +6944,47 @@ function addDetailsForFile(ev) {
   }
   /// if at least 1 checkbox is checked, then confirm with users
   if (checked) {
-    bootbox.confirm({
+    Swal.fire({
+      icon: "warning",
       title: "Adding additional metadata for files",
-      message:
-        "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
-      centerVertical: true,
-      button: {
-        ok: {
-          label: "Yes",
-          className: "btn-primary",
-        },
+      text:
+        "Metadata will be modified for all files in the folder. Would you like to continue?",
+      showCancelButton: true,
+      focusCancel: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
-      callback: function (r) {
-        if (r !== null && r === true) {
-          updateFileDetails(ev);
-          $("#button-confirm-display-details-file").html("Added");
-        }
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate_fastest",
       },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateFileDetails(ev);
+        $("#button-confirm-display-details-file").html("Added");
+      }
     });
+
+    // bootbox.confirm({
+    //   title: "Adding additional metadata for files",
+    //   message:
+    //     "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
+    //   centerVertical: true,
+    //   button: {
+    //     ok: {
+    //       label: "Yes",
+    //       className: "btn-primary",
+    //     },
+    //   },
+    //   callback: function (r) {
+    //     if (r !== null && r === true) {
+    //       updateFileDetails(ev);
+    //       $("#button-confirm-display-details-file").html("Added");
+    //     }
+    //   },
+    // });
   } else {
     updateFileDetails(ev);
     $("#button-confirm-display-details-file").html("Added");
@@ -6111,7 +7031,14 @@ $("#bf-new-dataset-name").keyup(function () {
   }
 });
 
+$("#inputNewNameDataset").on("click", () => {
+  $("#nextBtn").prop("disabled", true);
+  $("#inputNewNameDataset").keyup();
+});
+
 $("#inputNewNameDataset").keyup(function () {
+  $("#nextBtn").prop("disabled", true);
+
   var newName = $("#inputNewNameDataset").val().trim();
 
   $("#Question-generate-dataset-generate-div").removeClass("show");
@@ -6129,33 +7056,10 @@ $("#inputNewNameDataset").keyup(function () {
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
-      $("#nextBtn").prop("disabled", true);
+      // $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
-    } else {
-      $("#div-confirm-inputNewNameDataset").css("display", "flex");
-      $("#btn-confirm-new-dataset-name").show();
-      $("#Question-generate-dataset-generate-div").show();
-      $("#Question-generate-dataset-generate-div").children().show();
-
-      $("#Question-generate-dataset-generate-div-old").addClass("show");
-      document.getElementById("para-new-name-dataset-message").innerHTML = "";
-      $("#nextBtn").prop("disabled", false);
-    }
-  } else {
-    $("#nextBtn").prop("disabled", true);
-  }
-});
-
-$("#inputNewNameDataset").click(function () {
-  var newName = $("#inputNewNameDataset").val().trim();
-
-  if (newName !== "") {
-    if (check_forbidden_characters_bf(newName)) {
-      document.getElementById("div-confirm-inputNewNameDataset").style.display =
-        "none";
+      $("#div-confirm-inputNewNameDataset").css("display", "none");
       $("#btn-confirm-new-dataset-name").hide();
-      $("#nextBtn").prop("disabled", true);
-      $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
       $("#div-confirm-inputNewNameDataset").css("display", "flex");
       $("#btn-confirm-new-dataset-name").show();
@@ -6164,12 +7068,40 @@ $("#inputNewNameDataset").click(function () {
 
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
-      $("#nextBtn").prop("disabled", false);
+      // $("#nextBtn").prop("disabled", false);
     }
   } else {
-    $("#nextBtn").prop("disabled", true);
+    $("#div-confirm-inputNewNameDataset").css("display", "none");
+    $("#btn-confirm-new-dataset-name").hide();
+    // $("#nextBtn").prop("disabled", true);
   }
 });
+
+// Defined above
+// $("#inputNewNameDataset").click(function () {
+//   var newName = $("#inputNewNameDataset").val().trim();
+
+//   if (newName !== "") {
+//     if (check_forbidden_characters_bf(newName)) {
+//       document.getElementById("div-confirm-inputNewNameDataset").style.display =
+//         "none";
+//       $("#btn-confirm-new-dataset-name").hide();
+//       $("#nextBtn").prop("disabled", true);
+//       $("#Question-generate-dataset-generate-div-old").removeClass("show");
+//     } else {
+//       $("#div-confirm-inputNewNameDataset").css("display", "flex");
+//       $("#btn-confirm-new-dataset-name").show();
+//       $("#Question-generate-dataset-generate-div").show();
+//       $("#Question-generate-dataset-generate-div").children().show();
+
+//       $("#Question-generate-dataset-generate-div-old").addClass("show");
+//       document.getElementById("para-new-name-dataset-message").innerHTML = "";
+//       $("#nextBtn").prop("disabled", false);
+//     }
+//   } else {
+//     $("#nextBtn").prop("disabled", true);
+//   }
+// });
 
 //// Select to choose a local dataset (getting started)
 document
@@ -6220,34 +7152,65 @@ ipcRenderer.on(
             );
             $("#nextBtn").prop("disabled", false);
           } else {
-            var bootboxDialog = bootbox.confirm({
-              message:
+            // var bootboxDialog = bootbox.confirm({
+            //   message:
+            //     "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+            //   buttons: {
+            //     confirm: {
+            //       label: "Yes",
+            //       className: "btn-success",
+            //     },
+            //     cancel: {
+            //       label: "Cancel",
+            //       className: "btn-danger",
+            //     },
+            //   },
+            //   centerVertical: true,
+            //   callback: (result) => {
+            //     if (result) {
+            //       $("#nextBtn").prop("disabled", false);
+            //       $("#para-continue-location-dataset-getting-started").text(
+            //         "Please continue below."
+            //       );
+            //     } else {
+            //       document.getElementById(
+            //         "input-destination-getting-started-locally"
+            //       ).placeholder = "Browse here";
+            //       sodaJSONObj["starting-point"]["local-path"] = "";
+            //       $("#para-continue-location-dataset-getting-started").text("");
+            //     }
+            //   },
+            // });
+            Swal.fire({
+              icon: "warning",
+              text:
                 "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-              buttons: {
-                confirm: {
-                  label: "Yes",
-                  className: "btn-success",
-                },
-                cancel: {
-                  label: "Cancel",
-                  className: "btn-danger",
-                },
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showCancelButton: true,
+              focusCancel: true,
+              confirmButtonText: "Yes",
+              cancelButtonText: "Cancel",
+              reverseButtons: true,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
-              centerVertical: true,
-              callback: (result) => {
-                if (result) {
-                  $("#nextBtn").prop("disabled", false);
-                  $("#para-continue-location-dataset-getting-started").text(
-                    "Please continue below."
-                  );
-                } else {
-                  document.getElementById(
-                    "input-destination-getting-started-locally"
-                  ).placeholder = "Browse here";
-                  sodaJSONObj["starting-point"]["local-path"] = "";
-                  $("#para-continue-location-dataset-getting-started").text("");
-                }
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
               },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                $("#nextBtn").prop("disabled", false);
+                $("#para-continue-location-dataset-getting-started").text(
+                  "Please continue below."
+                );
+              } else {
+                document.getElementById(
+                  "input-destination-getting-started-locally"
+                ).placeholder = "Browse here";
+                sodaJSONObj["starting-point"]["local-path"] = "";
+                $("#para-continue-location-dataset-getting-started").text("");
+              }
             });
           }
         }
@@ -6345,7 +7308,7 @@ const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
 
 document
   .getElementById("button-generate")
-  .addEventListener("click", function () {
+  .addEventListener("click", async function () {
     // setTimeout(function () {
     $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById("prevBtn").style.display = "none";
@@ -6360,6 +7323,34 @@ document
     updateJSONStructureGenerate();
     if (sodaJSONObj["starting-point"]["type"] === "local") {
       sodaJSONObj["starting-point"]["type"] = "new";
+    }
+
+    let dataset_name = "";
+    let dataset_destination = "";
+
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      dataset_destination = "Pennsieve";
+    } else if ("generate-dataset" in sodaJSONObj) {
+      if ("destination" in sodaJSONObj["generate-dataset"]) {
+        let destination = sodaJSONObj["generate-dataset"]["destination"];
+        if (destination == "local") {
+          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+          dataset_destination = "Local";
+        }
+        if (destination == "bf") {
+          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+          dataset_destination = "Pennsieve";
+          t;
+        }
+      }
+    }
+
+    if (dataset_destination == "Pennsieve") {
+      let supplementary_checks = await run_pre_flight_checks(false);
+      if (!supplementary_checks) {
+        return;
+      }
     }
 
     //  from here you can modify
@@ -6429,35 +7420,67 @@ document
 
           if (message) {
             message += "Would you like to continue?";
-            var bootboxDialog = bootbox.confirm({
-              message: message,
-              buttons: {
-                confirm: {
-                  label: "Yes",
-                  className: "btn-success",
-                },
-                cancel: {
-                  label: "No",
-                  className: "btn-danger",
-                },
+            // var bootboxDialog = bootbox.confirm({
+            //   message: message,
+            //   buttons: {
+            //     confirm: {
+            //       label: "Yes",
+            //       className: "btn-success",
+            //     },
+            //     cancel: {
+            //       label: "No",
+            //       className: "btn-danger",
+            //     },
+            //   },
+            //   centerVertical: true,
+            //   callback: function (result) {
+            //     if (result) {
+            //       console.log("Continue");
+            //       initiate_generate();
+            //     } else {
+            //       console.log("Stop");
+            //       // then show the sidebar again
+            //       forceActionSidebar("show");
+            //       document.getElementById(
+            //         "para-please-wait-new-curate"
+            //       ).innerHTML = "Return to make changes";
+            //       document.getElementById(
+            //         "div-generate-comeback"
+            //       ).style.display = "flex";
+            //     }
+            //   },
+            // });
+            message = "<div style='text-align: left'>" + message + "</div>";
+            Swal.fire({
+              icon: "warning",
+              html: message,
+              showCancelButton: true,
+              cancelButtonText: "No",
+              focusCancel: true,
+              showConfirmButton: "Yes",
+              backdrop: "rgba(0,0,0, 0.4)",
+              reverseButtons: true,
+              heightAuto: false,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
-              centerVertical: true,
-              callback: function (result) {
-                if (result) {
-                  console.log("Continue");
-                  initiate_generate();
-                } else {
-                  console.log("Stop");
-                  // then show the sidebar again
-                  forceActionSidebar("show");
-                  document.getElementById(
-                    "para-please-wait-new-curate"
-                  ).innerHTML = "Return to make changes";
-                  document.getElementById(
-                    "div-generate-comeback"
-                  ).style.display = "flex";
-                }
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
               },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                console.log("Continue");
+                initiate_generate();
+              } else {
+                console.log("Stop");
+                // then show the sidebar again
+                forceActionSidebar("show");
+                document.getElementById(
+                  "para-please-wait-new-curate"
+                ).innerHTML = "Return to make changes";
+                document.getElementById("div-generate-comeback").style.display =
+                  "flex";
+              }
             });
             // ipcRenderer.send('warning-empty-files-folders-generate', message)
           } else {
@@ -7295,3 +8318,342 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
     );
   }
 });
+
+function showBFAddAccountSweetalert() {
+  var bootb = Swal.fire({
+    title: bfaddaccountTitle,
+    html: bfAddAccountBootboxMessage,
+    showCancelButton: true,
+    focusCancel: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Add Account",
+    customClass: "swal-wide",
+    reverseButtons: true,
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    didOpen: () => {
+      $(".swal-popover").popover();
+    },
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      addBFAccountInsideSweetalert(bootb);
+    }
+  });
+}
+
+function addBFAccountInsideSweetalert(myBootboxDialog) {
+  var name = $("#bootbox-key-name").val();
+  var apiKey = $("#bootbox-api-key").val();
+  var apiSecret = $("#bootbox-api-secret").val();
+  client.invoke("api_bf_add_account", name, apiKey, apiSecret, (error, res) => {
+    if (error) {
+      Swal.fire({
+        icon: "error",
+        html: "<span>" + error + "</span>",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+        // showClass: {
+        //   popup: ''
+        // },
+        // hideClass: {
+        //   popup: ''
+        // }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          showBFAddAccountSweetalert();
+        }
+      });
+      log.error(error);
+      console.error(error);
+    } else {
+      $("#bootbox-key-name").val("");
+      $("#bootbox-api-key").val("");
+      $("#bootbox-api-secret").val("");
+      bfAccountOptions[name] = name;
+      defaultBfAccount = name;
+      defaultBfDataset = "Select dataset";
+      updateBfAccountList();
+      client.invoke("api_bf_account_details", name, (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong!",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            footer:
+              '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+          });
+          showHideDropdownButtons("account", "hide");
+          confirm_click_account_function();
+        } else {
+          $("#para-account-detail-curate").html(res);
+          $("#current-bf-account").text(name);
+          $("#current-bf-account-generate").text(name);
+          $("#create_empty_dataset_BF_account_span").text(name);
+          $(".bf-account-span").text(name);
+          $("#current-bf-dataset").text("None");
+          $("#current-bf-dataset-generate").text("None");
+          $(".bf-dataset-span").html("None");
+          $("#para-account-detail-curate-generate").html(res);
+          $("#para_create_empty_dataset_BF_account").html(res);
+          $(".bf-account-details-span").html(res);
+          $("#para-continue-bf-dataset-getting-started").text("");
+          showHideDropdownButtons("account", "show");
+          confirm_click_account_function();
+        }
+      });
+      // myBootboxDialog.modal("hide");
+      Swal.fire({
+        icon: "success",
+        title: "Successfully added! <br/>Loading your account details...",
+        timer: 3000,
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showConfirmButton: false,
+      });
+    }
+  });
+}
+
+function showAddAirtableAccountSweetalert() {
+  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+
+  var bootb = Swal.fire({
+    title: htmlTitle,
+    html: airtableAccountBootboxMessage,
+    showCancelButton: true,
+    focusCancel: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Add Account",
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    reverseButtons: true,
+    customClass: "swal-wide",
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+    didOpen: () => {
+      $(".swal-popover").popover();
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      addAirtableAccountInsideSweetalert();
+    }
+  });
+}
+
+function addAirtableAccountInsideSweetalert() {
+  var name = $("#bootbox-airtable-key-name").val();
+  var key = $("#bootbox-airtable-key").val();
+  if (name.length === 0 || key.length === 0) {
+    var errorMessage =
+      "<span>Please fill in both required fields to add.</span>";
+    // $(myBootboxD).find(".modal-footer span").remove();
+    // myBootboxD
+    //   .find(".modal-footer")
+    //   .prepend(
+    //     "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+    //       error +
+    //       "</span>"
+    //   );
+    Swal.fire({
+      icon: "error",
+      html: errorMessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+      // showClass: {
+      //   popup: ''
+      // },
+      // hideClass: {
+      //   popup: ''
+      // }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        showAddAirtableAccountSweetalert();
+      }
+    });
+  } else {
+    Swal.fire({
+      icon: "warning",
+      title: "Connect to Airtable",
+      text:
+        "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      heightAuto: false,
+      showCancelButton: true,
+      focusCancel: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+      reverseButtons: true,
+      backdrop: "rgba(0,0,0,0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const optionsSparcTable = {
+          hostname: airtableHostname,
+          port: 443,
+          path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+          headers: { Authorization: `Bearer ${key}` },
+        };
+        var sparcTableSuccess;
+        https.get(optionsSparcTable, (res) => {
+          if (res.statusCode === 200) {
+            /// updating api key in SODA's storage
+            createMetadataDir();
+            var content = parseJson(airtableConfigPath);
+            content["api-key"] = key;
+            content["key-name"] = name;
+            fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+            checkAirtableStatus();
+            document.getElementById(
+              "para-generate-description-status"
+            ).innerHTML = "";
+            $("#submission-connect-Airtable").text("Loading...");
+            $("#dd-connect-Airtable").text("Loading...");
+            $("#submission-connect-Airtable").prop("disabled", "true");
+            $("#dd-connect-Airtable").prop("disabled", "true");
+            $("#submission-no-airtable-mode").prop("disabled", "true");
+            $("#dataset-description-no-airtable-mode").prop("disabled", "true");
+            $("#current-airtable-account").text(name);
+            $("#current-airtable-account-dd").text(name);
+            $("#bootbox-airtable-key-name").val("");
+            $("#bootbox-airtable-key").val("");
+            loadAwardData();
+            ddNoAirtableMode("Off");
+            // myBootboxD.modal("hide");
+            $("#Question-prepare-submission-1")
+              .nextAll()
+              .removeClass("show")
+              .removeClass("prev");
+            $("#Question-prepare-dd-1")
+              .nextAll()
+              .removeClass("show")
+              .removeClass("prev");
+            Swal.fire({
+              icon: "success",
+              title: "Successfully connected. Loading your Airtable account...",
+              timer: 2500,
+              timerProgressBar: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              allowEscapeKey: false,
+              showConfirmButton: false,
+            });
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Add Airtable account",
+              defaultBfAccount
+            );
+          } else if (res.statusCode === 403) {
+            // $(myBootboxD).find(".modal-footer span").remove();
+            // myBootboxD
+            //   .find(".modal-footer")
+            //   .prepend(
+            //     "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
+            //   );
+            Swal.fire({
+              icon: "error",
+              text:
+                "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0,0.4)",
+              // showClass: {
+              //   popup: ''
+              // },
+              // hideClass: {
+              //   popup: ''
+              // }
+            }).then((result) => {
+              if (result.isConfirmed) {
+                showAddAirtableAccountSweetalert();
+              }
+            });
+          } else {
+            log.error(res);
+            console.error(res);
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Add Airtable account",
+              defaultBfAccount
+            );
+            // $(myBootboxD).find(".modal-footer span").remove();
+            // myBootboxD
+            //   .find(".modal-footer")
+            //   .prepend(
+            //     "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+            //   );
+            Swal.fire({
+              icon: "error",
+              text:
+                "Failed to connect to Airtable. Please check your API Key and try again!",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0,0.4)",
+              // showClass: {
+              //   popup: ''
+              // },
+              // hideClass: {
+              //   popup: ''
+              // }
+            }).then((result) => {
+              if (result.isConfirmed) {
+                showAddAirtableAccountSweetalert();
+              }
+            });
+          }
+          res.on("error", (error) => {
+            log.error(error);
+            console.error(error);
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Add Airtable account",
+              defaultBfAccount
+            );
+            // $(myBootboxD).find(".modal-footer span").remove();
+            // myBootboxD
+            //   .find(".modal-footer")
+            //   .prepend(
+            //     "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+            //   );
+            Swal.fire({
+              icon: "error",
+              text:
+                "Failed to connect to Airtable. Please check your API Key and try again!",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0,0.4)",
+              // showClass: {
+              //   popup: ''
+              // },
+              // hideClass: {
+              //   popup: ''
+              // }
+            }).then((result) => {
+              if (result.isConfirmed) {
+                showAddAirtableAccountSweetalert();
+              }
+            });
+          });
+        });
+      }
+    });
+  }
+}

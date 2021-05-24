@@ -4,10 +4,30 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v4.3.0 - 2021-05-24
+
+### Feature additions:
+- Added support for toast style notifications to better show relevant information. When you open the app, SODA will run through a checklist of items so that you can see if you are missing any components required for the workflow. This includes checking for Pennsieve agent updates and SODA application updates as well.
+- You can now use your Pennsieve login details to connect your Pennsieve account to SODA. This will replace the default API key based login. The original login method will be present as a secondary login alternative in the meantime.  
+- Added better warning messages to functions that were not descriptive enough so now you will have a better idea of what they do.
+- You can now add line breaks for your dataset descriptions when created through SODA.
+- SODA now uses a new visual look for showing message boxes and alerts. This should make SODA more consistent to use.
+
+### Bug fixes:
+- Fixed a bug where SODA was unable to update on macOS through the built in buttons. The new update notification will be less intrusive and take up less space on your screen.
+- When you request a database from Pennsieve, SODA will now generate a timestamp that is inline with the curation team's requirements.
+- Fixed a visual bug where users would have been able to continue through certain datasets on a dataset that did not have a valid name.
+- Fixed a visual bug where right clicking on an item in 'Step 3' of our organize datasets would show the context menu in the wrong position.
+- Fixed a minor bug where .jpeg files were not requesting their proper icon in the UI. 
+- Added minor bug fixes with new Pennsieve APIs. As we go forward, performance of key SODA-Pennseive elements should improve.
+
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
 ## v4.2.1 - 2021-04-23
 
 ### Bug fixes:
-- Updated Pennsieve python packages to support minor bugfixes and performance improvements
+- Updated Pennsieve python packages to support minor bugfixes and performance improvements.
 - Fixed a minor bug in how dataset statistics were being recorded.
 - Fixed a bug where the contact person could not be changed when creating the dataset_description metadata file.
 

@@ -2,11 +2,11 @@ from __future__ import print_function
 from gevent import monkey; monkey.patch_all()
 import gevent
 from pysoda import submit_dataset_progress,  \
-    bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
+    bf_add_account_api_key, bf_add_account_username, bf_account_list, bf_dataset_account, bf_account_details, \
     bf_submit_dataset, bf_new_dataset_folder, bf_rename_dataset, bf_add_permission, bf_get_users, bf_get_permission, \
     bf_get_teams, bf_add_permission_team, bf_add_subtitle, bf_get_subtitle, bf_get_description, \
     bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
-    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, get_username, get_number_of_files_and_folders_locally
+    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, get_username, get_number_of_files_and_folders_locally, check_agent_install, get_pennsieve_api_key_secret, SODA_SPARC_API_KEY
 
 from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf_publish_dataset, bf_submit_review_dataset, bf_withdraw_review_dataset
 
@@ -96,9 +96,15 @@ class SodaApi(object):
             raise e
 
     ### Bf
-    def api_bf_add_account(self, keyname, key, secret):
+    def api_bf_add_account_api_key(self, keyname, key, secret):
         try:
-            return bf_add_account(keyname, key, secret)
+            return bf_add_account_api_key(keyname, key, secret)
+        except Exception as e:
+            raise e
+
+    def api_bf_add_account_username(self, keyname, key, secret):
+        try:
+            return bf_add_account_username(keyname, key, secret)
         except Exception as e:
             raise e
 
@@ -324,6 +330,18 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
+    def api_check_agent_install(self):
+        try:
+            return check_agent_install()
+        except Exception as e:
+            raise e
+
+    def api_get_pennsieve_api_key_secret(self, email, password, keyname=SODA_SPARC_API_KEY):
+        try:
+            return get_pennsieve_api_key_secret(email, password, keyname)
+        except Exception as e:
+            raise e
+
     ### Check Login to Python Server
     def echo(self, text):
         """echo any text"""
@@ -335,7 +353,7 @@ def parse_port():
     port = 4242
     try:
         port = int(sys.argv[1])
-    except Exception as e:
+    except:
         pass
     return '{}'.format(port)
 

@@ -69,6 +69,10 @@ forbidden_characters_bf = '\/:*?"<>'
 ## these subsequent CheckLeafValue and traverseForLeafNodes functions check for the validity of file paths,
 ## and folder and file size
 
+### Internal functions
+def TZLOCAL():
+    return datetime.now(timezone.utc).astimezone().tzinfo
+
 def checkLeafValue(leafName, leafNodeValue):
 
     error, c = '', 0

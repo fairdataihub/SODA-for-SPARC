@@ -535,34 +535,34 @@ const nextPrev = (n) => {
     x[currentTab].id === "organize-dataset-tab" &&
     sodaJSONObj["dataset-structure"] === { folders: {} }
   ) {
-    bootbox.confirm({
-      message:
+    Swal.fire({
+      icon: "warning",
+      text:
         "The current dataset folder is empty. Are you sure you want to continue?",
-      buttons: {
-        confirm: {
-          label: "Continue",
-          className: "btn-success",
-        },
-        cancel: {
-          label: "No",
-          className: "btn-danger",
-        },
+      showCancelButton: true,
+      cancelButtonText: "No",
+      confirmButtonText: "Continue",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
-      centerVertical: true,
-      callback: (result) => {
-        if (result !== null && result === true) {
-          // Hide the current tab:
-          $(x[currentTab]).removeClass("tab-active");
-          // Increase or decrease the current tab by 1:
-          currentTab = currentTab + n;
-          // For step 1,2,3, check for High level folders input to disable Continue button
-          if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
-            highLevelFoldersDisableOptions();
-          }
-          // Display the correct tab:
-          showParentTab(currentTab, n);
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $(x[currentTab]).removeClass("tab-active");
+        // Increase or decrease the current tab by 1:
+        currentTab = currentTab + n;
+        // For step 1,2,3, check for High level folders input to disable Continue button
+        if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+          highLevelFoldersDisableOptions();
         }
-      },
+        // Display the correct tab:
+        showParentTab(currentTab, n);
+      }
     });
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
@@ -580,30 +580,59 @@ const nextPrev = (n) => {
       withoutExtMetadataArray.includes(val)
     );
     if (!subArrayBoolean) {
-      bootbox.confirm({
-        message:
-          "You did not include all of the following required metadata files: <br><ol><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?",
-        buttons: {
-          confirm: {
-            label: "Continue",
-            className: "btn-success",
-          },
-          cancel: {
-            label: "No",
-            className: "btn-danger",
-          },
+      // bootbox.confirm({
+      //   message:
+      //     "You did not include all of the following required metadata files: <br><ol><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?",
+      //   buttons: {
+      //     confirm: {
+      //       label: "Continue",
+      //       className: "btn-success",
+      //     },
+      //     cancel: {
+      //       label: "No",
+      //       className: "btn-danger",
+      //     },
+      //   },
+      //   centerVertical: true,
+      //   callback: (result) => {
+      //     if (result !== null && result === true) {
+      //       // Hide the current tab:
+      //       $(x[currentTab]).removeClass("tab-active");
+      //       // Increase or decrease the current tab by 1:
+      //       currentTab = currentTab + n;
+      //       // Display the correct tab:
+      //       showParentTab(currentTab, n);
+      //     }
+      //   },
+      // });
+      var notIncludedMessage =
+        "<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?</div>";
+      Swal.fire({
+        icon: "warning",
+        html: notIncludedMessage,
+        showConfirmButton: true,
+        confirmButtonText: "Continue",
+        showCancelButton: "No",
+        focusCancel: true,
+        reverseButtons: true,
+        heightAuto: false,
+        customClass: "swal-wide",
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
-        centerVertical: true,
-        callback: (result) => {
-          if (result !== null && result === true) {
-            // Hide the current tab:
-            $(x[currentTab]).removeClass("tab-active");
-            // Increase or decrease the current tab by 1:
-            currentTab = currentTab + n;
-            // Display the correct tab:
-            showParentTab(currentTab, n);
-          }
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
         },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Hide the current tab:
+          $(x[currentTab]).removeClass("tab-active");
+          // Increase or decrease the current tab by 1:
+          currentTab = currentTab + n;
+          // Display the correct tab:
+          showParentTab(currentTab, n);
+        }
       });
     } else {
       // Hide the current tab:
@@ -816,29 +845,54 @@ const raiseWarningGettingStarted = (ev) => {
           '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
       )
     ) {
-      bootbox.confirm({
-        message:
+      // bootbox.confirm({
+      //   message:
+      //     "This will reset your progress so far. Are you sure you want to continue?",
+      //   buttons: {
+      //     confirm: {
+      //       label: "Yes",
+      //       className: "btn-success",
+      //     },
+      //     cancel: {
+      //       label: "No",
+      //       className: "btn-danger",
+      //     },
+      //   },
+      //   centerVertical: true,
+      //   callback: (result) => {
+      //     if (result) {
+      //       globalGettingStarted1stQuestionBool = true;
+      //       resolve(globalGettingStarted1stQuestionBool);
+      //     } else {
+      //       globalGettingStarted1stQuestionBool = false;
+      //       resolve(globalGettingStarted1stQuestionBool);
+      //     }
+      //   },
+      // });
+      Swal.fire({
+        icon: "warning",
+        text:
           "This will reset your progress so far. Are you sure you want to continue?",
-        buttons: {
-          confirm: {
-            label: "Yes",
-            className: "btn-success",
-          },
-          cancel: {
-            label: "No",
-            className: "btn-danger",
-          },
+        showCancelButton: "No",
+        focusCancel: true,
+        confirmButtonText: "Yes",
+        reverseButtons: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
-        centerVertical: true,
-        callback: (result) => {
-          if (result) {
-            globalGettingStarted1stQuestionBool = true;
-            resolve(globalGettingStarted1stQuestionBool);
-          } else {
-            globalGettingStarted1stQuestionBool = false;
-            resolve(globalGettingStarted1stQuestionBool);
-          }
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
         },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          globalGettingStarted1stQuestionBool = true;
+          resolve(globalGettingStarted1stQuestionBool);
+        } else {
+          globalGettingStarted1stQuestionBool = false;
+          resolve(globalGettingStarted1stQuestionBool);
+        }
       });
     } else {
       globalGettingStarted1stQuestionBool = true;
@@ -991,9 +1045,9 @@ async function transitionSubQuestions(
         $(ev).siblings().hide();
         // auto-scroll to bottom of div
         if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-          document.getElementById(parentDiv).scrollTop = document.getElementById(
+          document.getElementById(
             parentDiv
-          ).scrollHeight;
+          ).scrollTop = document.getElementById(parentDiv).scrollHeight;
         }
       }, delay);
     }
@@ -1065,9 +1119,15 @@ async function transitionSubQuestions(
       currentDiv === "Question-generate-dataset"
     ) {
       let starting_point = sodaJSONObj["starting-point"]["local-path"];
-      bootbox.alert({
-        message: `The following local folder '${starting_point}' will be modified as instructed.`,
-        centerVertical: true,
+      // bootbox.alert({
+      //   message: `The following local folder '${starting_point}' will be modified as instructed.`,
+      //   centerVertical: true,
+      // });
+      Swal.fire({
+        icon: "info",
+        text: `The following local folder '${starting_point}' will be modified as instructed.`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
       });
       $("#para-continue-replace-local-generate").show();
       $("#para-continue-replace-local-generate").text("Please continue below.");
@@ -1453,12 +1513,13 @@ async function transitionSubQuestionsButton(
 
     if (!result[0]) {
       Swal.fire({
+        icon: "error",
         html:
           "<p style='color:red'>" +
           result[1] +
           ".<br>Please choose another dataset!</p>",
-          heightAuto: false,
-          backdrop:"rgba(0,0,0, 0.4)"
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
       });
       $("#nextBtn").prop("disabled", true);
       $("#para-continue-bf-dataset-getting-started").text("");
@@ -1487,38 +1548,39 @@ async function transitionSubQuestionsButton(
         }
         message_text += "</ul>";
 
-        bootbox.confirm({
-          message: message_text,
-          buttons: {
-            confirm: {
-              label: "Continue",
-              className: "btn-success",
-            },
-            cancel: {
-              label: "No",
-              className: "btn-danger",
-            },
+        Swal.fire({
+          icon: "warning",
+          text: message_text,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Continue",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          reverseButtons: true,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
-          centerVertical: true,
-          callback: (response) => {
-            if (response !== null && response === true) {
-              sodaJSONObj = result[1][0];
-              if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-              } else {
-                datasetStructureJSONObj = { folders: {}, files: {} };
-              }
-              populate_existing_folders(datasetStructureJSONObj);
-              populate_existing_metadata(sodaJSONObj);
-              $("#nextBtn").prop("disabled", false);
-              $("#para-continue-bf-dataset-getting-started").text(
-                "Please continue below."
-              );
-              showHideDropdownButtons("dataset", "show");
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((response) => {
+          if (response.isConfirmed) {
+            sodaJSONObj = result[1][0];
+            if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
             } else {
-              exitCurate();
+              datasetStructureJSONObj = { folders: {}, files: {} };
             }
-          },
+            populate_existing_folders(datasetStructureJSONObj);
+            populate_existing_metadata(sodaJSONObj);
+            $("#nextBtn").prop("disabled", false);
+            $("#para-continue-bf-dataset-getting-started").text(
+              "Please continue below."
+            );
+            showHideDropdownButtons("dataset", "show");
+          } else {
+            exitCurate();
+          }
         });
       } else {
         sodaJSONObj = result[1][0];
@@ -1709,9 +1771,9 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
         $(ev).siblings().hide();
         // auto-scroll to bottom of div
         if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-          document.getElementById(parentDiv).scrollTop = document.getElementById(
+          document.getElementById(
             parentDiv
-          ).scrollHeight;
+          ).scrollTop = document.getElementById(parentDiv).scrollHeight;
         }
       }, delay);
     }
@@ -2542,28 +2604,53 @@ var generateExitButtonBool = false;
 function raiseWarningExit(message) {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
-    bootbox.confirm({
-      message: message,
-      buttons: {
-        confirm: {
-          label: "Yes",
-          className: "btn-success",
-        },
-        cancel: {
-          label: "No",
-          className: "btn-danger",
-        },
+    // bootbox.confirm({
+    //   message: message,
+    //   buttons: {
+    //     confirm: {
+    //       label: "Yes",
+    //       className: "btn-success",
+    //     },
+    //     cancel: {
+    //       label: "No",
+    //       className: "btn-danger",
+    //     },
+    //   },
+    //   centerVertical: true,
+    //   callback: (result) => {
+    //     if (result) {
+    //       generateExitButtonBool = true;
+    //       resolve(generateExitButtonBool);
+    //     } else {
+    //       generateExitButtonBool = false;
+    //       resolve(generateExitButtonBool);
+    //     }
+    //   },
+    // });
+    Swal.fire({
+      icon: "warning",
+      text: message,
+      showCancelButton: true,
+      focusCancel: true,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      reverseButtons: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
-      centerVertical: true,
-      callback: (result) => {
-        if (result) {
-          generateExitButtonBool = true;
-          resolve(generateExitButtonBool);
-        } else {
-          generateExitButtonBool = false;
-          resolve(generateExitButtonBool);
-        }
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
       },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        generateExitButtonBool = true;
+        resolve(generateExitButtonBool);
+      } else {
+        generateExitButtonBool = false;
+        resolve(generateExitButtonBool);
+      }
     });
   });
 }
@@ -2734,10 +2821,23 @@ const saveSODAJSONProgress = (progressFileName) => {
     }
   }
   fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj));
-  bootbox.alert({
-    message:
-      "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
-    centerVertical: true,
+  // bootbox.alert({
+  //   message:
+  //     "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
+  //   centerVertical: true,
+  // });
+  Swal.fire({
+    icon: "success",
+    text: "Successfully saved progress!",
+    showConfirmButton: "OK",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
   });
 };
 
@@ -2750,21 +2850,51 @@ const saveOrganizeProgressPrompt = () => {
     saveSODAJSONProgress(sodaJSONObj["save-progress"]);
     // if no, ask users what to name it, and create file
   } else {
-    bootbox.prompt({
+    // bootbox.prompt({
+    //   title: "Saving progress as...",
+    //   message: "Enter a name for your progress below:",
+    //   centerVertical: true,
+    //   callback: (result) => {
+    //     if (result !== null && result !== "") {
+    //       sodaJSONObj["save-progress"] = result.trim();
+    //       saveSODAJSONProgress(result.trim());
+    //       addOption(
+    //         progressFileDropdown,
+    //         result.trim(),
+    //         result.trim() + ".json"
+    //       );
+    //     }
+    //   },
+    // });
+    Swal.fire({
+      icon: "info",
       title: "Saving progress as...",
-      message: "Enter a name for your progress below:",
-      centerVertical: true,
-      callback: (result) => {
-        if (result !== null && result !== "") {
-          sodaJSONObj["save-progress"] = result.trim();
-          saveSODAJSONProgress(result.trim());
+      text: "Enter a name for your progress below:",
+      heightAuto: false,
+      input: "text",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "OK",
+      reverseButtons: true,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    }).then((result) => {
+      if (result.value) {
+        if (result.value !== null && result.value !== "") {
+          sodaJSONObj["save-progress"] = result.value.trim();
+          saveSODAJSONProgress(result.value.trim());
           addOption(
             progressFileDropdown,
-            result.trim(),
-            result.trim() + ".json"
+            result.value.trim(),
+            result.value.trim() + ".json"
           );
         }
-      },
+      }
     });
   }
 };
@@ -2829,8 +2959,14 @@ $(document).ready(() => {
         Swal.fire({
           icon: "info",
           heightAuto: false,
-          backdrop:"rgba(0,0,0, 0.4)",
+          backdrop: "rgba(0,0,0, 0.4)",
           html: `${warning_obj["warning-message"]}`,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         });
       }
     });
@@ -2940,9 +3076,18 @@ $("#edit_banner_image_button").click(async () => {
         } else {
           log.error(`An error happened: ${img_src}`);
           console.log(`An error happened: ${img_src}`);
-          bootbox.alert(
-            `An error occured when importing the image. Please try again later.`
-          );
+          // bootbox.alert(
+          //   `An error occured when importing the image. Please try again later.`
+          // );
+          Swal.fire({
+            icon: "error",
+            text:
+              "An error occured when importing the image. Please try again later.",
+            showConfirmButton: "OK",
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+          });
+
           ipcRenderer.send(
             "track-event",
             "Error",
@@ -2954,9 +3099,18 @@ $("#edit_banner_image_button").click(async () => {
       } else {
         log.error(`An error happened: ${img_src}`);
         console.log(`An error happened: ${img_src}`);
-        bootbox.alert(
-          `An error occured when importing the image. Please try again later.`
-        );
+        // bootbox.alert(
+        //   `An error occured when importing the image. Please try again later.`
+        // );
+        Swal.fire({
+          icon: "error",
+          text:
+            "An error occured when importing the image. Please try again later.",
+          showConfirmButton: "OK",
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+        });
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -2968,9 +3122,18 @@ $("#edit_banner_image_button").click(async () => {
     } else {
       log.error(`An error happened: ${img_src}`);
       console.log(`An error happened: ${img_src}`);
-      bootbox.alert(
-        `An error occured when importing the image. Please try again later.`
-      );
+      // bootbox.alert(
+      //   `An error occured when importing the image. Please try again later.`
+      // );
+      Swal.fire({
+        icon: "error",
+        text:
+          "An error occured when importing the image. Please try again later.",
+        showConfirmButton: "OK",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+      });
+
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -3007,33 +3170,41 @@ $(".popover-tooltip").each(function () {
   });
 });
 
-initRipple = function(buttonEle){
-  var inside = document.createElement('div');
-  inside.classList.add('btn_animated-inside');
+initRipple = function (buttonEle) {
+  var inside = document.createElement("div");
+  inside.classList.add("btn_animated-inside");
   inside.innerHTML = buttonEle.innerHTML;
-  buttonEle.innerHTML = '';
+  buttonEle.innerHTML = "";
   buttonEle.appendChild(inside);
-  inside.addEventListener('mousedown', function(){
-     ripple(event, this);
+  inside.addEventListener("mousedown", function () {
+    ripple(event, this);
   });
-}
-ripple = function(event, buttonEle){
-  var rippleEle = document.createElement('span');
-  rippleEle.setAttribute('class', 'ripple');
-  rippleEle.style.top = event.offsetY + 'px';
-  rippleEle.style.left = event.offsetX + 'px';
+};
+ripple = function (event, buttonEle) {
+  var rippleEle = document.createElement("span");
+  rippleEle.setAttribute("class", "ripple");
+  rippleEle.style.top = event.offsetY + "px";
+  rippleEle.style.left = event.offsetX + "px";
   buttonEle.appendChild(rippleEle);
-  setTimeout(function(){
-     rippleEle.classList.add('effect');
-  }, 0, rippleEle);
+  setTimeout(
+    function () {
+      rippleEle.classList.add("effect");
+    },
+    0,
+    rippleEle
+  );
 
-  setTimeout(function(){
-     rippleEle.remove();
-  }, 1000, rippleEle);
-}
+  setTimeout(
+    function () {
+      rippleEle.remove();
+    },
+    1000,
+    rippleEle
+  );
+};
 
-var buttons = document.getElementsByClassName('btn_animated');
-for(var i = 0; i < buttons.length; i++){
+var buttons = document.getElementsByClassName("btn_animated");
+for (var i = 0; i < buttons.length; i++) {
   button = buttons[i];
   initRipple(button);
 }

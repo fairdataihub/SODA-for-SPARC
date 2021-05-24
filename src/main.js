@@ -98,6 +98,7 @@ app.on("will-quit", exitPyProc);
 let mainWindow = null;
 let user_restart_confirmed = false;
 let updatechecked = false;
+let window_reloaded = false;
 
 function initialize() {
   makeSingleInstance();
@@ -159,9 +160,9 @@ function initialize() {
 
   app.on("ready", () => {
     const windowOptions = {
-      minWidth: 1110,
+      minWidth: 1118,
       minHeight: 735,
-      width: 1110,
+      width: 1118,
       height: 735,
       center: true,
       show: false,
@@ -197,11 +198,20 @@ function initialize() {
           mainWindow.reload();
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
+          run_pre_flight_checks();
         }
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
+
+    mainWindow.on("show", () => {
+      // var first_launch = nodeStorage.getItem("firstlaunch");
+      // if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
+      // }
+      run_pre_flight_checks();
+    });
+
   });
 
   app.on("ready", () => {
@@ -224,6 +234,10 @@ function initialize() {
     //log the message and stack trace
     console.log(err);
   });
+}
+
+function run_pre_flight_checks() {
+  mainWindow.webContents.send("run_pre_flight_checks");
 }
 
 // Make this app a single instance app.
