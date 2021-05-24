@@ -181,7 +181,13 @@ function delFolder(
       confirmButtonText: "OK",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: true
+      reverseButtons: true,
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         let itemToRestore = itemToDelete;
