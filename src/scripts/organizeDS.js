@@ -7,15 +7,26 @@ const { default: Swal } = require("sweetalert2");
 //// option to show tool-tips for high-level folders
 function showTooltips(ev) {
   var folderName = ev.parentElement.innerText;
-  bootbox.alert({
-    message: highLevelFolderToolTip[folderName],
-    button: {
-      ok: {
-        className: "btn-primary",
-      },
+  Swal.fire({
+    html: highLevelFolderToolTip[folderName],
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showClass: {
+      popup: 'animate__animated animate__fadeInDown animate__faster'
     },
-    centerVertical: true,
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutUp animate_fastest'
+    }
   });
+  // bootbox.alert({
+  //   message: highLevelFolderToolTip[folderName],
+  //   button: {
+  //     ok: {
+  //       className: "btn-primary",
+  //     },
+  //   },
+  //   centerVertical: true,
+  // });
 }
 
 const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
@@ -331,6 +342,7 @@ function delFolder(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
+        focusCancel: true,
         confirmButtonText: "OK",
         cancelButtonText: "Cancel",
         reverseButtons: true,
@@ -444,6 +456,7 @@ function delFolder(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
+        focusCancel: true,
         confirmButtonText: "OK",
         cancelButtonText: "Cancel",
         reverseButtons: true,
@@ -752,6 +765,7 @@ function renameFolder(
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
+      focusCancel: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
       reverseButtons: true,
@@ -870,6 +884,8 @@ function loadFileFolder(myPath) {
           "txt",
           "jpg",
           "JPG",
+          "jpeg",
+          "JPEG",
           "xlsx",
           "xls",
           "csv",
@@ -884,7 +900,7 @@ function loadFileFolder(myPath) {
     }
     appendString =
       appendString +
-      '<div class="single-item"><h1 class="myFile ' +
+      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
       extension +
       '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
       item +
@@ -1028,7 +1044,7 @@ function addFilesfunction(
         ].push("renamed");
       }
       var appendString =
-        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         regularFiles[element]["basename"] +
         "</div></div>";
       $(uiItem).html(appendString);

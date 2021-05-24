@@ -746,6 +746,24 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 10px;
 }
+.myFile.jpeg:before {
+  background: url("../img/jpeg-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 10px;
+}
+.myFile.JPEG:before {
+  background: url("../img/jpeg-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 10px;
+}
 .myFile.pdf:before {
   background: url("../img/pdf-file.png");
   content: "";

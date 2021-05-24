@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a bug where SODA was unable to update on macOS through the built in buttons. The new update notification will be less intrusive and take up less space on your screen.
 - When you request a database from Pennsieve, SODA will now generate a timestamp that is inline with the curation team's requirements.
 - Fixed a visual bug where users would have been able to continue through certain datasets on a dataset that did not have a valid name.
+- Fixed a visual bug where right clicking on an item in 'Step 3' of our organiza datasets would show the context menu in the wrong position.
 
 ### Known issues:
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 

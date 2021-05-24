@@ -992,7 +992,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           popup: 'animate__animated animate__fadeInDown animate__faster'
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp animate__faster'
+          popup: 'animate__animated animate__fadeOutUp animate__faster animate_fastest'
         },
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
@@ -1547,6 +1547,12 @@ $(document).ready(function () {
       "file JPEG": {
         icon: "./assets/img/jpeg-file.png",
       },
+      "file jpg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
       "file other": {
         icon: "./assets/img/other-file.png",
       },
@@ -1655,6 +1661,7 @@ async function moveItems(ev, category) {
       showCancelButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      focusCancel: true,
       confirmButtonText: "Yes",
       showClass: {
         popup: 'animate__animated animate__zoomIn animate__faster'
