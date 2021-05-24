@@ -1071,10 +1071,9 @@ function createMetadataDir() {
 
 createMetadataDir();
 
-$(document).ready(function() {
-
+function createSpeciesAutocomplete(id) {
   var autoCompleteJS = new autoComplete({
-    selector: "#bootbox-subject-species",
+    selector: "#"+id,
     data: {
       src: [{"Canis lupus familiaris": "dogs, beagle dogs",
     "Mustela putorius furo": "ferrets, black ferrets",
@@ -1091,13 +1090,13 @@ $(document).ready(function() {
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.key;
-      document.querySelector("#bootbox-subject-species").value = selection;
+      document.querySelector("#"+id).value = selection;
     },
     trigger: {
       event: ["input", "focus"]
     },
     resultItem: {
-      destination: "#bootbox-subject-species",
+      destination: "#"+id,
       highlight: {
         render: true
       },
@@ -1118,7 +1117,7 @@ $(document).ready(function() {
           // Add class to the created element
           message.setAttribute("class", "no_results_species");
           // Add an onclick event
-          message.setAttribute("onclick", "loadTaxonomySpecies('"+query+"')");
+          message.setAttribute("onclick", "loadTaxonomySpecies('"+query+"', '"+id+"')");
           // Add message text content
           message.innerHTML = `<span>Find the scientific name for "${query}"</span>`;
           // Append message element to the results list
@@ -1126,6 +1125,11 @@ $(document).ready(function() {
       },
     }
   });
+}
+
+$(document).ready(function() {
+  createSpeciesAutocomplete("bootbox-subject-species");
+  createSpeciesAutocomplete("bootbox-sample-species");
 
   var autoCompleteJS = new autoComplete({
     selector: "#bootbox-subject-age-category",
@@ -1151,7 +1155,7 @@ $(document).ready(function() {
   });
 })
 
-async function loadTaxonomySpecies(commonName) {
+async function loadTaxonomySpecies(commonName, destinationInput) {
   Swal.fire({
     title: "Finding the scientific name for " + commonName + "...",
     html:
@@ -1164,10 +1168,6 @@ async function loadTaxonomySpecies(commonName) {
       Swal.showLoading();
     },
   }).then((result) => {
-    /* Read more about handling dismissals below */
-    if (result.dismiss === Swal.DismissReason.timer) {
-      //console.log("I was closed by the timer");
-    }
   });
   await client.invoke(
     "api_load_taxonomy_species",
@@ -1181,7 +1181,7 @@ async function loadTaxonomySpecies(commonName) {
         if (Object.keys(res).length === 0) {
           Swal.fire("Cannot find a scientific name for '"+commonName+"'", "Make sure you enter a correct species name.", "error")
         } else {
-          $("#bootbox-subject-species").val(res[commonName]["ScientificName"])
+          $("#"+destinationInput).val(res[commonName]["ScientificName"])
         }
       }
     }
