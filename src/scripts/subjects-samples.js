@@ -24,7 +24,7 @@ function showForm(type, editBoolean) {
         confirmButtonText: 'Yes!'
       }).then((boolean) => {
         if (boolean.isConfirmed) {
-          promptImportPrevInfo(subjectsDropdownOptions, "subject");
+          promptImportPrevInfo(subjectsDropdownOptions, null, "subject");
         } else {
           clearAllSubjectFormFields(subjectsFormDiv);
         }
@@ -46,8 +46,10 @@ function showForm(type, editBoolean) {
 function showFormSamples(type, editBoolean) {
   if (samplesTableData.length > 1) {
     var samplesDropdownOptions = {};
+    var subjectsDropdownOptions = {};
     for (var i=1; i<samplesTableData.length;i++) {
-      samplesDropdownOptions[samplesTableData[i][0]] = samplesTableData[i][0]
+      samplesDropdownOptions[samplesTableData[i][1]] = samplesTableData[i][1];
+      subjectsDropdownOptions[samplesTableData[i][0]] = samplesTableData[i][0];
     }
     if (!editBoolean) {
       // prompt users if they want to import entries from previous sub_ids
@@ -60,7 +62,7 @@ function showFormSamples(type, editBoolean) {
         confirmButtonText: 'Yes!'
       }).then((boolean) => {
         if (boolean.isConfirmed) {
-          promptImportPrevInfo(samplesDropdownOptions, "sample");
+          promptImportPrevInfo(subjectsDropdownOptions, samplesDropdownOptions, "sample");
         } else {
           clearAllSubjectFormFields(samplesFormDiv);
         }
@@ -80,12 +82,12 @@ function showFormSamples(type, editBoolean) {
 }
 
 // helper function to show Import entries from prev sub_ids popup
-async function promptImportPrevInfo(object, type) {
+async function promptImportPrevInfo(object1, object2, type) {
   // show dropdown with existing sub_ids
   const { value: previousEntry } = await Swal.fire({
     title: 'Choose a previous subject:',
     input: 'select',
-    inputOptions: object,
+    inputOptions: object1,
     inputValidator: (value) => {
       return new Promise((resolve) => {
         if (value === '') {
@@ -104,7 +106,27 @@ async function promptImportPrevInfo(object, type) {
     if (type === "subject") {
       populateForms(previousEntry);
     } else {
-      populateFormsSamples(previousEntry);
+      const { value: previousEntrySample } = await Swal.fire({
+        title: 'Choose a previous sample:',
+        input: 'select',
+        inputOptions: object2,
+        inputValidator: (value) => {
+          return new Promise((resolve) => {
+            if (value === '') {
+              resolve(`Please select a sample!`)
+            } else {
+              resolve()
+            }
+          })
+        },
+        inputPlaceholder: 'Select here',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        confirmButtonText: 'Confirm'
+      });
+      if (previousEntrySample) {
+        populateFormsSamples(previousEntry, previousEntrySample);
+      }
     }
   } else {
     if (type === "subject") {
@@ -145,35 +167,44 @@ function hideSamplesForm() {
   $("#btn-add-sample").css("display", "inline-block");
 }
 
-function addNewIDToTable(newID, type) {
+function addNewIDToTable(newID, secondaryID, type) {
+  var message = "";
   if (type === "subjects") {
     var keyword = "subject";
+    var int = 1;
     var table = document.getElementById("table-subjects");
   } else if (type === "samples") {
     var keyword = "sample";
+    var int = 2;
     var table = document.getElementById("table-samples");
   }
   var duplicate = false;
   var rowcount = table.rows.length;
   for (var i=1;i<rowcount;i++) {
-    if (newID === table.rows[i].cells[1].innerText) {
+    if (newID === table.rows[i].cells[int].innerText) {
       duplicate = true
       break
     }
   }
-  if (!duplicate) {
-    var rowIndex = rowcount;
-    var indexNumber = rowIndex;
-    var currentRow = table.rows[table.rows.length - 1];
-    // check for unique row id in case users delete old rows and append new rows (same IDs!)
-    var newRowIndex = checkForUniqueRowID("row-current-"+keyword, rowIndex);
+  if (duplicate) {
+    var message = `We detect duplicate ${keyword}_id(s). Please make sure sample_id(s) are unique before you generate.`
+  }
+  var rowIndex = rowcount;
+  var indexNumber = rowIndex;
+  var currentRow = table.rows[table.rows.length - 1];
+  // check for unique row id in case users delete old rows and append new rows (same IDs!)
+  var newRowIndex = checkForUniqueRowID("row-current-"+keyword, rowIndex);
+  if (type === "subjects") {
     var row = (table.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-"+ keyword + newRowIndex +"' class='row-" +type+"'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newID+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_"+keyword+"_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_"+keyword+"_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  } else if (type === "samples") {
+    var row = (table.insertRow(rowIndex).outerHTML =
+    "<tr id='row-current-"+ keyword + newRowIndex +"' class='row-" +type+"'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+secondaryID+"</td><td>"+newID+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_"+keyword+"_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_"+keyword+"_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   }
+  return message
 }
 
 function addSubjectIDtoDataBase() {
-  console.log("here")
   var subjectID = $("#bootbox-subject-id").val();
 
   var table = document.getElementById("table-subjects");
@@ -188,7 +219,7 @@ function addSubjectIDtoDataBase() {
   }
   if (subjectID !== "") {
     if (!duplicate) {
-      addNewIDToTable(subjectID, "subjects")
+      var message = addNewIDToTable(subjectID, null, "subjects")
       addSubjectIDToJSON(subjectID);
       $("#table-subjects").css("display", "block");
       $("#button-generate-subjects").css("display", "block");
@@ -214,14 +245,14 @@ function addSampleIDtoDataBase() {
   var error = "";
   var rowcount = table.rows.length;
   for (var i=1;i<rowcount;i++) {
-    if (sampleID === table.rows[i].cells[1].innerText) {
+    if (sampleID === table.rows[i].cells[2].innerText) {
       duplicate = true
       break
     }
   }
   if (sampleID !== "" && subjectID !== "") {
     if (!duplicate) {
-      addNewIDToTable(sampleID, "samples")
+      var message = addNewIDToTable(sampleID, subjectID, "samples")
       addSampleIDtoJSON(sampleID);
       $("#table-samples").css("display", "block");
       $("#button-generate-samples").css("display", "block");
@@ -316,8 +347,9 @@ function edit_current_subject_id(ev) {
 }
 function edit_current_sample_id(ev) {
   var currentRow = $(ev).parents()[2];
-  var sampleID = $(currentRow)[0].cells[1].innerText;
-  loadSampleInformation(ev, sampleID)
+  var subjectID = $(currentRow)[0].cells[1].innerText;
+  var sampleID = $(currentRow)[0].cells[2].innerText;
+  loadSampleInformation(ev, subjectID, sampleID)
 }
 
 function loadSubjectInformation(ev, subjectID) {
@@ -361,7 +393,7 @@ function loadSubjectInformation(ev, subjectID) {
          if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
            if (field.name === "Age") {
              var fullAge = infoJson[i].split(" ");
-             var unitArr = ["days", "weeks", "months", "years"];
+             var unitArr = ["hours", "days", "weeks", "months", "years"];
              var breakBoolean = false;
              field.value = fullAge[0];
              for (var unit of unitArr) {
@@ -385,12 +417,12 @@ function loadSubjectInformation(ev, subjectID) {
    }
  }
 
- function populateFormsSamples(sampleID) {
+ function populateFormsSamples(subjectID, sampleID) {
    if (sampleID !== "clear" && sampleID !== "") {
      var infoJson = [];
      if (samplesTableData.length > 1) {
        for (var i=1; i<samplesTableData.length;i++) {
-         if (samplesTableData[i][1] === sampleID) {
+         if (samplesTableData[i][1] === sampleID && samplesTableData[i][0] === subjectID) {
            infoJson = samplesTableData[i];
            break
          }
@@ -404,7 +436,7 @@ function loadSubjectInformation(ev, subjectID) {
          if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
            if (field.name === "Age") {
              var fullAge = infoJson[i].split(" ");
-             var unitArr = ["days", "weeks", "months", "years"];
+             var unitArr = ["hours", "days", "weeks", "months", "years"];
              var breakBoolean = false;
              field.value = fullAge[0];
              for (var unit of unitArr) {
@@ -428,13 +460,13 @@ function loadSubjectInformation(ev, subjectID) {
    }
  }
 
- function loadSampleInformation(ev, sampleID) {
+ function loadSampleInformation(ev, subjectID, sampleID) {
    // 1. load fields for form
    showFormSamples("display", true);
    $("#btn-edit-sample").css("display", "inline-block");
    $("#btn-add-sample").css("display", "none");
    clearAllSubjectFormFields(samplesFormDiv)
-   populateFormsSamples(sampleID);
+   populateFormsSamples(subjectID, sampleID);
    $("#btn-edit-sample").unbind( "click" );
    $("#btn-edit-sample").click(function() {
      editSample(ev, sampleID)
@@ -531,7 +563,7 @@ function editSample(ev, bootbox, sampleID) {
     var error = "";
     var rowcount = table.rows.length;
     for (var i=1;i<rowcount;i++) {
-      if (newID === table.rows[i].cells[1].innerText) {
+      if (newID === table.rows[i].cells[2].innerText) {
         duplicate = true
         break
       }
@@ -546,7 +578,7 @@ function editSample(ev, bootbox, sampleID) {
            break
          }
        }
-       $(currentRow)[0].cells[1].innerText = newID;
+       $(currentRow)[0].cells[2].innerText = newID;
        hideSamplesForm()
      }
    }
@@ -576,10 +608,10 @@ function delete_current_sample_id(ev) {
  document.getElementById(currentRowid).outerHTML = "";
  updateIndexForTable(document.getElementById("table-samples"))
  // 2. Delete from JSON
- var subjectID = $(currentRow)[0].cells[1].innerText;
- for (var i=1; i<subjectsTableData.length; i++) {
-   if (subjectsTableData[i][0] === subjectID) {
-     subjectsTableData.splice(i, 1);
+ var sampleId = $(currentRow)[0].cells[2].innerText;
+ for (var i=1; i<samplesTableData.length; i++) {
+   if (samplesTableData[i][1] === sampleId) {
+     samplesTableData.splice(i, 1);
      break
    }
  }
@@ -702,35 +734,62 @@ function importPrimaryFolderSamples() {
 }
 
 function loadSubjectsDataToTable() {
+  var iconMessage = "success";
+  var showConfirmButtonBool = false;
+  var text = 'Please add or edit your subject_id(s) in the following subjects table.';
   // delete table rows except headers
   $("#table-subjects tr:gt(0)").remove();
   for (var i=1; i<subjectsTableData.length; i++) {
-    addNewIDToTable(subjectsTableData[i][0], "subjects")
+    var message = addNewIDToTable(subjectsTableData[i][0], null, "subjects")
+  }
+  if (message !== "") {
+    Swal.fire({
+      title: 'Loaded successfully!',
+      text: message,
+      icon: "warning",
+      showConfirmButton: true,
+    })
+  } else {
+    Swal.fire({
+      title: 'Loaded successfully!',
+      text: 'Please add or edit your subject_id(s) in the following subjects table.',
+      icon: "success",
+      showConfirmButton: false,
+      timer: 1200
+    })
   }
   Swal.fire({
   title: 'Loaded successfully!',
-  text: 'Please add or edit your subject_id(s) in the following subjects table.',
-  icon: 'success',
-  showConfirmButton: false,
+  text: text,
+  icon: iconMessage,
+  showConfirmButton: showConfirmButtonBool,
   timer: 1200
-})
+  })
   $("#button-generate-subjects").css("display", "block");
 }
 
 function loadSamplesDataToTable() {
   // delete table rows except headers
   $("#table-samples tr:gt(0)").remove();
-
   for (var i=1; i<samplesTableData.length; i++) {
-    addNewIDToTable(samplesTableData[i][1], "samples")
+    var message = addNewIDToTable(samplesTableData[i][1], samplesTableData[i][0], "samples")
   }
-  Swal.fire({
-  title: 'Loaded successfully!',
-  text: 'Please add or edit your sample_id(s) in the following samples table.',
-  icon: 'success',
-  showConfirmButton: false,
-  timer: 1200
-  })
+  if (message !== "") {
+    Swal.fire({
+      title: 'Loaded successfully!',
+      text: message,
+      icon: "warning",
+      showConfirmButton: true,
+    })
+  } else {
+    Swal.fire({
+      title: 'Loaded successfully!',
+      text: 'Please add or edit your sample_id(s) in the following samples table.',
+      icon: "success",
+      showConfirmButton: false,
+      timer: 1200
+    })
+  }
   $("#button-generate-samples").css("display", "block");
 }
 
