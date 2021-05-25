@@ -4,7 +4,7 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v4.3.0 - TBD
+## v4.3.0 - 2021-05-24
 
 ### Feature additions:
 - Added support for toast style notifications to better show relevant information. When you open the app, SODA will run through a checklist of items so that you can see if you are missing any components required for the workflow. This includes checking for Pennsieve agent updates and SODA application updates as well.
@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a minor bug in how dataset statistics were being recorded.
 - Fixed a bug where the contact person could not be changed when creating the dataset_description metadata file.
 
-## v4.2.0 - 2020-04-21
+## v4.2.0 - 2021-04-21
 
 ### Feature additions:
 - SODA now supports Pennsieve.
@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When showing popups for users, the messages now don't unintentionally move other content out of the way. This should make SODA to be more consistent to use.
 - Added a bug fix for the dataset subtitle character count
 
-## v4.1.0 - 2020-04-09
+## v4.1.0 - 2021-04-09
 
 ### Feature additions:
 - Complete UI overhaul for the Manage Datasets, Prepare Metadata and Disseminate Dataset features to bring the SODA's visuals to be consistent across all features.
@@ -106,4 +106,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Major bug fixes:
 - Updated Airtable SPARC's table name to reflect the change initiated by SPARC. Prior to the fix, SODA could not connect to the SPARC award data sheet, thus raising an error when users utilize the Prepare metadata feature.
-- 

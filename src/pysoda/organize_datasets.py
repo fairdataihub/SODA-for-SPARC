@@ -634,7 +634,8 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                             manifest_error_message.append(package_details["parent"]["content"]["name"])
                             pass
                     else:
-                        timestamp = package_details["content"]["updatedAt"]
+                        timestamp = (package_details["content"]["createdAt"]
+                                     .replace('.', ',').replace('+00:00', 'Z'))
                         dataset_folder["files"][file_name] = {
                             "type": "bf","action": ["existing"], "path": item.id, "timestamp": timestamp}
 
