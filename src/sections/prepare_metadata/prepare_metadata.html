@@ -5094,6 +5094,39 @@
                       ></i>
                     </div>
                   </div>
+                  <div class="div-dd-info subjects" style="margin:0">
+                    <div class="demo-controls-head" style="text-align:center;">
+                      <div style="width: 100%;">
+                      <font color="black"> Exact age at the start of experiment: </font>
+                    </div>
+                    </div>
+                    <div class="demo-controls-body">
+                      <div class="ui input modified" style="margin-right:5px">
+                        <input type="text" id="bootbox-sample-age" name="Age" class="samples-form-entry" placeholder="Type here...">
+                      </div>
+                      <div class="ui input modified">
+                        <select type="number" id="bootbox-sample-age-info" name="Age-info" class="ui selection dropdown" placeholder="Select here...">
+                          <option value="Select">Select a unit</option>
+                          <option value="hours">hour(s)</option>
+                          <option value="days">day(s)</option>
+                          <option value="weeks">week(s)</option>
+                          <option value="months">month(s)</option>
+                          <option value="years">year(s)</option>
+                          <option value="N/A">N/A</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                  </div>
                   <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
@@ -5102,7 +5135,7 @@
                     </div>
                     <div class="demo-controls-body">
                       <div class="ui input modified">
-                        <input type="text" id="bootbox-sample-species" name="Species" class="samples-form-entry" placeholder="Type here...">
+                        <input type="text" id="bootbox-sample-species" name="Species" class="samples-form-entry" placeholder="Search for species...">
                       </div>
                     </div>
                     <div class="tooltipnew demo-controls-end">
@@ -5139,6 +5172,62 @@
                   </div>
                 </div>
 
+                <div class="sub accordion" style="width: 100%">
+                  <div class="title" id="title-optional-age">
+                    <i class="icon dropdown"></i>
+                    Optional Details
+                  </div>
+                  <div class="content">
+                    <div class="div-dd-info subjects" style="text-align:center;">
+                      <div class="demo-controls-head">
+                        <div style="width: 100%;">
+                        <font color="black"> Age category: </font>
+                      </div>
+                      </div>
+                      <div class="demo-controls-body">
+                        <div class="ui input modified">
+                          <input type="text" id="bootbox-sample-age-category" name="Age category" class="samples-form-entry" placeholder="Search here...">
+                        </div>
+                      </div>
+                      <div class="tooltipnew demo-controls-end">
+                        <i
+                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          data-content="Description of age category from derived from UBERON life cycle stage."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                      <div class="demo-controls-head">
+                        <div style="width: 100%;">
+                        <font color="black"> Age range: </font>
+                      </div>
+                      </div>
+                      <div class="demo-controls-body">
+                        <div class="ui input modified" style="margin-right:5px">
+                          <input type="text" id="bootbox-sample-age-range-min" name="Age range (min)" class="samples-form-entry" placeholder="Minimum age">
+                        </div>
+                        <div class="ui input modified">
+                          <input type="text" id="bootbox-sample-age-range-max" name="Age range (max)" class="samples-form-entry" placeholder="Maximum age">
+                        </div>
+                      </div>
+                      <div class="tooltipnew demo-controls-end">
+                        <i
+                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          data-content="The minimal age (youngest) and  maximal age (oldest) of the research subjects. The format for this field: numerical value + space + unit (spelled out)."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="div-dd-info subjects" style="display: none">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
@@ -5160,142 +5249,6 @@
                     </span>
                   </div>
                 </div>
-                </div>
-              </div>
-            </div>
-
-
-            <div class="title" style="background:#A8D08D">
-              <i class="dropdown icon"></i>
-              Exact age at the start of experiment <span style="font-style: italic;opacity:0.8">(Mandatory if applicable)</span>
-            </div>
-            <div class="content">
-              <div class="ui segment">
-                <div class="ui fluid form">
-                  <div class="div-dd-info subjects" style="margin:0">
-                    <div class="demo-controls-head" style="text-align:center;">
-                      <div style="width: 100%;">
-                      <font color="black"> Age: </font>
-                    </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <div class="ui input modified" style="margin-right:5px">
-                        <input type="text" id="bootbox-sample-age" name="Age" class="samples-form-entry" placeholder="Type here...">
-                      </div>
-                      <div class="ui input modified">
-                        <select type="number" id="bootbox-sample-age-info" name="Age-info" class="ui selection dropdown" placeholder="Select here...">
-                          <option value="Select">Select a unit</option>
-                          <option value="hours">hour(s)</option>
-                          <option value="days">day(s)</option>
-                          <option value="weeks">week(s)</option>
-                          <option value="months">month(s)</option>
-                          <option value="years">year(s)</option>
-                          <option value="N/A">N/A</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <i
-                        class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                      ></i>
-                    </div>
-                  </div>
-                  <div class="sub accordion" style="width: 100%">
-                    <div class="title" id="title-optional-age">
-                      <i class="icon dropdown"></i>
-                      Optional Details
-                    </div>
-                    <div class="content">
-                      <div class="div-dd-info subjects" style="text-align:center;">
-                        <div class="demo-controls-head">
-                          <div style="width: 100%;">
-                          <font color="black"> Age category: </font>
-                        </div>
-                        </div>
-                        <div class="demo-controls-body">
-                          <div class="ui input modified">
-                            <select type="number" id="bootbox-sample-age-category" name="Age category" class="ui selection dropdown samples-form-entry" placeholder="Select here...">
-                              <option value="Select">Select a stage</option>
-                              <option value="2 cell stage">2 cell stage</option>
-                              <option value="4 cell stage">4 cell stage</option>
-                              <option value="8 cell stage">8 cell stage</option>
-                              <option value="blastula stage">blastula stage</option>
-                              <option value="cleavage stage">cleavage stage</option>
-                              <option value="copepodite stage">copepodite stage</option>
-                              <option value="crustacean post-larval stage">crustacean post-larval stage</option>
-                              <option value="cysticercus stage">cysticercus stage</option>
-                              <option value="death stage">death stage</option>
-                              <option value="embryo stage">embryo stage</option>
-                              <option value="fully formed stage">fully formed stage</option>
-                              <option value="gastrula stage">gastrula stage</option>
-                              <option value="glaucothoe stage">glaucothoe stage</option>
-                              <option value="infant stage">infant stage</option>
-                              <option value="juvenile stage">juvenile stage</option>
-                              <option value="larval stage">larval stage</option>
-                              <option value="late adult stage">late adult stage</option>
-                              <option value="late embryonic stage">late embryonic stage</option>
-                              <option value="nauplius stage">nauplius stage</option>
-                              <option value="neonate stage">neonate stage</option>
-                              <option value="neurula stage">neurula stage</option>
-                              <option value="nursing stage">nursing stage</option>
-                              <option value="organogenesis stage">organogenesis stage</option>
-                              <option value="perinatal stage">perinatal stage</option>
-                              <option value="pharyngula stage">pharyngula stage</option>
-                              <option value="post-embryonic stage">post-embryonic stage</option>
-                              <option value="post-juvenile adult stage">post-juvenile adult stage</option>
-                              <option value="prime adult stage">prime adult stage</option>
-                              <option value="pupal stage">pupal stage</option>
-                              <option value="sexually immature stage">sexually immature stage</option>
-                              <option value="trochophore stage">trochophore stage</option>
-                              <option value="veliger stage">veliger stage</option>
-                              <option value="zoea stage">zoea stage</option>
-                              <option value="zygote stage">zygote stage</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="tooltipnew demo-controls-end">
-                          <i
-                            class="fas fa-info-circle popover-tooltip subjects-form"
-                            data-content="Description of age category from derived from UBERON life cycle stage."
-                            rel="popover"
-                            data-placement="right"
-                            data-html="true"
-                            data-trigger="hover"
-                          ></i>
-                        </div>
-                      </div>
-                      <div class="div-dd-info subjects" style="margin-bottom: 20px">
-                        <div class="demo-controls-head">
-                          <div style="width: 100%;">
-                          <font color="black"> Age range: </font>
-                        </div>
-                        </div>
-                        <div class="demo-controls-body">
-                          <div class="ui input modified" style="margin-right:5px">
-                            <input type="text" id="bootbox-sample-age-range-min" name="Age range (min)" class="samples-form-entry" placeholder="Minimum age">
-                          </div>
-                          <div class="ui input modified">
-                            <input type="text" id="bootbox-sample-age-range-max" name="Age range (max)" class="samples-form-entry" placeholder="Maximum age">
-                          </div>
-                        </div>
-                        <div class="tooltipnew demo-controls-end">
-                          <i
-                            class="fas fa-info-circle popover-tooltip subjects-form"
-                            data-content="The minimal age (youngest) and  maximal age (oldest) of the research subjects. The format for this field: numerical value + space + unit (spelled out)."
-                            rel="popover"
-                            data-placement="right"
-                            data-html="true"
-                            data-trigger="hover"
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
