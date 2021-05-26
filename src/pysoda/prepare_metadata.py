@@ -332,29 +332,43 @@ def save_samples_file(filepath, datastructure):
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
 
+    transposeDatastructure = transposeMatrix(datastructure)
+
+    mandatoryFields = transposeDatastructure[:7]
+    optionalFields = transposeDatastructure[7:]
+    refinedOptionalFields = processMetadataCustomFields(optionalFields)
+
+    if refinedOptionalFields:
+        refinedDatastructure = transposeMatrix(np.concatenate((mandatoryFields, refinedOptionalFields)))
+    else:
+        refinedDatastructure = transposeMatrix(mandatoryFields)
+
     # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     ws1.delete_rows(2, 2)
+    # delete all optional columns first (from the template)
+    ws1.delete_cols(8, 15)
 
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
-    headers_no = len(datastructure[0])
+    headers_no = len(refinedDatastructure[0])
     orangeFill = PatternFill(start_color='FFD965',
                        end_color='FFD965',
                        fill_type='solid')
-    if headers_no > 22:
-        for column, header in zip(excel_columns(start_index=22), datastructure[0][22:]):
-            cell = column + str(1)
-            ws1[cell] = header
-            ws1[cell].fill = orangeFill
-            ws1[cell].font = Font(bold=True, size=12, name='Calibri')
+
+    for column, header in zip(excel_columns(start_index=7), refinedDatastructure[0][7:headers_no]):
+        cell = column + str(1)
+        ws1[cell] = header
+        ws1[cell].fill = orangeFill
+        ws1[cell].font = Font(bold=True, size=12, name='Calibri')
 
     # 3. populate matrices
-    for i, item in enumerate(datastructure):
+    for i, item in enumerate(refinedDatastructure):
         if i == 0:
             continue
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
+            # import pdb; pdb.set_trace()
             cell = column + str(i + 1)
-            if datastructure[i][j]:
-                ws1[cell] = datastructure[i][j]
+            if refinedDatastructure[i][j]:
+                ws1[cell] = refinedDatastructure[i][j]
             else:
                 ws1[cell] = ""
             ws1[cell].font = Font(bold=False, size=11, name='Arial')
@@ -400,9 +414,12 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
             column.extend([""]*len(subjects_df))
         transpose.append(column)
 
-    sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
+    sortMatrix = sortedSubjectsTableData(transpose, ui_fields);
 
-    return transposeMatrix(sortMatrix)
+    s = set(ui_fields)
+    customHeaders = [x for x in importedHeaderList if x not in s]
+
+    return [customHeaders, transposeMatrix(sortMatrix)]
 
 def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []

@@ -1006,7 +1006,12 @@ function loadSubjectsFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
-          subjectsTableData = res
+          var customHeaders = res[0];
+          subjectsTableData = res[1]
+          subjectsTableData[0] = subjectsTableData[0].concat(customHeaders);
+          for (var header of subjectsTableData.slice(1)) {
+            header = header.concat(new Array(customHeaders.length).fill(""))
+          }
           loadDataFrametoUI()
         } else {
           Swal.fire("Couldn't load existing subjects.xlsx file!", "Please make sure there are at least a header row in the subjects file.", "error")
@@ -1177,7 +1182,6 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         log.error(error);
         console.error(error);
       } else {
-        console.log(res)
         if (Object.keys(res).length === 0) {
           Swal.fire("Cannot find a scientific name for '"+commonName+"'", "Make sure you enter a correct species name.", "error")
         } else {

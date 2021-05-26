@@ -206,7 +206,6 @@ function addNewIDToTable(newID, secondaryID, type) {
 
 function addSubjectIDtoDataBase() {
   var subjectID = $("#bootbox-subject-id").val();
-
   var table = document.getElementById("table-subjects");
   var duplicate = false;
   var error = "";
@@ -221,10 +220,6 @@ function addSubjectIDtoDataBase() {
     if (!duplicate) {
       var message = addNewIDToTable(subjectID, null, "subjects")
       addSubjectIDToJSON(subjectID);
-      $("#table-subjects").css("display", "block");
-      $("#button-generate-subjects").css("display", "block");
-      clearAllSubjectFormFields(subjectsFormDiv)
-      hideSubjectsForm()
     } else {
       error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
     }
@@ -254,10 +249,6 @@ function addSampleIDtoDataBase() {
     if (!duplicate) {
       var message = addNewIDToTable(sampleID, subjectID, "samples")
       addSampleIDtoJSON(sampleID);
-      $("#table-samples").css("display", "block");
-      $("#button-generate-samples").css("display", "block");
-      clearAllSubjectFormFields(samplesFormDiv)
-      hideSamplesForm()
     } else {
       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
     }
@@ -280,61 +271,159 @@ function clearAllSubjectFormFields(form) {
 
 // add new subject ID to JSON file (main file to be converted to excel)
 function addSubjectIDToJSON(subjectID) {
-  var dataLength = subjectsTableData.length;
   if ($("#form-add-a-subject").length > 0) {
-    var valuesArr = [];
-    headersArrSubjects = [];
-    for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
-      if (field.value === "" || field.value === undefined || field.value === "Select") {
-        field.value  = null;
-      }
-      headersArrSubjects.push(field.name);
-      // if it's age, then add age info input (day/week/month/year)
-      if (field.name === "Age") {
-        if (field.value === "Select" || field.value === "") {
-          field.value  = null
+    // first, populate RRID
+    if ($("#bootbox-subject-strain").val() !== "") {
+      Swal.fire({
+        title: "Adding new subject...",
+        html:
+          "Please wait...",
+        timer: 2000,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+      });
+      var strain = $("#bootbox-subject-strain").val();
+      var rridHostname = "scicrunch.org"
+      var rridInfo = {
+        hostname: rridHostname,
+        port: 443,
+        path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${strain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
+        headers: { accept: "text/xml" },
+      };
+      https.get(rridInfo, (res) => {
+        if (res.statusCode === 200) {
+          let data = "";
+          res.setEncoding('utf8');
+          res.on("data", d => {
+            data += d
+          })
+          res.on("end", () => {
+            readXMLScicrunch(data, "subjects");
+          })
         } else {
-          field.value = field.value + " " + $("#bootbox-subject-age-info").val()
+          $("#bootbox-subject-strain-RRID").val("");
+          addTheRestSubjectEntriesToJSON()
         }
-      }
-      valuesArr.push(field.value);
-    }
-    subjectsTableData[0] = headersArrSubjects
-    if (valuesArr !== undefined && valuesArr.length !== 0) {
-      if (subjectsTableData[dataLength] !== undefined) {
-        subjectsTableData[dataLength + 1] = valuesArr
-      } else {
-        subjectsTableData[dataLength] = valuesArr
-      }
+      })
+    } else {
+      addTheRestSubjectEntriesToJSON()
     }
   }
 }
-function addSampleIDtoJSON(sampleID) {
-  var dataLength = samplesTableData.length;
-  if ($("#form-add-a-sample").length > 0) {
-    var valuesArr = [];
-    headersArrSamples = [];
-    for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
-      if (field.value === "" || field.value === undefined || field.value === "Select") {
-        field.value = null
-      }
-      headersArrSamples.push(field.name);
-      var new_value = "";
-      // if it's age, then add age info input (day/week/month/year)
-      if (field.name === "Age") {
-        new_value = field.value + " " + $("#bootbox-subject-age-info").val()
-      } else {
-        new_value = field.value
-      }
-      valuesArr.push(new_value);
+
+function addTheRestSubjectEntriesToJSON() {
+  var dataLength = subjectsTableData.length;
+  var valuesArr = [];
+  headersArrSubjects = [];
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
+      field.value  = null;
     }
-    samplesTableData[0] = headersArrSamples
-    if (valuesArr !== undefined && valuesArr.length !== 0) {
-      if (samplesTableData[dataLength] !== undefined) {
-        samplesTableData[dataLength + 1] = valuesArr
+    headersArrSubjects.push(field.name);
+    // if it's age, then add age info input (day/week/month/year)
+    if (field.name === "Age") {
+      if (field.value === "Select" || field.value === "") {
+        field.value  = null
       } else {
-        samplesTableData[dataLength] = valuesArr
+        field.value = field.value + " " + $("#bootbox-subject-age-info").val()
       }
+    }
+    valuesArr.push(field.value);
+  }
+  subjectsTableData[0] = headersArrSubjects
+  if (valuesArr !== undefined && valuesArr.length !== 0) {
+    if (subjectsTableData[dataLength] !== undefined) {
+      subjectsTableData[dataLength + 1] = valuesArr
+    } else {
+      subjectsTableData[dataLength] = valuesArr
+    }
+  }
+  $("#table-subjects").css("display", "block");
+  $("#button-generate-subjects").css("display", "block");
+  clearAllSubjectFormFields(subjectsFormDiv)
+  hideSubjectsForm()
+}
+
+function addTheRestSampleEntriesToJSON() {
+  var dataLength = samplesTableData.length;
+  var valuesArr = [];
+  headersArrSamples = [];
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
+      field.value  = null;
+    }
+    headersArrSamples.push(field.name);
+    // if it's age, then add age info input (day/week/month/year)
+    if (field.name === "Age") {
+      if (field.value === "Select" || field.value === "") {
+        field.value  = null
+      } else {
+        field.value = field.value + " " + $("#bootbox-sample-age-info").val()
+      }
+    }
+    valuesArr.push(field.value);
+  }
+  samplesTableData[0] = headersArrSamples
+  if (valuesArr !== undefined && valuesArr.length !== 0) {
+    if (samplesTableData[dataLength] !== undefined) {
+      samplesTableData[dataLength + 1] = valuesArr
+    } else {
+      samplesTableData[dataLength] = valuesArr
+    }
+  }
+  $("#table-samples").css("display", "block");
+  $("#button-generate-samples").css("display", "block");
+  clearAllSubjectFormFields(samplesFormDiv)
+  hideSamplesForm()
+}
+
+function addSampleIDtoJSON(sampleID) {
+  if ($("#form-add-a-sample").length > 0) {
+    // first, populate RRID
+    if ($("#bootbox-sample-strain").val() !== "") {
+      Swal.fire({
+        title: "Adding new sample...",
+        html:
+          "Please wait...",
+        timer: 2000,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+      });
+      var strain = $("#bootbox-sample-strain").val();
+      var rridHostname = "scicrunch.org"
+      var rridInfo = {
+        hostname: rridHostname,
+        port: 443,
+        path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${strain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
+        headers: { accept: "text/xml" },
+      };
+      https.get(rridInfo, (res) => {
+        if (res.statusCode === 200) {
+          let data = "";
+          res.setEncoding('utf8');
+          res.on("data", d => {
+            data += d
+          })
+          res.on("end", () => {
+            readXMLScicrunch(data, "samples");
+          })
+        } else {
+          $("#bootbox-sample-strain-RRID").val("");
+          addTheRestSampleEntriesToJSON()
+        }
+      })
+    } else {
+      addTheRestSampleEntriesToJSON()
     }
   }
 }
@@ -1326,3 +1415,31 @@ function showAgeSection(ev, div, type) {
     $("#"+divEle).addClass("hidden")
   }
 }
+
+function readXMLScicrunch(xml, type) {
+  var parser = new DOMParser();
+  var xmlDoc = parser.parseFromString(xml,"text/xml");
+  var resultList = xmlDoc.getElementsByTagName('name');       // THE XML TAG NAME.
+  var rrid = "";
+  for (var i = 0; i < resultList.length; i++) {
+    if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
+      rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
+      break
+    }
+  }
+  if (type === "subjects") {
+    if (rrid !== "") {
+      $("#bootbox-subject-strain-RRID").val(rrid)
+    } else {
+      $("#bootbox-subject-strain-RRID").val("")
+    }
+    addTheRestSubjectEntriesToJSON()
+  } else {
+    if (rrid !== "") {
+      $("#bootbox-sample-strain-RRID").val(rrid)
+    } else {
+      $("#bootbox-sample-strain-RRID").val("")
+    }
+    addTheRestSampleEntriesToJSON()
+  }
+};
