@@ -1775,6 +1775,14 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
       parentDiv
     ).scrollHeight;
   }
+
+  if (ev.getAttribute("data-next") === "Question-prepare-subjects-2") {
+    $("#Question-prepare-subjects-2 button").show();
+  }
+
+  if (ev.getAttribute("data-next") === "Question-prepare-samples-2") {
+    $("#Question-prepare-samples-2 button").show();
+  }
 }
 
 const reset_ui = () => {
