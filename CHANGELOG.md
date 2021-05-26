@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Feature additions:
 - Added support for toast style notifications to better show relevant information. When you open the app, SODA will run through a checklist of items so that you can see if you are missing any components required for the workflow. This includes checking for Pennsieve agent updates and SODA application updates as well.
-- You can now use your Pennsieve login details to connect your Pennsieve account to SODA. This will replace the default API key based login. The original login method will be present as a secondary login alternative in the meantime.  
+- You can now use your Pennsieve login details to connect your Pennsieve account to SODA. This will replace the default API key based login. The original login method with API key will remain as a secondary login alternative.  
 - Added better warning messages to functions that were not descriptive enough so now you will have a better idea of what they do.
 - You can now add line breaks for your dataset descriptions when created through SODA.
 - SODA now uses a new visual look for showing message boxes and alerts. This should make SODA more consistent to use.
