@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - You can now use your Pennsieve login details to connect your Pennsieve account to SODA. This will replace the default API key based login. The original login method with API key will remain as a secondary login alternative.  
 - Added better warning messages to functions that were not descriptive enough so now you will have a better idea of what they do.
 - You can now add line breaks for your dataset descriptions when created through SODA.
-- SODA now uses a new visual look for showing message boxes and alerts. This should make SODA more consistent to use.
+- SODA now uses a new visual look for showing message boxes and alerts. This would make SODA's UI more consistent.
 
 ### Bug fixes:
 - Fixed a bug where SODA was unable to update on macOS through the built in buttons. The new update notification will be less intrusive and take up less space on your screen.
