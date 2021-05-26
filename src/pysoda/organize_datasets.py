@@ -587,6 +587,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 col_count += 1
                 folder_name = item.name
                 if my_level == 0 and folder_name not in high_level_sparc_folders and requested_sparc_only:  # only import SPARC folders
+                    col_count -= 1
                     continue
                 if col_count == 1:
                     level = my_level + 1
