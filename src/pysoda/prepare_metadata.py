@@ -431,12 +431,12 @@ def sortedSubjectsTableData(matrix, fields):
     for column in matrix:
         if column[0] not in fields:
             customHeaderMatrix.append(column)
-            
+
     if len(customHeaderMatrix) > 0:
-        npArray = np.concatenate((sortedMatrix, customHeaderMatrix))
+        npArray = np.concatenate((sortedMatrix, customHeaderMatrix)).tolist()
     else:
         npArray = sortedMatrix
-    return npArray.tolist()
+    return npArray
 
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
