@@ -416,19 +416,27 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields);
 
-    s = set(ui_fields)
-    customHeaders = [x for x in importedHeaderList if x not in s]
-
-    return [customHeaders, transposeMatrix(sortMatrix)]
+    return transposeMatrix(sortMatrix)
 
 def sortedSubjectsTableData(matrix, fields):
-    sortedMatrix = []
+    sortedMatrix = [];
+    customHeaderMatrix = [];
+
     for field in fields:
         for column in matrix:
             if column[0] == field:
                 sortedMatrix.append(column)
                 break
-    return sortedMatrix
+
+    for column in matrix:
+        if column[0] not in fields:
+            customHeaderMatrix.append(column)
+            
+    if len(customHeaderMatrix) > 0:
+        npArray = np.concatenate((sortedMatrix, customHeaderMatrix))
+    else:
+        npArray = sortedMatrix
+    return npArray.tolist()
 
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
