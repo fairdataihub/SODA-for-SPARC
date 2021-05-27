@@ -3390,32 +3390,6 @@
                   justify-content: center;
                 "
               >
-                <div
-                  style="margin: 15px 0"
-                >
-                  <div
-                    class="option-card radio-button"
-                    data-next="Question-prepare-subjects-5"
-                    onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-1', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
-                  >
-                    <div class="card-head">
-                      <div class="folder-checkbox">
-                        <input
-                          class="folder-input-check"
-                          name="subjects-1"
-                          type="radio"
-                          id="subjects-1-A"
-                        />
-                        <label for="subjects-1-A"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <i class="far fa-save" style="color: var(--color-subtle)"></i>
-                      <h2>I want to continue working on a subjects.xlsx file</h2>
-                    </div>
-                  </div>
-                </div>
-
                 <div style="margin: 15px 0">
                   <div
                     class="option-card radio-button"
@@ -3442,6 +3416,32 @@
                     </div>
                   </div>
                 </div>
+                <div
+                  style="margin: 15px 0"
+                >
+                  <div
+                    class="option-card radio-button"
+                    data-next="Question-prepare-subjects-5"
+                    onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-1', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                  >
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input
+                          class="folder-input-check"
+                          name="subjects-1"
+                          type="radio"
+                          id="subjects-1-A"
+                        />
+                        <label for="subjects-1-A"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <i class="far fa-save" style="color: var(--color-subtle)"></i>
+                      <h2>I want to continue working on a subjects.xlsx file</h2>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -3957,40 +3957,8 @@
               style="width: 90%; margin: 0 auto; font-size: 13px;"
             >
               <div>
-                <div class="div-dd-info subjects" style="margin-top:10px">
-                  <div class="demo-controls-head" style="text-align:center;">
-                    <div style="width: 100%;">
-                    <font color="black"> Exact age at the start of experiment: </font>
-                  </div>
-                  </div>
-                  <div class="demo-controls-body">
-                    <div class="ui input modified" style="margin-right:5px">
-                      <input type="text" id="bootbox-subject-age" name="Age" class="subjects-form-entry" placeholder="Type here...">
-                    </div>
-                    <div class="ui input modified">
-                      <select type="number" id="bootbox-subject-age-info" name="Age-info" class="ui selection dropdown" placeholder="Select here...">
-                        <option value="Select">Select a unit</option>
-                        <option value="hours">hour(s)</option>
-                        <option value="days">day(s)</option>
-                        <option value="weeks">week(s)</option>
-                        <option value="months">month(s)</option>
-                        <option value="years">year(s)</option>
-                        <option value="N/A">N/A</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="tooltipnew demo-controls-end">
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
-                  </div>
-                </div>
-                <div class="div-dd-info subjects">
+
+                <div class="div-dd-info subjects" style="margin-top:10px;">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> Sex: </font>
@@ -4056,6 +4024,40 @@
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Organism strain of the subject."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+
+                <div class="div-dd-info subjects" style="margin-bottom:20px">
+                  <div class="demo-controls-head" style="text-align:center;">
+                    <div style="width: 100%;">
+                    <font color="black"> Exact age at the start of experiment: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input modified" style="margin-right:5px">
+                      <input type="text" id="bootbox-subject-age" name="Age" class="subjects-form-entry" placeholder="Type here...">
+                    </div>
+                    <div class="ui input modified">
+                      <select type="number" id="bootbox-subject-age-info" name="Age-info" class="ui selection dropdown" placeholder="Select here...">
+                        <option value="Select">Select a unit</option>
+                        <option value="hours">hour(s)</option>
+                        <option value="days">day(s)</option>
+                        <option value="weeks">week(s)</option>
+                        <option value="months">month(s)</option>
+                        <option value="years">year(s)</option>
+                        <option value="N/A">N/A</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -4228,28 +4230,6 @@
             style="width: 90%; margin: 0 auto; font-size: 13px;"
           >
             <div>
-              <div class="div-dd-info subjects" style="margin-top:10px">
-                <div class="demo-controls-head">
-                  <div style="width: 100%;">
-                  <font color="black"> Additional Fields: </font>
-                </div>
-                </div>
-                <div class="demo-controls-body">
-                  <div class="ui input modified">
-                    <input type="text" id="bootbox-subject-additional-fields" name="Additional Fields (e.g. MINDS)" class="subjects-form-entry" placeholder="Type here...">
-                  </div>
-                </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="For example: MINDS."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
-              </div>
               <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
@@ -4258,7 +4238,11 @@
                 </div>
                 <div class="demo-controls-body">
                   <div class="ui input modified">
-                    <input type="text" id="bootbox-subject-handedness" name="Handedness" class="subjects-form-entry" placeholder="Type here...">
+                    <select type="text" id="bootbox-subject-handedness" name="Handedness" class="ui selection dropdown subjects-form-entry">
+                      <option value="Select">Select here</option>
+                      <option value="right">Right</option>
+                      <option value="left">Left</option>
+                    </select>
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
@@ -4435,6 +4419,32 @@
                   justify-content: center;
                 "
               >
+              <div style="margin: 15px 0">
+                <div
+                  class="option-card radio-button"
+                  data-next="Question-prepare-samples-2"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-samples-1', 'create_samples-tab', '', 'individual-question prepare-samples')"
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="samples-1"
+                        type="radio"
+                        id="samples-1-B"
+                      />
+                      <label for="subjects-1-B"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-accent)" class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+                      <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+                      <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+                    </svg>
+                    <h2>I want to start a new samples file</h2>
+                  </div>
+                </div>
+              </div>
                 <div
                   style="margin: 15px 0"
                 >
@@ -4457,33 +4467,6 @@
                     <div class="card-body">
                       <i class="far fa-save" style="color: var(--color-subtle)"></i>
                       <h2>I want to continue working on a samples.xlsx file</h2>
-                    </div>
-                  </div>
-                </div>
-
-                <div style="margin: 15px 0">
-                  <div
-                    class="option-card radio-button"
-                    data-next="Question-prepare-samples-2"
-                    onclick="transitionFreeFormMode(this, 'Question-prepare-samples-1', 'create_samples-tab', '', 'individual-question prepare-samples')"
-                  >
-                    <div class="card-head">
-                      <div class="folder-checkbox">
-                        <input
-                          class="folder-input-check"
-                          name="samples-1"
-                          type="radio"
-                          id="samples-1-B"
-                        />
-                        <label for="subjects-1-B"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-accent)" class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
-                        <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
-                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
-                      </svg>
-                      <h2>I want to start a new samples file</h2>
                     </div>
                   </div>
                 </div>
@@ -5094,39 +5077,7 @@
                       ></i>
                     </div>
                   </div>
-                  <div class="div-dd-info subjects" style="margin:0">
-                    <div class="demo-controls-head" style="text-align:center;">
-                      <div style="width: 100%;">
-                      <font color="black"> Exact age at the start of experiment: </font>
-                    </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <div class="ui input modified" style="margin-right:5px">
-                        <input type="text" id="bootbox-sample-age" name="Age" class="samples-form-entry" placeholder="Type here...">
-                      </div>
-                      <div class="ui input modified">
-                        <select type="number" id="bootbox-sample-age-info" name="Age-info" class="ui selection dropdown" placeholder="Select here...">
-                          <option value="Select">Select a unit</option>
-                          <option value="hours">hour(s)</option>
-                          <option value="days">day(s)</option>
-                          <option value="weeks">week(s)</option>
-                          <option value="months">month(s)</option>
-                          <option value="years">year(s)</option>
-                          <option value="N/A">N/A</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <i
-                        class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                      ></i>
-                    </div>
-                  </div>
+
                   <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
@@ -5149,7 +5100,7 @@
                       ></i>
                     </div>
                   </div>
-                <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="div-dd-info subjects">
                   <div class="demo-controls-head">
                     <div style="width: 100%;">
                     <font color="black"> Strain: </font>
@@ -5164,6 +5115,39 @@
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Organism strain of the subject."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+                <div class="div-dd-info subjects" style="margin-bottom:20px">
+                  <div class="demo-controls-head" style="text-align:center;">
+                    <div style="width: 100%;">
+                    <font color="black"> Exact age at the start of experiment: </font>
+                  </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input modified" style="margin-right:5px">
+                      <input type="text" id="bootbox-sample-age" name="Age" class="samples-form-entry" placeholder="Type here...">
+                    </div>
+                    <div class="ui input modified">
+                      <select type="number" id="bootbox-sample-age-info" name="Age-info" class="ui selection dropdown" placeholder="Select here...">
+                        <option value="Select">Select a unit</option>
+                        <option value="hours">hour(s)</option>
+                        <option value="days">day(s)</option>
+                        <option value="weeks">week(s)</option>
+                        <option value="months">month(s)</option>
+                        <option value="years">year(s)</option>
+                        <option value="N/A">N/A</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”."
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -5336,29 +5320,6 @@
                 style="width: 90%; margin: 0 auto; font-size: 13px;"
               >
                 <div>
-                  <div class="div-dd-info subjects" style="margin-top:20px">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> Additional Fields: </font>
-                    </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <div class="ui input modified">
-                        <input type="text" id="bootbox-sample-additional-fields" name="Additional Fields (e.g. MINDS)" class="samples-form-entry" placeholder="Type here...">
-                      </div>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <i
-                        class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="For example: MINDS."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                      ></i>
-                    </div>
-                  </div>
-
                   <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
@@ -5394,7 +5355,11 @@
                     </div>
                     <div class="demo-controls-body">
                       <div class="ui input modified">
-                        <input type="text" id="bootbox-sample-handedness" name="Handedness" class="samples-form-entry" placeholder="Type here...">
+                        <select type="text" id="bootbox-sample-handedness" name="Handedness" class="ui selection dropdown samples-form-entry">
+                          <option value="Select">Select here</option>
+                          <option value="right">Right</option>
+                          <option value="left">Left</option>
+                        </select>
                       </div>
                     </div>
                     <div class="tooltipnew demo-controls-end">

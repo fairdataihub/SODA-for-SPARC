@@ -104,7 +104,7 @@ async function promptImportPrevInfo(object1, object2, type) {
   });
   if (previousEntry) {
     if (type === "subject") {
-      populateForms(previousEntry);
+      populateForms(previousEntry, "import");
     } else {
       const { value: previousEntrySample } = await Swal.fire({
         title: 'Choose a previous sample:',
@@ -125,7 +125,7 @@ async function promptImportPrevInfo(object1, object2, type) {
         confirmButtonText: 'Confirm'
       });
       if (previousEntrySample) {
-        populateFormsSamples(previousEntry, previousEntrySample);
+        populateFormsSamples(previousEntry, previousEntrySample, "import");
       }
     }
   } else {
@@ -447,7 +447,7 @@ function loadSubjectInformation(ev, subjectID) {
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
   clearAllSubjectFormFields(subjectsFormDiv)
-  populateForms(subjectID);
+  populateForms(subjectID, "");
   $("#btn-edit-subject").unbind( "click" );
   $("#btn-edit-subject").click(function() {
     editSubject(ev, subjectID)
@@ -463,7 +463,7 @@ function loadSubjectInformation(ev, subjectID) {
 }
 
 
- function populateForms(subjectID) {
+ function populateForms(subjectID, type) {
    if (subjectID !== "clear" && subjectID !== "") {
      var infoJson = [];
      if (subjectsTableData.length > 1) {
@@ -496,7 +496,15 @@ function loadSubjectInformation(ev, subjectID) {
                }
              }
            } else {
-             field.value = infoJson[i];
+              if (type === "import") {
+                if (field.name === "subject_id") {
+                  field.value = ""
+                } else {
+                  field.value = infoJson[i];
+                }
+              } else {
+                field.value = infoJson[i];
+              }
            }
          } else {
            field.value = "";
@@ -506,7 +514,7 @@ function loadSubjectInformation(ev, subjectID) {
    }
  }
 
- function populateFormsSamples(subjectID, sampleID) {
+ function populateFormsSamples(subjectID, sampleID, type) {
    if (sampleID !== "clear" && sampleID !== "") {
      var infoJson = [];
      if (samplesTableData.length > 1) {
@@ -539,7 +547,17 @@ function loadSubjectInformation(ev, subjectID) {
                }
              }
            } else {
-             field.value = infoJson[i];
+               if (type === "import") {
+                 if (field.name === "subject_id") {
+                   field.value = ""
+                 } else if (field.name === "sample_id") {
+                   field.value = ""
+                 } else {
+                    field.value = infoJson[i];
+                 }
+               } else {
+                 field.value = infoJson[i];
+               }
            }
          } else {
            field.value = "";
@@ -555,7 +573,7 @@ function loadSubjectInformation(ev, subjectID) {
    $("#btn-edit-sample").css("display", "inline-block");
    $("#btn-add-sample").css("display", "none");
    clearAllSubjectFormFields(samplesFormDiv)
-   populateFormsSamples(subjectID, sampleID);
+   populateFormsSamples(subjectID, sampleID, "");
    $("#btn-edit-sample").unbind( "click" );
    $("#btn-edit-sample").click(function() {
      editSample(ev, sampleID)
