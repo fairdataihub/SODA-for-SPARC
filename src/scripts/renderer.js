@@ -3527,23 +3527,23 @@ const validateDescription = (description) => {
   description = description.trim();
 
   if (
-    description.search("**Study Purpose**") != -1 ||
-    description.search("**Study Purpose:**") != -1 ||
-    description.search("**Study Purpose :**") != -1
+    description.search("[*][*]Study Purpose[*][*]") == -1 &&
+    description.search("[*][*]Study Purpose:[*][*]") == -1 &&
+    description.search("[*][*]Study Purpose :[*][*]") == -1
   ) {
     return false;
   }
   if (
-    description.search("**Data Collection**") != -1 ||
-    description.search("**Data Collection:**") != -1 ||
-    description.search("**Data Collection :**") != -1
+    description.search("[*][*]Data Collection[*][*]") == -1 &&
+    description.search("[*][*]Data Collection:[*][*]") == -1 &&
+    description.search("[*][*]Data Collection :[*][*]") == -1
   ) {
     return false;
   }
   if (
-    description.search("**Primary Conclusion**") != -1 ||
-    description.search("**Primary Conclusion:**") != -1 ||
-    description.search("**Primary Conclusion :**") != -1
+    description.search("[*][*]Primary Conclusion[*][*]") == -1 &&
+    description.search("[*][*]Primary Conclusion:[*][*]") == -1 &&
+    description.search("[*][*]Primary Conclusion :[*][*]") == -1
   ) {
     return false;
   }
@@ -3568,18 +3568,20 @@ bfAddDescriptionBtn.addEventListener("click", () => {
         icon: "warning",
         html: `This description does not seem to follow the SPARC guidelines. 
           Your descriptions should looke like this:
-          <br> 
+          <br> <br> 
+          <p style="text-align:left">
             <strong> Study Purpose: </strong> <br>
             <strong> Data Collection: </strong> <br>
-            <strong> Primary Conclusion: </strong> <br>
-          <br>
+            <strong> Primary Conclusion: </strong> 
+          </p>
+          <br> <br>
           Are you sure you want to continue?`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
         focusCancel: true,
         confirmButtonText: "Continue",
-        cancelButtonText: "I want to edit my description",
+        cancelButtonText: "No, I want to edit my description",
         reverseButtons: true,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -3605,7 +3607,6 @@ const addDescription = (
   selectedBfDataset,
   markdownDescription
 ) => {
-  return;
   client.invoke(
     "api_bf_add_description",
     selectedBfAccount,
@@ -8342,9 +8343,21 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           var emessage = userError(error);
           log.error(error);
           console.error(error);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Retreive Dataset - Pennsieve",
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+          );
           $("body").removeClass("waiting");
         } else {
           $("body").removeClass("waiting");
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Retreive Dataset - Pennsieve",
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+          );
         }
       }
     );
