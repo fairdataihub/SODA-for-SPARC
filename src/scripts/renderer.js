@@ -2502,7 +2502,7 @@ const tuiInstance = new Editor({
   previewStyle: "vertical",
   height: "400px",
   hideModeSwitch: true,
-  placeholder: "Add your description here",
+  placeholder: "Add a description here: ",
   toolbarItems: [
     "heading",
     "bold",
@@ -3074,7 +3074,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
 
 // Submit dataset to bf //
 bfSubmitDatasetBtn.addEventListener("click", async () => {
-  // Check that all 
+  // Check that all
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
@@ -3523,6 +3523,33 @@ bfAddSubtitleBtn.addEventListener("click", () => {
   }, delayAnimation);
 });
 
+const validateDescription = (description) => {
+  description = description.trim();
+
+  if (
+    description.search("**Study Purpose**") != -1 ||
+    description.search("**Study Purpose:**") != -1 ||
+    description.search("**Study Purpose :**") != -1
+  ) {
+    return false;
+  }
+  if (
+    description.search("**Data Collection**") != -1 ||
+    description.search("**Data Collection:**") != -1 ||
+    description.search("**Data Collection :**") != -1
+  ) {
+    return false;
+  }
+  if (
+    description.search("**Primary Conclusion**") != -1 ||
+    description.search("**Primary Conclusion:**") != -1 ||
+    description.search("**Primary Conclusion :**") != -1
+  ) {
+    return false;
+  }
+  return true;
+};
+
 // Add description //
 bfAddDescriptionBtn.addEventListener("click", () => {
   setTimeout(() => {
@@ -3534,45 +3561,89 @@ bfAddDescriptionBtn.addEventListener("click", () => {
     var selectedBfDataset = defaultBfDataset;
     var markdownDescription = tuiInstance.getMarkdown();
 
-    client.invoke(
-      "api_bf_add_description",
-      selectedBfAccount,
-      selectedBfDataset,
-      markdownDescription,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-          $("#bf-add-description-dataset-spinner").hide();
-          datasetDescriptionStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentMetadataProgress.style.display = "none";
-          $(".synced-progress").css("display", "none");
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Manage Dataset - Add/Edit Description",
-            selectedBfDataset
-          );
-        } else {
-          $("#bf-add-description-dataset-spinner").hide();
-          datasetDescriptionStatus.innerHTML = res;
-          // bfCurrentMetadataProgress.style.display = "none";
-          $(".synced-progress").css("display", "none");
-          showDatasetDescription();
-          changeDatasetUnderDD();
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Manage Dataset - Add/Edit Description",
-            selectedBfDataset
-          );
-        }
-      }
-    );
+    let response = validateDescription(markdownDescription);
+
+    if (!response) {
+      Swal.fire({
+        icon: "warning",
+        html: `This description does not seem to follow the SPARC guidelines. 
+          Your descriptions should looke like this:
+          <br> 
+            <strong> Study Purpose: </strong> <br>
+            <strong> Data Collection: </strong> <br>
+            <strong> Primary Conclusion: </strong> <br>
+          <br>
+          Are you sure you want to continue?`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Continue",
+        cancelButtonText: "I want to edit my description",
+        reverseButtons: true,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then(() => {
+        addDescription(
+          selectedBfAccount,
+          selectedBfDataset,
+          markdownDescription
+        );
+      });
+    } else {
+      addDescription(selectedBfAccount, selectedBfDataset, markdownDescription);
+    }
   }, delayAnimation);
 });
+
+const addDescription = (
+  selectedBfAccount,
+  selectedBfDataset,
+  markdownDescription
+) => {
+  return;
+  client.invoke(
+    "api_bf_add_description",
+    selectedBfAccount,
+    selectedBfDataset,
+    markdownDescription,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+        var emessage = userError(error);
+        $("#bf-add-description-dataset-spinner").hide();
+        datasetDescriptionStatus.innerHTML =
+          "<span style='color: red;'> " + emessage + "</span>";
+        // bfCurrentMetadataProgress.style.display = "none";
+        $(".synced-progress").css("display", "none");
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Manage Dataset - Add/Edit Description",
+          selectedBfDataset
+        );
+      } else {
+        $("#bf-add-description-dataset-spinner").hide();
+        datasetDescriptionStatus.innerHTML = res;
+        // bfCurrentMetadataProgress.style.display = "none";
+        $(".synced-progress").css("display", "none");
+        showDatasetDescription();
+        changeDatasetUnderDD();
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Manage Dataset - Add/Edit Description",
+          selectedBfDataset
+        );
+      }
+    }
+  );
+};
 
 // upload banner image //
 const Cropper = require("cropperjs");
@@ -4460,12 +4531,14 @@ function showCurrentDescription() {
           log.error(error);
           console.error(error);
         } else {
-          tuiInstance.setMarkdown(res);
-          if ((res = "")) {
+          if (res == "") {
+            res = `**Study Purpose:** &nbsp; \n \n **Data Collection:** &nbsp; \n \n **Primary Conclusion:** &nbsp; `;
+            tuiInstance.setMarkdown(res);
             $("#button-add-description > .btn_animated-inside").html(
               "Add description"
             );
           } else {
+            tuiInstance.setMarkdown(res);
             $("#button-add-description > .btn_animated-inside").html(
               "Edit description"
             );
