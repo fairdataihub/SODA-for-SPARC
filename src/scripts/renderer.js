@@ -8009,10 +8009,22 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
       sodaJSONObj,
       (error, res) => {
         if (error) {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Retreive Dataset - Pennsieve",
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+          );
           reject(userError(error));
           log.error(error);
           console.error(error);
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Retreive Dataset - Pennsieve",
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+          );
           resolve(res);
         }
       }
@@ -8299,8 +8311,17 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
     delete_imported_manifest();
 
     let temp_sodaJSONObj = JSON.parse(JSON.stringify(sodaJSONObj));
+    let dataset_name = "Undetermined";
 
     recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"]);
+
+    if ("bf-dataset-selected" in sodaJSONObj)
+    {
+      if ("dataset-name" in sodaJSONObj)
+      {
+        dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+      }
+    }
 
     client.invoke(
       "api_generate_manifest_file_locally",
@@ -8310,8 +8331,21 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           var emessage = userError(error);
           log.error(error);
           console.error(error);
+
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Generate Manifest - Local Preview",
+            dataset_name
+          );
           $("body").removeClass("waiting");
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Generate Manifest - Local Preview",
+            dataset_name
+          );
           $("body").removeClass("waiting");
         }
       }
