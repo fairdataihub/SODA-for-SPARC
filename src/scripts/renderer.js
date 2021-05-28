@@ -8009,23 +8009,23 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
       sodaJSONObj,
       (error, res) => {
         if (error) {
+          reject(userError(error));
+          log.error(error);
+          console.error(error);
           ipcRenderer.send(
             "track-event",
             "Error",
             "Retreive Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
-          reject(userError(error));
-          log.error(error);
-          console.error(error);
         } else {
+          resolve(res);
           ipcRenderer.send(
             "track-event",
             "Success",
             "Retreive Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
-          resolve(res);
         }
       }
     );
@@ -8315,11 +8315,9 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
 
     recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"]);
 
-    if ("bf-dataset-selected" in sodaJSONObj)
-    {
-      if ("dataset-name" in sodaJSONObj)
-      {
-        dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      if ("dataset-name" in sodaJSONObj) {
+        dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
       }
     }
 
@@ -8331,22 +8329,21 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           var emessage = userError(error);
           log.error(error);
           console.error(error);
-
+          $("body").removeClass("waiting");
           ipcRenderer.send(
             "track-event",
             "Error",
             "Generate Manifest - Local Preview",
             dataset_name
           );
-          $("body").removeClass("waiting");
         } else {
+          $("body").removeClass("waiting");
           ipcRenderer.send(
             "track-event",
             "Success",
             "Generate Manifest - Local Preview",
             dataset_name
           );
-          $("body").removeClass("waiting");
         }
       }
     );

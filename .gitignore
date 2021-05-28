@@ -6,6 +6,8 @@ node_modules
 build/api
 pysodadist
 dist
+semantic
+semantic.json
 
 *.pyc
 src/package-lock.json
