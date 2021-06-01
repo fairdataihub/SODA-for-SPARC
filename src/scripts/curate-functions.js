@@ -802,6 +802,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         focusConfirm: false,
         heightAuto: false,
         reverseButtons: true,
+        allowOutsideClick: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
           popup: "animate__animated animate__fadeInDown animate__faster",

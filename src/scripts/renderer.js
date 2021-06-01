@@ -32,6 +32,7 @@ const { JSONStorage } = require("node-localstorage");
 const electron_app = electron.app;
 const app = remote.app;
 const shell = electron.shell;
+const Clipboard = electron.clipboard;
 var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
@@ -52,6 +53,19 @@ client.invoke("echo", "server ready", (error, res) => {
       "Establishing Python Connection",
       error
     );
+
+    Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        app.relaunch();
+        app.exit();
+      }
+    });
   } else {
     console.log("Connected to Python back-end successfully");
     log.info("Connected to Python back-end successfully");
@@ -5423,8 +5437,70 @@ function showDetailsFile() {
   // $(".div-display-details.folders").hide()
 }
 
-var bfAddAccountBootboxMessage =
-  "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
+const pasteFromClipboard = (event, target_element) => {
+  event.preventDefault();
+  let key = Clipboard.readText();
+
+  if (
+    target_element == "bootbox-api-key" ||
+    target_element == "bootbox-api-secret"
+  ) {
+    const regex = new RegExp(
+      "^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$",
+      "i"
+    );
+    // "/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
+    console.log(regex.test(key), key, regex);
+    if (regex.test(key)) {
+      $(`#${target_element}`).val(key);
+    } else {
+      console.log("Invalid API Key");
+      log.error("Invalid API Key");
+    }
+  }
+};
+
+var bfAddAccountBootboxMessage = `<form>
+    <div class="form-group row">
+      <label for="bootbox-key-name" class="col-sm-3 col-form-label">
+        Key name:
+      </label>
+      <div class="col-sm-9">
+        <input type="text" id="bootbox-key-name" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="bootbox-api-key" class="col-sm-3 col-form-label">
+        API Key:
+      </label>
+      <div class="col-sm-9" style="display:flex">
+        <input id="bootbox-api-key" type="text" class="form-control" />
+        <button
+          class="ui left floated button"
+          style="height:auto; margin-left:3px"
+          onclick="pasteFromClipboard(event, 'bootbox-api-key')"
+        >
+          <i class="fas fa-paste"></i>
+        </button>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="bootbox-api-secret" class="col-sm-3 col-form-label">
+        API Secret:
+      </label>
+      <div class="col-sm-9" style="display:flex">
+        <input id="bootbox-api-secret" class="form-control" type="text" />
+        <button
+          class="ui left floated button"
+          style="height:auto; margin-left:3px"
+          onclick="pasteFromClipboard(event, 'bootbox-api-secret')"
+        >
+          <i class="fas fa-paste"></i>
+        </button>
+      </div>
+    </div>
+  </form>`;
+
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 // function addBFAccountInsideBootbox(myBootboxDialog) {
@@ -7981,6 +8057,27 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
         .basename(mypath[0])
         .slice(path.basename(mypath[0]).indexOf("."));
 
+      let file_size = 0;
+
+      try {
+        if (fs.existsSync(mypath[0])) {
+          let stats = fs.statSync(mypath[0]);
+          file_size = stats.size;
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file does not exist or is unreadable. Please verify that you are importing the correct metadata file from your system. </span>";
+
+        return;
+      }
+
+      if (file_size == 0) {
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file is empty! Please verify that you are importing the correct metadata file from your system.</span>";
+
+        return;
+      }
       if (metadataWithoutExtension === metadataIndividualFile) {
         if (metadataAllowedExtensions.includes(extension)) {
           document.getElementById(metadataParaElement).innerHTML = mypath[0];
@@ -8362,6 +8459,7 @@ function showBFAddAccountSweetalert() {
     reverseButtons: true,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
+    allowOutsideClick: false,
     didOpen: () => {
       $(".swal-popover").popover();
     },

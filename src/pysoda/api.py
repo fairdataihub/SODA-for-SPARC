@@ -342,6 +342,12 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
+    # def api_get_auth_key(self):
+    #     try:
+    #         return get_auth_key()
+    #     except Exception as e:
+    #         raise e
+
     ### Check Login to Python Server
     def echo(self, text):
         """echo any text"""
