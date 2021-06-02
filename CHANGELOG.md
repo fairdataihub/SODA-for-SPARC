@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid. 
 - Added a button to paste your API keys into the application more easily.
 - Added better warnings for when a backend module fails. This should give tou more information about the status of SODA and if a restart of the app maybe neccessary.
+- Adjusted the ordering of message box buttons to better follow OS specific guidelines for Human Interface Design.
 
 ### Bug fixes:
 - Fixed a potential bug where misspelled high level folders could cause SODA to not pull the correct information from Pennsieve.

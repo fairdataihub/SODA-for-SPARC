@@ -33,16 +33,16 @@ const disseminateDataset = (option) => {
     //   formBannerHeight.value
     // );
     Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      focusCancel: true,
       icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
       text:
         "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      focusCancel: true,
-      reverseButtons: true,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -65,16 +65,16 @@ const disseminateDataset = (option) => {
     $("#para-share-with-sparc-consortium-status").text("");
     // ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
     Swal.fire({
-      icon: "warning",
-      text:
-        "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
-      heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      focusCancel: true,
+      heightAuto: false,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      text:
+        "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -111,13 +111,14 @@ const unshareDataset = (option) => {
   }
 
   Swal.fire({
-    text: message_text,
-    icon: "warning",
-    showCancelButton: true,
-    focusCancel: true,
-    heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Continue",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: message_text,
   }).then((result) => {
     if (result.isConfirmed) {
       $(".spinner.post-curation").show();
@@ -176,14 +177,12 @@ $(document).ready(function () {
       if (fs.existsSync(destinationPath)) {
         var emessage =
           "File '" + filename + "' already exists in " + dirpath[0];
-        // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        // Swal.fire("Metadata file already exists", `${emessage}`, "error");
         Swal.fire({
-          icon: "error",
-          title: "Metadata file already exists",
-          text: `${emessage}`,
-          heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: `${emessage}`,
+          title: "Metadata file already exists",
         });
         $("#generate-submission-spinner").hide();
       } else {
@@ -1430,13 +1429,14 @@ function onChangeContactLabel(no) {
 
 function resetSubmission() {
   Swal.fire({
-    text: "Are you sure you want to start over and reset your progress?",
-    icon: "warning",
-    showCancelButton: true,
-    focusCancel: true,
-    heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Are you sure you want to start over and reset your progress?",
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
@@ -1480,34 +1480,18 @@ function resetSubmission() {
       checkAirtableStatus();
     }
   });
-
-  // bootbox.confirm({
-  //   message:
-  //     "<h4>Are you sure you want to start over and reset your propress?</h4>",
-  //   centerVertical: true,
-  //   button: {
-  //     ok: {
-  //       label: "Yes",
-  //       className: "btn-primary",
-  //     },
-  //   },
-  //   callback: function (r) {
-  //     if (r !== null && r === true) {
-
-  //     }
-  //   },
-  // });
 }
 
 function resetDD() {
   Swal.fire({
-    text: "Are you sure you want to start over and reset your progress?",
-    icon: "warning",
-    showCancelButton: true,
-    focusCancel: true,
-    heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Are you sure you want to start over and reset your progress?",
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
@@ -1557,20 +1541,4 @@ function resetDD() {
       document.getElementById("para-save-link-status").innerHTML = "";
     }
   });
-  // bootbox.confirm({
-  //   message:
-  //     "<h4>Are you sure you want to start over and reset your propress?</h4>",
-  //   centerVertical: true,
-  //   button: {
-  //     ok: {
-  //       label: "Yes",
-  //       className: "btn-primary",
-  //     },
-  //   },
-  //   callback: function (r) {
-  //     if (r !== null && r === true) {
-
-  //     }
-  //   },
-  // });
 }

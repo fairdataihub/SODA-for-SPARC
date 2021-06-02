@@ -37,6 +37,7 @@ var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
+var reverseSwalButtons = false;
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -260,6 +261,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,
+            reverseButtons: reverseSwalButtons,
             confirmButtonText: "Download now",
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
@@ -292,6 +294,7 @@ const run_pre_flight_checks = async (check_update = true) => {
               showCancelButton: true,
               confirmButtonText: "Download now",
               cancelButtonText: "Skip for now",
+              reverseButtons: reverseSwalButtons,
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
               },
@@ -348,6 +351,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
           showCancelButton: true,
+          reverseButtons: reverseSwalButtons,
           cancelButtonText: "I'll do it later",
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
@@ -520,6 +524,7 @@ const get_latest_agent_version = async () => {
         let release = release_res[0];
         let latest_agent_version = release.tag_name;
         if (process.platform == "darwin") {
+          reverseSwalButtons = true;
           release.assets.forEach((asset, index) => {
             let file_name = asset.name;
             if (path.extname(file_name) == ".pkg") {
@@ -528,6 +533,7 @@ const get_latest_agent_version = async () => {
           });
         }
         if (process.platform == "win32") {
+          reverseSwalButtons = false;
           release.assets.forEach((asset, index) => {
             let file_name = asset.name;
             if (
@@ -539,6 +545,7 @@ const get_latest_agent_version = async () => {
           });
         }
         if (process.platform == "linux") {
+          reverseSwalButtons = false;
           release.assets.forEach((asset, index) => {
             let file_name = asset.name;
             if (path.extname(file_name) == ".deb") {
@@ -1083,8 +1090,6 @@ const downloadTemplates = (templateItem, destinationFolder) => {
   if (fs.existsSync(destinationPath)) {
     var emessage =
       "File '" + templateItem + "' already exists in " + destinationFolder;
-    //ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    // Swal.fire("Metadata file already exists", `${emessage}`, "error");
     Swal.fire({
       icon: "error",
       title: "Metadata file already exists",
@@ -1096,9 +1101,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
     );
-    var emessage =
-      "Successfully saved '" + templateItem + "' to " + destinationFolder;
-    // Swal.fire("Download successful", `${emessage}`, "success");
+    var emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
     Swal.fire({
       icon: "success",
       title: "Download successful",
@@ -1111,7 +1114,6 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       "Success",
       `Download Template - ${templateItem}`
     );
-    //ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
   }
 };
 
@@ -2385,10 +2387,7 @@ generateDSBtn.addEventListener("click", (event) => {
     for (var i = 0; i < errorMessage.length; i++) {
       textErrorMessage += errorMessage[i] + "<br>";
     }
-    var messageMissingFields =
-      "<div>The following mandatory item(s) is/are missing:<br>" +
-      textErrorMessage +
-      "<br>Would you still like to generate the dataset description file?</div>";
+    var messageMissingFields = `<div>The following mandatory item(s) is/are missing:<br> ${textErrorMessage} <br>Would you still like to generate the dataset description file?</div>`;
     Swal.fire({
       icon: "warning",
       html: messageMissingFields,
@@ -2398,7 +2397,7 @@ generateDSBtn.addEventListener("click", (event) => {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -2439,8 +2438,6 @@ ipcRenderer.on(
       if (fs.existsSync(destinationPath)) {
         var emessage =
           "File '" + filename + "' already exists in " + dirpath[0];
-        // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        // Swal.fire("Metadata file already exists", `${emessage}`, "error");
         Swal.fire({
           icon: "error",
           title: "Metadata file already exists",
@@ -3356,41 +3353,6 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           $(".pulse-blue").removeClass("pulse-blue");
         }, 4000);
       } else {
-        // var bootboxDialog = bootbox.confirm({
-        //   message:
-        //     "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-        //   buttons: {
-        //     confirm: {
-        //       label: "Yes",
-        //       className: "btn-success",
-        //     },
-        //     cancel: {
-        //       label: "Cancel",
-        //       className: "btn-danger",
-        //     },
-        //   },
-        //   centerVertical: true,
-        //   callback: (result) => {
-        //     if (result) {
-        //       $("#button_upload_local_folder_confirm").click();
-        //       $("#button-submit-dataset").show();
-        //       $("#button-submit-dataset").addClass("pulse-blue");
-        //       // remove pulse class after 4 seconds
-        //       // pulse animation lasts 2 seconds => 2 pulses
-        //       setTimeout(() => {
-        //         $(".pulse-blue").removeClass("pulse-blue");
-        //       }, 4000);
-        //     } else {
-        //       document.getElementById(
-        //         "input-destination-getting-started-locally"
-        //       ).placeholder = "Browse here";
-        //       $("#selected-local-dataset-submit").attr(
-        //         "placeholder",
-        //         "Browse here"
-        //       );
-        //     }
-        //   },
-        // });
         Swal.fire({
           icon: "warning",
           text:
@@ -3401,7 +3363,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           focusCancel: true,
           confirmButtonText: "Yes",
           cancelButtonText: "Cancel",
-          reverseButtons: true,
+          reverseButtons: reverseSwalButtons,
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
@@ -3893,7 +3855,7 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
           focusCancel: true,
           confirmButtonText: "Yes",
           cancelButtonText: "No",
-          reverseButtons: true,
+          reverseButtons: reverseSwalButtons,
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
@@ -3993,7 +3955,7 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     focusCancel: true,
     confirmButtonText: "Yes",
     backdrop: "rgba(0,0,0, 0.4)",
-    reverseButtons: true,
+    reverseButtons: reverseSwalButtons,
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
@@ -4223,7 +4185,6 @@ function submitReviewDatasetCheck(res) {
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
     $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
-    // ipcRenderer.send("warning-publish-dataset-again");
     Swal.fire({
       icon: "warning",
       text:
@@ -4234,7 +4195,7 @@ function submitReviewDatasetCheck(res) {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -4260,7 +4221,7 @@ function submitReviewDatasetCheck(res) {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -4350,7 +4311,6 @@ function withdrawDatasetCheck(res) {
     $("#para-submit_prepublishing_review-status").text(emessage);
     $("#submit_prepublishing_review-spinner").hide();
   } else {
-    // ipcRenderer.send("warning-withdraw-dataset");
     Swal.fire({
       icon: "warning",
       text:
@@ -4361,7 +4321,7 @@ function withdrawDatasetCheck(res) {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -5176,72 +5136,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
     var newFolderName = "New Folder";
-    // show prompt for name
-    // bootbox.prompt({
-    //   title: "Add new folder...",
-    //   message: "Enter a name below:",
-    //   centerVertical: true,
-    //   callback: function (result) {
-    //     if (result !== null && result !== "") {
-    //       newFolderName = result.trim();
-    //       // check for duplicate or files with the same name
-    //       var duplicate = false;
-    //       var itemDivElements = document.getElementById("items").children;
-    //       for (var i = 0; i < itemDivElements.length; i++) {
-    //         if (newFolderName === itemDivElements[i].innerText) {
-    //           duplicate = true;
-    //           break;
-    //         }
-    //       }
-    //       if (duplicate) {
-    //         bootbox.alert({
-    //           message: "Duplicate folder name: " + newFolderName,
-    //           centerVertical: true,
-    //         });
-    //       } else {
-    //         var appendString = "";
-    //         appendString =
-    //           appendString +
-    //           '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-    //           newFolderName +
-    //           "</div></div>";
-    //         $(appendString).appendTo("#items");
-
-    //         /// update datasetStructureJSONObj
-    //         var currentPath = organizeDSglobalPath.value;
-    //         var jsonPathArray = currentPath.split("/");
-    //         var filtered = jsonPathArray.slice(1).filter(function (el) {
-    //           return el != "";
-    //         });
-
-    //         var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-    //         // update Json object with new folder created
-    //         var renamedNewFolder = newFolderName;
-    //         myPath["folders"][renamedNewFolder] = {
-    //           folders: {},
-    //           files: {},
-    //           type: "virtual",
-    //           action: ["new"],
-    //         };
-
-    //         listItems(myPath, "#items");
-    //         getInFolder(
-    //           ".single-item",
-    //           "#items",
-    //           organizeDSglobalPath,
-    //           datasetStructureJSONObj
-    //         );
-    //         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-    //         hideMenu(
-    //           "high-level-folder",
-    //           menuFolder,
-    //           menuHighLevelFolders,
-    //           menuFile
-    //         );
-    //       }
-    //     }
-    //   },
-    // });
     Swal.fire({
       title: "Add new folder...",
       text: "Enter a name below:",
@@ -5250,7 +5144,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: "Cancel",
       confirmButtonText: "Add folder",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
       },
@@ -5271,10 +5165,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             }
           }
           if (duplicate) {
-            // bootbox.alert({
-            //   message: "Duplicate folder name: " + newFolderName,
-            //   centerVertical: true,
-            // });
             Swal.fire({
               icon: "error",
               text: "Duplicate folder name: " + newFolderName,
@@ -5327,11 +5217,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       }
     });
   } else {
-    // bootbox.alert({
-    //   message:
-    //     "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
-    //   centerVertical: true,
-    // });
     Swal.fire({
       icon: "error",
       text:
@@ -5958,7 +5843,7 @@ function generateDataset(button) {
       confirmButtonText: "Confirm and Choose Location",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -6053,12 +5938,6 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-    // bootbox.alert({
-    //   message:
-    //     "We found some hidden files. These will be ignored when importing.",
-    //   backdrop: true,
-    //   centerVertical: true,
-    // });
   }
   addFilesfunction(
     path,
@@ -6099,11 +5978,6 @@ function addFoldersfunction(folderArray, currentLocation) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
-    // bootbox.alert({
-    //   message:
-    //     "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
-    //   centerVertical: true,
-    // });
   } else {
     // check for duplicates/folders with the same name
     for (var i = 0; i < folderArray.length; i++) {
@@ -7030,6 +6904,7 @@ function addDetailsForFile(ev) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -7042,25 +6917,6 @@ function addDetailsForFile(ev) {
         $("#button-confirm-display-details-file").html("Added");
       }
     });
-
-    // bootbox.confirm({
-    //   title: "Adding additional metadata for files",
-    //   message:
-    //     "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
-    //   centerVertical: true,
-    //   button: {
-    //     ok: {
-    //       label: "Yes",
-    //       className: "btn-primary",
-    //     },
-    //   },
-    //   callback: function (r) {
-    //     if (r !== null && r === true) {
-    //       updateFileDetails(ev);
-    //       $("#button-confirm-display-details-file").html("Added");
-    //     }
-    //   },
-    // });
   } else {
     updateFileDetails(ev);
     $("#button-confirm-display-details-file").html("Added");
@@ -7228,35 +7084,6 @@ ipcRenderer.on(
             );
             $("#nextBtn").prop("disabled", false);
           } else {
-            // var bootboxDialog = bootbox.confirm({
-            //   message:
-            //     "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-            //   buttons: {
-            //     confirm: {
-            //       label: "Yes",
-            //       className: "btn-success",
-            //     },
-            //     cancel: {
-            //       label: "Cancel",
-            //       className: "btn-danger",
-            //     },
-            //   },
-            //   centerVertical: true,
-            //   callback: (result) => {
-            //     if (result) {
-            //       $("#nextBtn").prop("disabled", false);
-            //       $("#para-continue-location-dataset-getting-started").text(
-            //         "Please continue below."
-            //       );
-            //     } else {
-            //       document.getElementById(
-            //         "input-destination-getting-started-locally"
-            //       ).placeholder = "Browse here";
-            //       sodaJSONObj["starting-point"]["local-path"] = "";
-            //       $("#para-continue-location-dataset-getting-started").text("");
-            //     }
-            //   },
-            // });
             Swal.fire({
               icon: "warning",
               text:
@@ -7267,7 +7094,7 @@ ipcRenderer.on(
               focusCancel: true,
               confirmButtonText: "Yes",
               cancelButtonText: "Cancel",
-              reverseButtons: true,
+              reverseButtons: reverseSwalButtons,
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
               },
@@ -7496,46 +7323,16 @@ document
 
           if (message) {
             message += "Would you like to continue?";
-            // var bootboxDialog = bootbox.confirm({
-            //   message: message,
-            //   buttons: {
-            //     confirm: {
-            //       label: "Yes",
-            //       className: "btn-success",
-            //     },
-            //     cancel: {
-            //       label: "No",
-            //       className: "btn-danger",
-            //     },
-            //   },
-            //   centerVertical: true,
-            //   callback: function (result) {
-            //     if (result) {
-            //       console.log("Continue");
-            //       initiate_generate();
-            //     } else {
-            //       console.log("Stop");
-            //       // then show the sidebar again
-            //       forceActionSidebar("show");
-            //       document.getElementById(
-            //         "para-please-wait-new-curate"
-            //       ).innerHTML = "Return to make changes";
-            //       document.getElementById(
-            //         "div-generate-comeback"
-            //       ).style.display = "flex";
-            //     }
-            //   },
-            // });
             message = "<div style='text-align: left'>" + message + "</div>";
             Swal.fire({
               icon: "warning",
               html: message,
               showCancelButton: true,
-              cancelButtonText: "No",
+              cancelButtonText: "No, I want to review my files",
               focusCancel: true,
-              showConfirmButton: "Yes",
+              showConfirmButton: "Yes, Continue",
               backdrop: "rgba(0,0,0, 0.4)",
-              reverseButtons: true,
+              reverseButtons: reverseSwalButtons,
               heightAuto: false,
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
@@ -8456,7 +8253,7 @@ function showBFAddAccountSweetalert() {
     cancelButtonText: "Cancel",
     confirmButtonText: "Add Account",
     customClass: "swal-wide",
-    reverseButtons: true,
+    reverseButtons: reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
@@ -8566,7 +8363,7 @@ function showAddAirtableAccountSweetalert() {
     confirmButtonText: "Add Account",
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
-    reverseButtons: true,
+    reverseButtons: reverseSwalButtons,
     customClass: "swal-wide",
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -8625,7 +8422,7 @@ function addAirtableAccountInsideSweetalert() {
       focusCancel: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       backdrop: "rgba(0,0,0,0.4)",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
