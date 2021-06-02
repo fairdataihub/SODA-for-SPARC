@@ -342,10 +342,10 @@ function addTheRestSubjectEntriesToJSON() {
     headersArrSubjects.push(field.name);
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
-      if (field.value === "Select" || field.value === "") {
-        field.value  = null
-      } else {
+      if ($("#bootbox-subject-age-info").val() !== "Select" && $("#bootbox-subject-age-info").val() !== "N/A") {
         field.value = field.value + " " + $("#bootbox-subject-age-info").val()
+      } else {
+        field.value = field.value
       }
     }
     valuesArr.push(field.value);
@@ -375,10 +375,10 @@ function addTheRestSampleEntriesToJSON() {
     headersArrSamples.push(field.name);
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
-      if (field.value === "Select" || field.value === "") {
-        field.value  = null
-      } else {
+      if ($("#bootbox-sample-age-info").val() !== "Select" && $("#bootbox-sample-age-info").val() !== "N/A") {
         field.value = field.value + " " + $("#bootbox-sample-age-info").val()
+      } else {
+        field.value = field.value
       }
     }
     valuesArr.push(field.value);
@@ -668,7 +668,7 @@ function editSample(ev, sampleID) {
     if (field.value !== "" && field.value !== undefined && field.value !== "Select") {
       // if it's age, then add age info input (day/week/month/year)
       if (field.name === "Age") {
-        if ($("#bootbox-sample-age-info").val() !== "Select") {
+        if ($("#bootbox-sample-age-info").val() !== "Select" && $("#bootbox-sample-age-info").val() !== "N/A") {
           field.value = field.value + " " + $("#bootbox-sample-age-info").val()
         }
       }
