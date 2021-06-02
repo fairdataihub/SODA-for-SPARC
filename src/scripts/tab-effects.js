@@ -583,6 +583,8 @@ const nextPrev = (n) => {
       var notIncludedMessage =
         "<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?</div>";
       Swal.fire({
+        allowOutsideClick: false,
+        allowEscapeKey: false,
         icon: "warning",
         html: notIncludedMessage,
         showConfirmButton: true,
@@ -824,9 +826,9 @@ const raiseWarningGettingStarted = (ev) => {
         icon: "warning",
         text:
           "This will reset your progress so far. Are you sure you want to continue?",
-        showCancelButton: "No",
+        showCancelButton: "Cancel",
         focusCancel: true,
-        confirmButtonText: "Yes",
+        confirmButtonText: "Continue",
         reverseButtons: reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -2557,8 +2559,8 @@ function raiseWarningExit(message) {
       text: message,
       showCancelButton: true,
       focusCancel: true,
-      cancelButtonText: "No",
-      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Continue",
       reverseButtons: reverseSwalButtons,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
