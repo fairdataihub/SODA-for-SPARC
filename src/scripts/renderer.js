@@ -36,7 +36,6 @@ const Clipboard = electron.clipboard;
 var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
-var jstreePreview = document.getElementById("div-dataset-tree-preview");
 var reverseSwalButtons = false;
 
 var datasetStructureJSONObj = {
@@ -44,6 +43,7 @@ var datasetStructureJSONObj = {
   files: {},
   type: "",
 };
+
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -3150,6 +3150,8 @@ const logFilesForUpload = (upload_folder_path) => {
 
 // Submit dataset to bf //
 bfSubmitDatasetBtn.addEventListener("click", async () => {
+  document.getElementById("para-please-wait-manage-dataset").innerHTML =
+    "Please wait while we verify a few things.";
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
@@ -7287,6 +7289,9 @@ document
         }
       }
     }
+
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "Please wait while we verify a few things.";
 
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);

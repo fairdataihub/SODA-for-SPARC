@@ -1,4 +1,5 @@
 var metadataFile = "";
+var jstreePreview = document.getElementById("div-dataset-tree-preview");
 
 // Function to clear the confirm options in the curate feature
 const confirm_click_account_function = () => {
@@ -1481,7 +1482,11 @@ function recursiveExpandNodes(object) {
 var selectedPath;
 var selectedNode;
 var jsTreeData = create_child_node(
-  datasetStructureJSONObj,
+  {
+    folders: {},
+    files: {},
+    type: "",
+  },
   "My_dataset_folder",
   "folder",
   "",
