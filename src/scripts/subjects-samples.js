@@ -168,7 +168,7 @@ function hideSamplesForm() {
 }
 
 function validateSubSamID(ev) {
-    var regex = /^[A-Za-z0-9 ]+$/;
+    var regex = /^[a-zA-Z0-9-_]+$/;
     var id = $(ev).prop("id");
     var value = $("#"+id).val();
     //Validate TextBox value against the Regex.
@@ -663,7 +663,7 @@ function editSubject(ev, subjectID) {
   subjectsFileData = []
 }
 
-function editSample(ev, bootbox, sampleID) {
+function editSample(ev, sampleID) {
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value !== "" && field.value !== undefined && field.value !== "Select") {
       // if it's age, then add age info input (day/week/month/year)
@@ -703,7 +703,7 @@ function editSample(ev, bootbox, sampleID) {
        Swal.fire("Duplicate sample_id!", error, "error")
      } else {
        for (var i=1; i<samplesTableData.length;i++) {
-         if (samplesTableData[i][0] === sampleID) {
+         if (samplesTableData[i][1] === sampleID) {
            samplesTableData[i] = samplesFileData
            break
          }
