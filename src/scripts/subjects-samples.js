@@ -1362,7 +1362,10 @@ function populateProtocolDropdown(type) {
       autoPopulateProtocolLink("", protocolResearcherList[selection], keyword)
     },
     trigger: {
-      event: ["input", "focus"]
+      event: ["input", "focus"],
+      condition:() => {
+        return true;
+      }
     },
     resultItem: {
       destination: "#bootbox-"+keyword+"-protocol-title",
@@ -1377,6 +1380,9 @@ function populateProtocolDropdown(type) {
            ${data.key}</span>`;
        }
     },
+    resultsList: {
+      maxResults: 5
+    }
   });
 }
 
