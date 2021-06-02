@@ -167,6 +167,21 @@ function hideSamplesForm() {
   $("#btn-add-sample").css("display", "inline-block");
 }
 
+function validateSubSamID(ev) {
+    var regex = /^[A-Za-z0-9 ]+$/;
+    var id = $(ev).prop("id");
+    var value = $("#"+id).val();
+    //Validate TextBox value against the Regex.
+    var isValid = regex.test(value);
+    if (!isValid && value !== "") {
+        $(ev).addClass("invalid");
+        $("#para-"+id).css("display", "block");
+    } else {
+        $(ev).removeClass("invalid");
+        $("#para-"+id).css("display", "none");
+    }
+}
+
 function addNewIDToTable(newID, secondaryID, type) {
   var message = "";
   if (type === "subjects") {

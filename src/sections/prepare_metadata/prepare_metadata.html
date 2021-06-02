@@ -3857,7 +3857,7 @@
           </div>
           <div class="demo-controls-body" style="width: fit-content">
             <div class="ui input" style="margin-left: 10px">
-              <input type="text" id="bootbox-subject-id" name="subject_id" class="subjects-form-entry" placeholder="Type here...">
+              <input type="text" id="bootbox-subject-id" name="subject_id" class="subjects-form-entry" placeholder="Type here..." onkeyup=validateSubSamID(this)>
             </div>
           </div>
           <div class="tooltipnew demo-controls-end">
@@ -3871,6 +3871,7 @@
             ></i>
           </div>
         </div>
+        <p id="para-bootbox-subject-id" style="color: red;display:none;text-align:center">Special characters are not allowed.</p>
         <div class="ui styled accordion">
           <div class="title" style="background: var(--color-bg-light-green-button)">
             <i class="dropdown icon"></i>
@@ -4872,7 +4873,7 @@
               </div>
               <div class="demo-controls-body" style="width: fit-content">
                 <div class="ui input" style="margin-left: 10px">
-                  <input type="text" id="bootbox-subject-id-samples" name="subject_id" class="samples-form-entry" placeholder="Type here...">
+                  <input type="text" id="bootbox-subject-id-samples" name="subject_id" class="samples-form-entry" placeholder="Type here..." onkeyup=validateSubSamID(this)>
                 </div>
               </div>
               <div class="tooltipnew demo-controls-end">
@@ -4886,6 +4887,7 @@
                 ></i>
               </div>
             </div>
+            <p id="para-bootbox-subject-id-samples" style="color: red;display:none;text-align:center">Special characters are not allowed.</p>
           </div>
           <div class="col" style="padding:0;">
             <div class="div-dd-info" style="margin: 20px auto;margin-top: 5px">
@@ -4896,7 +4898,7 @@
               </div>
               <div class="demo-controls-body" style="width: fit-content">
                 <div class="ui input" style="margin-left: 10px">
-                  <input type="text" id="bootbox-sample-id" name="sample_id" class="samples-form-entry" placeholder="Type here...">
+                  <input type="text" id="bootbox-sample-id" name="sample_id" class="samples-form-entry" placeholder="Type here..." onkeyup=validateSubSamID(this)>
                 </div>
               </div>
               <div class="tooltipnew demo-controls-end">
@@ -4910,6 +4912,7 @@
                 ></i>
               </div>
             </div>
+            <p id="para-bootbox-sample-id" style="color: red;display:none;text-align:left">Special characters are not allowed.</p>
           </div>
         </div>
           <div class="ui styled accordion">
