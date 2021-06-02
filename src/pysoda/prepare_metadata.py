@@ -285,12 +285,12 @@ def save_subjects_file(filepath, datastructure):
     ws1 = wb['Sheet1']
 
     transposeDatastructure = transposeMatrix(datastructure)
-    templateHeaderList = subjectsTemplateHeaderList
 
     mandatoryFields = transposeDatastructure[:8]
     optionalFields = transposeDatastructure[8:]
     refinedOptionalFields = processMetadataCustomFields(optionalFields)
 
+    templateHeaderList = subjectsTemplateHeaderList
     sortMatrix = sortedSubjectsTableData(mandatoryFields, templateHeaderList)
 
     if refinedOptionalFields:
@@ -344,10 +344,13 @@ def save_samples_file(filepath, datastructure):
     optionalFields = transposeDatastructure[7:]
     refinedOptionalFields = processMetadataCustomFields(optionalFields)
 
+    templateHeaderList = samplesTemplateHeaderList
+    sortMatrix = sortedSubjectsTableData(mandatoryFields, templateHeaderList)
+
     if refinedOptionalFields:
-        refinedDatastructure = transposeMatrix(np.concatenate((mandatoryFields, refinedOptionalFields)))
+        refinedDatastructure = transposeMatrix(np.concatenate((sortMatrix, refinedOptionalFields)))
     else:
-        refinedDatastructure = transposeMatrix(mandatoryFields)
+        refinedDatastructure = transposeMatrix(sortMatrix)
 
     # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     ws1.delete_rows(2, 2)
