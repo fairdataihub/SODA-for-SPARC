@@ -272,6 +272,9 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
 
     wb.save(destination)
 
+subjectsTemplateHeaderList = ["subject_id", "pool_id", "experimental group", "age", "sex", "species", "strain", "rrid for strain", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
+samplesTemplateHeaderList = ["subject_id", "sample_id", "wasderivedfromsample", "pool_id", "experimental group", "specimen type", "specimen anatomical location", "species", "sex", "age", "age category", "age range (min)", "age range (max)", "handedness", "strain", "rrid for strain",  "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
+
 def save_subjects_file(filepath, datastructure):
 
     source = join(TEMPLATE_PATH, "subjects.xlsx")
@@ -282,15 +285,18 @@ def save_subjects_file(filepath, datastructure):
     ws1 = wb['Sheet1']
 
     transposeDatastructure = transposeMatrix(datastructure)
+    templateHeaderList = subjectsTemplateHeaderList
 
     mandatoryFields = transposeDatastructure[:8]
     optionalFields = transposeDatastructure[8:]
     refinedOptionalFields = processMetadataCustomFields(optionalFields)
 
+    sortMatrix = sortedSubjectsTableData(mandatoryFields, templateHeaderList)
+
     if refinedOptionalFields:
-        refinedDatastructure = transposeMatrix(np.concatenate((mandatoryFields, refinedOptionalFields)))
+        refinedDatastructure = transposeMatrix(np.concatenate((sortMatrix, refinedOptionalFields)))
     else:
-        refinedDatastructure = transposeMatrix(mandatoryFields)
+        refinedDatastructure = transposeMatrix(sortMatrix)
 
     # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     ws1.delete_rows(2, 2)
@@ -380,9 +386,6 @@ def column_check(x):
         return False
     return True
 
-subjectsTemplateHeaderList = ["subject_id", "pool_id", "experimental group", "age", "sex", "species", "strain", "rrid for strain", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
-samplesTemplateHeaderList = ["subject_id", "sample_id", "wasderivedfromsample", "pool_id", "experimental group", "specimen type", "specimen anatomical location", "species", "sex", "age", "age category", "age range (min)", "age range (max)", "handedness", "strain", "rrid for strain",  "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
-
 def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
     if type == "subjects":
         templateHeaderList = subjectsTemplateHeaderList
@@ -414,7 +417,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
             column.extend([""]*len(subjects_df))
         transpose.append(column)
 
-    sortMatrix = sortedSubjectsTableData(transpose, ui_fields);
+    sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
     return transposeMatrix(sortMatrix)
 
@@ -424,12 +427,12 @@ def sortedSubjectsTableData(matrix, fields):
 
     for field in fields:
         for column in matrix:
-            if column[0] == field:
+            if column[0].lower() == field:
                 sortedMatrix.append(column)
                 break
 
     for column in matrix:
-        if column[0] not in fields:
+        if column[0].lower() not in fields:
             customHeaderMatrix.append(column)
 
     if len(customHeaderMatrix) > 0:
