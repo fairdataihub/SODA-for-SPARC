@@ -501,12 +501,16 @@ function loadSubjectInformation(ev, subjectID) {
              var breakBoolean = false;
              field.value = fullAge[0];
              for (var unit of unitArr) {
-               if (unit.includes(fullAge[1].toLowerCase())) {
-                 $("#bootbox-subject-age-info").val(unit);
-                 breakBoolean = true
-                 break
-               }
-               if (!breakBoolean) {
+               if (fullAge[1]) {
+                 if (unit.includes(fullAge[1].toLowerCase())) {
+                   $("#bootbox-subject-age-info").val(unit);
+                   breakBoolean = true
+                   break
+                 }
+                 if (!breakBoolean) {
+                   $("#bootbox-subject-age-info").val("N/A")
+                 }
+               } else {
                  $("#bootbox-subject-age-info").val("N/A")
                }
              }
@@ -551,15 +555,19 @@ function loadSubjectInformation(ev, subjectID) {
              var unitArr = ["hours", "days", "weeks", "months", "years"];
              var breakBoolean = false;
              field.value = fullAge[0];
-             for (var unit of unitArr) {
-               if (unit.includes(fullAge[1].toLowerCase())) {
-                 $("#bootbox-sample-age-info").val(unit);
-                 breakBoolean = true
-                 break
+             if (fullAge[1]) {
+               for (var unit of unitArr) {
+                 if (unit.includes(fullAge[1].toLowerCase())) {
+                   $("#bootbox-sample-age-info").val(unit);
+                   breakBoolean = true
+                   break
+                 }
+                 if (!breakBoolean) {
+                   $("#bootbox-sample-age-info").val("N/A")
+                 }
                }
-               if (!breakBoolean) {
-                 $("#bootbox-sample-age-info").val("N/A")
-               }
+             } else {
+               $("#bootbox-sample-age-info").val("N/A")
              }
            } else {
                if (type === "import") {

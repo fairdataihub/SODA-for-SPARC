@@ -935,8 +935,20 @@ ipcRenderer.on("selected-generate-metadata-subjects", async (event, dirpath, fil
             var emessage = userError(error);
             log.error(error);
             console.error(error);
-            Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error")
+            Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error");
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Create subjects.xlsx",
+              subjectsTableData
+            );
           } else {
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Create subjects.xlsx",
+              subjectsTableData
+            );
             Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
           }
         })
@@ -974,8 +986,20 @@ ipcRenderer.on("selected-generate-metadata-samples", async (event, dirpath, file
             var emessage = userError(error);
             log.error(error);
             console.error(error);
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Create samples.xlsx",
+              samplesTableData
+            );
             Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error")
           } else {
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Create samples.xlsx",
+              samplesTableData
+            );
             Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
           }
         })
@@ -1005,6 +1029,23 @@ ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPat
   }
 });
 
+function transformImportedExcelFile(result) {
+  for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "nan");
+    for (var ind of indices) {
+      column[ind] = "";
+    }
+  }
+  return result
+}
+
+function getAllIndexes(arr, val) {
+    var indexes = [], i = -1;
+    while ((i = arr.indexOf(val, i+1)) != -1){
+        indexes.push(i);
+    }
+    return indexes;
+}
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
 function loadSubjectsFileToDataframe(filePath) {
@@ -1022,9 +1063,21 @@ function loadSubjectsFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
-          subjectsTableData = res
+          subjectsTableData = transformImportedExcelFile(res);
           loadDataFrametoUI()
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            ""
+          );
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            error
+          );
           Swal.fire("Couldn't load existing subjects.xlsx file!", "Please make sure there are at least a header row in the subjects file.", "error")
         }
       }
@@ -1048,10 +1101,21 @@ function loadSamplesFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
-          samplesTableData = res
-
+          samplesTableData = transformImportedExcelFile(res);
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
           loadDataFrametoUISamples()
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
           Swal.fire("Couldn't load existing samples.xlsx file!", "Please make sure there are at least a header row in the samples file.", "error")
         }
       }
