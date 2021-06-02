@@ -1568,9 +1568,11 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .popover-tooltip.subjects-form {
     padding: 0;
-    font-size: 16px
+    font-size: 16px;
 }
-
+.popover-tooltip.subjects-form div{
+  min-width:180px 
+}
 .no_results_species{
   line-height: 1.5;
   padding: 3px 5px;
