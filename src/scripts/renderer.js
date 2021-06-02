@@ -906,40 +906,47 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
 });
 
 // generate subjects file
-ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
+ipcRenderer.on("selected-generate-metadata-subjects", async (event, dirpath, filename) => {
   if (dirpath.length > 0) {
-    $("#generate-subjects-spinner").show();
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
       var emessage = "File '" + filename + "' already exists in " + dirpath[0];
-      // ipcRenderer.send("open-error-metadata-file-exits", emessage);
       Swal.fire(
         'Metadata file already exists',
         `${emessage}`,
         'error'
       )
-      $("#generate-subjects-spinner").hide();
     } else {
-      client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          $("#generate-subjects-spinner").hide();
-          Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error")
-        } else {
-          $("#generate-subjects-spinner").hide();
-          Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
-        }
-      })
+        Swal.fire({
+          title: "Generating the subjects.xlsx file...",
+          html:
+            "Please wait...",
+          timer: 10000,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: true,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then((result) => {
+        });
+        await client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error")
+          } else {
+            Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
+          }
+        })
     }
   }
 })
 
 // generate samples file
-ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
+ipcRenderer.on("selected-generate-metadata-samples", async (event, dirpath, filename) => {
   if (dirpath.length > 0) {
-    $("#generate-samples-spinner").show();
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
       var emessage = "File '" + filename + "' already exists in " + dirpath[0];
@@ -948,21 +955,30 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         `${emessage}`,
         'error'
       )
-      $("#generate-samples-spinner").hide();
     } else {
-      client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          $("#generate-samples-spinner").hide();
-          Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error")
-        } else {
-          console.log(res);
-          $("#generate-samples-spinner").hide();
-          Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
-        }
-      })
+        Swal.fire({
+          title: "Generating the samples.xlsx file...",
+          html:
+            "Please wait...",
+          timer: 10000,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: true,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then((result) => {
+        });
+        await client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error")
+          } else {
+            Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
+          }
+        })
     }
   }
 })
