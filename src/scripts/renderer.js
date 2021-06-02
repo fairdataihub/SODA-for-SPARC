@@ -1072,7 +1072,7 @@ function createMetadataDir() {
 createMetadataDir();
 
 function createSpeciesAutocomplete(id) {
-  var autoCompleteJS = new autoComplete({
+  var autoCompleteJS2 = new autoComplete({
     selector: "#"+id,
     data: {
       src: [{"Canis lupus familiaris": "dogs, beagle dogs",
@@ -1093,7 +1093,10 @@ function createSpeciesAutocomplete(id) {
       document.querySelector("#"+id).value = selection;
     },
     trigger: {
-      event: ["input", "focus"]
+      event: ["input", "focus"],
+      condition:() => {
+        return true;
+      }
     },
     resultItem: {
       destination: "#"+id,
@@ -1111,6 +1114,7 @@ function createSpeciesAutocomplete(id) {
        }
     },
     resultsList: {
+      maxResults: 5,
       noResults: (list, query) => {
         // Create "No Results" message element
           const message = document.createElement("div");
@@ -1131,7 +1135,7 @@ $(document).ready(function() {
   createSpeciesAutocomplete("bootbox-subject-species");
   createSpeciesAutocomplete("bootbox-sample-species");
 
-  var autoCompleteJS = new autoComplete({
+  var autoCompleteJS1 = new autoComplete({
     selector: "#bootbox-subject-age-category",
     data: {
       src: ["2 cell stage", "4 cell stage", "8 cell stage", "blastula stage", "cleavage stage", "copepodite stage", "crustacean post-larval stage", "cysticercus stage", "death stage",
@@ -1144,7 +1148,10 @@ $(document).ready(function() {
       document.querySelector("#bootbox-subject-age-category").value = selection;
     },
     trigger: {
-      event: ["input", "focus"]
+      event: ["input", "focusin"],
+      condition:() => {
+        return true;
+      }
     },
     resultItem: {
       destination: "#bootbox-subject-age-category",
@@ -1152,6 +1159,9 @@ $(document).ready(function() {
         render: true
       },
     },
+    resultsList: {
+      maxResults: 5
+    }
   });
 })
 
