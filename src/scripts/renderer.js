@@ -1087,6 +1087,32 @@ function createMetadataDir() {
 
 createMetadataDir();
 
+function createSpecimenTypeAutocomplete(id) {
+  var autoCompleteJS3 = new autoComplete({
+    selector: "#"+id,
+    data: {
+      src: ["whole organism", "whole organ", "fluid specimen", "tissue", "nerve", "slice", "section", "cryosection", "cell", "nucleus", "nucleic acid", "slide", "whole mount"]
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#"+id).value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"],
+      condition: () => true,
+    },
+    resultItem: {
+      destination: "#"+id,
+      highlight: {
+        render: true
+      }
+    },
+    resultsList: {
+      maxResults: 5,
+    }
+  });
+}
+
 function createSpeciesAutocomplete(id) {
   var autoCompleteJS2 = new autoComplete({
     selector: "#"+id,
@@ -1110,9 +1136,7 @@ function createSpeciesAutocomplete(id) {
     },
     trigger: {
       event: ["input", "focus"],
-      condition:() => {
-        return true;
-      }
+      condition: () => true,
     },
     resultItem: {
       destination: "#"+id,
@@ -1147,12 +1171,9 @@ function createSpeciesAutocomplete(id) {
   });
 }
 
-$(document).ready(function() {
-  createSpeciesAutocomplete("bootbox-subject-species");
-  createSpeciesAutocomplete("bootbox-sample-species");
-
+function createAgeCategoryAutocomplete(id) {
   var autoCompleteJS1 = new autoComplete({
-    selector: "#bootbox-subject-age-category",
+    selector: "#"+id,
     data: {
       src: ["2 cell stage", "4 cell stage", "8 cell stage", "blastula stage", "cleavage stage", "copepodite stage", "crustacean post-larval stage", "cysticercus stage", "death stage",
             "embryo stage", "fully formed stage", "gastrula stage", "glaucothoe stage", "infant stage", "juvenile stage", "larval stage", "late adult stage", "late embryonic stage", "nauplius stage", "neonate stage",
@@ -1161,16 +1182,14 @@ $(document).ready(function() {
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.value;
-      document.querySelector("#bootbox-subject-age-category").value = selection;
+      document.querySelector("#"+id).value = selection;
     },
     trigger: {
-      event: ["input", "focusin"],
-      condition:() => {
-        return true;
-      }
+      event: ["input", "focus"],
+      condition: () => true,
     },
     resultItem: {
-      destination: "#bootbox-subject-age-category",
+      destination: "#"+id,
       highlight: {
         render: true
       },
@@ -1179,6 +1198,14 @@ $(document).ready(function() {
       maxResults: 5
     }
   });
+}
+
+$(document).ready(function() {
+  createSpeciesAutocomplete("bootbox-subject-species");
+  createSpeciesAutocomplete("bootbox-sample-species");
+  createAgeCategoryAutocomplete("bootbox-subject-age-category");
+  createAgeCategoryAutocomplete("bootbox-sample-age-category");
+  createSpecimenTypeAutocomplete("bootbox-sample-specimen-type");
 })
 
 async function loadTaxonomySpecies(commonName, destinationInput) {

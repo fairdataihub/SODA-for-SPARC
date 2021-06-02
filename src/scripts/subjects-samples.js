@@ -1363,9 +1363,7 @@ function populateProtocolDropdown(type) {
     },
     trigger: {
       event: ["input", "focus"],
-      condition:() => {
-        return true;
-      }
+      condition: () => true,
     },
     resultItem: {
       destination: "#bootbox-"+keyword+"-protocol-title",
