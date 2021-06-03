@@ -32,10 +32,18 @@ const { JSONStorage } = require("node-localstorage");
 const electron_app = electron.app;
 const app = remote.app;
 const shell = electron.shell;
+const Clipboard = electron.clipboard;
 var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
-var jstreePreview = document.getElementById("div-dataset-tree-preview");
+var reverseSwalButtons = false;
+
+var datasetStructureJSONObj = {
+  folders: {},
+  files: {},
+  type: "",
+};
+
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -52,6 +60,19 @@ client.invoke("echo", "server ready", (error, res) => {
       "Establishing Python Connection",
       error
     );
+
+    Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        app.relaunch();
+        app.exit();
+      }
+    });
   } else {
     console.log("Connected to Python back-end successfully");
     log.info("Connected to Python back-end successfully");
@@ -246,6 +267,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,
+            reverseButtons: reverseSwalButtons,
             confirmButtonText: "Download now",
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
@@ -278,6 +300,7 @@ const run_pre_flight_checks = async (check_update = true) => {
               showCancelButton: true,
               confirmButtonText: "Download now",
               cancelButtonText: "Skip for now",
+              reverseButtons: reverseSwalButtons,
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
               },
@@ -334,6 +357,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
           showCancelButton: true,
+          reverseButtons: reverseSwalButtons,
           cancelButtonText: "I'll do it later",
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
@@ -418,6 +442,7 @@ const check_api_key = async () => {
         console.error(error);
         resolve(false);
       } else {
+        log.info("Found a set of valid API keys");
         if (res[0] === "Select" && res.length === 1) {
           //no api key found
           notyf.dismiss(notification);
@@ -455,6 +480,7 @@ const check_agent_installed = async () => {
           message: "Pennsieve agent not found",
         });
         console.log(error);
+        log.warn("Pennsieve agent not found");
         var emessage = userError(error);
         resolve([false, emessage]);
       } else {
@@ -463,6 +489,7 @@ const check_agent_installed = async () => {
           type: "success",
           message: "Pennsieve agent found",
         });
+        log.info("Pennsieve agent found");
         resolve([true, res]);
       }
     });
@@ -488,6 +515,8 @@ const check_agent_installed_version = async (agent_version) => {
       type: "warning",
       message: "A newer Pennsieve agent was found!",
     });
+    log.warn(`Current agent version: ${agent_version}`);
+    log.warn(`Latest agent version: ${latest_agent_version}`);
   } else {
     notyf.dismiss(notification);
     notyf.open({
@@ -495,6 +524,7 @@ const check_agent_installed_version = async (agent_version) => {
       message: "You have the latest Pennsieve agent!",
     });
     browser_download_url = "";
+    log.info("Up to date agent version found");
   }
   return [browser_download_url, latest_agent_version];
 };
@@ -506,6 +536,7 @@ const get_latest_agent_version = async () => {
         let release = release_res[0];
         let latest_agent_version = release.tag_name;
         if (process.platform == "darwin") {
+          reverseSwalButtons = true;
           release.assets.forEach((asset, index) => {
             let file_name = asset.name;
             if (path.extname(file_name) == ".pkg") {
@@ -514,6 +545,7 @@ const get_latest_agent_version = async () => {
           });
         }
         if (process.platform == "win32") {
+          reverseSwalButtons = false;
           release.assets.forEach((asset, index) => {
             let file_name = asset.name;
             if (
@@ -525,6 +557,7 @@ const get_latest_agent_version = async () => {
           });
         }
         if (process.platform == "linux") {
+          reverseSwalButtons = false;
           release.assets.forEach((asset, index) => {
             let file_name = asset.name;
             if (path.extname(file_name) == ".deb") {
@@ -743,12 +776,6 @@ const validateSODAProgressBar = document.getElementById(
 );
 
 // Generate dataset //
-
-var datasetStructureJSONObj = {
-  folders: {},
-  files: {},
-  type: "",
-};
 
 const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
@@ -1069,8 +1096,6 @@ const downloadTemplates = (templateItem, destinationFolder) => {
   if (fs.existsSync(destinationPath)) {
     var emessage =
       "File '" + templateItem + "' already exists in " + destinationFolder;
-    //ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    // Swal.fire("Metadata file already exists", `${emessage}`, "error");
     Swal.fire({
       icon: "error",
       title: "Metadata file already exists",
@@ -1082,9 +1107,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
     );
-    var emessage =
-      "Successfully saved '" + templateItem + "' to " + destinationFolder;
-    // Swal.fire("Download successful", `${emessage}`, "success");
+    var emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
     Swal.fire({
       icon: "success",
       title: "Download successful",
@@ -1097,7 +1120,6 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       "Success",
       `Download Template - ${templateItem}`
     );
-    //ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
   }
 };
 
@@ -2371,10 +2393,7 @@ generateDSBtn.addEventListener("click", (event) => {
     for (var i = 0; i < errorMessage.length; i++) {
       textErrorMessage += errorMessage[i] + "<br>";
     }
-    var messageMissingFields =
-      "<div>The following mandatory item(s) is/are missing:<br>" +
-      textErrorMessage +
-      "<br>Would you still like to generate the dataset description file?</div>";
+    var messageMissingFields = `<div>The following mandatory item(s) is/are missing:<br> ${textErrorMessage} <br>Would you still like to generate the dataset description file?</div>`;
     Swal.fire({
       icon: "warning",
       html: messageMissingFields,
@@ -2384,7 +2403,7 @@ generateDSBtn.addEventListener("click", (event) => {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -2425,8 +2444,6 @@ ipcRenderer.on(
       if (fs.existsSync(destinationPath)) {
         var emessage =
           "File '" + filename + "' already exists in " + dirpath[0];
-        // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        // Swal.fire("Metadata file already exists", `${emessage}`, "error");
         Swal.fire({
           icon: "error",
           title: "Metadata file already exists",
@@ -2945,8 +2962,8 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 // Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener("click", () => {
   setTimeout(function () {
+    log.info(`Creating a new dataset with the name: ${bfNewDatasetName.value}`);
     bfCreateNewDatasetBtn.disabled = true;
-    //bfCreateNewDatasetStatus.innerHTML = "Adding...";
     $("#para-new-name-dataset-message").html("");
     $("#para-add-new-dataset-status").html("");
     $("#bf-create-new-dataset-spinner").css("visibility", "visible");
@@ -2974,6 +2991,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             bfNewDatasetName.value
           );
         } else {
+          log.info(`Created dataset successfully`);
           $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
           $(bfCreateNewDatasetBtn).hide();
           defaultBfDataset = bfNewDatasetName.value;
@@ -2994,6 +3012,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             "Manage Dataset - Create Empty Dataset",
             bfNewDatasetName.value
           );
+          log.info(`Requesting list of datasets`);
           client.invoke(
             "api_bf_dataset_account",
             defaultBfAccount,
@@ -3003,6 +3022,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
                 console.log(error);
                 var emessage = error;
               } else {
+                log.info(`Requested list of datasets successfully`);
                 datasetList = [];
                 datasetList = result;
               }
@@ -3026,6 +3046,10 @@ bfRenameDatasetBtn.addEventListener("click", () => {
     var selectedbfaccount = defaultBfAccount;
     var currentDatasetName = defaultBfDataset;
     var renamedDatasetName = renameDatasetName.value;
+
+    log.info(
+      `Requesting dataset name change from '${currentDatasetName}' to '${renamedDatasetName}'`
+    );
 
     if (currentDatasetName === "Select dataset") {
       emessage = "Please select a valid dataset";
@@ -3056,6 +3080,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               currentDatasetName + " to " + renamedDatasetName
             );
           } else {
+            log.info("Dataset rename success");
             defaultBfDataset = renamedDatasetName;
             $(".bf-dataset-span").html(renamedDatasetName);
             refreshDatasetList();
@@ -3079,6 +3104,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               currentDatasetName + " to " + renamedDatasetName
             );
             $("#bf-rename-dataset-spinner").css("visibility", "hidden");
+            log.info("Requesting list of datasets");
             client.invoke(
               "api_bf_dataset_account",
               defaultBfAccount,
@@ -3088,6 +3114,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
                   console.log(error);
                   var emessage = error;
                 } else {
+                  log.info("Request successful");
                   datasetList = [];
                   datasetList = result;
                   refreshDatasetList();
@@ -3101,8 +3128,30 @@ bfRenameDatasetBtn.addEventListener("click", () => {
   }, delayAnimation);
 });
 
+function walk(directory, filepaths = []) {
+  const files = fs.readdirSync(directory);
+  for (let filename of files) {
+    const filepath = path.join(directory, filename);
+    if (fs.statSync(filepath).isDirectory()) {
+      walk(filepath, filepaths);
+    } else {
+      filepaths.push(filepath);
+    }
+  }
+  return filepaths;
+}
+
+const logFilesForUpload = (upload_folder_path) => {
+  const foundFiles = walk(upload_folder_path);
+  foundFiles.forEach((item) => {
+    log.info(item);
+  });
+};
+
 // Submit dataset to bf //
 bfSubmitDatasetBtn.addEventListener("click", async () => {
+  document.getElementById("para-please-wait-manage-dataset").innerHTML =
+    "Please wait while we verify a few things...";
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
@@ -3127,6 +3176,8 @@ bfSubmitDatasetBtn.addEventListener("click", async () => {
   var selectedbfdataset = defaultBfDataset;
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+  log.info("Files selected for upload:");
+  logFilesForUpload(pathSubmitDataset.placeholder);
 
   client.invoke(
     "api_bf_submit_dataset",
@@ -3342,41 +3393,6 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           $(".pulse-blue").removeClass("pulse-blue");
         }, 4000);
       } else {
-        // var bootboxDialog = bootbox.confirm({
-        //   message:
-        //     "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-        //   buttons: {
-        //     confirm: {
-        //       label: "Yes",
-        //       className: "btn-success",
-        //     },
-        //     cancel: {
-        //       label: "Cancel",
-        //       className: "btn-danger",
-        //     },
-        //   },
-        //   centerVertical: true,
-        //   callback: (result) => {
-        //     if (result) {
-        //       $("#button_upload_local_folder_confirm").click();
-        //       $("#button-submit-dataset").show();
-        //       $("#button-submit-dataset").addClass("pulse-blue");
-        //       // remove pulse class after 4 seconds
-        //       // pulse animation lasts 2 seconds => 2 pulses
-        //       setTimeout(() => {
-        //         $(".pulse-blue").removeClass("pulse-blue");
-        //       }, 4000);
-        //     } else {
-        //       document.getElementById(
-        //         "input-destination-getting-started-locally"
-        //       ).placeholder = "Browse here";
-        //       $("#selected-local-dataset-submit").attr(
-        //         "placeholder",
-        //         "Browse here"
-        //       );
-        //     }
-        //   },
-        // });
         Swal.fire({
           icon: "warning",
           text:
@@ -3387,7 +3403,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           focusCancel: true,
           confirmButtonText: "Yes",
           cancelButtonText: "Cancel",
-          reverseButtons: true,
+          reverseButtons: reverseSwalButtons,
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
@@ -3506,9 +3522,12 @@ $(bfListDatasetStatus).on("change", () => {
 // Add subtitle //
 bfAddSubtitleBtn.addEventListener("click", () => {
   setTimeout(function () {
-    // bfCurrentMetadataProgress.style.display = "block";
+    log.info("Adding subtitle to dataset");
+    log.info(bfDatasetSubtitle.value);
+
     $(".synced-progress").css("display", "block");
     $("#bf-add-subtitle-dataset-spinner").show();
+
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
     var inputSubtitle = bfDatasetSubtitle.value;
@@ -3535,6 +3554,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
             defaultBfDataset
           );
         } else {
+          log.info("Added subtitle to dataset");
           $("#bf-add-subtitle-dataset-spinner").hide();
           datasetSubtitleStatus.innerHTML = res;
           // bfCurrentMetadataProgress.style.display = "none";
@@ -3554,13 +3574,15 @@ bfAddSubtitleBtn.addEventListener("click", () => {
 // Add description //
 bfAddDescriptionBtn.addEventListener("click", () => {
   setTimeout(() => {
-    // bfCurrentMetadataProgress.style.display = "block";
     $(".synced-progress").css("display", "block");
     $("#bf-add-description-dataset-spinner").show();
 
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
     var markdownDescription = tuiInstance.getMarkdown();
+
+    log.info("Adding description to dataset");
+    log.info(markdownDescription);
 
     client.invoke(
       "api_bf_add_description",
@@ -3584,9 +3606,9 @@ bfAddDescriptionBtn.addEventListener("click", () => {
             selectedBfDataset
           );
         } else {
+          log.info("Added description to dataset");
           $("#bf-add-description-dataset-spinner").hide();
           datasetDescriptionStatus.innerHTML = res;
-          // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
           showDatasetDescription();
           changeDatasetUnderDD();
@@ -3869,17 +3891,14 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
         // );
         Swal.fire({
           icon: "warning",
-          text:
-            "Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is " +
-            formBannerHeight.value +
-            " px. Would you like to continue?",
+          text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showCancelButton: true,
           focusCancel: true,
           confirmButtonText: "Yes",
           cancelButtonText: "No",
-          reverseButtons: true,
+          reverseButtons: reverseSwalButtons,
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
@@ -3966,9 +3985,6 @@ bfAddLicenseBtn.addEventListener("click", () => {
 // Make PI owner //
 bfAddPermissionPIBtn.addEventListener("click", () => {
   datasetPermissionStatusPI.innerHTML = "";
-  // bfCurrentPermissionProgress.style.display = "block";
-  // bfAddEditCurrentPermissionProgress.style.display = "block";
-  // ipcRenderer.send("warning-add-permission-owner-PI");
   Swal.fire({
     icon: "warning",
     text:
@@ -3979,7 +3995,7 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     focusCancel: true,
     confirmButtonText: "Yes",
     backdrop: "rgba(0,0,0, 0.4)",
-    reverseButtons: true,
+    reverseButtons: reverseSwalButtons,
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
@@ -3988,6 +4004,7 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     },
   }).then((result) => {
     if (result.isConfirmed) {
+      log.info("Changing PI Owner of datset");
       $("#bf-add-permission-pi-spinner").css("visibility", "visible");
       datasetPermissionStatusPI.innerHTML = "";
       //disableform(bfPermissionForm);
@@ -3998,112 +4015,109 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
         bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
       var selectedRole = "owner";
 
-      if (true) {
-        client.invoke(
-          "api_bf_add_permission",
-          selectedBfAccount,
-          selectedBfDataset,
-          selectedUser,
-          selectedRole,
-          (error, res) => {
-            if (error) {
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Manage Dataset - Change PI Owner",
-                selectedBfDataset
-              );
-              $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-              log.error(error);
-              console.error(error);
-              var emessage = userError(error);
-              datasetPermissionStatusPI.innerHTML =
-                "<span style='color: red;'> " + emessage + "</span>";
-              // bfCurrentPermissionProgress.style.display = "none";
-              // bfAddEditCurrentPermissionProgress.style.display = "none";
-            } else {
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Manage Dataset - Change PI Owner",
-                selectedBfDataset
-              );
-              let nodeStorage = new JSONStorage(app.getPath("userData"));
-              nodeStorage.setItem("previously_selected_PI", selectedUser);
-              $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-              datasetPermissionStatusPI.innerHTML = res;
-              showCurrentPermission();
-              changeDatasetRolePI(selectedBfDataset);
-            }
+      client.invoke(
+        "api_bf_add_permission",
+        selectedBfAccount,
+        selectedBfDataset,
+        selectedUser,
+        selectedRole,
+        (error, res) => {
+          if (error) {
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Manage Dataset - Change PI Owner",
+              selectedBfDataset
+            );
+            $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+            log.error(error);
+            console.error(error);
+            var emessage = userError(error);
+            datasetPermissionStatusPI.innerHTML =
+              "<span style='color: red;'> " + emessage + "</span>";
+            // bfCurrentPermissionProgress.style.display = "none";
+            // bfAddEditCurrentPermissionProgress.style.display = "none";
+          } else {
+            log.info("Changed PI Owner of datset");
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Manage Dataset - Change PI Owner",
+              selectedBfDataset
+            );
+            let nodeStorage = new JSONStorage(app.getPath("userData"));
+            nodeStorage.setItem("previously_selected_PI", selectedUser);
+            $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+            datasetPermissionStatusPI.innerHTML = res;
+            showCurrentPermission();
+            changeDatasetRolePI(selectedBfDataset);
           }
-        );
-      } else {
-        // bfCurrentPermissionProgress.style.display = "none";
-        // bfAddEditCurrentPermissionProgress.style.display = "none";
-        $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-      }
+        }
+      );
     }
   });
 });
-ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
-  $("#bf-add-permission-pi-spinner").css("visibility", "visible");
-  datasetPermissionStatusPI.innerHTML = "";
-  //disableform(bfPermissionForm);
 
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
-  var selectedRole = "owner";
+// ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
+//   $("#bf-add-permission-pi-spinner").css("visibility", "visible");
+//   datasetPermissionStatusPI.innerHTML = "";
+//   //disableform(bfPermissionForm);
 
-  if (index === 0) {
-    client.invoke(
-      "api_bf_add_permission",
-      selectedBfAccount,
-      selectedBfDataset,
-      selectedUser,
-      selectedRole,
-      (error, res) => {
-        if (error) {
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Manage Dataset - Change PI Owner",
-            selectedBfDataset
-          );
-          $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-          datasetPermissionStatusPI.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentPermissionProgress.style.display = "none";
-          // bfAddEditCurrentPermissionProgress.style.display = "none";
-        } else {
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Manage Dataset - Change PI Owner",
-            selectedBfDataset
-          );
-          let nodeStorage = new JSONStorage(app.getPath("userData"));
-          nodeStorage.setItem("previously_selected_PI", selectedUser);
-          $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-          datasetPermissionStatusPI.innerHTML = res;
-          showCurrentPermission();
-          changeDatasetRolePI(selectedBfDataset);
-        }
-      }
-    );
-  } else {
-    // bfCurrentPermissionProgress.style.display = "none";
-    // bfAddEditCurrentPermissionProgress.style.display = "none";
-    $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-  }
-});
+//   var selectedBfAccount = defaultBfAccount;
+//   var selectedBfDataset = defaultBfDataset;
+//   var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
+//   var selectedRole = "owner";
+
+//   if (index === 0) {
+//     client.invoke(
+//       "api_bf_add_permission",
+//       selectedBfAccount,
+//       selectedBfDataset,
+//       selectedUser,
+//       selectedRole,
+//       (error, res) => {
+//         if (error) {
+//           ipcRenderer.send(
+//             "track-event",
+//             "Error",
+//             "Manage Dataset - Change PI Owner",
+//             selectedBfDataset
+//           );
+//           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+//           log.error(error);
+//           console.error(error);
+//           var emessage = userError(error);
+//           datasetPermissionStatusPI.innerHTML =
+//             "<span style='color: red;'> " + emessage + "</span>";
+//           // bfCurrentPermissionProgress.style.display = "none";
+//           // bfAddEditCurrentPermissionProgress.style.display = "none";
+//         } else {
+//           ipcRenderer.send(
+//             "track-event",
+//             "Success",
+//             "Manage Dataset - Change PI Owner",
+//             selectedBfDataset
+//           );
+//           let nodeStorage = new JSONStorage(app.getPath("userData"));
+//           nodeStorage.setItem("previously_selected_PI", selectedUser);
+//           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+//           datasetPermissionStatusPI.innerHTML = res;
+//           showCurrentPermission();
+//           changeDatasetRolePI(selectedBfDataset);
+//         }
+//       }
+//     );
+//   } else {
+//     // bfCurrentPermissionProgress.style.display = "none";
+//     // bfAddEditCurrentPermissionProgress.style.display = "none";
+//     $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
+//   }
+// });
 
 // Add permission for user //
 bfAddPermissionBtn.addEventListener("click", () => {
   setTimeout(function () {
+    log.info("Adding a permission for a user on a dataset");
     $("#bf-add-permission-user-spinner").show();
     datasetPermissionStatus.innerHTML = "";
     // bfCurrentPermissionProgress.style.display = "block";
@@ -4115,61 +4129,62 @@ bfAddPermissionBtn.addEventListener("click", () => {
     var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
     var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
 
-    if (selectedRole === "owner") {
-      ipcRenderer.send("warning-add-permission-owner");
-    } else {
-      addPermissionUser(
-        selectedBfAccount,
-        selectedBfDataset,
-        selectedUser,
-        selectedRole
-      );
-    }
-  }, delayAnimation);
-});
-
-ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
-  var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
-
-  datasetPermissionStatus.innerHTML = "";
-
-  if (index === 0) {
     addPermissionUser(
       selectedBfAccount,
       selectedBfDataset,
       selectedUser,
       selectedRole
     );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Manage Dataset - Add User Permission",
-      selectedBfDataset
-    );
-    $("#bf-add-permission-user-spinner").hide();
-  } else {
-    $("#bf-add-permission-user-spinner").hide();
-    // bfCurrentPermissionProgress.style.display = "none";
-    // bfAddEditCurrentPermissionProgress.style.display = "none";
-  }
+
+    // if (selectedRole === "owner") {
+    //   ipcRenderer.send("warning-add-permission-owner");
+    // } else {
+    // }
+  }, delayAnimation);
 });
+
+// ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
+//   var selectedBfAccount = defaultBfAccount;
+//   var selectedBfDataset = defaultBfDataset;
+//   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
+//   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
+
+//   datasetPermissionStatus.innerHTML = "";
+
+//   if (index === 0) {
+//     addPermissionUser(
+//       selectedBfAccount,
+//       selectedBfDataset,
+//       selectedUser,
+//       selectedRole
+//     );
+//     ipcRenderer.send(
+//       "track-event",
+//       "Success",
+//       "Manage Dataset - Add User Permission",
+//       selectedBfDataset
+//     );
+//     $("#bf-add-permission-user-spinner").hide();
+//   } else {
+//     $("#bf-add-permission-user-spinner").hide();
+//     // bfCurrentPermissionProgress.style.display = "none";
+//     // bfAddEditCurrentPermissionProgress.style.display = "none";
+//   }
+// });
 
 // Add permission for team
 bfAddPermissionTeamBtn.addEventListener("click", () => {
   setTimeout(function () {
+    log.info("Adding a permission for a team on a dataset");
     $("#bf-add-permission-team-spinner").show();
     datasetPermissionStatusTeam.innerHTML = "";
-    // bfCurrentPermissionProgress.style.display = "block";
-    // bfAddEditCurrentPermissionProgress.style.display = "block";
-    //disableform(bfPermissionForm);
+
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
     var selectedTeam = bfListTeams.options[bfListTeams.selectedIndex].text;
     var selectedRole =
       bfListRolesTeam.options[bfListRolesTeam.selectedIndex].text;
+
     client.invoke(
       "api_bf_add_permission_team",
       selectedBfAccount,
@@ -4187,6 +4202,7 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
           // bfCurrentPermissionProgress.style.display = "none";
           // bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
+          log.info("Added permission for the team");
           $("#bf-add-permission-team-spinner").hide();
           datasetPermissionStatusTeam.innerHTML = res + ". " + smileyCan;
           showCurrentPermission();
@@ -4209,7 +4225,6 @@ function submitReviewDatasetCheck(res) {
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
     $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
-    // ipcRenderer.send("warning-publish-dataset-again");
     Swal.fire({
       icon: "warning",
       text:
@@ -4220,7 +4235,7 @@ function submitReviewDatasetCheck(res) {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -4246,7 +4261,7 @@ function submitReviewDatasetCheck(res) {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -4336,7 +4351,6 @@ function withdrawDatasetCheck(res) {
     $("#para-submit_prepublishing_review-status").text(emessage);
     $("#submit_prepublishing_review-spinner").hide();
   } else {
-    // ipcRenderer.send("warning-withdraw-dataset");
     Swal.fire({
       icon: "warning",
       text:
@@ -4347,7 +4361,7 @@ function withdrawDatasetCheck(res) {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -4364,12 +4378,12 @@ function withdrawDatasetCheck(res) {
   }
 }
 
-ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
-  if (index === 0) {
-    withdrawReviewDataset();
-  }
-  $("#submit_prepublishing_review-spinner").hide();
-});
+// ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
+//   if (index === 0) {
+//     withdrawReviewDataset();
+//   }
+//   $("#submit_prepublishing_review-spinner").hide();
+// });
 
 function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
@@ -4749,6 +4763,7 @@ function addPermissionUser(
         // bfCurrentPermissionProgress.style.display = "none";
         // bfAddEditCurrentPermissionProgress.style.display = "none";
       } else {
+        log.info("Dataset permission added");
         datasetPermissionStatus.innerHTML = res;
         showCurrentPermission();
 
@@ -5162,72 +5177,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
     var newFolderName = "New Folder";
-    // show prompt for name
-    // bootbox.prompt({
-    //   title: "Add new folder...",
-    //   message: "Enter a name below:",
-    //   centerVertical: true,
-    //   callback: function (result) {
-    //     if (result !== null && result !== "") {
-    //       newFolderName = result.trim();
-    //       // check for duplicate or files with the same name
-    //       var duplicate = false;
-    //       var itemDivElements = document.getElementById("items").children;
-    //       for (var i = 0; i < itemDivElements.length; i++) {
-    //         if (newFolderName === itemDivElements[i].innerText) {
-    //           duplicate = true;
-    //           break;
-    //         }
-    //       }
-    //       if (duplicate) {
-    //         bootbox.alert({
-    //           message: "Duplicate folder name: " + newFolderName,
-    //           centerVertical: true,
-    //         });
-    //       } else {
-    //         var appendString = "";
-    //         appendString =
-    //           appendString +
-    //           '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-    //           newFolderName +
-    //           "</div></div>";
-    //         $(appendString).appendTo("#items");
-
-    //         /// update datasetStructureJSONObj
-    //         var currentPath = organizeDSglobalPath.value;
-    //         var jsonPathArray = currentPath.split("/");
-    //         var filtered = jsonPathArray.slice(1).filter(function (el) {
-    //           return el != "";
-    //         });
-
-    //         var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-    //         // update Json object with new folder created
-    //         var renamedNewFolder = newFolderName;
-    //         myPath["folders"][renamedNewFolder] = {
-    //           folders: {},
-    //           files: {},
-    //           type: "virtual",
-    //           action: ["new"],
-    //         };
-
-    //         listItems(myPath, "#items");
-    //         getInFolder(
-    //           ".single-item",
-    //           "#items",
-    //           organizeDSglobalPath,
-    //           datasetStructureJSONObj
-    //         );
-    //         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-    //         hideMenu(
-    //           "high-level-folder",
-    //           menuFolder,
-    //           menuHighLevelFolders,
-    //           menuFile
-    //         );
-    //       }
-    //     }
-    //   },
-    // });
     Swal.fire({
       title: "Add new folder...",
       text: "Enter a name below:",
@@ -5236,7 +5185,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: "Cancel",
       confirmButtonText: "Add folder",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
       },
@@ -5257,10 +5206,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             }
           }
           if (duplicate) {
-            // bootbox.alert({
-            //   message: "Duplicate folder name: " + newFolderName,
-            //   centerVertical: true,
-            // });
             Swal.fire({
               icon: "error",
               text: "Duplicate folder name: " + newFolderName,
@@ -5313,11 +5258,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       }
     });
   } else {
-    // bootbox.alert({
-    //   message:
-    //     "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
-    //   centerVertical: true,
-    // });
     Swal.fire({
       icon: "error",
       text:
@@ -5423,8 +5363,70 @@ function showDetailsFile() {
   // $(".div-display-details.folders").hide()
 }
 
-var bfAddAccountBootboxMessage =
-  "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
+const pasteFromClipboard = (event, target_element) => {
+  event.preventDefault();
+  let key = Clipboard.readText();
+
+  if (
+    target_element == "bootbox-api-key" ||
+    target_element == "bootbox-api-secret"
+  ) {
+    const regex = new RegExp(
+      "^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$",
+      "i"
+    );
+    // "/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
+    console.log(regex.test(key), key, regex);
+    if (regex.test(key)) {
+      $(`#${target_element}`).val(key);
+    } else {
+      console.log("Invalid API Key");
+      log.error("Invalid API Key");
+    }
+  }
+};
+
+var bfAddAccountBootboxMessage = `<form>
+    <div class="form-group row">
+      <label for="bootbox-key-name" class="col-sm-3 col-form-label">
+        Key name:
+      </label>
+      <div class="col-sm-9">
+        <input type="text" id="bootbox-key-name" class="form-control" />
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="bootbox-api-key" class="col-sm-3 col-form-label">
+        API Key:
+      </label>
+      <div class="col-sm-9" style="display:flex">
+        <input id="bootbox-api-key" type="text" class="form-control" />
+        <button
+          class="ui left floated button"
+          style="height:auto; margin-left:3px"
+          onclick="pasteFromClipboard(event, 'bootbox-api-key')"
+        >
+          <i class="fas fa-paste"></i>
+        </button>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="bootbox-api-secret" class="col-sm-3 col-form-label">
+        API Secret:
+      </label>
+      <div class="col-sm-9" style="display:flex">
+        <input id="bootbox-api-secret" class="form-control" type="text" />
+        <button
+          class="ui left floated button"
+          style="height:auto; margin-left:3px"
+          onclick="pasteFromClipboard(event, 'bootbox-api-secret')"
+        >
+          <i class="fas fa-paste"></i>
+        </button>
+      </div>
+    </div>
+  </form>`;
+
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 // function addBFAccountInsideBootbox(myBootboxDialog) {
@@ -5882,7 +5884,7 @@ function generateDataset(button) {
       confirmButtonText: "Confirm and Choose Location",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -5977,12 +5979,6 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-    // bootbox.alert({
-    //   message:
-    //     "We found some hidden files. These will be ignored when importing.",
-    //   backdrop: true,
-    //   centerVertical: true,
-    // });
   }
   addFilesfunction(
     path,
@@ -6023,11 +6019,6 @@ function addFoldersfunction(folderArray, currentLocation) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
-    // bootbox.alert({
-    //   message:
-    //     "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
-    //   centerVertical: true,
-    // });
   } else {
     // check for duplicates/folders with the same name
     for (var i = 0; i < folderArray.length; i++) {
@@ -6954,6 +6945,7 @@ function addDetailsForFile(ev) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -6966,25 +6958,6 @@ function addDetailsForFile(ev) {
         $("#button-confirm-display-details-file").html("Added");
       }
     });
-
-    // bootbox.confirm({
-    //   title: "Adding additional metadata for files",
-    //   message:
-    //     "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
-    //   centerVertical: true,
-    //   button: {
-    //     ok: {
-    //       label: "Yes",
-    //       className: "btn-primary",
-    //     },
-    //   },
-    //   callback: function (r) {
-    //     if (r !== null && r === true) {
-    //       updateFileDetails(ev);
-    //       $("#button-confirm-display-details-file").html("Added");
-    //     }
-    //   },
-    // });
   } else {
     updateFileDetails(ev);
     $("#button-confirm-display-details-file").html("Added");
@@ -7152,35 +7125,6 @@ ipcRenderer.on(
             );
             $("#nextBtn").prop("disabled", false);
           } else {
-            // var bootboxDialog = bootbox.confirm({
-            //   message:
-            //     "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-            //   buttons: {
-            //     confirm: {
-            //       label: "Yes",
-            //       className: "btn-success",
-            //     },
-            //     cancel: {
-            //       label: "Cancel",
-            //       className: "btn-danger",
-            //     },
-            //   },
-            //   centerVertical: true,
-            //   callback: (result) => {
-            //     if (result) {
-            //       $("#nextBtn").prop("disabled", false);
-            //       $("#para-continue-location-dataset-getting-started").text(
-            //         "Please continue below."
-            //       );
-            //     } else {
-            //       document.getElementById(
-            //         "input-destination-getting-started-locally"
-            //       ).placeholder = "Browse here";
-            //       sodaJSONObj["starting-point"]["local-path"] = "";
-            //       $("#para-continue-location-dataset-getting-started").text("");
-            //     }
-            //   },
-            // });
             Swal.fire({
               icon: "warning",
               text:
@@ -7191,7 +7135,7 @@ ipcRenderer.on(
               focusCancel: true,
               confirmButtonText: "Yes",
               cancelButtonText: "Cancel",
-              reverseButtons: true,
+              reverseButtons: reverseSwalButtons,
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
               },
@@ -7341,10 +7285,12 @@ document
         if (destination == "bf") {
           dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
           dataset_destination = "Pennsieve";
-          t;
         }
       }
     }
+
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "Please wait while we verify a few things...";
 
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
@@ -7420,46 +7366,16 @@ document
 
           if (message) {
             message += "Would you like to continue?";
-            // var bootboxDialog = bootbox.confirm({
-            //   message: message,
-            //   buttons: {
-            //     confirm: {
-            //       label: "Yes",
-            //       className: "btn-success",
-            //     },
-            //     cancel: {
-            //       label: "No",
-            //       className: "btn-danger",
-            //     },
-            //   },
-            //   centerVertical: true,
-            //   callback: function (result) {
-            //     if (result) {
-            //       console.log("Continue");
-            //       initiate_generate();
-            //     } else {
-            //       console.log("Stop");
-            //       // then show the sidebar again
-            //       forceActionSidebar("show");
-            //       document.getElementById(
-            //         "para-please-wait-new-curate"
-            //       ).innerHTML = "Return to make changes";
-            //       document.getElementById(
-            //         "div-generate-comeback"
-            //       ).style.display = "flex";
-            //     }
-            //   },
-            // });
             message = "<div style='text-align: left'>" + message + "</div>";
             Swal.fire({
               icon: "warning",
               html: message,
               showCancelButton: true,
-              cancelButtonText: "No",
+              cancelButtonText: "No, I want to review my files",
               focusCancel: true,
-              showConfirmButton: "Yes",
+              confirmButtonText: "Yes, Continue",
               backdrop: "rgba(0,0,0, 0.4)",
-              reverseButtons: true,
+              reverseButtons: reverseSwalButtons,
               heightAuto: false,
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
@@ -7981,6 +7897,27 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
         .basename(mypath[0])
         .slice(path.basename(mypath[0]).indexOf("."));
 
+      let file_size = 0;
+
+      try {
+        if (fs.existsSync(mypath[0])) {
+          let stats = fs.statSync(mypath[0]);
+          file_size = stats.size;
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file does not exist or is unreadable. Please verify that you are importing the correct metadata file from your system. </span>";
+
+        return;
+      }
+
+      if (file_size == 0) {
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file is empty! Please verify that you are importing the correct metadata file from your system.</span>";
+
+        return;
+      }
       if (metadataWithoutExtension === metadataIndividualFile) {
         if (metadataAllowedExtensions.includes(extension)) {
           document.getElementById(metadataParaElement).innerHTML = mypath[0];
@@ -8012,8 +7949,20 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
           reject(userError(error));
           log.error(error);
           console.error(error);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Retreive Dataset - Pennsieve",
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+          );
         } else {
           resolve(res);
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Retreive Dataset - Pennsieve",
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+          );
         }
       }
     );
@@ -8299,8 +8248,15 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
     delete_imported_manifest();
 
     let temp_sodaJSONObj = JSON.parse(JSON.stringify(sodaJSONObj));
+    let dataset_name = "Undetermined";
 
     recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"]);
+
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      if ("dataset-name" in sodaJSONObj) {
+        dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      }
+    }
 
     client.invoke(
       "api_generate_manifest_file_locally",
@@ -8311,8 +8267,20 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           log.error(error);
           console.error(error);
           $("body").removeClass("waiting");
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Generate Manifest - Local Preview",
+            dataset_name
+          );
         } else {
           $("body").removeClass("waiting");
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Generate Manifest - Local Preview",
+            dataset_name
+          );
         }
       }
     );
@@ -8328,9 +8296,10 @@ function showBFAddAccountSweetalert() {
     cancelButtonText: "Cancel",
     confirmButtonText: "Add Account",
     customClass: "swal-wide",
-    reverseButtons: true,
+    reverseButtons: reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
+    allowOutsideClick: false,
     didOpen: () => {
       $(".swal-popover").popover();
     },
@@ -8437,7 +8406,7 @@ function showAddAirtableAccountSweetalert() {
     confirmButtonText: "Add Account",
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
-    reverseButtons: true,
+    reverseButtons: reverseSwalButtons,
     customClass: "swal-wide",
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -8496,7 +8465,7 @@ function addAirtableAccountInsideSweetalert() {
       focusCancel: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       backdrop: "rgba(0,0,0,0.4)",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",

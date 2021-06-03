@@ -4,6 +4,21 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## vTBD - TBD
+
+### Feature additions:
+- Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid. 
+- Added a button to paste your API keys into the application more easily.
+- Added better warnings for when a backend module fails. This should give tou more information about the status of SODA and if a restart of the app maybe neccessary.
+- Adjusted the ordering of message box buttons to better follow OS specific guidelines for Human Interface Design.
+
+### Bug fixes:
+- Fixed a potential bug where misspelled high level folders could cause SODA to not pull the correct information from Pennsieve.
+- Fixed a bug where launching SODA could randomly cause step 7 of 'Organize Datasets' to not show up when generating a dataset.
+
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
 ## v4.3.0 - 2021-05-24
 
 ### Feature additions:

@@ -544,7 +544,7 @@ const nextPrev = (n) => {
       confirmButtonText: "Continue",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -580,41 +580,18 @@ const nextPrev = (n) => {
       withoutExtMetadataArray.includes(val)
     );
     if (!subArrayBoolean) {
-      // bootbox.confirm({
-      //   message:
-      //     "You did not include all of the following required metadata files: <br><ol><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?",
-      //   buttons: {
-      //     confirm: {
-      //       label: "Continue",
-      //       className: "btn-success",
-      //     },
-      //     cancel: {
-      //       label: "No",
-      //       className: "btn-danger",
-      //     },
-      //   },
-      //   centerVertical: true,
-      //   callback: (result) => {
-      //     if (result !== null && result === true) {
-      //       // Hide the current tab:
-      //       $(x[currentTab]).removeClass("tab-active");
-      //       // Increase or decrease the current tab by 1:
-      //       currentTab = currentTab + n;
-      //       // Display the correct tab:
-      //       showParentTab(currentTab, n);
-      //     }
-      //   },
-      // });
       var notIncludedMessage =
         "<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?</div>";
       Swal.fire({
+        allowOutsideClick: false,
+        allowEscapeKey: false,
         icon: "warning",
         html: notIncludedMessage,
         showConfirmButton: true,
         confirmButtonText: "Continue",
         showCancelButton: "No",
         focusCancel: true,
-        reverseButtons: true,
+        reverseButtons: reverseSwalButtons,
         heightAuto: false,
         customClass: "swal-wide",
         backdrop: "rgba(0,0,0, 0.4)",
@@ -845,38 +822,14 @@ const raiseWarningGettingStarted = (ev) => {
           '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
       )
     ) {
-      // bootbox.confirm({
-      //   message:
-      //     "This will reset your progress so far. Are you sure you want to continue?",
-      //   buttons: {
-      //     confirm: {
-      //       label: "Yes",
-      //       className: "btn-success",
-      //     },
-      //     cancel: {
-      //       label: "No",
-      //       className: "btn-danger",
-      //     },
-      //   },
-      //   centerVertical: true,
-      //   callback: (result) => {
-      //     if (result) {
-      //       globalGettingStarted1stQuestionBool = true;
-      //       resolve(globalGettingStarted1stQuestionBool);
-      //     } else {
-      //       globalGettingStarted1stQuestionBool = false;
-      //       resolve(globalGettingStarted1stQuestionBool);
-      //     }
-      //   },
-      // });
       Swal.fire({
         icon: "warning",
         text:
           "This will reset your progress so far. Are you sure you want to continue?",
-        showCancelButton: "No",
+        showCancelButton: "Cancel",
         focusCancel: true,
-        confirmButtonText: "Yes",
-        reverseButtons: true,
+        confirmButtonText: "Continue",
+        reverseButtons: reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -1119,10 +1072,7 @@ async function transitionSubQuestions(
       currentDiv === "Question-generate-dataset"
     ) {
       let starting_point = sodaJSONObj["starting-point"]["local-path"];
-      // bootbox.alert({
-      //   message: `The following local folder '${starting_point}' will be modified as instructed.`,
-      //   centerVertical: true,
-      // });
+
       Swal.fire({
         icon: "info",
         text: `The following local folder '${starting_point}' will be modified as instructed.`,
@@ -1556,7 +1506,7 @@ async function transitionSubQuestionsButton(
           confirmButtonText: "Continue",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          reverseButtons: true,
+          reverseButtons: reverseSwalButtons,
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
@@ -2604,37 +2554,14 @@ var generateExitButtonBool = false;
 function raiseWarningExit(message) {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
-    // bootbox.confirm({
-    //   message: message,
-    //   buttons: {
-    //     confirm: {
-    //       label: "Yes",
-    //       className: "btn-success",
-    //     },
-    //     cancel: {
-    //       label: "No",
-    //       className: "btn-danger",
-    //     },
-    //   },
-    //   centerVertical: true,
-    //   callback: (result) => {
-    //     if (result) {
-    //       generateExitButtonBool = true;
-    //       resolve(generateExitButtonBool);
-    //     } else {
-    //       generateExitButtonBool = false;
-    //       resolve(generateExitButtonBool);
-    //     }
-    //   },
-    // });
     Swal.fire({
       icon: "warning",
       text: message,
       showCancelButton: true,
       focusCancel: true,
-      cancelButtonText: "No",
-      confirmButtonText: "Yes",
-      reverseButtons: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Continue",
+      reverseButtons: reverseSwalButtons,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
@@ -2821,11 +2748,7 @@ const saveSODAJSONProgress = (progressFileName) => {
     }
   }
   fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj));
-  // bootbox.alert({
-  //   message:
-  //     "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
-  //   centerVertical: true,
-  // });
+
   Swal.fire({
     icon: "success",
     text: "Successfully saved progress!",
@@ -2850,22 +2773,6 @@ const saveOrganizeProgressPrompt = () => {
     saveSODAJSONProgress(sodaJSONObj["save-progress"]);
     // if no, ask users what to name it, and create file
   } else {
-    // bootbox.prompt({
-    //   title: "Saving progress as...",
-    //   message: "Enter a name for your progress below:",
-    //   centerVertical: true,
-    //   callback: (result) => {
-    //     if (result !== null && result !== "") {
-    //       sodaJSONObj["save-progress"] = result.trim();
-    //       saveSODAJSONProgress(result.trim());
-    //       addOption(
-    //         progressFileDropdown,
-    //         result.trim(),
-    //         result.trim() + ".json"
-    //       );
-    //     }
-    //   },
-    // });
     Swal.fire({
       icon: "info",
       title: "Saving progress as...",
@@ -2875,7 +2782,7 @@ const saveOrganizeProgressPrompt = () => {
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
@@ -3076,9 +2983,6 @@ $("#edit_banner_image_button").click(async () => {
         } else {
           log.error(`An error happened: ${img_src}`);
           console.log(`An error happened: ${img_src}`);
-          // bootbox.alert(
-          //   `An error occured when importing the image. Please try again later.`
-          // );
           Swal.fire({
             icon: "error",
             text:
@@ -3099,9 +3003,7 @@ $("#edit_banner_image_button").click(async () => {
       } else {
         log.error(`An error happened: ${img_src}`);
         console.log(`An error happened: ${img_src}`);
-        // bootbox.alert(
-        //   `An error occured when importing the image. Please try again later.`
-        // );
+
         Swal.fire({
           icon: "error",
           text:
@@ -3122,9 +3024,7 @@ $("#edit_banner_image_button").click(async () => {
     } else {
       log.error(`An error happened: ${img_src}`);
       console.log(`An error happened: ${img_src}`);
-      // bootbox.alert(
-      //   `An error occured when importing the image. Please try again later.`
-      // );
+
       Swal.fire({
         icon: "error",
         text:

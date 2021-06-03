@@ -13,15 +13,6 @@ function showTooltips(ev) {
       popup: "animate__animated animate__fadeOutUp animate_fastest",
     },
   });
-  // bootbox.alert({
-  //   message: highLevelFolderToolTip[folderName],
-  //   button: {
-  //     ok: {
-  //       className: "btn-primary",
-  //     },
-  //   },
-  //   centerVertical: true,
-  // });
 }
 
 const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
@@ -123,14 +114,6 @@ function delFolder(
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
-      // bootbox.alert({
-      //   title: "Restore " + type,
-      //   message:
-      //     "You can only restore one file at a time. Please select a single file for restoration.",
-      //   onEscape: true,
-      //   centerVertical: true,
-      //   backdrop: true,
-      // });
       return;
     }
     if (ev.classList.value.includes("recursive_deleted_file")) {
@@ -148,35 +131,20 @@ function delFolder(
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
-      // bootbox.alert({
-      //   title: "Restore " + type,
-      //   message:
-      //     "The parent folder for this item has been marked for deletion. Please restore that folder to recover this item.",
-      //   onEscape: true,
-      //   centerVertical: true,
-      //   backdrop: true,
-      // });
       return;
     }
 
     // Handle file/folder restore
     Swal.fire({
       icon: "warning",
-      title: "Restore " + promptVar,
-      text:
-        "Are you sure you want to restore this " +
-        promptVar +
-        "? If any " +
-        promptVar +
-        " of the same name has been added, this restored " +
-        promptVar +
-        " will be renamed.",
+      title: `Restore ${promptVar}`,
+      text: `Are you sure you want to restore this ${promptVar}? If any ${promptVar} of the same name has been added, this restored ${promptVar} will be renamed.`,
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -210,13 +178,6 @@ function delFolder(
                 popup: "animate__animated animate__zoomOut animate__faster",
               },
             });
-            // bootbox.alert({
-            //   title: "Unable to restore " + promptVar,
-            //   message:
-            //     "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
-            //   onEscape: true,
-            //   centerVertical: true,
-            // });
             return;
           }
         }
@@ -271,75 +232,17 @@ function delFolder(
     });
   } else {
     if (type === "items") {
-      // bootbox.confirm({
-      //   title: "Delete " + promptVar,
-      //   message: "Are you sure you want to delete these " + type + "?",
-      //   onEscape: true,
-      //   centerVertical: true,
-      //   callback: function (result) {
-      //     if (result !== null && result === true) {
-      //       /// get current location of folders or files
-      //       var filtered = getGlobalPath(organizeCurrentLocation);
-      //       var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
-
-      //       $("div.single-item.selected-item > .folder_desc").each(function (
-      //         index,
-      //         current_element
-      //       ) {
-      //         itemToDelete = $(current_element).text();
-      //         if (itemToDelete in myPath["files"]) {
-      //           type = "files";
-      //         } else if (itemToDelete in myPath["folders"]) {
-      //           type = "folders";
-      //         }
-      //         if (
-      //           myPath[type][itemToDelete]["type"] === "bf" ||
-      //           (myPath[type][itemToDelete]["type"] === "local" &&
-      //             myPath[type][itemToDelete]["action"].includes("existing"))
-      //         ) {
-      //           if (type === "folders") {
-      //             recursive_mark_sub_files_deleted(
-      //               myPath[type][itemToDelete],
-      //               "delete"
-      //             );
-      //           }
-
-      //           if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
-      //             myPath[type][itemToDelete]["action"] = [];
-      //             myPath[type][itemToDelete]["action"].push("existing");
-      //             myPath[type][itemToDelete]["action"].push("deleted");
-      //             let itemToDelete_new_key = itemToDelete + "-DELETED";
-      //             myPath[type][itemToDelete_new_key] =
-      //               myPath[type][itemToDelete];
-      //             delete myPath[type][itemToDelete];
-      //           }
-      //         } else {
-      //           delete myPath[type][itemToDelete];
-      //         }
-      //       });
-
-      //       // update UI with updated jsonobj
-      //       listItems(myPath, uiItem);
-      //       getInFolder(
-      //         singleUIItem,
-      //         uiItem,
-      //         organizeCurrentLocation,
-      //         inputGlobal
-      //       );
-      //     }
-      //   },
-      // });
       Swal.fire({
         icon: "warning",
-        title: "Delete " + promptVar,
-        text: "Are you sure you want to delete these " + type + "?",
+        title: `Delete ${promptVar}`,
+        text: `Are you sure you want to delete these ${type}?`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
         focusCancel: true,
         confirmButtonText: `Delete ${type}`,
         cancelButtonText: "Cancel",
-        reverseButtons: true,
+        reverseButtons: reverseSwalButtons,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -397,62 +300,17 @@ function delFolder(
         }
       });
     } else {
-      // bootbox.confirm({
-      //   title: "Delete " + promptVar,
-      //   message: "Are you sure you want to delete this " + promptVar + "?",
-      //   onEscape: true,
-      //   centerVertical: true,
-      //   callback: function (result) {
-      //     if (result !== null && result === true) {
-      //       /// get current location of folders or files
-      //       var filtered = getGlobalPath(organizeCurrentLocation);
-      //       var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
-      //       // update Json object with new folder created
-      //       if (
-      //         myPath[type][itemToDelete]["type"] === "bf" ||
-      //         (myPath[type][itemToDelete]["type"] === "local" &&
-      //           myPath[type][itemToDelete]["action"].includes("existing"))
-      //       ) {
-      //         if (type === "folders") {
-      //           recursive_mark_sub_files_deleted(
-      //             myPath[type][itemToDelete],
-      //             "delete"
-      //           );
-      //         }
-
-      //         if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
-      //           myPath[type][itemToDelete]["action"] = [];
-      //           myPath[type][itemToDelete]["action"].push("existing");
-      //           myPath[type][itemToDelete]["action"].push("deleted");
-      //           let itemToDelete_new_key = itemToDelete + "-DELETED";
-      //           myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
-      //           delete myPath[type][itemToDelete];
-      //         }
-      //       } else {
-      //         delete myPath[type][itemToDelete];
-      //       }
-      //       // update UI with updated jsonobj
-      //       listItems(myPath, uiItem);
-      //       getInFolder(
-      //         singleUIItem,
-      //         uiItem,
-      //         organizeCurrentLocation,
-      //         inputGlobal
-      //       );
-      //     }
-      //   },
-      // });
       Swal.fire({
         icon: "warning",
-        title: "Delete " + promptVar,
-        text: "Are you sure you want to delete this " + promptVar + "?",
+        title: `Delete ${promptVar}`,
+        text: `Are you sure you want to delete this ${promptVar}?`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
         focusCancel: true,
         confirmButtonText: `Delete ${promptVar}`,
         cancelButtonText: "Cancel",
-        reverseButtons: true,
+        reverseButtons: reverseSwalButtons,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -565,10 +423,7 @@ function checkValidRenameInput(
       //   );
       Swal.fire({
         icon: "error",
-        text:
-          "The file name: " +
-          newName +
-          " already exists, please rename to a different name!",
+        text: `The file name: ${newName} already exists, please rename to a different name!`,
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
       });
@@ -595,10 +450,7 @@ function checkValidRenameInput(
       //   );
       Swal.fire({
         icon: "error",
-        text:
-          "The folder name: " +
-          newName +
-          " already exists, please rename to a different name!",
+        text: `The folder name: ${newName} already exists, please rename to a different name!`,
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
       });
@@ -682,82 +534,9 @@ function renameFolder(
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-    // bootbox.alert({
-    //   message: "High-level SPARC folders cannot be renamed!",
-    //   centerVertical: true,
-    // });
   } else {
-    // show prompt to enter a new name
-    // var myBootboxDialog = bootbox.dialog({
-    //   title: "Rename " + promptVar,
-    //   message:
-    //     'Please enter a new name: <p><input type="text" id="input-new-name-renamed" class="form-control" value="' +
-    //     nameWithoutExtension +
-    //     '"></input></p>',
-    //   buttons: {
-    //     cancel: {
-    //       label: '<i class="fa fa-times"></i> Cancel',
-    //     },
-    //     confirm: {
-    //       label: '<i class="fa fa-check"></i> Save',
-    //       className: "btn-success",
-    //       callback: function () {
-    //         var returnedName = checkValidRenameInput(
-    //           event1,
-    //           $("#input-new-name-renamed").val().trim(),
-    //           type,
-    //           currentName,
-    //           newName,
-    //           itemElement,
-    //           myBootboxDialog
-    //         );
-    //         if (returnedName !== "") {
-    //           myBootboxDialog.modal("hide");
-    //           Swal.fire({
-    //             icon: "success",
-    //             text: "Successfully renamed!.",
-    //             heightAuto: false,
-    //             backdrop: "rgba(0,0,0, 0.4)",
-    //           });
-    //           // bootbox.alert({
-    //           //   message: "Successfully renamed!",
-    //           //   centerVertical: true,
-    //           // });
-
-    //           /// assign new name to folder or file in the UI
-    //           event1.parentElement.parentElement.innerText = returnedName;
-    //           /// get location of current file or folder in JSON obj
-    //           var filtered = getGlobalPath(organizeCurrentLocation);
-    //           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
-    //           /// update jsonObjGlobal with the new name
-    //           storedValue = myPath[type][currentName];
-    //           delete myPath[type][currentName];
-    //           myPath[type][returnedName] = storedValue;
-    //           if ("action" in myPath[type][returnedName]) {
-    //             if (!myPath[type][returnedName]["action"].includes("renamed")) {
-    //               myPath[type][returnedName]["action"].push("renamed");
-    //             }
-    //           } else {
-    //             myPath[type][returnedName]["action"] = [];
-    //             myPath[type][returnedName]["action"].push("renamed");
-    //           }
-    //           /// list items again with updated JSON obj
-    //           listItems(myPath, uiItem);
-    //           getInFolder(
-    //             singleUIItem,
-    //             uiItem,
-    //             organizeCurrentLocation,
-    //             inputGlobal
-    //           );
-    //         }
-    //         return false;
-    //       },
-    //     },
-    //   },
-    //   centerVertical: true,
-    // });
     Swal.fire({
-      title: "Rename " + promptVar,
+      title: `Rename ${promptVar}`,
       text: "Please enter a new name:",
       input: "text",
       inputValue: nameWithoutExtension,
@@ -767,7 +546,7 @@ function renameFolder(
       focusCancel: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
-      reverseButtons: true,
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
       },
@@ -799,10 +578,6 @@ function renameFolder(
               popup: "animate__animated animate__fadeOutUp animate__faster",
             },
           });
-          // bootbox.alert({
-          //   message: "Successfully renamed!",
-          //   centerVertical: true,
-          // });
 
           /// assign new name to folder or file in the UI
           event1.parentElement.parentElement.innerText = returnedName;
@@ -968,11 +743,7 @@ function addFilesfunction(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
-      // bootbox.alert({
-      //   message:
-      //     "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-      //   centerVertical: true,
-      // });
+
       break;
     } else {
       if (
@@ -1067,13 +838,7 @@ function addFilesfunction(
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-    // bootbox.alert({
-    //   message:
-    //     "The following files are already imported into the current location of your dataset: <p><ul>" +
-    //     listElements +
-    //     "</ul></p>",
-    //   centerVertical: true,
-    // });
+
   }
 }
 
