@@ -3151,7 +3151,7 @@ const logFilesForUpload = (upload_folder_path) => {
 // Submit dataset to bf //
 bfSubmitDatasetBtn.addEventListener("click", async () => {
   document.getElementById("para-please-wait-manage-dataset").innerHTML =
-    "Please wait while we verify a few things.";
+    "Please wait while we verify a few things...";
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
@@ -7285,13 +7285,12 @@ document
         if (destination == "bf") {
           dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
           dataset_destination = "Pennsieve";
-          t;
         }
       }
     }
 
     document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "Please wait while we verify a few things.";
+      "Please wait while we verify a few things...";
 
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
