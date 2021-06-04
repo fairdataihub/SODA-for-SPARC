@@ -309,12 +309,14 @@ def save_subjects_file(filepath, datastructure):
                        end_color='FFD965',
                        fill_type='solid')
 
+    gevent.sleep(0)
     for column, header in zip(excel_columns(start_index=8), refinedDatastructure[0][8:headers_no]):
         cell = column + str(1)
         ws1[cell] = header
         ws1[cell].fill = orangeFill
         ws1[cell].font = Font(bold=True, size=12, name='Calibri')
 
+    gevent.sleep(0)
     # 3. populate matrices
     for i, item in enumerate(refinedDatastructure):
         if i == 0:
@@ -362,13 +364,14 @@ def save_samples_file(filepath, datastructure):
     orangeFill = PatternFill(start_color='FFD965',
                        end_color='FFD965',
                        fill_type='solid')
-
+    gevent.sleep(0)
     for column, header in zip(excel_columns(start_index=7), refinedDatastructure[0][7:headers_no]):
         cell = column + str(1)
         ws1[cell] = header
         ws1[cell].fill = orangeFill
         ws1[cell].font = Font(bold=True, size=12, name='Calibri')
 
+    gevent.sleep(0)
     # 3. populate matrices
     for i, item in enumerate(refinedDatastructure):
         if i == 0:
