@@ -925,6 +925,8 @@ ipcRenderer.on("selected-generate-metadata-subjects", async (event, dirpath, fil
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           timerProgressBar: true,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
           didOpen: () => {
             Swal.showLoading();
           },
@@ -974,6 +976,8 @@ ipcRenderer.on("selected-generate-metadata-samples", async (event, dirpath, file
             "Please wait...",
           timer: 10000,
           heightAuto: false,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
           backdrop: "rgba(0,0,0, 0.4)",
           timerProgressBar: true,
           didOpen: () => {
