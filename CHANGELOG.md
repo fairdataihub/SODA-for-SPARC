@@ -4,7 +4,7 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## vTBD - TBD
+## v4.4.0 - 2021-06-03
 
 ### Feature additions:
 - Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid. 
