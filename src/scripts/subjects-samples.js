@@ -802,20 +802,39 @@ function importPrimaryFolderSubjects() {
           j += 1
         }
       }
-      if (subjectsTableData.length > 1) {
-        loadSubjectsDataToTable();
-        $("#table-subjects").show();
-        $("#div-confirm-primary-folder-import").hide();
-        $("#button-fake-confirm-primary-folder-load").click();
-      } else {
-        Swal.fire(
-          'Could not load subject IDs from the imported primary folder!',
-          'Please check that you provided the correct path to a SPARC primary folder that has at least 1 subject folder.',
-          'error')
+      subjectsFileData = []
+      var subIDArray = [];
+      // grab and confirm with users about their sub-ids
+      for (var index of subjectsTableData.slice(1)) {
+        subIDArray.push(index[0])
+      }
+      Swal.fire({
+        title: "Please confirm the subject id(s) below:",
+        text: "The subject_ids are: " + subIDArray.join(", "),
+        icon: "warning",
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: "Yes, correct!",
+        cancelButtonText: "No",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (subjectsTableData.length > 1) {
+            loadSubjectsDataToTable();
+            $("#table-subjects").show();
+            $("#div-confirm-primary-folder-import").hide();
+            $("#button-fake-confirm-primary-folder-load").click();
+          } else {
+            Swal.fire(
+              'Could not load subject IDs from the imported primary folder!',
+              'Please check that you provided the correct path to a SPARC primary folder that has at least 1 subject folder.',
+              'error')
+            }
         }
+      })
     }
   }
-  subjectsFileData = []
 }
 function importPrimaryFolderSamples() {
   var folderPath = $("#primary-folder-destination-input-samples").prop("placeholder");
@@ -847,20 +866,41 @@ function importPrimaryFolderSamples() {
           j += 1
         }
       }
-      if (samplesTableData.length > 1) {
-        loadSamplesDataToTable();
-        $("#table-samples").show();
-        $("#div-confirm-primary-folder-import-samples").hide();
-        $("#button-fake-confirm-primary-folder-load-samples").click();
-      } else {
-        Swal.fire(
-          'Could not load samples IDs from the imported primary folder!',
-          'Please check that you provided the correct path to a SPARC primary folder that has at least 1 subject folder and 1 sample folder.',
-          'error')
+      samplesFileData = []
+      var subIDArray = [];
+      var samIDArray = [];
+      // grab and confirm with users about their sub-ids
+      for (var index of samplesTableData.slice(1)) {
+        subIDArray.push(index[0]);
+        samIDArray.push(index[1]);
+      }
+      Swal.fire({
+        title: "Please confirm the subject id(s) and sample id(s) below:",
+        html: "The subject_id(s) are: " + subIDArray.join(", ") + "<br> The sample_id(s) are: " + samIDArray.join(", "),
+        icon: "warning",
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: "Yes, correct!",
+        cancelButtonText: "No",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (samplesTableData.length > 1) {
+            loadSamplesDataToTable();
+            $("#table-samples").show();
+            $("#div-confirm-primary-folder-import-samples").hide();
+            $("#button-fake-confirm-primary-folder-load-samples").click();
+          } else {
+            Swal.fire(
+              'Could not load samples IDs from the imported primary folder!',
+              'Please check that you provided the correct path to a SPARC primary folder that has at least 1 subject folder and 1 sample folder.',
+              'error')
+            }
         }
+      })
     }
   }
-  samplesFileData = []
 }
 
 function loadSubjectsDataToTable() {
@@ -884,7 +924,10 @@ function loadSubjectsDataToTable() {
       title: 'Loaded successfully!',
       text: 'Please add or edit your subject_id(s) in the following subjects table.',
       icon: "success",
-      showConfirmButton: false,
+      showConfirmButton: true,
+      // showConfirmButton: true,
+      // showCancelButton: false,
+      // cancelButtonText: "No",
       timer: 1200
     })
   }
