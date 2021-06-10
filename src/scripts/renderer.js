@@ -1167,7 +1167,7 @@ function createSpecimenTypeAutocomplete(id) {
     },
     trigger: {
       event: ["input", "focus"],
-      condition: () => true,
+      // condition: () => true,
     },
     resultItem: {
       destination: "#"+id,
@@ -1204,7 +1204,7 @@ function createSpeciesAutocomplete(id) {
     },
     trigger: {
       event: ["input", "focus"],
-      condition: () => true,
+      // condition: () => true,
     },
     resultItem: {
       destination: "#"+id,
@@ -1254,7 +1254,7 @@ function createAgeCategoryAutocomplete(id) {
     },
     trigger: {
       event: ["input", "focus"],
-      condition: () => true,
+      // condition: () => true,
     },
     resultItem: {
       destination: "#"+id,
