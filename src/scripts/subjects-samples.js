@@ -147,6 +147,28 @@ function addSample() {
   addSampleIDtoDataBase();
 }
 
+function warningBeforeHideForm(type) {
+  Swal.fire({
+    title: "Are you sure you want to cancel?",
+    text: "This will reset your progress with the current subject_id.",
+    icon: "warning",
+    showCancelButton: true,
+    showConfirmButton: true,
+    confirmButtonText: "Yes, cancel!",
+    cancelButtonText: "No, stay here",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      if (type === "subjects") {
+        hideSubjectsForm()
+      } else {
+        hideSamplesForm()
+      }
+    }
+  })
+}
+
 function hideSubjectsForm() {
   subjectsFormDiv.style.display = "none";
   $("#create_subjects-tab").addClass("show");
@@ -925,9 +947,6 @@ function loadSubjectsDataToTable() {
       text: 'Please add or edit your subject_id(s) in the following subjects table.',
       icon: "success",
       showConfirmButton: true,
-      // showConfirmButton: true,
-      // showCancelButton: false,
-      // cancelButtonText: "No",
       timer: 1200
     })
   }
