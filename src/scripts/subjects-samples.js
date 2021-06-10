@@ -1429,63 +1429,47 @@ function grabResearcherProtocolList(username, token, type) {
 }
 
 function populateProtocolDropdown(type) {
-  var keyword = "";
   if (type === "subjects") {
-    keyword = "subject";
-  } else if (type === "samples") {
-    keyword = "sample"
-  }
-  var autoCompleteJSProtocol = new autoComplete({
-    selector: "#bootbox-"+keyword+"-protocol-title",
-    data: {
-      src: [protocolResearcherList],
-      key: Object.keys(protocolResearcherList)
-    },
-    onSelection: (feedback) => {
-      var selection = feedback.selection.key;
-      document.querySelector("#bootbox-"+keyword+"-protocol-title").value = selection;
-      autoPopulateProtocolLink("", protocolResearcherList[selection], keyword)
-    },
-    trigger: {
-      event: ["input", "focus"],
-      // condition: () => true,
-    },
-    resultItem: {
-      destination: "#bootbox-"+keyword+"-protocol-title",
-      highlight: {
-        render: true
-      },
-      content: (data, element) => {
-         // Modify Results Item Style
-         element.style = "display: flex; justify-content: space-between;";
-         // Modify Results Item Content
-         element.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-           ${data.key}</span>`;
+    $($("#bootbox-subject-protocol-title").parents()[0]).remove();
+      var divElement = '<div class="ui input"><select id="bootbox-subject-protocol-title" class="ui selection dropdown subjects-form-entry" onchange="autoPopulateProtocolLink(this, \''+type+'\')" name="Protocol title"></select></div>'
+      $("#subjects-protocol-titles").prepend(divElement);
+      // populate dropdown with protocolResearcherList
+      removeOptions(document.getElementById("bootbox-subject-protocol-title"));
+      addOption(document.getElementById("bootbox-subject-protocol-title"), "Select protocol", "Select")
+      for (var key of Object.keys(protocolResearcherList)) {
+        $('#bootbox-subject-protocol-title').append('<option value="' + key + '">' + key + '</option>');
+      }
+   } else {
+     $($("#bootbox-sample-protocol-title").parents()[0]).remove();
+       var divElement = '<div class="ui input"><select id="bootbox-sample-protocol-title" class="ui selection dropdown samples-form-entry" onchange="autoPopulateProtocolLink(this, \''+type+'\')" name="Protocol title"></select></div>'
+       $("#samples-protocol-titles").prepend(divElement);
+       // populate dropdown with protocolResearcherList
+       removeOptions(document.getElementById("bootbox-sample-protocol-title"));
+       addOption(document.getElementById("bootbox-sample-protocol-title"), "Select protocol", "Select")
+       for (var key of Object.keys(protocolResearcherList)) {
+         $('#bootbox-sample-protocol-title').append('<option value="' + key + '">' + key + '</option>');
        }
-    },
-    resultsList: {
-      maxResults: 5
-    }
-  });
+   }
 }
 
-function autoPopulateProtocolLink(ev, title, type) {
-  if (ev !== "") {
-    var parentele = $(ev).parents()[0];
-    title = $(ev).val()
-  }
-  if (title && title !== "") {
-    if (type === "subject" || type === "sample") {
-      $("#bootbox-"+type+"-protocol-location").val(title)
-    } else {
-      // set protocol link input field to be the value of link title
-      $($($(parentele).siblings()[0]).children()[0]).val(title)
+function autoPopulateProtocolLink(ev, type) {
+  var linkVal = $(ev).val();
+  if (linkVal && linkVal !== "Select") {
+    for (var key of Object.keys(protocolResearcherList)) {
+      if (key === linkVal) {
+        if (type === "subjects") {
+          $("#bootbox-subject-protocol-location").val(protocolResearcherList[key])
+        } else {
+          $("#bootbox-sample-protocol-location").val(protocolResearcherList[key])
+        }
+        break
+      }
     }
   } else {
-    if (type === "subject" || type === "sample") {
-      $("#bootbox-"+type+"-protocol-location").val("")
+    if (type === "subjects") {
+      $("#bootbox-subject-protocol-location").val("")
     } else {
-      $($($(parentele).siblings()[0]).children()[0]).val("")
+      $("#bootbox-sample-protocol-location").val("")
     }
   }
 }
