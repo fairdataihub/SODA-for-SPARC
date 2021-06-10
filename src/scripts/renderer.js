@@ -906,7 +906,8 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
 });
 
 // generate subjects file
-ipcRenderer.on("selected-generate-metadata-subjects", async (event, dirpath, filename) => {
+ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
+  $("#generate-subjects-spinner").css("display", "block");
   if (dirpath.length > 0) {
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
@@ -916,27 +917,14 @@ ipcRenderer.on("selected-generate-metadata-subjects", async (event, dirpath, fil
         `${emessage}`,
         'error'
       )
+      $("#generate-subjects-spinner").css("display", "none");
     } else {
-        Swal.fire({
-          title: "Generating the subjects.xlsx file...",
-          html:
-            "Please wait...",
-          timer: 10000,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: true,
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        }).then((result) => {
-        });
-        await client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
+        client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
           if (error) {
             var emessage = userError(error);
             log.error(error);
             console.error(error);
+            $("#generate-subjects-spinner").css("display", "none");
             Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error");
             ipcRenderer.send(
               "track-event",
@@ -951,15 +939,17 @@ ipcRenderer.on("selected-generate-metadata-subjects", async (event, dirpath, fil
               "Prepare Metadata - Create subjects.xlsx",
               subjectsTableData
             );
+            $("#generate-subjects-spinner").css("display", "none");
             Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
           }
         })
-    }
+     }
   }
 })
 
 // generate samples file
-ipcRenderer.on("selected-generate-metadata-samples", async (event, dirpath, filename) => {
+ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
+  $("#generate-samples-spinner").css("display", "block");
   if (dirpath.length > 0) {
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
@@ -969,23 +959,9 @@ ipcRenderer.on("selected-generate-metadata-samples", async (event, dirpath, file
         `${emessage}`,
         'error'
       )
+      $("#generate-samples-spinner").css("display", "none");
     } else {
-        Swal.fire({
-          title: "Generating the samples.xlsx file...",
-          html:
-            "Please wait...",
-          timer: 10000,
-          heightAuto: false,
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: true,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        }).then((result) => {
-        });
-        await client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
+       client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
           if (error) {
             var emessage = userError(error);
             log.error(error);
@@ -996,7 +972,8 @@ ipcRenderer.on("selected-generate-metadata-samples", async (event, dirpath, file
               "Prepare Metadata - Create samples.xlsx",
               samplesTableData
             );
-            Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error")
+            Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error");
+            $("#generate-samples-spinner").css("display", "none");
           } else {
             ipcRenderer.send(
               "track-event",
@@ -1004,6 +981,7 @@ ipcRenderer.on("selected-generate-metadata-samples", async (event, dirpath, file
               "Prepare Metadata - Create samples.xlsx",
               samplesTableData
             );
+            $("#generate-samples-spinner").css("display", "none");
             Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
           }
         })
