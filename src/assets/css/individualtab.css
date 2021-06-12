@@ -1579,3 +1579,12 @@ body.swal2-shown > [aria-hidden="true"] {
   background: pink;
   cursor: pointer
 }
+
+.confirm-disabled {
+  pointer-events: none;
+  background: #fff;
+  color: #cccccc;
+  border: 1px solid #cccccc;
+  opacity: 0.8;
+  transition: all 0.25s linear;
+}

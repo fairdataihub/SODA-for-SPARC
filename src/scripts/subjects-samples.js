@@ -24,7 +24,7 @@ function showForm(type, editBoolean) {
         confirmButtonText: 'Yes!'
       }).then((boolean) => {
         if (boolean.isConfirmed) {
-          promptImportPrevInfo(subjectsDropdownOptions, null, "subject");
+          promptImportPrevInfo(subjectsDropdownOptions, null);
         } else {
           clearAllSubjectFormFields(subjectsFormDiv);
         }
@@ -45,11 +45,11 @@ function showForm(type, editBoolean) {
 
 function showFormSamples(type, editBoolean) {
   if (samplesTableData.length > 1) {
-    var samplesDropdownOptions = {};
-    var subjectsDropdownOptions = {};
+    var samplesDropdownOptions = [];
+    var subjectsDropdownOptions = [];
     for (var i=1; i<samplesTableData.length;i++) {
-      samplesDropdownOptions[samplesTableData[i][1]] = samplesTableData[i][1];
-      subjectsDropdownOptions[samplesTableData[i][0]] = samplesTableData[i][0];
+      samplesDropdownOptions.push(samplesTableData[i][1]);
+      subjectsDropdownOptions.push(samplesTableData[i][0]);
     }
     if (!editBoolean) {
       // prompt users if they want to import entries from previous sub_ids
@@ -62,7 +62,7 @@ function showFormSamples(type, editBoolean) {
         confirmButtonText: 'Yes!'
       }).then((boolean) => {
         if (boolean.isConfirmed) {
-          promptImportPrevInfo(subjectsDropdownOptions, samplesDropdownOptions, "sample");
+          promptImportPrevInfoSamples(subjectsDropdownOptions, samplesDropdownOptions);
         } else {
           clearAllSubjectFormFields(samplesFormDiv);
         }
@@ -82,7 +82,7 @@ function showFormSamples(type, editBoolean) {
 }
 
 // helper function to show Import entries from prev sub_ids popup
-async function promptImportPrevInfo(object1, object2, type) {
+async function promptImportPrevInfo(object1, object2) {
   // show dropdown with existing sub_ids
   const { value: previousEntry } = await Swal.fire({
     title: 'Choose a previous subject:',
@@ -91,7 +91,7 @@ async function promptImportPrevInfo(object1, object2, type) {
     inputValidator: (value) => {
       return new Promise((resolve) => {
         if (value === '') {
-          resolve(`Please select a ${type}!`)
+          resolve(`Please select a subject!`)
         } else {
           resolve()
         }
@@ -103,37 +103,74 @@ async function promptImportPrevInfo(object1, object2, type) {
     confirmButtonText: 'Confirm'
   });
   if (previousEntry) {
-    if (type === "subject") {
       populateForms(previousEntry, "import");
-    } else {
-      const { value: previousEntrySample } = await Swal.fire({
-        title: 'Choose a previous sample:',
-        input: 'select',
-        inputOptions: object2,
-        inputValidator: (value) => {
-          return new Promise((resolve) => {
-            if (value === '') {
-              resolve(`Please select a sample!`)
-            } else {
-              resolve()
-            }
-          })
-        },
-        inputPlaceholder: 'Select here',
-        showCancelButton: true,
-        cancelButtonText: 'Cancel',
-        confirmButtonText: 'Confirm'
-      });
-      if (previousEntrySample) {
-        populateFormsSamples(previousEntry, previousEntrySample, "import");
+  } else {
+      clearAllSubjectFormFields(subjectsFormDiv);
+  }
+}
+
+var selectHTML = "<div><select id='previous-subject' class='swal2-input' onchange='displayPreviousSample()'></select><select style='display:none' id='previous-sample' class='swal2-input' onchange='confirmSample()'></select></div>"
+var prevSubID = "";
+var prevSamID = "";
+
+function promptImportPrevInfoSamples(arr1, arr2) {
+  Swal.fire({
+    title: 'Choose a previous sample:',
+    html: selectHTML,
+    showCancelButton: true,
+    cancelButtonText: 'Cancel',
+    confirmButtonText: 'Confirm',
+    customClass: {
+      confirmButton: 'confirm-disabled'
+    },
+    onOpen: function() {
+      $('.swal2-confirm').attr('id','btn-confirm-previous-import')
+      removeOptions(document.getElementById("previous-subject"))
+      removeOptions(document.getElementById("previous-sample"))
+      $('#previous-subject').append(`<option value="Select">Select a subject</option>`);
+      $('#previous-sample').append(`<option value="Select">Select a sample</option>`);
+      for (var ele of arr1) {
+        $('#previous-subject').append(`<option value="${ele}">${ele}</option>`);
       }
     }
-  } else {
-    if (type === "subject") {
-      clearAllSubjectFormFields(subjectsFormDiv);
+  }).then((result) => {
+    if (result.isConfirmed) {
+      if ($('#previous-subject').val() !== "Select" && $('#previous-sample').val() !== "Select") {
+        populateFormsSamples(prevSubID, prevSamID, "import");
+      }
     } else {
-      clearAllSubjectFormFields(samplesFormDiv);
+      hideSamplesForm()
     }
+  })
+}
+
+function displayPreviousSample() {
+  if ($("#previous-subject").val() !== "Select") {
+    $("#previous-sample").css("display", "block");
+    prevSubID = $("#previous-subject").val();
+    // load previous sample ids accordingly for a particular subject
+    var prevSampleArr = [];
+    for (var subject of samplesTableData.slice(1)) {
+      if (subject[0] === prevSubID) {
+        prevSampleArr.push(subject[1])
+      }
+    }
+    for (var ele of prevSampleArr) {
+      $('#previous-sample').append(`<option value="${ele}">${ele}</option>`);
+    }
+  } else {
+    $("#previous-sample").css("display", "none");
+    prevSubID = ""
+  }
+}
+
+function confirmSample() {
+  if ($("#previous-sample").val() !== "Select") {
+    $("#btn-confirm-previous-import").removeClass("confirm-disabled");
+    prevSamID = $("#previous-sample").val()
+  } else {
+    $("#btn-confirm-previous-import").addClass("confirm-disabled")
+    prevSamID = ""
   }
 }
 
