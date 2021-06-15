@@ -191,7 +191,7 @@ function warningBeforeHideForm(type) {
     icon: "warning",
     showCancelButton: true,
     showConfirmButton: true,
-    confirmButtonText: "Yes, cancel!",
+    confirmButtonText: "Yes, cancel",
     cancelButtonText: "No, stay here",
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -295,13 +295,13 @@ function addSubjectIDtoDataBase() {
       var message = addNewIDToTable(subjectID, null, "subjects")
       addSubjectIDToJSON(subjectID);
     } else {
-      error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
+      error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id."
     }
   } else {
-    error = "The subject_id is required to add a subject!"
+    error = "The subject_id is required to add a subject."
   }
     if (error !== "") {
-    Swal.fire("Failed to add the subject!", error, "error")
+    Swal.fire("Failed to add the subject", error, "error")
   }
 }
 
@@ -324,13 +324,13 @@ function addSampleIDtoDataBase() {
       var message = addNewIDToTable(sampleID, subjectID, "samples")
       addSampleIDtoJSON(sampleID);
     } else {
-      error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
+      error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id."
     }
   } else {
-    error = "The subject_id and sample_id are required to add a sample!"
+    error = "The subject_id and sample_id are required to add a sample."
     }
   if (error !== "") {
-    Swal.fire("Failed to add the sample!", error, "error")
+    Swal.fire("Failed to add the sample", error, "error")
   }
 }
 
@@ -710,8 +710,8 @@ function editSubject(ev, subjectID) {
       }
     }
     if (duplicate) {
-      error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
-      Swal.fire("Duplicate subject_id!", error, "error")
+      error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id."
+      Swal.fire("Duplicate subject_id", error, "error")
     } else {
       for (var i=1; i<subjectsTableData.length;i++) {
         if (subjectsTableData[i][0] === subjectID) {
@@ -762,8 +762,8 @@ function editSample(ev, sampleID) {
       }
     }
      if (duplicate) {
-       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
-       Swal.fire("Duplicate sample_id!", error, "error")
+       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id."
+       Swal.fire("Duplicate sample_id", error, "error")
      } else {
        for (var i=1; i<samplesTableData.length;i++) {
          if (samplesTableData[i][1] === sampleID) {
@@ -878,10 +878,10 @@ function importPrimaryFolderSubjects() {
   }
   var folderPath = $("#primary-folder-destination-input").prop("placeholder");
   if (folderPath === "Browse here") {
-    Swal.fire("No folder chosen!", "Please select a path to your primary folder", "error");
+    Swal.fire("No folder chosen", "Please select a path to your primary folder", "error");
   } else {
     if (path.parse(folderPath).base !== "primary") {
-      Swal.fire("Incorrect folder name!", "Your folder must be named 'primary' to be imported to SODA!", "error");
+      Swal.fire("Incorrect folder name", "Your folder must be named 'primary' to be imported to SODA.", "error");
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -944,10 +944,10 @@ function importPrimaryFolderSamples() {
   }
   var folderPath = $("#primary-folder-destination-input-samples").prop("placeholder");
   if (folderPath === "Browse here") {
-    Swal.fire("No folder chosen!", "Please select a path to your primary folder", "error");
+    Swal.fire("No folder chosen", "Please select a path to your primary folder.", "error");
   } else {
     if (path.parse(folderPath).base !== "primary") {
-      Swal.fire("Incorrect folder name!", "Your folder must be named 'primary' to be imported to SODA!", "error");
+      Swal.fire("Incorrect folder name", "Your folder must be named 'primary' to be imported to SODA.", "error");
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -985,7 +985,7 @@ function importPrimaryFolderSamples() {
         icon: "warning",
         showCancelButton: true,
         showConfirmButton: true,
-        confirmButtonText: "Yes, correct!",
+        confirmButtonText: "Yes, correct",
         cancelButtonText: "No",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -1075,7 +1075,7 @@ function resetSubjects() {
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over!",
+    confirmButtonText: "I want to start over",
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
@@ -1116,7 +1116,7 @@ function resetSamples() {
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over!",
+    confirmButtonText: "I want to start over",
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
@@ -1162,7 +1162,7 @@ async function addCustomField(type) {
             showCancelButton: true,
             inputValidator: (value) => {
               if (!value) {
-                return "Please enter a custom field!"
+                return "Please enter a custom field"
               } else {
                   if (lowercaseCasedArray.includes(value.toLowerCase())) {
                     return "Duplicate field name! <br> You entered a custom field that is already listed."
@@ -1183,7 +1183,7 @@ async function addCustomField(type) {
             showCancelButton: true,
             inputValidator: (value) => {
               if (!value) {
-                return "Please enter a custom field!"
+                return "Please enter a custom field"
               } else {
                   if (headersArrSamples.includes(value.toLowerCase())) {
                     return "Duplicate field name! <br> You entered a custom field that is already listed."
@@ -1227,7 +1227,7 @@ function deleteCustomField(ev, customField, category) {
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "Yes!",
+    confirmButtonText: "Yes",
   }).then((result) => {
     if (result.isConfirmed) {
       $(ev).parents()[1].remove();
@@ -1334,10 +1334,10 @@ function showExistingSamplesFile() {
 function importExistingSubjectsFile() {
   var filePath = $("#existing-subjects-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
-    Swal.fire("No file chosen!", "Please select a path to your subjects.xlsx file!", "error");
+    Swal.fire("No file chosen", "Please select a path to your subjects.xlsx file,", "error");
   } else {
     if (path.parse(filePath).base !== "subjects.xlsx") {
-      Swal.fire("Incorrect file name!", "Your file must be named 'subjects.xlsx' to be imported to SODA!", "error");
+      Swal.fire("Incorrect file name", "Your file must be named 'subjects.xlsx' to be imported to SODA.", "error");
     } else {
       Swal.fire({
         title: "Loading an existing subjects.xlsx file",
@@ -1362,10 +1362,10 @@ function importExistingSubjectsFile() {
 function importExistingSamplesFile() {
   var filePath = $("#existing-samples-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
-    Swal.fire("No file chosen!", "Please select a path to your samples.xlsx file!", "error");
+    Swal.fire("No file chosen", "Please select a path to your samples.xlsx file.", "error");
   } else {
     if (path.parse(filePath).base !== "samples.xlsx") {
-      Swal.fire("Incorrect file name!", "Your file must be named 'samples.xlsx' to be imported to SODA!", "error");
+      Swal.fire("Incorrect file name", "Your file must be named 'samples.xlsx' to be imported to SODA.", "error");
     } else {
       Swal.fire({
         title: "Loading an existing samples.xlsx file",
@@ -1439,15 +1439,15 @@ function preliminaryProtocolStep() {
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: '<a target="_blank" href="https://www.protocols.io/developers" style="color:#fff;border-bottom:none">Yes, I do!</a>',
-    cancelButtonText: "No, I don't!",
+    confirmButtonText: '<a target="_blank" href="https://www.protocols.io/developers" style="color:#fff;border-bottom:none">Yes, I do</a>',
+    cancelButtonText: "No, I don't",
   }).then((result) => {
   if (result.isConfirmed) {
     setTimeout(function() {
       connectProtocol()
     }, 1500)
   } else {
-    Swal.fire("At this point, SODA cannot help with your protocol information", "Please create an account with protocol.io!", "warning")
+    Swal.fire("At this point, SODA cannot help with your protocol information", "Please create an account with protocol.io.", "warning")
     }
   })
 }
@@ -1474,7 +1474,7 @@ async function connectProtocol() {
     if (res) {
       return res
     } else {
-      Swal.showValidationMessage("Please provide a access token to connect!");
+      Swal.showValidationMessage("Please provide a access token to connect.");
       return false
     }
   }
@@ -1505,7 +1505,7 @@ function sendHttpsRequestProtocol(accessToken, type) {
       });
     } else {
       if (type === "first-time") {
-        Swal.fire("Failed to connect with protocol.io!", "Please check your access token and try again.", "error")
+        Swal.fire("Failed to connect with protocol.io", "Please check your access token and try again.", "error")
       }
     }
   })
@@ -1549,7 +1549,7 @@ function grabResearcherProtocolList(username, token, type) {
           }
         } else {
           if (type==="first-time") {
-            Swal.fire("Successfully connected!", "However, at this moment, you do not have any protocol information for SODA to extract.", "success")
+            Swal.fire("Successfully connected", "However, at this moment, you do not have any protocol information for SODA to extract.", "success")
           }
         }
       });

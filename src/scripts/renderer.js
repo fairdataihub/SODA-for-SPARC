@@ -1090,7 +1090,7 @@ function loadSubjectsFileToDataframe(filePath) {
             "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
             error
           );
-          Swal.fire("Couldn't load existing subjects.xlsx file!", "Please make sure there are at least a header row in the subjects file.", "error")
+          Swal.fire("Couldn't load existing subjects.xlsx file", "Please make sure there are at least a header row in the subjects file.", "error")
         }
       }
     }
@@ -1128,7 +1128,7 @@ function loadSamplesFileToDataframe(filePath) {
             "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
             samplesTableData
           );
-          Swal.fire("Couldn't load existing samples.xlsx file!", "Please make sure there are at least a header row in the samples file.", "error")
+          Swal.fire("Couldn't load existing samples.xlsx file", "Please make sure there are at least a header row in the samples file.", "error")
         }
       }
     }
