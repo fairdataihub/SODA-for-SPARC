@@ -1092,6 +1092,14 @@ function resetSubjects() {
       subjectsFileData = []
       subjectsTableData = []
 
+      // delete custom fields (if any)
+      var fieldLength = $(".subjects-form-entry").length;
+      if (fieldLength > 18) {
+        for (var field of $(".subjects-form-entry").slice(18, fieldLength)) {
+          $($(field).parents()[2]).remove()
+        }
+      }
+
       // delete table rows except headers
       $("#table-subjects tr:gt(0)").remove();
       $("#table-subjects").css("display", "none")
@@ -1124,6 +1132,14 @@ function resetSamples() {
       $("#Question-prepare-subjects-primary-import-samples").find("input").prop("placeholder", "Browse here")
       samplesFileData = []
       samplesTableData = []
+
+      // delete custom fields (if any)
+      var fieldLength = $(".samples-form-entry").length;
+      if (fieldLength > 21) {
+        for (var field of $(".samples-form-entry").slice(21, fieldLength)) {
+          $($(field).parents()[2]).remove()
+        }
+      }
 
       // delete table rows except headers
       $("#table-samples tr:gt(0)").remove();

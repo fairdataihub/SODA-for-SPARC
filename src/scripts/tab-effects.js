@@ -1640,44 +1640,68 @@ async function transitionSubQuestionsButton(
 
 async function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
 
-  if ($(ev).attr("data-current") === "Question-prepare-subjects-1" && subjectsTableData.length !== 0) {
-    var { value: continueProgressSubjects } = await Swal.fire({
-      title: 'This will reset your progress so far with the subjects.xlsx file. Are you sure you want to continue?',
-      showCancelButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: 'Yes',
-      cancelButtonText: "No",
-    })
-    if (!continueProgressSubjects) {
-      return
+  if ($(ev).attr("data-current") === "Question-prepare-subjects-1") {
+    if (subjectsTableData.length !== 0) {
+      var { value: continueProgressSubjects } = await Swal.fire({
+        title: 'This will reset your progress so far with the subjects.xlsx file. Are you sure you want to continue?',
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: 'Yes',
+        cancelButtonText: "No",
+      })
+      if (!continueProgressSubjects) {
+        return
+      } else {
+        $("#existing-subjects-file-destination").val("")
+        subjectsTableData = []
+        // delete table rows except headers
+        $("#table-subjects tr:gt(0)").remove();
+        $("#table-subjects").css("display", "none")
+        // Hide Generate button
+        $("#button-generate-subjects").css("display", "none");
+        // delete custom fields (if any)
+        var fieldLength = $(".subjects-form-entry").length;
+        if (fieldLength > 18) {
+          for (var field of $(".subjects-form-entry").slice(18, fieldLength)) {
+            $($(field).parents()[2]).remove()
+          }
+        }
+      }
     } else {
-      subjectsTableData = []
-      // delete table rows except headers
-      $("#table-subjects tr:gt(0)").remove();
-      $("#table-subjects").css("display", "none")
-      // Hide Generate button
-      $("#button-generate-subjects").css("display", "none")
+       $("#existing-subjects-file-destination").val("")
     }
   }
-  if ($(ev).attr("data-current") === "Question-prepare-samples-1" && samplesTableData.length !== 0) {
-    var { value: continueProgressSamples } = await Swal.fire({
-      title: 'This will reset your progress so far with the samples.xlsx file. Are you sure you want to continue?',
-      showCancelButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: 'Yes',
-      cancelButtonText: "No",
-    })
-    if (!continueProgressSamples) {
-      return
+  if ($(ev).attr("data-current") === "Question-prepare-samples-1") {
+    if (samplesTableData.length !== 0) {
+      var { value: continueProgressSamples } = await Swal.fire({
+        title: 'This will reset your progress so far with the samples.xlsx file. Are you sure you want to continue?',
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: 'Yes',
+        cancelButtonText: "No",
+      })
+      if (!continueProgressSamples) {
+        return
+      } else {
+        $("#existing-samples-file-destination").val("")
+        samplesTableData = []
+        // delete table rows except headers
+        $("#table-samples tr:gt(0)").remove();
+        $("#table-samples").css("display", "none")
+        // Hide Generate button
+        $("#button-generate-samples").css("display", "none");
+        // delete custom fields (if any)
+        var fieldLength = $(".samples-form-entry").length;
+        if (fieldLength > 21) {
+          for (var field of $(".samples-form-entry").slice(21, fieldLength)) {
+            $($(field).parents()[2]).remove()
+          }
+        }
+      }
     } else {
-      samplesTableData = []
-      // delete table rows except headers
-      $("#table-samples tr:gt(0)").remove();
-      $("#table-samples").css("display", "none")
-      // Hide Generate button
-      $("#button-generate-samples").css("display", "none")
+      $("#existing-samples-file-destination").val("")
     }
   }
 
