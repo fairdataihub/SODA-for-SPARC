@@ -3613,14 +3613,14 @@
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Enter information about each subject from your study then click "Generate".
-                <i
+                <!-- <i
                   class="fas fa-info-circle popover-tooltip"
                   data-content="The below headers are either mandatory or recommended for every SPARC dataset. <br> You can also add additional headers in following steps."
                   rel="popover"
                   data-placement="right"
                   data-html="true"
                   data-trigger="hover"
-                ></i>
+                ></i> -->
               </label>
               <div
                 style="
@@ -3868,7 +3868,8 @@
           <div class="tooltipnew demo-controls-end">
             <i
               class="fas fa-info-circle popover-tooltip subjects-form"
-              data-content="Lab-based schema for identifying each subject, should match folder names"
+              data-content="Lab-based schema for identifying each subject, should match folder names in the primary folder. <br> 
+                              <i> Example: sub-1 <i>"
               rel="popover"
               data-placement="right"
               data-html="true"
@@ -3910,7 +3911,8 @@
                           <div class="tooltipnew demo-controls-end">
                             <i
                               class="fas fa-info-circle popover-tooltip subjects-form"
-                              data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary."
+                              data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside the primary folder. <br> 
+                              <i> Example: pool-1 <i>" 
                               rel="popover"
                               data-placement="right"
                               data-html="true"
@@ -3934,7 +3936,8 @@
                       <div class="tooltipnew demo-controls-end">
                         <i
                         class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Experimental group subject is assigned to in research project."
+                        data-content="Experimental group of the subject if assigned to in the research project. <br> 
+                        <i> Example: Control <i> "
                         rel="popover"
                         data-placement="right"
                         data-html="true"
@@ -3978,7 +3981,7 @@
                   <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Sex of the subject, or if unknown fill in with “Unknown”."
+                      data-content="Sex of the subject. If unknown select “Unknown”."
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -4001,7 +4004,14 @@
                   <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Subject species."
+                      data-content="Subject species. Type to get suggestions from the commonly used species. Must use termonology from the 
+                      <a
+                      target='_blank'
+                      href='https://www.ncbi.nlm.nih.gov/taxonomy'
+                      >NCBI Taxonomy database. </a>
+                      <br>
+                      <i> Example: Rattus <i>
+                      "
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -4348,7 +4358,7 @@
           <button class="btn_animated" id="btn-edit-subject"
           style="width: 140px; border: none !important;display:none">
           <i class="fas fa-check" style="margin-right: 7px"></i>
-          Edit subject</button>
+          Save </button>
           <button class="btn_animated" onclick="addSubject()" id="btn-add-subject"
           style="width: 140px; border: none !important;display:inline-block">
           <i class="fas fa-check" style="margin-right: 7px"></i>
@@ -4411,7 +4421,7 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Please select an option below:
+                >Select an option below:
               </label>
               <div
                 style="
