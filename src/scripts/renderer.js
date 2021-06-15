@@ -908,6 +908,7 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
 // generate subjects file
 ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
   $("#generate-subjects-spinner").css("display", "block");
+  $("#button-generate-subjects").prop("disabled", true)
   if (dirpath.length > 0) {
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
@@ -918,6 +919,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
         'error'
       )
       $("#generate-subjects-spinner").css("display", "none");
+      $("#button-generate-subjects").prop("disabled", false)
     } else {
         client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
           if (error) {
@@ -925,6 +927,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
             log.error(error);
             console.error(error);
             $("#generate-subjects-spinner").css("display", "none");
+            $("#button-generate-subjects").prop("disabled", false)
             Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error");
             ipcRenderer.send(
               "track-event",
@@ -940,6 +943,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
               subjectsTableData
             );
             $("#generate-subjects-spinner").css("display", "none");
+            $("#button-generate-subjects").prop("disabled", false)
             Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
           }
         })
@@ -950,6 +954,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
 // generate samples file
 ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
   $("#generate-samples-spinner").css("display", "block");
+  $("#button-generate-samples").prop("disabled", true)
   if (dirpath.length > 0) {
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
@@ -960,6 +965,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         'error'
       )
       $("#generate-samples-spinner").css("display", "none");
+      $("#button-generate-samples").prop("disabled", false)
     } else {
        client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
           if (error) {
@@ -974,6 +980,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
             );
             Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error");
             $("#generate-samples-spinner").css("display", "none");
+            $("#button-generate-samples").prop("disabled", false)
           } else {
             ipcRenderer.send(
               "track-event",
@@ -982,6 +989,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
               samplesTableData
             );
             $("#generate-samples-spinner").css("display", "none");
+            $("#button-generate-samples").prop("disabled", false)
             Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
           }
         })
