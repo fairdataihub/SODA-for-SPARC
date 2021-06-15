@@ -350,6 +350,8 @@ function addSubjectIDToJSON(subjectID) {
     if ($("#bootbox-subject-strain").val() !== "") {
       Swal.fire({
         title: "Adding new subject...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
         html:
           "Please wait...",
         timer: 2000,
@@ -462,6 +464,8 @@ function addSampleIDtoJSON(sampleID) {
     if ($("#bootbox-sample-strain").val() !== "") {
       Swal.fire({
         title: "Adding new sample...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
         html:
           "Please wait...",
         timer: 2000,
@@ -865,6 +869,13 @@ function showPrimaryBrowseFolderSamples() {
 }
 
 function importPrimaryFolderSubjects() {
+  headersArrSubjects = []
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
+      field.value = null
+    }
+    headersArrSubjects.push(field.name);
+  }
   var folderPath = $("#primary-folder-destination-input").prop("placeholder");
   if (folderPath === "Browse here") {
     Swal.fire("No folder chosen!", "Please select a path to your primary folder", "error");
@@ -924,6 +935,13 @@ function importPrimaryFolderSubjects() {
   }
 }
 function importPrimaryFolderSamples() {
+  headersArrSamples = []
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
+      field.value = null
+    }
+    headersArrSamples.push(field.name);
+  }
   var folderPath = $("#primary-folder-destination-input-samples").prop("placeholder");
   if (folderPath === "Browse here") {
     Swal.fire("No folder chosen!", "Please select a path to your primary folder", "error");
@@ -1310,6 +1328,8 @@ function importExistingSubjectsFile() {
         html:
           "Please wait...",
         timer: 1500,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         timerProgressBar: true,
@@ -1333,6 +1353,8 @@ function importExistingSamplesFile() {
     } else {
       Swal.fire({
         title: "Loading an existing samples.xlsx file",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
         html:
           "Please wait...",
         timer: 1500,
