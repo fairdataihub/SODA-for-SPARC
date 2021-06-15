@@ -1277,6 +1277,19 @@ function importExistingSubjectsFile() {
     if (path.parse(filePath).base !== "subjects.xlsx") {
       Swal.fire("Incorrect file name!", "Your file must be named 'subjects.xlsx' to be imported to SODA!", "error");
     } else {
+      Swal.fire({
+        title: "Loading an existing subjects.xlsx file",
+        html:
+          "Please wait...",
+        timer: 1500,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+      });
       loadSubjectsFileToDataframe(filePath);
     }
   }
@@ -1290,6 +1303,19 @@ function importExistingSamplesFile() {
     if (path.parse(filePath).base !== "samples.xlsx") {
       Swal.fire("Incorrect file name!", "Your file must be named 'samples.xlsx' to be imported to SODA!", "error");
     } else {
+      Swal.fire({
+        title: "Loading an existing samples.xlsx file",
+        html:
+          "Please wait...",
+        timer: 1500,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+      });
       loadSamplesFileToDataframe(filePath);
     }
   }
