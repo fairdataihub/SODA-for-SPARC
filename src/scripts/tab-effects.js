@@ -1638,7 +1638,49 @@ async function transitionSubQuestionsButton(
   }
 }
 
-function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
+async function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
+
+  if ($(ev).attr("data-current") === "Question-prepare-subjects-1" && subjectsTableData.length !== 0) {
+    var { value: continueProgressSubjects } = await Swal.fire({
+      title: 'This will reset your progress so far with the subjects.xlsx file. Are you sure you want to continue?',
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: 'Yes',
+      cancelButtonText: "No",
+    })
+    if (!continueProgressSubjects) {
+      return
+    } else {
+      subjectsTableData = []
+      // delete table rows except headers
+      $("#table-subjects tr:gt(0)").remove();
+      $("#table-subjects").css("display", "none")
+      // Hide Generate button
+      $("#button-generate-subjects").css("display", "none")
+    }
+  }
+  if ($(ev).attr("data-current") === "Question-prepare-samples-1" && samplesTableData.length !== 0) {
+    var { value: continueProgressSamples } = await Swal.fire({
+      title: 'This will reset your progress so far with the samples.xlsx file. Are you sure you want to continue?',
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: 'Yes',
+      cancelButtonText: "No",
+    })
+    if (!continueProgressSamples) {
+      return
+    } else {
+      samplesTableData = []
+      // delete table rows except headers
+      $("#table-samples tr:gt(0)").remove();
+      $("#table-samples").css("display", "none")
+      // Hide Generate button
+      $("#button-generate-samples").css("display", "none")
+    }
+  }
+
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
   $(ev).addClass("checked");
@@ -1768,6 +1810,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     $($(ev).parents()[0]).css("display", "flex");
     $($(ev).siblings()[0]).show();
   }
+
 
   // auto-scroll to bottom of div
   if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {

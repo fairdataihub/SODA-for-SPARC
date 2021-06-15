@@ -775,35 +775,61 @@ function editSample(ev, sampleID) {
 }
 
 function delete_current_subject_id(ev) {
- // 1. Delete from table
- var currentRow = $(ev).parents()[2];
- var currentRowid = $(currentRow).prop("id");
- document.getElementById(currentRowid).outerHTML = "";
- updateIndexForTable(document.getElementById("table-subjects"))
- // 2. Delete from JSON
- var subjectID = $(currentRow)[0].cells[1].innerText;
- for (var i=1; i<subjectsTableData.length; i++) {
-   if (subjectsTableData[i][0] === subjectID) {
-     subjectsTableData.splice(i, 1);
-     break
-   }
- }
+  Swal.fire({
+    title: 'Are you sure you want to delete this subject?',
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: `No!`,
+    cancelButtonColor: "#f44336",
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Yes'
+  }).then((boolean) => {
+    if (boolean.isConfirmed) {
+      // 1. Delete from table
+      var currentRow = $(ev).parents()[2];
+      var currentRowid = $(currentRow).prop("id");
+      document.getElementById(currentRowid).outerHTML = "";
+      updateIndexForTable(document.getElementById("table-subjects"))
+      // 2. Delete from JSON
+      var subjectID = $(currentRow)[0].cells[1].innerText;
+      for (var i=1; i<subjectsTableData.length; i++) {
+        if (subjectsTableData[i][0] === subjectID) {
+          subjectsTableData.splice(i, 1);
+          break
+        }
+      }
+    }
+  })
 }
 
 function delete_current_sample_id(ev) {
- // 1. Delete from table
- var currentRow = $(ev).parents()[2];
- var currentRowid = $(currentRow).prop("id");
- document.getElementById(currentRowid).outerHTML = "";
- updateIndexForTable(document.getElementById("table-samples"))
- // 2. Delete from JSON
- var sampleId = $(currentRow)[0].cells[2].innerText;
- for (var i=1; i<samplesTableData.length; i++) {
-   if (samplesTableData[i][1] === sampleId) {
-     samplesTableData.splice(i, 1);
-     break
-   }
- }
+  Swal.fire({
+    title: 'Are you sure you want to delete this sample?',
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: `No!`,
+    cancelButtonColor: "#f44336",
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Yes'
+  }).then((boolean) => {
+    if (boolean.isConfirmed) {
+      // 1. Delete from table
+      var currentRow = $(ev).parents()[2];
+      var currentRowid = $(currentRow).prop("id");
+      document.getElementById(currentRowid).outerHTML = "";
+      updateIndexForTable(document.getElementById("table-samples"))
+      // 2. Delete from JSON
+      var sampleId = $(currentRow)[0].cells[2].innerText;
+      for (var i=1; i<samplesTableData.length; i++) {
+        if (samplesTableData[i][1] === sampleId) {
+          samplesTableData.splice(i, 1);
+          break
+        }
+      }
+    }
+  })
 }
 
 function updateIndexForTable(table) {
@@ -871,9 +897,11 @@ function importPrimaryFolderSubjects() {
         title: "Please confirm the subject id(s) below:",
         text: "The subject_ids are: " + subIDArray.join(", "),
         icon: "warning",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
         showConfirmButton: true,
-        confirmButtonText: "Yes, correct!",
+        confirmButtonText: "Yes, correct",
         cancelButtonText: "No",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
