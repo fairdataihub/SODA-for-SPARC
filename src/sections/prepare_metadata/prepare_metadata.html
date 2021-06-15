@@ -3437,7 +3437,7 @@
                     </div>
                     <div class="card-body">
                       <i class="far fa-save" style="color: var(--color-subtle)"></i>
-                      <h2>I want to continue working on a subjects.xlsx file</h2>
+                      <h2>I want to continue working on an existing subjects file</h2>
                     </div>
                   </div>
                 </div>
@@ -3612,15 +3612,15 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Once all the subject_id(s) are added, click "Generate" to create the subjects file.
-                <i
+                >Enter information about each subject from your study then click "Generate".
+                <!-- <i
                   class="fas fa-info-circle popover-tooltip"
                   data-content="The below headers are either mandatory or recommended for every SPARC dataset. <br> You can also add additional headers in following steps."
                   rel="popover"
                   data-placement="right"
                   data-html="true"
                   data-trigger="hover"
-                ></i>
+                ></i> -->
               </label>
               <div
                 style="
@@ -3868,7 +3868,8 @@
           <div class="tooltipnew demo-controls-end">
             <i
               class="fas fa-info-circle popover-tooltip subjects-form"
-              data-content="Lab-based schema for identifying each subject, should match folder names"
+              data-content="Lab-based schema for identifying each subject. Should match folder names in the primary folder. <br> 
+                              <i> Example: sub-1 <i>"
               rel="popover"
               data-placement="right"
               data-html="true"
@@ -3910,7 +3911,8 @@
                           <div class="tooltipnew demo-controls-end">
                             <i
                               class="fas fa-info-circle popover-tooltip subjects-form"
-                              data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary."
+                              data-content="If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside the primary folder. <br> 
+                              <i> Example: pool-1 <i>" 
                               rel="popover"
                               data-placement="right"
                               data-html="true"
@@ -3934,7 +3936,8 @@
                       <div class="tooltipnew demo-controls-end">
                         <i
                         class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Experimental group subject is assigned to in research project."
+                        data-content="Experimental group of the subject if assigned to in the research project. <br> 
+                        <i> Example: Control <i> "
                         rel="popover"
                         data-placement="right"
                         data-html="true"
@@ -3978,7 +3981,7 @@
                   <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Sex of the subject, or if unknown fill in with “Unknown”."
+                      data-content="Sex of the subject. If unknown select “Unknown”."
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -4001,7 +4004,14 @@
                   <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Subject species."
+                      data-content="Type to get suggestions from the commonly used species. Must use termonology from the 
+                      <a
+                      target='_blank'
+                      href='https://www.ncbi.nlm.nih.gov/taxonomy'
+                      >NCBI Taxonomy database</a>.
+                      <br>
+                      <i> Example: Rattus <i>
+                      "
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -4024,7 +4034,8 @@
                   <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Organism strain of the subject."
+                      data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley <i>"
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -4109,7 +4120,14 @@
                     <div class="tooltipnew demo-controls-end">
                       <i
                         class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Description of age category from derived from UBERON life cycle stage."
+                        data-content="Description of age category. Must be derived from the 
+                        <a
+                        target='_blank'
+                        href='http://www.ontobee.org/ontology/catalog/UBERON?iri=http://purl.obolibrary.org/obo/UBERON_0000105'
+                        >UBERON life cycle stage</a>.
+                        <br>
+                        <i> Example: prime adult stage <i>
+                        "
                         rel="popover"
                         data-placement="right"
                         data-html="true"
@@ -4134,7 +4152,8 @@
                     <div class="tooltipnew demo-controls-end">
                       <i
                         class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="The minimal age (youngest) and  maximal age (oldest) of the research subjects. The format for this field: numerical value + space + unit (spelled out)."
+                        data-content="The minimal age (youngest) and  maximal age (oldest) of the subject during the study. The format for this field: numerical value + space + unit (spelled out). <br>
+                        <i> Example: 10 days (min)  20 days (max)<i>"
                         rel="popover"
                         data-placement="right"
                         data-html="true"
@@ -4159,7 +4178,7 @@
               <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> protocol title: </font>
+                  <font color="black"> protocol title on protocols.io: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body" id="subjects-protocol-titles">
@@ -4170,7 +4189,8 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Once the research protocol is uploaded to Protocols.io, the title of the protocol within Protocols.io must be noted in this field."
+                    data-content="Title of the protocol on protocols.io associated with this study. <br>
+                    <i>Example: Spinal Cord extraction <i>"
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -4193,7 +4213,8 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="The Protocol.io URL for the protocol. Once the protocol is uploaded to Protocols.io, the protocol must be shared with the SPARC group and the Protocol.io URL is noted in this field. Please share with the SPARC group."
+                    data-content="The protocol.io URL for the protocol associated with this study.<br>
+                    <i>Example: https://www.protocols.io/view/corchea-paper-based-microfluidic-device-vtwe6pe <i>"
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -4208,7 +4229,13 @@
                 >
                 <i
                   class="fas fa-info-circle popover-tooltip subjects-form"
-                  data-content="Connecting SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience."
+                  data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. See 
+                  <a
+                  target='_blank'
+                  href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'
+                  >here for details about creating your protocol on protocols.io</a>.
+                  <br>
+                  "
                   rel="popover"
                   data-placement="right"
                   data-html="true"
@@ -4272,7 +4299,8 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Ignore if RRID is filled in, Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group."
+                    data-content="Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group. Ignore if RRID is filled in. <br>
+                    <i>Example: MGI:3851780 <i>"
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -4295,7 +4323,8 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="The reference atlas and organ."
+                    data-content="The reference atlas and organ. <br>
+                    <i>Example: Paxinos Rat V3 <i>"
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -4348,7 +4377,7 @@
           <button class="btn_animated" id="btn-edit-subject"
           style="width: 140px; border: none !important;display:none">
           <i class="fas fa-check" style="margin-right: 7px"></i>
-          Edit subject</button>
+          Save </button>
           <button class="btn_animated" onclick="addSubject()" id="btn-add-subject"
           style="width: 140px; border: none !important;display:inline-block">
           <i class="fas fa-check" style="margin-right: 7px"></i>
@@ -4411,7 +4440,7 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Please select an option below:
+                >Select an option below:
               </label>
               <div
                 style="
@@ -4467,7 +4496,7 @@
                     </div>
                     <div class="card-body">
                       <i class="far fa-save" style="color: var(--color-subtle)"></i>
-                      <h2>I want to continue working on a samples.xlsx file</h2>
+                      <h2>I want to continue working on an existing samples file</h2>
                     </div>
                   </div>
                 </div>
@@ -4641,7 +4670,7 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Once all the samples_id(s) are added, click "Generate" to create the samples.xlsx file.
+                >Enter information about each sample from your study then click "Generate"
                 <i
                   class="fas fa-info-circle popover-tooltip"
                   data-content="The below headers are either mandatory or recommended for every SPARC dataset. <br> You can also add additional headers in following steps."
@@ -4872,7 +4901,7 @@
           "
           id="form-add-a-sample"
         >
-        <h3 style="text-align:center;font-size:18px;padding-bottom:0">ADD A SAMPLE</h3>
+        <h3 style="text-align:center;font-size:18px;padding-bottom:0">Enter sample information</h3>
         <div class="row mandatory" style="width:90%; max-width:850px; margin: 10px auto">
           <div class="col" style="padding:0;">
             <div class="div-dd-info" style="margin: 20px auto;margin-top: 5px">
@@ -4889,7 +4918,7 @@
               <div class="tooltipnew demo-controls-end">
                 <i
                   class="fas fa-info-circle popover-tooltip subjects-form"
-                  data-content="Lab-based schema for identifying each subject, should match folder names"
+                  data-content="Lab-based schema for identifying each subject. Should match folder names in the primary folder."
                   rel="popover"
                   data-placement="right"
                   data-html="true"
@@ -5010,7 +5039,7 @@
                       <div class="tooltipnew demo-controls-end">
                         <i
                           class="fas fa-info-circle popover-tooltip subjects-form"
-                          data-content="Experimental group subject is assigned to in research project."
+                          data-content="Experimental group subject is assigned to in the study."
                           rel="popover"
                           data-placement="right"
                           data-html="true"
@@ -5252,7 +5281,7 @@
                   <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
-                      <font color="black"> protocol title: </font>
+                      <font color="black"> protocol title on protocols.io: </font>
                     </div>
                     </div>
                     <div class="demo-controls-body" id="samples-protocol-titles">
@@ -5263,7 +5292,7 @@
                     <div class="tooltipnew demo-controls-end">
                       <i
                         class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Once the research protocol is uploaded to Protocols.io, the title of the protocol within Protocols.io must be noted in this field."
+                        data-content="Once the research protocol is uploaded to protocols.io, the title of the protocol within Protocols.io must be noted in this field."
                         rel="popover"
                         data-placement="right"
                         data-html="true"
@@ -5275,7 +5304,7 @@
                   <div class="div-dd-info subjects" style="margin-bottom: 10px">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
-                      <font color="black"> protocol.io links: </font>
+                      <font color="black"> protocols.io link: </font>
                     </div>
                     </div>
                     <div class="demo-controls-body">
