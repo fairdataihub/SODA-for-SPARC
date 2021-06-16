@@ -286,6 +286,9 @@ var datasetStructureJSONObj = {
   type: "",
 };
 
+var subjectsTableData = []
+var samplesTableData = []
+
 const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
 

@@ -363,14 +363,6 @@ function addSubjectIDToJSON(subjectID) {
         },
       }).then((result) => {
       });
-      var strain = $("#bootbox-subject-strain").val();
-      var rridHostname = "scicrunch.org"
-      var rridInfo = {
-        hostname: rridHostname,
-        port: 443,
-        path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${strain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-        headers: { accept: "text/xml" },
-      };
       https.get(rridInfo, (res) => {
         if (res.statusCode === 200) {
           let data = "";
