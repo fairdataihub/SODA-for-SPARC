@@ -543,6 +543,7 @@ ipcMain.on("open-file-dialog-local-primary-folder", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
     {
+      title: "Select primary folder",
       properties: ["openDirectory"],
     },
     (files) => {
@@ -556,6 +557,7 @@ ipcMain.on("open-file-dialog-local-primary-folder-samples", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
     {
+      title: "Select primary folder",
       properties: ["openDirectory"],
     },
     (files) => {

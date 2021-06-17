@@ -176,12 +176,21 @@ function confirmSample() {
 
 // for "Done adding" button - subjects
 function addSubject() {
-  addSubjectIDtoDataBase();
+  var subjectID = $("#bootbox-subject-id").val();
+  addSubjectIDtoDataBase(subjectID);
+  if (subjectsTableData.length !== 0) {
+    $("#div-import-primary-folder-sub").hide()
+  }
 }
 
 // for "Done adding" button - samples
 function addSample() {
-  addSampleIDtoDataBase();
+  var sampleID = $("#bootbox-sample-id").val();
+  var subjectID = $("#bootbox-subject-id-samples").val();
+  addSampleIDtoDataBase(sampleID, subjectID);
+  if (samplesTableData.length !== 0) {
+    $("#div-import-primary-folder-sam").hide()
+  }
 }
 
 function warningBeforeHideForm(type) {
@@ -270,30 +279,29 @@ function addNewIDToTable(newID, secondaryID, type) {
   var newRowIndex = checkForUniqueRowID("row-current-"+keyword, rowIndex);
   if (type === "subjects") {
     var row = (table.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-"+ keyword + newRowIndex +"' class='row-" +type+"'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newID+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_"+keyword+"_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_"+keyword+"_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "<tr id='row-current-"+ keyword + newRowIndex +"' class='row-" +type+"'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newID+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_"+keyword+"_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='copy_current_"+keyword+"_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='delete_current_"+keyword+"_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   } else if (type === "samples") {
     var row = (table.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-"+ keyword + newRowIndex +"' class='row-" +type+"'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+secondaryID+"</td><td>"+newID+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_"+keyword+"_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_"+keyword+"_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "<tr id='row-current-"+ keyword + newRowIndex +"' class='row-" +type+"'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+secondaryID+"</td><td>"+newID+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_"+keyword+"_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='copy_current_"+keyword+"_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='delete_current_"+keyword+"_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   }
   return message
 }
 
-function addSubjectIDtoDataBase() {
-  var subjectID = $("#bootbox-subject-id").val();
+function addSubjectIDtoDataBase(id) {
   var table = document.getElementById("table-subjects");
   var duplicate = false;
   var error = "";
   var rowcount = table.rows.length;
   for (var i=1;i<rowcount;i++) {
-    if (subjectID === table.rows[i].cells[1].innerText) {
+    if (id === table.rows[i].cells[1].innerText) {
       duplicate = true
       break
     }
   }
-  if (subjectID !== "") {
+  if (id !== "") {
     if (!duplicate) {
-      var message = addNewIDToTable(subjectID, null, "subjects")
-      addSubjectIDToJSON(subjectID);
+      var message = addNewIDToTable(id, null, "subjects")
+      addSubjectIDToJSON(id);
     } else {
       error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id."
     }
@@ -305,24 +313,21 @@ function addSubjectIDtoDataBase() {
   }
 }
 
-function addSampleIDtoDataBase() {
-  var sampleID = $("#bootbox-sample-id").val();
-  var subjectID = $("#bootbox-subject-id-samples").val();
-
+function addSampleIDtoDataBase(samID, subID) {
   var table = document.getElementById("table-samples");
   var duplicate = false;
   var error = "";
   var rowcount = table.rows.length;
   for (var i=1;i<rowcount;i++) {
-    if (sampleID === table.rows[i].cells[2].innerText) {
+    if (samID === table.rows[i].cells[2].innerText) {
       duplicate = true
       break
     }
   }
-  if (sampleID !== "" && subjectID !== "") {
+  if (samID !== "" && subID !== "") {
     if (!duplicate) {
-      var message = addNewIDToTable(sampleID, subjectID, "samples")
-      addSampleIDtoJSON(sampleID);
+      var message = addNewIDToTable(samID, subID, "samples")
+      addSampleIDtoJSON(samID);
     } else {
       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id."
     }
@@ -344,17 +349,25 @@ function clearAllSubjectFormFields(form) {
 }
 
 // add new subject ID to JSON file (main file to be converted to excel)
-function addSubjectIDToJSON(subjectID) {
+ function addSubjectIDToJSON(subjectID) {
   if ($("#form-add-a-subject").length > 0) {
     // first, populate RRID
     if ($("#bootbox-subject-strain").val() !== "") {
+      var strain = $("#bootbox-subject-strain").val();
+      var rridHostname = "scicrunch.org"
+      var rridInfo = {
+        hostname: rridHostname,
+        port: 443,
+        path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${strain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
+        headers: { accept: "text/xml" },
+      };
       Swal.fire({
         title: "Adding new subject...",
         allowEscapeKey: false,
         allowOutsideClick: false,
         html:
           "Please wait...",
-        timer: 2000,
+        timer: 10000,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         timerProgressBar: true,
@@ -828,6 +841,83 @@ function delete_current_sample_id(ev) {
   })
 }
 
+async function copy_current_subject_id(ev) {
+  const { value: newSubject } = await Swal.fire({
+  title: 'Copying information from this subject: ',
+  text: "Enter an ID for the new subject: ",
+  input: 'text',
+  showCancelButton: true,
+  inputValidator: (value) => {
+    if (!value) {
+      return 'Please enter an ID'
+      }
+    }
+  })
+  if (newSubject) {
+    // add new subject_id to JSON
+    // 1. copy from current ev.id (the whole array)
+    var currentRow = $(ev).parents()[2];
+    var id = currentRow.cells[1].innerText
+    // 2. append that to the end of matrix
+    for (var subArr of subjectsTableData.slice(1)) {
+      if (subArr[0] === id) {
+        var ind = subjectsTableData.indexOf(subArr);
+        var newArr = [...subjectsTableData[ind]];
+        subjectsTableData.push(newArr)
+        // 3. change first entry of that array
+        subjectsTableData[subjectsTableData.length - 1][0] = newSubject
+        break
+      }
+    }
+    // // add new row to table
+    var message = addNewIDToTable(newSubject, null, "subjects")
+    if (message !== "") {
+      Swal.fire(message, "", "warning")
+    }
+  }
+}
+
+async function copy_current_sample_id(ev) {
+  const { value: newSubSam } = await Swal.fire({
+  title: 'Copying information from this sample: ',
+  text: "Enter an ID for the new subject and sample: ",
+  html:
+    '<input id="new-subject" class="swal2-input" placeholder="Subject ID">' +
+    '<input id="new-sample" class="swal2-input" placeholder="Sample ID">',
+  focusConfirm: false,
+  preConfirm: () => {
+    return [
+      document.getElementById('new-subject').value,
+      document.getElementById('new-sample').value
+    ]
+    }
+  })
+  if (newSubSam) {
+    // // add new row to table
+    // add new subject_id to JSON
+    // 1. copy from current ev.id (the whole array)
+    var currentRow = $(ev).parents()[2];
+    var id1 = currentRow.cells[1].innerText;
+    var id2 = currentRow.cells[2].innerText;
+    // 2. append that to the end of matrix
+    for (var samArr of samplesTableData.slice(1)) {
+      if (samArr[0] === id1 && samArr[1] === id2) {
+        var ind = samplesTableData.indexOf(samArr);
+        var newArr = [...samplesTableData[ind]];
+        samplesTableData.push(newArr)
+        // 3. change first entry of that array
+        samplesTableData[samplesTableData.length - 1][0] = newSubSam[0]
+        samplesTableData[samplesTableData.length - 1][1] = newSubSam[1]
+        break
+      }
+    }
+    var message = addNewIDToTable(newSubSam[1], newSubSam[0], "samples")
+    if (message !== "") {
+      Swal.fire(message, "", "warning")
+    }
+  }
+}
+
 function updateIndexForTable(table) {
  var rowcount = table.rows.length;
  var index = 1;
@@ -860,7 +950,7 @@ function showPrimaryBrowseFolderSamples() {
   ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
 }
 
-function importPrimaryFolderSubjects() {
+function importPrimaryFolderSubjects(folderPath) {
   headersArrSubjects = []
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
@@ -868,7 +958,7 @@ function importPrimaryFolderSubjects() {
     }
     headersArrSubjects.push(field.name);
   }
-  var folderPath = $("#primary-folder-destination-input").prop("placeholder");
+  // var folderPath = $("#primary-folder-destination-input").prop("placeholder");
   if (folderPath === "Browse here") {
     Swal.fire("No folder chosen", "Please select a path to your primary folder", "error");
   } else {
@@ -913,8 +1003,9 @@ function importPrimaryFolderSubjects() {
           if (subjectsTableData.length > 1) {
             loadSubjectsDataToTable();
             $("#table-subjects").show();
-            $("#div-confirm-primary-folder-import").hide();
-            $("#button-fake-confirm-primary-folder-load").click();
+            $("#div-import-primary-folder-sub").hide()
+            // $("#div-confirm-primary-folder-import").hide();
+            // $("#button-fake-confirm-primary-folder-load").click();
           } else {
             Swal.fire(
               'Could not load subject IDs from the imported primary folder!',
@@ -926,7 +1017,7 @@ function importPrimaryFolderSubjects() {
     }
   }
 }
-function importPrimaryFolderSamples() {
+function importPrimaryFolderSamples(folderPath) {
   headersArrSamples = []
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
@@ -934,7 +1025,7 @@ function importPrimaryFolderSamples() {
     }
     headersArrSamples.push(field.name);
   }
-  var folderPath = $("#primary-folder-destination-input-samples").prop("placeholder");
+  // var folderPath = $("#primary-folder-destination-input-samples").prop("placeholder");
   if (folderPath === "Browse here") {
     Swal.fire("No folder chosen", "Please select a path to your primary folder.", "error");
   } else {
@@ -986,8 +1077,9 @@ function importPrimaryFolderSamples() {
           if (samplesTableData.length > 1) {
             loadSamplesDataToTable();
             $("#table-samples").show();
-            $("#div-confirm-primary-folder-import-samples").hide();
-            $("#button-fake-confirm-primary-folder-load-samples").click();
+            $("#div-import-primary-folder-sam").hide()
+            // $("#div-confirm-primary-folder-import-samples").hide();
+            // $("#button-fake-confirm-primary-folder-load-samples").click();
           } else {
             Swal.fire(
               'Could not load samples IDs from the imported primary folder!',

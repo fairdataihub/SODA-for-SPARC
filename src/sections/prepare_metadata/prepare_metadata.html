@@ -3393,7 +3393,7 @@
                 <div style="margin: 15px 0">
                   <div
                     class="option-card radio-button"
-                    data-next="Question-prepare-subjects-2"
+                    data-next="Question-prepare-subjects-3"
                     data-current="Question-prepare-subjects-1"
                     onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-1', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
                   >
@@ -3450,7 +3450,7 @@
           </div>
 
           <!-- Question 2: If start with an existing primary folder? -->
-          <div
+          <!-- <div
             class="individual-question prepare-subjects"
             id="Question-prepare-subjects-2"
           >
@@ -3459,7 +3459,7 @@
               <label
                 style="
                   font-size: 17px;
-                  color: var(--color-bg-plum);
+                  color: var(olor-bg-plum);
                   text-align: center;
                 "
                 >Do you have an existing <i>primary</i> folder to import?
@@ -3521,9 +3521,9 @@
             </div>
           </div>
 
-        </div>
+        </div> -->
 
-        <div
+        <!-- <div
           class="individual-question prepare-subjects"
           id="Question-prepare-subjects-primary-import"
         >
@@ -3545,11 +3545,11 @@
                 justify-content: center;
               "
             >
-              <input
+            <! id="primary-folder-destination-input" -->
+              <!-- <input
                 class="form-control"
                 style="width: 450px !important"
                 onclick="showPrimaryBrowseFolder()"
-                id="primary-folder-destination-input"
                 type="text"
                 readonly
                 placeholder="Browse here"
@@ -3603,8 +3603,8 @@
               </button>
             </div>
           </div>
-        </div>
-      </div>
+        </div> -->
+      <!-- </div>  -->
 
         <!-- Question 3: Choose headers -->
         <div
@@ -3614,15 +3614,9 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Enter information about each subject from your study then click "Generate".
-                <!-- <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="The below headers are either mandatory or recommended for every SPARC dataset. <br> You can also add additional headers in following steps."
-                  rel="popover"
-                  data-placement="right"
-                  data-html="true"
-                  data-trigger="hover"
-                ></i> -->
+                >Start adding your subject(s) below: <br/>
+                <!-- <span style="color: #898989; font-size: 12px"
+                  >When ready, click "Generate".</span> -->
               </label>
               <div
                 style="
@@ -3676,6 +3670,7 @@
                   flex-direction: row;
                   justify-content: center;
                   margin: 10px auto;
+                  margin-bottom:30px
                 "
               >
                 <button
@@ -3717,6 +3712,12 @@
                 >
                   Generate
                 </button>
+              </div>
+              <div style="margin: 0 auto; text-decoration: underline" id="div-import-primary-folder-sub">
+                <a href="#" onclick="showPrimaryBrowseFolder()"
+                  id="primary-folder-destination-input"
+                  >I want to import subject ID(s) from my primary folder
+                </a>
               </div>
               <div
               id="generate-subjects-spinner"
@@ -4546,7 +4547,7 @@
           </div>
 
           <!-- Question 2: If start with an existing primary folder? -->
-          <div
+          <!-- <div
             class="individual-question prepare-samples"
             id="Question-prepare-samples-2"
           >
@@ -4617,9 +4618,9 @@
             </div>
           </div>
 
-        </div>
+        </div> -->
 
-        <div
+        <!-- <div
           class="individual-question prepare-samples"
           id="Question-prepare-samples-primary-import"
         >
@@ -4628,7 +4629,7 @@
             <label
               style="
                 font-size: 17px;
-                color: var(--color-bg-plum);
+                color: var(color-bg-plum);
                 text-align: center;
               "
               >Browse for your <i>primary</i> folder below:
@@ -4700,7 +4701,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
         <!-- Question 3: Choose headers -->
         <div
@@ -4814,6 +4815,12 @@
                 >
                   Generate
                 </button>
+              </div>
+              <div style="margin: 0 auto; text-decoration: underline" id="div-import-primary-folder-sam">
+                <a href="#" onclick="showPrimaryBrowseFolderSamples()"
+                  id="primary-folder-destination-input-samples"
+                  >I want to import subject and sample ID(s) from my primary folder
+                </a>
               </div>
               <div
               id="generate-samples-spinner"

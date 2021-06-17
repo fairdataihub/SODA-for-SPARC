@@ -1025,22 +1025,24 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
 // import Primary folder
 ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
-    $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
-    $("#div-confirm-primary-folder-import").show()
-    $($("#div-confirm-primary-folder-import").find("button")[0]).show();
+    importPrimaryFolderSubjects(primaryFolderPath[0])
+    // $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
+    // $("#div-confirm-primary-folder-import").show()
+    // $($("#div-confirm-primary-folder-import").find("button")[0]).show();
   } else {
-    $("#primary-folder-destination-input").prop("placeholder", "Browse here")
-    $("#div-confirm-primary-folder-import").find("button").hide()
+    // $("#primary-folder-destination-input").prop("placeholder", "Browse here")
+    // $("#div-confirm-primary-folder-import").find("button").hide()
   }
 });
 ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
-    $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
-    $("#div-confirm-primary-folder-import-samples").show()
-    $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
+    importPrimaryFolderSamples(primaryFolderPath[0])
+    // $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
+    // $("#div-confirm-primary-folder-import-samples").show()
+    // $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
   } else {
-    $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
-    $("#div-confirm-primary-folder-import-samples").find("button").hide()
+    // $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
+    // $("#div-confirm-primary-folder-import-samples").find("button").hide()
   }
 });
 
