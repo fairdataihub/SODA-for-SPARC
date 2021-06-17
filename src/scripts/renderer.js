@@ -981,7 +981,6 @@ var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
-    maxTags: 5,
   });
 
 var otherFundingInput = document.getElementById("ds-other-funding"),
