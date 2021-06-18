@@ -8,32 +8,8 @@ var headersArrSubjects = [];
 var headersArrSamples = [];
 
 function showForm(type, editBoolean) {
-  if (subjectsTableData.length > 1) {
-    var subjectsDropdownOptions = {};
-    for (var i=1; i<subjectsTableData.length;i++) {
-      subjectsDropdownOptions[subjectsTableData[i][0]] = subjectsTableData[i][0]
-    }
-    if (!editBoolean) {
-      // prompt users if they want to import entries from previous sub_ids
-      Swal.fire({
-        title: 'Would you like to re-use information from previous subject(s)?',
-        showCancelButton: true,
-        cancelButtonText: `No, start fresh!`,
-        cancelButtonColor: "#f44336",
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Yes!'
-      }).then((boolean) => {
-        if (boolean.isConfirmed) {
-          promptImportPrevInfo(subjectsDropdownOptions, null);
-        } else {
-          clearAllSubjectFormFields(subjectsFormDiv);
-        }
-      })
-    }
-  } else {
-    if (type !== "edit") {
-      clearAllSubjectFormFields(subjectsFormDiv);
-    }
+  if (type !== "edit") {
+    clearAllSubjectFormFields(subjectsFormDiv);
   }
   subjectsFormDiv.style.display = "flex"
   $("#create_subjects-tab").removeClass("show");
@@ -79,34 +55,6 @@ function showFormSamples(type, editBoolean) {
   $("#footer-div-samples").css("display", "none");
   $("#btn-add-custom-field-samples").show();
   $("#sidebarCollapse").prop("disabled", "true")
-}
-
-// helper function to show Import entries from prev sub_ids popup
-async function promptImportPrevInfo(object1, object2) {
-  // show dropdown with existing sub_ids
-  const { value: previousEntry } = await Swal.fire({
-    title: 'Choose a previous subject:',
-    input: 'select',
-    inputOptions: object1,
-    inputValidator: (value) => {
-      return new Promise((resolve) => {
-        if (value === '') {
-          resolve(`Please select a subject!`)
-        } else {
-          resolve()
-        }
-      })
-    },
-    inputPlaceholder: 'Select here',
-    showCancelButton: true,
-    cancelButtonText: 'Cancel',
-    confirmButtonText: 'Confirm'
-  });
-  if (previousEntry) {
-      populateForms(previousEntry, "import");
-  } else {
-      clearAllSubjectFormFields(subjectsFormDiv);
-  }
 }
 
 var selectHTML = "<div><select id='previous-subject' class='swal2-input' onchange='displayPreviousSample()'></select><select style='display:none' id='previous-sample' class='swal2-input' onchange='confirmSample()'></select></div>"
@@ -349,7 +297,7 @@ function clearAllSubjectFormFields(form) {
 }
 
 // add new subject ID to JSON file (main file to be converted to excel)
- function addSubjectIDToJSON(subjectID) {
+function addSubjectIDToJSON(subjectID) {
   if ($("#form-add-a-subject").length > 0) {
     // first, populate RRID
     if ($("#bootbox-subject-strain").val() !== "") {
@@ -385,10 +333,47 @@ function clearAllSubjectFormFields(form) {
           })
           res.on("end", () => {
             readXMLScicrunch(data, "subjects");
+            // if (!returnRes) {
+              //   Swal.fire({
+              //     title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
+              //     text: "Would you like to stay here and edit the strain?",
+              //     showCancelButton: true,
+              //     heightAuto: false,
+              //     backdrop: "rgba(0,0,0, 0.4)",
+              //     confirmButtonText: 'Yes',
+              //     cancelButtonText: "No, ignore",
+              //   }).then((result) => {
+              //   if (result.isConfirmed) {
+              //     return
+              //   } else {
+              //     addTheRestSubjectEntriesToJSON()
+              //     $("#bootbox-subject-strain-RRID").val("");
+              //   }
+              // });
+            // } else {
+              // Swal.fire(`Successfully retrieved the RRID for "${strain}".`, "", "success")
+            // }
+            // if (rridFailureContinue) {
+            //   return
+            // } else {
+            //   addTheRestSubjectEntriesToJSON()
+            //   $("#bootbox-subject-strain-RRID").val("");
+            // }
           })
         } else {
-          $("#bootbox-subject-strain-RRID").val("");
           addTheRestSubjectEntriesToJSON()
+          $("#bootbox-subject-strain-RRID").val("");
+          // if (!returnRes) {
+          //   Swal.fire({
+          //     title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
+          //     text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
+          //     showCancelButton: true,
+          //     heightAuto: false,
+          //     backdrop: "rgba(0,0,0, 0.4)",
+          //     confirmButtonText: 'Yes',
+          //     cancelButtonText: "No, ignore",
+          //   })
+          // }
         }
       })
     } else {
@@ -1727,6 +1712,7 @@ function readXMLScicrunch(xml, type) {
   var xmlDoc = parser.parseFromString(xml,"text/xml");
   var resultList = xmlDoc.getElementsByTagName('name');       // THE XML TAG NAME.
   var rrid = "";
+  // var res;
   for (var i = 0; i < resultList.length; i++) {
     if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
       rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
@@ -1736,16 +1722,21 @@ function readXMLScicrunch(xml, type) {
   if (type === "subjects") {
     if (rrid !== "") {
       $("#bootbox-subject-strain-RRID").val(rrid)
+      // res = true
     } else {
       $("#bootbox-subject-strain-RRID").val("")
+      // res = false
     }
     addTheRestSubjectEntriesToJSON()
   } else {
     if (rrid !== "") {
       $("#bootbox-sample-strain-RRID").val(rrid)
+      // res = true
     } else {
       $("#bootbox-sample-strain-RRID").val("")
+      // res = false
     }
     addTheRestSampleEntriesToJSON()
   }
+  // return res
 };
