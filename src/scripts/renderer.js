@@ -44,7 +44,6 @@ var datasetStructureJSONObj = {
   type: "",
 };
 
-
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -7787,12 +7786,12 @@ function initiate_generate() {
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
 
         if ("bf-dataset-selected" in sodaJSONObj) {
-          show_curation_shortcut()
+          show_curation_shortcut();
         } else if ("generate-dataset" in sodaJSONObj) {
           if ("destination" in sodaJSONObj["generate-dataset"]) {
             let destination = sodaJSONObj["generate-dataset"]["destination"];
             if (destination == "bf") {
-              show_curation_shortcut()
+              show_curation_shortcut();
             }
           }
         }
@@ -7810,7 +7809,8 @@ const show_curation_shortcut = () => {
     icon: "success",
     reverseButtons: reverseSwalButtons,
     showCancelButton: true,
-    text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
+    text:
+      "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
@@ -7819,11 +7819,11 @@ const show_curation_shortcut = () => {
     },
   }).then((result) => {
     if (result.isConfirmed) {
-        $("#disseminate_dataset_tab").click();
-        $("#share_curation_team_btn").click();
+      $("#disseminate_dataset_tab").click();
+      $("#share_curation_team_btn").click();
     }
   });
-}
+};
 
 const get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
