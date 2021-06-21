@@ -7363,6 +7363,8 @@ document
             message += error_message_folders;
           }
 
+          // $("#save-progress-btn").hide();
+
           if (message) {
             message += "Would you like to continue?";
             message = "<div style='text-align: left'>" + message + "</div>";
@@ -7389,7 +7391,8 @@ document
               } else {
                 console.log("Stop");
                 // then show the sidebar again
-                forceActionSidebar("show");
+                // forceActionSidebar("show");
+                // $("#save-progress-btn").show();
                 document.getElementById(
                   "para-please-wait-new-curate"
                 ).innerHTML = "Return to make changes";
@@ -7779,12 +7782,47 @@ function initiate_generate() {
         log.info("Done curate track");
         console.log("Done curate track");
         // then show the sidebar again
-        forceActionSidebar("show");
+        // forceActionSidebar("show");
         clearInterval(timerProgress);
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
+
+        if ("bf-dataset-selected" in sodaJSONObj) {
+          show_curation_shortcut()
+        } else if ("generate-dataset" in sodaJSONObj) {
+          if ("destination" in sodaJSONObj["generate-dataset"]) {
+            let destination = sodaJSONObj["generate-dataset"]["destination"];
+            if (destination == "bf") {
+              show_curation_shortcut()
+            }
+          }
+        }
       }
     }
   }
+}
+
+const show_curation_shortcut = () => {
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "No. I'll do it later",
+    confirmButtonText: "Yes, I want to share it",
+    heightAuto: false,
+    icon: "success",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+        $("#disseminate_dataset_tab").click();
+        $("#share_curation_team_btn").click();
+    }
+  });
 }
 
 const get_num_files_and_folders = (dataset_folders) => {

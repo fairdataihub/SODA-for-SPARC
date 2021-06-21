@@ -30,7 +30,7 @@ function handleSectionTrigger(event) {
   const sectionId = `${event.target.dataset.section}-section`;
   document.getElementById(sectionId).classList.add("is-shown");
 
-  considerNextBtn()
+  considerNextBtn();
 
   // Save currently active button in localStorage
   const buttonId = event.target.getAttribute("id");
@@ -40,13 +40,12 @@ function handleSectionTrigger(event) {
 function considerNextBtn() {
   if (nextBtnDisabledVariable !== undefined) {
     if (nextBtnDisabledVariable === true) {
-      $("#nextBtn").prop("disabled", true)
+      $("#nextBtn").prop("disabled", true);
     } else {
-      $("#nextBtn").prop("disabled", false)
+      $("#nextBtn").prop("disabled", false);
     }
   }
 }
-
 
 function showMainContent() {
   document.querySelector(".js-nav").classList.add("is-shown");
@@ -94,3 +93,17 @@ if (sectionId) {
   // activateDefaultSection()
   //displayAbout()
 }
+
+// Set of functions for the footer shortcuts between sections
+// only required for when switching between section where the menu needs to change
+// TO DISCUSS - add these for all return buttons and pulse the button on return maybe?
+// Should help if people lose their position
+$("#shortcut-navigate-to-organize").on("click", () => {
+  $("#prepare_dataset_tab").click();
+  $("#organize_dataset_btn").click();
+});
+
+$("#shortcut-navigate-to-create_submission").on("click", () => {
+  $("#prepare_metadata_tab").click();
+  $("#create_submission_btn").click();
+});

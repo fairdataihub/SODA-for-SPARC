@@ -1419,32 +1419,45 @@ function create_child_node(
       }
     }
     if ("files" in oldFormatNode) {
-      for (var [key, value] of Object.entries(oldFormatNode["files"])) {
-        if (key !== undefined || value !== undefined) {
-          if (
-            [
-              ".png",
-              ".PNG",
-              ".xls",
-              ".xlsx",
-              ".pdf",
-              ".txt",
-              ".jpeg",
-              ".JPEG",
-              ".csv",
-              ".CSV",
-              ".DOC",
-              ".DOCX",
-              ".doc",
-              ".docx",
-            ].includes(path.parse(key).ext)
-          ) {
-            nodeType = "file " + path.parse(key).ext.slice(1);
-          } else {
-            nodeType = "file other";
-          }
-          if ("action" in oldFormatNode["files"][key]) {
-            if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+      if (oldFormatNode["files"] != undefined)
+      {
+        for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+          if (key !== undefined || value !== undefined) {
+            if (
+              [
+                ".png",
+                ".PNG",
+                ".xls",
+                ".xlsx",
+                ".pdf",
+                ".txt",
+                ".jpeg",
+                ".JPEG",
+                ".csv",
+                ".CSV",
+                ".DOC",
+                ".DOCX",
+                ".doc",
+                ".docx",
+              ].includes(path.parse(key).ext)
+            ) {
+              nodeType = "file " + path.parse(key).ext.slice(1);
+            } else {
+              nodeType = "file other";
+            }
+            if ("action" in oldFormatNode["files"][key]) {
+              if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+                var new_node = {
+                  text: key,
+                  state: { disabled: true },
+                  type: nodeType,
+                };
+                newFormatNode["children"].push(new_node);
+                newFormatNode["children"].sort((a, b) =>
+                  a.text > b.text ? 1 : -1
+                );
+              }
+            } else {
               var new_node = {
                 text: key,
                 state: { disabled: true },
@@ -1455,16 +1468,6 @@ function create_child_node(
                 a.text > b.text ? 1 : -1
               );
             }
-          } else {
-            var new_node = {
-              text: key,
-              state: { disabled: true },
-              type: nodeType,
-            };
-            newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) =>
-              a.text > b.text ? 1 : -1
-            );
           }
         }
       }
