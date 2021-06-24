@@ -95,7 +95,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
         .find(".option-card")
         .hasClass("checked") ||
       $("#input-destination-generate-dataset-locally")[0].placeholder !==
-      "Browse here"
+        "Browse here"
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
@@ -519,9 +519,9 @@ const nextPrev = (n) => {
     for (var highLevelFol in datasetStructureJSONObj["folders"]) {
       if (
         "manifest.xlsx" in
-        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+          datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
         datasetStructureJSONObj["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"] === true
       ) {
         delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
@@ -538,7 +538,8 @@ const nextPrev = (n) => {
   ) {
     Swal.fire({
       icon: "warning",
-      text: "The current dataset folder is empty. Are you sure you want to continue?",
+      text:
+        "The current dataset folder is empty. Are you sure you want to continue?",
       showCancelButton: true,
       cancelButtonText: "No",
       confirmButtonText: "Continue",
@@ -813,18 +814,19 @@ const raiseWarningGettingStarted = (ev) => {
       !(
         JSON.stringify(sodaJSONObj) === "{}" ||
         JSON.stringify(sodaJSONObj) ===
-        '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}' ||
+          '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}' ||
         JSON.stringify(sodaJSONObj) ===
-        '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}' ||
+          '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}' ||
         JSON.stringify(sodaJSONObj) ===
-        '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":{ "type": "local","local-path":""}}' ||
+          '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":{ "type": "local","local-path":""}}' ||
         JSON.stringify(sodaJSONObj) ===
-        '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
+          '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
       )
     ) {
       Swal.fire({
         icon: "warning",
-        text: "This will reset your progress so far. Are you sure you want to continue?",
+        text:
+          "This will reset your progress so far. Are you sure you want to continue?",
         showCancelButton: "Cancel",
         focusCancel: true,
         confirmButtonText: "Continue",
@@ -897,8 +899,9 @@ async function transitionSubQuestions(
       $(target).addClass("show");
       // auto-scroll to bottom of div
       if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-        document.getElementById(parentDiv).scrollTop =
-          document.getElementById(parentDiv).scrollHeight;
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
       }
     }, delay);
   }
@@ -976,7 +979,7 @@ async function transitionSubQuestions(
   if (
     !(
       ev.getAttribute("data-next") ===
-      "Question-generate-dataset-existing-files-options" &&
+        "Question-generate-dataset-existing-files-options" &&
       target.classList.contains("prev")
     )
   ) {
@@ -996,8 +999,9 @@ async function transitionSubQuestions(
         $(ev).siblings().hide();
         // auto-scroll to bottom of div
         if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-          document.getElementById(parentDiv).scrollTop =
-            document.getElementById(parentDiv).scrollHeight;
+          document.getElementById(
+            parentDiv
+          ).scrollTop = document.getElementById(parentDiv).scrollHeight;
         }
       }, delay);
     }
@@ -1005,15 +1009,17 @@ async function transitionSubQuestions(
       $(ev).hide();
       // auto-scroll to bottom of div
       if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-        document.getElementById(parentDiv).scrollTop =
-          document.getElementById(parentDiv).scrollHeight;
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
       }
     }, delay);
   }
 
   // auto-scroll to bottom of div
-  document.getElementById(parentDiv).scrollTop =
-    document.getElementById(parentDiv).scrollHeight;
+  document.getElementById(parentDiv).scrollTop = document.getElementById(
+    parentDiv
+  ).scrollHeight;
 
   // when we hit the last question under Step 1, hide and disable Next button
   if (ev.getAttribute("data-next") === "Question-getting-started-final") {
@@ -1188,7 +1194,9 @@ const create_json_object = (sodaJSONObj) => {
       })["Sheet1"];
     } else if (fs.existsSync(temp_file_path_csv)) {
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_csv;
-      sodaJSONObj["starting-point"][folder]["manifest"] = csvToJson
+      sodaJSONObj["starting-point"][folder][
+        "manifest"
+      ] = csvToJson
         .parseSubArray(";", ",")
         .getJsonFromCsv(sodaJSONObj["starting-point"][folder]["path"]);
     }
@@ -1264,29 +1272,29 @@ const recursive_structure_create = (
           ]) {
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-              item
+                item
               ]["A"] == relative_path
             ) {
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+                  item
                 ]["C"] != undefined
               ) {
                 manifest_object["description"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                    item
                   ]["C"];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+                  item
                 ]["E"] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                    item
                   ]["E"];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -1304,29 +1312,29 @@ const recursive_structure_create = (
           ]) {
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-              item
+                item
               ]["filename"] == relative_path
             ) {
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+                  item
                 ]["description"] != undefined
               ) {
                 manifest_object["description"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                    item
                   ]["description"];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+                  item
                 ]["AdditionalMetadata"] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                    item
                   ]["AdditionalMetadata"];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -1561,7 +1569,7 @@ async function transitionSubQuestionsButton(
   if (
     !(
       ev.getAttribute("data-next") ===
-      "Question-generate-dataset-existing-files-options" &&
+        "Question-generate-dataset-existing-files-options" &&
       target.classList.contains("prev")
     )
   ) {
@@ -1603,8 +1611,9 @@ async function transitionSubQuestionsButton(
   }
 
   // auto-scroll to bottom of div
-  document.getElementById(parentDiv).scrollTop =
-    document.getElementById(parentDiv).scrollHeight;
+  document.getElementById(parentDiv).scrollTop = document.getElementById(
+    parentDiv
+  ).scrollHeight;
 
   if (ev.getAttribute("data-next") === "Question-getting-started-final") {
     if ($("#existing-bf").is(":checked")) {
@@ -1699,8 +1708,9 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
       $(target).addClass("show");
       // auto-scroll to bottom of div
       if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-        document.getElementById(parentDiv).scrollTop =
-          document.getElementById(parentDiv).scrollHeight;
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
       }
     }, delay);
   }
@@ -1712,8 +1722,9 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
         $(ev).siblings().hide();
         // auto-scroll to bottom of div
         if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-          document.getElementById(parentDiv).scrollTop =
-            document.getElementById(parentDiv).scrollHeight;
+          document.getElementById(
+            parentDiv
+          ).scrollTop = document.getElementById(parentDiv).scrollHeight;
         }
       }, delay);
     }
@@ -1721,8 +1732,9 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
       $(ev).hide();
       // auto-scroll to bottom of div
       if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-        document.getElementById(parentDiv).scrollTop =
-          document.getElementById(parentDiv).scrollHeight;
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
       }
     }, delay);
   } else {
@@ -1772,8 +1784,9 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
 
   // auto-scroll to bottom of div
   if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
-    document.getElementById(parentDiv).scrollTop =
-      document.getElementById(parentDiv).scrollHeight;
+    document.getElementById(parentDiv).scrollTop = document.getElementById(
+      parentDiv
+    ).scrollHeight;
   }
 }
 
@@ -2179,24 +2192,19 @@ const updateJSONStructureDSstructure = () => {
 // Step 4: Metadata files
 /// function to obtain metadata file paths from UI and then populate JSON obj
 const updateJSONStructureMetadataFiles = () => {
-  var submissionFilePath = document.getElementById(
-    "para-submission-file-path"
-  ).innerHTML;
+  var submissionFilePath = document.getElementById("para-submission-file-path")
+    .innerHTML;
   var dsDescriptionFilePath = document.getElementById(
     "para-ds-description-file-path"
   ).innerHTML;
-  var subjectsFilePath = document.getElementById(
-    "para-subjects-file-path"
-  ).innerHTML;
-  var samplesFilePath = document.getElementById(
-    "para-samples-file-path"
-  ).innerHTML;
-  var readmeFilePath = document.getElementById(
-    "para-readme-file-path"
-  ).innerHTML;
-  var changesFilePath = document.getElementById(
-    "para-changes-file-path"
-  ).innerHTML;
+  var subjectsFilePath = document.getElementById("para-subjects-file-path")
+    .innerHTML;
+  var samplesFilePath = document.getElementById("para-samples-file-path")
+    .innerHTML;
+  var readmeFilePath = document.getElementById("para-readme-file-path")
+    .innerHTML;
+  var changesFilePath = document.getElementById("para-changes-file-path")
+    .innerHTML;
   var invalidOptionsList = [
     "Please drag a file!",
     "Please only import SPARC metadata files!",
@@ -2271,8 +2279,9 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
       if (
         dataset_folder["files"][file]["action"].includes("recursive_deleted")
       ) {
-        let index =
-          dataset_folder["files"][file]["action"].indexOf("recursive_deleted");
+        let index = dataset_folder["files"][file]["action"].indexOf(
+          "recursive_deleted"
+        );
         dataset_folder["files"][file]["action"].splice(index, 1);
       }
       if (dataset_folder["files"][file]["action"].includes("deleted")) {
@@ -2292,10 +2301,9 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
             "recursive_deleted"
           )
         ) {
-          let index =
-            dataset_folder["folders"][folder]["action"].indexOf(
-              "recursive_deleted"
-            );
+          let index = dataset_folder["folders"][folder]["action"].indexOf(
+            "recursive_deleted"
+          );
           dataset_folder["folders"][folder]["action"].splice(index, 1);
         }
         if (dataset_folder["folders"][folder]["action"].includes("deleted")) {
@@ -2732,9 +2740,9 @@ const saveSODAJSONProgress = (progressFileName) => {
   for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
     if (
       "manifest.xlsx" in
-      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-      "manifest.xlsx"
+        "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
@@ -2980,7 +2988,8 @@ $("#edit_banner_image_button").click(async () => {
           console.log(`An error happened: ${img_src}`);
           Swal.fire({
             icon: "error",
-            text: "An error occured when importing the image. Please try again later.",
+            text:
+              "An error occured when importing the image. Please try again later.",
             showConfirmButton: "OK",
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
@@ -3000,7 +3009,8 @@ $("#edit_banner_image_button").click(async () => {
 
         Swal.fire({
           icon: "error",
-          text: "An error occured when importing the image. Please try again later.",
+          text:
+            "An error occured when importing the image. Please try again later.",
           showConfirmButton: "OK",
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -3020,7 +3030,8 @@ $("#edit_banner_image_button").click(async () => {
 
       Swal.fire({
         icon: "error",
-        text: "An error occured when importing the image. Please try again later.",
+        text:
+          "An error occured when importing the image. Please try again later.",
         showConfirmButton: "OK",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,

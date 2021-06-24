@@ -31,10 +31,9 @@ function handleSectionTrigger(event) {
   document.getElementById(sectionId).classList.add("is-shown");
 
   if (sectionId == "main_tabs-section") {
-    forceActionSidebar("show")
-  }
-  else {
-    forceActionSidebar("hide")
+    forceActionSidebar("show");
+  } else {
+    forceActionSidebar("hide");
   }
 
   considerNextBtn();
