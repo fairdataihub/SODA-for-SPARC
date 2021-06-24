@@ -41,8 +41,7 @@ const disseminateDataset = (option) => {
       icon: "warning",
       reverseButtons: reverseSwalButtons,
       showCancelButton: true,
-      text:
-        "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+      text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -73,8 +72,7 @@ const disseminateDataset = (option) => {
       icon: "warning",
       reverseButtons: reverseSwalButtons,
       showCancelButton: true,
-      text:
-        "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
+      text: "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -172,7 +170,7 @@ $(document).ready(function () {
   // });
 
   checkAirtableStatus();
-  
+
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
       $("#generate-submission-spinner").show();
@@ -728,9 +726,8 @@ $("#reupload-DDD").click(function () {
   // append to parentDiv
   document.getElementById("create_submission-tab").appendChild(target);
   // auto-scroll to bottom of div
-  document.getElementById(
-    "create_submission-tab"
-  ).scrollTop = document.getElementById("create_submission-tab").scrollHeight;
+  document.getElementById("create_submission-tab").scrollTop =
+    document.getElementById("create_submission-tab").scrollHeight;
   $("#div-cancel-reupload-DDD").show();
 });
 // 2. clone import DDD button
@@ -740,8 +737,9 @@ $("#button-import-milestone-reupload").click(function () {
   ).style.display = "none";
   document.getElementById("para-milestone-document-info-reupload").innerHTML =
     "";
-  var filepath = document.getElementById("input-milestone-select-reupload")
-    .placeholder;
+  var filepath = document.getElementById(
+    "input-milestone-select-reupload"
+  ).placeholder;
   if (filepath === "Select a file") {
     document.getElementById("para-milestone-document-info-reupload").innerHTML =
       "<span style='color: red ;'>" +
@@ -985,9 +983,10 @@ function addNewRow(table) {
   var rowcount = document.getElementById(table).rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
-  var currentRow = document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
-  ];
+  var currentRow =
+    document.getElementById(table).rows[
+      document.getElementById(table).rows.length - 1
+    ];
   if (table === "doi-table") {
     if (
       $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
@@ -1244,9 +1243,10 @@ manually type Contributor names instead of choosing from the Airtable retrieved 
 function cancelOtherContributors(table) {
   var rowcount = document.getElementById(table).rows.length;
   var rowIndex = rowcount - 1;
-  var currentRow = document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
-  ];
+  var currentRow =
+    document.getElementById(table).rows[
+      document.getElementById(table).rows.length - 1
+    ];
   currentRow.cells[0].outerHTML =
     "<td class='grab'><select id='ds-description-contributor-list-last-" +
     rowIndex +
@@ -1267,9 +1267,10 @@ function cancelOtherContributors(table) {
 function addOtherContributors(table) {
   var rowcount = document.getElementById(table).rows.length;
   var rowIndex = rowcount;
-  var currentRow = document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
-  ];
+  var currentRow =
+    document.getElementById(table).rows[
+      document.getElementById(table).rows.length - 1
+    ];
   currentRow.cells[0].outerHTML =
     "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-" +
     rowIndex +
@@ -1342,9 +1343,10 @@ function ddNoAirtableMode(action) {
 function resetDDUI(table) {
   var rowcount = document.getElementById(table).rows.length;
   var rowIndex = rowcount - 1;
-  var currentRow = document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
-  ];
+  var currentRow =
+    document.getElementById(table).rows[
+      document.getElementById(table).rows.length - 1
+    ];
 
   $("#SPARC-Award-raw-input-div-dd").css("display", "none");
   $("#dd-description-raw-contributor-list-last-1").css("display", "none");

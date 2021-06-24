@@ -31,9 +31,10 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
         if (
           dataset_folder["files"][file]["action"].includes("recursive_deleted")
         ) {
-          let index = dataset_folder["files"][file]["action"].indexOf(
-            "recursive_deleted"
-          );
+          let index =
+            dataset_folder["files"][file]["action"].indexOf(
+              "recursive_deleted"
+            );
           dataset_folder["files"][file]["action"].splice(index, 1);
         }
       }
@@ -62,9 +63,10 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
               "recursive_deleted"
             )
           ) {
-            let index = dataset_folder["folders"][folder]["action"].indexOf(
-              "recursive_deleted"
-            );
+            let index =
+              dataset_folder["folders"][folder]["action"].indexOf(
+                "recursive_deleted"
+              );
             dataset_folder["folders"][folder]["action"].splice(index, 1);
           }
         }
@@ -103,8 +105,7 @@ function delFolder(
       Swal.fire({
         title: `Restore ${type}`,
         icon: "warning",
-        text:
-          "You can only restore one file at a time. Please select a single file for restoration.",
+        text: "You can only restore one file at a time. Please select a single file for restoration.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -120,8 +121,7 @@ function delFolder(
       Swal.fire({
         title: `Restore ${type}`,
         icon: "warning",
-        text:
-          "The parent folder for this item has been marked for deletion. Please restore that folder to recover this item.",
+        text: "The parent folder for this item has been marked for deletion. Please restore that folder to recover this item.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -167,8 +167,7 @@ function delFolder(
             Swal.fire({
               title: `Unable to restore ${type}`,
               icon: "warning",
-              text:
-                "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
+              text: "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showClass: {
@@ -201,10 +200,12 @@ function delFolder(
         // Done using a loop to avoid a case where the same file number exists
         if (itemToRestore_new_key in myPath[type]) {
           myPath[type][itemToRestore]["action"].push("renamed");
-          itemToRestore_new_key_file_name = path.parse(itemToRestore_new_key)
-            .name;
-          itemToRestore_new_key_file_ext = path.parse(itemToRestore_new_key)
-            .ext;
+          itemToRestore_new_key_file_name = path.parse(
+            itemToRestore_new_key
+          ).name;
+          itemToRestore_new_key_file_ext = path.parse(
+            itemToRestore_new_key
+          ).ext;
           file_number = 1;
           while (true) {
             itemToRestore_potential_new_key =
@@ -738,8 +739,7 @@ function addFilesfunction(
     if (slashCount === 1) {
       Swal.fire({
         icon: "error",
-        html:
-          "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
+        html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
@@ -838,7 +838,6 @@ function addFilesfunction(
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-
   }
 }
 

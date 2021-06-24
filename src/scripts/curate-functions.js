@@ -1419,8 +1419,7 @@ function create_child_node(
       }
     }
     if ("files" in oldFormatNode) {
-      if (oldFormatNode["files"] != undefined)
-      {
+      if (oldFormatNode["files"] != undefined) {
         for (var [key, value] of Object.entries(oldFormatNode["files"])) {
           if (key !== undefined || value !== undefined) {
             if (
