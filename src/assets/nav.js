@@ -21,16 +21,23 @@ function handleSectionTrigger(event) {
   if (event.detail.target) {
     let previous_section = `${event.detail.target.dataset.section}-section`;
     document.getElementById(previous_section).classList.add("is-shown");
+    forceActionSidebar("show");
     return;
   }
 
   event.target.classList.add("is-selected");
-
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   document.getElementById(sectionId).classList.add("is-shown");
 
-  if (sectionId == "main_tabs-section") {
+  let showSidebarSections = [
+    "main_tabs-section",
+    "getting_started-section",
+    "guided_mode-section",
+    "help-section",
+  ];
+
+  if (showSidebarSections.includes(sectionId)) {
     forceActionSidebar("show");
   } else {
     forceActionSidebar("hide");

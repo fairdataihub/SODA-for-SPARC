@@ -491,7 +491,7 @@ const nextPrev = (n) => {
       },
     });
     // $("#sidebarCollapse").click();
-    forceActionSidebar("show");
+    // forceActionSidebar("show");
     document.body.dispatchEvent(event);
     if ($("#nextBtn").prop("disabled") === true) {
       nextBtnDisabledVariable = true;
@@ -2614,7 +2614,7 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
       if (start_over) {
         $("#organize_dataset_btn").click();
       } else {
-        forceActionSidebar("show");
+        // forceActionSidebar("show");
       }
     } else {
       globalGettingStarted1stQuestionBool = false;
