@@ -6,6 +6,7 @@ node_modules
 build/api
 pysodadist
 dist
+src/Users
 semantic
 semantic.json
 

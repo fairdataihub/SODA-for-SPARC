@@ -7206,14 +7206,16 @@ document
 
 // function to hide the sidebar and disable the sidebar expand button
 function forceActionSidebar(action) {
-  if (action === "hide") {
-    if (!$("#main-nav").hasClass("active")) {
-      $("#sidebarCollapse").click();
-    }
+  if (action === "show") {
+    $("#sidebarCollapse").removeClass("active");
+    $("#main-nav").removeClass("active");
+    // if (!$("#main-nav").hasClass("active")) {
+    //   $("#sidebarCollapse").click();
+    // }
     // $("#sidebarCollapse").prop("disabled", true);
   } else {
-    $("#sidebarCollapse").toggleClass("active");
-    $("#main-nav").toggleClass("active");
+    $("#sidebarCollapse").addClass("active");
+    $("#main-nav").addClass("active");
     // $("#sidebarCollapse").prop("disabled", false);
   }
 }
@@ -7557,10 +7559,6 @@ function initiate_generate() {
           }
         }
 
-        if (dataset_destination == "Pennsieve") {
-          show_curation_shortcut();
-        }
-
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -7575,6 +7573,10 @@ function initiate_generate() {
           dataset_name,
           high_level_folder_num
         );
+      }
+
+      if (dataset_destination == "Pennsieve") {
+        show_curation_shortcut();
       }
 
       ipcRenderer.send(

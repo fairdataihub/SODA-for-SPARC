@@ -26,7 +26,8 @@
       "**/*",
       "!pysoda/",
       "!build/",
-      "!api.spec"
+      "!api.spec",
+      "!Users/"
     ],
     "win": {
       "target": "nsis",

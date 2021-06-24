@@ -30,6 +30,13 @@ function handleSectionTrigger(event) {
   const sectionId = `${event.target.dataset.section}-section`;
   document.getElementById(sectionId).classList.add("is-shown");
 
+  if (sectionId == "main_tabs-section") {
+    forceActionSidebar("show")
+  }
+  else {
+    forceActionSidebar("hide")
+  }
+
   considerNextBtn();
 
   // Save currently active button in localStorage

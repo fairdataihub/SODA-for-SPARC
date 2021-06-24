@@ -95,7 +95,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
         .find(".option-card")
         .hasClass("checked") ||
       $("#input-destination-generate-dataset-locally")[0].placeholder !==
-        "Browse here"
+      "Browse here"
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
@@ -490,7 +490,8 @@ const nextPrev = (n) => {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
       },
     });
-    $("#sidebarCollapse").click();
+    // $("#sidebarCollapse").click();
+    forceActionSidebar("show");
     document.body.dispatchEvent(event);
     if ($("#nextBtn").prop("disabled") === true) {
       nextBtnDisabledVariable = true;
@@ -518,9 +519,9 @@ const nextPrev = (n) => {
     for (var highLevelFol in datasetStructureJSONObj["folders"]) {
       if (
         "manifest.xlsx" in
-          datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
         datasetStructureJSONObj["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"] === true
       ) {
         delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
@@ -812,13 +813,13 @@ const raiseWarningGettingStarted = (ev) => {
       !(
         JSON.stringify(sodaJSONObj) === "{}" ||
         JSON.stringify(sodaJSONObj) ===
-          '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}' ||
+        '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}' ||
         JSON.stringify(sodaJSONObj) ===
-          '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}' ||
+        '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}' ||
         JSON.stringify(sodaJSONObj) ===
-          '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":{ "type": "local","local-path":""}}' ||
+        '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":{ "type": "local","local-path":""}}' ||
         JSON.stringify(sodaJSONObj) ===
-          '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
+        '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
       )
     ) {
       Swal.fire({
@@ -975,7 +976,7 @@ async function transitionSubQuestions(
   if (
     !(
       ev.getAttribute("data-next") ===
-        "Question-generate-dataset-existing-files-options" &&
+      "Question-generate-dataset-existing-files-options" &&
       target.classList.contains("prev")
     )
   ) {
@@ -1263,29 +1264,29 @@ const recursive_structure_create = (
           ]) {
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+              item
               ]["A"] == relative_path
             ) {
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["C"] != undefined
               ) {
                 manifest_object["description"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["C"];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["E"] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["E"];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -1303,29 +1304,29 @@ const recursive_structure_create = (
           ]) {
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                item
+              item
               ]["filename"] == relative_path
             ) {
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["description"] != undefined
               ) {
                 manifest_object["description"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["description"];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                  item
+                item
                 ]["AdditionalMetadata"] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
-                    item
+                  item
                   ]["AdditionalMetadata"];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -1560,7 +1561,7 @@ async function transitionSubQuestionsButton(
   if (
     !(
       ev.getAttribute("data-next") ===
-        "Question-generate-dataset-existing-files-options" &&
+      "Question-generate-dataset-existing-files-options" &&
       target.classList.contains("prev")
     )
   ) {
@@ -2731,9 +2732,9 @@ const saveSODAJSONProgress = (progressFileName) => {
   for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
     if (
       "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+      "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
