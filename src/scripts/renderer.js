@@ -7583,6 +7583,11 @@ function initiate_generate() {
             }
           }
         }
+
+        if (dataset_destination == "Pennsieve") {
+          show_curation_shortcut();
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -7784,17 +7789,6 @@ function initiate_generate() {
         // forceActionSidebar("show");
         clearInterval(timerProgress);
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
-
-        if ("bf-dataset-selected" in sodaJSONObj) {
-          show_curation_shortcut();
-        } else if ("generate-dataset" in sodaJSONObj) {
-          if ("destination" in sodaJSONObj["generate-dataset"]) {
-            let destination = sodaJSONObj["generate-dataset"]["destination"];
-            if (destination == "bf") {
-              show_curation_shortcut();
-            }
-          }
-        }
       }
     }
   }
