@@ -83,6 +83,7 @@ client.invoke("echo", "server ready", (error, res) => {
 
     //Load Default/global Pennsieve account if available
     updateBfAccountList();
+    checkNewAppVersion(); // Added so that version will be displayed for new users
   }
 });
 
