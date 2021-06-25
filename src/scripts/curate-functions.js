@@ -870,7 +870,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                 bfAccountOptions[key_name] = key_name;
                 defaultBfAccount = key_name;
                 defaultBfDataset = "Select dataset";
-                updateBfAccountList();
                 client.invoke(
                   "api_bf_account_details",
                   key_name,
@@ -911,6 +910,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
 
                       showHideDropdownButtons("account", "show");
                       confirm_click_account_function();
+                      updateBfAccountList();
                     }
                   }
                 );
