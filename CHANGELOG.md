@@ -4,6 +4,20 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v4.5.0 - 2021-06-03
+
+### Feature additions:
+- All input and message boxes should now follow the call to action button ordering that is specified in thier OS application guidelines.
+- Added additional navigation buttons that should allow a user to not have to return to the main menu when a certain function is complete. This workflow follows the step by step guide found [here](https://github.com/bvhpatel/SODA/wiki/Organize-and-submit-SPARC-datasets-with-SODA).
+
+### Bug fixes:
+- Fixed a bug where certain message input boxes would take accidental clicks outside the clickable area and clear the input
+- The dataset_description file will no longer enforce a 5 keyword limit.
+- Fixed a bug where the siebar would open up when exiting a datset curation workflow.
+
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
 ## v4.4.0 - 2021-06-03
 
 ### Feature additions:

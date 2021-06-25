@@ -1468,11 +1468,11 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .need-help-div {
   width: 100%;
-  border-bottom: 3px solid #b80d49;
+  border-bottom: 5px solid #b80d49;
   margin-bottom: -5px;
   display: flex;
   flex-direction: row;
-  height: 40px;
+  /* height: 40px; */
 }
 
 .need-help-div h2 {
@@ -1481,7 +1481,7 @@ body.swal2-shown > [aria-hidden="true"] {
   margin-right: 0;
   color: #222;
   font-weight: 600;
-  padding: 10px;
+  /* padding: 10px; */
   border: 1px solid transparent;
   text-align: left;
 }
@@ -1494,7 +1494,7 @@ body.swal2-shown > [aria-hidden="true"] {
 .need-help-div a {
   text-decoration: none;
   width: 30%;
-  padding-top: 12px;
+  /* padding-top: 12px; */
   border-bottom: none !important;
   text-align: right;
 }

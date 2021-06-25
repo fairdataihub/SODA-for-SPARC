@@ -798,7 +798,8 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Use my API key instead",
         confirmButtonText: "Connect to Pennsieve",
-        focusConfirm: false,
+        showCloseButton: true,
+        focusConfirm: true,
         heightAuto: false,
         reverseButtons: reverseSwalButtons,
         showCancelButton: false,
@@ -869,7 +870,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                 bfAccountOptions[key_name] = key_name;
                 defaultBfAccount = key_name;
                 defaultBfDataset = "Select dataset";
-                updateBfAccountList();
                 client.invoke(
                   "api_bf_account_details",
                   key_name,
@@ -910,6 +910,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
 
                       showHideDropdownButtons("account", "show");
                       confirm_click_account_function();
+                      updateBfAccountList();
                     }
                   }
                 );
@@ -987,6 +988,8 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         focusCancel: true,
         focusConfirm: false,
         heightAuto: false,
+        allowOutsideClick: false,
+        allowEscapeKey: true,
         html: datasetPermissionDiv,
         reverseButtons: reverseSwalButtons,
         showCloseButton: true,
@@ -1416,32 +1419,44 @@ function create_child_node(
       }
     }
     if ("files" in oldFormatNode) {
-      for (var [key, value] of Object.entries(oldFormatNode["files"])) {
-        if (key !== undefined || value !== undefined) {
-          if (
-            [
-              ".png",
-              ".PNG",
-              ".xls",
-              ".xlsx",
-              ".pdf",
-              ".txt",
-              ".jpeg",
-              ".JPEG",
-              ".csv",
-              ".CSV",
-              ".DOC",
-              ".DOCX",
-              ".doc",
-              ".docx",
-            ].includes(path.parse(key).ext)
-          ) {
-            nodeType = "file " + path.parse(key).ext.slice(1);
-          } else {
-            nodeType = "file other";
-          }
-          if ("action" in oldFormatNode["files"][key]) {
-            if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+      if (oldFormatNode["files"] != undefined) {
+        for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+          if (key !== undefined || value !== undefined) {
+            if (
+              [
+                ".png",
+                ".PNG",
+                ".xls",
+                ".xlsx",
+                ".pdf",
+                ".txt",
+                ".jpeg",
+                ".JPEG",
+                ".csv",
+                ".CSV",
+                ".DOC",
+                ".DOCX",
+                ".doc",
+                ".docx",
+              ].includes(path.parse(key).ext)
+            ) {
+              nodeType = "file " + path.parse(key).ext.slice(1);
+            } else {
+              nodeType = "file other";
+            }
+            if ("action" in oldFormatNode["files"][key]) {
+              if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+                var new_node = {
+                  text: key,
+                  state: { disabled: true },
+                  type: nodeType,
+                };
+                newFormatNode["children"].push(new_node);
+                newFormatNode["children"].sort((a, b) =>
+                  a.text > b.text ? 1 : -1
+                );
+              }
+            } else {
               var new_node = {
                 text: key,
                 state: { disabled: true },
@@ -1452,16 +1467,6 @@ function create_child_node(
                 a.text > b.text ? 1 : -1
               );
             }
-          } else {
-            var new_node = {
-              text: key,
-              state: { disabled: true },
-              type: nodeType,
-            };
-            newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) =>
-              a.text > b.text ? 1 : -1
-            );
           }
         }
       }

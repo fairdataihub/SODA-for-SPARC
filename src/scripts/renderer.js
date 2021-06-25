@@ -44,7 +44,6 @@ var datasetStructureJSONObj = {
   type: "",
 };
 
-
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -84,6 +83,7 @@ client.invoke("echo", "server ready", (error, res) => {
 
     //Load Default/global Pennsieve account if available
     updateBfAccountList();
+    checkNewAppVersion(); // Added so that version will be displayed for new users
   }
 });
 
@@ -235,8 +235,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     if (!connection_response) {
       Swal.fire({
         icon: "error",
-        text:
-          "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
+        text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "I understand",
@@ -254,10 +253,8 @@ const run_pre_flight_checks = async (check_update = true) => {
       if (account_present) {
         // Check for an installed Pennsieve agent
         await wait(500);
-        [
-          agent_installed_response,
-          agent_version_response,
-        ] = await check_agent_installed();
+        [agent_installed_response, agent_version_response] =
+          await check_agent_installed();
         // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
         if (!agent_installed_response) {
           Swal.fire({
@@ -272,10 +269,8 @@ const run_pre_flight_checks = async (check_update = true) => {
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              [
-                browser_download_url,
-                latest_agent_version,
-              ] = await get_latest_agent_version();
+              [browser_download_url, latest_agent_version] =
+                await get_latest_agent_version();
               shell.openExternal(browser_download_url);
               shell.openExternal(
                 "https://docs.pennsieve.io/docs/the-pennsieve-agent"
@@ -286,15 +281,12 @@ const run_pre_flight_checks = async (check_update = true) => {
         } else {
           await wait(500);
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          [
-            browser_download_url,
-            latest_agent_version,
-          ] = await check_agent_installed_version(agent_version_response);
+          [browser_download_url, latest_agent_version] =
+            await check_agent_installed_version(agent_version_response);
           if (browser_download_url != "") {
             Swal.fire({
               icon: "warning",
-              text:
-                "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+              text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
@@ -310,10 +302,8 @@ const run_pre_flight_checks = async (check_update = true) => {
             }).then(async (result) => {
               if (result.isConfirmed) {
                 // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
-                [
-                  browser_download_url,
-                  latest_agent_version,
-                ] = await get_latest_agent_version();
+                [browser_download_url, latest_agent_version] =
+                  await get_latest_agent_version();
                 shell.openExternal(browser_download_url);
                 shell.openExternal(
                   "https://docs.pennsieve.io/docs/the-pennsieve-agent"
@@ -351,8 +341,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
         Swal.fire({
           icon: "warning",
-          text:
-            "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
@@ -505,10 +494,8 @@ const check_agent_installed_version = async (agent_version) => {
   await wait(800);
   let latest_agent_version = "";
   let browser_download_url = "";
-  [
-    browser_download_url,
-    latest_agent_version,
-  ] = await get_latest_agent_version();
+  [browser_download_url, latest_agent_version] =
+    await get_latest_agent_version();
   if (latest_agent_version != agent_version) {
     notyf.dismiss(notification);
     notyf.open({
@@ -981,7 +968,6 @@ var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
-    maxTags: 5,
   });
 
 var otherFundingInput = document.getElementById("ds-other-funding"),
@@ -1322,8 +1308,9 @@ function importMilestoneDocument() {
     document.getElementById("para-milestone-document-info-long").style.display =
       "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
-    var filepath = document.getElementById("input-milestone-select")
-      .placeholder;
+    var filepath = document.getElementById(
+      "input-milestone-select"
+    ).placeholder;
     if (filepath === "Browse here") {
       document.getElementById("para-milestone-document-info").innerHTML =
         "<span style='color: red ;'>" +
@@ -3217,7 +3204,6 @@ bfSubmitDatasetBtn.addEventListener("click", async () => {
         });
         log.info("Completed submit function");
         console.log("Completed submit function");
-        console.log(res);
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -3395,8 +3381,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
       } else {
         Swal.fire({
           icon: "warning",
-          text:
-            "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+          text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showCancelButton: true,
@@ -3694,8 +3679,7 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
       $("body").addClass("waiting");
       Swal.fire({
         title: "Image conversion in progress!",
-        html:
-          "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
         timer: 4000,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -3987,8 +3971,7 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   datasetPermissionStatusPI.innerHTML = "";
   Swal.fire({
     icon: "warning",
-    text:
-      "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
+    text: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
     heightAuto: false,
     showCancelButton: true,
     cancelButtonText: "No",
@@ -4227,8 +4210,7 @@ function submitReviewDatasetCheck(res) {
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     Swal.fire({
       icon: "warning",
-      text:
-        "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
+      text: "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -4253,8 +4235,7 @@ function submitReviewDatasetCheck(res) {
     // ipcRenderer.send("warning-publish-dataset");
     Swal.fire({
       icon: "warning",
-      text:
-        "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
+      text: "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -4353,8 +4334,7 @@ function withdrawDatasetCheck(res) {
   } else {
     Swal.fire({
       icon: "warning",
-      text:
-        "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
+      text: "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -5113,12 +5093,10 @@ var highLevelFolders = [
   "protocol",
 ];
 var highLevelFolderToolTip = {
-  code:
-    "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
+  code: "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
   derivative:
     "<b>derivative</b>: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
-  docs:
-    "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
+  docs: "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
   source:
     "<b>source</b>: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
   primary:
@@ -5260,8 +5238,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   } else {
     Swal.fire({
       icon: "error",
-      text:
-        "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
+      text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       confirmButtonText: "OK",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -6014,8 +5991,7 @@ function addFoldersfunction(folderArray, currentLocation) {
   if (slashCount === 1) {
     Swal.fire({
       icon: "error",
-      text:
-        "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
+      text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
@@ -6126,8 +6102,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         Swal.fire({
           icon: "error",
-          html:
-            "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
+          html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
@@ -6175,8 +6150,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         Swal.fire({
           icon: "error",
-          text:
-            "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
+          text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
@@ -6938,8 +6912,7 @@ function addDetailsForFile(ev) {
     Swal.fire({
       icon: "warning",
       title: "Adding additional metadata for files",
-      text:
-        "Metadata will be modified for all files in the folder. Would you like to continue?",
+      text: "Metadata will be modified for all files in the folder. Would you like to continue?",
       showCancelButton: true,
       focusCancel: true,
       heightAuto: false,
@@ -7127,8 +7100,7 @@ ipcRenderer.on(
           } else {
             Swal.fire({
               icon: "warning",
-              text:
-                "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+              text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
@@ -7234,21 +7206,27 @@ document
 
 // function to hide the sidebar and disable the sidebar expand button
 function forceActionSidebar(action) {
-  if (action === "hide") {
-    if (!$("#main-nav").hasClass("active")) {
-      $("#sidebarCollapse").click();
-    }
-    $("#sidebarCollapse").prop("disabled", true);
+  if (action === "show") {
+    $("#sidebarCollapse").removeClass("active");
+    $("#main-nav").removeClass("active");
+    // if (!$("#main-nav").hasClass("active")) {
+    //   $("#sidebarCollapse").click();
+    // }
+    // $("#sidebarCollapse").prop("disabled", true);
   } else {
-    $("#sidebarCollapse").toggleClass("active");
-    $("#main-nav").toggleClass("active");
-    $("#sidebarCollapse").prop("disabled", false);
+    $("#sidebarCollapse").addClass("active");
+    $("#main-nav").addClass("active");
+    // $("#sidebarCollapse").prop("disabled", false);
   }
 }
 
 /// MAIN CURATE NEW ///
 
 const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
+const divGenerateProgressBar = document.getElementById(
+  "div-new-curate-meter-progress"
+);
+const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
 document
   .getElementById("button-generate")
@@ -7261,7 +7239,7 @@ document
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
       "flex";
-    forceActionSidebar("hide");
+    // forceActionSidebar("hide");
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
@@ -7288,6 +7266,8 @@ document
         }
       }
     }
+
+    generateProgressBar.value = 0;
 
     document.getElementById("para-new-curate-progress-bar-status").innerHTML =
       "Please wait while we verify a few things...";
@@ -7351,18 +7331,18 @@ document
           error_folders = res[1];
 
           if (error_files.length > 0) {
-            var error_message_files = backend_to_frontend_warning_message(
-              error_files
-            );
+            var error_message_files =
+              backend_to_frontend_warning_message(error_files);
             message += error_message_files;
           }
 
           if (error_folders.length > 0) {
-            var error_message_folders = backend_to_frontend_warning_message(
-              error_folders
-            );
+            var error_message_folders =
+              backend_to_frontend_warning_message(error_folders);
             message += error_message_folders;
           }
+
+          // $("#save-progress-btn").hide();
 
           if (message) {
             message += "Would you like to continue?";
@@ -7390,7 +7370,8 @@ document
               } else {
                 console.log("Stop");
                 // then show the sidebar again
-                forceActionSidebar("show");
+                // forceActionSidebar("show");
+                // $("#save-progress-btn").show();
                 document.getElementById(
                   "para-please-wait-new-curate"
                 ).innerHTML = "Return to make changes";
@@ -7433,11 +7414,6 @@ const delete_imported_manifest = () => {
     }
   }
 };
-
-const divGenerateProgressBar = document.getElementById(
-  "div-new-curate-meter-progress"
-);
-const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
 let file_counter = 0;
 let folder_counter = 0;
@@ -7582,6 +7558,7 @@ function initiate_generate() {
             }
           }
         }
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -7596,6 +7573,10 @@ function initiate_generate() {
           dataset_name,
           high_level_folder_num
         );
+      }
+
+      if (dataset_destination == "Pennsieve") {
+        show_curation_shortcut();
       }
 
       ipcRenderer.send(
@@ -7780,13 +7761,37 @@ function initiate_generate() {
         log.info("Done curate track");
         console.log("Done curate track");
         // then show the sidebar again
-        forceActionSidebar("show");
+        // forceActionSidebar("show");
         clearInterval(timerProgress);
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }
 }
+
+const show_curation_shortcut = () => {
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "No. I'll do it later",
+    confirmButtonText: "Yes, I want to share it",
+    heightAuto: false,
+    icon: "success",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $("#disseminate_dataset_tab").click();
+      $("#share_curation_team_btn").click();
+    }
+  });
+};
 
 const get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
@@ -7867,9 +7872,10 @@ function importPennsieveMetadataFiles(
       sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
     ) {
       // update Json object with the restored object
-      let index = sodaJSONObj["metadata-files"][deleted_file_name][
-        "action"
-      ].indexOf("deleted");
+      let index =
+        sodaJSONObj["metadata-files"][deleted_file_name]["action"].indexOf(
+          "deleted"
+        );
       sodaJSONObj["metadata-files"][deleted_file_name]["action"].splice(
         index,
         1
@@ -8458,8 +8464,7 @@ function addAirtableAccountInsideSweetalert() {
     Swal.fire({
       icon: "warning",
       title: "Connect to Airtable",
-      text:
-        "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
       heightAuto: false,
       showCancelButton: true,
       focusCancel: true,
@@ -8540,8 +8545,7 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text:
-                "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
+              text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
@@ -8572,8 +8576,7 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text:
-                "Failed to connect to Airtable. Please check your API Key and try again!",
+              text: "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
@@ -8605,8 +8608,7 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text:
-                "Failed to connect to Airtable. Please check your API Key and try again!",
+              text: "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
