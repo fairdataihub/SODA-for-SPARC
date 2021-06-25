@@ -3204,7 +3204,6 @@ bfSubmitDatasetBtn.addEventListener("click", async () => {
         });
         log.info("Completed submit function");
         console.log("Completed submit function");
-        console.log(res);
         ipcRenderer.send(
           "track-event",
           "Success",
