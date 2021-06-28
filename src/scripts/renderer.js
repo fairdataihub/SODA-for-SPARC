@@ -47,7 +47,7 @@ var datasetStructureJSONObj = {
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-let client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000 });
+let client = new zerorpc.Client({ timeout: 300000});
 client.connect("tcp://127.0.0.1:4242");
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
@@ -1426,7 +1426,10 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
       // $("#generate-subjects-spinner").css("display", "none");
       // $("#button-generate-subjects").prop("disabled", false)
     } else {
-        client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
+      // new client that has a longer timeout
+      let clientLongTimeout = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000});
+      clientLongTimeout.connect("tcp://127.0.0.1:4242");
+      clientLongTimeout.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
           if (error) {
             var emessage = userError(error);
             log.error(error);
