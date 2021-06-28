@@ -759,6 +759,36 @@
   display: inline-block;
 } */
 
+.bi.bi-trash.custom-fields:hover {
+  animation: shakingeffect 0.4s;
+}
+
+@keyframes shakingeffect {
+  0% {
+      transform: translateY(0px) rotate(0deg);
+  }
+  20% {
+      transform: translateY(-2px) rotate(-4deg);
+  }
+  40% {
+      transform: translateY(-2px) rotate(-2deg);
+  }
+  60% {
+      transform: translateY(2px) rotate(4deg);
+  }
+  80% {
+      transform: translateY(2px) rotate(2deg);
+  }
+  100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+}
+
+.ui.positive.button.active {
+  background: #e7f1ff !important;
+  color: #0c63e4 !important;
+}
+
 .individual-question {
   display: none;
   visibility: visible;
@@ -921,6 +951,31 @@
 
 .ui.form .grouped.fields > label {
   text-align: center;
+}
+
+.ui.input.modified>input {
+  border-bottom: 1px solid rgba(34,36,38,.15) !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-radius: 0 !important;
+}
+
+.ui.input.modified>input:focus {
+  border-bottom: 1px solid var(--color-light-green) !important;
+}
+
+.ui.styled.accordion .title {
+  background: #fff !important
+}
+
+.ui.styled.accordion .title.active {
+  background: #e7f1ff !important;
+  color: #0c63e4 !important
+}
+
+.ui.styled.accordion .accordion .title, .ui.styled.accordion .title {
+  color: rgba(0,0,0,.8) !important
 }
 
 .invalid {
@@ -1255,15 +1310,16 @@
   justify-content: flex-end !important;
 } */
 
-.swal2-deny {
+/* .swal2-deny {
+  width: 120px !important;
   border: 1px solid #dbdbdb !important;
   color: #363636 !important;
   font-weight: 400 !important;
   /* width: 140px !important; */
-  font-size: 14px !important;
+  /* font-size: 14px !important;
   padding: 8px 10px !important;
   background: #fff !important;
-}
+} */
 
 /* .swal2-cancel {
   width: 120px !important;
@@ -1343,7 +1399,7 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 /* .swal2-header {
-  margin-bottom: 15px !important; 
+  margin-bottom: 15px !important;
 } */
 
 .jstree-default .jstree-themeicon-custom {
@@ -1532,4 +1588,27 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .jstree-default > .jstree-container-ul > .jstree-node {
   overflow: auto !important;
+}
+
+.popover-tooltip.subjects-form {
+    padding: 0;
+    font-size: 16px;
+}
+.popover-tooltip.subjects-form div{
+  min-width:180px
+}
+.no_results_species{
+  line-height: 1.5;
+  padding: 3px 5px;
+  background: pink;
+  cursor: pointer
+}
+
+.confirm-disabled {
+  pointer-events: none;
+  background: #fff;
+  color: #cccccc;
+  border: 1px solid #cccccc;
+  opacity: 0.8;
+  transition: all 0.25s linear;
 }

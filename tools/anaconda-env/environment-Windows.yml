@@ -1,4 +1,4 @@
-name: env-electron-python
+name: env-pennsieve
 channels:
 - defaults
 - conda-forge
@@ -17,3 +17,4 @@ dependencies:
   - configparser == 4.0.2
   - python-docx == 0.8.10
   - xlrd == 1.2.0
+  - biopython == 1.78

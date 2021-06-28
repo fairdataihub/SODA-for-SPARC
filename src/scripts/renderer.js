@@ -47,7 +47,7 @@ var datasetStructureJSONObj = {
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-let client = new zerorpc.Client({ timeout: 300000 });
+let client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000 });
 client.connect("tcp://127.0.0.1:4242");
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
@@ -764,6 +764,9 @@ const validateSODAProgressBar = document.getElementById(
 
 // Generate dataset //
 
+var subjectsTableData = []
+var samplesTableData = []
+
 const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
 
@@ -959,10 +962,12 @@ var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
 var awardFileName = "awards.json";
 var milestoneFileName = "milestones.json";
 var airtableConfigFileName = "airtable-config.json";
+var protocolConfigFileName = "protocol-config.json";
 var awardPath = path.join(metadataPath, awardFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
+var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -1389,7 +1394,238 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
     $("#button-import-milestone").hide();
   }
 });
-//
+
+// generate subjects file
+ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
+  // $("#generate-subjects-spinner").css("display", "block");
+  // $("#button-generate-subjects").prop("disabled", true)
+  Swal.fire({
+    title: "Generating the subjects.xlsx file",
+    html:
+      "Please wait...",
+    timer: 30000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {
+  });
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0], filename);
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+      Swal.fire(
+        'Metadata file already exists',
+        `${emessage}`,
+        'error'
+      )
+      // $("#generate-subjects-spinner").css("display", "none");
+      // $("#button-generate-subjects").prop("disabled", false)
+    } else {
+        client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            // $("#generate-subjects-spinner").css("display", "none");
+            // $("#button-generate-subjects").prop("disabled", false)
+            Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error");
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Create subjects.xlsx",
+              subjectsTableData
+            );
+          } else {
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Create subjects.xlsx",
+              subjectsTableData
+            );
+            // $("#generate-subjects-spinner").css("display", "none");
+            // $("#button-generate-subjects").prop("disabled", false)
+            Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
+          }
+        })
+     }
+  }
+})
+
+// generate samples file
+ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
+  Swal.fire({
+    title: "Generating the samples.xlsx file",
+    html:
+      "Please wait...",
+    timer: 30000,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {
+  });
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0], filename);
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+      Swal.fire(
+        'Metadata file already exists',
+        `${emessage}`,
+        'error'
+      )
+    } else {
+       client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Create samples.xlsx",
+              samplesTableData
+            );
+            Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error");
+          } else {
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Create samples.xlsx",
+              samplesTableData
+            );
+            Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
+          }
+        })
+    }
+  }
+})
+
+// import Primary folder
+ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
+  if (primaryFolderPath.length > 0) {
+    importPrimaryFolderSubjects(primaryFolderPath[0])
+    // $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
+    // $("#div-confirm-primary-folder-import").show()
+    // $($("#div-confirm-primary-folder-import").find("button")[0]).show();
+  } else {
+    // $("#primary-folder-destination-input").prop("placeholder", "Browse here")
+    // $("#div-confirm-primary-folder-import").find("button").hide()
+  }
+});
+ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
+  if (primaryFolderPath.length > 0) {
+    importPrimaryFolderSamples(primaryFolderPath[0])
+    // $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
+    // $("#div-confirm-primary-folder-import-samples").show()
+    // $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
+  } else {
+    // $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
+    // $("#div-confirm-primary-folder-import-samples").find("button").hide()
+  }
+});
+
+function transformImportedExcelFile(result) {
+  for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "nan");
+    for (var ind of indices) {
+      column[ind] = "";
+    }
+  }
+  return result
+}
+
+function getAllIndexes(arr, val) {
+    var indexes = [], i = -1;
+    while ((i = arr.indexOf(val, i+1)) != -1){
+        indexes.push(i);
+    }
+    return indexes;
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSubjectsFileToDataframe(filePath) {
+  var fieldSubjectEntries = [];
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    fieldSubjectEntries.push(field.name.toLowerCase())
+  }
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "subjects", filePath, fieldSubjectEntries,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+        if (res.length > 1) {
+          subjectsTableData = transformImportedExcelFile(res);
+          loadDataFrametoUI()
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            ""
+          );
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            error
+          );
+          Swal.fire("Couldn't load existing subjects.xlsx file", "Please make sure there are at least a header row in the subjects file.", "error")
+        }
+      }
+    }
+  );
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSamplesFileToDataframe(filePath) {
+  var fieldSampleEntries = [];
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    fieldSampleEntries.push(field.name.toLowerCase())
+  }
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "samples", filePath, fieldSampleEntries,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
+        if (res.length > 1) {
+          samplesTableData = transformImportedExcelFile(res);
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
+          loadDataFrametoUISamples()
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
+          Swal.fire("Couldn't load existing samples.xlsx file", "Please make sure there are at least a header row in the samples file.", "error")
+        }
+      }
+    }
+  );
+}
 
 // load and parse json file
 function parseJson(path) {
@@ -1418,6 +1654,170 @@ function createMetadataDir() {
 }
 
 createMetadataDir();
+
+function createSpecimenTypeAutocomplete(id) {
+  var autoCompleteJS3 = new autoComplete({
+    selector: "#"+id,
+    data: {
+      src: ["whole organism", "whole organ", "fluid specimen", "tissue", "nerve", "slice", "section", "cryosection", "cell", "nucleus", "nucleic acid", "slide", "whole mount"]
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#"+id).value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"],
+      // condition: () => true,
+    },
+    resultItem: {
+      destination: "#"+id,
+      highlight: {
+        render: true
+      }
+    },
+    resultsList: {
+      maxResults: 5,
+    }
+  });
+}
+
+function createSpeciesAutocomplete(id) {
+  var autoCompleteJS2 = new autoComplete({
+    selector: "#"+id,
+    data: {
+      src: [{"Canis lupus familiaris": "dogs, beagle dogs",
+    "Mustela putorius furo": "ferrets, black ferrets",
+    "Mus sp.": "mice",
+    "Mus musculus": "mouse, house mouse",
+    "Rattus norvegicus": "Norway rats",
+    "Rattus": "rats",
+    "Sus scrofa": "pigs, swine, wild boar",
+    "Sus scrofa domesticus": "domestic pigs",
+    "Homo sapiens": "humans",
+    "Felis catus": "domestic cat"}
+    ],
+      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus","Homo sapiens", "Rattus", "Felis catus", "Rattus norvegicus"]
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.key;
+      document.querySelector("#"+id).value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"],
+      // condition: () => true,
+    },
+    resultItem: {
+      destination: "#"+id,
+      highlight: {
+        render: true
+      },
+      content: (data, element) => {
+         // Modify Results Item Style
+         element.style = "display: flex; justify-content: space-between;";
+         // Modify Results Item Content
+         element.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+           ${data.match}</span>
+           <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
+         ${data.key}</span>`;
+       }
+    },
+    resultsList: {
+      maxResults: 5,
+      noResults: (list, query) => {
+        // Create "No Results" message element
+          const message = document.createElement("div");
+          // Add class to the created element
+          message.setAttribute("class", "no_results_species");
+          // Add an onclick event
+          message.setAttribute("onclick", "loadTaxonomySpecies('"+query+"', '"+id+"')");
+          // Add message text content
+          message.innerHTML = `<span>Find the scientific name for "${query}"</span>`;
+          // Append message element to the results list
+          list.appendChild(message);
+      },
+    }
+  });
+}
+
+// function createAgeCategoryAutocomplete(id) {
+//   var optionList = ["Select", "2 cell stage", "4 cell stage", "8 cell stage", "blastula stage", "cleavage stage", "copepodite stage", "crustacean post-larval stage", "cysticercus stage", "death stage",
+//         "embryo stage", "fully formed stage", "gastrula stage", "glaucothoe stage", "infant stage", "juvenile stage", "larval stage", "late adult stage", "late embryonic stage", "nauplius stage", "neonate stage",
+//         "neurula stage", "nursing stage", "organogenesis stage", "perinatal stage", "pharyngula stage", "post-embryonic stage", "post-juvenile adult stage", "prime adult stage", "pupal stage", "sexually immature stage",
+//         "trochophore stage", "veliger stage", "zoea stage", "zygote stage"]
+//   var select = document.getElementById(id);
+//   for (var option of optionList) {
+//     addOption(select, option, option);
+//   }
+//   initializeBootstrapSelect("#"+id, "show");
+// }
+
+function createStrain(id) {
+  var autoCompleteJS4 = new autoComplete({
+    selector: "#"+id,
+    data: {
+      src: ['Wistar', 'Th.Cre+CHR2', 'Th.Cre- CHR2', 'Yucatan', 'Th.Cre+ CHR2', 'Th. Cre+ CHR2', 'Th.Cre-CHR2', 'C57/B6J', 'C57 BL/6J', 'mixed background', 'CHR2 TH Cre-', 'TH.Cre- CHR2', "Sprague-Dawley"]
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#"+id).value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"],
+    },
+    resultItem: {
+      destination: "#"+id,
+      highlight: {
+        render: true
+      }
+    },
+    resultsList: {
+      maxResults: 5,
+    }
+  });
+}
+
+$(document).ready(function() {
+  createSpeciesAutocomplete("bootbox-subject-species");
+  createSpeciesAutocomplete("bootbox-sample-species");
+  createStrain("bootbox-sample-strain")
+  createStrain("bootbox-subject-strain")
+  // createAgeCategoryAutocomplete("bootbox-subject-age-category");
+  // createAgeCategoryAutocomplete("bootbox-sample-age-category");
+  createSpecimenTypeAutocomplete("bootbox-sample-specimen-type");
+})
+
+async function loadTaxonomySpecies(commonName, destinationInput) {
+  Swal.fire({
+    title: "Finding the scientific name for " + commonName + "...",
+    html:
+      "Please wait...",
+    timer: 1500,
+    heightAuto: false,
+    allowOutsideClick: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {
+  });
+  await client.invoke(
+    "api_load_taxonomy_species",
+    [commonName],
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        if (Object.keys(res).length === 0) {
+          Swal.fire("Cannot find a scientific name for '"+commonName+"'", "Make sure you enter a correct species name.", "error")
+        } else {
+          $("#"+destinationInput).val(res[commonName]["ScientificName"])
+        }
+      }
+    }
+  );
+}
 
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {

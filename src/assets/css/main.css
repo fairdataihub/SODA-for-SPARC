@@ -227,6 +227,9 @@ button[data-id="bf_list_users_pi"] {
   font-weight: bold;
   height: 60px;
   padding: 8px 10px !important;
+  text-align: center;
+  vertical-align: middle;
+  margin-top:;
 }
 
 .modal-footer {

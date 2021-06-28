@@ -991,18 +991,21 @@ function addNewRow(table) {
     if (
       $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
         .find("input")
-        .val() == ""
+        .val() === "" || $(document.getElementById("doi-table").rows[rowIndex - 1].cells[0])
+          .find("select")
+          .val() === "Select"
     ) {
       $("#para-save-link-status").text("Please enter a link to add!");
     } else {
       $(".doi-helper-buttons").css("display", "inline-flex");
       $(".doi-add-row-button").css("display", "none");
+      $("#select-misc-links").remove();
       // check for unique row id in case users delete old rows and append new rows (same IDs!)
       var newRowIndex = checkForUniqueRowID("row-current-link", rowIndex);
       var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
         "<tr id='row-current-link" +
         newRowIndex +
-        "'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
+        "'><td><select id='select-misc-link' class='form-container-input-bf' onchange='populateProtocolLink(this)' style='font-size:13px;line-height:2;'><option value='Select'>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
         rowIndex +
         ")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
     }
@@ -1147,6 +1150,28 @@ function checkForUniqueRowID(rowID, no) {
   } else {
     no = no + 1;
     return checkForUniqueRowID(rowID, no);
+  }
+}
+
+function populateProtocolLink(ev) {
+  if ($(ev).val() === "Protocol URL or DOI*") {
+    // display dropdown to select protocol titles
+    if ($("#select-misc-links").length > 0) {
+      $("#select-misc-links").css("display", "block")
+    } else {
+      var divElement = '<select id="select-misc-links" class="form-container-input-bf" style="font-size:13px; line-height:2;margin-top: 20px" onchange="autoPopulateProtocolLink(this, \'\', \'dd\')"></select>'
+      $($(ev).parents()[0]).append(divElement);
+      // populate dropdown with protocolResearcherList
+      removeOptions(document.getElementById("select-misc-links"));
+      addOption(document.getElementById("select-misc-links"), "Select protocol title", "Select")
+      for (var key of Object.keys(protocolResearcherList)) {
+        $('#select-misc-links').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
+      }
+    }
+  } else {
+    if ($("#select-misc-links").length > 0) {
+      $("#select-misc-links").css("display", "none")
+    }
   }
 }
 
