@@ -4,7 +4,7 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v4.5.0 - 2021-06-25
+## v4.5.1 - 2021-06-25
 
 ### Bug fixes:
 - Fixed a bug where trying to connect to Pennsieve with an API key alone would return an error.
@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## v4.5.0 - 2021-06-25
 
 ### Feature additions:
-- All input and message boxes should now follow the call to action button ordering that is specified in thier OS application guidelines.
+- All input and message boxes should now follow the call to action button ordering that is specified in their OS application guidelines.
 - Added additional navigation buttons that should allow a user to not have to return to the main menu when a certain function is complete. This workflow follows the step by step guide found [here](https://github.com/bvhpatel/SODA/wiki/Organize-and-submit-SPARC-datasets-with-SODA).
 
 ### Bug fixes:
