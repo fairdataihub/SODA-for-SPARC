@@ -1742,19 +1742,7 @@ function createSpeciesAutocomplete(id) {
   });
 }
 
-// function createAgeCategoryAutocomplete(id) {
-//   var optionList = ["Select", "2 cell stage", "4 cell stage", "8 cell stage", "blastula stage", "cleavage stage", "copepodite stage", "crustacean post-larval stage", "cysticercus stage", "death stage",
-//         "embryo stage", "fully formed stage", "gastrula stage", "glaucothoe stage", "infant stage", "juvenile stage", "larval stage", "late adult stage", "late embryonic stage", "nauplius stage", "neonate stage",
-//         "neurula stage", "nursing stage", "organogenesis stage", "perinatal stage", "pharyngula stage", "post-embryonic stage", "post-juvenile adult stage", "prime adult stage", "pupal stage", "sexually immature stage",
-//         "trochophore stage", "veliger stage", "zoea stage", "zygote stage"]
-//   var select = document.getElementById(id);
-//   for (var option of optionList) {
-//     addOption(select, option, option);
-//   }
-//   initializeBootstrapSelect("#"+id, "show");
-// }
-
-function createStrain(id) {
+function createStrain(id, type) {
   var autoCompleteJS4 = new autoComplete({
     selector: "#"+id,
     data: {
@@ -1763,6 +1751,14 @@ function createStrain(id) {
     onSelection: (feedback) => {
       var selection = feedback.selection.value;
       document.querySelector("#"+id).value = selection;
+      if (type === "subjects") {
+        var strain = $("#bootbox-subject-strain").val();
+      } else if (type === "samples") {
+        var strain = $("#bootbox-sample-strain").val();
+      }
+      if (strain !== "") {
+        populateRRID(strain, type)
+      }
     },
     trigger: {
       event: ["input", "focus"],
@@ -1775,6 +1771,18 @@ function createStrain(id) {
     },
     resultsList: {
       maxResults: 5,
+      noResults: (list, query) => {
+        // Create "No Results" message element
+          const message = document.createElement("div");
+          // Add class to the created element
+          message.setAttribute("class", "no_results_species");
+          // Add an onclick event
+          message.setAttribute("onclick", "populateRRID('"+query+"', '"+type+"')");
+          // Add message text content
+          message.innerHTML = `<span>Check the RRID for "${query}"</span>`;
+          // Append message element to the results list
+          list.appendChild(message);
+      },
     }
   });
 }
@@ -1782,8 +1790,8 @@ function createStrain(id) {
 $(document).ready(function() {
   createSpeciesAutocomplete("bootbox-subject-species");
   createSpeciesAutocomplete("bootbox-sample-species");
-  createStrain("bootbox-sample-strain")
-  createStrain("bootbox-subject-strain")
+  createStrain("bootbox-sample-strain", "samples")
+  createStrain("bootbox-subject-strain", "subjects")
   // createAgeCategoryAutocomplete("bootbox-subject-age-category");
   // createAgeCategoryAutocomplete("bootbox-sample-age-category");
   createSpecimenTypeAutocomplete("bootbox-sample-specimen-type");

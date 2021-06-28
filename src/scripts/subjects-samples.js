@@ -299,87 +299,75 @@ function clearAllSubjectFormFields(form) {
 // add new subject ID to JSON file (main file to be converted to excel)
 function addSubjectIDToJSON(subjectID) {
   if ($("#form-add-a-subject").length > 0) {
-    // first, populate RRID
-    if ($("#bootbox-subject-strain").val() !== "") {
-      var strain = $("#bootbox-subject-strain").val();
-      var rridHostname = "scicrunch.org"
-      var rridInfo = {
-        hostname: rridHostname,
-        port: 443,
-        path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${strain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-        headers: { accept: "text/xml" },
-      };
-      Swal.fire({
-        title: "Adding new subject...",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        html:
-          "Please wait...",
-        timer: 10000,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: true,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      }).then((result) => {
-      });
-      https.get(rridInfo, (res) => {
-        if (res.statusCode === 200) {
-          let data = "";
-          res.setEncoding('utf8');
-          res.on("data", d => {
-            data += d
-          })
-          res.on("end", () => {
-            readXMLScicrunch(data, "subjects");
-            // if (!returnRes) {
-              //   Swal.fire({
-              //     title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-              //     text: "Would you like to stay here and edit the strain?",
-              //     showCancelButton: true,
-              //     heightAuto: false,
-              //     backdrop: "rgba(0,0,0, 0.4)",
-              //     confirmButtonText: 'Yes',
-              //     cancelButtonText: "No, ignore",
-              //   }).then((result) => {
-              //   if (result.isConfirmed) {
-              //     return
-              //   } else {
-              //     addTheRestSubjectEntriesToJSON()
-              //     $("#bootbox-subject-strain-RRID").val("");
-              //   }
-              // });
-            // } else {
-              // Swal.fire(`Successfully retrieved the RRID for "${strain}".`, "", "success")
-            // }
-            // if (rridFailureContinue) {
-            //   return
-            // } else {
-            //   addTheRestSubjectEntriesToJSON()
-            //   $("#bootbox-subject-strain-RRID").val("");
-            // }
-          })
-        } else {
-          addTheRestSubjectEntriesToJSON()
-          $("#bootbox-subject-strain-RRID").val("");
-          // if (!returnRes) {
-          //   Swal.fire({
-          //     title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-          //     text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
-          //     showCancelButton: true,
-          //     heightAuto: false,
-          //     backdrop: "rgba(0,0,0, 0.4)",
-          //     confirmButtonText: 'Yes',
-          //     cancelButtonText: "No, ignore",
-          //   })
-          // }
-        }
+    addTheRestSubjectEntriesToJSON()
+  }
+}
+
+// populate RRID
+function populateRRID(strain, type) {
+  var rridHostname = "scicrunch.org"
+  var rridInfo = {
+    hostname: rridHostname,
+    port: 443,
+    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${strain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
+    headers: { accept: "text/xml" },
+  };
+  Swal.fire({
+    title: `Retrieving RRID for ${strain}...`,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    html:
+      "Please wait...",
+    timer: 10000,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: true,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {
+  });
+  https.get(rridInfo, (res) => {
+    if (res.statusCode === 200) {
+      let data = "";
+      res.setEncoding('utf8');
+      res.on("data", d => {
+        data += d
+      })
+      res.on("end", () => {
+        var returnRes = readXMLScicrunch(data, type);
+        if (!returnRes) {
+            Swal.fire({
+              title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
+              text: "Please make sure you enter the correct strain.",
+              showCancelButton: false,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            })
+            if (type === "subjects") {
+              $("#bootbox-subject-strain-RRID").val("");
+            } else if (type === "samples") {
+              $("#bootbox-sample-strain-RRID").val("");
+            }
+          } else {
+            Swal.fire(`Successfully retrieved the RRID for "${strain}".`, "", "success")
+          }
       })
     } else {
-      addTheRestSubjectEntriesToJSON()
+      if (type === "subjects") {
+        $("#bootbox-subject-strain-RRID").val("");
+      } else if (type === "samples") {
+        $("#bootbox-sample-strain-RRID").val("");
+      }
+      Swal.fire({
+        title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
+        text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
+        showCancelButton: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      })
     }
-  }
+  })
 }
 
 function addTheRestSubjectEntriesToJSON() {
@@ -450,49 +438,7 @@ function addTheRestSampleEntriesToJSON() {
 
 function addSampleIDtoJSON(sampleID) {
   if ($("#form-add-a-sample").length > 0) {
-    // first, populate RRID
-    if ($("#bootbox-sample-strain").val() !== "") {
-      Swal.fire({
-        title: "Adding new sample...",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        html:
-          "Please wait...",
-        timer: 2000,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: true,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      }).then((result) => {
-      });
-      var strain = $("#bootbox-sample-strain").val();
-      var rridHostname = "scicrunch.org"
-      var rridInfo = {
-        hostname: rridHostname,
-        port: 443,
-        path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${strain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-        headers: { accept: "text/xml" },
-      };
-      https.get(rridInfo, (res) => {
-        if (res.statusCode === 200) {
-          let data = "";
-          res.setEncoding('utf8');
-          res.on("data", d => {
-            data += d
-          })
-          res.on("end", () => {
-            readXMLScicrunch(data, "samples");
-          })
-        } else {
-          $("#bootbox-sample-strain-RRID").val("");
-          addTheRestSampleEntriesToJSON()
-        }
-      })
-    } else {
-      addTheRestSampleEntriesToJSON()
-    }
+    addTheRestSampleEntriesToJSON()
   }
 }
 
@@ -1712,7 +1658,7 @@ function readXMLScicrunch(xml, type) {
   var xmlDoc = parser.parseFromString(xml,"text/xml");
   var resultList = xmlDoc.getElementsByTagName('name');       // THE XML TAG NAME.
   var rrid = "";
-  // var res;
+  var res;
   for (var i = 0; i < resultList.length; i++) {
     if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
       rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
@@ -1722,21 +1668,19 @@ function readXMLScicrunch(xml, type) {
   if (type === "subjects") {
     if (rrid !== "") {
       $("#bootbox-subject-strain-RRID").val(rrid)
-      // res = true
+      res = true
     } else {
       $("#bootbox-subject-strain-RRID").val("")
-      // res = false
+      res = false
     }
-    addTheRestSubjectEntriesToJSON()
   } else {
     if (rrid !== "") {
       $("#bootbox-sample-strain-RRID").val(rrid)
-      // res = true
+      res = true
     } else {
       $("#bootbox-sample-strain-RRID").val("")
-      // res = false
+      res = false
     }
-    addTheRestSampleEntriesToJSON()
   }
-  // return res
+  return res
 };
