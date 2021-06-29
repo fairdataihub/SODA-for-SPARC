@@ -1664,6 +1664,8 @@ async function transitionFreeFormMode(ev, currentDiv, parentDiv, button, categor
         $("#table-subjects").css("display", "none")
         // Hide Generate button
         $("#button-generate-subjects").css("display", "none");
+        $("#div-import-primary-folder-sub").show();
+        $("#existing-subjects-file-destination").attr("placeholder", "Browse here")
         // delete custom fields (if any)
         var fieldLength = $(".subjects-form-entry").length;
         if (fieldLength > 18) {

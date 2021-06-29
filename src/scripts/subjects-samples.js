@@ -917,7 +917,6 @@ function importPrimaryFolderSubjects(folderPath) {
     }
     headersArrSubjects.push(field.name);
   }
-  // var folderPath = $("#primary-folder-destination-input").prop("placeholder");
   if (folderPath === "Browse here") {
     Swal.fire("No folder chosen", "Please select a path to your primary folder", "error");
   } else {
@@ -963,8 +962,6 @@ function importPrimaryFolderSubjects(folderPath) {
             loadSubjectsDataToTable();
             $("#table-subjects").show();
             $("#div-import-primary-folder-sub").hide()
-            // $("#div-confirm-primary-folder-import").hide();
-            // $("#button-fake-confirm-primary-folder-load").click();
           } else {
             Swal.fire(
               'Could not load subject IDs from the imported primary folder!',
@@ -1084,6 +1081,7 @@ function loadSubjectsDataToTable() {
   timer: 1200
   })
   $("#button-generate-subjects").css("display", "block");
+  $("#div-import-primary-folder-sub").hide()
 }
 
 function loadSamplesDataToTable() {
