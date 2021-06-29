@@ -1779,7 +1779,7 @@ function createStrain(id, type) {
           // Add an onclick event
           message.setAttribute("onclick", "populateRRID('"+query+"', '"+type+"')");
           // Add message text content
-          message.innerHTML = `<span>Check the RRID for "${query}"</span>`;
+          message.innerHTML = `<span>${query}</span>`;
           // Append message element to the results list
           list.appendChild(message);
       },

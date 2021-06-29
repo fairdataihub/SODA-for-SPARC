@@ -680,7 +680,7 @@ function editSample(ev, sampleID) {
   var newID = $("#bootbox-sample-id").val();
   if (newID === sampleID) {
     for (var i=1; i<samplesTableData.length;i++) {
-      if (samplesTableData[i][0] === sampleID) {
+      if (samplesTableData[i][1] === sampleID) {
         samplesTableData[i] = samplesFileData
         break
       }
@@ -784,7 +784,7 @@ async function copy_current_subject_id(ev) {
       }
     }
   })
-  if (newSubject) {
+  if (newSubject && newSubject !== "") {
     // add new subject_id to JSON
     // 1. copy from current ev.id (the whole array)
     var currentRow = $(ev).parents()[2];
@@ -823,7 +823,7 @@ async function copy_current_sample_id(ev) {
     ]
     }
   })
-  if (newSubSam) {
+  if (newSubSam && newSubSam[0] !== "" & newSubSam[1] !== "") {
     // // add new row to table
     // add new subject_id to JSON
     // 1. copy from current ev.id (the whole array)
