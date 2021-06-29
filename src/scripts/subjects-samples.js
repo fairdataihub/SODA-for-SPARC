@@ -1107,6 +1107,7 @@ function loadSamplesDataToTable() {
     })
   }
   $("#button-generate-samples").css("display", "block");
+  $("#div-import-primary-folder-sam").hide()
 }
 
 function resetSubjects() {

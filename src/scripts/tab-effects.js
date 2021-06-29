@@ -1698,6 +1698,8 @@ async function transitionFreeFormMode(ev, currentDiv, parentDiv, button, categor
         $("#table-samples").css("display", "none")
         // Hide Generate button
         $("#button-generate-samples").css("display", "none");
+        $("#div-import-primary-folder-sam").show();
+        $("#existing-samples-file-destination").attr("placeholder", "Browse here")
         // delete custom fields (if any)
         var fieldLength = $(".samples-form-entry").length;
         if (fieldLength > 21) {
