@@ -850,6 +850,8 @@ async function copy_current_sample_id(ev) {
 }
 
 function updateIndexForTable(table) {
+ // disable table to prevent further row-moving action before the updateIndexForTable finishes
+ $("#table-subjects").css("pointer-events", "none");
  var rowcount = table.rows.length;
  var index = 1;
  for (var i=1;i<rowcount;i++) {
@@ -864,6 +866,32 @@ function updateIndexForTable(table) {
      $("#button-generate-samples").css("display", "none");
    }
  }
+ $("#table-subjects").css("pointer-events", "auto");
+}
+
+function updateOrderIDTable(table, json, type) {
+  var length = table.rows.length;
+  // 1. make a new json object - orderedTableData
+  var orderedTableData = [];
+  // 2. add headers as the first array
+  orderedTableData[0] = json[0];
+  // 3. loop through the UI table by index -> grab subject_id accordingly, find subject_id in json, append that to orderedSubjectsTableData
+  i = 1;
+  for (var index = 1; index < length; index++) {
+    var id = table.rows[index].cells[1].innerText;
+    for (var ind of json.slice(1)) {
+      if (ind[0] === id) {
+        orderedTableData[i] = ind
+        i += 1
+        break
+      }
+    }
+  }
+  if (type === "subjects") {
+    subjectsTableData = orderedTableData
+  } else  if (type === "samples") {
+    samplesTableData = orderedTableData
+  }
 }
 
 function generateSubjects() {

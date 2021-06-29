@@ -2368,8 +2368,11 @@ $(currentConTable).mousedown(function (e) {
       if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
         if (i !== 0) {
           if ($(e.target).closest("tr")[0].rowIndex !== length) {
-            if (i < tr.index()) s.insertAfter(tr);
-            s.insertBefore(tr);
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
             return false;
           }
         }
@@ -2385,6 +2388,90 @@ $(currentConTable).mousedown(function (e) {
   }
   $(document).mousemove(move).mouseup(up);
 });
+
+$("#table-subjects").mousedown(function (e) {
+  var length = document.getElementById("table-subjects").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    // the below functions updates the row index accordingly and update the order of subject IDs in json
+    updateIndexForTable(document.getElementById("table-subjects"));
+    updateOrderIDTable(document.getElementById("table-subjects"), subjectsTableData, "subjects")
+  }
+  $(document).mousemove(move).mouseup(up);
+})
+
+$("#table-samples").mousedown(function (e) {
+  var length = document.getElementById("table-samples").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    // the below functions updates the row index accordingly and update the order of sample IDs in json
+    updateIndexForTable(document.getElementById("table-samples"))
+    updateOrderIDTable(document.getElementById("table-samples"), samplesTableData, "samples")
+  }
+  $(document).mousemove(move).mouseup(up);
+})
 
 ///// grab datalist name and auto-load current description
 const showDatasetDescription = () => {
