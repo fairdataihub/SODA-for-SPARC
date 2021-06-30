@@ -1746,7 +1746,7 @@ function createStrain(id, type) {
   var autoCompleteJS4 = new autoComplete({
     selector: "#"+id,
     data: {
-      src: ['Wistar', 'Th.Cre+CHR2', 'Th.Cre- CHR2', 'Yucatan', 'Th.Cre+ CHR2', 'Th. Cre+ CHR2', 'Th.Cre-CHR2', 'C57/B6J', 'C57 BL/6J', 'mixed background', 'CHR2 TH Cre-', 'TH.Cre- CHR2', "Sprague-Dawley"]
+      src: ['Wistar', 'Yucatan', 'C57/B6J', 'C57 BL/6J', 'mixed background', "Sprague-Dawley"]
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.value;

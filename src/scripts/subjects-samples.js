@@ -305,11 +305,13 @@ function addSubjectIDToJSON(subjectID) {
 
 // populate RRID
 function populateRRID(strain, type) {
-  var rridHostname = "scicrunch.org"
+  var rridHostname = "scicrunch.org";
+  // this is to handle spaces and other special characters in strain name
+  var encodedStrain = encodeURIComponent(strain);
   var rridInfo = {
     hostname: rridHostname,
     port: 443,
-    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${strain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
+    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${encodedStrain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
     headers: { accept: "text/xml" },
   };
   Swal.fire({
@@ -350,6 +352,7 @@ function populateRRID(strain, type) {
               $("#bootbox-sample-strain-RRID").val("");
             }
           } else {
+
             Swal.fire(`Successfully retrieved the RRID for "${strain}".`, "", "success")
           }
       })
