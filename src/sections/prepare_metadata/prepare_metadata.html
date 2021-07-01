@@ -3690,7 +3690,7 @@
                     <th style="width: 10%">
                       <i
                         class="fas fa-info-circle popover-tooltip"
-                        data-content="Click on each symbol (Edit, Delete) to edit/delete a subject id."
+                        data-content="Click on the corresponding button to edit/duplicate/delete a subject."
                         rel="popover"
                         data-placement="right"
                         data-html="true"
@@ -4069,14 +4069,15 @@
                   </div>
                   <div class="demo-controls-body">
                     <div class="ui input modified">
-                      <input type="text" id="bootbox-subject-strain" name="Strain" class="subjects-form-entry" placeholder="Type here...">
+                      <input type="text" id="bootbox-subject-strain" name="Strain" class="subjects-form-entry" placeholder="Type here and select from suggestions...">
                     </div>
                   </div>
                   <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
-                      <i>Example: Sprague-Dawley <i>"
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -4255,7 +4256,7 @@
               <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> protocol title on protocols.io: </font>
+                  <font color="black"> Protocol title on protocols.io: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body" id="subjects-protocol-titles">
@@ -4279,7 +4280,7 @@
               <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> protocol.io links: </font>
+                  <font color="black"> Protocol URL on protocols.io: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body">
@@ -4376,7 +4377,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group. Ignore if RRID is filled in. <br>
+                    data-content="Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group. Ignore if strain is provided.<br>
                     <i>Example: MGI:3851780 <i>"
                     rel="popover"
                     data-placement="right"
@@ -4442,7 +4443,10 @@
         <div class="content">
           <div id="accordian-custom-fields"></div>
           <div class="ui secondary submit button" style="margin: 20px;" onclick="addCustomField('subjects')">
-            Add custom field</div>
+            <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+            Add a field</div>
         </div>
       </div>
 
@@ -4794,7 +4798,7 @@
                     <th style="width: 10%">
                       <i
                         class="fas fa-info-circle popover-tooltip"
-                        data-content="Click on each symbol (Edit, Delete) to edit/delete a pair of subject id and sample id."
+                        data-content="Click on the corresponding button to edit/duplicate/delete a sample."
                         rel="popover"
                         data-placement="right"
                         data-html="true"
@@ -5241,14 +5245,15 @@
                   </div>
                   <div class="demo-controls-body">
                     <div class="ui input modified">
-                      <input type="text" id="bootbox-sample-strain" name="Strain" class="samples-form-entry" placeholder="Type here...">
+                      <input type="text" id="bootbox-sample-strain" name="Strain" class="samples-form-entry" placeholder="Type here and select from suggestions...">
                     </div>
                   </div>
                   <div class="tooltipnew demo-controls-end">
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
-                      <i>Example: Sprague-Dawley <i>"
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
                       rel="popover"
                       data-placement="right"
                       data-html="true"
@@ -5428,7 +5433,7 @@
                   <div class="div-dd-info subjects">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
-                      <font color="black"> protocol title on protocols.io: </font>
+                      <font color="black"> Protocol title on protocols.io: </font>
                     </div>
                     </div>
                     <div class="demo-controls-body" id="samples-protocol-titles">
@@ -5452,7 +5457,7 @@
                   <div class="div-dd-info subjects" style="margin-bottom: 10px">
                     <div class="demo-controls-head">
                       <div style="width: 100%;">
-                      <font color="black"> protocols.io link: </font>
+                      <font color="black"> Protocol URL on protocols.io: </font>
                     </div>
                     </div>
                     <div class="demo-controls-body">
@@ -5568,7 +5573,7 @@
                     <div class="tooltipnew demo-controls-end">
                       <i
                         class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group. Ignore if RRID is filled in. <br>
+                        data-content="Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group. Ignore if strain is provided. <br>
                     <i>Example: MGI:3851780 <i>"
                         rel="popover"
                         data-placement="right"
@@ -5634,26 +5639,29 @@
             <div class="content">
               <div id="accordian-custom-fields-samples"></div>
               <div class="ui secondary submit button" style="margin: 20px;" onclick="addCustomField('samples')">
-                Add custom field
+                <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                Add a field</div>
               </div>
+            </div>
+            <div style="display:flex;flex-direction: row;justify-content: center;margin:40px auto;width:100%;margin-left: 30px">
+              <button class="start-over" onclick="warningBeforeHideForm('samples')"
+              style="width: 120px; background: #fff;color:red;border:1px solid red;display:block">
+              <i class="fas fa-times" style="margin-right: 7px"></i>
+              Cancel</button>
+              <button class="btn_animated" id="btn-edit-sample"
+              style="width: 140px; border: none !important;display:none">
+              <i class="fas fa-check" style="margin-right: 7px"></i>
+              Save </button>
+              <button class="btn_animated" onclick="addSample()" id="btn-add-sample"
+              style="width: 140px; border: none !important;display:inline-block">
+              <i class="fas fa-check" style="margin-right: 7px"></i>
+              Add sample</button>
             </div>
           </div>
 
 
-        <div style="display:flex;flex-direction: row;justify-content: center;margin:40px auto;width:100%;margin-left: 30px">
-          <button class="start-over" onclick="warningBeforeHideForm('samples')"
-          style="width: 120px; background: #fff;color:red;border:1px solid red;display:block">
-          <i class="fas fa-times" style="margin-right: 7px"></i>
-          Cancel</button>
-          <button class="btn_animated" id="btn-edit-sample"
-          style="width: 140px; border: none !important;display:none">
-          <i class="fas fa-check" style="margin-right: 7px"></i>
-          Save </button>
-          <button class="btn_animated" onclick="addSample()" id="btn-add-sample"
-          style="width: 140px; border: none !important;display:inline-block">
-          <i class="fas fa-check" style="margin-right: 7px"></i>
-          Add sample</button>
-        </div>
       </div>
 
       </section>

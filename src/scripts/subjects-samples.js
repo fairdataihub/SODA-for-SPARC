@@ -1073,7 +1073,6 @@ function loadSubjectsDataToTable() {
       text: 'Please add or edit your subject_id(s) in the following subjects table.',
       icon: "success",
       showConfirmButton: true,
-      timer: 1200
     })
   }
   Swal.fire({
@@ -1081,7 +1080,7 @@ function loadSubjectsDataToTable() {
   text: text,
   icon: iconMessage,
   showConfirmButton: showConfirmButtonBool,
-  timer: 1200
+  timer: 1200,
   })
   $("#button-generate-subjects").css("display", "block");
   $("#div-import-primary-folder-sub").hide()
@@ -1245,7 +1244,7 @@ async function addCustomField(type) {
 function addCustomHeader(type, customHeaderValue) {
   var customName = customHeaderValue.trim();
   if (type === "subjects") {
-    var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-'+customName+'" name="'+customName+'"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \''+customName+'\', 0)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>'
+    var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><div class="ui input modified"><input class="subjects-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-'+customName+'" name="'+customName+'"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \''+customName+'\', 0)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>'
     $("#accordian-custom-fields").append(divElement);
     headersArrSubjects.push(customName);
     // add empty entries for all of the other sub_ids to normalize the size of matrix
@@ -1253,7 +1252,7 @@ function addCustomHeader(type, customHeaderValue) {
       subId.push("");
     }
   } else if (type === "samples") {
-    var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><div class="ui input"><input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-'+customName+'" name="'+customName+'"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \''+customName+'\', 1)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>'
+    var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><div class="ui input modified"><input class="samples-form-entry" type="text" placeholder="Type here..." id="bootbox-subject-'+customName+'" name="'+customName+'"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \''+customName+'\', 1)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>'
     $("#accordian-custom-fields-samples").append(divElement);
     headersArrSamples.push(customName);
     // add empty entries for all of the other sub_ids to normalize the size of matrix
@@ -1388,18 +1387,18 @@ function importExistingSubjectsFile() {
         title: "Loading an existing subjects.xlsx file",
         html:
           "Please wait...",
-        timer: 1500,
+        timer: 2000,
         allowEscapeKey: false,
         allowOutsideClick: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: true,
+        timerProgressBar: false,
         didOpen: () => {
           Swal.showLoading();
         },
       }).then((result) => {
       });
-      loadSubjectsFileToDataframe(filePath);
+      setTimeout(loadSubjectsFileToDataframe(filePath), 1000)
     }
   }
 }
@@ -1421,13 +1420,13 @@ function importExistingSamplesFile() {
         timer: 1500,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: true,
+        timerProgressBar: false,
         didOpen: () => {
           Swal.showLoading();
         },
       }).then((result) => {
       });
-      loadSamplesFileToDataframe(filePath);
+      setTimeout(loadSamplesFileToDataframe(filePath), 1000)
     }
   }
 }
@@ -1486,13 +1485,15 @@ function preliminaryProtocolStep() {
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: '<a target="_blank" href="https://www.protocols.io/developers" style="color:#fff;border-bottom:none">Yes, I do</a>',
     cancelButtonText: "No, I don't",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
   }).then((result) => {
   if (result.isConfirmed) {
     setTimeout(function() {
       connectProtocol()
     }, 1500)
   } else {
-    Swal.fire("At this point, SODA cannot help with your protocol information", "Please create an account with protocol.io.", "warning")
+    Swal.fire("Please create an account with protocol.io.", "SODA suggests you create an account with protocols.io first. For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.", "warning")
     }
   })
 }
@@ -1512,6 +1513,8 @@ async function connectProtocol() {
   showCancelButton: true,
   showLoaderOnConfirm: true,
   heightAuto: false,
+  allowEscapeKey: false,
+  allowOutsideClick: false,
   backdrop: "rgba(0,0,0, 0.4)",
   preConfirm: () => {
     var res =
@@ -1590,6 +1593,7 @@ function grabResearcherProtocolList(username, token, type) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showConfirmButton: false,
+              allowOutsideClick: false,
             })
           }
         } else {

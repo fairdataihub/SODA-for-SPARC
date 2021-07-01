@@ -1397,22 +1397,22 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
 
 // generate subjects file
 ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
-  Swal.fire({
-    title: "Generating the subjects.xlsx file",
-    html:
-      "Please wait...",
-    timer: 30000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {
-  });
   if (dirpath.length > 0) {
+    Swal.fire({
+      title: "Generating the subjects.xlsx file",
+      html:
+        "Please wait...",
+      timer: 30000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    }).then((result) => {
+    });
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
       var emessage = "File '" + filename + "' already exists in " + dirpath[0];
@@ -1453,22 +1453,22 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
 
 // generate samples file
 ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
-  Swal.fire({
-    title: "Generating the samples.xlsx file",
-    html:
-      "Please wait...",
-    timer: 30000,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {
-  });
   if (dirpath.length > 0) {
+    Swal.fire({
+      title: "Generating the samples.xlsx file",
+      html:
+      "Please wait...",
+      timer: 30000,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    }).then((result) => {
+    });
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
       var emessage = "File '" + filename + "' already exists in " + dirpath[0];
@@ -1790,6 +1790,7 @@ $(document).ready(function() {
   // createAgeCategoryAutocomplete("bootbox-subject-age-category");
   // createAgeCategoryAutocomplete("bootbox-sample-age-category");
   createSpecimenTypeAutocomplete("bootbox-sample-specimen-type");
+
 })
 
 async function loadTaxonomySpecies(commonName, destinationInput) {
@@ -1801,7 +1802,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     heightAuto: false,
     allowOutsideClick: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: true,
+    timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
     },
