@@ -1397,8 +1397,6 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
 
 // generate subjects file
 ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
-  // $("#generate-subjects-spinner").css("display", "block");
-  // $("#button-generate-subjects").prop("disabled", true)
   Swal.fire({
     title: "Generating the subjects.xlsx file",
     html:
@@ -1408,7 +1406,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
     allowOutsideClick: false,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: true,
+    timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
     },
@@ -1423,8 +1421,6 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
         `${emessage}`,
         'error'
       )
-      // $("#generate-subjects-spinner").css("display", "none");
-      // $("#button-generate-subjects").prop("disabled", false)
     } else {
       // new client that has a longer timeout
       let clientLongTimeout = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000});
@@ -1434,8 +1430,6 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
             var emessage = userError(error);
             log.error(error);
             console.error(error);
-            // $("#generate-subjects-spinner").css("display", "none");
-            // $("#button-generate-subjects").prop("disabled", false)
             Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error");
             ipcRenderer.send(
               "track-event",
@@ -1450,8 +1444,6 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
               "Prepare Metadata - Create subjects.xlsx",
               subjectsTableData
             );
-            // $("#generate-subjects-spinner").css("display", "none");
-            // $("#button-generate-subjects").prop("disabled", false)
             Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
           }
         })
@@ -1470,7 +1462,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
     backdrop: "rgba(0,0,0, 0.4)",
     allowEscapeKey: false,
     allowOutsideClick: false,
-    timerProgressBar: true,
+    timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
     },
@@ -1486,7 +1478,10 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         'error'
       )
     } else {
-       client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
+      // new client that has a longer timeout
+      let clientLongTimeout = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000});
+      clientLongTimeout.connect("tcp://127.0.0.1:4242");
+      clientLongTimeout.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
           if (error) {
             var emessage = userError(error);
             log.error(error);
