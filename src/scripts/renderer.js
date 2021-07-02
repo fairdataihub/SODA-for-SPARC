@@ -1665,7 +1665,6 @@ function createSpecimenTypeAutocomplete(id) {
     },
     trigger: {
       event: ["input", "focus"],
-      // condition: () => true,
     },
     resultItem: {
       destination: "#"+id,

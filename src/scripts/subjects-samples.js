@@ -218,7 +218,7 @@ function addNewIDToTable(newID, secondaryID, type) {
     }
   }
   if (duplicate) {
-    var message = `We detect duplicate ${keyword}_id(s). Please make sure sample_id(s) are unique before you generate.`
+    var message = `We detect duplicate ${keyword}_id(s). Please make sure ${keyword}_id(s) are unique before you generate.`
   }
   var rowIndex = rowcount;
   var indexNumber = rowIndex;
@@ -231,6 +231,31 @@ function addNewIDToTable(newID, secondaryID, type) {
   } else if (type === "samples") {
     var row = (table.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-"+ keyword + newRowIndex +"' class='row-" +type+"'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+secondaryID+"</td><td>"+newID+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_"+keyword+"_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='copy_current_"+keyword+"_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='delete_current_"+keyword+"_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  }
+  return message
+}
+
+function addNewIDToTableStrict(newID, secondaryID, type) {
+  var message = "";
+  if (type === "subjects") {
+    var keyword = "subject";
+    var int = 1;
+    var table = document.getElementById("table-subjects");
+  } else if (type === "samples") {
+    var keyword = "sample";
+    var int = 2;
+    var table = document.getElementById("table-samples");
+  }
+  var duplicate = false;
+  var rowcount = table.rows.length;
+  for (var i=1;i<rowcount;i++) {
+    if (newID === table.rows[i].cells[int].innerText) {
+      duplicate = true
+      break
+    }
+  }
+  if (duplicate) {
+    var message = `We detect duplicate ${keyword}_id(s). Please make sure ${keyword}_id(s) are unique before you generate.`
   }
   return message
 }
@@ -788,25 +813,27 @@ async function copy_current_subject_id(ev) {
     }
   })
   if (newSubject && newSubject !== "") {
-    // add new subject_id to JSON
-    // 1. copy from current ev.id (the whole array)
-    var currentRow = $(ev).parents()[2];
-    var id = currentRow.cells[1].innerText
-    // 2. append that to the end of matrix
-    for (var subArr of subjectsTableData.slice(1)) {
-      if (subArr[0] === id) {
-        var ind = subjectsTableData.indexOf(subArr);
-        var newArr = [...subjectsTableData[ind]];
-        subjectsTableData.push(newArr)
-        // 3. change first entry of that array
-        subjectsTableData[subjectsTableData.length - 1][0] = newSubject
-        break
-      }
-    }
     // // add new row to table
-    var message = addNewIDToTable(newSubject, null, "subjects")
+    var message = addNewIDToTableStrict(newSubject, null, "subjects")
     if (message !== "") {
       Swal.fire(message, "", "warning")
+    } else {
+      var res = addNewIDToTable(newSubject, null, "subjects")
+      // add new subject_id to JSON
+      // 1. copy from current ev.id (the whole array)
+      var currentRow = $(ev).parents()[2];
+      var id = currentRow.cells[1].innerText
+      // 2. append that to the end of matrix
+      for (var subArr of subjectsTableData.slice(1)) {
+        if (subArr[0] === id) {
+          var ind = subjectsTableData.indexOf(subArr);
+          var newArr = [...subjectsTableData[ind]];
+          subjectsTableData.push(newArr)
+          // 3. change first entry of that array
+          subjectsTableData[subjectsTableData.length - 1][0] = newSubject
+          break
+        }
+      }
     }
   }
 }
@@ -827,27 +854,29 @@ async function copy_current_sample_id(ev) {
     }
   })
   if (newSubSam && newSubSam[0] !== "" & newSubSam[1] !== "") {
-    // // add new row to table
-    // add new subject_id to JSON
-    // 1. copy from current ev.id (the whole array)
-    var currentRow = $(ev).parents()[2];
-    var id1 = currentRow.cells[1].innerText;
-    var id2 = currentRow.cells[2].innerText;
-    // 2. append that to the end of matrix
-    for (var samArr of samplesTableData.slice(1)) {
-      if (samArr[0] === id1 && samArr[1] === id2) {
-        var ind = samplesTableData.indexOf(samArr);
-        var newArr = [...samplesTableData[ind]];
-        samplesTableData.push(newArr)
-        // 3. change first entry of that array
-        samplesTableData[samplesTableData.length - 1][0] = newSubSam[0]
-        samplesTableData[samplesTableData.length - 1][1] = newSubSam[1]
-        break
-      }
-    }
-    var message = addNewIDToTable(newSubSam[1], newSubSam[0], "samples")
+    var message = addNewIDToTableStrict(newSubSam[1], newSubSam[0], "samples")
     if (message !== "") {
       Swal.fire(message, "", "warning")
+    } else {
+      var res = addNewIDToTable(newSubSam[1], newSubSam[0], "samples")
+      // // add new row to table
+      // add new subject_id to JSON
+      // 1. copy from current ev.id (the whole array)
+      var currentRow = $(ev).parents()[2];
+      var id1 = currentRow.cells[1].innerText;
+      var id2 = currentRow.cells[2].innerText;
+      // 2. append that to the end of matrix
+      for (var samArr of samplesTableData.slice(1)) {
+        if (samArr[0] === id1 && samArr[1] === id2) {
+          var ind = samplesTableData.indexOf(samArr);
+          var newArr = [...samplesTableData[ind]];
+          samplesTableData.push(newArr)
+          // 3. change first entry of that array
+          samplesTableData[samplesTableData.length - 1][0] = newSubSam[0]
+          samplesTableData[samplesTableData.length - 1][1] = newSubSam[1]
+          break
+        }
+      }
     }
   }
 }
