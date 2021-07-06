@@ -1773,7 +1773,7 @@ function createStrain(id, type) {
           // Add an onclick event
           message.setAttribute("onclick", "populateRRID('"+query+"', '"+type+"')");
           // Add message text content
-          message.innerHTML = `<span>${query}</span>`;
+          message.innerHTML = `<span>Did you mean "${query}"?</span>`;
           // Append message element to the results list
           list.appendChild(message);
       },
@@ -1786,10 +1786,16 @@ $(document).ready(function() {
   createSpeciesAutocomplete("bootbox-sample-species");
   createStrain("bootbox-sample-strain", "samples")
   createStrain("bootbox-subject-strain", "subjects")
-  // createAgeCategoryAutocomplete("bootbox-subject-age-category");
-  // createAgeCategoryAutocomplete("bootbox-sample-age-category");
-  createSpecimenTypeAutocomplete("bootbox-sample-specimen-type");
-
+  // $("#bootbox-subject-strain").focusout(function() {
+  //   setTimeout(function(){
+  //     // if (!noResultListStrain) {
+  //       var strainName = $("#bootbox-subject-strain").val()
+  //       if (strainName !== "") {
+  //         populateRRID(strainName, "subjects")
+  //       }
+  //     // }
+  //   }, 1000)
+  // })
 })
 
 async function loadTaxonomySpecies(commonName, destinationInput) {

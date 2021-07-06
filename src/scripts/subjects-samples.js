@@ -372,19 +372,22 @@ function populateRRID(strain, type) {
               backdrop: "rgba(0,0,0, 0.4)",
             })
             if (type === "subjects") {
+              $("#bootbox-subject-strain").val("");
               $("#bootbox-subject-strain-RRID").val("");
             } else if (type === "samples") {
+              $("#bootbox-sample-strain").val("");
               $("#bootbox-sample-strain-RRID").val("");
             }
           } else {
-
             Swal.fire(`Successfully retrieved the RRID for "${strain}".`, "", "success")
           }
       })
     } else {
       if (type === "subjects") {
+        $("#bootbox-subject-strain").val("");
         $("#bootbox-subject-strain-RRID").val("");
       } else if (type === "samples") {
+        $("#bootbox-sample-strain").val("");
         $("#bootbox-sample-strain-RRID").val("");
       }
       Swal.fire({
