@@ -1621,18 +1621,10 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
       res.on('data', function (body) {
         var result = JSON.parse(body)
         protocolResearcherList = {};
-        // $("#bootbox-subject-protocol-location").val("");
-        // $("#bootbox-subject-protocol-title").prop("placeholder", "Search here");
-        // $("#bootbox-sample-protocol-title").val("");
-        // $("#bootbox-sample-protocol-location").prop("placeholder", "Search here");
-        // $("#bootbox-subject-protocol-title").val("");
-        // $("#bootbox-sample-protocol-title").val("");
         for (var item of result["items"]) {
           protocolResearcherList["https://www.protocols.io/view/" + item.uri] = item.title;
         }
         if (Object.keys(protocolResearcherList).length > 0) {
-          // populateProtocolDropdown("subjects");
-          // populateProtocolDropdown("samples")
           if (type==="first-time") {
             Swal.fire({
               title: "Successfully connected! <br/>Loading your protocol information...",
@@ -1692,51 +1684,6 @@ async function showProtocolCredentials(email, filetype) {
   }
 }
 
-function populateProtocolDropdown(type) {
-  if (type === "subjects") {
-    $($("#bootbox-subject-protocol-title").parents()[0]).remove();
-      var divElement = '<div class="ui input"><select id="bootbox-subject-protocol-title" class="ui selection dropdown subjects-form-entry" onchange="autoPopulateProtocolLink(this, \''+type+'\')" name="Protocol title"></select></div>'
-      $("#subjects-protocol-titles").prepend(divElement);
-      // populate dropdown with protocolResearcherList
-      removeOptions(document.getElementById("bootbox-subject-protocol-title"));
-      addOption(document.getElementById("bootbox-subject-protocol-title"), "Select protocol", "Select")
-      for (var key of Object.keys(protocolResearcherList)) {
-        $('#bootbox-subject-protocol-title').append('<option value="' + key + '">' + key + '</option>');
-      }
-   } else {
-     $($("#bootbox-sample-protocol-title").parents()[0]).remove();
-       var divElement = '<div class="ui input"><select id="bootbox-sample-protocol-title" class="ui selection dropdown samples-form-entry" onchange="autoPopulateProtocolLink(this, \''+type+'\')" name="Protocol title"></select></div>'
-       $("#samples-protocol-titles").prepend(divElement);
-       // populate dropdown with protocolResearcherList
-       removeOptions(document.getElementById("bootbox-sample-protocol-title"));
-       addOption(document.getElementById("bootbox-sample-protocol-title"), "Select protocol", "Select")
-       for (var key of Object.keys(protocolResearcherList)) {
-         $('#bootbox-sample-protocol-title').append('<option value="' + key + '">' + key + '</option>');
-       }
-   }
-}
-
-function autoPopulateProtocolLink(ev, type) {
-  var linkVal = $(ev).val();
-  if (linkVal && linkVal !== "Select") {
-    for (var key of Object.keys(protocolResearcherList)) {
-      if (key === linkVal) {
-        if (type === "subjects") {
-          $("#bootbox-subject-protocol-location").val(protocolResearcherList[key])
-        } else {
-          $("#bootbox-sample-protocol-location").val(protocolResearcherList[key])
-        }
-        break
-      }
-    }
-  } else {
-    if (type === "subjects") {
-      $("#bootbox-subject-protocol-location").val("")
-    } else {
-      $("#bootbox-sample-protocol-location").val("")
-    }
-  }
-}
 
 function saveProtocolInfo(token, email){
   var content = parseJson(protocolConfigPath);

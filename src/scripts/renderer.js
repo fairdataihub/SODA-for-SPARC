@@ -1773,7 +1773,7 @@ function createStrain(id, type) {
           // Add an onclick event
           message.setAttribute("onclick", "populateRRID('"+query+"', '"+type+"')");
           // Add message text content
-          message.innerHTML = `<span>Did you mean "<b>${query}</b>"?</span>`;
+          message.innerHTML = `<span>Click here to check "<b>${query}</b>"</span>`;
           // Append message element to the results list
           list.appendChild(message);
       },
