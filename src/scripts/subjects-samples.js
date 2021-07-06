@@ -1509,9 +1509,24 @@ function loadDataFrametoUISamples() {
   $("#button-fake-confirm-existing-samples-file-load").click();
 }
 
-function preliminaryProtocolStep() {
+function preliminaryProtocolStep(type) {
+  var credentials = loadExistingProtocolInfo();
+  if (credentials[0]) {
+    // show email for protocol account
+    showProtocolCredentials(credentials[1], type)
+  } else {
+    protocolAccountQuestion(type, false)
+  }
+}
+
+function protocolAccountQuestion(type, changeAccountBoolean) {
+  if (changeAccountBoolean) {
+    var titleText = 'Do you want to connect to a different protocol account?';
+  } else {
+    var titleText = 'Do you have an account with protocol.io?';
+  }
   Swal.fire({
-    title: 'Do you have an account with protocol.io?',
+    title: titleText,
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -1522,15 +1537,17 @@ function preliminaryProtocolStep() {
   }).then((result) => {
   if (result.isConfirmed) {
     setTimeout(function() {
-      connectProtocol()
+      connectProtocol(type)
     }, 1500)
   } else {
-    Swal.fire("Please create an account with protocol.io.", "SODA suggests you create an account with protocols.io first. For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.", "warning")
+    if (!changeAccountBoolean) {
+      Swal.fire("Please create an account with protocol.io.", "SODA suggests you create an account with protocols.io first. For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.", "warning")
+      }
     }
   })
 }
 
-async function connectProtocol() {
+async function connectProtocol(type) {
   const { value: protocolCredentials } = await Swal.fire({
   width: "fit-content",
   title: "Once you're signed in, grab your <i>private access token</i> and enter it below: ",
@@ -1560,14 +1577,14 @@ async function connectProtocol() {
   }
   })
   if (protocolCredentials) {
-    sendHttpsRequestProtocol(protocolCredentials, "first-time")
+    sendHttpsRequestProtocol(protocolCredentials.trim(), "first-time", type)
   }
 }
 
 const protocolHostname = "protocols.io";
 var protocolResearcherList = {};
 
-function sendHttpsRequestProtocol(accessToken, type) {
+function sendHttpsRequestProtocol(accessToken, accessType, filetype) {
   var protocolList = {}
   var protocolInfo = {
     hostname: protocolHostname,
@@ -1580,18 +1597,18 @@ function sendHttpsRequestProtocol(accessToken, type) {
       res.setEncoding('utf8');
       res.on('data', async function (body) {
         var bodyRes = JSON.parse(body)
-        saveProtocolInfo(accessToken);
-        await grabResearcherProtocolList(bodyRes.user.username, accessToken, type)
+        saveProtocolInfo(accessToken, bodyRes.user.email);
+        await grabResearcherProtocolList(bodyRes.user.username, bodyRes.user.email, accessToken, accessType, filetype)
       });
     } else {
-      if (type === "first-time") {
+      if (accessType === "first-time") {
         Swal.fire("Failed to connect with protocol.io", "Please check your access token and try again.", "error")
       }
     }
   })
 }
 
-function grabResearcherProtocolList(username, token, type) {
+function grabResearcherProtocolList(username, email, token, type, filetype) {
   var protocolInfoList = {
     hostname: protocolHostname,
     port: 443,
@@ -1604,18 +1621,18 @@ function grabResearcherProtocolList(username, token, type) {
       res.on('data', function (body) {
         var result = JSON.parse(body)
         protocolResearcherList = {};
-        $("#bootbox-subject-protocol-location").val("");
-        $("#bootbox-subject-protocol-title").prop("placeholder", "Search here");
-        $("#bootbox-sample-protocol-title").val("");
-        $("#bootbox-sample-protocol-location").prop("placeholder", "Search here");
-        $("#bootbox-subject-protocol-title").val("");
-        $("#bootbox-sample-protocol-title").val("");
+        // $("#bootbox-subject-protocol-location").val("");
+        // $("#bootbox-subject-protocol-title").prop("placeholder", "Search here");
+        // $("#bootbox-sample-protocol-title").val("");
+        // $("#bootbox-sample-protocol-location").prop("placeholder", "Search here");
+        // $("#bootbox-subject-protocol-title").val("");
+        // $("#bootbox-sample-protocol-title").val("");
         for (var item of result["items"]) {
-          protocolResearcherList[item.title] = "https://www.protocols.io/view/" + item.uri;
+          protocolResearcherList["https://www.protocols.io/view/" + item.uri] = item.title;
         }
         if (Object.keys(protocolResearcherList).length > 0) {
-          populateProtocolDropdown("subjects");
-          populateProtocolDropdown("samples")
+          // populateProtocolDropdown("subjects");
+          // populateProtocolDropdown("samples")
           if (type==="first-time") {
             Swal.fire({
               title: "Successfully connected! <br/>Loading your protocol information...",
@@ -1626,6 +1643,8 @@ function grabResearcherProtocolList(username, token, type) {
               backdrop: "rgba(0,0,0, 0.4)",
               showConfirmButton: false,
               allowOutsideClick: false,
+            }).then((result) => {
+                showProtocolCredentials(email, filetype)
             })
           }
         } else {
@@ -1636,6 +1655,41 @@ function grabResearcherProtocolList(username, token, type) {
       });
     }
   })
+}
+
+async function showProtocolCredentials(email, filetype) {
+  if (Object.keys(protocolResearcherList).length === 0) {
+    var warningText = "You currently don't have any protocols."
+  } else {
+    var warningText = 'Please select a protocol.'
+  }
+  var htmlEle = `<div><h2>Protocol information: </h2><h3 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Email: <span style="font-weight:500; text-align:left">${email}</span><span style="width: 40%; text-align:right"><a onclick="protocolAccountQuestion('${filetype}', true)" style="font-weight:500;">Change</a></span></h3><h3 style="text-align:left">Current protocols: </h3></div>`;
+  const { value: protocol } = await Swal.fire({
+    html: htmlEle,
+    input: 'select',
+    inputOptions: protocolResearcherList,
+    inputPlaceholder: 'Select a protocol',
+    showCancelButton: true,
+    confirmButtonText: "Confirm",
+    inputValidator: (value) => {
+      return new Promise((resolve) => {
+        if (value) {
+          resolve()
+        } else {
+          resolve(warningText)
+        }
+      })
+    }
+  })
+  if (protocol) {
+    if (filetype === "subjects") {
+      $("#bootbox-subject-protocol-title").val(protocolResearcherList[protocol])
+      $("#bootbox-subject-protocol-location").val(protocol)
+    } else {
+      $("#bootbox-sample-protocol-title").val(protocolResearcherList[protocol])
+      $("#bootbox-sample-protocol-location").val(protocol)
+    }
+  }
 }
 
 function populateProtocolDropdown(type) {
@@ -1684,21 +1738,25 @@ function autoPopulateProtocolLink(ev, type) {
   }
 }
 
-function saveProtocolInfo(token){
+function saveProtocolInfo(token, email){
   var content = parseJson(protocolConfigPath);
   content["access-token"] = token;
+  content["email"] = email;
   fs.writeFileSync(protocolConfigPath, JSON.stringify(content));
 }
 
 function loadExistingProtocolInfo() {
+  var protocolExists = false;
   //// config and load live data from Airtable
   var protocolTokenContent = parseJson(protocolConfigPath);
   if (JSON.stringify(protocolTokenContent) !== "{}") {
     var protocolToken = protocolTokenContent["access-token"];
     if (protocolToken !== "") {
       sendHttpsRequestProtocol(protocolToken, "upon-loading")
+      protocolExists = true
     }
   }
+  return [protocolExists, protocolTokenContent["email"]]
 }
 
 function showAgeSection(ev, div, type) {
