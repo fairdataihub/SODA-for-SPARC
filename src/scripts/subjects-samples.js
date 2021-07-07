@@ -486,6 +486,29 @@ function edit_current_sample_id(ev) {
   loadSampleInformation(ev, subjectID, sampleID)
 }
 
+async function edit_current_protocol_id(ev) {
+  var currentRow = $(ev).parents()[2];
+  var link = $(currentRow)[0].cells[1].innerText;
+  var desc = $(currentRow)[0].cells[2].innerText;
+  const { value: values } = await Swal.fire({
+    title: "Edit protocol",
+    html:
+        '<input id="DD-protocol-link" value="'+link+'" class="swal2-input" placeholder="Enter protocol link">' +
+        '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description">'+desc+'</textarea>',
+    focusConfirm: false,
+    preConfirm: () => {
+      return [
+        document.getElementById('DD-protocol-link').value,
+        document.getElementById('DD-protocol-link-description').value
+      ]
+    }
+  })
+  if (values) {
+    $(currentRow)[0].cells[1].innerText = values[0];
+    $(currentRow)[0].cells[2].innerText = values[1];
+  }
+}
+
 function loadSubjectInformation(ev, subjectID) {
   // 1. load fields for form
   showForm("display", true);
@@ -803,6 +826,27 @@ function delete_current_sample_id(ev) {
   })
 }
 
+function delete_current_protocol_id(ev) {
+  Swal.fire({
+    title: 'Are you sure you want to delete this protocol?',
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: `No!`,
+    cancelButtonColor: "#f44336",
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Yes'
+  }).then((boolean) => {
+    if (boolean.isConfirmed) {
+      // 1. Delete from table
+      var currentRow = $(ev).parents()[2];
+      var currentRowid = $(currentRow).prop("id");
+      document.getElementById(currentRowid).outerHTML = "";
+      updateIndexForTable(document.getElementById("protocol-link-table-dd"))
+    }
+  })
+}
+
 async function copy_current_subject_id(ev) {
   const { value: newSubject } = await Swal.fire({
   title: 'Copying information from this subject: ',
@@ -886,7 +930,11 @@ async function copy_current_sample_id(ev) {
 
 function updateIndexForTable(table) {
  // disable table to prevent further row-moving action before the updateIndexForTable finishes
- $("#table-subjects").css("pointer-events", "none");
+ if (table === document.getElementById("table-subjects")) {
+   $("#table-subjects").css("pointer-events", "none");
+ } else if (table === document.getElementById("table-samples")) {
+   $("#table-samples").css("pointer-events", "none");
+ }
  var rowcount = table.rows.length;
  var index = 1;
  for (var i=1;i<rowcount;i++) {
@@ -902,6 +950,7 @@ function updateIndexForTable(table) {
    }
  }
  $("#table-subjects").css("pointer-events", "auto");
+ $("#table-samples").css("pointer-events", "auto");
 }
 
 function updateOrderIDTable(table, json, type) {
@@ -1534,15 +1583,41 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
     cancelButtonText: "No, I don't",
     allowEscapeKey: false,
     allowOutsideClick: false,
-  }).then((result) => {
+  }).then(async (result) => {
   if (result.isConfirmed) {
     setTimeout(function() {
       connectProtocol(type)
     }, 1500)
   } else {
     if (!changeAccountBoolean) {
-      Swal.fire("Please create an account with protocol.io.", "SODA suggests you create an account with protocols.io first. For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.", "warning")
+      if (type !== "DD") {
+        Swal.fire("Please create an account with protocol.io.", "SODA suggests you create an account with protocols.io first. For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.", "warning")
+      } else {
+        const { value: formValues } = await Swal.fire({
+          title: "Enter a protocol link and its description below:",
+          text: " For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: 'Add',
+          cancelButtonText: "Cancel",
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          html:
+              '<input id="DD-protocol-link" class="swal2-input" placeholder="Enter protocol link">' +
+              '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+          focusConfirm: false,
+          preConfirm: () => {
+            return [
+              document.getElementById('DD-protocol-link').value,
+              document.getElementById('DD-protocol-link-description').value
+            ]
+          }
+        })
+        if (formValues) {
+          addProtocolLinktoTableDD(formValues[0], formValues[1])
+        }
       }
+    }
     }
   })
 }
@@ -1677,9 +1752,22 @@ async function showProtocolCredentials(email, filetype) {
     if (filetype === "subjects") {
       $("#bootbox-subject-protocol-title").val(protocolResearcherList[protocol])
       $("#bootbox-subject-protocol-location").val(protocol)
-    } else {
+    } else if (filetype === "samples") {
       $("#bootbox-sample-protocol-title").val(protocolResearcherList[protocol])
       $("#bootbox-sample-protocol-location").val(protocol)
+    } else {
+      const { value: formValue } = await Swal.fire({
+        title: "Enter a description for the link (optional): ",
+        html:
+          '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+        focusConfirm: false,
+        preConfirm: () => {
+          return document.getElementById('DD-protocol-link-description').value
+        }
+      })
+      if (formValue) {
+        addProtocolLinktoTableDD(protocol, formValue)
+      }
     }
   }
 }
@@ -1755,3 +1843,31 @@ function readXMLScicrunch(xml, type) {
   }
   return res
 };
+
+// add protocol function for DD file
+function addProtocol() {
+  var credentials = loadExistingProtocolInfo();
+  if (credentials[0]) {
+    // show email for protocol account
+    showProtocolCredentials(credentials[1], "DD")
+  } else {
+    protocolAccountQuestion("DD", false)
+  }
+}
+
+function addProtocolLinktoTableDD(protocolLink, protocolDesc) {
+  var protocolTable = document.getElementById("protocol-link-table-dd");
+  protocolTable.style.display = "block";
+  var rowcount = protocolTable.rows.length;
+  /// append row to table from the bottom
+  var rowIndex = rowcount;
+  var currentRow =
+    protocolTable.rows[
+      protocolTable.rows.length - 1
+  ];
+  // check for unique row id in case users delete old rows and append new rows (same IDs!)
+  var newRowIndex = checkForUniqueRowID("row-current-protocol", rowIndex);
+  var indexNumber = rowIndex;
+  var row = (protocolTable.insertRow(rowIndex).outerHTML =
+  "<tr id='row-current-protocol" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+protocolLink+"</td><td class='contributor-table-row'>"+protocolDesc+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+}

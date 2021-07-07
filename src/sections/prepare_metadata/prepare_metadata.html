@@ -2016,9 +2016,673 @@
         margin-left: -40px;
       "
     >
+         <div
+            class="individual-question prepare-dd show"
+            id="Question-prepare-dd-1"
+          >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Please select an option below:
+              </label>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: center;
+                "
+              >
+                <div style="margin: 15px 0">
+                  <div
+                    class="option-card radio-button"
+                    data-next="Question-prepare-dd-2"
+                    onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', '', 'individual-question prepare-dd')"
+                    style="max-width: 200px; max-height: 180px; height: 250px !important; width: 200px !important;"
+                  >
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input
+                          class="folder-input-check"
+                          name="dd-1"
+                          type="radio"
+                          id="dd-1-B"
+                        />
+                        <label for="dd-1-B"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-accent)" class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+                        <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+                      </svg>
+                      <h2>I want to start a new dataset_description.xlsx file</h2>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="margin: 15px 0"
+                >
+                  <div
+                    class="option-card radio-button"
+                    data-next="Question-prepare-dd-3"
+                    onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', '', 'individual-question prepare-dd')"
+                    style="max-width: 200px; max-height: 180px; height: 250px !important; width: 200px !important;"
+                  >
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input
+                          class="folder-input-check"
+                          name="dd-1"
+                          type="radio"
+                          id="dd-1-A"
+                        />
+                        <label for="dd-1-A"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <i class="far fa-save" style="color: var(--color-subtle)"></i>
+                      <h2>I want to continue working on an existing dataset_description.xlsx file</h2>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          </div>
+
+        <div
+           class="individual-question prepare-dd"
+           id="Question-prepare-dd-2"
+         >
+          <div class="ui form" style="width: 100%">
+            <div class="field">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  margin-bottom: 20px;
+                  text-align: center
+                "
+                >Fill out the sections below and generate your
+                dataset_description file
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="After you complete all steps, click on 'Generate' to
+                          generate your dataset description file. A warning
+                          message may show up if any mandatory fields are missing.
+                          You may decide to go back and address the issues or
+                          generate the file anyway.
+                          <br/><br/>
+                          Click on 'Start over' to refresh the form."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </label>
+              <div class="ui styled accordion" style="width:100% !important">
+                <div class="title" style="background: var(--color-bg-light-green-button)">
+                  <i class="dropdown icon"></i>
+                  Dataset Information <span style="font-style: italic;opacity:0.8">(Mandatory)</span>
+                </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0 auto;
+                      font-size: 13px;
+                    "
+                  >
+                    <div>
+                      <div class="div-dd-info subjects" style="margin-top:10px;margin-bottom: 15px">
+                        <div class="demo-controls-head">
+                          <div style="width: 100%;">
+                          <font color="black"> Dataset name: </font>
+                        </div>
+                        </div>
+                        <div class="demo-controls-body">
+                          <div class="ui input modified">
+                            <input type="text" id="ds-name" name="dataset name" placeholder="Type here..." style="font-size:14px">
+                          </div>
+                        </div>
+                        <div class="tooltipnew demo-controls-end">
+                          <i
+                            class="fas fa-info-circle popover-tooltip subjects-form"
+                            data-content="Enter the dataset where the dataset
+                            description file will be uploaded. You can create a new
+                            dataset from the 'Manage Datasets' section under the
+                            'Create a new dataset' feature."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </div>
+                      </div>
+
+                      <div class="div-dd-info subjects" style="margin-bottom: 15px">
+                        <div class="demo-controls-head">
+                          <div style="width: 100%;">
+                          <font color="black"> Description: </font>
+                        </div>
+                        </div>
+                        <div class="demo-controls-body">
+                          <div class="ui input modified">
+                            <textarea type="text" id="ds-description" name="Species" class="subjects-form-entry" placeholder="Type here..." style="font-size:14px"></textarea>
+                          </div>
+                        </div>
+                        <div class="tooltipnew demo-controls-end">
+                          <i
+                            class="fas fa-info-circle popover-tooltip subjects-form"
+                            data-content="Enter the description for the dataset you provide above.
+                            "
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </div>
+                      </div>
+
+                      <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
+                        <a onclick=""
+                          >Help me select a Pennsieve dataset</a
+                        >
+                        <i
+                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          data-content="If your dataset is listed on Pennsieve, click here to select it from the list.
+                          "
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </div>
+                    </div>
+
+
+                  </div>
+                </div>
+
+              <div class="title" style="background: var(--color-bg-light-green-button)">
+                <i class="dropdown icon"></i>
+                Study Information <span style="font-style: italic;opacity:0.8">(Mandatory)</span>
+              </div>
+              <div class="content">
+                <div
+                  style="
+                    display: block;
+                    width: 97%;
+                    margin: 0 auto;
+                    font-size: 13px;
+                  "
+                >
+                <div>
+                  <div class="div-dd-info" style="margin-top:20px">
+                      <div class="demo-controls-head">
+                        <div style="width: 100%">
+                          <font color="black"> Keywords*: </font>
+                        </div>
+                      </div>
+                      <div class="demo-controls-body">
+                        <div class="ui input modified">
+                          <input
+                            id="ds-keywords"
+                            class="form-container-input-bf"
+                          >
+                          </input>
+                        </div>
+                      </div>
+                      <div class="tooltipnew demo-controls-end">
+                        <i
+                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          data-content="A set of 3-5 keywords other than the above that will aid
+                            in search. Hit 'Enter' on your keyboard after each entry
+                            to register it."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head">
+                        <div style="width: 100%">
+                          <font color="black"> Number of subjects*: </font>
+                        </div>
+                      </div>
+                      <div class="demo-controls-body">
+                        <div class="ui input modified">
+                          <input
+                            id="ds-subjects-no"
+                            type="number"
+                          />
+                        </div>
+                      </div>
+                      <div class="tooltipnew demo-controls-end">
+                        <i
+                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          data-content="Number of unique subjects in this dataset, should match
+                          subjects metadata file. Must be greater or equal to 1."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="div-dd-info" style="margin-bottom:20px">
+                      <div class="demo-controls-head">
+                        <div style="width: 100%">
+                          <font color="black"> Number of samples*: </font>
+                        </div>
+                      </div>
+                      <div class="demo-controls-body">
+                        <div class="ui input modified">
+                          <input
+                            id="ds-samples-no"
+                            type="number"
+                          />
+                        </div>
+                      </div>
+                      <div class="tooltipnew demo-controls-end">
+                        <i
+                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          data-content="Number of unique samples in this dataset, should match
+                          samples metadata file. Set to 0 if there are no samples."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            <div class="title" style="background: var(--color-bg-light-green-button)">
+              <i class="dropdown icon"></i>
+            Award & Contributor Information <span style="font-style: italic;opacity:0.8">(Mandatory)</span>
+            </div>
+            <div class="content">
+              <div
+                style="
+                  display: block;
+                  width: 90%;
+                  margin: 0 auto;
+                  font-size: 13px;
+                "
+              >
+              <div>
+                <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%">
+                      <font color="black"> SPARC Award: </font>
+                    </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input modified">
+                      <input
+                        id="ds-description-award-input"
+                        type="text"
+                      />
+                    </div>
+                    <!-- <select
+                      id="ds-description-award-list"
+                      onchange="changeAwardInputDsDescription()"
+                      class="form-container-input-bf"
+                      style="font-size: 13px; line-height: 2"
+                    >
+                      <option value="Select">Select an option</option>
+                    </select> -->
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="SPARC award associated with the dataset."
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+
+                <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
+                  <a onclick=""
+                    >Help me with my award information</a
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Click here if you have an Airtable account and would like SODA to extract your award and related contributor information.
+                    "
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+
+
+              </div>
+              </div>
+            </div>
+
+            <div class="title" style="background: var(--color-bg-light-green-button)">
+              <i class="dropdown icon"></i>
+            Protocol Information <span style="font-style: italic;opacity:0.8">(Mandatory)</span>
+            </div>
+            <div class="content">
+              <div
+                style="
+                  display: block;
+                  width: 90%;
+                  margin: 0 auto;
+                  font-size: 13px;
+                "
+              >
+                <!--  this is where the table of additional links will be -->
+                <div style="margin: 20px auto">
+                  <table
+                    class="ui celled table"
+                    style="text-align: center; display: none"
+                    id="protocol-link-table-dd"
+                  >
+                    <style>
+                      /* style for grabbed contributor row for moving contributors */
+                      .grab {
+                        cursor: grab;
+                      }
+                      .grabbed {
+                        box-shadow: 0 0 6px #000;
+                      }
+                      .grabCursor,
+                      .grabCursor * {
+                        cursor: grabbing !important;
+                      }
+                    </style>
+                    <thead class="full-width">
+                      <tr>
+                        <th style="width: 10%">Index</th>
+                        <th style="width: 25%">
+                          Protocol link
+                        </th>
+                        <th style="width: 50%">
+                          Description
+                        </th>
+                        <th style="width: 15%">
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="Click on the corresponding button to edit/delete a protocol."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </th>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+                <!-- end here -->
+                <div class="ui secondary submit button" style="margin: 20px 0;" onclick="addProtocol()">
+                  <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                  </svg>
+                  Add a link
+                </div>
+              </div>
+            </div>
+
+            <div class="title" style="background: var(--color-bg-light-green-button)">
+              <i class="dropdown icon"></i>
+            Completeness Information <span style="font-style: italic;opacity:0.8">(Optional)</span>
+            </div>
+            <div class="content">
+              <div
+                style="
+                  display: block;
+                  width: 90%;
+                  margin: 0 auto;
+                  font-size: 13px;
+                "
+              >
+            <div>
+              <div class="div-dd-info" style="margin-top:20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black">Completeness of dataset: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      id="ds-completeness"
+                      class="form-container-input-bf"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Is the data set as uploaded complete or is it part of an
+                    ongoing study? Select "hasNext" to indicate that you
+                    expect more data on different subjects as a continuation
+                    of this study. Select “hasChildren” to indicate that you
+                    expect more data on the same subjects or samples derived
+                    from those subjects. Leave empty if none.
+                    "
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%">
+                      <font color="black">Parent dataset(s): </font>
+                    </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input modified">
+                      <input
+                        id="input-parent-ds"
+                        class="form-container-input-bf"
+                      />
+                    </div>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="If this is a part of a larger dataset, or references
+                      subjects or samples from a parent dataset, select the
+                      prior dataset. You need only the last dataset, not all
+                      datasets. If samples and subjects are from multiple
+                      parent datasets please select them all. Leave empty if
+                      none.
+                      <br /><br />
+                      Tip: Start typing to see the name of your dataset, and
+                      then press Enter to add your dataset.
+                      "
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+
+                <div class="div-dd-info">
+                    <div class="demo-controls-head">
+                      <div style="width: 100%">
+                        <font color="black">Title for complete dataset: </font>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body">
+                      <div class="ui input modified">
+                        <input
+                          id="input-completeds-title"
+                          class="form-container-input-bf"
+                        />
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="Please give us a provisional title for the entire data
+                        set. Leave empty if not applicable.
+                        "
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                  </div>
+
+                  <div class="div-dd-info" style="margin-bottom:20px;padding-bottom:20px">
+                    <div class="demo-controls-head">
+                      <div style="width: 100%">
+                        <font color="black">Metadata Version: </font>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body">
+                      <div class="ui input modified">
+                        <input
+                          id="input-metadata-ver"
+                          value="1.2.3"
+                          disabled
+                          class="form-container-input-bf"
+                        />
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="DO NOT CHANGE: 1.2.3
+                        "
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                </div>
+              </div>
+
+              </div>
+            </div>
+
+            <div class="title" style="background: var(--color-bg-light-green-button)">
+              <i class="dropdown icon"></i>
+            Additional Information <span style="font-style: italic;opacity:0.8">(Optional)</span>
+            </div>
+            <div class="content">
+              <div
+                style="
+                  display: block;
+                  width: 90%;
+                  margin: 0 auto;
+                  font-size: 13px;
+                "
+              >
+              <div>
+                <div class="div-dd-info">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%">
+                      <font color="black"> Other funding source(s): </font>
+                    </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input modified">
+                      <textarea
+                        id="ds-other-funding"
+                      >
+                      </textarea>
+                    </div>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Other funding sources, if any. Hit 'Enter' on your
+                      keyboard after typing each. Leave empty if none.
+                      "
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+
+                <div class="div-dd-info">
+                    <div class="demo-controls-head">
+                      <div style="width: 100%">
+                        <font color="black"> Acknowledgments: </font>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body">
+                      <div class="ui input modified">
+                        <textarea
+                          id="ds-description-acknowledgments"
+                          class="form-container-textarea"
+                        >
+                        </textarea>
+                      </div>
+                    </div>
+                    <div class="tooltipnew demo-controls-end">
+                      <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="Acknowledgments beyond funding and contributors, if any.
+                        Leave empty if none.
+                        "
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+                  </div>
+              </div>
+              <div class="sub accordion" style="width: 100%">
+                <div class="title" id="title-optional-age">
+                  <i class="icon dropdown"></i>
+                  Additional link(s)
+                </div>
+                <div class="content">
+                  <!--  this is where the table of additional links will be -->
+                  <div></div>
+                  <!-- end here -->
+                  <div class="ui secondary submit button" style="margin: 20px;" onclick="addCustomField('subjects')">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Add a link
+                  </div>
+                </div>
+              </div>
+
+
+              </div>
+            </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       <div
-        class="individual-question prepare-dd show"
-        id="Question-prepare-dd-1"
+        class="individual-question prepare-dd"
+        id="Question-prepare-dd-1-old"
       >
         <div class="ui form" style="width: 100%">
           <div class="field">
