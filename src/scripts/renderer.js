@@ -2043,13 +2043,10 @@ function actionEnterNewDate(action) {
 function getParentDatasets() {
   var parentDatasets = [];
   for (
-    var i = 1, n = datasetDescriptionFileDataset.options.length;
-    i < n;
+    var i = 0; i<datasetList.length;
     i++
   ) {
-    if (datasetDescriptionFileDataset.options[i].value) {
-      parentDatasets.push(datasetDescriptionFileDataset.options[i].value);
-    }
+    parentDatasets.push(datasetList[i]);
   }
   return parentDatasets;
 }
@@ -2309,7 +2306,7 @@ function loadContributorInfo(no, lastName, firstName) {
 
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
-  for (let list of [datasetDescriptionFileDataset, curateDatasetDropdown]) {
+  for (let list of [curateDatasetDropdown]) {
     removeOptions(list);
     addOption(list, "Select dataset", "Select dataset");
     list.options[0].disabled = true;
@@ -2477,9 +2474,7 @@ $("#table-samples").mousedown(function (e) {
 ///// grab datalist name and auto-load current description
 const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
-  let temp = datasetDescriptionFileDataset.selectedIndex;
   var selectedBfDataset = defaultBfDataset;
-  //var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
     // bfCurrentMetadataProgress.style.display = "none";
@@ -2795,18 +2790,6 @@ function grabCompletenessInfo() {
   }
   return optionalSectionObj;
 }
-
-//// upon choosing a dataset, populate current description
-datasetDescriptionFileDataset.addEventListener("change", function () {
-  document.getElementById("ds-description").disabled = true;
-  document.getElementById("ds-description").innerHTML = "Loading...";
-  defaultBfDataset = datasetDescriptionFileDataset.value;
-  showDatasetDescription();
-  $("#current-bf-dataset").text(defaultBfDataset);
-  $("#current-bf-dataset-generate").text(defaultBfDataset);
-  $(".bf-dataset-span").html(defaultBfDataset);
-  refreshDatasetList();
-});
 
 /// detect empty required fields and raise a warning
 function detectEmptyRequiredFields(funding) {
@@ -3517,7 +3500,6 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           $(".bf-dataset-span").html(bfNewDatasetName.value);
           refreshDatasetList();
           updateDatasetList();
-          datasetDescriptionFileDataset.value = bfNewDatasetName.value;
           $(".confirm-button").click();
           bfNewDatasetName.value = "";
         }
@@ -3570,7 +3552,6 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             defaultBfDataset = renamedDatasetName;
             $(".bf-dataset-span").html(renamedDatasetName);
             refreshDatasetList();
-            datasetDescriptionFileDataset.value = renamedDatasetName;
             renameDatasetName.value = renamedDatasetName;
             bfRenameDatasetStatus.innerHTML =
               "Success: Renamed dataset" +
@@ -3925,7 +3906,7 @@ const metadataDatasetlistChange = () => {
   datasetSubtitleStatus.innerHTML = "";
   datasetLicenseStatus.innerHTML = "";
   bfDatasetSubtitle.value = "";
-  datasetDescriptionStatus.innerHTML = "";
+  // datasetDescriptionStatus.innerHTML = "";
   datasetBannerImageStatus.innerHTML = "";
   showCurrentSubtitle();
   showCurrentDescription();
@@ -4095,7 +4076,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
           datasetDescriptionStatus.innerHTML = res;
           $(".synced-progress").css("display", "none");
           showDatasetDescription();
-          changeDatasetUnderDD();
+          // changeDatasetUnderDD();
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -4983,6 +4964,7 @@ function showCurrentDescription() {
           console.error(error);
         } else {
           tuiInstance.setMarkdown(res);
+          $("#ds-description").val(res)
           if ((res = "")) {
             $("#button-add-description > .btn_animated-inside").html(
               "Add description"
@@ -5406,13 +5388,13 @@ function populateDatasetDropdowns(mylist) {
   permissionDatasetlistChange();
   postCurationListChange();
   datasetStatusListChange();
-  changeDatasetUnderDD();
+  // changeDatasetUnderDD();
 }
 
-function changeDatasetUnderDD() {
-  datasetDescriptionFileDataset.value = defaultBfDataset;
-  showDatasetDescription();
-}
+// function changeDatasetUnderDD() {
+//   datasetDescriptionFileDataset.value = defaultBfDataset;
+//   showDatasetDescription();
+// }
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 function loadDefaultAccount() {

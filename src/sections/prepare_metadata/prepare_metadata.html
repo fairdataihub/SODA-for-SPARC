@@ -2170,7 +2170,7 @@
                         </div>
                         <div class="demo-controls-body">
                           <div class="ui input modified">
-                            <textarea type="text" id="ds-description" name="Species" class="subjects-form-entry" placeholder="Type here..." style="font-size:14px"></textarea>
+                            <textarea type="text" id="ds-description" class="subjects-form-entry" placeholder="Type here..." style="font-size:14px"></textarea>
                           </div>
                         </div>
                         <div class="tooltipnew demo-controls-end">
@@ -2187,7 +2187,7 @@
                       </div>
 
                       <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
-                        <a onclick=""
+                        <a onclick="openDropdownPrompt('dataset')"
                           >Help me select a Pennsieve dataset</a
                         >
                         <i
@@ -3017,7 +3017,7 @@
                     </div>
                     <div class="demo-controls-body">
                       <select
-                        id="ds-name"
+                        id="ds-name-select"
                         class="form-container-input-bf"
                         style="width: 100%; line-height: 2"
                       >
@@ -3047,7 +3047,7 @@
                     </div>
                     <div class="demo-controls-body">
                       <textarea
-                        id="ds-description"
+                        id="ds-description-old"
                         class="form-container-textarea"
                         disabled
                       ></textarea>

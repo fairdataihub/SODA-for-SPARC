@@ -1070,7 +1070,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
-
+        $("#ds-name").val(bfDataset)
         confirm_click_function();
 
         defaultBfDataset = bfDataset;
