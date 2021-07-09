@@ -1062,7 +1062,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             heightAuto: false,
             showConfirmButton: false,
             timer: 2000,
-            timerProgressBar: true,
+            timerProgressBar: false,
             title: "Loading your dataset details...",
           });
         }
@@ -1070,7 +1070,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
-        $("#ds-name").val(bfDataset)
+        $("#ds-name").val(bfDataset);
         confirm_click_function();
 
         defaultBfDataset = bfDataset;

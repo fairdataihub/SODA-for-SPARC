@@ -2061,12 +2061,17 @@
                 </div>
                 <div
                   style="margin: 15px 0"
+                  class="coming-soon-div"
+                  data-content="Coming soon..."
+                  rel="popover"
+                  data-placement="bottom"
+                  data-trigger="hover"
                 >
                   <div
                     class="option-card radio-button"
                     data-next="Question-prepare-dd-3"
                     onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', '', 'individual-question prepare-dd')"
-                    style="max-width: 200px; max-height: 180px; height: 250px !important; width: 200px !important;"
+                    style="pointer-events: none; background: #f6f6f6;max-width: 200px; max-height: 180px; height: 250px !important; width: 200px !important;"
                   >
                     <div class="card-head">
                       <div class="folder-checkbox">
@@ -2137,9 +2142,9 @@
                   >
                     <div>
                       <div class="div-dd-info" style="margin-top:10px;margin-bottom: 15px; flex-direction: column">
-                        <div class="demo-controls-head" style="text-align: left; width: 90%">
+                        <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom: 5px">
                           <div style="width: 100%;">
-                          <font color="black"> Dataset name: <i>(must be exactly named on Pennsieve)</i>:
+                          <font style="font-weight:600;color: #090909"> Dataset name: <i>(must be exactly named on Pennsieve)</i>:
                           </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
@@ -2162,10 +2167,25 @@
                         </div>
                       </div>
 
+                    <div style="margin: 0 auto; text-decoration: underline;text-align:center;font-size:14px;margin-top:10px;margin-bottom:20px">
+                      <a onclick="openDropdownPrompt('dataset')"
+                        >Help me select my dataset from Pennsieve</a
+                      >
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="If your dataset is listed on Pennsieve, click here to select it from the list.
+                        "
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                      ></i>
+                    </div>
+
                       <div class="div-dd-info subjects" style="margin-bottom: 15px; flex-direction: column">
-                        <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
+                        <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:5px">
                           <div style="width: 100%;">
-                          <font color="black"> Description: </font>
+                          <font style="font-weight:600;color: #090909"> Description: </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
                             data-content="Enter the description for the dataset you provide above.
@@ -2180,24 +2200,9 @@
                         </div>
                         <div class="demo-controls-body" style="width: 90%">
                           <div class="ui input modified">
-                            <textarea type="text" id="ds-description" placeholder="Type here..." style="font-size:14px"></textarea>
+                            <textarea type="text" id="ds-description" placeholder="Type here..." style="font-size:14px;height: 50px"></textarea>
                           </div>
                         </div>
-                      </div>
-
-                      <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
-                        <a onclick="openDropdownPrompt('dataset')"
-                          >Help me select a Pennsieve dataset</a
-                        >
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="If your dataset is listed on Pennsieve, click here to select it from the list.
-                          "
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
                       </div>
                     </div>
 
@@ -2222,7 +2227,7 @@
                   <div class="div-dd-info" style="margin-top:20px;flex-direction: column">
                       <div class="demo-controls-head" style="text-align: left; width: 90%">
                         <div style="width: 100%">
-                          <font color="black"> Keywords <i>(specify from 3 to 5)</i>:</font>
+                          <font style="font-weight:600;color: #090909"> Keywords <i>(specify from 3 to 5)</i>:</font>
                             <i
                               class="fas fa-info-circle popover-tooltip"
                               data-content="A set of 3-5 keywords other than the above that will aid
@@ -2250,7 +2255,7 @@
                     <div class="div-dd-info" style="flex-direction: column">
                       <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                         <div style="width: 100%">
-                          <font color="black"> Number of subjects: </font>
+                          <font style="font-weight:600;color: #090909"> Number of subjects: </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
                             data-content="Number of unique subjects in this dataset, should match
@@ -2275,7 +2280,7 @@
                     <div class="div-dd-info" style="margin-bottom:20px;flex-direction: column">
                       <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                         <div style="width: 100%">
-                          <font color="black"> Number of samples: </font>
+                          <font style="font-weight:600;color: #090909"> Number of samples: </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
                             data-content="Number of unique samples in this dataset, should match
@@ -2296,9 +2301,6 @@
                           />
                         </div>
                       </div>
-                      <!-- <div class="tooltipnew demo-controls-end">
-
-                      </div> -->
                     </div>
                   </div>
 
@@ -2322,7 +2324,7 @@
                 <div class="div-dd-info" style="flex-direction: column">
                   <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                     <div style="width: 100%">
-                      <font color="black"> SPARC Award: </font>
+                      <font style="font-weight:600;color: #090909"> SPARC Award: </font>
                       <i
                         class="fas fa-info-circle popover-tooltip"
                         data-content="SPARC award associated with the dataset."
@@ -2348,7 +2350,7 @@
         <div class="div-dd-info" style="flex-direction: column">
           <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
             <div style="width: 100%">
-              <font color="black"> Contributor Information: </font>
+              <font style="font-weight:600;color: #090909"> Contributor Information: </font>
               <div id="div-contributor-table-dd" style="display:none">
                 <h3 style="padding-bottom:10px; margin-top:30px; text-align:center">Table of contributors:</h3>
                 <table
@@ -2507,7 +2509,7 @@
               <div class="div-dd-info" style="margin-top:20px;flex-direction: column">
                 <div class="demo-controls-head"  style="text-align: left; width: 90%;margin-bottom:0">
                   <div style="width: 100%">
-                    <font color="black">Completeness of dataset: </font>
+                    <font style="font-weight:600;color: #090909">Completeness of dataset: </font>
                     <i
                       class="fas fa-info-circle popover-tooltip"
                       data-content="Is the data set as uploaded complete or is it part of an
@@ -2539,7 +2541,7 @@
               <div class="div-dd-info" style="flex-direction: column">
                   <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                     <div style="width: 100%">
-                      <font color="black">Parent dataset(s): </font>
+                      <font style="font-weight:600;color: #090909">Parent dataset(s): </font>
                       <i
                         class="fas fa-info-circle popover-tooltip"
                         data-content="If this is a part of a larger dataset, or references
@@ -2574,7 +2576,7 @@
                 <div class="div-dd-info" style="flex-direction: column">
                     <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                       <div style="width: 100%">
-                        <font color="black">Title for complete dataset: </font>
+                        <font style="font-weight:600;color: #090909">Title for complete dataset: </font>
                         <i
                           class="fas fa-info-circle popover-tooltip"
                           data-content="Please give us a provisional title for the entire data
@@ -2602,7 +2604,7 @@
                   <div class="div-dd-info" style="margin-bottom:20px;padding-bottom:20px;flex-direction: column">
                     <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                       <div style="width: 100%">
-                        <font color="black">Metadata Version: </font>
+                        <font style="font-weight:600;color: #090909">Metadata Version: </font>
                         <i
                           class="fas fa-info-circle popover-tooltip"
                           data-content="DO NOT CHANGE: 1.2.3
@@ -2648,7 +2650,7 @@
                 <div class="div-dd-info" style="flex-direction: column">
                   <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                     <div style="width: 100%">
-                      <font color="black"> Other funding source(s): </font>
+                      <font style="font-weight:600;color: #090909"> Other funding source(s): </font>
                       <i
                         class="fas fa-info-circle popover-tooltip"
                         data-content="Other funding sources, if any. Hit 'Enter' on your
@@ -2677,7 +2679,7 @@
                 <div class="div-dd-info" style="flex-direction: column">
                     <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                       <div style="width: 100%">
-                        <font color="black"> Acknowledgments: </font>
+                        <font style="font-weight:600;color: #090909"> Acknowledgments: </font>
                         <i
                           class="fas fa-info-circle popover-tooltip"
                           data-content="Acknowledgments beyond funding and contributors, if any.

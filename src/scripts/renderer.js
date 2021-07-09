@@ -2442,6 +2442,7 @@ const showDatasetDescription = () => {
       });
     }, 5);
   } else {
+
     client.invoke(
       "api_bf_get_subtitle",
       selectedBfAccount,
@@ -4647,12 +4648,13 @@ function showCurrentSubtitle() {
 function showCurrentDescription() {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-
   if (selectedBfDataset === "Select dataset") {
     // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
     tuiInstance.setMarkdown("");
   } else {
+    document.getElementById("ds-description").innerHTML = "Loading...";
+    document.getElementById("ds-description").disabled = true;
     client.invoke(
       "api_bf_get_description",
       selectedBfAccount,
@@ -4661,9 +4663,12 @@ function showCurrentDescription() {
         if (error) {
           log.error(error);
           console.error(error);
+          document.getElementById("ds-description").disabled = false;
+          $("#ds-description").val("")
         } else {
           tuiInstance.setMarkdown(res);
           $("#ds-description").val(res)
+          document.getElementById("ds-description").disabled = false;
           if ((res = "")) {
             $("#button-add-description > .btn_animated-inside").html(
               "Add description"
@@ -5080,7 +5085,7 @@ function populateDatasetDropdowns(mylist) {
     var option1 = option.cloneNode(true);
     var option2 = option.cloneNode(true);
 
-    datasetDescriptionFileDataset.appendChild(option1);
+    // datasetDescriptionFileDataset.appendChild(option1);
     curateDatasetDropdown.appendChild(option2);
   }
   metadataDatasetlistChange();
@@ -8570,7 +8575,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
         icon: "success",
         title: "Successfully added! <br/>Loading your account details...",
         timer: 3000,
-        timerProgressBar: true,
+        timerProgressBar: false,
         allowEscapeKey: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
