@@ -507,7 +507,7 @@ async function edit_current_protocol_id(ev) {
     }
   })
   if (values) {
-    $(currentRow)[0].cells[1].innerText = values[0]
+    $(currentRow)[0].cells[1].innerHTML = "<a href='"+values[0]+"' target='_blank'>"+values[0]+"</a>"
     $(currentRow)[0].cells[2].innerText = values[1]
   }
 }
@@ -540,7 +540,7 @@ async function edit_current_additional_link_id(ev) {
   })
   if (values) {
     $(currentRow)[0].cells[1].innerText = values[0]
-    $(currentRow)[0].cells[2].innerText = values[1]
+    $(currentRow)[0].cells[2].innerHTML = "<a href='"+values[1]+"' target='_blank'>"+values[1]+"</a>"
     $(currentRow)[0].cells[3].innerText = values[2]
   }
 }
@@ -1964,7 +1964,7 @@ function addProtocolLinktoTableDD(protocolLink, protocolDesc) {
   var newRowIndex = checkForUniqueRowID("row-current-protocol", rowIndex);
   var indexNumber = rowIndex;
   var row = (protocolTable.insertRow(rowIndex).outerHTML =
-  "<tr id='row-current-protocol" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+protocolLink+"</td><td class='contributor-table-row'>"+protocolDesc+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  "<tr id='row-current-protocol" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td><a href='"+protocolLink+"' target='_blank'>"+protocolLink+"</a></td><td class='contributor-table-row' style='display:none'>"+protocolDesc+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
 function addAdditionalLinktoTableDD(linkType, link, description) {
@@ -1981,7 +1981,7 @@ function addAdditionalLinktoTableDD(linkType, link, description) {
   var newRowIndex = checkForUniqueRowID("row-current-additional-link", rowIndex);
   var indexNumber = rowIndex;
   var row = (linkTable.insertRow(rowIndex).outerHTML =
-  "<tr id='row-current-additional-link" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+linkType+"</td><td>"+link+"</td><td class='contributor-table-row'>"+description+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  "<tr id='row-current-additional-link" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+linkType+"</td><td><a href='"+link+"' target='_blank'>"+link+"</a></td><td class='contributor-table-row' style='display:none'>"+description+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
 async function helpSPARCAward(filetype) {
