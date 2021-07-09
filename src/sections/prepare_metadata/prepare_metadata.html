@@ -2111,20 +2111,6 @@
                 "
                 >Fill out the sections below and generate your
                 dataset_description file
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="After you complete all steps, click on 'Generate' to
-                          generate your dataset description file. A warning
-                          message may show up if any mandatory fields are missing.
-                          You may decide to go back and address the issues or
-                          generate the file anyway.
-                          <br/><br/>
-                          Click on 'Start over' to refresh the form."
-                  rel="popover"
-                  data-placement="right"
-                  data-html="true"
-                  data-trigger="hover"
-                ></i>
               </label>
               <div class="ui styled accordion" style="width:100% !important">
                 <div class="title" style="background: var(--color-bg-light-green-button)">
@@ -2144,13 +2130,16 @@
                       <div class="div-dd-info" style="margin-top:10px;margin-bottom: 15px; flex-direction: column">
                         <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom: 5px">
                           <div style="width: 100%;">
-                          <font style="font-weight:600;color: #090909"> Dataset name: <i>(must be exactly named on Pennsieve)</i>:
+                          <font style="font-weight:600;color: #090909"> Dataset name: <i>(must be exactly as your dataset name on Pennsieve)</i>:
                           </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
-                            data-content="Enter the dataset where the dataset
-                            description file will be uploaded. You can create a new
-                            dataset from the 'Manage Datasets' section under the
+                            data-content="Enter the name of the dataset associated with this dataset
+                            description file. 
+                            <br><br>
+                            You can click on the Help link below the text field to select a dataset directly from your list of datasets on Pennsieve. This will also populate the description field with the subtitle provided (if any) for your dataset on Pennsieve.
+                            <br><br>
+                            If you need to create a new dataset on Pennsieve, you can do so from the 'Manage Datasets' section under the
                             'Create a new dataset' feature."
                             rel="popover"
                             data-placement="right"
@@ -2171,24 +2160,15 @@
                       <a onclick="openDropdownPrompt('dataset')"
                         >Help me select my dataset from Pennsieve</a
                       >
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="If your dataset is listed on Pennsieve, click here to select it from the list.
-                        "
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                      ></i>
                     </div>
 
                       <div class="div-dd-info subjects" style="margin-bottom: 15px; flex-direction: column">
                         <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:5px">
                           <div style="width: 100%;">
-                          <font style="font-weight:600;color: #090909"> Description: </font>
+                          <font style="font-weight:600;color: #090909"> Brief description of your dataset: </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
-                            data-content="Enter the description for the dataset you provide above.
+                            data-content="Provide a brief description equivalent to the abstract of a scientific paper. Include the rationale for the approach, the types of data collected, the techniques used, formats and number of files and an approximate size.
                             "
                             rel="popover"
                             data-placement="right"
@@ -2227,12 +2207,10 @@
                   <div class="div-dd-info" style="margin-top:20px;flex-direction: column">
                       <div class="demo-controls-head" style="text-align: left; width: 90%">
                         <div style="width: 100%">
-                          <font style="font-weight:600;color: #090909"> Keywords <i>(specify from 3 to 5)</i>:</font>
+                          <font style="font-weight:600;color: #090909"> Keywords <i>(specify from 3 to 5 words not already used in the description)</i>:</font>
                             <i
                               class="fas fa-info-circle popover-tooltip"
-                              data-content="A set of 3-5 keywords other than the above that will aid
-                                in search. Hit 'Enter' on your keyboard after each entry
-                                to register it."
+                              data-content="Provide a set of 3-5 keywords that will aid in the search of your dataset when published on the SPARC portal. Hit 'Enter' on your keyboard after each entry to register it."
                               rel="popover"
                               data-placement="right"
                               data-html="true"
@@ -2255,11 +2233,11 @@
                     <div class="div-dd-info" style="flex-direction: column">
                       <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                         <div style="width: 100%">
-                          <font style="font-weight:600;color: #090909"> Number of subjects: </font>
+                          <font style="font-weight:600;color: #090909"> Number of subjects in your dataset: </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
-                            data-content="Number of unique subjects in this dataset, should match
-                            subjects metadata file. Must be greater or equal to 1."
+                            data-content="Enter the number of unique subjects in this dataset. Should match with the number of rows in the
+                            subjects metadata file. Set to 0 if there are no subjects.""
                             rel="popover"
                             data-placement="right"
                             data-html="true"
@@ -2280,10 +2258,10 @@
                     <div class="div-dd-info" style="margin-bottom:20px;flex-direction: column">
                       <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                         <div style="width: 100%">
-                          <font style="font-weight:600;color: #090909"> Number of samples: </font>
+                          <font style="font-weight:600;color: #090909"> Number of samples in your dataset: </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
-                            data-content="Number of unique samples in this dataset, should match
+                            data-content="Enter the number of unique samples in this dataset. Should match the number of rows in the
                             samples metadata file. Set to 0 if there are no samples."
                             rel="popover"
                             data-placement="right"
@@ -2324,16 +2302,7 @@
                 <div class="div-dd-info" style="flex-direction: column">
                   <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                     <div style="width: 100%">
-                      <font style="font-weight:600;color: #090909"> SPARC Award: </font>
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="SPARC award associated with the dataset."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                        style="margin-left: 5px; color: black"
-                      ></i>
+                      <font style="font-weight:600;color: #090909"> Number of the SPARC Award associated with this dataset: </font>
                     </div>
                   </div>
                   <div class="demo-controls-body" style="width: 90%">
@@ -2408,7 +2377,7 @@
 
                 <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
                   <a onclick="helpSPARCAward('dd')"
-                    >Help me with my award and contributor information</a
+                    >Help me with my award number and contributor information</a
                   >
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
@@ -2513,9 +2482,9 @@
                     <i
                       class="fas fa-info-circle popover-tooltip"
                       data-content="Is the data set as uploaded complete or is it part of an
-                      ongoing study? Select "hasNext" to indicate that you
+                      ongoing study? Select 'hasNext' to indicate that you
                       expect more data on different subjects as a continuation
-                      of this study. Select “hasChildren” to indicate that you
+                      of this study. Select 'hasChildren' to indicate that you
                       expect more data on the same subjects or samples derived
                       from those subjects. Leave empty if none.
                       "
