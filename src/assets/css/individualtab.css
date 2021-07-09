@@ -1612,3 +1612,7 @@ body.swal2-shown > [aria-hidden="true"] {
   opacity: 0.8;
   transition: all 0.25s linear;
 }
+
+.contributor-popup {
+  max-width: 90%
+}

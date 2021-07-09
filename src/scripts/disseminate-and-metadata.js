@@ -589,21 +589,12 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
 // Main function to check Airtable status upon loading soda
 ///// config and load live data from Airtable
 var sparcAwards = [];
+var airtableRes = [];
 function checkAirtableStatus() {
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length === 0) {
-    changeAirtableDiv(
-      "div-field-already-connected-dd",
-      "div-field-not-connected-dd",
-      "div-airtable-confirm-button-dd",
-      "div-airtable-award-button-dd"
-    );
-    changeAirtableDiv(
-      "div-field-already-connected",
-      "div-field-not-connected",
-      "div-airtable-confirm-button",
-      "div-airtable-award-button"
-    );
+    airtableRes = [false, ""]
+    return airtableRes
   } else {
     var airKeyInput = airKeyContent["api-key"];
     var airKeyName = airKeyContent["key-name"];
@@ -631,62 +622,24 @@ function checkAirtableStatus() {
           },
           function done(err) {
             if (err) {
-              changeAirtableDiv(
-                "div-field-already-connected",
-                "div-field-not-connected",
-                "div-airtable-confirm-button",
-                "div-airtable-award-button"
-              );
-              changeAirtableDiv(
-                "div-field-already-connected-dd",
-                "div-field-not-connected-dd",
-                "div-airtable-confirm-button-dd",
-                "div-airtable-award-button-dd"
-              );
               log.error(err);
               console.log(err);
-              return;
+              airtableRes = [false, ""]
+              return airtableRes
             } else {
-              // create set to remove duplicates
-              $("#current-airtable-account").text(airKeyName);
-              $("#current-airtable-account-dd").text(airKeyName);
-              changeAirtableDiv(
-                "div-field-not-connected",
-                "div-field-already-connected",
-                "div-airtable-award-button",
-                "div-airtable-confirm-button"
-              );
-              changeAirtableDiv(
-                "div-field-not-connected-dd",
-                "div-field-already-connected-dd",
-                "div-airtable-award-button-dd",
-                "div-airtable-confirm-button-dd"
-              );
               var awardSet = new Set(sparcAwards);
               var resultArray = [...awardSet];
               existingSPARCAwardsTagify.settings.whitelist = resultArray;
+              airtableRes = [true, airKeyName]
+              return airtableRes
             }
           }
         );
     } else {
-      changeAirtableDiv(
-        "div-field-already-connected",
-        "div-field-not-connected",
-        "div-airtable-confirm-button",
-        "div-airtable-award-button"
-      );
-      changeAirtableDiv(
-        "div-field-already-connected-dd",
-        "div-field-not-connected-dd",
-        "div-airtable-confirm-button-dd",
-        "div-airtable-award-button-dd"
-      );
+      airtableRes = [true, airKeyName]
+      return airtableRes
     }
   }
-  $("#submission-connect-Airtable").prop("disabled", false);
-  $("#dd-connect-Airtable").prop("disabled", false);
-  $("#submission-no-airtable-mode").prop("disabled", false);
-  $("#dataset-description-no-airtable-mode").prop("disabled", false);
 }
 
 // Related to Upload DDD part (Show and Import and Cancel DDD upload)
@@ -1203,7 +1156,7 @@ function cloneConNamesSelect(selectLast) {
   addOption(
     document.getElementById(selectLast),
     "Select an option",
-    "Select an option"
+    "Select"
   );
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
     var opt = currentContributorsLastNames[i];
@@ -1444,17 +1397,6 @@ function checkEmptyConRowInfo(table, row) {
     }
   }
   return empty;
-}
-
-function onChangeContactLabel(no) {
-  $("#para-save-contributor-status").text("");
-  var contactPersonBoolean = contactPersonCheck(no);
-  if (contactPersonBoolean) {
-    $("#ds-contact-person-" + no).prop("checked", false);
-    $("#para-save-contributor-status").text(
-      "One contact person is already added above. Only one contact person is allowed for a dataset."
-    );
-  }
 }
 
 function resetSubmission() {

@@ -496,6 +496,9 @@ async function edit_current_protocol_id(ev) {
         '<input id="DD-protocol-link" value="'+link+'" class="swal2-input" placeholder="Enter protocol link">' +
         '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description">'+desc+'</textarea>',
     focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
     preConfirm: () => {
       return [
         document.getElementById('DD-protocol-link').value,
@@ -504,8 +507,41 @@ async function edit_current_protocol_id(ev) {
     }
   })
   if (values) {
-    $(currentRow)[0].cells[1].innerText = values[0];
-    $(currentRow)[0].cells[2].innerText = values[1];
+    $(currentRow)[0].cells[1].innerText = values[0]
+    $(currentRow)[0].cells[2].innerText = values[1]
+  }
+}
+
+async function edit_current_additional_link_id(ev) {
+  var currentRow = $(ev).parents()[2];
+  var linkType = $(currentRow)[0].cells[1].innerText;
+  var link = $(currentRow)[0].cells[2].innerText;
+  var desc = $(currentRow)[0].cells[3].innerText;
+  const { value: values } = await Swal.fire({
+    title: "Edit protocol",
+    html:
+        '<select id="DD-additional-link-type" class="swal2-select"><option value="Select">Select a type</option><option value="Originating Article DOI">Originating Article DOI</option><option value="Additional Link">Additional Link</option></select>' +
+        '<input id="DD-additional-link" value="'+link+'" class="swal2-input" placeholder="Enter protocol link">' +
+        '<textarea id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description">'+desc+'</textarea>',
+    focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      $('#DD-additional-link-type').val(linkType);
+    },
+    preConfirm: () => {
+      return [
+        $('#DD-additional-link-type').val(),
+        $('#DD-additional-link').val(),
+        $('#DD-additional-link-description').val()
+      ]
+    }
+  })
+  if (values) {
+    $(currentRow)[0].cells[1].innerText = values[0]
+    $(currentRow)[0].cells[2].innerText = values[1]
+    $(currentRow)[0].cells[3].innerText = values[2]
   }
 }
 
@@ -847,6 +883,27 @@ function delete_current_protocol_id(ev) {
   })
 }
 
+function delete_current_additional_link_id(ev) {
+  Swal.fire({
+    title: 'Are you sure you want to delete this link?',
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: `No!`,
+    cancelButtonColor: "#f44336",
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Yes'
+  }).then((boolean) => {
+    if (boolean.isConfirmed) {
+      // 1. Delete from table
+      var currentRow = $(ev).parents()[2];
+      var currentRowid = $(currentRow).prop("id");
+      document.getElementById(currentRowid).outerHTML = "";
+      updateIndexForTable(document.getElementById("additional-link-table-dd"))
+    }
+  })
+}
+
 async function copy_current_subject_id(ev) {
   const { value: newSubject } = await Swal.fire({
   title: 'Copying information from this subject: ',
@@ -947,6 +1004,8 @@ function updateIndexForTable(table) {
      $("#button-generate-subjects").css("display", "none");
    } else if (table === document.getElementById("table-samples")) {
      $("#button-generate-samples").css("display", "none");
+   } else if (table === document.getElementById("contributor-table-dd")) {
+     document.getElementById("div-contributor-table-dd").style.display = "none"
    }
  }
  $("#table-subjects").css("pointer-events", "auto");
@@ -1730,11 +1789,13 @@ async function showProtocolCredentials(email, filetype) {
   } else {
     var warningText = 'Please select a protocol.'
   }
-  var htmlEle = `<div><h2>Protocol information: </h2><h3 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Email: <span style="font-weight:500; text-align:left">${email}</span><span style="width: 40%; text-align:right"><a onclick="protocolAccountQuestion('${filetype}', true)" style="font-weight:500;">Change</a></span></h3><h3 style="text-align:left">Current protocols: </h3></div>`;
+  var htmlEle = `<div><h2>Protocol information: </h2><h3 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Email: <span style="font-weight:500; text-align:left">${email}</span><span style="width: 40%; text-align:right"><a onclick="protocolAccountQuestion('${filetype}', true)" style="font-weight:500;text-decoration: underline">Change</a></span></h3><h3 style="text-align:left">Current protocols: </h3></div>`;
   const { value: protocol } = await Swal.fire({
     html: htmlEle,
     input: 'select',
     inputOptions: protocolResearcherList,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
     inputPlaceholder: 'Select a protocol',
     showCancelButton: true,
     confirmButtonText: "Confirm",
@@ -1761,6 +1822,8 @@ async function showProtocolCredentials(email, filetype) {
         html:
           '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
         focusConfirm: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
         preConfirm: () => {
           return document.getElementById('DD-protocol-link-description').value
         }
@@ -1771,7 +1834,6 @@ async function showProtocolCredentials(email, filetype) {
     }
   }
 }
-
 
 function saveProtocolInfo(token, email){
   var content = parseJson(protocolConfigPath);
@@ -1792,6 +1854,39 @@ function loadExistingProtocolInfo() {
     }
   }
   return [protocolExists, protocolTokenContent["email"]]
+}
+
+async function addAdditionalLink() {
+  const { value: values } = await Swal.fire({
+    title: "Add additional link",
+    html:
+        '<select id="DD-additional-link-type" class="swal2-select"><option value="Select">Select a type</option><option value="Originating Article DOI">Originating Article DOI</option><option value="Additional Link">Additional Link</option></select>' +
+        '<input id="DD-additional-link" class="swal2-input" placeholder="Enter a link">' +
+        '<textarea id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+    focusConfirm: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    preConfirm: () => {
+      if ($('#DD-additional-link-type').val() === "Select") {
+        Swal.showValidationMessage(
+          `Please select a type of links!`
+        )
+      }
+      if ($('#DD-additional-link').val() === "") {
+        Swal.showValidationMessage(
+          `Please enter a link!`
+        )
+      }
+      return [
+        $('#DD-additional-link-type').val(),
+        $('#DD-additional-link').val(),
+        $('#DD-additional-link-description').val()
+      ]
+    }
+  })
+  if (values) {
+    addAdditionalLinktoTableDD(values[0], values[1], values[2])
+  }
 }
 
 function showAgeSection(ev, div, type) {
@@ -1863,11 +1958,666 @@ function addProtocolLinktoTableDD(protocolLink, protocolDesc) {
   var rowIndex = rowcount;
   var currentRow =
     protocolTable.rows[
-      protocolTable.rows.length - 1
+      protocolTable.rows.length
   ];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
   var newRowIndex = checkForUniqueRowID("row-current-protocol", rowIndex);
   var indexNumber = rowIndex;
   var row = (protocolTable.insertRow(rowIndex).outerHTML =
   "<tr id='row-current-protocol" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+protocolLink+"</td><td class='contributor-table-row'>"+protocolDesc+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+}
+
+function addAdditionalLinktoTableDD(linkType, link, description) {
+  var linkTable = document.getElementById("additional-link-table-dd");
+  linkTable.style.display = "block";
+  var rowcount = linkTable.rows.length;
+  /// append row to table from the bottom
+  var rowIndex = rowcount;
+  var currentRow =
+    linkTable.rows[
+      linkTable.rows.length
+  ];
+  // check for unique row id in case users delete old rows and append new rows (same IDs!)
+  var newRowIndex = checkForUniqueRowID("row-current-additional-link", rowIndex);
+  var indexNumber = rowIndex;
+  var row = (linkTable.insertRow(rowIndex).outerHTML =
+  "<tr id='row-current-additional-link" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+linkType+"</td><td>"+link+"</td><td class='contributor-table-row'>"+description+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+}
+
+async function helpSPARCAward(filetype) {
+  if (filetype === "dd") {
+    var res = airtableRes;
+    if (res[0]) {
+      var keyname = res[1];
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert()" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4></div>`;
+      const { value: award } = await Swal.fire({
+        html: htmlEle,
+        input: 'select',
+        inputOptions: awardObj,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        inputPlaceholder: 'Select an award',
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        inputValidator: (value) => {
+          return new Promise((resolve) => {
+            if (value) {
+              resolve()
+            } else {
+              resolve("Please select an award.")
+            }
+          })
+        }
+      })
+      if (award) {
+        if (contributorObject.length !== 0) {
+          Swal.fire({
+            title: 'Are you sure you want to delete all of the previous contributor information?',
+            showCancelButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: `No!`,
+            cancelButtonColor: "#f44336",
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Yes'
+          }).then((boolean) => {
+            if (boolean.isConfirmed) {
+              changeAward(award)
+            }
+          })
+        } else {
+          changeAward(award)
+        }
+      }
+    }
+  }
+}
+
+function changeAward(award) {
+  $("#ds-description-award-input").val(award);
+  globalContributorNameObject = {};
+  currentContributorsLastNames = [];
+  $("#contributor-table-dd tr:gt(1)").remove();
+  $("#div-contributor-table-dd").css("display", "none");
+  contributorObject = [];
+  var airKeyContent = parseJson(airtableConfigPath);
+  if (Object.keys(airKeyContent).length !== 0) {
+    var airKeyInput = airKeyContent["api-key"];
+    Airtable.configure({
+      endpointUrl: "https://" + airtableHostname,
+      apiKey: airKeyInput,
+    });
+    var base = Airtable.base("appiYd1Tz9Sv857GZ");
+    base("sparc_members")
+    .select({
+      filterByFormula: `({SPARC_Award_#} = "${award}")`,
+    })
+    .eachPage(function page(records, fetchNextPage) {
+      records.forEach(function (record) {
+        var firstName = record.get("First_name");
+        var lastName = record.get("Last_name");
+        globalContributorNameObject[lastName] = firstName;
+        currentContributorsLastNames.push(lastName);
+      }),
+      fetchNextPage();
+      // var currentRowLeftID = $(
+        //   $($("#table-current-contributors").find("tr")[1].cells[0]).find(
+          //     "select"
+          //   )[0]
+          // ).prop("id");
+          // if (currentRowLeftID) {
+            //   cloneConNamesSelect(currentRowLeftID);
+            // }
+          });
+          function done(err) {
+            if (err) {
+              log.error(err);
+              console.error(err);
+              return;
+            }
+          }
+        }
+}
+
+function addContributortoTableDD(name, contactStatus) {
+  var conTable = document.getElementById("contributor-table-dd");
+  document.getElementById("div-contributor-table-dd").style.display = "block";
+  var rowcount = conTable.rows.length;
+  /// append row to table from the bottom
+  var rowIndex = rowcount;
+  var currentRow =
+    conTable.rows[
+      conTable.rows.length - 1
+  ];
+  // check for unique row id in case users delete old rows and append new rows (same IDs!)
+  var newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
+  var indexNumber = rowIndex;
+
+  var conName = name
+  var conContactPerson = contactStatus
+  var row = (conTable.insertRow(rowIndex).outerHTML =
+  "<tr id='row-current-con" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+conName+"</td><td class='contributor-table-row'>"+conContactPerson+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+}
+
+var contributorElement = '<table id="add-contributor-table" class="ui celled table" style="text-align: center"><thead class="full-width"><tr><th style="width: 15%">Last Name</th><th style="width: 15%">First Name</th><th style="width: 25%">ORCID ID</th><th style="width: 25%">Affiliation</th><th style="width: 20%">Role</th><th style="width: 5%">Contact Person</th></tr></thead><tbody><tr><td class="contributor-table-row"><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></td><td class="contributor-table-row""><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></th><td class="contributor-table-row"><input id="input-con-ID" class="form-container-input-bf" contenteditable="true" /></td><td class="contributor-table-row"><input id="input-con-affiliation" contenteditable="true"/></td><td class="contributor-table-row"><input id="input-con-role" contenteditable="true" /></td><td class="contributor-table-row"><label class="switch"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/><span class="slider round"></span></label></td></tr></tbody></table>';
+
+var contributorElementRaw = '<table id="add-contributor-table" class="ui celled table" style="text-align: center"><thead class="full-width"><tr><th style="width: 15%">Last Name</th><th style="width: 15%">First Name</th><th style="width: 25%">ORCID ID</th><th style="width: 25%">Affiliation</th><th style="width: 20%">Role</th><th style="width: 5%">Contact Person</th></tr></thead><tbody><tr><td class="contributor-table-row"><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></td><td class="contributor-table-row"><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></th><td class="contributor-table-row"><input id="input-con-ID" class="form-container-input-bf" contenteditable="true" /></td><td class="contributor-table-row"><input id="input-con-affiliation" contenteditable="true"/></td><td class="contributor-table-row"><input id="input-con-role" contenteditable="true" /></td><td class="contributor-table-row"><label class="switch"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/><span class="slider round"></span></label></td></tr></tbody></table>'
+
+var contributorObject = []
+
+function showContributorSweetalert() {
+  var currentContributortagify;
+  var currentAffliationtagify;
+  if (Object.keys(globalContributorNameObject).length !== 0) {
+    var element = contributorElement
+  } else {
+    var element = contributorElementRaw
+  }
+  Swal.fire({
+    title: "Add a contributor",
+    html: element,
+    showCancelButton: true,
+    focusCancel: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Add contributor",
+    width: 'max-content',
+    reverseButtons: reverseSwalButtons,
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    allowOutsideClick: false,
+    didOpen: () => {
+      $(".swal-popover").popover();
+      // first destroy old tagify
+      $($("#input-con-affiliation").siblings()[0]).remove();
+      $($("#input-con-role").siblings()[0]).remove();
+      /// initiate tagify for contributor roles
+      currentContributortagify = new Tagify(document.getElementById("input-con-role"), {
+        whitelist: [
+          "PrincipleInvestigator",
+          "Creator",
+          "CoInvestigator",
+          "DataCollector",
+          "DataCurator",
+          "DataManager",
+          "Distributor",
+          "Editor",
+          "Producer",
+          "ProjectLeader",
+          "ProjectManager",
+          "ProjectMember",
+          "RelatedPerson",
+          "Researcher",
+          "ResearchGroup",
+          "Sponsor",
+          "Supervisor",
+          "WorkPackageLeader",
+          "Other",
+        ],
+        dropdown: {
+          classname: "color-blue",
+          enabled: 0, // show the dropdown immediately on focus
+          maxItems: 25,
+          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+        },
+        duplicates: false,
+      });
+      currentAffliationtagify = new Tagify(document.getElementById("input-con-affiliation"), {
+        dropdown: {
+          classname: "color-blue",
+          enabled: 0, // show the dropdown immediately on focus
+          maxItems: 25,
+          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+        },
+        delimiters: null,
+        duplicates: false,
+      });
+
+      // load contributor names onto Select
+      if (Object.keys(globalContributorNameObject).length !== 0) {
+        cloneConNamesSelect("dd-contributor-last-name")
+      }
+    },
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+    preConfirm: () => {
+      var firstName = $("#dd-contributor-first-name").val().trim();
+      var lastName = $("#dd-contributor-last-name").val().trim();
+      if ($("#input-con-ID").val().trim() === "" || $("#input-con-affiliation").val().trim() === "" || $("#input-con-role").val().trim() === ""
+            || firstName === "Select" || lastName === "Select"
+            || firstName === "" || lastName === "") {
+        Swal.showValidationMessage(
+          `Please fill in all required fields!`
+        )
+      } else {
+        var duplicateConName = checkDuplicateContributorName(firstName, lastName);
+        if (!duplicateConName) {
+          if ($("#ds-contact-person").prop("checked")) {
+            var contactPersonExists = checkContactPersonStatus("add", null)
+            if (contactPersonExists) {
+              Swal.showValidationMessage(
+                "One contact person is already added. Only one contact person is allowed for a dataset."
+              )
+            } else {
+              var myCurrentCon = {
+                conName: lastName + ", " + firstName,
+                conID: $("#input-con-ID").val().trim(),
+                conAffliation: grabCurrentTagifyContributor(currentAffliationtagify, 3).join(", "),
+                conRole: grabCurrentTagifyContributor(currentContributortagify, 4).join(", "),
+                conContact: "Yes",
+              };
+              contributorObject.push(myCurrentCon)
+              return [myCurrentCon.conName, myCurrentCon.conContact]
+            }
+          } else {
+            if ($("#ds-contact-person").prop("checked")) {
+              var contactStatus = "Yes"
+            } else {
+              var contactStatus = "No"
+            }
+            var myCurrentCon = {
+              conName: lastName + ", " + firstName,
+              conID: $("#input-con-ID").val().trim(),
+              conAffliation: grabCurrentTagifyContributor(currentAffliationtagify, 3).join(", "),
+              conRole: grabCurrentTagifyContributor(currentContributortagify, 4).join(", "),
+              conContact: contactStatus,
+            };
+            contributorObject.push(myCurrentCon)
+            return [myCurrentCon.conName, myCurrentCon.conContact]
+          }
+        } else {
+          Swal.showValidationMessage(
+            `The contributor ${lastName + ", " + firstName} is already added.`
+          )
+        }
+      }
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      addContributortoTableDD(result.value[0], result.value[1])
+    }
+  });
+}
+
+function delete_current_con_id(ev) {
+  Swal.fire({
+    title: 'Are you sure you want to delete this contributor?',
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: `No!`,
+    cancelButtonColor: "#f44336",
+    confirmButtonColor: '#3085d6',
+    confirmButtonText: 'Yes'
+  }).then((boolean) => {
+    if (boolean.isConfirmed) {
+      // 1. Delete from table
+      var currentRow = $(ev).parents()[2];
+      var currentRowid = $(currentRow).prop("id");
+      document.getElementById(currentRowid).outerHTML = "";
+      updateIndexForTable(document.getElementById("contributor-table-dd"))
+      // 2. Delete from JSON
+      var contributorName = $(currentRow)[0].cells[1].innerText;
+      for (var i=0; i<contributorObject.length; i++) {
+        if (contributorObject[i].conName === contributorName) {
+          contributorObject.splice(i, 1);
+          break
+        }
+      }
+    }
+  })
+}
+
+function edit_current_con_id(ev) {
+  var currentContributortagify;
+  var currentAffliationtagify;
+  // if (Object.keys(globalContributorNameObject).length !== 0) {
+    // var element = contributorElement
+  // } else {
+  var element = contributorElementRaw
+  // }
+  var currentRow = $(ev).parents()[2];
+  var name = $(currentRow)[0].cells[1].innerText;
+  Swal.fire({
+    title: "Edit contributor",
+    html: element,
+    showCancelButton: true,
+    focusCancel: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Edit",
+    width: 'max-content',
+    customClass:"contributor-popup",
+    reverseButtons: reverseSwalButtons,
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    allowOutsideClick: false,
+    didOpen: () => {
+      $(".swal-popover").popover();
+      // disable first and last names (cannot edit these fields)
+      // first destroy old tagify
+      $($("#input-con-affiliation").siblings()[0]).remove();
+      $($("#input-con-role").siblings()[0]).remove();
+      /// initiate tagify for contributor roles
+      currentContributortagify = new Tagify(document.getElementById("input-con-role"), {
+        whitelist: [
+          "PrincipleInvestigator",
+          "Creator",
+          "CoInvestigator",
+          "DataCollector",
+          "DataCurator",
+          "DataManager",
+          "Distributor",
+          "Editor",
+          "Producer",
+          "ProjectLeader",
+          "ProjectManager",
+          "ProjectMember",
+          "RelatedPerson",
+          "Researcher",
+          "ResearchGroup",
+          "Sponsor",
+          "Supervisor",
+          "WorkPackageLeader",
+          "Other",
+        ],
+        dropdown: {
+          classname: "color-blue",
+          enabled: 0, // show the dropdown immediately on focus
+          maxItems: 25,
+          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+        },
+        duplicates: false,
+      });
+      currentAffliationtagify = new Tagify(document.getElementById("input-con-affiliation"), {
+        dropdown: {
+          classname: "color-blue",
+          enabled: 0, // show the dropdown immediately on focus
+          maxItems: 25,
+          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+        },
+        delimiters: null,
+        duplicates: false,
+      });
+      for (var contributor of contributorObject) {
+        if (contributor.conName === name) {
+          // add existing tags to tagifies
+          currentAffliationtagify.addTags(contributor.conAffliation);
+          currentContributortagify.addTags(contributor.conRole);
+          if (contributor.conContact === "Yes") {
+            $("#ds-contact-person").prop("checked", true)
+          } else {
+            $("#ds-contact-person").prop("checked", false)
+          }
+          var splitNames = name.split(", ")
+          $("#dd-contributor-last-name").val(splitNames[0].trim());
+          $("#dd-contributor-first-name").val(splitNames[1].trim());
+          $("#dd-contributor-last-name").attr("disabled", true);
+          $("#dd-contributor-first-name").attr("disabled", true);
+          $("#input-con-ID").val(contributor.conID)
+          break
+        }
+      }
+
+    },
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+    preConfirm: () => {
+      if ($("#input-con-ID").val().trim() === "" || $("#input-con-affiliation").val().trim() === "" || $("#input-con-role").val().trim() === ""
+            || $("#dd-contributor-last-name").val().trim() === "Select" || $("#dd-contributor-first-name").val().trim() === "Select"
+            || $("#dd-contributor-last-name").val().trim() === "" || $("#dd-contributor-first-name").val().trim() === "") {
+        Swal.showValidationMessage(
+          `Please fill in all required fields!`
+        )
+      } else {
+          if ($("#ds-contact-person").prop("checked")) {
+            var contactPersonExists = checkContactPersonStatus("edit", ev)
+            if (contactPersonExists) {
+              Swal.showValidationMessage(
+                "One contact person is already added. Only one contact person is allowed for a dataset."
+              )
+            } else {
+              var myCurrentCon = {
+                conName: $("#dd-contributor-last-name").val().trim() + ", " + $("#dd-contributor-first-name").val().trim(),
+                conID: $("#input-con-ID").val().trim(),
+                conAffliation: grabCurrentTagifyContributor(currentAffliationtagify, 3).join(", "),
+                conRole: grabCurrentTagifyContributor(currentContributortagify, 4).join(", "),
+                conContact: "Yes",
+              };
+              for (var contributor of contributorObject) {
+                if (contributor.conName === name) {
+                  contributorObject[contributorObject.indexOf(contributor)] = myCurrentCon
+                  break
+                }
+              }
+              return [myCurrentCon.conName, myCurrentCon.conContact]
+            }
+          } else {
+            var myCurrentCon = {
+              conName: $("#dd-contributor-last-name").val().trim() + ", " + $("#dd-contributor-first-name").val().trim(),
+              conID: $("#input-con-ID").val().trim(),
+              conAffliation: grabCurrentTagifyContributor(currentAffliationtagify, 3).join(", "),
+              conRole: grabCurrentTagifyContributor(currentContributortagify, 4).join(", "),
+              conContact: "No",
+            };
+            for (var contributor of contributorObject) {
+              if (contributor.conName === name) {
+                contributorObject[contributorObject.indexOf(contributor)] = myCurrentCon
+                break
+              }
+            }
+            return [myCurrentCon.conName, myCurrentCon.conContact]
+          }
+        }
+      },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $(currentRow)[0].cells[2].innerText = result.value[1];
+    }
+  });
+}
+
+function grabCurrentTagifyContributor(tagify, no) {
+  var infoArray = []
+  var element = document.getElementById("add-contributor-table").rows[1].cells[no]
+  var values = $(element).find("tag").toArray();
+  if (values.length > 0) {
+    values.forEach((item, k) => {
+      infoArray.push($(values)[k].innerText);
+    });
+  }
+  return infoArray
+}
+
+function checkContactPersonStatus(type, ev) {
+  var allConTable = document.getElementById("contributor-table-dd");
+  if (type === "edit") {
+    var contactPersonExists = false;
+    var currentRow = $(ev).parents()[2];
+    var name = $(currentRow)[0].cells[1].innerText;
+    var rowcount = allConTable.rows.length;
+    for (var i = 1; i < rowcount; i++) {
+      var contactLabel = allConTable.rows[i].cells[2].innerText;
+      var currentContributorName = allConTable.rows[i].cells[1].innerText;
+      if (currentContributorName !== name) {
+        if (contactLabel === "Yes") {
+          contactPersonExists = true;
+          break;
+        }
+      }
+    }
+    return contactPersonExists;
+  } else {
+    var contactPersonExists = false;
+    var rowcount = allConTable.rows.length;
+    for (var i = 1; i < rowcount; i++) {
+      var contactLabel = allConTable.rows[i].cells[2].innerText;
+      if (contactLabel === "Yes") {
+        contactPersonExists = true;
+        break;
+      }
+    }
+    return contactPersonExists;
+    }
+}
+
+function checkAtLeastOneContactPerson() {
+  var contactPersonExists = false;
+  var allConTable = document.getElementById("contributor-table-dd");
+  var rowcount = allConTable.rows.length;
+  if (allConTable.rows.length > 1) {
+    for (var i = 1; i < rowcount; i++) {
+      var contactLabel = allConTable.rows[i].cells[2].innerText;
+      if (contactLabel === "Yes") {
+        contactPersonExists = true;
+        break;
+      }
+    }
+  }
+  return contactPersonExists;
+}
+
+function checkDuplicateContributorName(first, last) {
+  var allConTable = document.getElementById("contributor-table-dd");
+  var duplicate = false;
+  var name = last + ", " + first;
+  var rowcount = allConTable.rows.length;
+  for (var i = 1; i < rowcount; i++) {
+    var currentContributorName = allConTable.rows[i].cells[1].innerText;
+    if (currentContributorName === name) {
+      duplicate = true;
+      break;
+    }
+  }
+  return duplicate;
+}
+
+
+///// Functions to grab each piece of info to generate the dd file
+
+// dataset info
+function grabDSInfoEntries() {
+  var name = document.getElementById("ds-description-award-input").value;
+  var description = document.getElementById("ds-description").value;
+  var keywordArray = keywordTagify.value;
+  var samplesNo = document.getElementById("ds-samples-no").value;
+  var subjectsNo = document.getElementById("ds-subjects-no").value;
+
+  return {
+    name: name,
+    description: description,
+    keywords: keywordArray,
+    "number of samples": samplesNo,
+    "number of subjects": subjectsNo,
+  };
+}
+
+// contributor info
+function grabConInfoEntries() {
+  var funding = $("ds-description-award-input").val();
+  var acknowledgment = $("#ds-description-acknowledgments").val();
+
+  var fundingArray = [];
+  if (funding === "") {
+    fundingArray = [""]
+  } else {
+    fundingArray = [funding];
+  }
+  /// other funding sources
+  var otherFunding = otherFundingTagify.value;
+  for (var i = 0; i < otherFunding.length; i++) {
+    fundingArray.push(otherFunding[i].value);
+  }
+
+  var contributorInfo = {};
+
+  contributorInfo["funding"] = fundingArray;
+  contributorInfo["acknowledgment"] = acknowledgment;
+  contributorInfo["contributors"] = contributorObject;
+  return contributorInfo;
+}
+
+function grabAdditionalLinkSection() {
+  var table = document.getElementById("additional-link-table-dd");
+  var rowcountLink = table.rows.length;
+  var additionalLinkInfo = [];
+  for (i = 1; i < rowcountLink; i++) {
+    var link = {
+      "link type": table.rows[i].cells[1].innerText,
+      link: table.rows[i].cells[2].innerText,
+      description: table.rows[i].cells[3].innerText,
+    };
+    additionalLinkInfo.push(link);
+  }
+  var allLinks = {}
+  //// categorize links based on types
+  var originatingDOIArray = [];
+  var additionalLinkArray = [];
+  for (var i = 0; i < additionalLinkInfo.length; i++) {
+    if (additionalLinkInfo[i]["link type"] === "Originating Article DOI") {
+      originatingDOIArray.push(additionalLinkInfo[i]);
+    } else if (additionalLinkInfo[i]["link type"] === "Additional Link") {
+      additionalLinkArray.push(additionalLinkInfo[i]);
+    }
+  }
+  allLinks["Additional links"] = additionalLinkArray;
+  allLinks["Originating Article DOI"] = originatingDOIArray;
+  return allLinks
+}
+
+function grabProtocolSection() {
+  var table = document.getElementById("protocol-link-table-dd");
+  var rowcountLink = table.rows.length;
+  var protocolLinkInfo = [];
+  for (i = 1; i < rowcountLink; i++) {
+    var protocolLink = {
+      "link type": "Protocol URL or DOI*",
+      link: table.rows[i].cells[1].innerText,
+      description: table.rows[i].cells[2].innerText,
+    };
+    protocolLinkInfo.push(protocolLink);
+  }
+  return protocolLinkInfo
+}
+
+function combineLinksSections() {
+  var protocolLinks = grabProtocolSection();
+  var otherLinks = grabAdditionalLinkSection()
+  var miscObj = {};
+  miscObj["Originating Article DOI"] = otherLinks["Originating Article DOI"];
+  miscObj["Protocol URL or DOI*"] = protocolLinks;
+  miscObj["Additional Link"] = otherLinks["Additional links"];
+  return miscObj;
+}
+
+// completeness info
+function grabCompletenessInfo() {
+  var completeness = completenessTagify.value;
+  var parentDS = parentDSTagify.value;
+  var completeDSTitle = document.getElementById("input-completeds-title").value;
+  var optionalSectionObj = {};
+  var completenessValueArray = [];
+  for (var i = 0; i < completeness.length; i++) {
+    completenessValueArray.push(completeness[i].value);
+  }
+  optionalSectionObj["completeness"] = completenessValueArray.join(", ");
+
+  var parentDSValueArray = [];
+  for (var i = 0; i < parentDS.length; i++) {
+    parentDSValueArray.push(parentDS[i].value);
+  }
+  optionalSectionObj["parentDS"] = parentDSValueArray;
+
+  if (completeDSTitle.length === 0) {
+    optionalSectionObj["completeDSTitle"] = "";
+  } else {
+    optionalSectionObj["completeDSTitle"] = completeDSTitle;
+  }
+  return optionalSectionObj;
 }

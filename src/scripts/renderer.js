@@ -697,8 +697,8 @@ const dsContributorArrayFirst1 = document.getElementById(
   "ds-description-contributor-list-first-1"
 );
 
-var contributorRoles = document.getElementById("input-con-role-1");
-const affiliationInput = document.getElementById("input-con-affiliation-1");
+// var contributorRoles = document.getElementById("input-con-role-1");
+// const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById(
   "button-ds-add-contributor"
 );
@@ -989,49 +989,6 @@ var parentDSTagify = new Tagify(parentDSDropdown, {
     enabled: 0,
     closeOnSelect: true,
   },
-});
-
-/// initiate tagify for contributor roles
-var currentContributortagify = new Tagify(contributorRoles, {
-  whitelist: [
-    "PrincipleInvestigator",
-    "Creator",
-    "CoInvestigator",
-    "DataCollector",
-    "DataCurator",
-    "DataManager",
-    "Distributor",
-    "Editor",
-    "Producer",
-    "ProjectLeader",
-    "ProjectManager",
-    "ProjectMember",
-    "RelatedPerson",
-    "Researcher",
-    "ResearchGroup",
-    "Sponsor",
-    "Supervisor",
-    "WorkPackageLeader",
-    "Other",
-  ],
-  dropdown: {
-    classname: "color-blue",
-    enabled: 0, // show the dropdown immediately on focus
-    maxItems: 25,
-    closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-  },
-  duplicates: false,
-});
-
-var currentAffliationtagify = new Tagify(affiliationInput, {
-  dropdown: {
-    classname: "color-blue",
-    enabled: 0, // show the dropdown immediately on focus
-    maxItems: 25,
-    closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-  },
-  delimiters: null,
-  duplicates: false,
 });
 
 var completenessInput = document.getElementById("ds-completeness"),
@@ -1922,6 +1879,7 @@ function addSPARCAwards() {
   return message;
 }
 
+var awardObj = {};
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   ///// Construct table from data
@@ -1945,10 +1903,13 @@ function loadAwardData() {
           function page(records, fetchNextPage) {
             records.forEach(function (record) {
               if (record.get("Project_title") !== undefined) {
+                var awardNumber = item = record
+                  .get("SPARC_Award_#");
                 item = record
                   .get("SPARC_Award_#")
                   .concat(" (", record.get("Project_title"), ")");
                 awardResultArray.push(item);
+                awardObj[awardNumber] = item
               }
             }),
               fetchNextPage();
@@ -2046,7 +2007,7 @@ function getParentDatasets() {
     var i = 0; i<datasetList.length;
     i++
   ) {
-    parentDatasets.push(datasetList[i]);
+    parentDatasets.push(datasetList[i].name);
   }
   return parentDatasets;
 }
@@ -2141,69 +2102,63 @@ function changeAwardInputDsDescription() {
 }
 
 // on change event when users choose a contributor's last name
-function onchangeLastNames(no) {
-  $("#ds-description-contributor-list-first-" + no.toString()).attr(
+function onchangeLastNames() {
+  $("#dd-contributor-first-name").attr(
     "disabled",
     true
   );
-  var conLastname = $(
-    "#ds-description-contributor-list-last-" + no.toString()
-  ).val();
+  var conLastname = $("#dd-contributor-last-name").val();
   removeOptions(
     document.getElementById(
-      "ds-description-contributor-list-first-" + no.toString()
+      "dd-contributor-first-name"
     )
   );
   if (conLastname in globalContributorNameObject) {
     addOption(
       document.getElementById(
-        "ds-description-contributor-list-first-" + no.toString()
+        "dd-contributor-first-name"
       ),
       globalContributorNameObject[conLastname],
       globalContributorNameObject[conLastname]
     );
-    $("#ds-description-contributor-list-first-" + no.toString())
+    $("#dd-contributor-first-name")
       .val(globalContributorNameObject[conLastname])
       .trigger("onchange");
 
     // delete contributor names from list after it's added
-    delete globalContributorNameObject[conLastname];
-    var newConLastNames = currentContributorsLastNames.filter(function (
-      value,
-      index,
-      arr
-    ) {
-      return value !== conLastname;
-    });
-    currentContributorsLastNames = newConLastNames;
+    // delete globalContributorNameObject[conLastname];
+    // var newConLastNames = currentContributorsLastNames.filter(function (
+    //   value,
+    //   index,
+    //   arr
+    // ) {
+    //   return value !== conLastname;
+    // });
+    // currentContributorsLastNames = newConLastNames;
   }
-  $("#ds-description-contributor-list-first-" + no.toString()).attr(
+  $("#dd-contributor-first-name").attr(
     "disabled",
     false
   );
 }
 
 // on change event when users choose a contributor's first name -> Load con info
-function onchangeFirstNames(no) {
-  var conLastname = $(
-    "#ds-description-contributor-list-last-" + no.toString()
-  ).val();
-  var conFirstname = $(
-    "#ds-description-contributor-list-first-" + no.toString()
-  ).val();
-  if (conFirstname !== "Select an option") {
-    loadContributorInfo(no, conLastname, conFirstname);
+function onchangeFirstNames() {
+  var conLastname = $("#dd-contributor-last-name").val();
+  var conFirstname = $("#dd-contributor-first-name").val()
+  if (conFirstname !== "Select") {
+    loadContributorInfo(conLastname, conFirstname);
   }
 }
 
 // Auto populate once a contributor is selected
-function loadContributorInfo(no, lastName, firstName) {
+function loadContributorInfo(lastName, firstName) {
   // first destroy old tagifies
-  $($("#input-con-affiliation-" + no.toString()).siblings()[0]).remove();
-  $($("#input-con-role-" + no.toString()).siblings()[0]).remove();
+  $($("#input-con-affiliation").siblings()[0]).remove();
+  $($("#input-con-role").siblings()[0]).remove();
 
   var tagifyRole = new Tagify(
-    document.getElementById("input-con-role-" + no.toString()),
+    document.getElementById("input-con-role"),
     {
       whitelist: [
         "PrincipleInvestigator",
@@ -2234,7 +2189,7 @@ function loadContributorInfo(no, lastName, firstName) {
     }
   );
   var tagifyAffliation = new Tagify(
-    document.getElementById("input-con-affiliation-" + no.toString()),
+    document.getElementById("input-con-affiliation"),
     {
       dropdown: {
         classname: "color-blue",
@@ -2248,9 +2203,9 @@ function loadContributorInfo(no, lastName, firstName) {
   );
   tagifyRole.removeAllTags();
   tagifyAffliation.removeAllTags();
-  var contactLabel = $("#ds-contact-person-" + no.toString());
+  var contactLabel = $("#ds-contact-person");
   $(contactLabel).prop("checked", false);
-  document.getElementById("input-con-ID-" + no.toString()).value = "Loading...";
+  document.getElementById("input-con-ID").value = "Loading...";
 
   tagifyAffliation.loading(true).dropdown.hide.call(tagifyAffliation);
   tagifyRole.loading(true).dropdown.hide.call(tagifyRole);
@@ -2278,15 +2233,15 @@ function loadContributorInfo(no, lastName, firstName) {
       // if no records found, leave fields empty
       leaveFieldsEmpty(
         conInfoObj["ID"],
-        document.getElementById("input-con-ID-" + no.toString())
+        document.getElementById("input-con-ID")
       );
       leaveFieldsEmpty(
         conInfoObj["Role"],
-        document.getElementById("input-con-role-" + no.toString())
+        document.getElementById("input-con-role")
       );
       leaveFieldsEmpty(
         conInfoObj["Affiliation"],
-        document.getElementById("input-con-affiliation-" + no.toString())
+        document.getElementById("input-con-affiliation")
       );
 
       tagifyAffliation.addTags(conInfoObj["Affiliation"]);
@@ -2535,261 +2490,22 @@ const emptyDSInfoEntries = () => {
 };
 
 function emptyLinkInfo() {
-  var tableCurrentLinks = document.getElementById("doi-table");
+  var tableCurrentLinks = document.getElementById("protocol-link-table-dd");
   var fieldSatisfied = false;
-  for (var i = 0; i < tableCurrentLinks.rows.length - 1; i++) {
-    if (
-      $(tableCurrentLinks.rows[i].cells[0]).find("select").val() ==
-      "Protocol URL or DOI*"
-    ) {
-      fieldSatisfied = true;
-    }
+  if (tableCurrentLinks.rows.length > 1) {
+    fieldSatisfied = true
   }
   return fieldSatisfied;
 }
 
 const emptyInfoEntries = (element) => {
   var fieldSatisfied = true;
-  if (element === "Select") {
+  if (element === "") {
     fieldSatisfied = false;
   }
   return fieldSatisfied;
 };
 
-const contactPersonCheck = (no) => {
-  var contactPersonExists = false;
-  var currentContactPersonID = "";
-  var rowcount = currentConTable.rows.length;
-
-  if (no === 0) {
-    currentContactPersonID = "";
-  } else {
-    currentContactPersonID = "ds-contact-person-" + no;
-  }
-
-  for (var i = 1; i < rowcount; i++) {
-    var contactLabel = $(
-      currentConTable.rows[i].cells[currentConTable.rows[i].cells.length - 2]
-    )
-      .find("label")
-      .find("input")[0];
-    if (
-      $(contactLabel).prop("id") &&
-      $(contactLabel).prop("id") !== currentContactPersonID
-    ) {
-      if (contactLabel.checked) {
-        contactPersonExists = true;
-        break;
-      }
-    }
-  }
-  return contactPersonExists;
-};
-
-function grabDSInfoEntries() {
-  var rawName =
-    datasetDescriptionFileDataset.options[
-      datasetDescriptionFileDataset.selectedIndex
-    ];
-  var name;
-  if (rawName === undefined) {
-    name = "N/A";
-  } else {
-    name = rawName.value;
-    if (name === "Select" || name === "Select dataset") {
-      name = "N/A";
-    }
-  }
-  var description = document.getElementById("ds-description").value;
-  var keywordArray = keywordTagify.value;
-  var samplesNo = document.getElementById("ds-samples-no").value;
-  var subjectsNo = document.getElementById("ds-subjects-no").value;
-  return {
-    name: name,
-    description: description,
-    keywords: keywordArray,
-    "number of samples": samplesNo,
-    "number of subjects": subjectsNo,
-  };
-}
-
-function grabConInfoEntries() {
-  if (noAirtable) {
-    var funding = $("#ds-description-award-raw-input-dd").val().trim();
-  } else {
-    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  }
-  var acknowledgment = document
-    .getElementById("ds-description-acknowledgments")
-    .value.trim();
-
-  var contributorObj = {};
-  var fundingArray = [];
-  if (funding === "Select") {
-    fundingArray = [""];
-  } else {
-    fundingArray = [funding];
-  }
-  /// other funding sources
-  var otherFunding = otherFundingTagify.value;
-  for (var i = 0; i < otherFunding.length; i++) {
-    fundingArray.push(otherFunding[i].value);
-  }
-  /// grab entries from contributor table
-  var rowcountCon = currentConTable.rows.length;
-  var cellRowCount = currentConTable.rows[1].cells.length;
-  var res;
-
-  res = grabCellConInfo(rowcountCon);
-
-  contributorObj["funding"] = fundingArray;
-  contributorObj["acknowledgment"] = acknowledgment;
-  contributorObj["contributors"] = res;
-  console.log(contributorObj["contributors"]);
-  return contributorObj;
-}
-
-function grabCellConInfo(rowcountCon) {
-  var currentConInfo = [];
-
-  for (i = 1; i < rowcountCon - 1; i++) {
-    var conLastName;
-    var conFirstName;
-    if ($($(currentConTable.rows[i].cells[0])[0]).find("select").length > 0) {
-      conLastName = $($(currentConTable.rows[i].cells[0])[0])
-        .find("select")
-        .val();
-      conFirstName = $($(currentConTable.rows[i].cells[1])[0])
-        .find("select")
-        .val();
-    } else {
-      conLastName = $($(currentConTable.rows[i].cells[0])[0])
-        .find("input")
-        .val()
-        .trim();
-      conFirstName = $($(currentConTable.rows[i].cells[1])[0])
-        .find("input")
-        .val()
-        .trim();
-    }
-
-    var conAffliationInfo = [];
-    var conRoleInfo = [];
-    var contactCheck = "No";
-    var conID = "";
-
-    for (var j = 1; j < currentConTable.rows[i].cells.length; j++) {
-      var inputField = $(currentConTable.rows[i].cells[j]).find("input");
-      if (inputField.length > 0) {
-        if (inputField.prop("id").includes("input-con-role")) {
-          var conRoleTagify = $(currentConTable.rows[i].cells[j])
-            .find("tag")
-            .toArray();
-          if (conRoleTagify.length > 0) {
-            conRoleTagify.forEach((item, k) => {
-              conRoleInfo.push($(conRoleTagify)[k].innerText);
-            });
-          }
-        } else if (inputField.prop("id").includes("input-con-affiliation")) {
-          var conAffliationTagify = $(currentConTable.rows[i].cells[j])
-            .find("tag")
-            .toArray();
-          if (conAffliationTagify.length > 0) {
-            conAffliationTagify.forEach((item, k) => {
-              conAffliationInfo.push($(conAffliationTagify)[k].innerText);
-            });
-          }
-        } else if (inputField.prop("name") === "contact-person") {
-          var contactLabel = $(currentConTable.rows[i].cells[j])
-            .find("label")
-            .find("input")[0];
-          if (contactLabel && contactLabel.checked) {
-            contactCheck = "Yes";
-          }
-        } else if (inputField.prop("id").includes("input-con-ID")) {
-          conID = $($(currentConTable.rows[i].cells[j])[0])
-            .find("input")
-            .val()
-            .trim();
-        }
-      }
-    }
-
-    var myCurrentCon = {
-      conName: conLastName + ", " + conFirstName,
-      conID: conID,
-      conAffliation: conAffliationInfo.join("; "),
-      conRole: conRoleInfo.join(", "),
-      conContact: contactCheck,
-    };
-    currentConInfo.push(myCurrentCon);
-  }
-
-  return currentConInfo;
-}
-
-function grabProtocolSection() {
-  var miscObj = {};
-  /// Additional link description
-  var rowcountLink = document.getElementById("doi-table").rows.length;
-  var addlLinkInfo = [];
-  for (i = 1; i < rowcountLink - 1; i++) {
-    var addlLink = {
-      "link type": $(document.getElementById("doi-table").rows[i].cells[0])
-        .find("select")
-        .val(),
-      link: $(document.getElementById("doi-table").rows[i].cells[1])
-        .find("input")
-        .val(),
-      description: $(document.getElementById("doi-table").rows[i].cells[2])
-        .find("input")
-        .val(),
-    };
-    addlLinkInfo.push(addlLink);
-  }
-  //// categorize links based on types
-  var originatingDOIArray = [];
-  var protocolArray = [];
-  var additionalLinkArray = [];
-  for (var i = 0; i < addlLinkInfo.length; i++) {
-    if (addlLinkInfo[i]["link type"] === "Originating Article DOI") {
-      originatingDOIArray.push(addlLinkInfo[i]);
-    } else if (addlLinkInfo[i]["link type"] === "Protocol URL or DOI*") {
-      protocolArray.push(addlLinkInfo[i]);
-    } else {
-      additionalLinkArray.push(addlLinkInfo[i]);
-    }
-  }
-  miscObj["Originating Article DOI"] = originatingDOIArray;
-  miscObj["Protocol URL or DOI*"] = protocolArray;
-  miscObj["Additional Link"] = additionalLinkArray;
-  return miscObj;
-}
-
-function grabCompletenessInfo() {
-  var completeness = completenessTagify.value;
-  var parentDS = parentDSTagify.value;
-  var completeDSTitle = document.getElementById("input-completeds-title").value;
-  var optionalSectionObj = {};
-  var completenessValueArray = [];
-  for (var i = 0; i < completeness.length; i++) {
-    completenessValueArray.push(completeness[i].value);
-  }
-  optionalSectionObj["completeness"] = completenessValueArray.join(", ");
-
-  var parentDSValueArray = [];
-  for (var i = 0; i < parentDS.length; i++) {
-    parentDSValueArray.push(parentDS[i].value);
-  }
-  optionalSectionObj["parentDS"] = parentDSValueArray;
-
-  if (completeDSTitle.length === 0) {
-    optionalSectionObj["completeDSTitle"] = "";
-  } else {
-    optionalSectionObj["completeDSTitle"] = completeDSTitle;
-  }
-  return optionalSectionObj;
-}
 
 /// detect empty required fields and raise a warning
 function detectEmptyRequiredFields(funding) {
@@ -2805,15 +2521,15 @@ function detectEmptyRequiredFields(funding) {
   var conEmptyField = [];
   var conSatisfied = true;
   var fundingSatisfied = emptyInfoEntries(funding);
-  var contactPersonExists = contactPersonCheck(0);
-  var contributorNumber = currentConTable.rows.length;
+  var contactPersonExists = checkAtLeastOneContactPerson();
+  var contributorNumber = document.getElementById("contributor-table-dd").rows.length;
   if (!fundingSatisfied) {
     conEmptyField.push("SPARC Award");
   }
   if (!contactPersonExists) {
     conEmptyField.push("One contact person");
   }
-  if (contributorNumber === 1) {
+  if (contributorNumber <= 1) {
     conEmptyField.push("At least one contributor");
   }
   if (conEmptyField.length !== 0) {
@@ -2844,20 +2560,12 @@ function detectEmptyRequiredFields(funding) {
 ////////////////////////////////////////////////////////////////
 generateDSBtn.addEventListener("click", (event) => {
   document.getElementById("para-generate-description-status").innerHTML = "";
-  if (noAirtable) {
-    var funding = $("#ds-description-award-list").val().trim();
-  } else {
-    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  }
+  var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
 
   /// raise a warning if empty required fields are found
   if (allFieldsSatisfied === false) {
-    // ipcRenderer.send(
-    //   "warning-missing-items-ds-description",
-    //   errorMessage.join("\n")
-    // );
     var textErrorMessage = "";
     for (var i = 0; i < errorMessage.length; i++) {
       textErrorMessage += errorMessage[i] + "<br>";
@@ -2941,7 +2649,7 @@ ipcRenderer.on(
         //// grab entries from contributor info section and pass values to conSectionArray
         var contributorObj = grabConInfoEntries();
         /// grab entries from other misc info section
-        var miscObj = grabProtocolSection();
+        var miscObj = combineLinksSections();
 
         /// grab entries from other optional info section
         var completenessSectionObj = grabCompletenessInfo();
@@ -2970,10 +2678,7 @@ ipcRenderer.on(
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                document.getElementById(
-                  "para-generate-description-status"
-                ).innerHTML =
-                  "<span style='color: red;'> " + emessage + "</span>";
+                Swal.fire("Failed to generate the dataset_description file", emessage, "warning")
                 ipcRenderer.send(
                   "track-event",
                   "Error",
@@ -2982,13 +2687,7 @@ ipcRenderer.on(
                 );
                 $("#generate-dd-spinner").hide();
               } else {
-                document.getElementById(
-                  "para-generate-description-status"
-                ).innerHTML =
-                  "<span style='color: black ;'>" +
-                  "Done!" +
-                  smileyCan +
-                  "</span>";
+                  Swal.fire("Successfully generated the dataset_description file", "", "success")
                 ipcRenderer.send(
                   "track-event",
                   "Success",
@@ -8980,27 +8679,28 @@ function addAirtableAccountInsideSweetalert() {
             document.getElementById(
               "para-generate-description-status"
             ).innerHTML = "";
-            $("#submission-connect-Airtable").text("Loading...");
-            $("#dd-connect-Airtable").text("Loading...");
-            $("#submission-connect-Airtable").prop("disabled", "true");
-            $("#dd-connect-Airtable").prop("disabled", "true");
-            $("#submission-no-airtable-mode").prop("disabled", "true");
-            $("#dataset-description-no-airtable-mode").prop("disabled", "true");
-            $("#current-airtable-account").text(name);
-            $("#current-airtable-account-dd").text(name);
+            // $("#submission-connect-Airtable").text("Loading...");
+            // $("#dd-connect-Airtable").text("Loading...");
+            // $("#submission-connect-Airtable").prop("disabled", "true");
+            // $("#dd-connect-Airtable").prop("disabled", "true");
+            // $("#submission-no-airtable-mode").prop("disabled", "true");
+            // $("#dataset-description-no-airtable-mode").prop("disabled", "true");
+            // $("#current-airtable-account").text(name);
+            // $("#current-airtable-account-dd").text(name);
+            $("#span-airtable-keyname").html(name);
             $("#bootbox-airtable-key-name").val("");
             $("#bootbox-airtable-key").val("");
             loadAwardData();
             ddNoAirtableMode("Off");
             // myBootboxD.modal("hide");
-            $("#Question-prepare-submission-1")
-              .nextAll()
-              .removeClass("show")
-              .removeClass("prev");
-            $("#Question-prepare-dd-1")
-              .nextAll()
-              .removeClass("show")
-              .removeClass("prev");
+            // $("#Question-prepare-submission-1")
+            //   .nextAll()
+            //   .removeClass("show")
+            //   .removeClass("prev");
+            // $("#Question-prepare-dd-1")
+            //   .nextAll()
+            //   .removeClass("show")
+            //   .removeClass("prev");
             Swal.fire({
               icon: "success",
               title: "Successfully connected. Loading your Airtable account...",
@@ -9011,6 +8711,7 @@ function addAirtableAccountInsideSweetalert() {
               allowEscapeKey: false,
               showConfirmButton: false,
             });
+            helpSPARCAward("dd");
             ipcRenderer.send(
               "track-event",
               "Success",
