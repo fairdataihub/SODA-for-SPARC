@@ -4616,6 +4616,8 @@ function showCurrentSubtitle() {
     $(".synced-progress").css("display", "none");
     bfDatasetSubtitle.value = "";
   } else {
+    document.getElementById("ds-description").innerHTML = "Loading...";
+    document.getElementById("ds-description").disabled = true;
     client.invoke(
       "api_bf_get_subtitle",
       selectedBfAccount,
@@ -4624,8 +4626,10 @@ function showCurrentSubtitle() {
         if (error) {
           log.error(error);
           console.error(error);
+          $("#ds-description").val("")
         } else {
           bfDatasetSubtitle.value = res;
+          $("#ds-description").val(res)
           let result = countCharacters(
             bfDatasetSubtitle,
             bfDatasetSubtitleCharCount
@@ -4642,6 +4646,7 @@ function showCurrentSubtitle() {
         }
       }
     );
+    document.getElementById("ds-description").disabled = false;
   }
 }
 
@@ -4653,8 +4658,6 @@ function showCurrentDescription() {
     $(".synced-progress").css("display", "none");
     tuiInstance.setMarkdown("");
   } else {
-    document.getElementById("ds-description").innerHTML = "Loading...";
-    document.getElementById("ds-description").disabled = true;
     client.invoke(
       "api_bf_get_description",
       selectedBfAccount,
@@ -4663,12 +4666,8 @@ function showCurrentDescription() {
         if (error) {
           log.error(error);
           console.error(error);
-          document.getElementById("ds-description").disabled = false;
-          $("#ds-description").val("")
         } else {
           tuiInstance.setMarkdown(res);
-          $("#ds-description").val(res)
-          document.getElementById("ds-description").disabled = false;
           if ((res = "")) {
             $("#button-add-description > .btn_animated-inside").html(
               "Add description"
