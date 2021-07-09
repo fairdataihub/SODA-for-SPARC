@@ -2136,20 +2136,13 @@
                     "
                   >
                     <div>
-                      <div class="div-dd-info subjects" style="margin-top:10px;margin-bottom: 15px">
-                        <div class="demo-controls-head">
+                      <div class="div-dd-info" style="margin-top:10px;margin-bottom: 15px; flex-direction: column">
+                        <div class="demo-controls-head" style="text-align: left; width: 90%">
                           <div style="width: 100%;">
-                          <font color="black"> Dataset name: </font>
-                        </div>
-                        </div>
-                        <div class="demo-controls-body">
-                          <div class="ui input modified">
-                            <input type="text" id="ds-name" name="dataset name" placeholder="Type here..." style="font-size:14px">
-                          </div>
-                        </div>
-                        <div class="tooltipnew demo-controls-end">
+                          <font color="black"> Dataset name: <i>(must be exactly named on Pennsieve)</i>:
+                          </font>
                           <i
-                            class="fas fa-info-circle popover-tooltip subjects-form"
+                            class="fas fa-info-circle popover-tooltip"
                             data-content="Enter the dataset where the dataset
                             description file will be uploaded. You can create a new
                             dataset from the 'Manage Datasets' section under the
@@ -2158,31 +2151,37 @@
                             data-placement="right"
                             data-html="true"
                             data-trigger="hover"
+                            style="margin-left: 5px; color: black"
                           ></i>
+                        </div>
+                        </div>
+                        <div class="demo-controls-body" style="width: 90%">
+                          <div class="ui input modified">
+                            <input type="text" id="ds-name" name="dataset name" placeholder="Type here..." style="font-size:14px">
+                          </div>
                         </div>
                       </div>
 
-                      <div class="div-dd-info subjects" style="margin-bottom: 15px">
-                        <div class="demo-controls-head">
+                      <div class="div-dd-info subjects" style="margin-bottom: 15px; flex-direction: column">
+                        <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                           <div style="width: 100%;">
                           <font color="black"> Description: </font>
-                        </div>
-                        </div>
-                        <div class="demo-controls-body">
-                          <div class="ui input modified">
-                            <textarea type="text" id="ds-description" placeholder="Type here..." style="font-size:14px"></textarea>
-                          </div>
-                        </div>
-                        <div class="tooltipnew demo-controls-end">
                           <i
-                            class="fas fa-info-circle popover-tooltip subjects-form"
+                            class="fas fa-info-circle popover-tooltip"
                             data-content="Enter the description for the dataset you provide above.
                             "
                             rel="popover"
                             data-placement="right"
                             data-html="true"
                             data-trigger="hover"
+                            style="margin-left: 5px; color: black"
                           ></i>
+                        </div>
+                        </div>
+                        <div class="demo-controls-body" style="width: 90%">
+                          <div class="ui input modified">
+                            <textarea type="text" id="ds-description" placeholder="Type here..." style="font-size:14px"></textarea>
+                          </div>
                         </div>
                       </div>
 
@@ -2191,7 +2190,7 @@
                           >Help me select a Pennsieve dataset</a
                         >
                         <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
+                          class="fas fa-info-circle popover-tooltip"
                           data-content="If your dataset is listed on Pennsieve, click here to select it from the list.
                           "
                           rel="popover"
@@ -2220,13 +2219,24 @@
                   "
                 >
                 <div>
-                  <div class="div-dd-info" style="margin-top:20px">
-                      <div class="demo-controls-head">
+                  <div class="div-dd-info" style="margin-top:20px;flex-direction: column">
+                      <div class="demo-controls-head" style="text-align: left; width: 90%">
                         <div style="width: 100%">
-                          <font color="black"> Keywords: </font>
+                          <font color="black"> Keywords <i>(specify from 3 to 5)</i>:</font>
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
+                              data-content="A set of 3-5 keywords other than the above that will aid
+                                in search. Hit 'Enter' on your keyboard after each entry
+                                to register it."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                         </div>
                       </div>
-                      <div class="demo-controls-body">
+                      <div class="demo-controls-body" style="width: 90%">
                         <div class="ui input modified">
                           <input
                             id="ds-keywords"
@@ -2236,26 +2246,24 @@
                           </input>
                         </div>
                       </div>
-                      <div class="tooltipnew demo-controls-end">
-                        <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
-                          data-content="A set of 3-5 keywords other than the above that will aid
-                            in search. Hit 'Enter' on your keyboard after each entry
-                            to register it."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </div>
                     </div>
-                    <div class="div-dd-info">
-                      <div class="demo-controls-head">
+                    <div class="div-dd-info" style="flex-direction: column">
+                      <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                         <div style="width: 100%">
                           <font color="black"> Number of subjects: </font>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="Number of unique subjects in this dataset, should match
+                            subjects metadata file. Must be greater or equal to 1."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                            style="margin-left: 5px; color: black"
+                          ></i>
                         </div>
                       </div>
-                      <div class="demo-controls-body">
+                      <div class="demo-controls-body" style="width: 90%">
                         <div class="ui input modified">
                           <input
                             id="ds-subjects-no"
@@ -2263,25 +2271,24 @@
                           />
                         </div>
                       </div>
-                      <div class="tooltipnew demo-controls-end">
-                        <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
-                          data-content="Number of unique subjects in this dataset, should match
-                          subjects metadata file. Must be greater or equal to 1."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </div>
                     </div>
-                    <div class="div-dd-info" style="margin-bottom:20px">
-                      <div class="demo-controls-head">
+                    <div class="div-dd-info" style="margin-bottom:20px;flex-direction: column">
+                      <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                         <div style="width: 100%">
                           <font color="black"> Number of samples: </font>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="Number of unique samples in this dataset, should match
+                            samples metadata file. Set to 0 if there are no samples."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                            style="margin-left: 5px; color: black"
+                          ></i>
                         </div>
                       </div>
-                      <div class="demo-controls-body">
+                      <div class="demo-controls-body" style="width: 90%">
                         <div class="ui input modified">
                           <input
                             id="ds-samples-no"
@@ -2289,17 +2296,9 @@
                           />
                         </div>
                       </div>
-                      <div class="tooltipnew demo-controls-end">
-                        <i
-                          class="fas fa-info-circle popover-tooltip subjects-form"
-                          data-content="Number of unique samples in this dataset, should match
-                          samples metadata file. Set to 0 if there are no samples."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </div>
+                      <!-- <div class="tooltipnew demo-controls-end">
+
+                      </div> -->
                     </div>
                   </div>
 
@@ -2314,19 +2313,28 @@
               <div
                 style="
                   display: block;
-                  width: 90%;
+                  /* width: 90%; */
                   margin: 0 auto;
                   font-size: 13px;
                 "
               >
               <div>
-                <div class="div-dd-info">
-                  <div class="demo-controls-head">
+                <div class="div-dd-info" style="flex-direction: column">
+                  <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                     <div style="width: 100%">
                       <font color="black"> SPARC Award: </font>
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="SPARC award associated with the dataset."
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                        style="margin-left: 5px; color: black"
+                      ></i>
                     </div>
                   </div>
-                  <div class="demo-controls-body">
+                  <div class="demo-controls-body" style="width: 90%">
                     <div class="ui input modified">
                       <input
                         id="ds-description-award-input"
@@ -2335,18 +2343,12 @@
                       />
                     </div>
                   </div>
-                  <div class="tooltipnew demo-controls-end">
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="SPARC award associated with the dataset."
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
-                  </div>
                 </div>
 
+        <div class="div-dd-info" style="flex-direction: column">
+          <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
+            <div style="width: 100%">
+              <font color="black"> Contributor Information: </font>
               <div id="div-contributor-table-dd" style="display:none">
                 <h3 style="padding-bottom:10px; margin-top:30px; text-align:center">Table of contributors:</h3>
                 <table
@@ -2391,13 +2393,16 @@
                 </table>
               </div>
                 <div style="display: flex">
-                  <div class="ui secondary submit button" style="margin: 20px auto;" onclick="showContributorSweetalert()">
+                  <div class="ui secondary submit button" style="margin: 20px 0;" onclick="showContributorSweetalert()">
                     <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                       <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>
                     Add a contributor
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
 
                 <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
                   <a onclick="helpSPARCAward('dd')"
@@ -2493,19 +2498,34 @@
               <div
                 style="
                   display: block;
-                  width: 90%;
+                  width: 100%;
                   margin: 0 auto;
                   font-size: 13px;
                 "
               >
             <div>
-              <div class="div-dd-info" style="margin-top:20px">
-                <div class="demo-controls-head">
+              <div class="div-dd-info" style="margin-top:20px;flex-direction: column">
+                <div class="demo-controls-head"  style="text-align: left; width: 90%;margin-bottom:0">
                   <div style="width: 100%">
                     <font color="black">Completeness of dataset: </font>
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="Is the data set as uploaded complete or is it part of an
+                      ongoing study? Select "hasNext" to indicate that you
+                      expect more data on different subjects as a continuation
+                      of this study. Select “hasChildren” to indicate that you
+                      expect more data on the same subjects or samples derived
+                      from those subjects. Leave empty if none.
+                      "
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                      style="margin-left: 5px; color: black"
+                    ></i>
                   </div>
                 </div>
-                <div class="demo-controls-body">
+                <div class="demo-controls-body"  style="width: 90%">
                   <div class="ui input modified">
                     <input
                       id="ds-completeness"
@@ -2514,94 +2534,88 @@
                     />
                   </div>
                 </div>
-                <div class="tooltipnew demo-controls-end">
-                  <i
-                    class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Is the data set as uploaded complete or is it part of an
-                    ongoing study? Select "hasNext" to indicate that you
-                    expect more data on different subjects as a continuation
-                    of this study. Select “hasChildren” to indicate that you
-                    expect more data on the same subjects or samples derived
-                    from those subjects. Leave empty if none.
-                    "
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                  ></i>
-                </div>
               </div>
 
-              <div class="div-dd-info">
-                  <div class="demo-controls-head">
+              <div class="div-dd-info" style="flex-direction: column">
+                  <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                     <div style="width: 100%">
                       <font color="black">Parent dataset(s): </font>
-                    </div>
-                  </div>
-                  <div class="demo-controls-body">
-                    <div class="ui input modified">
-                      <input
-                        id="input-parent-ds"
-                        class="form-container-input-bf"
-                      />
-                    </div>
-                  </div>
-                  <div class="tooltipnew demo-controls-end">
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="If this is a part of a larger dataset, or references
-                      subjects or samples from a parent dataset, select the
-                      prior dataset. You need only the last dataset, not all
-                      datasets. If samples and subjects are from multiple
-                      parent datasets please select them all. Leave empty if
-                      none.
-                      <br /><br />
-                      Tip: Start typing to see the name of your dataset, and
-                      then press Enter to add your dataset.
-                      "
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
-                  </div>
-                </div>
-
-                <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black">Title for complete dataset: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <div class="ui input modified">
-                        <input
-                          id="input-completeds-title"
-                          class="form-container-input-bf"
-                        />
-                      </div>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
                       <i
-                        class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Please give us a provisional title for the entire data
-                        set. Leave empty if not applicable.
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="If this is a part of a larger dataset, or references
+                        subjects or samples from a parent dataset, select the
+                        prior dataset. You need only the last dataset, not all
+                        datasets. If samples and subjects are from multiple
+                        parent datasets please select them all. Leave empty if
+                        none.
+                        <br /><br />
+                        Tip: Start typing to see the name of your dataset, and
+                        then press Enter to add your dataset.
                         "
                         rel="popover"
                         data-placement="right"
                         data-html="true"
                         data-trigger="hover"
+                        style="margin-left: 5px; color: black"
                       ></i>
                     </div>
                   </div>
+                  <div class="demo-controls-body"  style="width: 90%">
+                    <div class="ui input modified">
+                      <input
+                        id="input-parent-ds"
+                        class="form-container-input-bf"
+                        placeholder="Type here and hit 'Enter' after each dataset."
+                      />
+                    </div>
+                  </div>
+                </div>
 
-                  <div class="div-dd-info" style="margin-bottom:20px;padding-bottom:20px">
-                    <div class="demo-controls-head">
+                <div class="div-dd-info" style="flex-direction: column">
+                    <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                       <div style="width: 100%">
-                        <font color="black">Metadata Version: </font>
+                        <font color="black">Title for complete dataset: </font>
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Please give us a provisional title for the entire data
+                          set. Leave empty if not applicable.
+                          "
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
                       </div>
                     </div>
-                    <div class="demo-controls-body">
+                    <div class="demo-controls-body"  style="width: 90%">
+                      <div class="ui input modified">
+                        <input
+                          id="input-completeds-title"
+                          class="form-container-input-bf"
+                          placeholder="Type here"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="div-dd-info" style="margin-bottom:20px;padding-bottom:20px;flex-direction: column">
+                    <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
+                      <div style="width: 100%">
+                        <font color="black">Metadata Version: </font>
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="DO NOT CHANGE: 1.2.3
+                          "
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: 90%">
                       <div class="ui input modified">
                         <input
                           id="input-metadata-ver"
@@ -2610,17 +2624,6 @@
                           class="form-container-input-bf"
                         />
                       </div>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <i
-                        class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="DO NOT CHANGE: 1.2.3
-                        "
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                      ></i>
                     </div>
                 </div>
               </div>
@@ -2636,19 +2639,30 @@
               <div
                 style="
                   display: block;
-                  width: 90%;
+                  width: 100%;
                   margin: 0 auto;
                   font-size: 13px;
                 "
               >
               <div>
-                <div class="div-dd-info">
-                  <div class="demo-controls-head">
+                <div class="div-dd-info" style="flex-direction: column">
+                  <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                     <div style="width: 100%">
                       <font color="black"> Other funding source(s): </font>
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="Other funding sources, if any. Hit 'Enter' on your
+                        keyboard after typing each. Leave empty if none.
+                        "
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                        style="margin-left: 5px; color: black"
+                      ></i>
                     </div>
                   </div>
-                  <div class="demo-controls-body">
+                  <div class="demo-controls-body" style="width: 90%">
                     <div class="ui input modified">
                       <input
                         id="ds-other-funding"
@@ -2658,60 +2672,47 @@
                       </input>
                     </div>
                   </div>
-                  <div class="tooltipnew demo-controls-end">
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Other funding sources, if any. Hit 'Enter' on your
-                      keyboard after typing each. Leave empty if none.
-                      "
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
-                  </div>
                 </div>
 
-                <div class="div-dd-info">
-                    <div class="demo-controls-head">
+                <div class="div-dd-info" style="flex-direction: column">
+                    <div class="demo-controls-head" style="text-align: left; width: 90%;margin-bottom:0">
                       <div style="width: 100%">
                         <font color="black"> Acknowledgments: </font>
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Acknowledgments beyond funding and contributors, if any.
+                          Leave empty if none.
+                          "
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
                       </div>
                     </div>
-                    <div class="demo-controls-body">
+                    <div class="demo-controls-body"  style="width: 90%">
                       <div class="ui input modified">
                         <textarea
                           id="ds-description-acknowledgments"
                           class="form-container-textarea"
-                        >
-                        </textarea>
+                          placeholder="Type here..."
+                        ></textarea>
                       </div>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <i
-                        class="fas fa-info-circle popover-tooltip subjects-form"
-                        data-content="Acknowledgments beyond funding and contributors, if any.
-                        Leave empty if none.
-                        "
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                      ></i>
                     </div>
                   </div>
               </div>
-              <div class="sub accordion" style="width: 100%">
-                <div class="title" id="title-optional-age">
+              <div class="sub accordion" style="width: 100%; padding-bottom:30px">
+                <div class="title" style="padding-bottom:10px">
                   <i class="icon dropdown"></i>
                   Additional link(s)
                 </div>
                 <div class="content">
                   <!--  this is where the table of additional links will be -->
-                  <div style="margin: 10px auto">
+                  <div style="width: 90%; margin:0 auto">
                     <table
                       class="ui celled table"
-                      style="text-align: center; display: none"
+                      style="text-align: center; display: none;margin: 15px auto"
                       id="additional-link-table-dd"
                     >
                       <style>
@@ -2754,7 +2755,7 @@
                     </table>
                   </div>
                   <!-- end here -->
-                  <div class="ui secondary submit button" style="margin-bottom: 20px;margin-top:15px" onclick="addAdditionalLink()">
+                  <div class="ui secondary submit button" style="margin-bottom: 20px;margin-top:15px;margin-left:20px" onclick="addAdditionalLink()">
                     <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                       <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>
@@ -3166,8 +3167,7 @@
                       <textarea
                         id="ds-description-old"
                         class="form-container-textarea"
-                        disabled
-                      ></textarea>
+                        disabled></textarea>
                     </div>
                     <div class="tooltipnew demo-controls-end">
                       <img
@@ -3193,8 +3193,7 @@
                         id="ds-keywords-old"
                         class="form-container-textarea"
                         style="border-left: 2px solid #258193"
-                      >
-                      </textarea>
+                      ></textarea>
                     </div>
                     <div class="tooltipnew demo-controls-end">
                       <img
@@ -3222,6 +3221,7 @@
                         type="number"
                         class="form-container-input-bf"
                         style="width: 100%"
+                        placeholder="Enter a number"
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
@@ -3248,6 +3248,7 @@
                         id="ds-samples-no-old"
                         type="number"
                         class="form-container-input-bf"
+                        placeholder="Enter a number"
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
@@ -3349,8 +3350,7 @@
                         id="ds-other-funding-old"
                         class="form-container-textarea"
                         style="border-left: 2px solid #258193"
-                      >
-                      </textarea>
+                      ></textarea>
                     </div>
                     <div class="tooltipnew demo-controls-end">
                       <img
