@@ -4048,35 +4048,54 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
   datasetBannerImageStatus.innerHTML = "";
   if (bfViewImportedImage.src.length > 0) {
     if (formBannerHeight.value > 511) {
-      if (formBannerHeight.value < 1024) {
-        // ipcRenderer.send(
-        //   "warning-banner-image-below-1024",
-        //   formBannerHeight.value
-        // );
-        Swal.fire({
-          icon: "warning",
-          text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showCancelButton: true,
-          focusCancel: true,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-          reverseButtons: reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            uploadBannerImage();
-          }
-        });
-      } else {
-        uploadBannerImage();
-      }
+      Swal.fire({
+        icon: "warning",
+        text: `As per NIH guidelines, banner image must not display animals or graphic/bloody tissues. Do you confirm that?`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (formBannerHeight.value < 1024) {
+          // ipcRenderer.send(
+          //   "warning-banner-image-below-1024",
+          //   formBannerHeight.value
+          // );
+
+          Swal.fire({
+            icon: "warning",
+            text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
+            focusCancel: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              uploadBannerImage();
+            }
+          });
+        } else {
+          uploadBannerImage();
+        }
+      });
     } else {
       datasetBannerImageStatus.innerHTML =
         "<span style='color: red;'> " +
