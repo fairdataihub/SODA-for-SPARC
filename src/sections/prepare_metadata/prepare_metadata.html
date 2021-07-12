@@ -2439,56 +2439,82 @@
                   font-size: 13px;
                 "
               >
-                <!--  this is where the table of additional links will be -->
-                <div style="margin: 10px auto">
-                  <table
-                    class="ui celled table"
-                    style="text-align: center; display: none"
-                    id="protocol-link-table-dd"
-                  >
-                    <style>
-                      /* style for grabbed contributor row for moving contributors */
-                      .grab {
-                        cursor: grab;
-                      }
-                      .grabbed {
-                        box-shadow: 0 0 6px #000;
-                      }
-                      .grabCursor,
-                      .grabCursor * {
-                        cursor: grabbing !important;
-                      }
-                    </style>
-                    <thead class="full-width">
-                      <tr>
-                        <th style="width: 10%">Index</th>
-                        <th style="width: 25%">
-                          Protocol link
-                        </th>
-                        <th style="width: 50%;display:none">
-                          Description
-                        </th>
-                        <th style="width: 15%">
-                          <i
-                            class="fas fa-info-circle popover-tooltip"
-                            data-content="Click on the corresponding button to edit/delete a protocol."
-                            rel="popover"
-                            data-placement="right"
-                            data-html="true"
-                            data-trigger="hover"
-                          ></i>
-                        </th>
-                      </tr>
-                    </thead>
-                  </table>
+              <div class="div-dd-info" style="flex-direction: column">
+                <div class="demo-controls-head" style="text-align: left; width: 100%;margin-bottom:0">
+                  <div style="width: 100%">
+                    <font style="font-weight:600;color: #090909"> Protocol Information: </font>
+                      <!--  this is where the table of protocol links will be -->
+                      <div style="margin: 10px auto">
+                        <table
+                          class="ui celled table"
+                          style="text-align: center; display: none"
+                          id="protocol-link-table-dd"
+                        >
+                          <style>
+                            /* style for grabbed contributor row for moving contributors */
+                            .grab {
+                              cursor: grab;
+                            }
+                            .grabbed {
+                              box-shadow: 0 0 6px #000;
+                            }
+                            .grabCursor,
+                            .grabCursor * {
+                              cursor: grabbing !important;
+                            }
+                          </style>
+                          <thead class="full-width">
+                            <tr>
+                              <th style="width: 10%">Index</th>
+                              <th style="width: 25%">
+                                Protocol link
+                              </th>
+                              <th style="width: 50%;display:none">
+                                Description
+                              </th>
+                              <th style="width: 15%">
+                                <i
+                                  class="fas fa-info-circle popover-tooltip"
+                                  data-content="Click on the corresponding button to edit/delete a protocol."
+                                  rel="popover"
+                                  data-placement="right"
+                                  data-html="true"
+                                  data-trigger="hover"
+                                ></i>
+                              </th>
+                            </tr>
+                          </thead>
+                        </table>
+                      </div>
+                      <!-- end here -->
+                    <div class="ui secondary submit button" style="margin-bottom: 20px;margin-top:15px;" onclick="addProtocol()">
+                      <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                      </svg>
+                      Add a protocol
+                    </div>
+                  </div>
                 </div>
-                <!-- end here -->
-                <div class="ui secondary submit button" style="margin-bottom: 20px;margin-top:15px;" onclick="addProtocol()">
-                  <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                  </svg>
-                  Add a protocol
-                </div>
+              </div>
+                <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
+                <a onclick="addExistingProtocol()"
+                  >Help me with my protocol information</a
+                >
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. See
+                  <a
+                  target='_blank'
+                  href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'
+                  >here for details about creating your protocol on protocols.io</a>.
+                  <br>
+                  "
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
               </div>
             </div>
 
@@ -2708,6 +2734,18 @@
                       <div class="title" style="padding-bottom:10px">
                         <i class="icon dropdown"></i>
                         Additional link(s)
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content='All links and descriptions added to the "Additional link(s)"
+                          table will be included in your dataset description
+                          file when it is generated.
+                          '
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
                       </div>
                       <div class="content">
                         <!--  this is where the table of additional links will be -->

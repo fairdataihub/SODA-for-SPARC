@@ -1860,12 +1860,19 @@ async function addAdditionalLink() {
   const { value: values } = await Swal.fire({
     title: "Add additional link",
     html:
-        '<select id="DD-additional-link-type" class="swal2-select"><option value="Select">Select a type</option><option value="Originating Article DOI">Originating Article DOI</option><option value="Additional Link">Additional Link</option></select>' +
-        '<input id="DD-additional-link" class="swal2-input" placeholder="Enter a link">' +
-        '<textarea id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+        '<label>Link type: <i class="fas fa-info-circle swal-popover" data-content="Select the nature of the link: <br /> - Originating Article DOIs: DOIs of published articles that were generated from this dataset. <br /> - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-additional-link-type" class="swal2-select"><option value="Select">Select a type</option><option value="Originating Article DOI">Originating Article DOI</option><option value="Additional Link">Additional Link</option></select>' +
+        '<label>Link: <i class="fas fa-info-circle swal-popover" data-content="Enter the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-additional-link" class="swal2-input" placeholder="Enter a link">' +
+        '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
     focusConfirm: false,
+    confirmButtonText: "Add",
+    cancelButtonText: "Cancel",
+    customClass: "swal-content-additional-link",
+    showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      $(".swal-popover").popover();
+    },
     preConfirm: () => {
       if ($('#DD-additional-link-type').val() === "Select") {
         Swal.showValidationMessage(
@@ -1940,7 +1947,40 @@ function readXMLScicrunch(xml, type) {
 };
 
 // add protocol function for DD file
-function addProtocol() {
+async function addProtocol() {
+  const { value: values } = await Swal.fire({
+    title: "Add a protocol",
+    html:
+        '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
+        '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+    focusConfirm: false,
+    confirmButtonText: "Add",
+    cancelButtonText: "Cancel",
+    customClass: "swal-content-additional-link",
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      $(".swal-popover").popover();
+    },
+    preConfirm: () => {
+      if ($('#DD-protocol-link').val() === "") {
+        Swal.showValidationMessage(
+          `Please enter a link!`
+        )
+      }
+      return [
+        $('#DD-protocol-link').val(),
+        $('#DD-protocol-description').val()
+      ]
+    }
+  })
+  if (values) {
+    addProtocolLinktoTableDD(values[0], values[1])
+  }
+}
+
+function addExistingProtocol() {
   var credentials = loadExistingProtocolInfo();
   if (credentials[0]) {
     // show email for protocol account
@@ -2099,9 +2139,9 @@ function addContributortoTableDD(name, contactStatus) {
   "<tr id='row-current-con" + newRowIndex +"' class='row-protocol'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+conName+"</td><td class='contributor-table-row'>"+conContactPerson+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
-var contributorElement = '<table id="add-contributor-table" class="ui celled table" style="text-align: center"><thead class="full-width"><tr><th style="width: 15%">Last Name</th><th style="width: 15%">First Name </th><th style="width: 25%">ORCID ID <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 25%">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 20%">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 5%">Contact Person <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th></tr></thead><tbody><tr><td class="contributor-table-row"><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></td><td class="contributor-table-row""><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></th><td class="contributor-table-row"><input id="input-con-ID" class="form-container-input-bf" contenteditable="true" /></td><td class="contributor-table-row"><input id="input-con-affiliation" contenteditable="true"/></td><td class="contributor-table-row"><input id="input-con-role" contenteditable="true" /></td><td class="contributor-table-row"><label class="switch"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/><span class="slider round"></span></label></td></tr></tbody></table>';
+var contributorElement = '<table id="add-contributor-table" class="ui celled table" style="text-align: center"><thead class="full-width"><tr><th style="width: 15%">Last Name</th><th style="width: 15%">First Name </th><th style="width: 25%">ORCID ID <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 25%">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 20%">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 5%">Contact Person <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th></tr></thead><tbody><tr><td class="contributor-table-row"><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></td><td class="contributor-table-row""><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></th><td class="contributor-table-row"><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true" /></td><td class="contributor-table-row"><input id="input-con-affiliation" contenteditable="true"/></td><td class="contributor-table-row"><input id="input-con-role" contenteditable="true" /></td><td class="contributor-table-row"><label class="switch"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/><span class="slider round"></span></label></td></tr></tbody></table>';
 
-var contributorElementRaw = '<table id="add-contributor-table" class="ui celled table" style="text-align: center"><thead class="full-width"><tr><th style="width: 15%">Last Name</th><th style="width: 15%">First Name</th><th style="width: 25%">ORCID ID <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 25%">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 20%">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 5%">Contact Person <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th></tr></thead><tbody><tr><td class="contributor-table-row"><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></td><td class="contributor-table-row"><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></th><td class="contributor-table-row"><input id="input-con-ID" class="form-container-input-bf" contenteditable="true" /></td><td class="contributor-table-row"><input id="input-con-affiliation" contenteditable="true"/></td><td class="contributor-table-row"><input id="input-con-role" contenteditable="true" /></td><td class="contributor-table-row"><label class="switch"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/><span class="slider round"></span></label></td></tr></tbody></table>'
+var contributorElementRaw = '<table id="add-contributor-table" class="ui celled table" style="text-align: center"><thead class="full-width"><tr><th style="width: 15%">Last Name</th><th style="width: 15%">First Name</th><th style="width: 25%">ORCID ID <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 25%">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 20%">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th><th style="width: 5%">Contact Person <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></th></tr></thead><tbody><tr><td class="contributor-table-row"><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></td><td class="contributor-table-row"><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></th><td class="contributor-table-row"><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true" /></td><td class="contributor-table-row"><input id="input-con-affiliation" contenteditable="true"/></td><td class="contributor-table-row"><input id="input-con-role" contenteditable="true" /></td><td class="contributor-table-row"><label class="switch"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/><span class="slider round"></span></label></td></tr></tbody></table>'
 
 var contributorObject = []
 

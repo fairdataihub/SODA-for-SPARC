@@ -1401,7 +1401,12 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
               "Prepare Metadata - Create subjects.xlsx",
               subjectsTableData
             );
-            Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
+            Swal.fire({
+              title: "The subjects.xlsx file has been successfully generated at the specified location.",
+              icon: 'success',
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            })
           }
         })
      }
@@ -1457,7 +1462,12 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
               "Prepare Metadata - Create samples.xlsx",
               samplesTableData
             );
-            Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
+            Swal.fire({
+              title: "The samples.xlsx file has been successfully generated at the specified location.",
+              icon: 'success',
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            })
           }
         })
     }
@@ -2688,7 +2698,12 @@ ipcRenderer.on(
                 );
                 $("#generate-dd-spinner").hide();
               } else {
-                  Swal.fire("Successfully generated the dataset_description file", "", "success")
+                  Swal.fire({
+                    title: "The dataset_description.xlsx file has been successfully generated at the specified location.",
+                    icon: 'success',
+                    heightAuto: false,
+                    backdrop: "rgba(0,0,0, 0.4)",
+                  })
                 ipcRenderer.send(
                   "track-event",
                   "Success",

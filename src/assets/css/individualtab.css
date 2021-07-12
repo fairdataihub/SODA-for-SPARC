@@ -1616,3 +1616,12 @@ body.swal2-shown > [aria-hidden="true"] {
 .contributor-popup {
   max-width: 90%
 }
+
+.swal-content-additional-link #swal2-content {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.swal-content-additional-link #swal2-content label {
+  font-weight: 600
+}
