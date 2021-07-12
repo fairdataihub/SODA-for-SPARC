@@ -2026,6 +2026,7 @@ function addAdditionalLinktoTableDD(linkType, link, description) {
 
 async function helpSPARCAward(filetype) {
   if (filetype === "dd") {
+    $("#select-sparc-award-dd-spinner").css("display", "block");
     var res = airtableRes;
     if (res[0]) {
       var keyname = res[1];
@@ -2039,6 +2040,9 @@ async function helpSPARCAward(filetype) {
         inputPlaceholder: 'Select an award',
         showCancelButton: true,
         confirmButtonText: "Confirm",
+        didOpen: () => {
+          $("#select-sparc-award-dd-spinner").css("display", "none");
+        },
         inputValidator: (value) => {
           return new Promise((resolve) => {
             if (value) {

@@ -2135,7 +2135,7 @@
                           <i
                             class="fas fa-info-circle popover-tooltip"
                             data-content="Enter the name of the dataset associated with this dataset
-                            description file. 
+                            description file.
                             <br><br>
                             You can click on the Help link below the text field to select a dataset directly from your list of datasets on Pennsieve. This will also populate the description field with the subtitle provided (if any) for your dataset on Pennsieve.
                             <br><br>
@@ -2156,10 +2156,15 @@
                         </div>
                       </div>
 
-                    <div style="margin: 0 auto; text-decoration: underline;text-align:center;font-size:14px;margin-top:10px;margin-bottom:20px">
-                      <a onclick="openDropdownPrompt('dataset')"
+                    <div style="display: flex;justify-content: center;margin: 0 auto; text-decoration: underline;text-align:center;font-size:14px;margin-top:10px;margin-bottom:20px">
+                      <a onclick="openDropdownPrompt('dataset')" id="dd-select-pennsieve-dataset"
                         >Help me select my dataset from Pennsieve</a
                       >
+                      <div
+                        id="select-dataset-dd-spinner"
+                        class="ui active green inline loader small"
+                        style="display: none; margin-left: 10px"
+                      ></div>
                     </div>
 
                       <div class="div-dd-info subjects" style="margin-bottom: 30px; flex-direction: column">
@@ -2237,7 +2242,7 @@
                           <i
                             class="fas fa-info-circle popover-tooltip"
                             data-content="Enter the number of unique subjects in this dataset. Should match with the number of rows in the
-                            subjects metadata file. Set to 0 if there are no subjects.""
+                            subjects metadata file. Set to 0 if there are no subjects."
                             rel="popover"
                             data-placement="right"
                             data-html="true"
@@ -2375,19 +2380,23 @@
             </div>
           </div>
 
-                <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
-                  <a onclick="helpSPARCAward('dd')"
+                <div style="margin: 0 auto; display:flex; justify-content: center;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
+                  <a onclick="helpSPARCAward('dd')" target="_blank"
                     >Help me with my award number and contributor information</a
                   >
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Click here if you have an Airtable account and would like SODA to extract your award and related contributor information.
-                    "
+                    data-content="Click here if you have an Airtable account and would like SODA to extract your award and related contributor information."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
                     data-trigger="hover"
                   ></i>
+                  <div
+                    id="select-sparc-award-dd-spinner"
+                    class="ui active green inline loader sparc-award small"
+                    style="display: none; margin-left: 10px"
+                  ></div>
                 </div>
 
 
@@ -2465,24 +2474,17 @@
                   </div>
                 </div>
               </div>
-                <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
-                <a onclick="addExistingProtocol()"
+                <div style="margin: 0 auto; text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
+                <a onclick="addExistingProtocol()" target="_blank"
                   >Help me with my protocol information</a
                 >
                 <i
                   class="fas fa-info-circle popover-tooltip subjects-form"
-                  data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. See
-                  <a
-                  target='_blank'
-                  href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'
-                  >here for details about creating your protocol on protocols.io</a>.
-                  <br>
-                  "
+                  data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. See <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>here for details about creating your protocol on protocols.io</a>.<br>"
                   rel="popover"
                   data-placement="right"
                   data-html="true"
-                  data-trigger="hover"
-                ></i>
+                  data-trigger="hover"></i>
               </div>
               </div>
             </div>
@@ -5088,8 +5090,8 @@
                 </div>
               </div>
 
-              <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
-                <a onclick="preliminaryProtocolStep('subjects')"
+              <div style="margin: 0 auto;text-align:center;margin-bottom:20px;font-size:14px;margin-top:10px">
+                <a onclick="preliminaryProtocolStep('subjects')" target="_blank"
                   >Help me with my protocol information</a
                 >
                 <i
@@ -6280,8 +6282,8 @@
                     </div>
                   </div>
 
-                  <div style="margin: 0 auto; text-decoration: underline;text-align:center;margin-bottom:20px;font-size:14px">
-                    <a onclick="preliminaryProtocolStep('samples')"
+                  <div style="margin: 0 auto;text-align:center;margin-bottom:20px;font-size:14px">
+                    <a onclick="preliminaryProtocolStep('samples')" target="_blank"
                       >Help me with my protocol information</a
                     >
                     <i
