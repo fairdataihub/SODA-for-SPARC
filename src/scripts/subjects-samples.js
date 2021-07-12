@@ -1004,7 +1004,7 @@ function updateIndexForTable(table) {
      $("#button-generate-subjects").css("display", "none");
    } else if (table === document.getElementById("table-samples")) {
      $("#button-generate-samples").css("display", "none");
-   } else if (table === document.getElementById("contributor-table-dd")) {
+   } else if (table === document.getElementById("table-current-contributors")) {
      document.getElementById("div-contributor-table-dd").style.display = "none"
    }
  }
@@ -1035,6 +1035,25 @@ function updateOrderIDTable(table, json, type) {
   } else  if (type === "samples") {
     samplesTableData = orderedTableData
   }
+}
+
+function updateOrderContributorTable(table, json) {
+  var length = table.rows.length;
+  // 1. make a new json object - orderedTableData
+  var orderedTableData = [];
+  // 2. loop through the UI table by index -> grab subject_id accordingly, find subject_id in json, append that to orderedSubjectsTableData
+  i = 0;
+  for (var index = 1; index < length; index++) {
+    var name = table.rows[index].cells[1].innerText;
+    for (var con of json) {
+      if (con.conName === name) {
+        orderedTableData[i] = con
+        i += 1
+        break
+      }
+    }
+  }
+  contributorObject = orderedTableData
 }
 
 function generateSubjects() {

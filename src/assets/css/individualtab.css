@@ -1625,3 +1625,7 @@ body.swal2-shown > [aria-hidden="true"] {
 .swal-content-additional-link #swal2-content label {
   font-weight: 600
 }
+
+.tagify.form-container-input-bf {
+  overflow-x: hidden
+}
