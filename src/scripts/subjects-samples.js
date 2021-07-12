@@ -1006,6 +1006,10 @@ function updateIndexForTable(table) {
      $("#button-generate-samples").css("display", "none");
    } else if (table === document.getElementById("table-current-contributors")) {
      document.getElementById("div-contributor-table-dd").style.display = "none"
+   } else if (table === document.getElementById("protocol-link-table-dd")) {
+     document.getElementById("protocol-link-table-dd").style.display = "none"
+   } else if (table === document.getElementById("additional-link-table-dd")) {
+     document.getElementById("additional-link-table-dd").style.display = "none"
    }
  }
  $("#table-subjects").css("pointer-events", "auto");
