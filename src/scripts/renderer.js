@@ -3449,6 +3449,14 @@ bfSubmitDatasetBtn.addEventListener("click", async () => {
               ipcRenderer.send(
                 "track-event",
                 "Success",
+                `Manage Dataset - Upload Local Dataset - name - Number of files`,
+                defaultBfDataset,
+                num_of_files
+              );
+
+              ipcRenderer.send(
+                "track-event",
+                "Success",
                 `Upload Local Dataset - ${defaultBfDataset} - Number of Files`,
                 num_of_files
               );
