@@ -1821,7 +1821,7 @@ async function showProtocolCredentials(email, filetype) {
     backdrop: "rgba(0,0,0, 0.4)",
     inputPlaceholder: 'Select a protocol',
     showCancelButton: true,
-    confirmButtonText: "Confirm",
+    confirmButtonText: "Add",
     inputValidator: (value) => {
       return new Promise((resolve) => {
         if (value) {
@@ -1847,6 +1847,7 @@ async function showProtocolCredentials(email, filetype) {
         focusConfirm: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: "Add",
         preConfirm: () => {
           return document.getElementById('DD-protocol-link-description').value
         }

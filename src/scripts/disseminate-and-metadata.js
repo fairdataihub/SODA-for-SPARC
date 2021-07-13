@@ -1477,16 +1477,17 @@ function resetDD() {
       $("#Question-prepare-dd-1").removeClass("prev");
       $("#Question-prepare-dd-1").nextAll().removeClass("show");
       $("#Question-prepare-dd-1").nextAll().removeClass("prev");
-      checkAirtableStatus();
+      $("#Question-prepare-dd-1 .option-card").removeClass("checked").removeClass("disabled").removeClass("non-selected");
+      $("#Question-prepare-dd-1 .option-card .folder-input-check").prop("checked", false);
 
       // 1. empty all input, textarea, select, para-elements
       // 2. delete all rows from table Contributor
       // 3. delete all rows from table Links
-      var inputFields = $("#Question-prepare-dd-4-sections").find("input");
-      var textAreaFields = $("#Question-prepare-dd-4-sections").find(
+      var inputFields = $("#Question-prepare-dd-2").find("input");
+      var textAreaFields = $("#Question-prepare-dd-2").find(
         "textarea"
       );
-      var selectFields = $("#Question-prepare-dd-4-sections").find("select");
+      // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
 
       for (var field of inputFields) {
         $(field).val("");
@@ -1494,23 +1495,28 @@ function resetDD() {
       for (var field of textAreaFields) {
         $(field).val("");
       }
-      for (var field of selectFields) {
-        $(field).prop("selectedIndex", 0);
-      }
+      // for (var field of selectFields) {
+      //   $(field).prop("selectedIndex", 0);
+      // }
 
       keywordTagify.removeAllTags();
       otherFundingTagify.removeAllTags();
       parentDSTagify.removeAllTags();
       completenessTagify.removeAllTags();
 
-      // 3. deleting table rows
-      changeAwardInputDsDescription();
-      $("#doi-table").find("tr").slice(1, -1).remove();
+      $("#input-metadata-ver").val("1.2.3");
 
-      document.getElementById("para-generate-description-status").innerHTML =
-        "";
-      document.getElementById("para-save-contributor-status").innerHTML = "";
-      document.getElementById("para-save-link-status").innerHTML = "";
+      // 3. deleting table rows
+      globalContributorNameObject = {};
+      currentContributorsLastNames = [];
+      contributorObject = [];
+      $("#contributor-table-dd tr:gt(0)").remove();
+      $("#protocol-link-table-dd tr:gt(0)").remove();
+      $("#additional-link-table-dd tr:gt(0)").remove();
+
+      $("#div-contributor-table-dd").css("display", "none");
+      document.getElementById("protocol-link-table-dd").style.display = "none";
+      document.getElementById("additional-link-table-dd").style.display = "none"
     }
   });
 }
