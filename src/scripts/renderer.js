@@ -1355,21 +1355,6 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
 // generate subjects file
 ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
   if (dirpath.length > 0) {
-    Swal.fire({
-      title: "Generating the subjects.xlsx file",
-      html:
-        "Please wait...",
-      timer: 30000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    }).then((result) => {
-    });
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
       var emessage = "File '" + filename + "' already exists in " + dirpath[0];
@@ -1379,6 +1364,21 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
         'error'
       )
     } else {
+      Swal.fire({
+        title: "Generating the subjects.xlsx file",
+        html:
+          "Please wait...",
+        timer: 30000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+      });
       // new client that has a longer timeout
       let clientLongTimeout = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000});
       clientLongTimeout.connect("tcp://127.0.0.1:4242");
@@ -1416,21 +1416,6 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
 // generate samples file
 ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
   if (dirpath.length > 0) {
-    Swal.fire({
-      title: "Generating the samples.xlsx file",
-      html:
-      "Please wait...",
-      timer: 30000,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    }).then((result) => {
-    });
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
       var emessage = "File '" + filename + "' already exists in " + dirpath[0];
@@ -1440,6 +1425,21 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         'error'
       )
     } else {
+      Swal.fire({
+        title: "Generating the samples.xlsx file",
+        html:
+        "Please wait...",
+        timer: 30000,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+      });
       // new client that has a longer timeout
       let clientLongTimeout = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000});
       clientLongTimeout.connect("tcp://127.0.0.1:4242");
@@ -2748,7 +2748,7 @@ ipcRenderer.on(
   "selected-metadata-ds-description",
   (event, dirpath, filename) => {
     if (dirpath.length > 0) {
-      $("#generate-dd-spinner").show();
+      // $("#generate-dd-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
@@ -2760,8 +2760,26 @@ ipcRenderer.on(
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        $("#generate-dd-spinner").hide();
+
+        // $("#generate-dd-spinner").hide();
       } else {
+
+        Swal.fire({
+          title: "Generating the dataset_description.xlsx file",
+          html:
+            "Please wait...",
+          timer: 15000,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then((result) => {
+        });
+
         var datasetInfoValueArray = grabDSInfoEntries();
 
         //// process obtained values to pass to an array ///
@@ -2817,7 +2835,7 @@ ipcRenderer.on(
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
-                $("#generate-dd-spinner").hide();
+                // $("#generate-dd-spinner").hide();
               } else {
                   Swal.fire({
                     title: "The dataset_description.xlsx file has been successfully generated at the specified location.",
@@ -2831,14 +2849,12 @@ ipcRenderer.on(
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
-                $("#generate-dd-spinner").hide();
+                // $("#generate-dd-spinner").hide();
               }
             }
           );
         }
       }
-    } else {
-      $("#generate-dd-spinner").hide();
     }
   }
 );

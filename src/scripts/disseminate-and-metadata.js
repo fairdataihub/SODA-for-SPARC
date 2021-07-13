@@ -173,7 +173,7 @@ $(document).ready(function () {
 
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
-      $("#generate-submission-spinner").show();
+      // $("#generate-submission-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
@@ -185,8 +185,23 @@ $(document).ready(function () {
           text: `${emessage}`,
           title: "Metadata file already exists",
         });
-        $("#generate-submission-spinner").hide();
+        // $("#generate-submission-spinner").hide();
       } else {
+        Swal.fire({
+          title: "Generating the submission.xlsx file",
+          html:
+            "Please wait...",
+          timer: 15000,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then((result) => {
+        });
         var awardRes = $("#submission-SPARC-award-span").text();
         var dateRes = $("#submission-completion-date-span").text();
         var milestonesRes = $("#submission-milestones-span").text();
@@ -217,39 +232,44 @@ $(document).ready(function () {
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                document.getElementById(
-                  "para-save-submission-status"
-                ).innerHTML =
-                  "<span style='color: red;'> " + emessage + "</span>";
+                Swal.fire("Failed to generate the submission file", emessage, "warning")
+                // document.getElementById(
+                //   "para-save-submission-status"
+                // ).innerHTML =
+                //   "<span style='color: red;'> " + emessage + "</span>";
                 ipcRenderer.send(
                   "track-event",
                   "Error",
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
-                $("#generate-submission-spinner").hide();
+                // $("#generate-submission-spinner").hide();
               } else {
-                document.getElementById(
-                  "para-save-submission-status"
-                ).innerHTML =
-                  "<span style='color: black ;'>" +
-                  "Done!" +
-                  smileyCan +
-                  "</span>";
+                // document.getElementById(
+                //   "para-save-submission-status"
+                // ).innerHTML =
+                //   "<span style='color: black ;'>" +
+                //   "Done!" +
+                //   smileyCan +
+                //   "</span>";
+                Swal.fire({
+                  title: "The submission.xlsx file has been successfully generated at the specified location.",
+                  icon: 'success',
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                })
                 ipcRenderer.send(
                   "track-event",
                   "Success",
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
-                $("#generate-submission-spinner").hide();
+                // $("#generate-submission-spinner").hide();
               }
             }
           );
         }
       }
-    } else {
-      $("#generate-submission-spinner").hide();
     }
   });
   ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
