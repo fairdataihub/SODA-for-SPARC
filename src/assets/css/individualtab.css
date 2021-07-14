@@ -1629,3 +1629,26 @@ body.swal2-shown > [aria-hidden="true"] {
 .tagify.form-container-input-bf {
   overflow-x: hidden
 }
+
+#contributor-popup {
+  text-align: left;
+  min-width: 400px;
+  min-height: 400px;
+  margin-top: 30px;
+  padding: 0 10px;
+}
+
+#contributor-popup input {
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
+#contributor-popup select {
+  margin-bottom: 20px;
+  margin-top: 15px;
+  height: 45px
+}
+
+#contributor-popup label {
+  font-weight: 600
+}
