@@ -1652,3 +1652,21 @@ body.swal2-shown > [aria-hidden="true"] {
 #contributor-popup label {
   font-weight: 600
 }
+
+.autoComplete_wrapper > ul > li mark, .mark {
+  padding: 0 !important
+}
+
+.autoComplete_wrapper {
+  width: 100% !important
+}
+
+.autoComplete_wrapper > input {
+  width: 100% !important;
+  font-size: inherit !important;
+  min-height: 2.71428571em !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(34,36,38,.15) !important;
+  border-radius: 0 !important;
+  color: inherit !important;
+}

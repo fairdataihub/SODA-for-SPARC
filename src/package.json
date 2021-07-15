@@ -67,7 +67,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@sweetalert2/theme-bulma": "^4.0.3",
-    "@tarekraafat/autocomplete.js": "9.1.1",
+    "@tarekraafat/autocomplete.js": "^10.2.6",
     "@toast-ui/editor": "^2.5.1",
     "@yaireo/tagify": "^3.23.1",
     "airtable": "^0.8.1",

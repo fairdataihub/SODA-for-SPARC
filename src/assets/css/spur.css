@@ -286,8 +286,9 @@ small,
 
 mark,
 .mark {
-  padding: 0.2em;
-  background-color: #fcf8e3; }
+  padding: 0;
+  background-color: #fcf8e3;
+  }
 
 .list-inline {
   padding-left: 0;

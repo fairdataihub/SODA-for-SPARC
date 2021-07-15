@@ -1621,9 +1621,11 @@ function createMetadataDir() {
 createMetadataDir();
 
 function createSpecimenTypeAutocomplete(id) {
+  // var listID = "autocomplete" + id;
   var autoCompleteJS3 = new autoComplete({
     selector: "#"+id,
     data: {
+      cache: true,
       src: ["whole organism", "whole organ", "fluid specimen", "tissue", "nerve", "slice", "section", "cryosection", "cell", "nucleus", "nucleic acid", "slide", "whole mount"]
     },
     onSelection: (feedback) => {
@@ -1632,6 +1634,7 @@ function createSpecimenTypeAutocomplete(id) {
     },
     trigger: {
       event: ["input", "focus"],
+      // condition: () => true
 
     },
     resultItem: {
@@ -1641,12 +1644,14 @@ function createSpecimenTypeAutocomplete(id) {
       }
     },
     resultsList: {
+      // id: listID,
       maxResults: 5,
     }
   });
 }
 
 function createSpeciesAutocomplete(id) {
+  // var listID = "autocomplete" + id;
   var autoCompleteJS2 = new autoComplete({
     selector: "#"+id,
     data: {
@@ -1661,45 +1666,55 @@ function createSpeciesAutocomplete(id) {
     "Homo sapiens": "humans",
     "Felis catus": "domestic cat"}
     ],
-      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus","Homo sapiens", "Rattus", "Felis catus", "Rattus norvegicus"]
-    },
-    onSelection: (feedback) => {
-      var selection = feedback.selection.key;
-      document.querySelector("#"+id).value = selection;
-    },
-    trigger: {
-      event: ["input", "focus"],
+      keys: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus","Homo sapiens", "Rattus", "Felis catus", "Rattus norvegicus"]
     },
     resultItem: {
-      destination: "#"+id,
-      highlight: {
-        render: true
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>
+        <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
+          ${data.key}
+        </span>`;
       },
-      content: (data, element) => {
-         // Modify Results Item Style
-         element.style = "display: flex; justify-content: space-between;";
-         // Modify Results Item Content
-         element.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-           ${data.match}</span>
-           <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
-         ${data.key}</span>`;
-       }
+      highlight: true
     },
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS2.start();
+        }
+      }
+    },
+    threshold: 0,
     resultsList: {
-      maxResults: 5,
-      noResults: (list, query) => {
-        // Create "No Results" message element
-          const message = document.createElement("div");
-          // Add class to the created element
-          message.setAttribute("class", "no_results_species");
-          // Add an onclick event
-          message.setAttribute("onclick", "loadTaxonomySpecies('"+query+"', '"+id+"')");
-          // Add message text content
-          message.innerHTML = `<span>Find the scientific name for "${query}"</span>`;
-          // Append message element to the results list
-          list.appendChild(message);
+      element: (list, data) => {
+        const info = document.createElement("div");
+
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute("onclick", "loadTaxonomySpecies('"+data.query+"', '"+id+"')");
+          info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
       },
-    }
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true
+    },
+  });
+
+  autoCompleteJS2.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.key;
+    // Render selected choice to selection div
+    document.getElementById(id).value = selection;
+    // Replace Input value with the selected value
+    autoCompleteJS2.input.value = selection;
   });
 }
 
@@ -1709,42 +1724,56 @@ function createStrain(id, type) {
     data: {
       src: ['Wistar', 'Yucatan', 'C57/B6J', 'C57 BL/6J', 'mixed background', "Sprague-Dawley"]
     },
-    onSelection: (feedback) => {
-      var selection = feedback.selection.value;
-      document.querySelector("#"+id).value = selection;
-      if (type === "subjects") {
-        var strain = $("#bootbox-subject-strain").val();
-      } else if (type === "samples") {
-        var strain = $("#bootbox-sample-strain").val();
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS4.start();
+        }
       }
-      if (strain !== "") {
-        populateRRID(strain, type)
-      }
-    },
-    trigger: {
-      event: ["input", "focus"],
     },
     resultItem: {
-      destination: "#"+id,
-      highlight: {
-        render: true
-      }
-    },
-    resultsList: {
-      maxResults: 5,
-      noResults: (list, query) => {
-        // Create "No Results" message element
-          const message = document.createElement("div");
-          // Add class to the created element
-          message.setAttribute("class", "no_results_species");
-          // Add an onclick event
-          message.setAttribute("onclick", "populateRRID('"+query+"', '"+type+"')");
-          // Add message text content
-          message.innerHTML = `<span>Click here to check "<b>${query}</b>"</span>`;
-          // Append message element to the results list
-          list.appendChild(message);
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>`;
       },
+      highlight: true
+    },
+    threshold: 0,
+    resultsList: {
+      element: (list, data) => {
+        const info = document.createElement("div");
+
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute("onclick", "populateRRID('"+data.query+"', '"+type+"')");
+          info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
+      },
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true
+    },
+  });
+
+  autoCompleteJS4.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.value;
+    document.querySelector("#"+id).value = selection;
+    if (type === "subjects") {
+      var strain = $("#bootbox-subject-strain").val();
+    } else if (type === "samples") {
+      var strain = $("#bootbox-sample-strain").val();
     }
+    if (strain !== "") {
+      populateRRID(strain, type)
+    }
+    autoCompleteJS4.input.value = selection;
   });
 }
 
@@ -1753,16 +1782,6 @@ $(document).ready(function() {
   createSpeciesAutocomplete("bootbox-sample-species");
   createStrain("bootbox-sample-strain", "samples")
   createStrain("bootbox-subject-strain", "subjects")
-  // $("#bootbox-subject-strain").focusout(function() {
-  //   setTimeout(function(){
-  //     // if (!noResultListStrain) {
-  //       var strainName = $("#bootbox-subject-strain").val()
-  //       if (strainName !== "") {
-  //         populateRRID(strainName, "subjects")
-  //       }
-  //     // }
-  //   }, 1000)
-  // })
 })
 
 async function loadTaxonomySpecies(commonName, destinationInput) {
