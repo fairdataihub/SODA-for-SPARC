@@ -2787,7 +2787,7 @@ ipcRenderer.on(
           title: "Generating the dataset_description.xlsx file",
           html:
             "Please wait...",
-          timer: 15000,
+          timer: 300000,
           allowEscapeKey: false,
           allowOutsideClick: false,
           heightAuto: false,
