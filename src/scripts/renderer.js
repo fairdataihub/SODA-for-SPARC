@@ -7482,13 +7482,15 @@ ipcRenderer.on(
           } else {
             Swal.fire({
               icon: "warning",
-              text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+              html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure. 
+              <br/>
+              If you are trying to create a new dataset folder, select the 'Prepare a new dataset' option.`,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
+              showConfirmButton: false,
               showCancelButton: true,
               focusCancel: true,
-              confirmButtonText: "Yes",
-              cancelButtonText: "Cancel",
+              cancelButtonText: "Okay",
               reverseButtons: reverseSwalButtons,
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
