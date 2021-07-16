@@ -2228,7 +2228,8 @@ function loadContributorInfo(lastName, firstName) {
       },
       delimiters: null,
       duplicates: false,
-    }
+    },
+
   );
   tagifyRole.removeAllTags();
   tagifyAffliation.removeAllTags();
@@ -2236,8 +2237,8 @@ function loadContributorInfo(lastName, firstName) {
   $(contactLabel).prop("checked", false);
   document.getElementById("input-con-ID").value = "Loading...";
 
-  tagifyAffliation.loading(true).dropdown.hide.call(tagifyAffliation);
-  tagifyRole.loading(true).dropdown.hide.call(tagifyRole);
+  tagifyAffliation.loading(true);
+  tagifyRole.loading(true);
 
   var airKeyContent = parseJson(airtableConfigPath);
   var airKeyInput = airKeyContent["api-key"];
@@ -2275,9 +2276,6 @@ function loadContributorInfo(lastName, firstName) {
 
       tagifyAffliation.addTags(conInfoObj["Affiliation"]);
       tagifyRole.addTags(conInfoObj["Role"]);
-
-      tagifyAffliation.loading(false).dropdown.show.call(tagifyAffliation);
-      tagifyRole.loading(false);
     }),
     function done(err) {
       if (err) {
@@ -2286,6 +2284,8 @@ function loadContributorInfo(lastName, firstName) {
         return;
       }
     };
+    tagifyAffliation.loading(false);
+    tagifyRole.loading(false);
 }
 
 //// De-populate dataset dropdowns to clear options

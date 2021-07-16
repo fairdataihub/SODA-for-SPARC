@@ -2049,14 +2049,15 @@ function addAdditionalLinktoTableDD(linkType, link, description) {
 }
 
 async function helpSPARCAward(filetype) {
+  var award = "";
   if (filetype === "dd") {
-    $("#select-sparc-award-dd-spinner").css("display", "block");
     var res = airtableRes;
+    $("#select-sparc-award-dd-spinner").css("display", "block");
     if (res[0]) {
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert()" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
-      const { value: award } = await Swal.fire({
+      const { value: awardVal } = await Swal.fire({
         html: htmlEle,
         // input: 'select',
         // inputOptions: awardObj,
@@ -2073,10 +2074,12 @@ async function helpSPARCAward(filetype) {
         preConfirm: () => {
             if ($("#select-SPARC-award").val() === "Select") {
               Swal.showValidationMessage("Please select an award.")
+            } else {
+              award = $("#select-SPARC-award").val()
             }
         }
       })
-      if (award) {
+      if (awardVal) {
         if (contributorObject.length !== 0) {
           Swal.fire({
             title: 'Are you sure you want to delete all of the previous contributor information?',
@@ -2089,13 +2092,14 @@ async function helpSPARCAward(filetype) {
             confirmButtonText: 'Yes'
           }).then((boolean) => {
             if (boolean.isConfirmed) {
-              var awardValue =  $("#select-SPARC-award").val()
-              changeAward(awardValue)
+              // var awardValue =  $("#select-SPARC-award").val()
+              // $("#ds-description-award-input").val(awardValue)
+              changeAward(award)
             }
           })
         } else {
-          var awardValue =  $("#select-SPARC-award").val()
-          changeAward(awardValue)
+          // var awardValue =  $("#select-SPARC-award").val()
+          changeAward(award)
         }
       }
     }
@@ -2114,7 +2118,7 @@ function changeAward(award) {
   $("#ds-description-award-input").val(award);
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
-  $("#contributor-table-dd tr:gt(1)").remove();
+  $("#contributor-table-dd tr:gt(0)").remove();
   $("#div-contributor-table-dd").css("display", "none");
   contributorObject = [];
   var airKeyContent = parseJson(airtableConfigPath);
@@ -2256,7 +2260,6 @@ function showContributorSweetalert(key) {
         delimiters: null,
         duplicates: false,
       });
-
       // load contributor names onto Select
       if (Object.keys(globalContributorNameObject).length !== 0) {
         if (key === false) {
@@ -2271,6 +2274,10 @@ function showContributorSweetalert(key) {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     preConfirm: () => {
+
+      var affiliationVals = grabCurrentTagifyContributor(currentAffliationtagify).join(", ");
+      var roleVals = grabCurrentTagifyContributor(currentContributortagify).join(", ");
+
       var firstName = $("#dd-contributor-first-name").val().trim();
       var lastName = $("#dd-contributor-last-name").val().trim();
       if ($("#input-con-ID").val().trim() === "" || $("#input-con-affiliation").val().trim() === "" || $("#input-con-role").val().trim() === ""
@@ -2280,6 +2287,7 @@ function showContributorSweetalert(key) {
           `Please fill in all required fields!`
         )
       } else {
+
         var duplicateConName = checkDuplicateContributorName(firstName, lastName);
         if (!duplicateConName) {
           if ($("#ds-contact-person").prop("checked")) {
@@ -2292,25 +2300,20 @@ function showContributorSweetalert(key) {
               var myCurrentCon = {
                 conName: lastName + ", " + firstName,
                 conID: $("#input-con-ID").val().trim(),
-                conAffliation: grabCurrentTagifyContributor(currentAffliationtagify).join(", "),
-                conRole: grabCurrentTagifyContributor(currentContributortagify).join(", "),
+                conAffliation: affiliationVals,
+                conRole: roleVals,
                 conContact: "Yes",
               };
               contributorObject.push(myCurrentCon)
               return [myCurrentCon.conName, myCurrentCon.conContact]
             }
           } else {
-            if ($("#ds-contact-person").prop("checked")) {
-              var contactStatus = "Yes"
-            } else {
-              var contactStatus = "No"
-            }
             var myCurrentCon = {
               conName: lastName + ", " + firstName,
               conID: $("#input-con-ID").val().trim(),
-              conAffliation: grabCurrentTagifyContributor(currentAffliationtagify).join(", "),
-              conRole: grabCurrentTagifyContributor(currentContributortagify).join(", "),
-              conContact: contactStatus,
+              conAffliation: affiliationVals,
+              conRole: roleVals,
+              conContact: "No",
             };
             contributorObject.push(myCurrentCon)
             return [myCurrentCon.conName, myCurrentCon.conContact]
@@ -2361,11 +2364,7 @@ function delete_current_con_id(ev) {
 function edit_current_con_id(ev) {
   var currentContributortagify;
   var currentAffliationtagify;
-  // if (Object.keys(globalContributorNameObject).length !== 0) {
-    // var element = contributorElement
-  // } else {
   var element = contributorElementRaw
-  // }
   var currentRow = $(ev).parents()[2];
   var name = $(currentRow)[0].cells[1].innerText;
   Swal.fire({
@@ -2431,8 +2430,12 @@ function edit_current_con_id(ev) {
       for (var contributor of contributorObject) {
         if (contributor.conName === name) {
           // add existing tags to tagifies
-          currentAffliationtagify.addTags(contributor.conAffliation);
-          currentContributortagify.addTags(contributor.conRole);
+          for (var affiliation of contributor.conAffliation.split(" ,")) {
+            currentAffliationtagify.addTags(affiliation);
+          }
+          for (var role of contributor.conRole.split(" ,")) {
+            currentContributortagify.addTags(role);
+          }
           if (contributor.conContact === "Yes") {
             $("#ds-contact-person").prop("checked", true)
           } else {
@@ -2447,7 +2450,6 @@ function edit_current_con_id(ev) {
           break
         }
       }
-
     },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -2463,6 +2465,8 @@ function edit_current_con_id(ev) {
           `Please fill in all required fields!`
         )
       } else {
+          var affiliationVals = grabCurrentTagifyContributor(currentAffliationtagify).join(", ");
+          var roleVals = grabCurrentTagifyContributor(currentContributortagify).join(", ");
           if ($("#ds-contact-person").prop("checked")) {
             var contactPersonExists = checkContactPersonStatus("edit", ev)
             if (contactPersonExists) {
@@ -2473,8 +2477,8 @@ function edit_current_con_id(ev) {
               var myCurrentCon = {
                 conName: $("#dd-contributor-last-name").val().trim() + ", " + $("#dd-contributor-first-name").val().trim(),
                 conID: $("#input-con-ID").val().trim(),
-                conAffliation: grabCurrentTagifyContributor(currentAffliationtagify).join(", "),
-                conRole: grabCurrentTagifyContributor(currentContributortagify).join(", "),
+                conAffliation: affiliationVals,
+                conRole: roleVals,
                 conContact: "Yes",
               };
               for (var contributor of contributorObject) {
@@ -2489,8 +2493,8 @@ function edit_current_con_id(ev) {
             var myCurrentCon = {
               conName: $("#dd-contributor-last-name").val().trim() + ", " + $("#dd-contributor-first-name").val().trim(),
               conID: $("#input-con-ID").val().trim(),
-              conAffliation: grabCurrentTagifyContributor(currentAffliationtagify).join(", "),
-              conRole: grabCurrentTagifyContributor(currentContributortagify).join(", "),
+              conAffliation: affiliationVals,
+              conRole: roleVals,
               conContact: "No",
             };
             for (var contributor of contributorObject) {
@@ -2513,13 +2517,14 @@ function edit_current_con_id(ev) {
 function grabCurrentTagifyContributor(tagify) {
   var infoArray = []
   // var element = document.getElementById(id)
-  var values = tagify.value;
-  if (values.length > 0) {
-    values.forEach((item, k) => {
-      if ($(values)[k].value) {
-        infoArray.push($(values)[k].value);
+  var values = tagify.DOM.originalInput.value;
+  if (values !== ""){
+    var valuesArray = JSON.parse(values);
+    if (valuesArray.length > 0) {
+      for (var val of valuesArray) {
+        infoArray.push(val.value);
       }
-    });
+    }
   }
   return infoArray
 }
@@ -2592,7 +2597,7 @@ function checkDuplicateContributorName(first, last) {
 
 // dataset info
 function grabDSInfoEntries() {
-  var name = document.getElementById("ds-description-award-input").value;
+  var name = document.getElementById("ds-name").value;
   var description = document.getElementById("ds-description").value;
   var keywordArray = keywordTagify.value;
   var samplesNo = document.getElementById("ds-samples-no").value;

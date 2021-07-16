@@ -215,23 +215,28 @@ def populate_completeness_info(workbook, val_array, bfaccountname):
     workbook["D20"] = val_array["completeDSTitle"]
 
     ## parent Datasets
-    parentds_id_array = []
-    try:
-        bf = Pennsieve(bfaccountname)
+    if val_array["parentDS"]:
 
-        for dataset in val_array["parentDS"]:
+        parentds_id_array = []
+        try:
+            bf = Pennsieve(bfaccountname)
 
-            myds = bf.get_dataset(dataset)
-            dataset_id = myds.id
-            parentds_id_array.append(dataset_id)
+            for dataset in val_array["parentDS"]:
 
-            workbook["D19"] = ", ".join(parentds_id_array)
+                myds = bf.get_dataset(dataset)
+                dataset_id = myds.id
+                parentds_id_array.append(dataset_id)
 
-    except Exception as err:
-        # NOTE: Pennsieve package 3.2.0 misspells 'invalid'
-        if 'Invalid profile name' in str(err) or "Invaid profile name" in str(err):
-            raise Exception("Please connect SODA with Pennsieve to use this feature!")
-        raise
+                workbook["D19"] = ", ".join(parentds_id_array)
+
+        except Exception as err:
+            # NOTE: Pennsieve package 3.2.0 misspells 'invalid'
+            if 'Invalid profile name' in str(err) or "Invaid profile name" in str(err):
+                raise Exception("Please connect SODA with Pennsieve to use this feature!")
+            raise
+    else:
+        workbook["D19"] = ""
+
 
 ### generate the file
 def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, optional_str, con_str):
