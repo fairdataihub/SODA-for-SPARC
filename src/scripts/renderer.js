@@ -1504,11 +1504,16 @@ ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPat
   }
 });
 
-function transformImportedExcelFile(result) {
+function transformImportedExcelFile(type, result) {
   for (var column of result.slice(1)) {
     var indices = getAllIndexes(column, "nan");
     for (var ind of indices) {
-      column[ind] = "";
+        column[ind] = "";
+    }
+    if (type === "samples") {
+      if (!specimenType.includes(column[5])) {
+        column[5] = "";
+      }
     }
   }
   return result
@@ -1538,7 +1543,7 @@ function loadSubjectsFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
-          subjectsTableData = transformImportedExcelFile(res);
+          subjectsTableData = transformImportedExcelFile("subjects", res);
           loadDataFrametoUI()
           ipcRenderer.send(
             "track-event",
@@ -1583,7 +1588,7 @@ function loadSamplesFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
-          samplesTableData = transformImportedExcelFile(res);
+          samplesTableData = transformImportedExcelFile("samples", res);
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -1639,13 +1644,14 @@ function createMetadataDir() {
 
 createMetadataDir();
 
+const specimenType = ["whole organism", "whole organ", "fluid specimen", "tissue", "nerve", "slice", "section", "cryosection", "cell", "nucleus", "nucleic acid", "slide", "whole mount"];
 function createSpecimenTypeAutocomplete(id) {
   // var listID = "autocomplete" + id;
   var autoCompleteJS3 = new autoComplete({
     selector: "#"+id,
     data: {
       cache: true,
-      src: ["whole organism", "whole organ", "fluid specimen", "tissue", "nerve", "slice", "section", "cryosection", "cell", "nucleus", "nucleic acid", "slide", "whole mount"]
+      src: specimenType
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.value;
