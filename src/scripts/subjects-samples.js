@@ -910,6 +910,8 @@ async function copy_current_subject_id(ev) {
   text: "Enter an ID for the new subject: ",
   input: 'text',
   showCancelButton: true,
+  heightAuto: false,
+  backdrop: "rgba(0,0,0, 0.4)",
   inputValidator: (value) => {
     if (!value) {
       return 'Please enter an ID'
@@ -1229,6 +1231,8 @@ function loadSubjectsDataToTable() {
       text: message,
       icon: "warning",
       showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     })
   } else {
     Swal.fire({
@@ -1236,6 +1240,8 @@ function loadSubjectsDataToTable() {
       text: 'Please add or edit your subject_id(s) in the following subjects table.',
       icon: "success",
       showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     })
   }
   Swal.fire({
@@ -1244,6 +1250,8 @@ function loadSubjectsDataToTable() {
   icon: iconMessage,
   showConfirmButton: showConfirmButtonBool,
   timer: 1200,
+  heightAuto: false,
+  backdrop: "rgba(0,0,0, 0.4)",
   })
   $("#button-generate-subjects").css("display", "block");
   $("#div-import-primary-folder-sub").hide()
@@ -1261,6 +1269,8 @@ function loadSamplesDataToTable() {
       text: message,
       icon: "warning",
       showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     })
   } else {
     Swal.fire({
@@ -1268,7 +1278,9 @@ function loadSamplesDataToTable() {
       text: 'Please add or edit your sample_id(s) in the following samples table.',
       icon: "success",
       showConfirmButton: false,
-      timer: 1200
+      timer: 1200,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     })
   }
   $("#button-generate-samples").css("display", "block");
@@ -1367,6 +1379,8 @@ async function addCustomField(type) {
             title: 'Enter a custom field:',
             input: 'text',
             showCancelButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
             inputValidator: (value) => {
               if (!value) {
                 return "Please enter a custom field"
@@ -1388,6 +1402,8 @@ async function addCustomField(type) {
             title: 'Enter a custom field:',
             input: 'text',
             showCancelButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
             inputValidator: (value) => {
               if (!value) {
                 return "Please enter a custom field"
@@ -1792,13 +1808,22 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
               backdrop: "rgba(0,0,0, 0.4)",
               showConfirmButton: false,
               allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading()
+              }
             }).then((result) => {
                 showProtocolCredentials(email, filetype)
             })
           }
         } else {
           if (type==="first-time") {
-            Swal.fire("Successfully connected", "However, at this moment, you do not have any protocol information for SODA to extract.", "success")
+            Swal.fire({
+              title: "Successfully connected",
+              text: "However, at this moment, you do not have any protocol information for SODA to extract.",
+              icon: "success",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            })
           }
         }
       });
@@ -2055,7 +2080,7 @@ async function helpSPARCAward(filetype) {
     $("#select-sparc-award-dd-spinner").css("display", "block");
     if (res[0]) {
       var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert()" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
         html: htmlEle,
@@ -2102,6 +2127,23 @@ async function helpSPARCAward(filetype) {
           changeAward(award)
         }
       }
+    } else {
+      Swal.fire({
+        title: 'At this moment, SODA is not connected with your Airtable account.',
+        text: 'Would you like to connect your Airtable account with SODA?',
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: `No!`,
+        cancelButtonColor: "#f44336",
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Yes'
+      }).then((boolean) => {
+        if (boolean.isConfirmed) {
+          showAddAirtableAccountSweetalert('dd')
+        }
+      })
+      $("#select-sparc-award-dd-spinner").css("display", "none");
     }
   }
 }

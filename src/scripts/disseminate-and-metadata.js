@@ -169,7 +169,7 @@ $(document).ready(function () {
   //   }
   // });
 
-  checkAirtableStatus();
+  checkAirtableStatus("");
 
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
@@ -610,7 +610,7 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
 ///// config and load live data from Airtable
 var sparcAwards = [];
 var airtableRes = [];
-function checkAirtableStatus() {
+function checkAirtableStatus(keyword) {
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length === 0) {
     airtableRes = [false, ""]
@@ -651,6 +651,9 @@ function checkAirtableStatus() {
               var resultArray = [...awardSet];
               existingSPARCAwardsTagify.settings.whitelist = resultArray;
               airtableRes = [true, airKeyName]
+              if (keyword === "dd") {
+                helpSPARCAward('dd')
+              }
               return airtableRes
             }
           }
@@ -1469,7 +1472,7 @@ function resetSubmission() {
       document.getElementById("para-milestone-document-info-long").innerHTML =
         "";
       document.getElementById("para-save-submission-status").innerHTML = "";
-      checkAirtableStatus();
+      checkAirtableStatus("");
     }
   });
 }
