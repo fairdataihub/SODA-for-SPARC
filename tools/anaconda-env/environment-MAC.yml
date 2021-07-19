@@ -9,6 +9,7 @@ dependencies:
 - git = 2.20.1
 - pip
 - pip:
+  - chardet == 4.0.0
   - pandas == 0.25.2
   - openpyxl == 3.0.0
   - zerorpc == 0.6.3
