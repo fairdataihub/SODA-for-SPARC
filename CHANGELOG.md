@@ -4,6 +4,20 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v4.6.0 - 2021-06-25
+
+### Feature additions:
+- You can now create your subjects.xlsx and samples.xlsx files directly through SODA.
+- Added additional navigation buttons that should allow a user to not have to return to the main menu when a certain function is complete. This workflow follows the step by step guide found [here](https://github.com/bvhpatel/SODA/wiki/Organize-and-submit-SPARC-datasets-with-SODA).
+- Added a new warning when uploading a banner image.
+
+### Bug fixes:
+- Fixed a bug where the footer of the app could be mispositioned sometimes.
+
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
+
 ## v4.5.1 - 2021-06-25
 
 ### Bug fixes:
@@ -24,6 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Known issues:
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
 
+
 ## v4.4.0 - 2021-06-03
 
 ### Feature additions:
@@ -38,6 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Known issues:
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
 
 ## v4.3.0 - 2021-05-24
 
@@ -59,12 +75,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Known issues:
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
 
+
 ## v4.2.1 - 2021-04-23
 
 ### Bug fixes:
 - Updated Pennsieve python packages to support minor bugfixes and performance improvements.
 - Fixed a minor bug in how dataset statistics were being recorded.
 - Fixed a bug where the contact person could not be changed when creating the dataset_description metadata file.
+
 
 ## v4.2.0 - 2021-04-21
 
@@ -81,6 +99,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When uploading on macOS, hidden files like .DS_STORE will currently break the Pennsieve agent upload. To combat this if your folder has these hidden files, SODA will block the upload when you use the 'Manage Datasets - Upload a local folder' feature. If you import a folder, that has these files, within the 'Organize Dataset' process, SODA will filter out these files automatically.
 - When showing popups for users, the messages now don't unintentionally move other content out of the way. This should make SODA to be more consistent to use.
 - Added a bug fix for the dataset subtitle character count
+
 
 ## v4.1.0 - 2021-04-09
 
