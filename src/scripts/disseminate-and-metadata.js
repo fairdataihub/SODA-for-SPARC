@@ -169,11 +169,11 @@ $(document).ready(function () {
   //   }
   // });
 
-  checkAirtableStatus();
+  checkAirtableStatus("");
 
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
-      $("#generate-submission-spinner").show();
+      // $("#generate-submission-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
@@ -185,8 +185,23 @@ $(document).ready(function () {
           text: `${emessage}`,
           title: "Metadata file already exists",
         });
-        $("#generate-submission-spinner").hide();
+        // $("#generate-submission-spinner").hide();
       } else {
+        Swal.fire({
+          title: "Generating the submission.xlsx file",
+          html:
+            "Please wait...",
+          timer: 15000,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then((result) => {
+        });
         var awardRes = $("#submission-SPARC-award-span").text();
         var dateRes = $("#submission-completion-date-span").text();
         var milestonesRes = $("#submission-milestones-span").text();
@@ -217,39 +232,44 @@ $(document).ready(function () {
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                document.getElementById(
-                  "para-save-submission-status"
-                ).innerHTML =
-                  "<span style='color: red;'> " + emessage + "</span>";
+                Swal.fire("Failed to generate the submission file", emessage, "warning")
+                // document.getElementById(
+                //   "para-save-submission-status"
+                // ).innerHTML =
+                //   "<span style='color: red;'> " + emessage + "</span>";
                 ipcRenderer.send(
                   "track-event",
                   "Error",
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
-                $("#generate-submission-spinner").hide();
+                // $("#generate-submission-spinner").hide();
               } else {
-                document.getElementById(
-                  "para-save-submission-status"
-                ).innerHTML =
-                  "<span style='color: black ;'>" +
-                  "Done!" +
-                  smileyCan +
-                  "</span>";
+                // document.getElementById(
+                //   "para-save-submission-status"
+                // ).innerHTML =
+                //   "<span style='color: black ;'>" +
+                //   "Done!" +
+                //   smileyCan +
+                //   "</span>";
+                Swal.fire({
+                  title: "The submission.xlsx file has been successfully generated at the specified location.",
+                  icon: 'success',
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                })
                 ipcRenderer.send(
                   "track-event",
                   "Success",
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
-                $("#generate-submission-spinner").hide();
+                // $("#generate-submission-spinner").hide();
               }
             }
           );
         }
       }
-    } else {
-      $("#generate-submission-spinner").hide();
     }
   });
   ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
@@ -589,21 +609,12 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
 // Main function to check Airtable status upon loading soda
 ///// config and load live data from Airtable
 var sparcAwards = [];
-function checkAirtableStatus() {
+var airtableRes = [];
+function checkAirtableStatus(keyword) {
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length === 0) {
-    changeAirtableDiv(
-      "div-field-already-connected-dd",
-      "div-field-not-connected-dd",
-      "div-airtable-confirm-button-dd",
-      "div-airtable-award-button-dd"
-    );
-    changeAirtableDiv(
-      "div-field-already-connected",
-      "div-field-not-connected",
-      "div-airtable-confirm-button",
-      "div-airtable-award-button"
-    );
+    airtableRes = [false, ""]
+    return airtableRes
   } else {
     var airKeyInput = airKeyContent["api-key"];
     var airKeyName = airKeyContent["key-name"];
@@ -631,62 +642,27 @@ function checkAirtableStatus() {
           },
           function done(err) {
             if (err) {
-              changeAirtableDiv(
-                "div-field-already-connected",
-                "div-field-not-connected",
-                "div-airtable-confirm-button",
-                "div-airtable-award-button"
-              );
-              changeAirtableDiv(
-                "div-field-already-connected-dd",
-                "div-field-not-connected-dd",
-                "div-airtable-confirm-button-dd",
-                "div-airtable-award-button-dd"
-              );
               log.error(err);
               console.log(err);
-              return;
+              airtableRes = [false, ""]
+              return airtableRes
             } else {
-              // create set to remove duplicates
-              $("#current-airtable-account").text(airKeyName);
-              $("#current-airtable-account-dd").text(airKeyName);
-              changeAirtableDiv(
-                "div-field-not-connected",
-                "div-field-already-connected",
-                "div-airtable-award-button",
-                "div-airtable-confirm-button"
-              );
-              changeAirtableDiv(
-                "div-field-not-connected-dd",
-                "div-field-already-connected-dd",
-                "div-airtable-award-button-dd",
-                "div-airtable-confirm-button-dd"
-              );
               var awardSet = new Set(sparcAwards);
               var resultArray = [...awardSet];
               existingSPARCAwardsTagify.settings.whitelist = resultArray;
+              airtableRes = [true, airKeyName]
+              if (keyword === "dd") {
+                helpSPARCAward('dd')
+              }
+              return airtableRes
             }
           }
         );
     } else {
-      changeAirtableDiv(
-        "div-field-already-connected",
-        "div-field-not-connected",
-        "div-airtable-confirm-button",
-        "div-airtable-award-button"
-      );
-      changeAirtableDiv(
-        "div-field-already-connected-dd",
-        "div-field-not-connected-dd",
-        "div-airtable-confirm-button-dd",
-        "div-airtable-award-button-dd"
-      );
+      airtableRes = [true, airKeyName]
+      return airtableRes
     }
   }
-  $("#submission-connect-Airtable").prop("disabled", false);
-  $("#dd-connect-Airtable").prop("disabled", false);
-  $("#submission-no-airtable-mode").prop("disabled", false);
-  $("#dataset-description-no-airtable-mode").prop("disabled", false);
 }
 
 // Related to Upload DDD part (Show and Import and Cancel DDD upload)
@@ -991,18 +967,21 @@ function addNewRow(table) {
     if (
       $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
         .find("input")
-        .val() == ""
+        .val() === "" || $(document.getElementById("doi-table").rows[rowIndex - 1].cells[0])
+          .find("select")
+          .val() === "Select"
     ) {
       $("#para-save-link-status").text("Please enter a link to add!");
     } else {
       $(".doi-helper-buttons").css("display", "inline-flex");
       $(".doi-add-row-button").css("display", "none");
+      $("#select-misc-links").remove();
       // check for unique row id in case users delete old rows and append new rows (same IDs!)
       var newRowIndex = checkForUniqueRowID("row-current-link", rowIndex);
       var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
         "<tr id='row-current-link" +
         newRowIndex +
-        "'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
+        "'><td><select id='select-misc-link' class='form-container-input-bf' onchange='populateProtocolLink(this)' style='font-size:13px;line-height:2;'><option value='Select'>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
         rowIndex +
         ")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
     }
@@ -1150,6 +1129,28 @@ function checkForUniqueRowID(rowID, no) {
   }
 }
 
+function populateProtocolLink(ev) {
+  if ($(ev).val() === "Protocol URL or DOI*") {
+    // display dropdown to select protocol titles
+    if ($("#select-misc-links").length > 0) {
+      $("#select-misc-links").css("display", "block")
+    } else {
+      var divElement = '<select id="select-misc-links" class="form-container-input-bf" style="font-size:13px; line-height:2;margin-top: 20px" onchange="autoPopulateProtocolLink(this, \'\', \'dd\')"></select>'
+      $($(ev).parents()[0]).append(divElement);
+      // populate dropdown with protocolResearcherList
+      removeOptions(document.getElementById("select-misc-links"));
+      addOption(document.getElementById("select-misc-links"), "Select protocol title", "Select")
+      for (var key of Object.keys(protocolResearcherList)) {
+        $('#select-misc-links').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
+      }
+    }
+  } else {
+    if ($("#select-misc-links").length > 0) {
+      $("#select-misc-links").css("display", "none")
+    }
+  }
+}
+
 // check for duplicates in names of contributors
 function checkContributorNameDuplicates(table, currentRow) {
   var duplicate = false;
@@ -1178,7 +1179,7 @@ function cloneConNamesSelect(selectLast) {
   addOption(
     document.getElementById(selectLast),
     "Select an option",
-    "Select an option"
+    "Select"
   );
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
     var opt = currentContributorsLastNames[i];
@@ -1421,17 +1422,6 @@ function checkEmptyConRowInfo(table, row) {
   return empty;
 }
 
-function onChangeContactLabel(no) {
-  $("#para-save-contributor-status").text("");
-  var contactPersonBoolean = contactPersonCheck(no);
-  if (contactPersonBoolean) {
-    $("#ds-contact-person-" + no).prop("checked", false);
-    $("#para-save-contributor-status").text(
-      "One contact person is already added above. Only one contact person is allowed for a dataset."
-    );
-  }
-}
-
 function resetSubmission() {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -1482,7 +1472,7 @@ function resetSubmission() {
       document.getElementById("para-milestone-document-info-long").innerHTML =
         "";
       document.getElementById("para-save-submission-status").innerHTML = "";
-      checkAirtableStatus();
+      checkAirtableStatus("");
     }
   });
 }
@@ -1510,16 +1500,17 @@ function resetDD() {
       $("#Question-prepare-dd-1").removeClass("prev");
       $("#Question-prepare-dd-1").nextAll().removeClass("show");
       $("#Question-prepare-dd-1").nextAll().removeClass("prev");
-      checkAirtableStatus();
+      $("#Question-prepare-dd-1 .option-card").removeClass("checked").removeClass("disabled").removeClass("non-selected");
+      $("#Question-prepare-dd-1 .option-card .folder-input-check").prop("checked", false);
 
       // 1. empty all input, textarea, select, para-elements
       // 2. delete all rows from table Contributor
       // 3. delete all rows from table Links
-      var inputFields = $("#Question-prepare-dd-4-sections").find("input");
-      var textAreaFields = $("#Question-prepare-dd-4-sections").find(
+      var inputFields = $("#Question-prepare-dd-2").find("input");
+      var textAreaFields = $("#Question-prepare-dd-2").find(
         "textarea"
       );
-      var selectFields = $("#Question-prepare-dd-4-sections").find("select");
+      // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
 
       for (var field of inputFields) {
         $(field).val("");
@@ -1527,23 +1518,28 @@ function resetDD() {
       for (var field of textAreaFields) {
         $(field).val("");
       }
-      for (var field of selectFields) {
-        $(field).prop("selectedIndex", 0);
-      }
+      // for (var field of selectFields) {
+      //   $(field).prop("selectedIndex", 0);
+      // }
 
       keywordTagify.removeAllTags();
       otherFundingTagify.removeAllTags();
       parentDSTagify.removeAllTags();
       completenessTagify.removeAllTags();
 
-      // 3. deleting table rows
-      changeAwardInputDsDescription();
-      $("#doi-table").find("tr").slice(1, -1).remove();
+      $("#input-metadata-ver").val("1.2.3");
 
-      document.getElementById("para-generate-description-status").innerHTML =
-        "";
-      document.getElementById("para-save-contributor-status").innerHTML = "";
-      document.getElementById("para-save-link-status").innerHTML = "";
+      // 3. deleting table rows
+      globalContributorNameObject = {};
+      currentContributorsLastNames = [];
+      contributorObject = [];
+      $("#contributor-table-dd tr:gt(0)").remove();
+      $("#protocol-link-table-dd tr:gt(0)").remove();
+      $("#additional-link-table-dd tr:gt(0)").remove();
+
+      $("#div-contributor-table-dd").css("display", "none");
+      document.getElementById("protocol-link-table-dd").style.display = "none";
+      document.getElementById("additional-link-table-dd").style.display = "none"
     }
   });
 }

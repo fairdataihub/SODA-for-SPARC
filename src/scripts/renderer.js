@@ -47,7 +47,7 @@ var datasetStructureJSONObj = {
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-let client = new zerorpc.Client({ timeout: 300000 });
+let client = new zerorpc.Client({ timeout: 300000});
 client.connect("tcp://127.0.0.1:4242");
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
@@ -710,8 +710,8 @@ const dsContributorArrayFirst1 = document.getElementById(
   "ds-description-contributor-list-first-1"
 );
 
-var contributorRoles = document.getElementById("input-con-role-1");
-const affiliationInput = document.getElementById("input-con-affiliation-1");
+// var contributorRoles = document.getElementById("input-con-role-1");
+// const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById(
   "button-ds-add-contributor"
 );
@@ -776,6 +776,9 @@ const validateSODAProgressBar = document.getElementById(
 );
 
 // Generate dataset //
+
+var subjectsTableData = []
+var samplesTableData = []
 
 const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
@@ -972,10 +975,12 @@ var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
 var awardFileName = "awards.json";
 var milestoneFileName = "milestones.json";
 var airtableConfigFileName = "airtable-config.json";
+var protocolConfigFileName = "protocol-config.json";
 var awardPath = path.join(metadataPath, awardFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
+var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -997,49 +1002,6 @@ var parentDSTagify = new Tagify(parentDSDropdown, {
     enabled: 0,
     closeOnSelect: true,
   },
-});
-
-/// initiate tagify for contributor roles
-var currentContributortagify = new Tagify(contributorRoles, {
-  whitelist: [
-    "PrincipleInvestigator",
-    "Creator",
-    "CoInvestigator",
-    "DataCollector",
-    "DataCurator",
-    "DataManager",
-    "Distributor",
-    "Editor",
-    "Producer",
-    "ProjectLeader",
-    "ProjectManager",
-    "ProjectMember",
-    "RelatedPerson",
-    "Researcher",
-    "ResearchGroup",
-    "Sponsor",
-    "Supervisor",
-    "WorkPackageLeader",
-    "Other",
-  ],
-  dropdown: {
-    classname: "color-blue",
-    enabled: 0, // show the dropdown immediately on focus
-    maxItems: 25,
-    closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-  },
-  duplicates: false,
-});
-
-var currentAffliationtagify = new Tagify(affiliationInput, {
-  dropdown: {
-    classname: "color-blue",
-    enabled: 0, // show the dropdown immediately on focus
-    maxItems: 25,
-    closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-  },
-  delimiters: null,
-  duplicates: false,
 });
 
 var completenessInput = document.getElementById("ds-completeness"),
@@ -1401,7 +1363,270 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
     $("#button-import-milestone").hide();
   }
 });
-//
+
+// generate subjects file
+ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0], filename);
+    if (fs.existsSync(destinationPath)) {
+      var emessage =
+        "File '" + filename + "' already exists in " + dirpath[0];
+      Swal.fire({
+        icon: "error",
+        title: "Metadata file already exists",
+        text: `${emessage}`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    } else {
+      Swal.fire({
+        title: "Generating the subjects.xlsx file",
+        html:
+          "Please wait...",
+        timer: 30000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+      });
+      // new client that has a longer timeout
+      let clientLongTimeout = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000});
+      clientLongTimeout.connect("tcp://127.0.0.1:4242");
+      clientLongTimeout.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error");
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Create subjects.xlsx",
+              subjectsTableData
+            );
+          } else {
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Create subjects.xlsx",
+              subjectsTableData
+            );
+            Swal.fire({
+              title: "The subjects.xlsx file has been successfully generated at the specified location.",
+              icon: 'success',
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            })
+          }
+        })
+     }
+  }
+})
+
+// generate samples file
+ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0], filename);
+    if (fs.existsSync(destinationPath)) {
+      var emessage =
+        "File '" + filename + "' already exists in " + dirpath[0];
+      Swal.fire({
+        icon: "error",
+        title: "Metadata file already exists",
+        text: `${emessage}`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    } else {
+      Swal.fire({
+        title: "Generating the samples.xlsx file",
+        html:
+        "Please wait...",
+        timer: 30000,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+      });
+      // new client that has a longer timeout
+      let clientLongTimeout = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000});
+      clientLongTimeout.connect("tcp://127.0.0.1:4242");
+      clientLongTimeout.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - Create samples.xlsx",
+              samplesTableData
+            );
+            Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error");
+          } else {
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Create samples.xlsx",
+              samplesTableData
+            );
+            Swal.fire({
+              title: "The samples.xlsx file has been successfully generated at the specified location.",
+              icon: 'success',
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            })
+          }
+        })
+    }
+  }
+})
+
+// import Primary folder
+ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
+  if (primaryFolderPath.length > 0) {
+    importPrimaryFolderSubjects(primaryFolderPath[0])
+    // $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
+    // $("#div-confirm-primary-folder-import").show()
+    // $($("#div-confirm-primary-folder-import").find("button")[0]).show();
+  } else {
+    // $("#primary-folder-destination-input").prop("placeholder", "Browse here")
+    // $("#div-confirm-primary-folder-import").find("button").hide()
+  }
+});
+ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
+  if (primaryFolderPath.length > 0) {
+    importPrimaryFolderSamples(primaryFolderPath[0])
+    // $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
+    // $("#div-confirm-primary-folder-import-samples").show()
+    // $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
+  } else {
+    // $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
+    // $("#div-confirm-primary-folder-import-samples").find("button").hide()
+  }
+});
+
+function transformImportedExcelFile(type, result) {
+  for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "nan");
+    for (var ind of indices) {
+        column[ind] = "";
+    }
+    if (type === "samples") {
+      if (!specimenType.includes(column[5])) {
+        column[5] = "";
+      }
+    }
+  }
+  return result
+}
+
+function getAllIndexes(arr, val) {
+    var indexes = [], i = -1;
+    while ((i = arr.indexOf(val, i+1)) != -1){
+        indexes.push(i);
+    }
+    return indexes;
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSubjectsFileToDataframe(filePath) {
+  var fieldSubjectEntries = [];
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    fieldSubjectEntries.push(field.name.toLowerCase())
+  }
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "subjects", filePath, fieldSubjectEntries,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+        if (res.length > 1) {
+          subjectsTableData = transformImportedExcelFile("subjects", res);
+          loadDataFrametoUI()
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            ""
+          );
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            error
+          );
+
+          Swal.fire({
+            title: "Couldn't load existing subjects.xlsx file",
+            text: "Please make sure there is at least one subject in the subjects.xlsx file.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          })
+        }
+      }
+    }
+  );
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSamplesFileToDataframe(filePath) {
+  var fieldSampleEntries = [];
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    fieldSampleEntries.push(field.name.toLowerCase())
+  }
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "samples", filePath, fieldSampleEntries,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
+        if (res.length > 1) {
+          samplesTableData = transformImportedExcelFile("samples", res);
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
+          loadDataFrametoUISamples()
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
+          Swal.fire({
+            title: "Couldn't load existing samples.xlsx file",
+            text: "Please make sure there is at least one sample in the samples.xlsx file.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          })
+        }
+      }
+    }
+  );
+}
 
 // load and parse json file
 function parseJson(path) {
@@ -1430,6 +1655,204 @@ function createMetadataDir() {
 }
 
 createMetadataDir();
+
+const specimenType = ["whole organism", "whole organ", "fluid specimen", "tissue", "nerve", "slice", "section", "cryosection", "cell", "nucleus", "nucleic acid", "slide", "whole mount"];
+function createSpecimenTypeAutocomplete(id) {
+  // var listID = "autocomplete" + id;
+  var autoCompleteJS3 = new autoComplete({
+    selector: "#"+id,
+    data: {
+      cache: true,
+      src: specimenType
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#"+id).value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"],
+      // condition: () => true
+
+    },
+    resultItem: {
+      destination: "#"+id,
+      highlight: {
+        render: true
+      }
+    },
+    resultsList: {
+      // id: listID,
+      maxResults: 5,
+    }
+  });
+}
+
+function createSpeciesAutocomplete(id) {
+  // var listID = "autocomplete" + id;
+  var autoCompleteJS2 = new autoComplete({
+    selector: "#"+id,
+    data: {
+      src: [{"Canis lupus familiaris": "dogs, beagle dogs",
+    "Mustela putorius furo": "ferrets, black ferrets",
+    "Mus sp.": "mice",
+    "Mus musculus": "mouse, house mouse",
+    "Rattus norvegicus": "Norway rats",
+    "Rattus": "rats",
+    "Sus scrofa": "pigs, swine, wild boar",
+    "Sus scrofa domesticus": "domestic pigs",
+    "Homo sapiens": "humans",
+    "Felis catus": "domestic cat"}
+    ],
+      keys: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus","Homo sapiens", "Rattus", "Felis catus", "Rattus norvegicus"]
+    },
+    resultItem: {
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>
+        <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
+          ${data.key}
+        </span>`;
+      },
+      highlight: true
+    },
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS2.start();
+        }
+      }
+    },
+    threshold: 0,
+    resultsList: {
+      element: (list, data) => {
+        const info = document.createElement("div");
+
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute("onclick", "loadTaxonomySpecies('"+data.query+"', '"+id+"')");
+          info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
+      },
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true
+    },
+  });
+
+  autoCompleteJS2.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.key;
+    // Render selected choice to selection div
+    document.getElementById(id).value = selection;
+    // Replace Input value with the selected value
+    autoCompleteJS2.input.value = selection;
+  });
+}
+
+function createStrain(id, type) {
+  var autoCompleteJS4 = new autoComplete({
+    selector: "#"+id,
+    data: {
+      src: ['Wistar', 'Yucatan', 'C57/B6J', 'C57 BL/6J', 'mixed background', "Sprague-Dawley"]
+    },
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS4.start();
+        }
+      }
+    },
+    resultItem: {
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>`;
+      },
+      highlight: true
+    },
+    threshold: 0,
+    resultsList: {
+      element: (list, data) => {
+        const info = document.createElement("div");
+
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute("onclick", "populateRRID('"+data.query+"', '"+type+"')");
+          info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
+      },
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true
+    },
+  });
+
+  autoCompleteJS4.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.value;
+    document.querySelector("#"+id).value = selection;
+    if (type === "subjects") {
+      var strain = $("#bootbox-subject-strain").val();
+    } else if (type === "samples") {
+      var strain = $("#bootbox-sample-strain").val();
+    }
+    if (strain !== "") {
+      populateRRID(strain, type)
+    }
+    autoCompleteJS4.input.value = selection;
+  });
+}
+
+$(document).ready(function() {
+  createSpeciesAutocomplete("bootbox-subject-species");
+  createSpeciesAutocomplete("bootbox-sample-species");
+  createStrain("bootbox-sample-strain", "samples")
+  createStrain("bootbox-subject-strain", "subjects")
+})
+
+async function loadTaxonomySpecies(commonName, destinationInput) {
+  Swal.fire({
+    title: "Finding the scientific name for " + commonName + "...",
+    html:
+      "Please wait...",
+    timer: 1500,
+    heightAuto: false,
+    allowOutsideClick: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {
+  });
+  await client.invoke(
+    "api_load_taxonomy_species",
+    [commonName],
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        if (Object.keys(res).length === 0) {
+          Swal.fire("Cannot find a scientific name for '"+commonName+"'", "Make sure you enter a correct species name.", "error")
+        } else {
+          $("#"+destinationInput).val(res[commonName]["ScientificName"])
+        }
+      }
+    }
+  );
+}
 
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {
@@ -1522,6 +1945,7 @@ function addSPARCAwards() {
   return message;
 }
 
+var awardObj = {};
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   ///// Construct table from data
@@ -1545,10 +1969,13 @@ function loadAwardData() {
           function page(records, fetchNextPage) {
             records.forEach(function (record) {
               if (record.get("Project_title") !== undefined) {
+                var awardNumber = item = record
+                  .get("SPARC_Award_#");
                 item = record
                   .get("SPARC_Award_#")
                   .concat(" (", record.get("Project_title"), ")");
                 awardResultArray.push(item);
+                awardObj[awardNumber] = item
               }
             }),
               fetchNextPage();
@@ -1643,13 +2070,10 @@ function actionEnterNewDate(action) {
 function getParentDatasets() {
   var parentDatasets = [];
   for (
-    var i = 1, n = datasetDescriptionFileDataset.options.length;
-    i < n;
+    var i = 0; i<datasetList.length;
     i++
   ) {
-    if (datasetDescriptionFileDataset.options[i].value) {
-      parentDatasets.push(datasetDescriptionFileDataset.options[i].value);
-    }
+    parentDatasets.push(datasetList[i].name);
   }
   return parentDatasets;
 }
@@ -1744,69 +2168,63 @@ function changeAwardInputDsDescription() {
 }
 
 // on change event when users choose a contributor's last name
-function onchangeLastNames(no) {
-  $("#ds-description-contributor-list-first-" + no.toString()).attr(
+function onchangeLastNames() {
+  $("#dd-contributor-first-name").attr(
     "disabled",
     true
   );
-  var conLastname = $(
-    "#ds-description-contributor-list-last-" + no.toString()
-  ).val();
+  var conLastname = $("#dd-contributor-last-name").val();
   removeOptions(
     document.getElementById(
-      "ds-description-contributor-list-first-" + no.toString()
+      "dd-contributor-first-name"
     )
   );
   if (conLastname in globalContributorNameObject) {
     addOption(
       document.getElementById(
-        "ds-description-contributor-list-first-" + no.toString()
+        "dd-contributor-first-name"
       ),
       globalContributorNameObject[conLastname],
       globalContributorNameObject[conLastname]
     );
-    $("#ds-description-contributor-list-first-" + no.toString())
+    $("#dd-contributor-first-name")
       .val(globalContributorNameObject[conLastname])
       .trigger("onchange");
 
     // delete contributor names from list after it's added
-    delete globalContributorNameObject[conLastname];
-    var newConLastNames = currentContributorsLastNames.filter(function (
-      value,
-      index,
-      arr
-    ) {
-      return value !== conLastname;
-    });
-    currentContributorsLastNames = newConLastNames;
+    // delete globalContributorNameObject[conLastname];
+    // var newConLastNames = currentContributorsLastNames.filter(function (
+    //   value,
+    //   index,
+    //   arr
+    // ) {
+    //   return value !== conLastname;
+    // });
+    // currentContributorsLastNames = newConLastNames;
   }
-  $("#ds-description-contributor-list-first-" + no.toString()).attr(
+  $("#dd-contributor-first-name").attr(
     "disabled",
     false
   );
 }
 
 // on change event when users choose a contributor's first name -> Load con info
-function onchangeFirstNames(no) {
-  var conLastname = $(
-    "#ds-description-contributor-list-last-" + no.toString()
-  ).val();
-  var conFirstname = $(
-    "#ds-description-contributor-list-first-" + no.toString()
-  ).val();
-  if (conFirstname !== "Select an option") {
-    loadContributorInfo(no, conLastname, conFirstname);
+function onchangeFirstNames() {
+  var conLastname = $("#dd-contributor-last-name").val();
+  var conFirstname = $("#dd-contributor-first-name").val()
+  if (conFirstname !== "Select") {
+    loadContributorInfo(conLastname, conFirstname);
   }
 }
 
 // Auto populate once a contributor is selected
-function loadContributorInfo(no, lastName, firstName) {
+function loadContributorInfo(lastName, firstName) {
   // first destroy old tagifies
-  $($("#input-con-affiliation-" + no.toString()).siblings()[0]).remove();
-  $($("#input-con-role-" + no.toString()).siblings()[0]).remove();
+  $($("#input-con-affiliation").siblings()[0]).remove();
+  $($("#input-con-role").siblings()[0]).remove();
 
   var tagifyRole = new Tagify(
-    document.getElementById("input-con-role-" + no.toString()),
+    document.getElementById("input-con-role"),
     {
       whitelist: [
         "PrincipleInvestigator",
@@ -1837,7 +2255,7 @@ function loadContributorInfo(no, lastName, firstName) {
     }
   );
   var tagifyAffliation = new Tagify(
-    document.getElementById("input-con-affiliation-" + no.toString()),
+    document.getElementById("input-con-affiliation"),
     {
       dropdown: {
         classname: "color-blue",
@@ -1847,16 +2265,17 @@ function loadContributorInfo(no, lastName, firstName) {
       },
       delimiters: null,
       duplicates: false,
-    }
+    },
+
   );
   tagifyRole.removeAllTags();
   tagifyAffliation.removeAllTags();
-  var contactLabel = $("#ds-contact-person-" + no.toString());
+  var contactLabel = $("#ds-contact-person");
   $(contactLabel).prop("checked", false);
-  document.getElementById("input-con-ID-" + no.toString()).value = "Loading...";
+  document.getElementById("input-con-ID").value = "Loading...";
 
-  tagifyAffliation.loading(true).dropdown.hide.call(tagifyAffliation);
-  tagifyRole.loading(true).dropdown.hide.call(tagifyRole);
+  tagifyAffliation.loading(true);
+  tagifyRole.loading(true);
 
   var airKeyContent = parseJson(airtableConfigPath);
   var airKeyInput = airKeyContent["api-key"];
@@ -1881,22 +2300,19 @@ function loadContributorInfo(no, lastName, firstName) {
       // if no records found, leave fields empty
       leaveFieldsEmpty(
         conInfoObj["ID"],
-        document.getElementById("input-con-ID-" + no.toString())
+        document.getElementById("input-con-ID")
       );
       leaveFieldsEmpty(
         conInfoObj["Role"],
-        document.getElementById("input-con-role-" + no.toString())
+        document.getElementById("input-con-role")
       );
       leaveFieldsEmpty(
         conInfoObj["Affiliation"],
-        document.getElementById("input-con-affiliation-" + no.toString())
+        document.getElementById("input-con-affiliation")
       );
 
       tagifyAffliation.addTags(conInfoObj["Affiliation"]);
       tagifyRole.addTags(conInfoObj["Role"]);
-
-      tagifyAffliation.loading(false).dropdown.show.call(tagifyAffliation);
-      tagifyRole.loading(false);
     }),
     function done(err) {
       if (err) {
@@ -1905,11 +2321,13 @@ function loadContributorInfo(no, lastName, firstName) {
         return;
       }
     };
+    tagifyAffliation.loading(false);
+    tagifyRole.loading(false);
 }
 
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
-  for (let list of [datasetDescriptionFileDataset, curateDatasetDropdown]) {
+  for (let list of [curateDatasetDropdown]) {
     removeOptions(list);
     addOption(list, "Select dataset", "Select dataset");
     list.options[0].disabled = true;
@@ -1969,8 +2387,11 @@ $(currentConTable).mousedown(function (e) {
       if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
         if (i !== 0) {
           if ($(e.target).closest("tr")[0].rowIndex !== length) {
-            if (i < tr.index()) s.insertAfter(tr);
-            s.insertBefore(tr);
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
             return false;
           }
         }
@@ -1987,12 +2408,215 @@ $(currentConTable).mousedown(function (e) {
   $(document).mousemove(move).mouseup(up);
 });
 
+$("#table-subjects").mousedown(function (e) {
+  var length = document.getElementById("table-subjects").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    // the below functions updates the row index accordingly and update the order of subject IDs in json
+    updateIndexForTable(document.getElementById("table-subjects"));
+    updateOrderIDTable(document.getElementById("table-subjects"), subjectsTableData, "subjects")
+  }
+  $(document).mousemove(move).mouseup(up);
+})
+
+$("#table-samples").mousedown(function (e) {
+  var length = document.getElementById("table-samples").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    // the below functions updates the row index accordingly and update the order of sample IDs in json
+    updateIndexForTable(document.getElementById("table-samples"))
+    updateOrderIDTable(document.getElementById("table-samples"), samplesTableData, "samples")
+  }
+  $(document).mousemove(move).mouseup(up);
+})
+
+$("#contributor-table-dd").mousedown(function (e) {
+  var length = document.getElementById("contributor-table-dd").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    updateIndexForTable(document.getElementById("contributor-table-dd"))
+    updateOrderContributorTable(document.getElementById("contributor-table-dd"), contributorObject)
+  }
+  $(document).mousemove(move).mouseup(up);
+})
+
+$("#protocol-link-table-dd").mousedown(function (e) {
+  var length = document.getElementById("protocol-link-table-dd").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    updateIndexForTable(document.getElementById("protocol-link-table-dd"))
+  }
+  $(document).mousemove(move).mouseup(up);
+})
+
+$("#additional-link-table-dd").mousedown(function (e) {
+  var length = document.getElementById("additional-link-table-dd").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr)
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    updateIndexForTable(document.getElementById("additional-link-table-dd"))
+  }
+  $(document).mousemove(move).mouseup(up);
+})
+
 ///// grab datalist name and auto-load current description
 const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
-  let temp = datasetDescriptionFileDataset.selectedIndex;
   var selectedBfDataset = defaultBfDataset;
-  //var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
     // bfCurrentMetadataProgress.style.display = "none";
@@ -2005,6 +2629,7 @@ const showDatasetDescription = () => {
       });
     }, 5);
   } else {
+
     client.invoke(
       "api_bf_get_subtitle",
       selectedBfAccount,
@@ -2053,273 +2678,22 @@ const emptyDSInfoEntries = () => {
 };
 
 function emptyLinkInfo() {
-  var tableCurrentLinks = document.getElementById("doi-table");
+  var tableCurrentLinks = document.getElementById("protocol-link-table-dd");
   var fieldSatisfied = false;
-  for (var i = 0; i < tableCurrentLinks.rows.length - 1; i++) {
-    if (
-      $(tableCurrentLinks.rows[i].cells[0]).find("select").val() ==
-      "Protocol URL or DOI*"
-    ) {
-      fieldSatisfied = true;
-    }
+  if (tableCurrentLinks.rows.length > 1) {
+    fieldSatisfied = true
   }
   return fieldSatisfied;
 }
 
 const emptyInfoEntries = (element) => {
   var fieldSatisfied = true;
-  if (element === "Select") {
+  if (element === "") {
     fieldSatisfied = false;
   }
   return fieldSatisfied;
 };
 
-const contactPersonCheck = (no) => {
-  var contactPersonExists = false;
-  var currentContactPersonID = "";
-  var rowcount = currentConTable.rows.length;
-
-  if (no === 0) {
-    currentContactPersonID = "";
-  } else {
-    currentContactPersonID = "ds-contact-person-" + no;
-  }
-
-  for (var i = 1; i < rowcount; i++) {
-    var contactLabel = $(
-      currentConTable.rows[i].cells[currentConTable.rows[i].cells.length - 2]
-    )
-      .find("label")
-      .find("input")[0];
-    if (
-      $(contactLabel).prop("id") &&
-      $(contactLabel).prop("id") !== currentContactPersonID
-    ) {
-      if (contactLabel.checked) {
-        contactPersonExists = true;
-        break;
-      }
-    }
-  }
-  return contactPersonExists;
-};
-
-function grabDSInfoEntries() {
-  var rawName =
-    datasetDescriptionFileDataset.options[
-      datasetDescriptionFileDataset.selectedIndex
-    ];
-  var name;
-  if (rawName === undefined) {
-    name = "N/A";
-  } else {
-    name = rawName.value;
-    if (name === "Select" || name === "Select dataset") {
-      name = "N/A";
-    }
-  }
-  var description = document.getElementById("ds-description").value;
-  var keywordArray = keywordTagify.value;
-  var samplesNo = document.getElementById("ds-samples-no").value;
-  var subjectsNo = document.getElementById("ds-subjects-no").value;
-  return {
-    name: name,
-    description: description,
-    keywords: keywordArray,
-    "number of samples": samplesNo,
-    "number of subjects": subjectsNo,
-  };
-}
-
-function grabConInfoEntries() {
-  if (noAirtable) {
-    var funding = $("#ds-description-award-raw-input-dd").val().trim();
-  } else {
-    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  }
-  var acknowledgment = document
-    .getElementById("ds-description-acknowledgments")
-    .value.trim();
-
-  var contributorObj = {};
-  var fundingArray = [];
-  if (funding === "Select") {
-    fundingArray = [""];
-  } else {
-    fundingArray = [funding];
-  }
-  /// other funding sources
-  var otherFunding = otherFundingTagify.value;
-  for (var i = 0; i < otherFunding.length; i++) {
-    fundingArray.push(otherFunding[i].value);
-  }
-  /// grab entries from contributor table
-  var rowcountCon = currentConTable.rows.length;
-  var cellRowCount = currentConTable.rows[1].cells.length;
-  var res;
-
-  res = grabCellConInfo(rowcountCon);
-
-  contributorObj["funding"] = fundingArray;
-  contributorObj["acknowledgment"] = acknowledgment;
-  contributorObj["contributors"] = res;
-  console.log(contributorObj["contributors"]);
-  return contributorObj;
-}
-
-function grabCellConInfo(rowcountCon) {
-  var currentConInfo = [];
-
-  for (i = 1; i < rowcountCon - 1; i++) {
-    var conLastName;
-    var conFirstName;
-    if ($($(currentConTable.rows[i].cells[0])[0]).find("select").length > 0) {
-      conLastName = $($(currentConTable.rows[i].cells[0])[0])
-        .find("select")
-        .val();
-      conFirstName = $($(currentConTable.rows[i].cells[1])[0])
-        .find("select")
-        .val();
-    } else {
-      conLastName = $($(currentConTable.rows[i].cells[0])[0])
-        .find("input")
-        .val()
-        .trim();
-      conFirstName = $($(currentConTable.rows[i].cells[1])[0])
-        .find("input")
-        .val()
-        .trim();
-    }
-
-    var conAffliationInfo = [];
-    var conRoleInfo = [];
-    var contactCheck = "No";
-    var conID = "";
-
-    for (var j = 1; j < currentConTable.rows[i].cells.length; j++) {
-      var inputField = $(currentConTable.rows[i].cells[j]).find("input");
-      if (inputField.length > 0) {
-        if (inputField.prop("id").includes("input-con-role")) {
-          var conRoleTagify = $(currentConTable.rows[i].cells[j])
-            .find("tag")
-            .toArray();
-          if (conRoleTagify.length > 0) {
-            conRoleTagify.forEach((item, k) => {
-              conRoleInfo.push($(conRoleTagify)[k].innerText);
-            });
-          }
-        } else if (inputField.prop("id").includes("input-con-affiliation")) {
-          var conAffliationTagify = $(currentConTable.rows[i].cells[j])
-            .find("tag")
-            .toArray();
-          if (conAffliationTagify.length > 0) {
-            conAffliationTagify.forEach((item, k) => {
-              conAffliationInfo.push($(conAffliationTagify)[k].innerText);
-            });
-          }
-        } else if (inputField.prop("name") === "contact-person") {
-          var contactLabel = $(currentConTable.rows[i].cells[j])
-            .find("label")
-            .find("input")[0];
-          if (contactLabel && contactLabel.checked) {
-            contactCheck = "Yes";
-          }
-        } else if (inputField.prop("id").includes("input-con-ID")) {
-          conID = $($(currentConTable.rows[i].cells[j])[0])
-            .find("input")
-            .val()
-            .trim();
-        }
-      }
-    }
-
-    var myCurrentCon = {
-      conName: conLastName + ", " + conFirstName,
-      conID: conID,
-      conAffliation: conAffliationInfo.join("; "),
-      conRole: conRoleInfo.join(", "),
-      conContact: contactCheck,
-    };
-    currentConInfo.push(myCurrentCon);
-  }
-
-  return currentConInfo;
-}
-
-function grabProtocolSection() {
-  var miscObj = {};
-  /// Additional link description
-  var rowcountLink = document.getElementById("doi-table").rows.length;
-  var addlLinkInfo = [];
-  for (i = 1; i < rowcountLink - 1; i++) {
-    var addlLink = {
-      "link type": $(document.getElementById("doi-table").rows[i].cells[0])
-        .find("select")
-        .val(),
-      link: $(document.getElementById("doi-table").rows[i].cells[1])
-        .find("input")
-        .val(),
-      description: $(document.getElementById("doi-table").rows[i].cells[2])
-        .find("input")
-        .val(),
-    };
-    addlLinkInfo.push(addlLink);
-  }
-  //// categorize links based on types
-  var originatingDOIArray = [];
-  var protocolArray = [];
-  var additionalLinkArray = [];
-  for (var i = 0; i < addlLinkInfo.length; i++) {
-    if (addlLinkInfo[i]["link type"] === "Originating Article DOI") {
-      originatingDOIArray.push(addlLinkInfo[i]);
-    } else if (addlLinkInfo[i]["link type"] === "Protocol URL or DOI*") {
-      protocolArray.push(addlLinkInfo[i]);
-    } else {
-      additionalLinkArray.push(addlLinkInfo[i]);
-    }
-  }
-  miscObj["Originating Article DOI"] = originatingDOIArray;
-  miscObj["Protocol URL or DOI*"] = protocolArray;
-  miscObj["Additional Link"] = additionalLinkArray;
-  return miscObj;
-}
-
-function grabCompletenessInfo() {
-  var completeness = completenessTagify.value;
-  var parentDS = parentDSTagify.value;
-  var completeDSTitle = document.getElementById("input-completeds-title").value;
-  var optionalSectionObj = {};
-  var completenessValueArray = [];
-  for (var i = 0; i < completeness.length; i++) {
-    completenessValueArray.push(completeness[i].value);
-  }
-  optionalSectionObj["completeness"] = completenessValueArray.join(", ");
-
-  var parentDSValueArray = [];
-  for (var i = 0; i < parentDS.length; i++) {
-    parentDSValueArray.push(parentDS[i].value);
-  }
-  optionalSectionObj["parentDS"] = parentDSValueArray;
-
-  if (completeDSTitle.length === 0) {
-    optionalSectionObj["completeDSTitle"] = "";
-  } else {
-    optionalSectionObj["completeDSTitle"] = completeDSTitle;
-  }
-  return optionalSectionObj;
-}
-
-//// upon choosing a dataset, populate current description
-datasetDescriptionFileDataset.addEventListener("change", function () {
-  document.getElementById("ds-description").disabled = true;
-  document.getElementById("ds-description").innerHTML = "Loading...";
-  defaultBfDataset = datasetDescriptionFileDataset.value;
-  showDatasetDescription();
-  $("#current-bf-dataset").text(defaultBfDataset);
-  $("#current-bf-dataset-generate").text(defaultBfDataset);
-  $(".bf-dataset-span").html(defaultBfDataset);
-  refreshDatasetList();
-});
 
 /// detect empty required fields and raise a warning
 function detectEmptyRequiredFields(funding) {
@@ -2335,15 +2709,15 @@ function detectEmptyRequiredFields(funding) {
   var conEmptyField = [];
   var conSatisfied = true;
   var fundingSatisfied = emptyInfoEntries(funding);
-  var contactPersonExists = contactPersonCheck(0);
-  var contributorNumber = currentConTable.rows.length;
+  var contactPersonExists = checkAtLeastOneContactPerson();
+  var contributorNumber = document.getElementById("contributor-table-dd").rows.length;
   if (!fundingSatisfied) {
     conEmptyField.push("SPARC Award");
   }
   if (!contactPersonExists) {
     conEmptyField.push("One contact person");
   }
-  if (contributorNumber === 1) {
+  if (contributorNumber <= 1) {
     conEmptyField.push("At least one contributor");
   }
   if (conEmptyField.length !== 0) {
@@ -2374,20 +2748,12 @@ function detectEmptyRequiredFields(funding) {
 ////////////////////////////////////////////////////////////////
 generateDSBtn.addEventListener("click", (event) => {
   document.getElementById("para-generate-description-status").innerHTML = "";
-  if (noAirtable) {
-    var funding = $("#ds-description-award-list").val().trim();
-  } else {
-    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  }
+  var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
 
   /// raise a warning if empty required fields are found
   if (allFieldsSatisfied === false) {
-    // ipcRenderer.send(
-    //   "warning-missing-items-ds-description",
-    //   errorMessage.join("\n")
-    // );
     var textErrorMessage = "";
     for (var i = 0; i < errorMessage.length; i++) {
       textErrorMessage += errorMessage[i] + "<br>";
@@ -2438,7 +2804,7 @@ ipcRenderer.on(
   "selected-metadata-ds-description",
   (event, dirpath, filename) => {
     if (dirpath.length > 0) {
-      $("#generate-dd-spinner").show();
+      // $("#generate-dd-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
@@ -2450,8 +2816,26 @@ ipcRenderer.on(
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        $("#generate-dd-spinner").hide();
+
+        // $("#generate-dd-spinner").hide();
       } else {
+
+        Swal.fire({
+          title: "Generating the dataset_description.xlsx file",
+          html:
+            "Please wait...",
+          timer: 300000,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then((result) => {
+        });
+
         var datasetInfoValueArray = grabDSInfoEntries();
 
         //// process obtained values to pass to an array ///
@@ -2471,7 +2855,7 @@ ipcRenderer.on(
         //// grab entries from contributor info section and pass values to conSectionArray
         var contributorObj = grabConInfoEntries();
         /// grab entries from other misc info section
-        var miscObj = grabProtocolSection();
+        var miscObj = combineLinksSections();
 
         /// grab entries from other optional info section
         var completenessSectionObj = grabCompletenessInfo();
@@ -2500,39 +2884,33 @@ ipcRenderer.on(
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                document.getElementById(
-                  "para-generate-description-status"
-                ).innerHTML =
-                  "<span style='color: red;'> " + emessage + "</span>";
+                Swal.fire("Failed to generate the dataset_description file", emessage, "warning")
                 ipcRenderer.send(
                   "track-event",
                   "Error",
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
-                $("#generate-dd-spinner").hide();
+                // $("#generate-dd-spinner").hide();
               } else {
-                document.getElementById(
-                  "para-generate-description-status"
-                ).innerHTML =
-                  "<span style='color: black ;'>" +
-                  "Done!" +
-                  smileyCan +
-                  "</span>";
+                  Swal.fire({
+                    title: "The dataset_description.xlsx file has been successfully generated at the specified location.",
+                    icon: 'success',
+                    heightAuto: false,
+                    backdrop: "rgba(0,0,0, 0.4)",
+                  })
                 ipcRenderer.send(
                   "track-event",
                   "Success",
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
-                $("#generate-dd-spinner").hide();
+                // $("#generate-dd-spinner").hide();
               }
             }
           );
         }
       }
-    } else {
-      $("#generate-dd-spinner").hide();
     }
   }
 );
@@ -3030,7 +3408,6 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           $(".bf-dataset-span").html(bfNewDatasetName.value);
           refreshDatasetList();
           updateDatasetList();
-          datasetDescriptionFileDataset.value = bfNewDatasetName.value;
           $(".confirm-button").click();
           bfNewDatasetName.value = "";
         }
@@ -3083,7 +3460,6 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             defaultBfDataset = renamedDatasetName;
             $(".bf-dataset-span").html(renamedDatasetName);
             refreshDatasetList();
-            datasetDescriptionFileDataset.value = renamedDatasetName;
             renameDatasetName.value = renamedDatasetName;
             bfRenameDatasetStatus.innerHTML =
               "Success: Renamed dataset" +
@@ -3266,6 +3642,14 @@ bfSubmitDatasetBtn.addEventListener("click", async () => {
               ipcRenderer.send(
                 "track-event",
                 "Success",
+                `Manage Dataset - Upload Local Dataset - name - Number of files`,
+                defaultBfDataset,
+                num_of_files
+              );
+
+              ipcRenderer.send(
+                "track-event",
+                "Success",
                 `Upload Local Dataset - ${defaultBfDataset} - Number of Files`,
                 num_of_files
               );
@@ -3439,7 +3823,7 @@ const metadataDatasetlistChange = () => {
   datasetSubtitleStatus.innerHTML = "";
   datasetLicenseStatus.innerHTML = "";
   bfDatasetSubtitle.value = "";
-  datasetDescriptionStatus.innerHTML = "";
+  // datasetDescriptionStatus.innerHTML = "";
   datasetBannerImageStatus.innerHTML = "";
   showCurrentSubtitle();
   showCurrentDescription();
@@ -3609,7 +3993,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
           datasetDescriptionStatus.innerHTML = res;
           $(".synced-progress").css("display", "none");
           showDatasetDescription();
-          changeDatasetUnderDD();
+          // changeDatasetUnderDD();
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -3882,35 +4266,54 @@ bfSaveBannerImageBtn.addEventListener("click", (event) => {
   datasetBannerImageStatus.innerHTML = "";
   if (bfViewImportedImage.src.length > 0) {
     if (formBannerHeight.value > 511) {
-      if (formBannerHeight.value < 1024) {
-        // ipcRenderer.send(
-        //   "warning-banner-image-below-1024",
-        //   formBannerHeight.value
-        // );
-        Swal.fire({
-          icon: "warning",
-          text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showCancelButton: true,
-          focusCancel: true,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-          reverseButtons: reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            uploadBannerImage();
-          }
-        });
-      } else {
-        uploadBannerImage();
-      }
+      Swal.fire({
+        icon: "warning",
+        text: `As per NIH guidelines, banner image must not display animals or graphic/bloody tissues. Do you confirm that?`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (formBannerHeight.value < 1024) {
+          // ipcRenderer.send(
+          //   "warning-banner-image-below-1024",
+          //   formBannerHeight.value
+          // );
+
+          Swal.fire({
+            icon: "warning",
+            text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
+            focusCancel: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              uploadBannerImage();
+            }
+          });
+        } else {
+          uploadBannerImage();
+        }
+      });
     } else {
       datasetBannerImageStatus.innerHTML =
         "<span style='color: red;'> " +
@@ -4454,6 +4857,8 @@ function showCurrentSubtitle() {
     $(".synced-progress").css("display", "none");
     bfDatasetSubtitle.value = "";
   } else {
+    document.getElementById("ds-description").innerHTML = "Loading...";
+    document.getElementById("ds-description").disabled = true;
     client.invoke(
       "api_bf_get_subtitle",
       selectedBfAccount,
@@ -4462,8 +4867,10 @@ function showCurrentSubtitle() {
         if (error) {
           log.error(error);
           console.error(error);
+          $("#ds-description").val("")
         } else {
           bfDatasetSubtitle.value = res;
+          $("#ds-description").val(res)
           let result = countCharacters(
             bfDatasetSubtitle,
             bfDatasetSubtitleCharCount
@@ -4480,13 +4887,13 @@ function showCurrentSubtitle() {
         }
       }
     );
+    document.getElementById("ds-description").disabled = false;
   }
 }
 
 function showCurrentDescription() {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-
   if (selectedBfDataset === "Select dataset") {
     // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -4918,20 +5325,20 @@ function populateDatasetDropdowns(mylist) {
     var option1 = option.cloneNode(true);
     var option2 = option.cloneNode(true);
 
-    datasetDescriptionFileDataset.appendChild(option1);
+    // datasetDescriptionFileDataset.appendChild(option1);
     curateDatasetDropdown.appendChild(option2);
   }
   metadataDatasetlistChange();
   permissionDatasetlistChange();
   postCurationListChange();
   datasetStatusListChange();
-  changeDatasetUnderDD();
+  // changeDatasetUnderDD();
 }
 
-function changeDatasetUnderDD() {
-  datasetDescriptionFileDataset.value = defaultBfDataset;
-  showDatasetDescription();
-}
+// function changeDatasetUnderDD() {
+//   datasetDescriptionFileDataset.value = defaultBfDataset;
+//   showDatasetDescription();
+// }
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 function loadDefaultAccount() {
@@ -5426,293 +5833,6 @@ var bfAddAccountBootboxMessage = `<form>
   </form>`;
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
-
-// function addBFAccountInsideBootbox(myBootboxDialog) {
-//   var name = $("#bootbox-key-name").val();
-//   var apiKey = $("#bootbox-api-key").val();
-//   var apiSecret = $("#bootbox-api-secret").val();
-//   client.invoke(
-//     "api_bf_add_account_api_key",
-//     name,
-//     apiKey,
-//     apiSecret,
-//     (error, res) => {
-//       if (error) {
-//         $(myBootboxDialog).find(".modal-footer span").remove();
-//         myBootboxDialog
-//           .find(".modal-footer")
-//           .prepend(
-//             "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-//               error +
-//               "</span>"
-//           );
-//         log.error(error);
-//         console.error(error);
-//       } else {
-//         $("#bootbox-key-name").val("");
-//         $("#bootbox-api-key").val("");
-//         $("#bootbox-api-secret").val("");
-//         bfAccountOptions[name] = name;
-//         defaultBfAccount = name;
-//         defaultBfDataset = "Select dataset";
-//         updateBfAccountList();
-//         client.invoke("api_bf_account_details", name, (error, res) => {
-//           if (error) {
-//             log.error(error);
-//             console.error(error);
-//             Swal.fire({
-//               icon: "error",
-//               text: "Something went wrong!",
-//               heightAuto: false,
-//               backdrop: "rgba(0,0,0, 0.4)",
-//               footer:
-//                 '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-//             });
-//             showHideDropdownButtons("account", "hide");
-//             confirm_click_account_function();
-//           } else {
-//             $("#para-account-detail-curate").html(res);
-//             $("#current-bf-account").text(name);
-//             $("#current-bf-account-generate").text(name);
-//             $("#create_empty_dataset_BF_account_span").text(name);
-//             $(".bf-account-span").text(name);
-//             $("#current-bf-dataset").text("None");
-//             $("#current-bf-dataset-generate").text("None");
-//             $(".bf-dataset-span").html("None");
-//             $("#para-account-detail-curate-generate").html(res);
-//             $("#para_create_empty_dataset_BF_account").html(res);
-//             $(".bf-account-details-span").html(res);
-//             $("#para-continue-bf-dataset-getting-started").text("");
-//             $("#current_curation_team_status").text("None");
-//             $("#curation-team-share-btn").hide();
-//             $("#curation-team-unshare-btn").hide();
-//             $("#current_sparc_consortium_status").text("None");
-//             $("#sparc-consortium-share-btn").hide();
-//             $("#sparc-consortium-unshare-btn").hide();
-//             showHideDropdownButtons("account", "show");
-//             showHideDropdownButtons("account", "show");
-//             confirm_click_account_function();
-//           }
-//         });
-//         myBootboxDialog.modal("hide");
-//         Swal.fire({
-//           title: "Successfully added! <br/>Loading your account details...",
-//           timer: 3000,
-//           timerProgressBar: true,
-//           allowEscapeKey: false,
-//           heightAuto: false,
-//           backdrop: "rgba(0,0,0, 0.9)",
-//           showConfirmButton: false,
-//         });
-//         // bootbox.alert({
-//         //   message: "Successfully added!",
-//         //   centerVertical: true,
-//         // });
-//       }
-//     }
-//   );
-// }
-
-// function showBFAddAccountBootbox() {
-//   Swal.close();
-//   var bootb = bootbox.dialog({
-//     title: bfaddaccountTitle,
-//     message: bfAddAccountBootboxMessage,
-//     buttons: {
-//       cancel: {
-//         label: "Cancel",
-//       },
-//       confirm: {
-//         label: "Add",
-//         className: "btn btn-primary bootbox-add-bf-class",
-//         callback: function () {
-//           addBFAccountInsideBootbox(bootb);
-//           return false;
-//         },
-//       },
-//     },
-//     size: "medium",
-//     centerVertical: true,
-//     onShown: function (e) {
-//       $(".popover-tooltip").each(function () {
-//         var $this = $(this);
-//         $this.popover({
-//           trigger: "hover",
-//           container: $this,
-//         });
-//       });
-//     },
-//   });
-// }
-
-// function showAddAirtableAccountBootbox() {
-//   var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
-
-//   var bootb = bootbox.dialog({
-//     title: htmlTitle,
-//     message: airtableAccountBootboxMessage,
-//     buttons: {
-//       cancel: {
-//         label: "Cancel",
-//       },
-//       confirm: {
-//         label: "Add",
-//         className: "btn btn-primary bootbox-add-airtable-class",
-//         callback: function () {
-//           addAirtableAccountInsideBootbox(bootb);
-//           return false;
-//         },
-//       },
-//     },
-//     size: "medium",
-//     class: "api-width",
-//     centerVertical: true,
-//     onShown: function (e) {
-//       $(".popover-tooltip").each(function () {
-//         var $this = $(this);
-//         $this.popover({
-//           trigger: "hover",
-//           container: $this,
-//         });
-//       });
-//     },
-//   });
-// }
-
-// function addAirtableAccountInsideBootbox(myBootboxD) {
-//   var name = $("#bootbox-airtable-key-name").val();
-//   var key = $("#bootbox-airtable-key").val();
-//   if (name.length === 0 || key.length === 0) {
-//     var errorMessage =
-//       "<span style='color: red;'>Please fill in both required fields to add.</span>";
-//     $(myBootboxD).find(".modal-footer span").remove();
-//     myBootboxD
-//       .find(".modal-footer")
-//       .prepend(
-//         "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-//           error +
-//           "</span>"
-//       );
-//   } else {
-//     bootbox.confirm({
-//       title: "Connect to Airtable",
-//       message:
-//         "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
-//       centerVertical: true,
-//       size: "large",
-//       button: {
-//         ok: {
-//           label: "Yes",
-//           className: "btn-primary",
-//         },
-//       },
-//       callback: function (r) {
-//         if (r !== null && r === true) {
-//           // test connection
-//           const optionsSparcTable = {
-//             hostname: airtableHostname,
-//             port: 443,
-//             path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-//             headers: { Authorization: `Bearer ${key}` },
-//           };
-//           var sparcTableSuccess;
-//           https.get(optionsSparcTable, (res) => {
-//             if (res.statusCode === 200) {
-//               /// updating api key in SODA's storage
-//               createMetadataDir();
-//               var content = parseJson(airtableConfigPath);
-//               content["api-key"] = key;
-//               content["key-name"] = name;
-//               fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-//               checkAirtableStatus();
-//               document.getElementById(
-//                 "para-generate-description-status"
-//               ).innerHTML = "";
-//               $("#submission-connect-Airtable").text("Loading...");
-//               $("#dd-connect-Airtable").text("Loading...");
-//               $("#submission-connect-Airtable").prop("disabled", "true");
-//               $("#dd-connect-Airtable").prop("disabled", "true");
-//               $("#submission-no-airtable-mode").prop("disabled", "true");
-//               $("#dataset-description-no-airtable-mode").prop(
-//                 "disabled",
-//                 "true"
-//               );
-//               $("#current-airtable-account").text(name);
-//               $("#current-airtable-account-dd").text(name);
-//               $("#bootbox-airtable-key-name").val("");
-//               $("#bootbox-airtable-key").val("");
-//               loadAwardData();
-//               ddNoAirtableMode("Off");
-//               myBootboxD.modal("hide");
-//               $("#Question-prepare-submission-1")
-//                 .nextAll()
-//                 .removeClass("show")
-//                 .removeClass("prev");
-//               $("#Question-prepare-dd-1")
-//                 .nextAll()
-//                 .removeClass("show")
-//                 .removeClass("prev");
-//               Swal.fire({
-//                 title:
-//                   "Successfully connected. Loading your Airtable account...",
-//                 timer: 2500,
-//                 timerProgressBar: true,
-//                 heightAuto: false,
-//                 backdrop: "rgba(0,0,0, 0.4)",
-//                 allowEscapeKey: false,
-//                 showConfirmButton: false,
-//               });
-//               ipcRenderer.send(
-//                 "track-event",
-//                 "Success",
-//                 "Prepare Metadata - Add Airtable account",
-//                 defaultBfAccount
-//               );
-//             } else if (res.statusCode === 403) {
-//               $(myBootboxD).find(".modal-footer span").remove();
-//               myBootboxD
-//                 .find(".modal-footer")
-//                 .prepend(
-//                   "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
-//                 );
-//             } else {
-//               log.error(res);
-//               console.error(res);
-//               ipcRenderer.send(
-//                 "track-event",
-//                 "Error",
-//                 "Prepare Metadata - Add Airtable account",
-//                 defaultBfAccount
-//               );
-//               $(myBootboxD).find(".modal-footer span").remove();
-//               myBootboxD
-//                 .find(".modal-footer")
-//                 .prepend(
-//                   "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-//                 );
-//             }
-//             res.on("error", (error) => {
-//               log.error(error);
-//               console.error(error);
-//               ipcRenderer.send(
-//                 "track-event",
-//                 "Error",
-//                 "Prepare Metadata - Add Airtable account",
-//                 defaultBfAccount
-//               );
-//               $(myBootboxD).find(".modal-footer span").remove();
-//               myBootboxD
-//                 .find(".modal-footer")
-//                 .prepend(
-//                   "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-//                 );
-//             });
-//           });
-//         }
-//       },
-//     });
-//   }
-// }
 
 var editSPARCAwardsTitle =
   "<h3 style='text-align:center'> Add/Remove your SPARC Award(s) below: <i class='fas fa-info-circle popover-tooltip' data-content='The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on Add to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.' rel='popover' data-placement='right' data-html='true' data-trigger='hover'></i></h3>";
@@ -7125,14 +7245,15 @@ ipcRenderer.on(
           } else {
             Swal.fire({
               icon: "warning",
-              text:
-                "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+              html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+              <br/>
+              If you are trying to create a new dataset folder, select the 'Prepare a new dataset' option.`,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
+              showConfirmButton: false,
               showCancelButton: true,
               focusCancel: true,
-              confirmButtonText: "Yes",
-              cancelButtonText: "Cancel",
+              cancelButtonText: "Okay",
               reverseButtons: reverseSwalButtons,
               showClass: {
                 popup: "animate__animated animate__zoomIn animate__faster",
@@ -8434,7 +8555,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
   );
 }
 
-function showAddAirtableAccountSweetalert() {
+function showAddAirtableAccountSweetalert(keyword) {
   var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
   var bootb = Swal.fire({
@@ -8459,39 +8580,25 @@ function showAddAirtableAccountSweetalert() {
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      addAirtableAccountInsideSweetalert();
+      addAirtableAccountInsideSweetalert(keyword);
     }
   });
 }
 
-function addAirtableAccountInsideSweetalert() {
+function addAirtableAccountInsideSweetalert(keyword) {
   var name = $("#bootbox-airtable-key-name").val();
   var key = $("#bootbox-airtable-key").val();
   if (name.length === 0 || key.length === 0) {
     var errorMessage =
       "<span>Please fill in both required fields to add.</span>";
-    // $(myBootboxD).find(".modal-footer span").remove();
-    // myBootboxD
-    //   .find(".modal-footer")
-    //   .prepend(
-    //     "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-    //       error +
-    //       "</span>"
-    //   );
     Swal.fire({
       icon: "error",
       html: errorMessage,
       heightAuto: false,
       backdrop: "rgba(0,0,0,0.4)",
-      // showClass: {
-      //   popup: ''
-      // },
-      // hideClass: {
-      //   popup: ''
-      // }
     }).then((result) => {
       if (result.isConfirmed) {
-        showAddAirtableAccountSweetalert();
+        showAddAirtableAccountSweetalert(keyword);
       }
     });
   } else {
@@ -8530,40 +8637,27 @@ function addAirtableAccountInsideSweetalert() {
             content["api-key"] = key;
             content["key-name"] = name;
             fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-            checkAirtableStatus();
+            checkAirtableStatus(keyword)
             document.getElementById(
               "para-generate-description-status"
             ).innerHTML = "";
-            $("#submission-connect-Airtable").text("Loading...");
-            $("#dd-connect-Airtable").text("Loading...");
-            $("#submission-connect-Airtable").prop("disabled", "true");
-            $("#dd-connect-Airtable").prop("disabled", "true");
-            $("#submission-no-airtable-mode").prop("disabled", "true");
-            $("#dataset-description-no-airtable-mode").prop("disabled", "true");
-            $("#current-airtable-account").text(name);
-            $("#current-airtable-account-dd").text(name);
+            $("#span-airtable-keyname").html(name);
             $("#bootbox-airtable-key-name").val("");
             $("#bootbox-airtable-key").val("");
             loadAwardData();
             ddNoAirtableMode("Off");
-            // myBootboxD.modal("hide");
-            $("#Question-prepare-submission-1")
-              .nextAll()
-              .removeClass("show")
-              .removeClass("prev");
-            $("#Question-prepare-dd-1")
-              .nextAll()
-              .removeClass("show")
-              .removeClass("prev");
             Swal.fire({
-              icon: "success",
               title: "Successfully connected. Loading your Airtable account...",
-              timer: 2500,
-              timerProgressBar: true,
+              timer: 15000,
+              timerProgressBar: false,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               allowEscapeKey: false,
+              allowOutsideClick: false,
               showConfirmButton: false,
+              didOpen: () => {
+                Swal.showLoading()
+              }
             });
             ipcRenderer.send(
               "track-event",
@@ -8572,27 +8666,15 @@ function addAirtableAccountInsideSweetalert() {
               defaultBfAccount
             );
           } else if (res.statusCode === 403) {
-            // $(myBootboxD).find(".modal-footer span").remove();
-            // myBootboxD
-            //   .find(".modal-footer")
-            //   .prepend(
-            //     "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
-            //   );
             Swal.fire({
               icon: "error",
               text:
                 "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
-              // showClass: {
-              //   popup: ''
-              // },
-              // hideClass: {
-              //   popup: ''
-              // }
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert();
+                showAddAirtableAccountSweetalert(keyword);
               }
             });
           } else {
@@ -8604,27 +8686,15 @@ function addAirtableAccountInsideSweetalert() {
               "Prepare Metadata - Add Airtable account",
               defaultBfAccount
             );
-            // $(myBootboxD).find(".modal-footer span").remove();
-            // myBootboxD
-            //   .find(".modal-footer")
-            //   .prepend(
-            //     "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-            //   );
             Swal.fire({
               icon: "error",
               text:
                 "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
-              // showClass: {
-              //   popup: ''
-              // },
-              // hideClass: {
-              //   popup: ''
-              // }
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert();
+                showAddAirtableAccountSweetalert(keyword);
               }
             });
           }
@@ -8637,27 +8707,15 @@ function addAirtableAccountInsideSweetalert() {
               "Prepare Metadata - Add Airtable account",
               defaultBfAccount
             );
-            // $(myBootboxD).find(".modal-footer span").remove();
-            // myBootboxD
-            //   .find(".modal-footer")
-            //   .prepend(
-            //     "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-            //   );
             Swal.fire({
               icon: "error",
               text:
                 "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
-              // showClass: {
-              //   popup: ''
-              // },
-              // hideClass: {
-              //   popup: ''
-              // }
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert();
+                showAddAirtableAccountSweetalert(keyword);
               }
             });
           });

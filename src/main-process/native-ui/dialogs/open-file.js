@@ -42,6 +42,7 @@ ipcMain.on("open-file-dialog-local-destination-curate", (event) => {
   );
 });
 
+
 ipcMain.on("open-file-dialog-local-destination-curate-generate", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -296,6 +297,7 @@ ipcMain.on("open-file-dialog-submission", (event) => {
   );
 });
 
+
 ipcMain.on("open-file-dialog-description", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -336,6 +338,37 @@ ipcMain.on("open-file-dialog-samples", (event) => {
     (files) => {
       if (files) {
         event.sender.send("selected-samples", files);
+      }
+    }
+  );
+});
+
+// import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-subjects", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-subjects", files);
+      }
+    }
+  );
+});
+// import existing samples
+ipcMain.on("open-file-dialog-existing-samples", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-samples", files);
       }
     }
   );
@@ -474,6 +507,67 @@ ipcMain.on("open-folder-dialog-save-ds-description", (event, filename) => {
     }
   );
 });
+
+// Generate subjects file
+ipcMain.on("open-folder-dialog-save-subjects", (event, filename) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-generate-metadata-subjects", files, filename);
+      }
+    }
+  );
+});
+
+// Generate samples file
+ipcMain.on("open-folder-dialog-save-samples", (event, filename) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-generate-metadata-samples", files, filename);
+      }
+    }
+  );
+});
+
+// open primary folder
+ipcMain.on("open-file-dialog-local-primary-folder", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      title: "Select primary folder",
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-local-primary-folder", files);
+      }
+    }
+  );
+});
+ipcMain.on("open-file-dialog-local-primary-folder-samples", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      title: "Select primary folder",
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-local-primary-folder-samples", files);
+      }
+    }
+  );
+});
+
 
 //// DDD download
 ipcMain.on("open-folder-dialog-save-DDD", (event, filename) => {

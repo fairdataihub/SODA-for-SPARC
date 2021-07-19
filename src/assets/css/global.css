@@ -134,7 +134,7 @@ kbd {
   flex: 1;
   position: relative;
   overflow: hidden;
-  visibility: hidden;
+  visibility: visible;
   opacity: 0;
   border:none;
   padding-top: 15px;

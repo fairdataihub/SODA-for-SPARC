@@ -164,16 +164,56 @@ body.waiting * {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  margin: 10px 0
+  justify-content: flex-start;
+  margin: 10px 0;
+  background-color: white;
+}
+
+.div-dd-info.subjects {
+  margin: 0
+}
+
+.ui.accordion .content.active {
+  display: contents;
+}
+
+.ui.styled.accordion {
+  width: 90% !important;
+  margin: 0 auto;
+  max-width: 850px
+}
+
+.sub.accordion {
+  box-shadow: none !important
+}
+
+#title-optional-age{
+  background: #fff !important;
+  padding-top: 0 !important;
+  padding-bottom: 20px !important;
+  font-size: 14px !important
+}
+
+.ui.input {
+  width: 100%
+}
+
+.ui.selection.dropdown {
+  height: auto !important;
+  width: 100% !important;
+  border-bottom: 1px solid rgba(34,36,38,.15) !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-radius: 0 !important;
 }
 
 .demo-controls-head {
   display: flex;
-  align-items: center;
+  align-items: left;
   margin: 10px;
   width: 18%;
-  float: left;
+  float: right;
   font-size: 14px;
   margin: 10px 0;
   /* padding-right: 10px; */
@@ -183,6 +223,16 @@ body.waiting * {
   color: #a0a0a0;
   font: bold;
   font-weight: 500;
+}
+
+.demo-controls-head.mandatory {
+  width: fit-content;
+  padding: 0;
+  margin: 0;
+}
+
+.row.mandatory {
+  line-height: 1
 }
 
 .demo-controls-body {
@@ -196,6 +246,10 @@ body.waiting * {
   display: flex;
   width: 30px;
   height:30px;
+}
+
+.tooltipnew.demo-controls-end.subjects {
+  display: none
 }
 
 .demo-button-next-step {
@@ -474,7 +528,7 @@ input[type="checkbox"].with-style:checked ~ label {
 }
 
 .datasetsaveoption {
-  display: none;
+  display: none
 }
 
 .filepath {
@@ -1158,7 +1212,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .multisteps-form__progress {
-  display: grid;
+  display: none;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   margin-bottom: 30px;
 }
@@ -1220,6 +1274,8 @@ input::-webkit-calendar-picker-indicator {
   content: "";
   background-color: currentColor;
   z-index: 1;
+  color: var;
+  color: inherit;
 }
 .multisteps-form__progress-btn:first-child:after {
   display: none;

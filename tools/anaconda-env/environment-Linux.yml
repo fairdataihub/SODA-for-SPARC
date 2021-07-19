@@ -14,6 +14,7 @@ dependencies:
   #   ModuleNotFoundError: No module named 'pkg_resources.py2_warn'
   # see: https://github.com/pypa/setuptools/issues/1963#issuecomment-573675633
   - setuptools < 45.0.0
+  - chardet == 4.0.0
   - pandas == 0.25.2
   - openpyxl == 3.0.0
   - zerorpc == 0.6.3
@@ -21,3 +22,4 @@ dependencies:
   - configparser == 4.0.2
   - python-docx == 0.8.10
   - xlrd == 1.2.0
+  - biopython == 1.78

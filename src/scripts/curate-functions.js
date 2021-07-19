@@ -719,6 +719,9 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           timer: 2000,
           timerProgressBar: true,
           title: "Loading your account details...",
+          didOpen: () => {
+            Swal.showLoading()
+          }
         });
         $("#Question-getting-started-BF-account")
           .nextAll()
@@ -924,6 +927,9 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                   timerProgressBar: true,
                   title:
                     "Successfully added! <br/>Loading your account details...",
+                  didOpen: () => {
+                    Swal.showLoading()
+                  }
                 });
               }
             }
@@ -1062,15 +1068,18 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             heightAuto: false,
             showConfirmButton: false,
             timer: 2000,
-            timerProgressBar: true,
+            timerProgressBar: false,
             title: "Loading your dataset details...",
+            didOpen: () => {
+              Swal.showLoading()
+            }
           });
         }
 
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
-
+        $("#ds-name").val(bfDataset);
         confirm_click_function();
 
         defaultBfDataset = bfDataset;
