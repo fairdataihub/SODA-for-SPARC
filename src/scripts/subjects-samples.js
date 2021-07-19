@@ -2656,7 +2656,7 @@ function grabDSInfoEntries() {
 
 // contributor info
 function grabConInfoEntries() {
-  var funding = $("ds-description-award-input").val();
+  var funding = $("#ds-description-award-input").val();
   var acknowledgment = $("#ds-description-acknowledgments").val();
 
   var fundingArray = [];
