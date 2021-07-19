@@ -189,8 +189,7 @@ $(document).ready(function () {
       } else {
         Swal.fire({
           title: "Generating the submission.xlsx file",
-          html:
-            "Please wait...",
+          html: "Please wait...",
           timer: 15000,
           allowEscapeKey: false,
           allowOutsideClick: false,
@@ -200,8 +199,7 @@ $(document).ready(function () {
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {
-        });
+        }).then((result) => {});
         var awardRes = $("#submission-SPARC-award-span").text();
         var dateRes = $("#submission-completion-date-span").text();
         var milestonesRes = $("#submission-milestones-span").text();
@@ -232,7 +230,11 @@ $(document).ready(function () {
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                Swal.fire("Failed to generate the submission file", emessage, "warning")
+                Swal.fire(
+                  "Failed to generate the submission file",
+                  emessage,
+                  "warning"
+                );
                 // document.getElementById(
                 //   "para-save-submission-status"
                 // ).innerHTML =
@@ -253,11 +255,12 @@ $(document).ready(function () {
                 //   smileyCan +
                 //   "</span>";
                 Swal.fire({
-                  title: "The submission.xlsx file has been successfully generated at the specified location.",
-                  icon: 'success',
+                  title:
+                    "The submission.xlsx file has been successfully generated at the specified location.",
+                  icon: "success",
                   heightAuto: false,
                   backdrop: "rgba(0,0,0, 0.4)",
-                })
+                });
                 ipcRenderer.send(
                   "track-event",
                   "Success",
@@ -613,9 +616,9 @@ var airtableRes = [];
 function checkAirtableStatus(keyword) {
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length === 0) {
-    airtableRes = [false, ""]
+    airtableRes = [false, ""];
     $("#current-airtable-account").html("None");
-    return airtableRes
+    return airtableRes;
   } else {
     var airKeyInput = airKeyContent["api-key"];
     var airKeyName = airKeyContent["key-name"];
@@ -646,25 +649,25 @@ function checkAirtableStatus(keyword) {
               log.error(err);
               console.log(err);
               $("#current-airtable-account").html("None");
-              airtableRes = [false, ""]
-              return airtableRes
+              airtableRes = [false, ""];
+              return airtableRes;
             } else {
               $("#current-airtable-account").text(airKeyName);
               var awardSet = new Set(sparcAwards);
               var resultArray = [...awardSet];
               existingSPARCAwardsTagify.settings.whitelist = resultArray;
-              airtableRes = [true, airKeyName]
+              airtableRes = [true, airKeyName];
               if (keyword === "dd") {
-                helpSPARCAward('dd')
+                helpSPARCAward("dd");
               }
-              return airtableRes
+              return airtableRes;
             }
           }
         );
     } else {
       $("#current-airtable-account").text(airKeyName);
-      airtableRes = [true, airKeyName]
-      return airtableRes
+      airtableRes = [true, airKeyName];
+      return airtableRes;
     }
   }
 }
@@ -971,9 +974,10 @@ function addNewRow(table) {
     if (
       $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
         .find("input")
-        .val() === "" || $(document.getElementById("doi-table").rows[rowIndex - 1].cells[0])
-          .find("select")
-          .val() === "Select"
+        .val() === "" ||
+      $(document.getElementById("doi-table").rows[rowIndex - 1].cells[0])
+        .find("select")
+        .val() === "Select"
     ) {
       $("#para-save-link-status").text("Please enter a link to add!");
     } else {
@@ -1137,20 +1141,31 @@ function populateProtocolLink(ev) {
   if ($(ev).val() === "Protocol URL or DOI*") {
     // display dropdown to select protocol titles
     if ($("#select-misc-links").length > 0) {
-      $("#select-misc-links").css("display", "block")
+      $("#select-misc-links").css("display", "block");
     } else {
-      var divElement = '<select id="select-misc-links" class="form-container-input-bf" style="font-size:13px; line-height:2;margin-top: 20px" onchange="autoPopulateProtocolLink(this, \'\', \'dd\')"></select>'
+      var divElement =
+        '<select id="select-misc-links" class="form-container-input-bf" style="font-size:13px; line-height:2;margin-top: 20px" onchange="autoPopulateProtocolLink(this, \'\', \'dd\')"></select>';
       $($(ev).parents()[0]).append(divElement);
       // populate dropdown with protocolResearcherList
       removeOptions(document.getElementById("select-misc-links"));
-      addOption(document.getElementById("select-misc-links"), "Select protocol title", "Select")
+      addOption(
+        document.getElementById("select-misc-links"),
+        "Select protocol title",
+        "Select"
+      );
       for (var key of Object.keys(protocolResearcherList)) {
-        $('#select-misc-links').append('<option value="' + protocolResearcherList[key] + '">' + key + '</option>');
+        $("#select-misc-links").append(
+          '<option value="' +
+            protocolResearcherList[key] +
+            '">' +
+            key +
+            "</option>"
+        );
       }
     }
   } else {
     if ($("#select-misc-links").length > 0) {
-      $("#select-misc-links").css("display", "none")
+      $("#select-misc-links").css("display", "none");
     }
   }
 }
@@ -1180,11 +1195,7 @@ function checkContributorNameDuplicates(table, currentRow) {
 // clone Last names of contributors (from a global Airtable Contributor array) to subsequent selects so we don't have to keep calling Airtable API
 function cloneConNamesSelect(selectLast) {
   removeOptions(document.getElementById(selectLast));
-  addOption(
-    document.getElementById(selectLast),
-    "Select an option",
-    "Select"
-  );
+  addOption(document.getElementById(selectLast), "Select an option", "Select");
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
     var opt = currentContributorsLastNames[i];
     if (document.getElementById(selectLast)) {
@@ -1504,16 +1515,20 @@ function resetDD() {
       $("#Question-prepare-dd-1").removeClass("prev");
       $("#Question-prepare-dd-1").nextAll().removeClass("show");
       $("#Question-prepare-dd-1").nextAll().removeClass("prev");
-      $("#Question-prepare-dd-1 .option-card").removeClass("checked").removeClass("disabled").removeClass("non-selected");
-      $("#Question-prepare-dd-1 .option-card .folder-input-check").prop("checked", false);
+      $("#Question-prepare-dd-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-dd-1 .option-card .folder-input-check").prop(
+        "checked",
+        false
+      );
 
       // 1. empty all input, textarea, select, para-elements
       // 2. delete all rows from table Contributor
       // 3. delete all rows from table Links
       var inputFields = $("#Question-prepare-dd-2").find("input");
-      var textAreaFields = $("#Question-prepare-dd-2").find(
-        "textarea"
-      );
+      var textAreaFields = $("#Question-prepare-dd-2").find("textarea");
       // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
 
       for (var field of inputFields) {
@@ -1543,7 +1558,8 @@ function resetDD() {
 
       $("#div-contributor-table-dd").css("display", "none");
       document.getElementById("protocol-link-table-dd").style.display = "none";
-      document.getElementById("additional-link-table-dd").style.display = "none"
+      document.getElementById("additional-link-table-dd").style.display =
+        "none";
     }
   });
 }
