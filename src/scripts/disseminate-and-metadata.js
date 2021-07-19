@@ -614,6 +614,7 @@ function checkAirtableStatus(keyword) {
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length === 0) {
     airtableRes = [false, ""]
+    $("#current-airtable-account").html("None");
     return airtableRes
   } else {
     var airKeyInput = airKeyContent["api-key"];
@@ -644,9 +645,11 @@ function checkAirtableStatus(keyword) {
             if (err) {
               log.error(err);
               console.log(err);
+              $("#current-airtable-account").html("None");
               airtableRes = [false, ""]
               return airtableRes
             } else {
+              $("#current-airtable-account").text(airKeyName);
               var awardSet = new Set(sparcAwards);
               var resultArray = [...awardSet];
               existingSPARCAwardsTagify.settings.whitelist = resultArray;
@@ -659,6 +662,7 @@ function checkAirtableStatus(keyword) {
           }
         );
     } else {
+      $("#current-airtable-account").text(airKeyName);
       airtableRes = [true, airKeyName]
       return airtableRes
     }

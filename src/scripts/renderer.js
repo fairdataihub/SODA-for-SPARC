@@ -8641,7 +8641,8 @@ function addAirtableAccountInsideSweetalert(keyword) {
             document.getElementById(
               "para-generate-description-status"
             ).innerHTML = "";
-            $("#span-airtable-keyname").html(name);
+            // $("#span-airtable-keyname").html(name);
+            $("#current-airtable-account").html(name);
             $("#bootbox-airtable-key-name").val("");
             $("#bootbox-airtable-key").val("");
             loadAwardData();
@@ -8666,6 +8667,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
               defaultBfAccount
             );
           } else if (res.statusCode === 403) {
+            $("#current-airtable-account").html("None");
             Swal.fire({
               icon: "error",
               text:
