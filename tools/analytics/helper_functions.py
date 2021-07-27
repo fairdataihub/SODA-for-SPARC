@@ -108,6 +108,12 @@ def next_date_interval(start, end, update_interval):
     end = start = start.replace(day=1)
     end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
     return start, end
+    
+  if update_interval == "No Seperation":
+    start = end + relativedelta(months=+1)
+    end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
+    return start, end
+
 
 ###########################################################
 

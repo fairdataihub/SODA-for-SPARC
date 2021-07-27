@@ -4,21 +4,77 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v4.3.0 - TBD
+## v4.6.0 - 2021-07-19
+
+### Feature additions:
+- You can now create your subjects.xlsx and samples.xlsx files directly through SODA.
+- Added additional navigation buttons that should allow a user to not have to return to the main menu when a certain function is complete. This workflow follows the step by step guide found [here](https://github.com/bvhpatel/SODA/wiki/Organize-and-submit-SPARC-datasets-with-SODA).
+- Added a new warning when uploading a banner image.
+
+### Bug fixes:
+- Fixed a bug where the footer of the app could be mispositioned sometimes.
+
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
+
+## v4.5.1 - 2021-06-25
+
+### Bug fixes:
+- Fixed a bug where trying to connect to Pennsieve with an API key alone would return an error.
+
+
+## v4.5.0 - 2021-06-25
+
+### Feature additions:
+- All input and message boxes should now follow the call to action button ordering that is specified in their OS application guidelines.
+- Added additional navigation buttons that should allow a user to not have to return to the main menu when a certain function is complete. This workflow follows the step by step guide found [here](https://github.com/bvhpatel/SODA/wiki/Organize-and-submit-SPARC-datasets-with-SODA).
+
+### Bug fixes:
+- Fixed a bug where certain message input boxes would take accidental clicks outside the clickable area and clear the input
+- The dataset_description file will no longer enforce a 5 keyword limit.
+- Fixed a bug where the siebar would open up when exiting a datset curation workflow.
+
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
+
+## v4.4.0 - 2021-06-03
+
+### Feature additions:
+- Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid. 
+- Added a button to paste your API keys into the application more easily.
+- Added better warnings for when a backend module fails. This should give tou more information about the status of SODA and if a restart of the app maybe neccessary.
+- Adjusted the ordering of message box buttons to better follow OS specific guidelines for Human Interface Design.
+
+### Bug fixes:
+- Fixed a potential bug where misspelled high level folders could cause SODA to not pull the correct information from Pennsieve.
+- Fixed a bug where launching SODA could randomly cause step 7 of 'Organize Datasets' to not show up when generating a dataset.
+
+### Known issues:
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
+
+## v4.3.0 - 2021-05-24
 
 ### Feature additions:
 - Added support for toast style notifications to better show relevant information. When you open the app, SODA will run through a checklist of items so that you can see if you are missing any components required for the workflow. This includes checking for Pennsieve agent updates and SODA application updates as well.
-- You can now use your Pennsieve login details to connect your Pennsieve account to SODA. This will replace the default API key based login. The original login method will be present as a secondary login alternative in the meantime.  
+- You can now use your Pennsieve login details to connect your Pennsieve account to SODA. This will replace the default API key based login. The original login method with API key will remain as a secondary login alternative.  
 - Added better warning messages to functions that were not descriptive enough so now you will have a better idea of what they do.
+- You can now add line breaks for your dataset descriptions when created through SODA.
+- SODA now uses a new visual look for showing message boxes and alerts. This would make SODA's UI more consistent.
 
 ### Bug fixes:
 - Fixed a bug where SODA was unable to update on macOS through the built in buttons. The new update notification will be less intrusive and take up less space on your screen.
 - When you request a database from Pennsieve, SODA will now generate a timestamp that is inline with the curation team's requirements.
 - Fixed a visual bug where users would have been able to continue through certain datasets on a dataset that did not have a valid name.
-- Fixed a visual bug where right clicking on an item in 'Step 3' of our organiza datasets would show the context menu in the wrong position.
+- Fixed a visual bug where right clicking on an item in 'Step 3' of our organize datasets would show the context menu in the wrong position.
+- Fixed a minor bug where .jpeg files were not requesting their proper icon in the UI. 
+- Added minor bug fixes with new Pennsieve APIs. As we go forward, performance of key SODA-Pennseive elements should improve.
 
 ### Known issues:
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+
 
 ## v4.2.1 - 2021-04-23
 
@@ -27,7 +83,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a minor bug in how dataset statistics were being recorded.
 - Fixed a bug where the contact person could not be changed when creating the dataset_description metadata file.
 
-## v4.2.0 - 2020-04-21
+
+## v4.2.0 - 2021-04-21
 
 ### Feature additions:
 - SODA now supports Pennsieve.
@@ -43,7 +100,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When showing popups for users, the messages now don't unintentionally move other content out of the way. This should make SODA to be more consistent to use.
 - Added a bug fix for the dataset subtitle character count
 
-## v4.1.0 - 2020-04-09
+
+## v4.1.0 - 2021-04-09
 
 ### Feature additions:
 - Complete UI overhaul for the Manage Datasets, Prepare Metadata and Disseminate Dataset features to bring the SODA's visuals to be consistent across all features.
@@ -102,4 +160,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Major bug fixes:
 - Updated Airtable SPARC's table name to reflect the change initiated by SPARC. Prior to the fix, SODA could not connect to the SPARC award data sheet, thus raising an error when users utilize the Prepare metadata feature.
-- 
