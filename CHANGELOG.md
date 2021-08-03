@@ -10,12 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - You can now create your subjects.xlsx and samples.xlsx files directly through SODA.
 - Added additional navigation buttons that should allow a user to not have to return to the main menu when a certain function is complete. This workflow follows the step by step guide found [here](https://github.com/bvhpatel/SODA/wiki/Organize-and-submit-SPARC-datasets-with-SODA).
 - Added a new warning when uploading a banner image.
+- Transformed the existing user interface for the dataset_description.xlsx file. This new interface is changed to be consistent with the newly added subjects.xlsx and samples.xlsx interfaces.
 
 ### Bug fixes:
 - Fixed a bug where the footer of the app could be mispositioned sometimes.
 
 ### Known issues:
-- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 
 ## v4.5.1 - 2021-06-25
@@ -36,13 +37,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a bug where the siebar would open up when exiting a datset curation workflow.
 
 ### Known issues:
-- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 
 ## v4.4.0 - 2021-06-03
 
 ### Feature additions:
-- Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid. 
+- Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid.
 - Added a button to paste your API keys into the application more easily.
 - Added better warnings for when a backend module fails. This should give tou more information about the status of SODA and if a restart of the app maybe neccessary.
 - Adjusted the ordering of message box buttons to better follow OS specific guidelines for Human Interface Design.
@@ -52,7 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a bug where launching SODA could randomly cause step 7 of 'Organize Datasets' to not show up when generating a dataset.
 
 ### Known issues:
-- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 
 ## v4.3.0 - 2021-05-24
@@ -69,11 +70,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When you request a database from Pennsieve, SODA will now generate a timestamp that is inline with the curation team's requirements.
 - Fixed a visual bug where users would have been able to continue through certain datasets on a dataset that did not have a valid name.
 - Fixed a visual bug where right clicking on an item in 'Step 3' of our organize datasets would show the context menu in the wrong position.
-- Fixed a minor bug where .jpeg files were not requesting their proper icon in the UI. 
+- Fixed a minor bug where .jpeg files were not requesting their proper icon in the UI.
 - Added minor bug fixes with new Pennsieve APIs. As we go forward, performance of key SODA-Pennseive elements should improve.
 
 ### Known issues:
-- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon. 
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 
 ## v4.2.1 - 2021-04-23
@@ -109,27 +110,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - You are now able to import and organize dataset folders and files directly from your local file system.
   - After organizing the dataset and including your metadata files, you can push your dataset directly to Blackfynn for storage and publishing or save it on your computer for future use.
 - Organize a Blackfynn dataset
-  - You are now able to import a dataset, directly from Blaackfynn and rename, move and delete files directly from SODA. 
+  - You are now able to import a dataset, directly from Blaackfynn and rename, move and delete files directly from SODA.
   - Support for importing pre-existing manifest files and metadata files has been included.
   - You will be able to import new files from your computer and deposit it within your Blackfynn dataset as well.
 - Save your progress
   - If you are in the middle of organizing a dataset and have to leave the process at any time, you can now save all your current progress and restart from the exact same point at a later time.
-- Organize dataset: 
+- Organize dataset:
   - You can now start over the dataset organization process at any point from step 3 onward by clicking the Start over button (located next to the Back button).
-  - You can now move files and folders to another folder by right-clicking on the items and select Move to. 
+  - You can now move files and folders to another folder by right-clicking on the items and select Move to.
   - SODA now allows multiple selections of files and folders for manipulation. This can be achieved by dragging your mouse pointers over several items or pressing and holding the Ctrl button and select the items.
   - Blackfynn has updated how their backend systems handle file names when you upload to their platform. SODA will take care of all the file names and generate your manifest files accordingly.
   - When you organize a dataset, you can now generate your manifest files locally to verify their accuracy before you upload them to Blackfynn.
   - A preview step is added to the dataset organization process that gives users a preview of their dataset structure, generate options, and options to edit if applicable. The dataset structure at this step will be shown in a tree view for an easy and convenient file track.
-     
+
 - Unshare with the Curation team
   - If you have already shared your dataset with the Curation team, you can now remove it from this state with a click of just one button
 - Unshare with the SPARC Consortium
   - If you have already shared your dataset with the SPARC consortium, you can now remove it from this state with a click of just one button
 
-- Search dropdowns: 
-  - Multiple dropdowns throughout SODA are now searchable. These dropdowns include the dataset list, PI owner/user/team list, and SPARC award list. 
-    
+- Search dropdowns:
+  - Multiple dropdowns throughout SODA are now searchable. These dropdowns include the dataset list, PI owner/user/team list, and SPARC award list.
+
 - Updated account management
   - SODA now restricts you to have only one valid account at a time. This account has to be within the SPARC Consortium organization. If you have any Blackfynn API keys from an unsupported organization they will be removed and SODA will prompt you to regenerate a new key set that is within the SPARC Consortium organization.
 - Adding Permissions for users
