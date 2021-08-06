@@ -1466,6 +1466,8 @@ function resetSubjects() {
           $($(field).parents()[2]).remove();
         }
       }
+      // show Primary import hyperlink again
+      $("#div-import-primary-folder-sub").show();
 
       // delete table rows except headers
       $("#table-subjects tr:gt(0)").remove();
@@ -1515,6 +1517,8 @@ function resetSamples() {
           $($(field).parents()[2]).remove();
         }
       }
+      // show import Primary folder hyperlink again
+      $("#div-import-primary-folder-sam").show();
 
       // delete table rows except headers
       $("#table-samples tr:gt(0)").remove();
