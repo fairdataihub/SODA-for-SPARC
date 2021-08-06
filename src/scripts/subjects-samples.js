@@ -1212,7 +1212,7 @@ function importPrimaryFolderSubjects(folderPath) {
         var stats = fs.statSync(path.join(folderPath, folder));
         if (stats.isDirectory()) {
           subjectsFileData[0] = folder;
-          for (var i = 1; i < 18; i++) {
+          for (var i = 1; i < 17; i++) {
             subjectsFileData.push("");
           }
           subjectsTableData[j] = subjectsFileData;
@@ -1288,24 +1288,24 @@ function importPrimaryFolderSamples(folderPath) {
       var j = 1;
       samplesTableData[0] = headersArrSamples;
       for (var folder of folders) {
-        samplesFileData = [];
         var statsSubjectID = fs.statSync(path.join(folderPath, folder));
         if (statsSubjectID.isDirectory()) {
-          samplesFileData[0] = folder;
           var subjectFolder = fs.readdirSync(path.join(folderPath, folder));
           for (var subfolder of subjectFolder) {
             var statsSampleID = fs.statSync(
               path.join(folderPath, folder, subfolder)
             );
             if (statsSampleID.isDirectory()) {
+              samplesFileData = [];
+              samplesFileData[0] = folder;
               samplesFileData[1] = subfolder;
+              for (var i = 2; i < 21; i++) {
+                samplesFileData.push("");
+              }
+              samplesTableData[j] = samplesFileData;
+              j += 1
             }
           }
-          for (var i = 2; i < 22; i++) {
-            samplesFileData.push("");
-          }
-          samplesTableData[j] = samplesFileData;
-          j += 1;
         }
       }
       samplesFileData = [];
@@ -1466,6 +1466,8 @@ function resetSubjects() {
           $($(field).parents()[2]).remove();
         }
       }
+      // show Primary import hyperlink again
+      $("#div-import-primary-folder-sub").show();
 
       // delete table rows except headers
       $("#table-subjects tr:gt(0)").remove();
@@ -1515,6 +1517,8 @@ function resetSamples() {
           $($(field).parents()[2]).remove();
         }
       }
+      // show import Primary folder hyperlink again
+      $("#div-import-primary-folder-sam").show();
 
       // delete table rows except headers
       $("#table-samples tr:gt(0)").remove();

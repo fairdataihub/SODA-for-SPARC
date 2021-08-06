@@ -4138,7 +4138,6 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
       Swal.fire({
         title: "Image conversion in progress!",
         html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
-        timer: 4000,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -4147,19 +4146,14 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
         hideClass: {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
-        timerProgressBar: true,
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {
-        /* Read more about handling dismissals below */
-        if (result.dismiss === Swal.DismissReason.timer) {
-          //console.log("I was closed by the timer");
-        }
       });
 
       await Jimp.read(original_image_path)
         .then(async (file) => {
+          console.log("starting tiff conversion");
           if (!fs.existsSync(destination_image_path)) {
             fs.mkdirSync(destination_image_path);
           }
@@ -4180,6 +4174,8 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
               let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
               if (fileSizeInMegabytes > 5) {
+                console.log("File size too large. Resizing image");
+
                 fs.unlinkSync(converted_image_file);
 
                 await Jimp.read(original_image_path)
@@ -4221,18 +4217,33 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
                   }
                 }
               }
+              console.log("file conversion complete");
               image_path = converted_image_file;
               imageExtension = "jpg";
+              datasetBannerImagePath.innerHTML = image_path;
+              bfViewImportedImage.src = image_path;
+              myCropper.destroy();
+              myCropper = new Cropper(bfViewImportedImage, cropOptions);
+              $("#save-banner-image").css("visibility", "visible");
             }
           });
         })
         .catch((err) => {
           conversion_success = false;
           console.error(err);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong",
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
         });
       if (conversion_success == false) {
         $("body").removeClass("waiting");
         return;
+      } else {
+        Swal.close();
       }
     } else {
       document.getElementById("div-img-container-holder").style.display =
