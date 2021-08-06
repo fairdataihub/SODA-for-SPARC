@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed a bug where manifest file data wasn't being pulled down correctly on Windows.
 - Fixed a bug where .tiff images were not being converted by SODA.
+- Fixed an issue where multiple sample id imports from the primary folder would not work.
 
 ### Known issues:
 
