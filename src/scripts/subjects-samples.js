@@ -1212,7 +1212,7 @@ function importPrimaryFolderSubjects(folderPath) {
         var stats = fs.statSync(path.join(folderPath, folder));
         if (stats.isDirectory()) {
           subjectsFileData[0] = folder;
-          for (var i = 1; i < 18; i++) {
+          for (var i = 1; i < 17; i++) {
             subjectsFileData.push("");
           }
           subjectsTableData[j] = subjectsFileData;
@@ -1288,24 +1288,24 @@ function importPrimaryFolderSamples(folderPath) {
       var j = 1;
       samplesTableData[0] = headersArrSamples;
       for (var folder of folders) {
-        samplesFileData = [];
         var statsSubjectID = fs.statSync(path.join(folderPath, folder));
         if (statsSubjectID.isDirectory()) {
-          samplesFileData[0] = folder;
           var subjectFolder = fs.readdirSync(path.join(folderPath, folder));
           for (var subfolder of subjectFolder) {
             var statsSampleID = fs.statSync(
               path.join(folderPath, folder, subfolder)
             );
             if (statsSampleID.isDirectory()) {
+              samplesFileData = [];
+              samplesFileData[0] = folder;
               samplesFileData[1] = subfolder;
+              for (var i = 2; i < 21; i++) {
+                samplesFileData.push("");
+              }
+              samplesTableData[j] = samplesFileData;
+              j += 1
             }
           }
-          for (var i = 2; i < 22; i++) {
-            samplesFileData.push("");
-          }
-          samplesTableData[j] = samplesFileData;
-          j += 1;
         }
       }
       samplesFileData = [];
