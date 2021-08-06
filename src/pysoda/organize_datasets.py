@@ -646,7 +646,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
             for file_key, file in my_folder["files"].items():
                     filename = join(my_relative_path, file_key)
                     colum_headers = manifest_df.columns.tolist()
-                    filename.replace("\\","/")
+                    filename = filename.replace("\\","/")
 
                     if filename in list(manifest_df["filename"].values):
                         if "description" in colum_headers:
@@ -655,7 +655,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                                 file["description"] = mydescription
                         if "Additional Metadata" in colum_headers:
                             my_additional_medata = manifest_df[manifest_df['filename'] == filename]["Additional Metadata"].values[0]
-                            if mydescription:
+                            if my_additional_medata:
                                 file["additional-metadata"] = my_additional_medata
                         if "timestamp" in colum_headers:
                             my_timestamp = manifest_df[manifest_df['filename'] == filename]["timestamp"].values[0]
