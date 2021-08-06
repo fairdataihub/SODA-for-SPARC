@@ -3982,6 +3982,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
             "<span style='color: red;'> " + emessage + "</span>";
           // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
+          $("#ds-description").val("");
           ipcRenderer.send(
             "track-event",
             "Error",
@@ -3991,6 +3992,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
         } else {
           log.info("Added subtitle to dataset");
           $("#bf-add-subtitle-dataset-spinner").hide();
+          $("#ds-description").val(inputSubtitle);
           datasetSubtitleStatus.innerHTML = res;
           // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
