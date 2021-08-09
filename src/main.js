@@ -105,7 +105,7 @@ function initialize() {
 
   loadDemos();
   function createWindow() {
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.on("new-window", (event, url) => {
       event.preventDefault();
@@ -185,7 +185,7 @@ function initialize() {
       transparent: true,
     });
     splash.loadURL(path.join("file://", __dirname, "/splash-screen.html"));
-    
+
     //  if main window is ready to show, then destroy the splash window and show up the main window
     mainWindow.once("ready-to-show", () => {
       setTimeout(function () {
@@ -211,7 +211,6 @@ function initialize() {
       // }
       run_pre_flight_checks();
     });
-
   });
 
   app.on("ready", () => {

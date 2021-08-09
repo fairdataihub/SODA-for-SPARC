@@ -1,4 +1,5 @@
 var metadataFile = "";
+var jstreePreview = document.getElementById("div-dataset-tree-preview");
 
 // Function to clear the confirm options in the curate feature
 const confirm_click_account_function = () => {
@@ -470,42 +471,43 @@ const verify_missing_files = (mode) => {
 
   message_text += "</ul>";
 
-  bootbox.confirm({
-    message: message_text,
-    centerVertical: true,
-    buttons: {
-      confirm: {
-        label: "Yes",
-        className: "btn-success",
-      },
-      cancel: {
-        label: "No",
-        className: "btn-danger",
-      },
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "Cancel",
+    confirmButtonText: "OK",
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: message_text,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
-    callback: (result) => {
-      if (result == true) {
-        remove_missing_files();
-        if (mode === "pre-existing") {
-          document.getElementById("div-progress-file-loader").style.display =
-            "none";
-          $("body").removeClass("waiting");
-          document.getElementById("nextBtn").disabled = false;
-          document.getElementById("para-progress-file-status").innerHTML =
-            "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
-        } else if (mode === "new") {
-          document.getElementById("div-progress-file-loader").style.display =
-            "none";
-          $("body").removeClass("waiting");
-          document.getElementById("para-progress-file-status").innerHTML = "";
-        }
-      } else {
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      remove_missing_files();
+      if (mode === "pre-existing") {
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
+        $("body").removeClass("waiting");
+        document.getElementById("nextBtn").disabled = false;
+        document.getElementById("para-progress-file-status").innerHTML =
+          "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+      } else if (mode === "new") {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
         $("body").removeClass("waiting");
         document.getElementById("para-progress-file-status").innerHTML = "";
       }
-    },
+    } else {
+      document.getElementById("div-progress-file-loader").style.display =
+        "none";
+      $("body").removeClass("waiting");
+      document.getElementById("para-progress-file-status").innerHTML = "";
+    }
   });
 };
 
@@ -710,13 +712,16 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
     if (bfAccountSwal === null) {
       if (bfacct !== "Select") {
         Swal.fire({
-          title: "Loading your account details...",
-          timer: 2000,
-          heightAuto: false,
-          timerProgressBar: true,
-          backdrop: "rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
           showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          title: "Loading your account details...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
         });
         $("#Question-getting-started-BF-account")
           .nextAll()
@@ -753,10 +758,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             log.error(error);
             console.error(error);
             Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
               icon: "error",
               text: error,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
               footer:
                 "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
             });
@@ -792,21 +797,23 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       }
     } else if (bfAccountSwal === false) {
       Swal.fire({
+        allowOutsideClick: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: "Use my API key instead",
+        confirmButtonText: "Connect to Pennsieve",
+        showCloseButton: true,
+        focusConfirm: true,
+        heightAuto: false,
+        reverseButtons: reverseSwalButtons,
+        showCancelButton: false,
         title: `<span style="text-align:center">Connect your Pennsieve account using your email and password <i class="fas fa-info-circle swal-popover" data-content="Your email and password will not be saved and not seen by anyone." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></span>`,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
         <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
-        confirmButtonText: "Connect to Pennsieve",
-        showCancelButton: false,
-        cancelButtonText: "Use my API key instead",
-        focusConfirm: false,
-        heightAuto: false,
-        reverseButtons: true,
-        backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: 'animate__animated animate__fadeInDown animate__faster'
+          popup: "animate__animated animate__fadeInDown animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp animate__faster'
+          popup: "animate__animated animate__fadeOutUp animate__faster",
         },
         footer:
           '<a onclick="showBFAddAccountSweetalert()">I want to connect with an API key instead</a>',
@@ -839,11 +846,11 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       }).then((result) => {
         if (result.isConfirmed) {
           Swal.fire({
-            title: "Adding account...",
             allowEscapeKey: false,
-            heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
             showConfirmButton: false,
+            title: "Adding account...",
             didOpen: () => {
               Swal.showLoading();
             },
@@ -866,7 +873,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                 bfAccountOptions[key_name] = key_name;
                 defaultBfAccount = key_name;
                 defaultBfDataset = "Select dataset";
-                updateBfAccountList();
                 client.invoke(
                   "api_bf_account_details",
                   key_name,
@@ -875,10 +881,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
                       log.error(error);
                       console.error(error);
                       Swal.fire({
+                        backdrop: "rgba(0,0,0, 0.4)",
+                        heightAuto: false,
                         icon: "error",
                         text: "Something went wrong!",
-                        heightAuto: false,
-                        backdrop: "rgba(0,0,0, 0.4)",
                         footer:
                           '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
                       });
@@ -907,18 +913,23 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
 
                       showHideDropdownButtons("account", "show");
                       confirm_click_account_function();
+                      updateBfAccountList();
                     }
                   }
                 );
                 Swal.fire({
-                  title:
-                    "Successfully added! <br/>Loading your account details...",
-                  timer: 3000,
-                  timerProgressBar: true,
                   allowEscapeKey: false,
                   heightAuto: false,
                   backdrop: "rgba(0,0,0, 0.4)",
+                  icon: "success",
                   showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  title:
+                    "Successfully added! <br/>Loading your account details...",
+                  didOpen: () => {
+                    Swal.showLoading();
+                  },
                 });
               }
             }
@@ -977,22 +988,26 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       // $("#bf-dataset-select-div").hide();
 
       const { value: bfDS } = await Swal.fire({
-        title:
-          "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
-        html: datasetPermissionDiv,
-        showCloseButton: true,
-        showCancelButton: true,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Confirm",
+        focusCancel: true,
         focusConfirm: false,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Confirm",
-        cancelButtonText: "Cancel",
-        focusCancel: true,
+        allowOutsideClick: false,
+        allowEscapeKey: true,
+        html: datasetPermissionDiv,
+        reverseButtons: reverseSwalButtons,
+        showCloseButton: true,
+        showCancelButton: true,
+        title:
+          "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
         showClass: {
-          popup: 'animate__animated animate__fadeInDown animate__faster'
+          popup: "animate__animated animate__fadeInDown animate__faster",
         },
         hideClass: {
-          popup: 'animate__animated animate__fadeOutUp animate__faster animate_fastest'
+          popup:
+            "animate__animated animate__fadeOutUp animate__faster animate_fastest",
         },
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
@@ -1048,20 +1063,23 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       if (bfDS) {
         if (show_timer) {
           Swal.fire({
-            title: "Loading your dataset details...",
-            timer: 2000,
-            timerProgressBar: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
             allowEscapeKey: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
             showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: false,
+            title: "Loading your dataset details...",
+            didOpen: () => {
+              Swal.showLoading();
+            },
           });
         }
 
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
-
+        $("#ds-name").val(bfDataset);
         confirm_click_function();
 
         defaultBfDataset = bfDataset;
@@ -1410,32 +1428,44 @@ function create_child_node(
       }
     }
     if ("files" in oldFormatNode) {
-      for (var [key, value] of Object.entries(oldFormatNode["files"])) {
-        if (key !== undefined || value !== undefined) {
-          if (
-            [
-              ".png",
-              ".PNG",
-              ".xls",
-              ".xlsx",
-              ".pdf",
-              ".txt",
-              ".jpeg",
-              ".JPEG",
-              ".csv",
-              ".CSV",
-              ".DOC",
-              ".DOCX",
-              ".doc",
-              ".docx",
-            ].includes(path.parse(key).ext)
-          ) {
-            nodeType = "file " + path.parse(key).ext.slice(1);
-          } else {
-            nodeType = "file other";
-          }
-          if ("action" in oldFormatNode["files"][key]) {
-            if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+      if (oldFormatNode["files"] != undefined) {
+        for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+          if (key !== undefined || value !== undefined) {
+            if (
+              [
+                ".png",
+                ".PNG",
+                ".xls",
+                ".xlsx",
+                ".pdf",
+                ".txt",
+                ".jpeg",
+                ".JPEG",
+                ".csv",
+                ".CSV",
+                ".DOC",
+                ".DOCX",
+                ".doc",
+                ".docx",
+              ].includes(path.parse(key).ext)
+            ) {
+              nodeType = "file " + path.parse(key).ext.slice(1);
+            } else {
+              nodeType = "file other";
+            }
+            if ("action" in oldFormatNode["files"][key]) {
+              if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+                var new_node = {
+                  text: key,
+                  state: { disabled: true },
+                  type: nodeType,
+                };
+                newFormatNode["children"].push(new_node);
+                newFormatNode["children"].sort((a, b) =>
+                  a.text > b.text ? 1 : -1
+                );
+              }
+            } else {
               var new_node = {
                 text: key,
                 state: { disabled: true },
@@ -1446,16 +1476,6 @@ function create_child_node(
                 a.text > b.text ? 1 : -1
               );
             }
-          } else {
-            var new_node = {
-              text: key,
-              state: { disabled: true },
-              type: nodeType,
-            };
-            newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) =>
-              a.text > b.text ? 1 : -1
-            );
           }
         }
       }
@@ -1476,7 +1496,11 @@ function recursiveExpandNodes(object) {
 var selectedPath;
 var selectedNode;
 var jsTreeData = create_child_node(
-  datasetStructureJSONObj,
+  {
+    folders: {},
+    files: {},
+    type: "",
+  },
   "My_dataset_folder",
   "folder",
   "",
@@ -1614,22 +1638,24 @@ async function moveItems(ev, category) {
   // first, convert datasetStructureJSONObj to jsTree's json structure
   // show swal2 with jstree in here
   const { value: folderDestination } = await Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Confirm",
+    focusCancel: true,
+    focusConfirm: false,
+    heightAuto: false,
+    html: jstreeInstance,
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    showCloseButton: true,
     title:
       "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
-    html: jstreeInstance,
-    showCloseButton: true,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    focusConfirm: false,
-    confirmButtonText: "Confirm",
-    cancelButtonText: "Cancel",
     customClass: { content: "swal-left-align" },
     showClass: {
-      popup: 'animate__animated animate__fadeInDown animate__faster'
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: 'animate__animated animate__fadeOutUp animate__faster'
+      popup: "animate__animated animate__fadeOutUp animate_fastest",
     },
     preConfirm: () => {
       Swal.resetValidationMessage();
@@ -1653,33 +1679,31 @@ async function moveItems(ev, category) {
   });
   if (folderDestination) {
     Swal.fire({
-      icon: "warning",
-      title:
-        "Are you sure you want to move selected item(s) to: " +
-        selectedPath +
-        "?",
-      showCancelButton: true,
-      heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      focusCancel: true,
       confirmButtonText: "Yes",
+      focusCancel: true,
+      heightAuto: false,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      title: `Are you sure you want to move selected item(s) to: ${selectedPath}?`,
       showClass: {
-        popup: 'animate__animated animate__zoomIn animate__faster'
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: 'animate__animated animate__zoomOut animate__faster'
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         // loading effect
         Swal.fire({
-          title: "Moving items...",
+          allowEscapeKey: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          showConfirmButton: false,
           timer: 1500,
           timerProgressBar: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          allowEscapeKey: false,
-          showConfirmButton: false,
+          title: "Moving items...",
         });
         // action to move and delete here
         // multiple files/folders

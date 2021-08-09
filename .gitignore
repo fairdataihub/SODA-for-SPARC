@@ -6,6 +6,9 @@ node_modules
 build/api
 pysodadist
 dist
+src/Users
+semantic
+semantic.json
 
 *.pyc
 src/package-lock.json
@@ -16,7 +19,7 @@ electron-builder.yml
 website/.eslintcache
 website/images-bhavesh/~$suggestions.pptx
 website/package-lock.json
-website/package-lock.json
 tools/analytics/clients_secret.json
 tools/analytics/result_csv
 tools/analytics/.ipynb_checkpoints
+tools/analytics/client_secrets.json

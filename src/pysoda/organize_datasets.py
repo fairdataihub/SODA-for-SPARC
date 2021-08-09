@@ -587,6 +587,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 col_count += 1
                 folder_name = item.name
                 if my_level == 0 and folder_name not in high_level_sparc_folders and requested_sparc_only:  # only import SPARC folders
+                    col_count -= 1
                     continue
                 if col_count == 1:
                     level = my_level + 1
@@ -634,7 +635,8 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                             manifest_error_message.append(package_details["parent"]["content"]["name"])
                             pass
                     else:
-                        timestamp = package_details["content"]["updatedAt"]
+                        timestamp = (package_details["content"]["createdAt"]
+                                     .replace('.', ',').replace('+00:00', 'Z'))
                         dataset_folder["files"][file_name] = {
                             "type": "bf","action": ["existing"], "path": item.id, "timestamp": timestamp}
 
@@ -644,7 +646,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
             for file_key, file in my_folder["files"].items():
                     filename = join(my_relative_path, file_key)
                     colum_headers = manifest_df.columns.tolist()
-                    filename.replace("\\","/")
+                    filename = filename.replace("\\","/")
 
                     if filename in list(manifest_df["filename"].values):
                         if "description" in colum_headers:
@@ -653,7 +655,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                                 file["description"] = mydescription
                         if "Additional Metadata" in colum_headers:
                             my_additional_medata = manifest_df[manifest_df['filename'] == filename]["Additional Metadata"].values[0]
-                            if mydescription:
+                            if my_additional_medata:
                                 file["additional-metadata"] = my_additional_medata
                         if "timestamp" in colum_headers:
                             my_timestamp = manifest_df[manifest_df['filename'] == filename]["timestamp"].values[0]
