@@ -2,7 +2,7 @@
   "name": "SODA",
   "productName": "SODA",
   "version": "4.6.1-alpha",
-  "description": "Keep Calm and Curate ",
+  "description": "Keep Calm and Curate",
   "main": "main.js",
   "scripts": {
     "start": "NODE_ENV=development electron .",

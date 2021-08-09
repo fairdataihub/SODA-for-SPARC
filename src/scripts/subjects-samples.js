@@ -1930,6 +1930,7 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             text: " For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
             confirmButtonText: "Add",
             cancelButtonText: "Cancel",
             allowEscapeKey: false,
