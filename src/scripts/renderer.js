@@ -27,6 +27,9 @@ const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
+const tippy = require("tippy.js").default;
+
+// import "tippy.js/dist/tippy.css"; // optional for styling
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -8685,7 +8688,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
 }
 
 function showAddAirtableAccountSweetalert(keyword) {
-  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle swal-popover  " data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
   var bootb = Swal.fire({
     title: htmlTitle,
@@ -8705,7 +8708,13 @@ function showAddAirtableAccountSweetalert(keyword) {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     didOpen: () => {
-      $(".swal-popover").popover();
+      // $(".swal-popover").popover();
+      tippy("[data-tippy-content]", {
+        allowHTML: true,
+        interactive: true,
+        placement: "right",
+        theme: "light",
+      });
     },
   }).then((result) => {
     if (result.isConfirmed) {
@@ -8851,3 +8860,75 @@ function addAirtableAccountInsideSweetalert(keyword) {
     });
   }
 }
+
+$("#resetSODASettings").on("click", () => {
+  let currentPath = path.join(homeDirectory, ".pennsieve");
+  let newPath = path.join(homeDirectory, ".pennsieve2");
+
+  if (fs.existsSync(currentPath)) {
+    fs.rename(currentPath, newPath, function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
+
+  currentPath = path.join(homeDirectory, "SODA");
+  newPath = path.join(homeDirectory, "SODA2");
+
+  if (fs.existsSync(currentPath)) {
+    fs.rename(currentPath, newPath, function (err) {
+      if (err) {
+        Swal.fire({
+          icon: "error",
+          text: `Reset failed! - ${err}`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+        });
+      } else {
+        Swal.fire({
+          icon: "success",
+          text: "Reset successful!",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+        });
+      }
+    });
+  }
+});
+
+$("#restoreSODASettings").on("click", () => {
+  let currentPath = path.join(homeDirectory, ".pennsieve2");
+  let newPath = path.join(homeDirectory, ".pennsieve");
+
+  if (fs.existsSync(currentPath)) {
+    fs.rename(currentPath, newPath, function (err) {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
+
+  currentPath = path.join(homeDirectory, "SODA2");
+  newPath = path.join(homeDirectory, "SODA");
+
+  if (fs.existsSync(currentPath)) {
+    fs.rename(currentPath, newPath, function (err) {
+      if (err) {
+        Swal.fire({
+          icon: "error",
+          text: `Restore failed! - ${err}`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+        });
+      } else {
+        Swal.fire({
+          icon: "success",
+          text: "Restore successful!",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+        });
+      }
+    });
+  }
+});

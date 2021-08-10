@@ -99,6 +99,7 @@
     "remove-markdown": "^0.3.0",
     "spur-template": "^1.1.0",
     "sweetalert2": "^10.16.9",
+    "tippy.js": "^6.3.1",
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",
