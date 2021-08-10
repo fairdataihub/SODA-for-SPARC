@@ -86,6 +86,7 @@
     "electron-shortcut-normalizer": "^1.0.0",
     "electron-updater": "^4.3.9",
     "fomantic-ui": "^2.8.8",
+    "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
     "html2canvas": "^1.0.0-rc.5",
     "image-data-uri": "^2.0.1",

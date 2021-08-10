@@ -229,7 +229,7 @@ button[data-id="bf_list_users_pi"] {
   padding: 8px 10px !important;
   text-align: center;
   vertical-align: middle;
-  margin-top:;
+  margin-top: ;
 }
 
 .modal-footer {
@@ -1128,7 +1128,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 350px;
   height: auto;
-  margin-top: 50px;
+  /* margin-top: 50px; */
   /* margin-right: 20px; */
   right: 0;
   border-radius: 10px 0 0 10px;

@@ -3,7 +3,7 @@
 //////////////////////////////////
 
 const zerorpc = require("zerorpc");
-const fs = require("fs");
+const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
 const { ipcRenderer } = require("electron");
@@ -8897,11 +8897,14 @@ $("#resetSODASettings").on("click", () => {
   }
 });
 
-$("#restoreSODASettings").on("click", () => {
+$("#restoreSODASettings").on("click", async () => {
   let currentPath = path.join(homeDirectory, ".pennsieve2");
   let newPath = path.join(homeDirectory, ".pennsieve");
 
   if (fs.existsSync(currentPath)) {
+    if (fs.existsSync(newPath)) {
+      await fs.removeSync(newPath);
+    }
     fs.rename(currentPath, newPath, function (err) {
       if (err) {
         console.log(err);
@@ -8913,6 +8916,9 @@ $("#restoreSODASettings").on("click", () => {
   newPath = path.join(homeDirectory, "SODA");
 
   if (fs.existsSync(currentPath)) {
+    if (fs.existsSync(newPath)) {
+      await fs.removeSync(newPath);
+    }
     fs.rename(currentPath, newPath, function (err) {
       if (err) {
         Swal.fire({
