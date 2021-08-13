@@ -2247,9 +2247,7 @@ function readXMLScicrunch(xml, type) {
 async function addProtocol() {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
-    html:
-      '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-      '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+    html: '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">',
     focusConfirm: false,
     confirmButtonText: "Add",
     cancelButtonText: "Cancel",
@@ -2266,7 +2264,8 @@ async function addProtocol() {
       }
       return [
         $("#DD-protocol-link").val(),
-        $("#DD-protocol-description").val(),
+        " ",
+        // $("#DD-protocol-description").val(),
       ];
     },
   });

@@ -103,6 +103,51 @@ const showParentTab = (tabNow, nextOrPrev) => {
     }
   }
 
+  if (tabNow == 2) {
+    if (!introStatus.organizeStep3) {
+      introJs()
+        .setOptions({
+          steps: [
+            {
+              title: "Welcome",
+              intro:
+                "This is where you will organize your dataset for curation",
+            },
+            {
+              title: "Expand folders",
+              element: document.querySelector(".div-organize-items"),
+              intro: "Double click on any of the folders to expand them.",
+            },
+            {
+              title: "More options",
+              element: document.querySelector(".single-item"),
+              intro:
+                "You can rename, delete and move folders and files by right clicking here.",
+            },
+            {
+              title: "Manifest info",
+              element: document.querySelector(".single-item"),
+              intro:
+                "You can also add descriptions to your manifest file by clicking the 'More details' options after right click.",
+            },
+            {
+              title: "Adding metadata",
+              element: document.querySelector("#nextBtn"),
+              intro:
+                "Click here after you are done organizing to add your metadata files to this dataset.",
+            },
+          ],
+          exitOnEsc: false,
+          exitOnOverlayClick: false,
+          disableInteraction: false,
+        })
+        .onbeforeexit(function () {
+          introStatus.organizeStep3 = true;
+        })
+        .start();
+    }
+  }
+
   if (tabNow == x.length - 1) {
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");

@@ -28,8 +28,7 @@ const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
 const tippy = require("tippy.js").default;
-
-// import "tippy.js/dist/tippy.css"; // optional for styling
+const introJs = require("intro.js");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -46,6 +45,10 @@ var datasetStructureJSONObj = {
   files: {},
   type: "",
 };
+
+let introStatus = {
+  organizeStep3: false
+}
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -6483,7 +6486,7 @@ async function drop(ev) {
         );
       }
       var appendString =
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         importedFiles[element]["basename"] +
         "</div></div>";
       $(appendString).appendTo(ev.target);
@@ -7064,7 +7067,7 @@ function listItems(jsonObj, uiItem) {
       appendString +
       '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
       extension +
-      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc' +
+      '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
       cloud_item +
       '">' +
       item +

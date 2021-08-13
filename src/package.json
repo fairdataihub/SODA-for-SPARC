@@ -90,6 +90,7 @@
     "glob": "^7.1.7",
     "html2canvas": "^1.0.0-rc.5",
     "image-data-uri": "^2.0.1",
+    "intro.js": "^4.1.0",
     "jimp": "^0.16.1",
     "jquery": "^3.6.0",
     "jstree": "^3.3.11",

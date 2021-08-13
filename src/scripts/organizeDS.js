@@ -808,7 +808,7 @@ function addFilesfunction(
         ].push("renamed");
       }
       var appendString =
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         regularFiles[element]["basename"] +
         "</div></div>";
       $(uiItem).html(appendString);
@@ -840,6 +840,8 @@ function addFilesfunction(
     });
   }
 }
+
+
 
 ///// function to load details to show in display once
 ///// users click Show details
@@ -881,6 +883,7 @@ function loadDetailsContextMenu(
 }
 
 //path_label = document.querySelector("#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label");
+
 
 function triggerManageDetailsPrompts(
   ev,
