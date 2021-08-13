@@ -578,8 +578,15 @@ async function edit_current_protocol_id(ev) {
 async function edit_current_additional_link_id(ev) {
   var currentRow = $(ev).parents()[2];
   var linkType = $(currentRow)[0].cells[1].innerText;
+  // check which link type is being edited to hide/show the link description
+  if (linkType === "Originating Article DOI") {
+    var display = "none"
+    var desc = ""
+  } else {
+    var display = "block"
+    var desc = $(currentRow)[0].cells[3].innerText;
+  }
   var link = $(currentRow)[0].cells[2].innerText;
-  var desc = $(currentRow)[0].cells[3].innerText;
   const { value: values } = await Swal.fire({
     title: "Edit protocol",
     html:
@@ -587,7 +594,7 @@ async function edit_current_additional_link_id(ev) {
       '<input id="DD-additional-link" value="' +
       link +
       '" class="swal2-input" placeholder="Enter protocol link">' +
-      '<textarea id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description">' +
+      '<textarea style="display:'+display+'" id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description">' +
       desc +
       "</textarea>",
     focusConfirm: false,
@@ -596,6 +603,7 @@ async function edit_current_additional_link_id(ev) {
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
       $("#DD-additional-link-type").val(linkType);
+      $("#DD-additional-link-type").attr("disabled", true);
     },
     preConfirm: () => {
       return [
