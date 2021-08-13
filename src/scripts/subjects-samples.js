@@ -1354,8 +1354,6 @@ function importPrimaryFolderSamples(folderPath) {
 function loadSubjectsDataToTable() {
   var iconMessage = "success";
   var showConfirmButtonBool = false;
-  var text =
-    "Please add or edit your subject_id(s) in the following subjects table.";
   // delete table rows except headers
   $("#table-subjects tr:gt(0)").remove();
   for (var i = 1; i < subjectsTableData.length; i++) {
@@ -1373,7 +1371,7 @@ function loadSubjectsDataToTable() {
   } else {
     Swal.fire({
       title: "Loaded successfully!",
-      text: "Please add or edit your subject_id(s) in the following subjects table.",
+      html: 'Add or edit your subject_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sex", "Age category", and "Handedness") will be not be imported by SODA.',
       icon: "success",
       showConfirmButton: true,
       heightAuto: false,
@@ -1382,7 +1380,7 @@ function loadSubjectsDataToTable() {
   }
   Swal.fire({
     title: "Loaded successfully!",
-    text: text,
+    html: 'Add or edit your subject_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sex", "Age category", and "Handedness") will be not be imported by SODA.',
     icon: iconMessage,
     showConfirmButton: showConfirmButtonBool,
     timer: 1200,
@@ -1415,7 +1413,7 @@ function loadSamplesDataToTable() {
   } else {
     Swal.fire({
       title: "Loaded successfully!",
-      text: "Please add or edit your sample_id(s) in the following samples table.",
+      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>:: Any value that does not follow SPARC standards (For example: Values for the fields: "Specimen type", "Age category", "Sex", and "Handedness") will be not be imported by SODA.',
       icon: "success",
       showConfirmButton: false,
       timer: 1200,
@@ -1714,7 +1712,13 @@ $(document).ready(function () {
           "Prepare Metadata - Continue with existing subjects.xlsx",
           defaultBfAccount
         );
+      } else {
+        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-subjects-import").hide();
       }
+    } else {
+      document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+      $("#div-confirm-existing-subjects-import").hide();
     }
     if (
       document.getElementById("existing-subjects-file-destination")
@@ -1740,7 +1744,13 @@ $(document).ready(function () {
           "Prepare Metadata - Continue with existing samples.xlsx",
           defaultBfAccount
         );
+      } else {
+        document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-samples-import").hide();
       }
+    } else {
+      document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+      $("#div-confirm-existing-samples-import").hide();
     }
     if (
       document.getElementById("existing-samples-file-destination")
@@ -1756,12 +1766,60 @@ $(document).ready(function () {
 });
 
 function showExistingSubjectsFile() {
-  ipcRenderer.send("open-file-dialog-existing-subjects");
+  if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
+    Swal.fire({
+      title: "Are you sure you want to import a different subjects file?",
+      text: "This will delete all of your previous work on this file.",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: `No!`,
+      cancelButtonColor: "#f44336",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+    }).then((boolean) => {
+      if (boolean.isConfirmed) {
+        ipcRenderer.send("open-file-dialog-existing-subjects");
+        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-subjects-import").hide();
+        $($("#div-confirm-existing-subjects-import button")[0]).hide();
+        $("#Question-prepare-subjects-3").removeClass("show")
+      }
+    })
+  } else {
+    ipcRenderer.send("open-file-dialog-existing-subjects");
+  }
 }
 
 function showExistingSamplesFile() {
-  ipcRenderer.send("open-file-dialog-existing-samples");
-}
+  if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
+     Swal.fire({
+       title: "Are you sure you want to import a different samples file?",
+       text: "This will delete all of your previous work on this file.",
+       showCancelButton: true,
+       heightAuto: false,
+       backdrop: "rgba(0,0,0, 0.4)",
+       cancelButtonText: `No!`,
+       cancelButtonColor: "#f44336",
+       confirmButtonColor: "#3085d6",
+       confirmButtonText: "Yes",
+       icon: "warning",
+       reverseButtons: reverseSwalButtons,
+     }).then((boolean) => {
+       if (boolean.isConfirmed) {
+         ipcRenderer.send("open-file-dialog-existing-samples");
+         document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+         $("#div-confirm-existing-samples-import").hide();
+         $($("#div-confirm-existing-samples-import button")[0]).hide();
+         $("#Question-prepare-samples-3").removeClass("show")
+       }
+     })
+   } else {
+     ipcRenderer.send("open-file-dialog-existing-samples");
+   }
+ }
 
 function importExistingSubjectsFile() {
   var filePath = $("#existing-subjects-file-destination").prop("placeholder");

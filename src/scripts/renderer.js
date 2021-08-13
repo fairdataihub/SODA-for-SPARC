@@ -1576,6 +1576,14 @@ function loadSubjectsFileToDataframe(filePath) {
       if (error) {
         log.error(error);
         console.error(error);
+        var emessage = userError(error);
+        Swal.fire({
+          title: "Couldn't load existing subjects.xlsx file",
+          text: emessage,
+          icon: "error",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
@@ -1625,6 +1633,14 @@ function loadSamplesFileToDataframe(filePath) {
       if (error) {
         log.error(error);
         console.error(error);
+        var emessage = userError(error);
+        Swal.fire({
+          title: "Couldn't load existing samples.xlsx file",
+          text: emessage,
+          icon: "error",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
@@ -6815,7 +6831,6 @@ const select_items = (items, event, isDragging) => {
 
 $(document).bind("click", (event) => {
   // If there is weird right click menu behaviour, check the hideMenu block
-  //
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);

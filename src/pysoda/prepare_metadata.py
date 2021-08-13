@@ -398,16 +398,33 @@ def column_check(x):
     return True
 
 def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
-    if type == "subjects":
-        templateHeaderList = subjectsTemplateHeaderList
-    else:
-        templateHeaderList = samplesTemplateHeaderList
 
     subjects_df = pd.read_excel(filepath, engine='openpyxl', usecols=column_check, header=0)
     subjects_df = subjects_df.dropna(axis = 0, how = 'all')
+    subjects_df = subjects_df.replace(np.nan, '', regex=True)
     subjects_df = subjects_df.applymap(str)
     subjects_df.columns = map(str.lower, subjects_df.columns)
     importedHeaderList = list(subjects_df.columns.values)
+
+    if type == "subjects":
+        if "subject_id" not in list(subjects_df.columns.values):
+            raise Exception("The header 'subject_id' is required to import an existing subjects file")
+
+        else:
+            if checkEmptyColumn(subjects_df["subject_id"]):
+                raise Exception("At least 1 'subject id' is required to import an existing subjects file")
+
+        templateHeaderList = subjectsTemplateHeaderList
+
+    else:
+        if "subject_id" not in list(subjects_df.columns.values) or "sample_id" not in list(subjects_df.columns.values) :
+            raise Exception("The headers 'subject_id' and 'sample_id' are required to import an existing samples file")
+
+        else:
+            if checkEmptyColumn(subjects_df["sample_id"]) or checkEmptyColumn(subjects_df["sample_id"]):
+                raise Exception("At least 1 'subject_id' and 'sample_id' pair is required to import an existing samples file")
+
+        templateHeaderList = samplesTemplateHeaderList
 
     transpose = []
     for header in templateHeaderList:
@@ -431,6 +448,13 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
     return transposeMatrix(sortMatrix)
+
+def checkEmptyColumn(column):
+    for element in column:
+        if element:
+            break
+        return True
+    return False
 
 def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = [];
