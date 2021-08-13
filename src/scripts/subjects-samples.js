@@ -1383,8 +1383,7 @@ function loadSubjectsDataToTable() {
     title: "Loaded successfully!",
     html: 'Add or edit your subject_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sex", "Age category", and "Handedness") will be not be imported by SODA.',
     icon: iconMessage,
-    showConfirmButton: showConfirmButtonBool,
-    timer: 1200,
+    showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   });
@@ -1416,8 +1415,7 @@ function loadSamplesDataToTable() {
       title: "Loaded successfully!",
       html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>:: Any value that does not follow SPARC standards (For example: Values for the fields: "Specimen type", "Age category", "Sex", and "Handedness") will be not be imported by SODA.',
       icon: "success",
-      showConfirmButton: false,
-      timer: 1200,
+      showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
