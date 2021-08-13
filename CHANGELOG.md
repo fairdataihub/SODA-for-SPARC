@@ -5,6 +5,15 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v4.6.2 - 2021-08-13
+
+### Bug fixes:
+
+- Changed the way SODA populated the dataset_description file - protocols, originating articles/DOIs, and additional links options. Protocols and Originating articles/DOIs DO NOT have a description. Only additional links does. Changed the backend and frontend accordingly to enforce this change.
+- Added a warning whenever users import another existing metadata file (subjects, samples, dataset_description) onto SODA.
+- Fixed margin bug for Details display (Prepare dataset -> Step 3).
+- Added warning for when a user imports an existing metadata file. If any values from the file does not follow SPARC standard values, they will be ignored and not imported onto SODA for edits.
+
 ## v4.6.1 - 2021-08-06
 
 ### Bug fixes:
