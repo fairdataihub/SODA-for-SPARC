@@ -190,24 +190,23 @@ def populate_contributor_info(workbook, val_array):
 def populate_links_info(workbook, val_array):
     ## originating DOI, Protocol DOI
     total_link_array = val_array["Originating Article DOI"] + val_array["Protocol URL or DOI*"] + val_array["Additional Link"]
-    for i, column in zip(range(len(total_link_array)), excel_columns(start_index=3)):
-        if total_link_array[i]["link type"] == "Originating Article DOI":
-            workbook[column + "12"] = total_link_array[i]["link"]
-            workbook[column + "13"] = ""
-            workbook[column + "14"] = ""
-            workbook[column + "15"] = total_link_array[i]["description"]
-        if total_link_array[i]["link type"] == "Protocol URL or DOI*":
-            workbook[column + "12"] = ""
-            workbook[column + "13"] = total_link_array[i]["link"]
-            workbook[column + "14"] = ""
-            workbook[column + "15"] = total_link_array[i]["description"]
-        if total_link_array[i]["link type"] == "Additional Link":
-            workbook[column + "12"] = ""
-            workbook[column + "13"] = ""
-            workbook[column + "14"] = total_link_array[i]["link"]
-            workbook[column + "15"] = total_link_array[i]["description"]
 
-    return total_link_array
+    ## protocols
+    for i, column in zip(range(len(val_array["Protocol URL or DOI*"])), excel_columns(start_index=3)):
+        workbook[column + "13"] = val_array["Protocol URL or DOI*"][i]
+
+    ## originating DOIs
+    for i, column in zip(range(len(val_array["Originating Article DOI"])), excel_columns(start_index=3)):
+        workbook[column + "12"] = val_array["Originating Article DOI"][i]
+
+    for i, column in zip(range(len(val_array["Additional Link"])), excel_columns(start_index=3)):
+        workbook[column + "14"] = val_array["Additional Link"][i]["link"]
+        workbook[column + "15"] = val_array["Additional Link"][i]["description"]
+
+    ## max_length obtained for file formatting purpose (coloring of headers and such)
+    max_length = max(len(val_array["Originating Article DOI"]), len(val_array["Protocol URL or DOI*"]), len(val_array["Additional Link"]))
+
+    return max_length
 
 def populate_completeness_info(workbook, val_array, bfaccountname):
     ## completeness, parent dataset ID, title Respectively
@@ -256,7 +255,7 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
 
     keyword_array = populate_dataset_info(ws1, val_arr_ds)
     (funding_array, contributor_role_array) = populate_contributor_info(ws1, val_arr_con)
-    total_link_array = populate_links_info(ws1, val_arr_misc)
+    total_link_len = populate_links_info(ws1, val_arr_misc)
     populate_completeness_info(ws1, val_arr_optional, bfaccountname)
 
     # keywords
@@ -268,10 +267,7 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
     # funding = SPARC award + other funding sources
     funding_len = len(funding_array)
 
-    # total links added
-    link_len = len(total_link_array)
-
-    max_len = max(keyword_len, funding_len, link_len, no_contributors)
+    max_len = max(keyword_len, funding_len, total_link_len, no_contributors)
 
     rename_headers(ws1, max_len, 3)
 

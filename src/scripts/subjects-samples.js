@@ -555,30 +555,23 @@ async function edit_current_protocol_id(ev) {
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
   var desc = $(currentRow)[0].cells[2].innerText;
-  const { value: values } = await Swal.fire({
+  const { value: value } = await Swal.fire({
     title: "Edit protocol",
     html:
       '<input id="DD-protocol-link" value="' +
       link +
-      '" class="swal2-input" placeholder="Enter protocol link">' +
-      '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description">' +
-      desc +
-      "</textarea>",
+      '" class="swal2-input" placeholder="Enter protocol link">',
     focusConfirm: false,
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     preConfirm: () => {
-      return [
-        document.getElementById("DD-protocol-link").value,
-        document.getElementById("DD-protocol-link-description").value,
-      ];
+      return document.getElementById("DD-protocol-link").value
     },
   });
-  if (values) {
+  if (value) {
     $(currentRow)[0].cells[1].innerHTML =
-      "<a href='" + values[0] + "' target='_blank'>" + values[0] + "</a>";
-    $(currentRow)[0].cells[2].innerText = values[1];
+      "<a href='" + value + "' target='_blank'>" + value + "</a>";
   }
 }
 
@@ -1983,8 +1976,8 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             "warning"
           );
         } else {
-          const { value: formValues } = await Swal.fire({
-            title: "Enter a protocol link and its description below:",
+          const { value: formValue } = await Swal.fire({
+            title: "Enter a protocol link:",
             text: " For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
@@ -1993,18 +1986,18 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             allowEscapeKey: false,
             allowOutsideClick: false,
             html:
-              '<input id="DD-protocol-link" class="swal2-input" placeholder="Enter protocol link">' +
-              '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+              '<input id="DD-protocol-link" class="swal2-input" placeholder="Enter protocol link">',
             focusConfirm: false,
             preConfirm: () => {
-              return [
-                document.getElementById("DD-protocol-link").value,
-                document.getElementById("DD-protocol-link-description").value,
-              ];
+              var link = document.getElementById("DD-protocol-link").value;
+              if (checkDuplicateLink(link, "protocol-link-table-dd")) {
+                Swal.showValidationMessage("The link provided is already added to the table. Please provide a different protocol.")
+              }
+              return link
             },
           });
-          if (formValues) {
-            addProtocolLinktoTableDD(formValues[0], formValues[1]);
+          if (formValue) {
+            addProtocolLinktoTableDD(formValue);
           }
         }
       }
@@ -2152,14 +2145,16 @@ async function showProtocolCredentials(email, filetype) {
     showCancelButton: true,
     confirmButtonText: "Add",
     inputValidator: (value) => {
-      return new Promise((resolve) => {
-        if (value) {
-          resolve();
-        } else {
-          resolve(warningText);
+      if (value) {
+        if (filetype === "DD") {
+          if (checkDuplicateLink(value, "protocol-link-table-dd")) {
+            return "The link provided is already added to the table. Please provide a different protocol."
+          }
         }
-      });
-    },
+      } else {
+        return warningText
+      }
+    }
   });
   if (protocol) {
     if (filetype === "subjects") {
@@ -2171,20 +2166,7 @@ async function showProtocolCredentials(email, filetype) {
       $("#bootbox-sample-protocol-title").val(protocolResearcherList[protocol]);
       $("#bootbox-sample-protocol-location").val(protocol);
     } else {
-      const { value: formValue } = await Swal.fire({
-        title: "Enter a description for the link (optional): ",
-        html: '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
-        focusConfirm: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Add",
-        preConfirm: () => {
-          return document.getElementById("DD-protocol-link-description").value;
-        },
-      });
-      if (formValue) {
-        addProtocolLinktoTableDD(protocol, formValue);
-      }
+      addProtocolLinktoTableDD(protocol);
     }
   }
 }
@@ -2214,9 +2196,9 @@ async function addAdditionalLink() {
   const { value: values } = await Swal.fire({
     title: "Add additional link",
     html:
-      '<label>Link type: <i class="fas fa-info-circle swal-popover" data-content="Select the nature of the link: <br /> - Originating Article DOIs: DOIs of published articles that were generated from this dataset. <br /> - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-additional-link-type" class="swal2-select"><option value="Select">Select a type</option><option value="Originating Article DOI">Originating Article DOI</option><option value="Additional Link">Additional Link</option></select>' +
+      '<label>Link type: <i class="fas fa-info-circle swal-popover" data-content="Select the nature of the link: <br /> - Originating Article DOIs: DOIs of published articles that were generated from this dataset. <br /> - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-additional-link-type" onchange="hideDescriptionForDOIs()" class="swal2-select"><option value="Select">Select a type</option><option value="Originating Article DOI">Originating Article DOI</option><option value="Additional Link">Additional Link</option></select>' +
       '<label>Link: <i class="fas fa-info-circle swal-popover" data-content="Enter the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-additional-link" class="swal2-input" placeholder="Enter a link">' +
-      '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+      '<label style="display:none" id="label-additional-link-description">Link description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-additional-link-description" class="swal2-textarea" style="display:none" placeholder="Enter link description"></textarea>',
     focusConfirm: false,
     confirmButtonText: "Add",
     cancelButtonText: "Cancel",
@@ -2243,6 +2225,18 @@ async function addAdditionalLink() {
   });
   if (values) {
     addAdditionalLinktoTableDD(values[0], values[1], values[2]);
+  }
+}
+
+function hideDescriptionForDOIs() {
+  $("#DD-additional-link-description").val("")
+  $("#DD-additional-link").val("")
+  if ($("#DD-additional-link-type").val() === "Originating Article DOI") {
+    $("#DD-additional-link-description").css("display", "none");
+    $("#label-additional-link-description").css("display", "none");
+  } else if ($("#DD-additional-link-type").val() === "Additional Link") {
+    $("#DD-additional-link-description").css("display", "block");
+    $("#label-additional-link-description").css("display", "block");
   }
 }
 
@@ -2305,8 +2299,7 @@ async function addProtocol() {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
     html:
-      '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-      '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+      '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">',
     focusConfirm: false,
     confirmButtonText: "Add",
     cancelButtonText: "Cancel",
@@ -2318,17 +2311,20 @@ async function addProtocol() {
       $(".swal-popover").popover();
     },
     preConfirm: () => {
-      if ($("#DD-protocol-link").val() === "") {
+      var link = $("#DD-protocol-link").val();
+      if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
+      }
+      if (checkDuplicateLink(link, "protocol-link-table-dd")) {
+        Swal.showValidationMessage("The link provided is already added to the table. Please provide a different protocol.")
       }
       return [
         $("#DD-protocol-link").val(),
-        $("#DD-protocol-description").val(),
       ];
     },
   });
   if (values) {
-    addProtocolLinktoTableDD(values[0], values[1]);
+    addProtocolLinktoTableDD(values[0]);
   }
 }
 
@@ -2342,7 +2338,7 @@ function addExistingProtocol() {
   }
 }
 
-function addProtocolLinktoTableDD(protocolLink, protocolDesc) {
+function addProtocolLinktoTableDD(protocolLink) {
   var protocolTable = document.getElementById("protocol-link-table-dd");
   protocolTable.style.display = "block";
   var rowcount = protocolTable.rows.length;
@@ -2361,9 +2357,7 @@ function addProtocolLinktoTableDD(protocolLink, protocolDesc) {
     protocolLink +
     "' target='_blank'>" +
     protocolLink +
-    "</a></td><td class='contributor-table-row' style='display:none'>" +
-    protocolDesc +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "</a></td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
 function addAdditionalLinktoTableDD(linkType, link, description) {
@@ -3011,6 +3005,20 @@ function checkDuplicateContributorName(first, last) {
   return duplicate;
 }
 
+function checkDuplicateLink(link, table) {
+  var duplicate = false;
+  var rowcount = document.getElementById(table).rows.length;
+  for (var i = 1; i < rowcount; i++) {
+    var currentLink = document.getElementById(table).rows[i].cells[1].innerText;
+    if (currentLink === link) {
+      duplicate = true;
+      break;
+    }
+  }
+  return duplicate;
+}
+
+
 ///// Functions to grab each piece of info to generate the dd file
 
 // dataset info
@@ -3058,29 +3066,22 @@ function grabConInfoEntries() {
 function grabAdditionalLinkSection() {
   var table = document.getElementById("additional-link-table-dd");
   var rowcountLink = table.rows.length;
-  var additionalLinkInfo = [];
-  for (i = 1; i < rowcountLink; i++) {
-    var link = {
-      "link type": table.rows[i].cells[1].innerText,
-      link: table.rows[i].cells[2].innerText,
-      description: table.rows[i].cells[3].innerText,
-    };
-    additionalLinkInfo.push(link);
-  }
-  var allLinks = {};
-  //// categorize links based on types
   var originatingDOIArray = [];
   var additionalLinkArray = [];
-  for (var i = 0; i < additionalLinkInfo.length; i++) {
-    if (additionalLinkInfo[i]["link type"] === "Originating Article DOI") {
-      originatingDOIArray.push(additionalLinkInfo[i]);
-    } else if (additionalLinkInfo[i]["link type"] === "Additional Link") {
-      additionalLinkArray.push(additionalLinkInfo[i]);
+  for (i = 1; i < rowcountLink; i++) {
+    var linkType = table.rows[i].cells[1].innerText;
+    var link = table.rows[i].cells[2].innerText
+    if (linkType === "Originating Article DOI") {
+      originatingDOIArray.push(link)
+    } else if (linkType === "Additional Link") {
+      var linkObject = {
+        link: link,
+        description: table.rows[i].cells[3].innerText,
+      };
+      additionalLinkArray.push(linkObject);
     }
   }
-  allLinks["Additional links"] = additionalLinkArray;
-  allLinks["Originating Article DOI"] = originatingDOIArray;
-  return allLinks;
+  return [originatingDOIArray, additionalLinkArray];
 }
 
 function grabProtocolSection() {
@@ -3088,11 +3089,7 @@ function grabProtocolSection() {
   var rowcountLink = table.rows.length;
   var protocolLinkInfo = [];
   for (i = 1; i < rowcountLink; i++) {
-    var protocolLink = {
-      "link type": "Protocol URL or DOI*",
-      link: table.rows[i].cells[1].innerText,
-      description: table.rows[i].cells[2].innerText,
-    };
+    var protocolLink = table.rows[i].cells[1].innerText;
     protocolLinkInfo.push(protocolLink);
   }
   return protocolLinkInfo;
@@ -3102,9 +3099,9 @@ function combineLinksSections() {
   var protocolLinks = grabProtocolSection();
   var otherLinks = grabAdditionalLinkSection();
   var miscObj = {};
-  miscObj["Originating Article DOI"] = otherLinks["Originating Article DOI"];
+  miscObj["Originating Article DOI"] = otherLinks[0];
   miscObj["Protocol URL or DOI*"] = protocolLinks;
-  miscObj["Additional Link"] = otherLinks["Additional links"];
+  miscObj["Additional Link"] = otherLinks[1];
   return miscObj;
 }
 

@@ -2957,18 +2957,20 @@ ipcRenderer.on(
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                Swal.fire(
-                  "Failed to generate the dataset_description file",
-                  emessage,
-                  "warning"
-                );
+                Swal.fire({
+                  title:
+                    "Failed to generate the dataset_description file.",
+                  text:emessage,
+                  icon: "error",
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
                 ipcRenderer.send(
                   "track-event",
                   "Error",
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
-                // $("#generate-dd-spinner").hide();
               } else {
                 Swal.fire({
                   title:
