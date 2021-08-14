@@ -146,6 +146,8 @@ function dropHandler(ev, paraElement, metadataFile) {
       } else {
         document.getElementById(paraElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
+        $($("#"+paraElement).parents()[1]).find(".div-metadata-confirm").css("display", "none");
+        $($("#"+paraElement).parents()[1]).find(".div-metadata-go-back").css("display", "flex");
       }
     } else {
       document.getElementById(paraElement).innerHTML =

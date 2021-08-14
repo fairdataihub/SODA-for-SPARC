@@ -1128,8 +1128,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 350px;
   height: auto;
-  /* margin-top: 50px; */
-  /* margin-right: 20px; */
+  bottom: 70px;
   right: 0;
   bottom: 70px;
   border-radius: 10px 0 0 10px;
