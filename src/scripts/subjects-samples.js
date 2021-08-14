@@ -566,7 +566,7 @@ async function edit_current_protocol_id(ev) {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     preConfirm: () => {
-      return document.getElementById("DD-protocol-link").value
+      return document.getElementById("DD-protocol-link").value;
     },
   });
   if (value) {
@@ -580,10 +580,10 @@ async function edit_current_additional_link_id(ev) {
   var linkType = $(currentRow)[0].cells[1].innerText;
   // check which link type is being edited to hide/show the link description
   if (linkType === "Originating Article DOI") {
-    var display = "none"
-    var desc = ""
+    var display = "none";
+    var desc = "";
   } else {
-    var display = "block"
+    var display = "block";
     var desc = $(currentRow)[0].cells[3].innerText;
   }
   var link = $(currentRow)[0].cells[2].innerText;
@@ -594,7 +594,9 @@ async function edit_current_additional_link_id(ev) {
       '<input id="DD-additional-link" value="' +
       link +
       '" class="swal2-input" placeholder="Enter protocol link">' +
-      '<textarea style="display:'+display+'" id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description">' +
+      '<textarea style="display:' +
+      display +
+      '" id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description">' +
       desc +
       "</textarea>",
     focusConfirm: false,
@@ -1712,11 +1714,15 @@ $(document).ready(function () {
           defaultBfAccount
         );
       } else {
-        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-subjects-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
       }
     } else {
-      document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+      document.getElementById(
+        "existing-subjects-file-destination"
+      ).placeholder = "Browse here";
       $("#div-confirm-existing-subjects-import").hide();
     }
     if (
@@ -1744,11 +1750,14 @@ $(document).ready(function () {
           defaultBfAccount
         );
       } else {
-        document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-samples-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-samples-import").hide();
       }
     } else {
-      document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+      document.getElementById("existing-samples-file-destination").placeholder =
+        "Browse here";
       $("#div-confirm-existing-samples-import").hide();
     }
     if (
@@ -1765,7 +1774,10 @@ $(document).ready(function () {
 });
 
 function showExistingSubjectsFile() {
-  if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
+  if (
+    $("#existing-subjects-file-destination").prop("placeholder") !==
+    "Browse here"
+  ) {
     Swal.fire({
       title: "Are you sure you want to import a different subjects file?",
       text: "This will delete all of your previous work on this file.",
@@ -1781,44 +1793,51 @@ function showExistingSubjectsFile() {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-subjects");
-        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-subjects-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
         $($("#div-confirm-existing-subjects-import button")[0]).hide();
-        $("#Question-prepare-subjects-3").removeClass("show")
+        $("#Question-prepare-subjects-3").removeClass("show");
       }
-    })
+    });
   } else {
     ipcRenderer.send("open-file-dialog-existing-subjects");
   }
 }
 
 function showExistingSamplesFile() {
-  if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
-     Swal.fire({
-       title: "Are you sure you want to import a different samples file?",
-       text: "This will delete all of your previous work on this file.",
-       showCancelButton: true,
-       heightAuto: false,
-       backdrop: "rgba(0,0,0, 0.4)",
-       cancelButtonText: `No!`,
-       cancelButtonColor: "#f44336",
-       confirmButtonColor: "#3085d6",
-       confirmButtonText: "Yes",
-       icon: "warning",
-       reverseButtons: reverseSwalButtons,
-     }).then((boolean) => {
-       if (boolean.isConfirmed) {
-         ipcRenderer.send("open-file-dialog-existing-samples");
-         document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
-         $("#div-confirm-existing-samples-import").hide();
-         $($("#div-confirm-existing-samples-import button")[0]).hide();
-         $("#Question-prepare-samples-3").removeClass("show")
-       }
-     })
-   } else {
-     ipcRenderer.send("open-file-dialog-existing-samples");
-   }
- }
+  if (
+    $("#existing-samples-file-destination").prop("placeholder") !==
+    "Browse here"
+  ) {
+    Swal.fire({
+      title: "Are you sure you want to import a different samples file?",
+      text: "This will delete all of your previous work on this file.",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: `No!`,
+      cancelButtonColor: "#f44336",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+    }).then((boolean) => {
+      if (boolean.isConfirmed) {
+        ipcRenderer.send("open-file-dialog-existing-samples");
+        document.getElementById(
+          "existing-samples-file-destination"
+        ).placeholder = "Browse here";
+        $("#div-confirm-existing-samples-import").hide();
+        $($("#div-confirm-existing-samples-import button")[0]).hide();
+        $("#Question-prepare-samples-3").removeClass("show");
+      }
+    });
+  } else {
+    ipcRenderer.send("open-file-dialog-existing-samples");
+  }
+}
 
 function importExistingSubjectsFile() {
   var filePath = $("#existing-subjects-file-destination").prop("placeholder");
@@ -1992,15 +2011,16 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             cancelButtonText: "Cancel",
             allowEscapeKey: false,
             allowOutsideClick: false,
-            html:
-              '<input id="DD-protocol-link" class="swal2-input" placeholder="Enter protocol link">',
+            html: '<input id="DD-protocol-link" class="swal2-input" placeholder="Enter protocol link">',
             focusConfirm: false,
             preConfirm: () => {
               var link = document.getElementById("DD-protocol-link").value;
               if (checkDuplicateLink(link, "protocol-link-table-dd")) {
-                Swal.showValidationMessage("The link provided is already added to the table. Please provide a different protocol.")
+                Swal.showValidationMessage(
+                  "The link provided is already added to the table. Please provide a different protocol."
+                );
               }
-              return link
+              return link;
             },
           });
           if (formValue) {
@@ -2155,13 +2175,13 @@ async function showProtocolCredentials(email, filetype) {
       if (value) {
         if (filetype === "DD") {
           if (checkDuplicateLink(value, "protocol-link-table-dd")) {
-            return "The link provided is already added to the table. Please provide a different protocol."
+            return "The link provided is already added to the table. Please provide a different protocol.";
           }
         }
       } else {
-        return warningText
+        return warningText;
       }
-    }
+    },
   });
   if (protocol) {
     if (filetype === "subjects") {
@@ -2236,8 +2256,8 @@ async function addAdditionalLink() {
 }
 
 function hideDescriptionForDOIs() {
-  $("#DD-additional-link-description").val("")
-  $("#DD-additional-link").val("")
+  $("#DD-additional-link-description").val("");
+  $("#DD-additional-link").val("");
   if ($("#DD-additional-link-type").val() === "Originating Article DOI") {
     $("#DD-additional-link-description").css("display", "none");
     $("#label-additional-link-description").css("display", "none");
@@ -2305,12 +2325,7 @@ function readXMLScicrunch(xml, type) {
 async function addProtocol() {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
-<<<<<<< HEAD
     html: '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">',
-=======
-    html:
-      '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">',
->>>>>>> master
     focusConfirm: false,
     confirmButtonText: "Add",
     cancelButtonText: "Cancel",
@@ -2327,16 +2342,11 @@ async function addProtocol() {
         Swal.showValidationMessage(`Please enter a link!`);
       }
       if (checkDuplicateLink(link, "protocol-link-table-dd")) {
-        Swal.showValidationMessage("The link provided is already added to the table. Please provide a different protocol.")
+        Swal.showValidationMessage(
+          "The link provided is already added to the table. Please provide a different protocol."
+        );
       }
-      return [
-        $("#DD-protocol-link").val(),
-<<<<<<< HEAD
-        " ",
-        // $("#DD-protocol-description").val(),
-=======
->>>>>>> master
-      ];
+      return [$("#DD-protocol-link").val()];
     },
   });
   if (values) {
@@ -3048,7 +3058,6 @@ function checkDuplicateLink(link, table) {
   return duplicate;
 }
 
-
 ///// Functions to grab each piece of info to generate the dd file
 
 // dataset info
@@ -3100,9 +3109,9 @@ function grabAdditionalLinkSection() {
   var additionalLinkArray = [];
   for (i = 1; i < rowcountLink; i++) {
     var linkType = table.rows[i].cells[1].innerText;
-    var link = table.rows[i].cells[2].innerText
+    var link = table.rows[i].cells[2].innerText;
     if (linkType === "Originating Article DOI") {
-      originatingDOIArray.push(link)
+      originatingDOIArray.push(link);
     } else if (linkType === "Additional Link") {
       var linkObject = {
         link: link,
