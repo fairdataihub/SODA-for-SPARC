@@ -2962,6 +2962,25 @@ $("input:radio[name=main_tabs]").click(function () {
 });
 
 $(document).ready(() => {
+  // Enable the popover content for the main-tab buttons
+  $(".content-button").popover();
+  $(".option-card-disseminate-dataset").each(function () {
+    var $this = $(this);
+    $this.popover({
+      trigger: "hover",
+      container: $this,
+    });
+  });
+  $(".coming-soon-div").popover();
+  $("#button-submit-dataset").popover();
+  $(".popover-tooltip").each(function () {
+    var $this = $(this);
+    $this.popover({
+      trigger: "hover",
+      container: $this,
+    });
+  });
+
   $(".ui.accordion").accordion();
   $(".content-button").click(function () {
     let section = $(this).data("section");
@@ -3180,25 +3199,6 @@ $("#edit_banner_image_button").click(async () => {
       cropOptions
     );
   }
-});
-
-// Enable the popover content for the main-tab buttons
-$(".content-button").popover();
-$(".option-card-disseminate-dataset").each(function () {
-  var $this = $(this);
-  $this.popover({
-    trigger: "hover",
-    container: $this,
-  });
-});
-$(".coming-soon-div").popover();
-$("#button-submit-dataset").popover();
-$(".popover-tooltip").each(function () {
-  var $this = $(this);
-  $this.popover({
-    trigger: "hover",
-    container: $this,
-  });
 });
 
 initRipple = function (buttonEle) {

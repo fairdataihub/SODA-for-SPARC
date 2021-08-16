@@ -2460,13 +2460,10 @@ async function helpSPARCAward(filetype) {
             confirmButtonText: "Yes",
           }).then((boolean) => {
             if (boolean.isConfirmed) {
-              // var awardValue =  $("#select-SPARC-award").val()
-              // $("#ds-description-award-input").val(awardValue)
               changeAward(award);
             }
           });
         } else {
-          // var awardValue =  $("#select-SPARC-award").val()
           changeAward(award);
         }
       }
@@ -2509,6 +2506,19 @@ function populateSelectSPARCAward(object) {
 }
 
 function changeAward(award) {
+  Swal.fire({
+    title: "Loading your award and contributor information.",
+    html: "Please wait...",
+    timer: 3000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   $("#ds-description-award-input").val(award);
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
@@ -2535,14 +2545,6 @@ function changeAward(award) {
           currentContributorsLastNames.push(lastName);
         }),
           fetchNextPage();
-        // var currentRowLeftID = $(
-        //   $($("#table-current-contributors").find("tr")[1].cells[0]).find(
-        //     "select"
-        //   )[0]
-        // ).prop("id");
-        // if (currentRowLeftID) {
-        //   cloneConNamesSelect(currentRowLeftID);
-        // }
       });
     function done(err) {
       if (err) {
@@ -2659,6 +2661,7 @@ function showContributorSweetalert(key) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
+          enforceWhitelist: true,
           duplicates: false,
         }
       );
@@ -2848,6 +2851,7 @@ function edit_current_con_id(ev) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
+          enforceWhitelist: true,
           duplicates: false,
         }
       );
