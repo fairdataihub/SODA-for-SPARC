@@ -872,6 +872,8 @@ function editSample(ev, sampleID) {
         break;
       }
     }
+    // $(currentRow)[0].cells[2].innerText = newID;
+    $(currentRow)[0].cells[1].innerText = samplesFileData[0];
     hideSamplesForm();
   } else {
     var table = document.getElementById("table-samples");
@@ -896,6 +898,7 @@ function editSample(ev, sampleID) {
         }
       }
       $(currentRow)[0].cells[2].innerText = newID;
+      $(currentRow)[0].cells[1].innerText = samplesFileData[0];
       hideSamplesForm();
     }
   }
@@ -1050,6 +1053,9 @@ async function copy_current_sample_id(ev) {
       '<input id="new-subject" class="swal2-input" placeholder="Subject ID">' +
       '<input id="new-sample" class="swal2-input" placeholder="Sample ID">',
     focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
     preConfirm: () => {
       return [
         document.getElementById("new-subject").value,
