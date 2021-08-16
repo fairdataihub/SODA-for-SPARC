@@ -870,6 +870,7 @@ function editSample(ev, sampleID) {
         break;
       }
     }
+    $(currentRow)[0].cells[1].innerText = samplesFileData[0];
     hideSamplesForm();
   } else {
     var table = document.getElementById("table-samples");
@@ -894,6 +895,7 @@ function editSample(ev, sampleID) {
         }
       }
       $(currentRow)[0].cells[2].innerText = newID;
+      $(currentRow)[0].cells[1].innerText = samplesFileData[0];
       hideSamplesForm();
     }
   }
@@ -2632,6 +2634,7 @@ function showContributorSweetalert(key) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
+          enforceWhitelist: true,
           duplicates: false,
         }
       );
@@ -2814,6 +2817,7 @@ function edit_current_con_id(ev) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
+          enforceWhitelist: true,
           duplicates: false,
         }
       );
