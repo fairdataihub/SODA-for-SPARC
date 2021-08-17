@@ -142,33 +142,6 @@ $(document).ready(function () {
     }
   });
 
-  // ipcRenderer.on(
-  //   "warning-share-with-curation-team-selection",
-  //   (event, index) => {
-  //     if (index === 0) {
-  //       var account = $("#current-bf-account").text();
-  //       var dataset = $(".bf-dataset-span")
-  //         .html()
-  //         .replace(/^\s+|\s+$/g, "");
-  //       disseminateCurationTeam(account, dataset);
-  //     } else {
-  //       $("#share-curation-team-spinner").hide();
-  //     }
-  //   }
-  // );
-
-  // ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
-  //   if (index === 0) {
-  //     var account = $("#current-bf-account").text();
-  //     var dataset = $(".bf-dataset-span")
-  //       .html()
-  //       .replace(/^\s+|\s+$/g, "");
-  //     disseminateConsortium(account, dataset);
-  //   } else {
-  //     $("#share-with-sparc-consortium-spinner").show();
-  //   }
-  // });
-
   checkAirtableStatus("");
 
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
@@ -185,7 +158,6 @@ $(document).ready(function () {
           text: `${emessage}`,
           title: "Metadata file already exists",
         });
-        // $("#generate-submission-spinner").hide();
       } else {
         Swal.fire({
           title: "Generating the submission.xlsx file",
@@ -200,9 +172,10 @@ $(document).ready(function () {
             Swal.showLoading();
           },
         }).then((result) => {});
-        var awardRes = $("#submission-SPARC-award-span").text();
-        var dateRes = $("#submission-completion-date-span").text();
-        var milestonesRes = $("#submission-milestones-span").text();
+        var awardRes = $("#submission-sparc-award").val();
+        var dateRes = $("#submission-completion-date").val();
+        var milestonesRes = $("#selected-milestone-1").val();
+        // TODO: convert this milestonesRes tagify into array of values
         var milestoneValue = milestonesRes.split(", \n");
         var json_arr = [];
         json_arr.push({
@@ -235,25 +208,13 @@ $(document).ready(function () {
                   emessage,
                   "warning"
                 );
-                // document.getElementById(
-                //   "para-save-submission-status"
-                // ).innerHTML =
-                //   "<span style='color: red;'> " + emessage + "</span>";
                 ipcRenderer.send(
                   "track-event",
                   "Error",
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
-                // $("#generate-submission-spinner").hide();
               } else {
-                // document.getElementById(
-                //   "para-save-submission-status"
-                // ).innerHTML =
-                //   "<span style='color: black ;'>" +
-                //   "Done!" +
-                //   smileyCan +
-                //   "</span>";
                 Swal.fire({
                   title:
                     "The submission.xlsx file has been successfully generated at the specified location.",
@@ -267,7 +228,6 @@ $(document).ready(function () {
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
-                // $("#generate-submission-spinner").hide();
               }
             }
           );
@@ -1562,4 +1522,41 @@ function resetDD() {
         "none";
     }
   });
+}
+
+function helpMilestoneSubmission() {
+  var filepath = ""
+  var award = $("#submission-sparc-award").val();
+  // read from milestonePath to see if associated milestones exist or not
+  var informationJson = {};
+  informationJson = parseJson(milestonePath);
+  if (Object.keys(informationJson).includes(award)) {
+    informationJson[award] = milestoneObj;
+  } else {
+    Swal.fire({
+      title: "Do you have the Data Deliverables document ready to import?",
+      showCancelButton: true,
+      showConfirmButton: true,
+      confirmButtonText: "Yes, let's import it",
+      cancelButtonText: "No",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Importing the Data Deliverables document",
+          html: `<div class="container-milestone-upload" style="display: flex"><input class="milestone-upload-text" id="input-milestone-select"style="text-align: center;height: 40px;border-radius: 0;background: #fff; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          preConfirm: () => {
+            if ($("#milestone-upload-text").attr("placeholder") === "") {
+              Swal.showValidationMessage("Please select a file")
+            } else {
+              filepath = $("#milestone-upload-text").attr("placeholder")
+            }
+          },
+        })
+      }
+    })
+  }
 }

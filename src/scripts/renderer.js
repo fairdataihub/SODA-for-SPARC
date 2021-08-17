@@ -1716,7 +1716,6 @@ const specimenType = [
   "whole mount",
 ];
 function createSpecimenTypeAutocomplete(id) {
-  // var listID = "autocomplete" + id;
   var autoCompleteJS3 = new autoComplete({
     selector: "#" + id,
     data: {

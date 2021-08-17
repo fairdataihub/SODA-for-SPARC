@@ -1170,7 +1170,7 @@
                       display: flex;
                       justify-content: center;
                       margin: 0 auto;
-                      text-decoration: underline;
+                      text-decoration: none;
                       text-align: center;
                       font-size: 14px;
                       margin-top: 10px;
@@ -1178,12 +1178,12 @@
                     "
                   >
                     <a
-                      onclick=""
-                      id=""
-                      >Help me select my SPARC award</a
+                      onclick="helpSPARCAward('submission')" target="_blank"
+                      >Help me select my SPARC award from Airtable</a
                     >
                     <div
-                      class="ui active green inline loader small"
+                      id="select-sparc-award-submission-spinner"
+                      class="ui active green inline loader sparc-award small"
                       style="display: none; margin-left: 10px"
                     ></div>
                   </div>
@@ -1222,8 +1222,9 @@
                         >
                           <div class="ui input modified">
                             <textarea
-                              type="text"
-                              placeholder="Type here..."
+                              id="selected-milestone-1"
+                              class="form-container-input-bf"
+                              placeholder="Type here and hit 'Enter' after each keyword."
                             ></textarea>
                           </div>
                         </div>
@@ -1263,6 +1264,7 @@
                           <div class="ui input modified">
                             <input
                               type="date"
+                              id="submission-completion-date"
                             />
                           </div>
                         </div>
@@ -1275,14 +1277,14 @@
                     text-decoration: underline;
                     text-align: center;
                     font-size: 14px;
-                    margin-top: 10px;
+                    margin-top: 25px;
                     padding-bottom: 20px;
                   "
                 >
                   <a
-                    onclick=""
+                    onclick="helpMilestoneSubmission()"
                     id=""
-                    >Help me with my milestone information</a
+                    >Help me with import milestones from my Data Deliverables document</a
                   >
                   <div
                     class="ui active green inline loader small"
@@ -1627,7 +1629,7 @@
 
               <div class="field">
                 <textarea
-                  id="selected-milestone-1"
+
                   class="form-container-textarea"
                 ></textarea>
               </div>

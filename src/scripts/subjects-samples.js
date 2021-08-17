@@ -2408,8 +2408,6 @@ async function helpSPARCAward(filetype) {
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
         html: htmlEle,
-        // input: 'select',
-        // inputOptions: awardObj,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         inputPlaceholder: "Select an award",
@@ -2417,8 +2415,9 @@ async function helpSPARCAward(filetype) {
         confirmButtonText: "Confirm",
         didOpen: () => {
           $("#select-sparc-award-dd-spinner").css("display", "none");
-          populateSelectSPARCAward(awardObj);
+          populateSelectSPARCAward(awardObj, "select-SPARC-award");
           $("#select-SPARC-award").selectpicker();
+          $("#bf_list_users_pi").selectpicker("refresh");
         },
         preConfirm: () => {
           if ($("#select-SPARC-award").val() === "Select") {
@@ -2442,13 +2441,10 @@ async function helpSPARCAward(filetype) {
             confirmButtonText: "Yes",
           }).then((boolean) => {
             if (boolean.isConfirmed) {
-              // var awardValue =  $("#select-SPARC-award").val()
-              // $("#ds-description-award-input").val(awardValue)
               changeAward(award);
             }
           });
         } else {
-          // var awardValue =  $("#select-SPARC-award").val()
           changeAward(award);
         }
       }
@@ -2471,19 +2467,89 @@ async function helpSPARCAward(filetype) {
       });
       $("#select-sparc-award-dd-spinner").css("display", "none");
     }
+  } else {
+    var res = airtableRes;
+    $("#select-sparc-award-submission-spinner").css("display", "block");
+    if (res[0]) {
+      var keyname = res[1];
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+        class="search-select-box"><select id="select-SPARC-award-submission" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
+      const { value: awardVal } = await Swal.fire({
+        html: htmlEle,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        inputPlaceholder: "Select an award",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        didOpen: () => {
+          $("#select-sparc-award-submission-spinner").css("display", "none");
+          populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
+          $("#select-SPARC-award-submission").selectpicker();
+          $("#bf_list_users_pi").selectpicker("refresh");
+        },
+        preConfirm: () => {
+          if ($("#select-SPARC-award-submission").val() === "Select") {
+            Swal.showValidationMessage("Please select an award.");
+          } else {
+            award = $("#select-SPARC-award-submission").val();
+          }
+        },
+      });
+      if (awardVal) {
+        if ($("#selected-milestone-1").val() !== "") {
+          Swal.fire({
+            title:
+              "Are you sure you want to delete all of the previous milestone information?",
+            showCancelButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: `No!`,
+            cancelButtonColor: "#f44336",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Yes",
+          }).then((boolean) => {
+            if (boolean.isConfirmed) {
+              milestoneTagify1.removeAllTags();
+              $("#submission-sparc-award").val(award)
+            }
+          });
+        } else {
+          milestoneTagify1.removeAllTags();
+          $("#submission-sparc-award").val(award)
+        }
+      }
+    } else {
+      Swal.fire({
+        title:
+          "At this moment, SODA is not connected with your Airtable account.",
+        text: "Would you like to connect your Airtable account with SODA?",
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: `No!`,
+        cancelButtonColor: "#f44336",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "Yes",
+      }).then((boolean) => {
+        if (boolean.isConfirmed) {
+          showAddAirtableAccountSweetalert("dd");
+        }
+      });
+      $("#select-sparc-award-submission-spinner").css("display", "none");
+    }
   }
 }
 
-function populateSelectSPARCAward(object) {
-  removeOptions(document.getElementById("select-SPARC-award"));
+function populateSelectSPARCAward(object, id) {
+  removeOptions(document.getElementById(id));
   addOption(
-    document.getElementById("select-SPARC-award"),
+    document.getElementById(id),
     "Select an award",
     "Select"
   );
   for (var award of Object.keys(object)) {
     addOption(
-      document.getElementById("select-SPARC-award"),
+      document.getElementById(id),
       object[award],
       award
     );
