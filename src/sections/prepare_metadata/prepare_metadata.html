@@ -986,152 +986,315 @@
         margin-left: -70px;
       "
     >
+
       <div
         class="individual-question prepare-submission show"
         id="Question-prepare-submission-1"
-        style="margin-top: 20px"
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Let's check your Airtable connection status:
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="SODA makes use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
-                <br/><br/>
-                To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
-                <br/><br/>
-                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key' target='_blank'> Airtable Help page</a> to learn how to obtain or re-generate your API key."
-                rel="popover"
-                data-placement="right"
-                data-html="true"
-                data-trigger="hover"
-              ></i>
+              >Please select an option below:
             </label>
-
-            <!-- field that will show when AIrtable is not connected yet -->
             <div
-              class="field"
-              style="width: 100%; display: none"
-              id="div-field-not-connected"
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+              "
             >
-              <!-- <div id="checking-airtable-connection" class="ui active green inline loader" style="display:block;margin:10px auto"></div> -->
-              <p
-                id="airtable-connection-status"
-                style="font-weight: 600; text-align: center; font-size: 16px"
-              >
-                <span style="color: #000"
-                  >You are not connected to Airtable. </span
-                ><br /><span style="color: #000"
-                  >We recommend you to create an Airtable account, get access to
-                  the SPARC Airtable spreadsheet, and connect your Airtable
-                  account with SODA so SODA can auto-populate information for
-                  your metadata files at your convenience. Would you like to
-                  connect your Airtable account?</span
-                >
-              </p>
-            </div>
-            <!-- field that will show when AIrtable is already connected -->
-            <div
-              class="field"
-              style="width: 100%; display: flex"
-              id="div-field-already-connected"
-            >
-              <div
-                style="
-                  width: 100%;
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
+              <div style="margin: 15px 0">
                 <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                    margin-bottom: 15px;
-                  "
+                  class="option-card radio-button"
+                  data-next="Question-prepare-submission-2"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                  style="max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;"
                 >
-                  <div class="card-container prepare-submission">
-                    <h5 class="card-left" style="width: 30%">
-                      Airtable account:
-                    </h5>
-                    <h5
-                      class="card-right"
-                      id="current-airtable-account"
-                      style="width: 70%"
-                    >
-                      Loading...
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="showAddAirtableAccountSweetalert('submission')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      width: 100%;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <h5 class="card-left" style="width: 30%">
-                        User's award(s):
-                      </h5>
-                      <h5
-                        class="card-right"
-                        id="current-users-awards"
-                        style="width: 70%"
-                      >
-                        None
-                      </h5>
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="submission-1"
+                        type="radio"
+                        id="submission-1-B"
+                      />
+                      <label for="submission-1-B"></label>
                     </div>
+                  </div>
+                  <div class="card-body">
                     <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="editSPARCAwardsBootbox()"
                       xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
+                      width="40px"
+                      height="40px"
+                      fill="var(--color-accent)"
+                      class="bi bi-file-earmark-plus"
                       viewBox="0 0 16 16"
                     >
                       <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
                       />
                     </svg>
+                    <h2>I want to start a new submission.xlsx file</h2>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="margin: 15px 0"
+                class="coming-soon-div"
+                data-content="Coming soon..."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <div
+                  class="option-card radio-button"
+                  data-next="Question-prepare-submission-3"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                  style="
+                    pointer-events: none;
+                    background: #f6f6f6;
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                  "
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="submission-1"
+                        type="radio"
+                        id="submission-1-A"
+                      />
+                      <label for="submission-1-A"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-subtle)"
+                    ></i>
+                    <h2>
+                      I want to continue working on an existing
+                      submission.xlsx file
+                    </h2>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- This is the button (Confirm) that will appear if users are already connected to Airtable -->
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-2"
+        style="margin-top: 20px"
+      >
+      <div class="ui form" style="width: 100%">
+        <div class="field">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              margin-bottom: 20px;
+              text-align: center;
+            "
+            >Fill out the sections below and generate your submission
+            file
+          </label>
+          <div class="ui styled accordion" style="width: 100% !important">
             <div
-              id="div-airtable-confirm-button"
+              class="title active"
+              style="background: var(--color-bg-light-green-button)"
+            >
+              <i class="dropdown icon"></i>
+              Award and milestone information
+            </div>
+            <div class="content active">
+              <div
+                style="
+                  display: block;
+                  width: 90%;
+                  margin: 0 auto;
+                  font-size: 13px;
+                "
+              >
+                <div>
+                  <div
+                    class="div-dd-info"
+                    style="
+                      margin-top: 10px;
+                      margin-bottom: 15px;
+                      flex-direction: column;
+                    "
+                  >
+                    <div
+                      class="demo-controls-head"
+                      style="text-align: left; width: 90%; margin-bottom: 5px"
+                    >
+                      <div style="width: 100%">
+                        <font style="font-weight: 600; color: #090909">
+                          SPARC Award number:
+                        </font>
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="SPARC award associated with the dataset."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: 90%">
+                      <div class="ui input modified">
+                        <input
+                          type="text"
+                          id="submission-sparc-award"
+                          name="dataset name"
+                          placeholder="Type here..."
+                          style="font-size: 14px"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: center;
+                      margin: 0 auto;
+                      text-decoration: none;
+                      text-align: center;
+                      font-size: 14px;
+                      margin-top: 10px;
+                      padding-bottom: 20px;
+                    "
+                  >
+                    <a
+                      onclick="helpSPARCAward('submission')" target="_blank"
+                      >Help me select my SPARC award from Airtable</a
+                    >
+                    <div
+                      id="select-sparc-award-submission-spinner"
+                      class="ui active green inline loader sparc-award small"
+                      style="display: none; margin-left: 10px"
+                    ></div>
+                  </div>
+                      <div class="div-dd-info"
+                          style="
+                            margin-top: 10px;
+                            margin-bottom: 15px;
+                            flex-direction: column;
+                          ">
+                        <div
+                          class="demo-controls-head"
+                          style="text-align: left; width: 90%; margin-bottom: 5px"
+                        >
+                          <div style="width: 100%">
+                            <font style="font-weight: 600; color: #090909">
+                            Enter the milestone(s):</font>
+                            <i
+                              class="
+                                fas
+                                fa-info-circle
+                                popover-tooltip
+                              "
+                              data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+                                  <br/><br/>
+                                  Hit 'Enter' to register it."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
+                          </div>
+                        </div>
+                        <div
+                          class="demo-controls-body" style="width: 90%"
+                        >
+                          <div class="ui input modified">
+                            <textarea
+                              id="selected-milestone-1"
+                              class="form-container-input-bf"
+                              placeholder="Type here and hit 'Enter' after each keyword."
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="div-dd-info"
+                          style="
+                            margin-top: 10px;
+                            margin-bottom: 15px;
+                            flex-direction: column;
+                          ">
+                        <div
+                          class="demo-controls-head"
+                          style="text-align: left; width: 90%; margin-bottom: 5px"
+                        >
+                          <div style="width: 100%">
+                            <font style="font-weight: 600; color: #090909">Completion date:
+                            </font>
+                            <i
+                              class="
+                                fas
+                                fa-info-circle
+                                popover-tooltip
+                              "
+                              data-content="Enter the completion date for your milestone(s) specified above."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
+                          </div>
+                        </div>
+                        <div
+                          class="demo-controls-body" style="width: 90%"
+                        >
+                          <div class="ui input modified">
+                            <input
+                              type="date"
+                              id="submission-completion-date"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    margin: 0 auto;
+                    text-decoration: underline;
+                    text-align: center;
+                    font-size: 14px;
+                    margin-top: 25px;
+                    padding-bottom: 20px;
+                  "
+                >
+                  <a
+                    onclick="helpMilestoneSubmission()"
+                    id=""
+                    >Help me with import milestones from my Data Deliverables document</a
+                  >
+                  <div
+                    class="ui active green inline loader small"
+                    style="display: none; margin-left: 10px"
+                  ></div>
+                </div>
+                </div>
+              </div>
+            </div>
+            <div
               style="
                 display: flex;
                 flex-direction: row;
@@ -1140,55 +1303,17 @@
               "
             >
               <button
-                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                data-next="Question-prepare-submission-3"
+                onclick="generateSubmissionFile()"
                 class="btn_animated"
-                style="margin: 10px auto; width: 100px"
+                style="margin: 10px; width: 120px; border: none !important"
               >
-                Confirm
-              </button>
-            </div>
-            <!-- this is the set of buttons that will appear if Airtable account is not connected -->
-            <div
-              id="div-airtable-award-button"
-              style="
-                display: none;
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-                margin-top: 30px;
-              "
-            >
-              <button
-                id="submission-no-airtable-mode"
-                class="btn_animated skip"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                data-next="Question-prepare-submission-no-skip-1"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 140px;
-                  background: #fff;
-                  color: red;
-                  font-weight: 600;
-                  border: 1px solid red;
-                  margin-right: 20px;
-                "
-              >
-                No, skip
-              </button>
-              <button
-                id="submission-connect-Airtable"
-                onclick="showAddAirtableAccountSweetalert('submission')"
-                class="btn_animated"
-                style="margin: 10px auto; width: 140px; border: none !important"
-              >
-                Yes, let's connect
+                Generate
               </button>
             </div>
           </div>
         </div>
+      </div>
+
       </div>
 
       <div
@@ -1504,7 +1629,7 @@
 
               <div class="field">
                 <textarea
-                  id="selected-milestone-1"
+
                   class="form-container-textarea"
                 ></textarea>
               </div>
@@ -1921,7 +2046,7 @@
                     </div>
                   </div>
                 </div>
-                <div
+                <!-- <div
                   style="
                     display: flex;
                     flex-direction: row;
@@ -1936,7 +2061,7 @@
                   >
                     Generate
                   </button>
-                </div>
+                </div> -->
                 <p
                   id="para-save-submission-status"
                   style="
