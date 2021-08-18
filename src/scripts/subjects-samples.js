@@ -1199,18 +1199,24 @@ function importPrimaryFolderSubjects(folderPath) {
     headersArrSubjects.push(field.name);
   }
   if (folderPath === "Browse here") {
-    Swal.fire(
-      "No folder chosen",
-      "Please select a path to your primary folder",
-      "error"
-    );
+    Swal.fire({
+      title: "No folder chosen!",
+      text: "Please select a path to your primary folder",
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
   } else {
     if (path.parse(folderPath).base !== "primary") {
-      Swal.fire(
-        "Incorrect folder name",
-        "Your folder must be named 'primary' to be imported to SODA.",
-        "error"
-      );
+      Swal.fire({
+        title: "Incorrect folder name!",
+        text: "Your folder must be named 'primary' to be imported to SODA.",
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -1279,18 +1285,24 @@ function importPrimaryFolderSamples(folderPath) {
   }
   // var folderPath = $("#primary-folder-destination-input-samples").prop("placeholder");
   if (folderPath === "Browse here") {
-    Swal.fire(
-      "No folder chosen",
-      "Please select a path to your primary folder.",
-      "error"
-    );
+    Swal.fire({
+      title: "No folder chosen!",
+      text: "Please select a path to your primary folder.",
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
   } else {
     if (path.parse(folderPath).base !== "primary") {
-      Swal.fire(
-        "Incorrect folder name",
-        "Your folder must be named 'primary' to be imported to SODA.",
-        "error"
-      );
+      Swal.fire({
+        title: "Incorrect folder name!",
+        text: "Your folder must be named 'primary' to be imported to SODA.",
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -2533,12 +2545,12 @@ async function helpSPARCAward(filetype) {
           }).then((boolean) => {
             if (boolean.isConfirmed) {
               milestoneTagify1.removeAllTags();
-              $("#submission-sparc-award").val(award)
+              $("#submission-sparc-award").val(award);
             }
           });
         } else {
           milestoneTagify1.removeAllTags();
-          $("#submission-sparc-award").val(award)
+          $("#submission-sparc-award").val(award);
         }
       }
     } else {
@@ -2565,17 +2577,9 @@ async function helpSPARCAward(filetype) {
 
 function populateSelectSPARCAward(object, id) {
   removeOptions(document.getElementById(id));
-  addOption(
-    document.getElementById(id),
-    "Select an award",
-    "Select"
-  );
+  addOption(document.getElementById(id), "Select an award", "Select");
   for (var award of Object.keys(object)) {
-    addOption(
-      document.getElementById(id),
-      object[award],
-      award
-    );
+    addOption(document.getElementById(id), object[award], award);
   }
 }
 
@@ -2606,7 +2610,7 @@ function changeAward(award) {
       endpointUrl: "https://" + airtableHostname,
       apiKey: airKeyInput,
     });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
+    var base = Airtable.base("appSDqnnxSuM1s2F7");
     base("sparc_members")
       .select({
         filterByFormula: `({SPARC_Award_#} = "${award}")`,

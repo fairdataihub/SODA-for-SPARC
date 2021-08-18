@@ -175,13 +175,25 @@ $(document).ready(function () {
         var awardRes = $("#submission-sparc-award").val();
         var dateRes = $("#submission-completion-date").val();
         var milestonesRes = $("#selected-milestone-1").val();
+        if (awardRes == "" || dateRes == "" || milestonesRes == "") {
+          Swal.hideLoading();
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            text: `Please fill in all fields before generating the submission.xlsx file`,
+            title: "Required fields incomplete",
+          });
+          return;
+        }
         // TODO: convert this milestonesRes tagify into array of values
-        var milestoneValue = milestonesRes.split(", \n");
+        let milestoneValue = JSON.parse(milestonesRes);
+        // var milestoneValue = milestonesRes.split(", \n");
         var json_arr = [];
         json_arr.push({
           award: awardRes,
           date: dateRes,
-          milestone: milestoneValue[0],
+          milestone: milestoneValue[0].value,
         });
         if (milestoneValue.length > 0) {
           for (var index = 1; index < milestoneValue.length; index++) {
@@ -252,6 +264,56 @@ $(document).ready(function () {
       }
     }
   });
+});
+
+$("#submission-completion-date").change(function () {
+  const text = $("#submission-completion-date").val();
+  console.log(text);
+  if (text == "Enter my own date") {
+    Swal.fire({
+      allowOutsideClick: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Confirm",
+      showCloseButton: true,
+      focusConfirm: true,
+      heightAuto: false,
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: false,
+      title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
+      html: `<input type="date" id="milestone_date_picker" >`,
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+      didOpen: () => {
+        document.getElementById("milestone_date_picker").valueAsDate =
+          new Date();
+      },
+      preConfirm: async () => {
+        const input_date = document.getElementById(
+          "milestone_date_picker"
+        ).value;
+        return {
+          date: input_date,
+        };
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const input_date = result.value.date;
+        $("#submission-completion-date").append(
+          $("<option>", {
+            value: input_date,
+            text: input_date,
+          })
+        );
+        var $option = $("#submission-completion-date").children().last();
+        $option.prop("selected", true);
+      }
+    });
+  }
 });
 
 const disseminateCurationTeam = (account, dataset, share_status = "") => {
@@ -587,8 +649,11 @@ function checkAirtableStatus(keyword) {
         endpointUrl: "https://" + airtableHostname,
         apiKey: airKeyInput,
       });
-      var base = Airtable.base("appW7lVO177HpnrP2");
-      base("soda_sparc_members")
+      // var base = new Airtable({
+      //   apiKey: airKeyInput,
+      // }).base("appSDqnnxSuM1s2F7");
+      var base = Airtable.base("appSDqnnxSuM1s2F7");
+      base("sparc_members")
         .select({
           view: "All members (ungrouped)",
         })
@@ -815,7 +880,7 @@ $("#input-milestone-date").change(function () {
 $("#selected-milestone-date").change(function () {
   document.getElementById("input-milestone-date").value = "";
   if ($("#selected-milestone-date").val() !== "") {
-    if (descriptionDateInput.value === "Enter a date") {
+    if (descriptionDateInput.value === "Enter my own date") {
       actionEnterNewDate("flex");
     } else {
       actionEnterNewDate("none");
@@ -877,7 +942,7 @@ function showPreviewSubmission() {
     } else if (div.id == "Question-prepare-submission-no-skip-1") {
       sparcAwardRes = $("#textarea-SPARC-award-raw-input").val();
     } else if (div.id == "Question-prepare-submission-6") {
-      if ($("#selected-milestone-date").val() === "Enter a date") {
+      if ($("#selected-milestone-date").val() === "Enter my own date") {
         dateRes = $("#input-milestone-date").val();
       } else {
         dateRes = $("#selected-milestone-date").val();
@@ -1525,7 +1590,7 @@ function resetDD() {
 }
 
 function helpMilestoneSubmission() {
-  var filepath = ""
+  var filepath = "";
   var award = $("#submission-sparc-award").val();
   // read from milestonePath to see if associated milestones exist or not
   var informationJson = {};
@@ -1545,18 +1610,149 @@ function helpMilestoneSubmission() {
       if (result.isConfirmed) {
         Swal.fire({
           title: "Importing the Data Deliverables document",
-          html: `<div class="container-milestone-upload" style="display: flex"><input class="milestone-upload-text" id="input-milestone-select"style="text-align: center;height: 40px;border-radius: 0;background: #fff; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
+          html: `<div class="container-milestone-upload" style="display: flex"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #fff; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           preConfirm: () => {
-            if ($("#milestone-upload-text").attr("placeholder") === "") {
-              Swal.showValidationMessage("Please select a file")
+            if (
+              $("#input-milestone-select").attr("placeholder") === "Browse here"
+            ) {
+              Swal.showValidationMessage("Please select a file");
             } else {
-              filepath = $("#milestone-upload-text").attr("placeholder")
+              filepath = $("#input-milestone-select").attr("placeholder");
+              return {
+                filepath: filepath,
+              };
             }
           },
-        })
+        }).then((result) => {
+          Swal.close();
+
+          const filepath = result.value.filepath;
+          // document.getElementById(
+          //   "para-milestone-document-info-long"
+          // ).style.display = "none";
+          // document.getElementById("para-milestone-document-info").innerHTML =
+          //   "";
+          // var filepath = document.getElementById(
+          //   "input-milestone-select"
+          // ).placeholder;
+          // if (filepath === "Browse here") {
+          // document.getElementById("para-milestone-document-info").innerHTML =
+          //   "<span style='color: red ;'>" +
+          //   "Please select a data deliverables document first!</span>";
+          // $("#upload-DDD-spinner").hide();
+          // } else {
+          var award =
+            presavedAwardArray1.options[presavedAwardArray1.selectedIndex]
+              .value;
+          client.invoke(
+            "api_extract_milestone_info",
+            filepath,
+            (error, res) => {
+              if (error) {
+                var emessage = userError(error);
+                log.error(error);
+                console.error(error);
+                // document.getElementById(
+                //   "para-milestone-document-info-long"
+                // ).style.display = "block";
+                // document.getElementById(
+                //   "para-milestone-document-info-long"
+                // ).innerHTML =
+                //   "<span style='color: red;'> " + emessage + ".</span>";
+                Swal.fire({
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  heightAuto: false,
+                  icon: "error",
+                  text: `${emessage}`,
+                });
+                // $("#upload-DDD-spinner").hide();
+              } else {
+                milestoneObj = res;
+                createMetadataDir();
+                var informationJson = {};
+                informationJson = parseJson(milestonePath);
+                informationJson[award] = milestoneObj;
+                fs.writeFileSync(
+                  milestonePath,
+                  JSON.stringify(informationJson)
+                );
+                Swal.fire({
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  heightAuto: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  icon: "success",
+                  text: `Successfully loaded your DataDeliverables.docx document`,
+                });
+                // document.getElementById(
+                //   "para-milestone-document-info"
+                // ).innerHTML =
+                //   "<span style='color: black ;'>" + "Imported!</span>";
+                // document.getElementById("input-milestone-select").placeholder =
+                //   "Browse here";
+                removeOptions(descriptionDateInput);
+                milestoneTagify1.removeAllTags();
+                milestoneTagify1.settings.whitelist = [];
+                milestoneTagify2.settings.whitelist = [];
+                changeAwardInput();
+                // $("#div-cancel-DDD-import").hide();
+                // $("#div-confirm-DDD-import button").click();
+                // $("#upload-DDD-spinner").hide();
+              }
+            }
+          );
+          // }
+        });
       }
-    })
+    });
   }
+}
+
+function openDDDimport() {
+  // console.log("here");
+  document.getElementById("para-milestone-document-info").innerHTML = "";
+  document.getElementById("para-milestone-document-info-long").innerHTML = "";
+  document.getElementById("para-milestone-document-info-long").style.display =
+    "none";
+  // ipcRenderer.send("open-file-dialog-milestone-doc");
+
+  const dialog = require("electron").remote.dialog;
+  const BrowserWindow = require("electron").remote.BrowserWindow;
+
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "DOCX", extensions: ["docx"] }],
+    },
+    (filepath) => {
+      if (filepath) {
+        if (filepath.length > 0) {
+          if (filepath != null) {
+            // used to communicate value to button-import-milestone click event-listener
+            // console.log(document.getElementById("input-milestone-select"));
+            // console.log(document.querySelector("#input-milestone-select"));
+            document.getElementById("input-milestone-select").placeholder =
+              filepath[0];
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Prepare Metadata - Add DDD",
+              defaultBfAccount
+            );
+          }
+        }
+        // if (
+        //   document.getElementById("input-milestone-select").placeholder !==
+        //   "Browse here"
+        // ) {
+        //   $("#button-import-milestone").show();
+        // } else {
+        //   $("#button-import-milestone").hide();
+        // }
+      }
+    }
+  );
 }

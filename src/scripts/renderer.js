@@ -47,8 +47,8 @@ var datasetStructureJSONObj = {
 };
 
 let introStatus = {
-  organizeStep3: false
-}
+  organizeStep3: false,
+};
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -72,6 +72,8 @@ client.invoke("echo", "server ready", (error, res) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
     }).then(async (result) => {
       if (result.isConfirmed) {
         app.relaunch();
@@ -683,7 +685,7 @@ var globalContributorNameObject = {};
 
 // Prepare Submission File
 const airtableAccountBootboxMessage =
-  "<form><div class='form-group row'><label for='bootbox-airtable-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-airtable-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
+  "<form><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
 const generateSubmissionBtn = document.getElementById("generate-submission");
 
 // Prepare Dataset Description File
@@ -1104,7 +1106,9 @@ ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
 //////////////// //////////////// //////////////// //////////////// ///////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
-const descriptionDateInput = document.getElementById("selected-milestone-date");
+const descriptionDateInput = document.getElementById(
+  "submission-completion-date"
+);
 
 const milestoneInput1 = document.getElementById("selected-milestone-1");
 var milestoneTagify1 = new Tagify(milestoneInput1, {
@@ -1127,19 +1131,58 @@ milestoneTagify1.on("add", function () {
       $(buttonDiv).show();
       $($(buttonDiv).children()[0]).show();
     }
-    if ($("#Question-prepare-submission-7").hasClass("show")) {
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+
+    console.log(milestoneTagify1.value);
+
+    document.getElementById("selected-milestone-date").value = "";
+    document.getElementById("input-milestone-date").value = "";
+    actionEnterNewDate("none");
+    document.getElementById("para-save-submission-status").innerHTML = "";
+    removeOptions(descriptionDateInput);
+    addOption(descriptionDateInput, "Select an option", "Select");
+
+    const award =
+      presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+    var informationJson = parseJson(milestonePath);
+
+    var completionDateArray = [];
+    completionDateArray.push("Enter my own date");
+
+    /// when DD is provided
+    if (award in informationJson) {
+      var milestoneObj = informationJson[award];
+      // Load milestone values once users choose an award number
+      var milestoneKey = milestoneTagify1.value[0].value;
+
+      /// add milestones to Tagify suggestion tag list and options to completion date dropdown
+
+      for (var j = 0; j < milestoneObj[milestoneKey].length; j++) {
+        completionDateArray.push(
+          milestoneObj[milestoneKey][j]["Expected date of completion"]
+        );
+      }
     }
+    for (var i = 0; i < completionDateArray.length; i++) {
+      addOption(
+        descriptionDateInput,
+        completionDateArray[i],
+        completionDateArray[i]
+      );
+    }
+
+    // if ($("#Question-prepare-submission-7").hasClass("show")) {
+    //   var res = showPreviewSubmission();
+    //   var awardRes = res["awards"];
+    //   var dateRes = res["date"];
+    //   var milestonesRes = res["milestones"];
+    //   var milestoneValues = [];
+    //   $("#submission-SPARC-award-span").text(awardRes);
+    //   $("#submission-completion-date-span").text(dateRes);
+    //   milestonesRes.forEach((item, i) => {
+    //     milestoneValues.push(milestonesRes[i].value);
+    //   });
+    //   $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+    // }
   } else {
     $(buttonDiv).hide();
     $("#Question-prepare-submission-4")
@@ -1317,15 +1360,6 @@ function importMilestoneDocument() {
   }
 }
 
-document
-  .getElementById("input-milestone-select")
-  .addEventListener("click", function () {
-    document.getElementById("para-milestone-document-info").innerHTML = "";
-    document.getElementById("para-milestone-document-info-long").innerHTML = "";
-    document.getElementById("para-milestone-document-info-long").style.display =
-      "none";
-    ipcRenderer.send("open-file-dialog-milestone-doc");
-  });
 ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
@@ -2043,8 +2077,8 @@ function loadAwardData() {
         endpointUrl: "https://" + airtableHostname,
         apiKey: airKeyInput,
       });
-      var base = Airtable.base("appW7lVO177HpnrP2");
-      base("soda_sparc_members")
+      var base = Airtable.base("appSDqnnxSuM1s2F7");
+      base("sparc_members")
         .select({
           view: "All members (ungrouped)",
         })
@@ -2100,7 +2134,7 @@ function changeAwardInput() {
 
   var completionDateArray = [];
   var milestoneValueArray = [];
-  completionDateArray.push("Enter a date");
+  completionDateArray.push("Enter my own date");
 
   /// when DD is provided
   if (award in informationJson) {
@@ -2214,8 +2248,8 @@ function changeAwardInputDsDescription() {
       endpointUrl: "https://" + airtableHostname,
       apiKey: airKeyInput,
     });
-    var base = Airtable.base("appW7lVO177HpnrP2");
-    base("soda_sparc_members")
+    var base = Airtable.base("appSDqnnxSuM1s2F7");
+    base("sparc_members")
       .select({
         filterByFormula: `({SPARC_Award_#} = "${awardVal}")`,
       })
@@ -2346,8 +2380,8 @@ function loadContributorInfo(lastName, firstName) {
     endpointUrl: "https://" + airtableHostname,
     apiKey: airKeyInput,
   });
-  var base = Airtable.base("appW7lVO177HpnrP2");
-  base("soda_sparc_members")
+  var base = Airtable.base("appSDqnnxSuM1s2F7");
+  base("sparc_members")
     .select({
       filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
     })
@@ -2955,9 +2989,8 @@ ipcRenderer.on(
                 log.error(error);
                 console.error(error);
                 Swal.fire({
-                  title:
-                    "Failed to generate the dataset_description file.",
-                  text:emessage,
+                  title: "Failed to generate the dataset_description file.",
+                  text: emessage,
                   icon: "error",
                   heightAuto: false,
                   backdrop: "rgba(0,0,0, 0.4)",
@@ -8707,7 +8740,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
 }
 
 function showAddAirtableAccountSweetalert(keyword) {
-  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
   var bootb = Swal.fire({
     title: htmlTitle,
@@ -8720,6 +8753,8 @@ function showAddAirtableAccountSweetalert(keyword) {
     heightAuto: false,
     reverseButtons: reverseSwalButtons,
     customClass: "swal-wide",
+    footer:
+      "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank' style='text-decoration:none'> Where do i find my Airtable API key.</a>",
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
     },
@@ -8743,7 +8778,8 @@ function showAddAirtableAccountSweetalert(keyword) {
 }
 
 function addAirtableAccountInsideSweetalert(keyword) {
-  var name = $("#bootbox-airtable-key-name").val();
+  // var name = $("#bootbox-airtable-key-name").val();
+  var name = "SODA-Airtable";
   var key = $("#bootbox-airtable-key").val();
   if (name.length === 0 || key.length === 0) {
     var errorMessage =
@@ -8781,7 +8817,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
         const optionsSparcTable = {
           hostname: airtableHostname,
           port: 443,
-          path: "/v0/appW7lVO177HpnrP2/soda_sparc_members",
+          path: "/v0/appSDqnnxSuM1s2F7/sparc_members",
           headers: { Authorization: `Bearer ${key}` },
         };
         var sparcTableSuccess;
@@ -8799,7 +8835,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
             ).innerHTML = "";
             // $("#span-airtable-keyname").html(name);
             $("#current-airtable-account").html(name);
-            $("#bootbox-airtable-key-name").val("");
+            // $("#bootbox-airtable-key-name").val("");
             $("#bootbox-airtable-key").val("");
             loadAwardData();
             ddNoAirtableMode("Off");
