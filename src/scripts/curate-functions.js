@@ -146,8 +146,12 @@ function dropHandler(ev, paraElement, metadataFile) {
       } else {
         document.getElementById(paraElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
-        $($("#"+paraElement).parents()[1]).find(".div-metadata-confirm").css("display", "none");
-        $($("#"+paraElement).parents()[1]).find(".div-metadata-go-back").css("display", "flex");
+        $($("#" + paraElement).parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "none");
+        $($("#" + paraElement).parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "flex");
       }
     } else {
       document.getElementById(paraElement).innerHTML =
@@ -597,22 +601,6 @@ const importOrganizeProgressPrompt = () => {
 };
 
 $(document).ready(function () {
-  // confirm_click_function()
-
-  importOrganizeProgressPrompt();
-  $("#bf_list_users_pi").selectpicker();
-  $("#bf_list_users_pi").selectpicker("refresh");
-  $("#bf_list_users").selectpicker();
-  $("#bf_list_users").selectpicker("refresh");
-  $("#bf_list_roles").selectpicker();
-  $("#bf_list_roles").selectpicker("refresh");
-  $("#bf_list_teams").selectpicker();
-  $("#bf_list_teams").selectpicker("refresh");
-  $("#bf_list_roles_team").selectpicker();
-  $("#bf_list_roles_team").selectpicker("refresh");
-});
-
-$(document).ready(function () {
   var accountDetails = $("#para-account-detail-curate");
   //Observe the paragraph
   this.observer = new MutationObserver(
@@ -638,6 +626,19 @@ $(document).ready(function () {
     characterData: true,
     childList: true,
   });
+
+  importOrganizeProgressPrompt();
+
+  $("#bf_list_users_pi").selectpicker();
+  $("#bf_list_users_pi").selectpicker("refresh");
+  $("#bf_list_users").selectpicker();
+  $("#bf_list_users").selectpicker("refresh");
+  $("#bf_list_roles").selectpicker();
+  $("#bf_list_roles").selectpicker("refresh");
+  $("#bf_list_teams").selectpicker();
+  $("#bf_list_teams").selectpicker("refresh");
+  $("#bf_list_roles_team").selectpicker();
+  $("#bf_list_roles_team").selectpicker("refresh");
 });
 
 const get_api_key = async (login, password, key_name) => {
