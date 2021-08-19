@@ -20,38 +20,38 @@ function showForm(type, editBoolean) {
 }
 
 function showFormSamples(type, editBoolean) {
-  if (samplesTableData.length > 1) {
-    var samplesDropdownOptions = [];
-    var subjectsDropdownOptions = [];
-    for (var i = 1; i < samplesTableData.length; i++) {
-      samplesDropdownOptions.push(samplesTableData[i][1]);
-      subjectsDropdownOptions.push(samplesTableData[i][0]);
-    }
-    if (!editBoolean) {
-      // prompt users if they want to import entries from previous sub_ids
-      Swal.fire({
-        title: "Would you like to re-use information from previous sample(s)?",
-        showCancelButton: true,
-        cancelButtonText: `No, start fresh!`,
-        cancelButtonColor: "#f44336",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes!",
-      }).then((boolean) => {
-        if (boolean.isConfirmed) {
-          promptImportPrevInfoSamples(
-            subjectsDropdownOptions,
-            samplesDropdownOptions
-          );
-        } else {
-          clearAllSubjectFormFields(samplesFormDiv);
-        }
-      });
-    }
-  } else {
-    if (type !== "edit") {
-      clearAllSubjectFormFields(samplesFormDiv);
-    }
+  // if (samplesTableData.length > 1) {
+  //   var samplesDropdownOptions = [];
+  //   var subjectsDropdownOptions = [];
+  //   for (var i = 1; i < samplesTableData.length; i++) {
+  //     samplesDropdownOptions.push(samplesTableData[i][1]);
+  //     subjectsDropdownOptions.push(samplesTableData[i][0]);
+  //   }
+  //   if (!editBoolean) {
+  //     // prompt users if they want to import entries from previous sub_ids
+  //     Swal.fire({
+  //       title: "Would you like to re-use information from previous sample(s)?",
+  //       showCancelButton: true,
+  //       cancelButtonText: `No, start fresh!`,
+  //       cancelButtonColor: "#f44336",
+  //       confirmButtonColor: "#3085d6",
+  //       confirmButtonText: "Yes!",
+  //     }).then((boolean) => {
+  //       if (boolean.isConfirmed) {
+  //         promptImportPrevInfoSamples(
+  //           subjectsDropdownOptions,
+  //           samplesDropdownOptions
+  //         );
+  //       } else {
+  //         clearAllSubjectFormFields(samplesFormDiv);
+  //       }
+  //     });
+  //   }
+  // } else {
+  if (type !== "edit") {
+    clearAllSubjectFormFields(samplesFormDiv);
   }
+  // }
   samplesFormDiv.style.display = "flex";
   $("#create_samples-tab").removeClass("show");
   $("#create_samples-tab").css("display", "none");
@@ -1006,8 +1006,7 @@ function delete_current_additional_link_id(ev) {
 
 async function copy_current_subject_id(ev) {
   const { value: newSubject } = await Swal.fire({
-    title: "Copying information from this subject: ",
-    text: "Enter an ID for the new subject: ",
+    title: "Enter an ID for the new subject:",
     input: "text",
     showCancelButton: true,
     heightAuto: false,
@@ -1046,8 +1045,7 @@ async function copy_current_subject_id(ev) {
 
 async function copy_current_sample_id(ev) {
   const { value: newSubSam } = await Swal.fire({
-    title: "Copying information from this sample: ",
-    text: "Enter an ID for the new subject and sample: ",
+    title: "Enter an ID for the new subject and sample: ",
     html:
       '<input id="new-subject" class="swal2-input" placeholder="Subject ID">' +
       '<input id="new-sample" class="swal2-input" placeholder="Sample ID">',

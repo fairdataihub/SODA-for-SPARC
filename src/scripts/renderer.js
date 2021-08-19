@@ -7567,6 +7567,8 @@ document
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
       "flex";
+    $("#sidebarCollapse").prop("disabled", true);
+
     // forceActionSidebar("hide");
 
     // updateJSON structure after Generate dataset tab
@@ -7603,6 +7605,7 @@ document
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
+        $("#sidebarCollapse").prop("disabled", false);
         return;
       }
     }
@@ -7650,6 +7653,7 @@ document
             "<span style='color: red;'> Error: " + emessage + "</span>";
           document.getElementById("para-please-wait-new-curate").innerHTML = "";
           console.error(error);
+          $("#sidebarCollapse").prop("disabled", false);
         } else {
           document.getElementById("para-please-wait-new-curate").innerHTML =
             "Please wait...";
@@ -7697,6 +7701,7 @@ document
                 initiate_generate();
               } else {
                 console.log("Stop");
+                $("#sidebarCollapse").prop("disabled", false);
                 // then show the sidebar again
                 // forceActionSidebar("show");
                 // $("#save-progress-btn").show();
@@ -7791,6 +7796,7 @@ function initiate_generate() {
 
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
+      $("#sidebarCollapse").prop("disabled", false);
       var emessage = userError(error);
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
@@ -7875,6 +7881,7 @@ function initiate_generate() {
         }
       );
     } else {
+      $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
       console.log("Completed curate function");
       if (manifest_files_requested) {
@@ -8084,6 +8091,7 @@ function initiate_generate() {
     });
 
     if (main_curate_status === "Done") {
+      $("#sidebarCollapse").prop("disabled", false);
       countDone++;
       if (countDone > 1) {
         log.info("Done curate track");
