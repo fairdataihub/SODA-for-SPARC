@@ -313,7 +313,7 @@ const run_pre_flight_checks = async (check_update = true) => {
               }
               if (result.isDismissed) {
                 if (check_update) {
-                  // checkNewAppVersion();
+                  checkNewAppVersion();
                 }
                 await wait(500);
                 notyf.open({
@@ -325,7 +325,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             });
           } else {
             if (check_update) {
-              // checkNewAppVersion();
+              checkNewAppVersion();
             }
             await wait(500);
             notyf.open({
@@ -337,7 +337,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         }
       } else {
         if (check_update) {
-          // checkNewAppVersion();
+          checkNewAppVersion();
         }
         // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
         Swal.fire({
