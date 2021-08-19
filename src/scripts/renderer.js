@@ -29,6 +29,7 @@ const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
 const tippy = require("tippy.js").default;
 const introJs = require("intro.js");
+const selectpicker = require("bootstrap-select");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
