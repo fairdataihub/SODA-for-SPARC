@@ -168,27 +168,22 @@ $(document).ready(function () {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
         }).then((result) => {});
         var awardRes = $("#submission-sparc-award").val();
         var dateRes = $("#submission-completion-date").val();
         var milestonesRes = $("#selected-milestone-1").val();
-        if (awardRes == "" || dateRes == "" || milestonesRes == "") {
-          Swal.hideLoading();
+        let milestoneValue = JSON.parse(milestonesRes);
+        // var milestoneValue = milestonesRes.split(", \n");
+        if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
           Swal.fire({
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             icon: "error",
-            text: `Please fill in all fields before generating the submission.xlsx file`,
-            title: "Required fields incomplete",
+            text: "Please fill in all of the required fields.",
+            title: "Incomplete information",
           });
-          return;
+          return
         }
-        // TODO: convert this milestonesRes tagify into array of values
-        let milestoneValue = JSON.parse(milestonesRes);
-        // var milestoneValue = milestonesRes.split(", \n");
         var json_arr = [];
         json_arr.push({
           award: awardRes,
@@ -200,11 +195,64 @@ $(document).ready(function () {
             json_arr.push({
               award: "",
               date: "",
-              milestone: milestoneValue[index],
+              milestone: milestoneValue[index].value,
             });
           }
         }
         json_str = JSON.stringify(json_arr);
+        // var awardRes = "";
+        // var dateRes = "";
+        // var milestonesRes = "";
+        // Swal.fire({
+        //   title: "Generating the submission.xlsx file",
+        //   html: "Please wait...",
+        //   timer: 15000,
+        //   allowEscapeKey: false,
+        //   allowOutsideClick: false,
+        //   heightAuto: false,
+        //   backdrop: "rgba(0,0,0, 0.4)",
+        //   timerProgressBar: false,
+        //   didOpen: () => {
+        //     Swal.showLoading();
+        //   },
+        //   preConfirm: () => {
+        //     awardRes = $("#submission-sparc-award").val();
+        //     dateRes = $("#submission-completion-date").val();
+        //     milestonesRes = $("#selected-milestone-1").val();
+        //     if (awardRes == "" || dateRes == "" || milestonesRes == "") {
+        //       Swal.fire({
+        //         backdrop: "rgba(0,0,0, 0.4)",
+        //         heightAuto: false,
+        //         icon: "error",
+        //         text: `Please fill in all fields before generating the submission.xlsx file`,
+        //         title: "Required fields incomplete",
+        //       });
+        //     }
+        //   }
+        // })
+        //   //
+        //   //
+        //   // return;
+        // }
+        // // TODO: convert this milestonesRes tagify into array of values
+        // let milestoneValue = JSON.parse(milestonesRes);
+        // // var milestoneValue = milestonesRes.split(", \n");
+        // var json_arr = [];
+        // json_arr.push({
+        //   award: awardRes,
+        //   date: dateRes,
+        //   milestone: milestoneValue[0].value,
+        // });
+        // if (milestoneValue.length > 0) {
+        //   for (var index = 1; index < milestoneValue.length; index++) {
+        //     json_arr.push({
+        //       award: "",
+        //       date: "",
+        //       milestone: milestoneValue[index],
+        //     });
+        //   }
+        // }
+        // json_str = JSON.stringify(json_arr);
         if (dirpath != null) {
           client.invoke(
             "api_save_submission_file",
@@ -215,11 +263,13 @@ $(document).ready(function () {
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                Swal.fire(
-                  "Failed to generate the submission file",
-                  emessage,
-                  "warning"
-                );
+                Swal.fire({
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  heightAuto: false,
+                  icon: "error",
+                  text: emessage,
+                  title: "Failed to generate the submission file",
+                });
                 ipcRenderer.send(
                   "track-event",
                   "Error",

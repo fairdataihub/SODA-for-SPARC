@@ -1157,10 +1157,12 @@ milestoneTagify1.on("add", function () {
 
       /// add milestones to Tagify suggestion tag list and options to completion date dropdown
 
-      for (var j = 0; j < milestoneObj[milestoneKey].length; j++) {
-        completionDateArray.push(
-          milestoneObj[milestoneKey][j]["Expected date of completion"]
-        );
+      if (milestoneKey in milestoneObj) {
+        for (var j = 0; j < milestoneObj[milestoneKey].length; j++) {
+          completionDateArray.push(
+            milestoneObj[milestoneKey][j]["Expected date of completion"]
+          );
+        }
       }
     }
     for (var i = 0; i < completionDateArray.length; i++) {
@@ -4107,13 +4109,13 @@ bfAddDescriptionBtn.addEventListener("click", () => {
     if (!response) {
       Swal.fire({
         icon: "warning",
-        html: `This description does not seem to follow the SPARC guidelines. 
+        html: `This description does not seem to follow the SPARC guidelines.
           Your descriptions should looke like this:
-          <br> <br> 
+          <br> <br>
           <p style="text-align:left">
             <strong> Study Purpose: </strong> <br>
             <strong> Data Collection: </strong> <br>
-            <strong> Primary Conclusion: </strong> 
+            <strong> Primary Conclusion: </strong>
           </p>
           <br> <br>
           Are you sure you want to continue?`,
@@ -8807,7 +8809,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
     Swal.fire({
       icon: "warning",
       title: "Connect to Airtable",
-      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue?",
       heightAuto: false,
       showCancelButton: true,
       focusCancel: true,
