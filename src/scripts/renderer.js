@@ -8863,7 +8863,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
                 Swal.showLoading();
               },
             }).then((result) => {
-              helpSPARCAward("submission")
+              helpSPARCAward("submission");
             });
             // helpSPARCAward("submission")
             ipcRenderer.send(

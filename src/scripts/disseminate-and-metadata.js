@@ -182,7 +182,7 @@ $(document).ready(function () {
             text: "Please fill in all of the required fields.",
             title: "Incomplete information",
           });
-          return
+          return;
         }
         var json_arr = [];
         json_arr.push({
