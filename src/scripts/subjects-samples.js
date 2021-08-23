@@ -2565,7 +2565,7 @@ async function helpSPARCAward(filetype) {
         confirmButtonText: "Yes",
       }).then((boolean) => {
         if (boolean.isConfirmed) {
-          showAddAirtableAccountSweetalert("dd");
+          showAddAirtableAccountSweetalert("submission");
         }
       });
       $("#select-sparc-award-submission-spinner").css("display", "none");
@@ -2596,6 +2596,7 @@ function changeAward(award) {
     },
   }).then((result) => {});
   $("#ds-description-award-input").val(award);
+
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();

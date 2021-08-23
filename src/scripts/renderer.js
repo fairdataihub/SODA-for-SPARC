@@ -8749,7 +8749,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
 }
 
 function showAddAirtableAccountSweetalert(keyword) {
-  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
   var bootb = Swal.fire({
     title: htmlTitle,
@@ -8763,7 +8763,7 @@ function showAddAirtableAccountSweetalert(keyword) {
     reverseButtons: reverseSwalButtons,
     customClass: "swal-wide",
     footer:
-      "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank' style='text-decoration:none'> Where do i find my Airtable API key.</a>",
+      "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank' style='text-decoration:none'> Where do i find my Airtable API key?</a>",
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
     },
@@ -8847,10 +8847,10 @@ function addAirtableAccountInsideSweetalert(keyword) {
             // $("#bootbox-airtable-key-name").val("");
             $("#bootbox-airtable-key").val("");
             loadAwardData();
-            ddNoAirtableMode("Off");
+            // ddNoAirtableMode("Off");
             Swal.fire({
               title: "Successfully connected. Loading your Airtable account...",
-              timer: 15000,
+              timer: 10000,
               timerProgressBar: false,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
@@ -8860,7 +8860,10 @@ function addAirtableAccountInsideSweetalert(keyword) {
               didOpen: () => {
                 Swal.showLoading();
               },
+            }).then((result) => {
+              helpSPARCAward("submission")
             });
+            // helpSPARCAward("submission")
             ipcRenderer.send(
               "track-event",
               "Success",
