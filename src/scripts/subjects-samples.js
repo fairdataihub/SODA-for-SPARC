@@ -1131,10 +1131,15 @@ function updateOrderIDTable(table, json, type) {
   orderedTableData[0] = json[0];
   // 3. loop through the UI table by index -> grab subject_id accordingly, find subject_id in json, append that to orderedSubjectsTableData
   i = 1;
+  if (type === "subjects") {
+    j = 0;
+  } else if (type === "samples") {
+    j = 1;
+  }
   for (var index = 1; index < length; index++) {
-    var id = table.rows[index].cells[1].innerText;
+    var id = table.rows[index].cells[j+1].innerText;
     for (var ind of json.slice(1)) {
-      if (ind[0] === id) {
+      if (ind[j] === id) {
         orderedTableData[i] = ind;
         i += 1;
         break;

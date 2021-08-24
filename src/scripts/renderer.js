@@ -2555,7 +2555,7 @@ $("#table-subjects").mousedown(function (e) {
 });
 
 $("#table-samples").mousedown(function (e) {
-  var length = document.getElementById("table-samples").rows.length;
+  var length = document.getElementById("table-samples").rows.length - 1;
   var tr = $(e.target).closest("tr"),
     sy = e.pageY,
     drag;
@@ -2601,7 +2601,7 @@ $("#table-samples").mousedown(function (e) {
 });
 
 $("#contributor-table-dd").mousedown(function (e) {
-  var length = document.getElementById("contributor-table-dd").rows.length;
+  var length = document.getElementById("contributor-table-dd").rows.length - 1;
   var tr = $(e.target).closest("tr"),
     sy = e.pageY,
     drag;
