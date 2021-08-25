@@ -702,7 +702,7 @@ function checkAirtableStatus(keyword) {
       // var base = new Airtable({
       //   apiKey: airKeyInput,
       // }).base("appSDqnnxSuM1s2F7");
-      var base = Airtable.base("appSDqnnxSuM1s2F7");
+      var base = Airtable.base("appiYd1Tz9Sv857GZ")
       base("sparc_members")
         .select({
           view: "All members (ungrouped)",

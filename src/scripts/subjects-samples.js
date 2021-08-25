@@ -2614,7 +2614,7 @@ function changeAward(award) {
       endpointUrl: "https://" + airtableHostname,
       apiKey: airKeyInput,
     });
-    var base = Airtable.base("appSDqnnxSuM1s2F7");
+    var base = Airtable.base("appiYd1Tz9Sv857GZ");
     base("sparc_members")
       .select({
         filterByFormula: `({SPARC_Award_#} = "${award}")`,

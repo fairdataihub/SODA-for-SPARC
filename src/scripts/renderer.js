@@ -2080,7 +2080,7 @@ function loadAwardData() {
         endpointUrl: "https://" + airtableHostname,
         apiKey: airKeyInput,
       });
-      var base = Airtable.base("appSDqnnxSuM1s2F7");
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
       base("sparc_members")
         .select({
           view: "All members (ungrouped)",
@@ -2251,7 +2251,7 @@ function changeAwardInputDsDescription() {
       endpointUrl: "https://" + airtableHostname,
       apiKey: airKeyInput,
     });
-    var base = Airtable.base("appSDqnnxSuM1s2F7");
+    var base = Airtable.base("appiYd1Tz9Sv857GZ");
     base("sparc_members")
       .select({
         filterByFormula: `({SPARC_Award_#} = "${awardVal}")`,
@@ -2383,7 +2383,7 @@ function loadContributorInfo(lastName, firstName) {
     endpointUrl: "https://" + airtableHostname,
     apiKey: airKeyInput,
   });
-  var base = Airtable.base("appSDqnnxSuM1s2F7");
+  var base = Airtable.base("appiYd1Tz9Sv857GZ");
   base("sparc_members")
     .select({
       filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
@@ -8929,18 +8929,18 @@ function addAirtableAccountInsideSweetalert(keyword) {
     });
   }
 }
-
-$("#resetSODASettings").on("click", () => {
-  let currentPath = path.join(homeDirectory, ".pennsieve");
-  let newPath = path.join(homeDirectory, ".pennsieve2");
-
-  if (fs.existsSync(currentPath)) {
-    fs.rename(currentPath, newPath, function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
-  }
+//
+// $("#resetSODASettings").on("click", () => {
+//   let currentPath = path.join(homeDirectory, ".pennsieve");
+//   let newPath = path.join(homeDirectory, ".pennsieve2");
+//
+//   if (fs.existsSync(currentPath)) {
+//     fs.rename(currentPath, newPath, function (err) {
+//       if (err) {
+//         console.log(err);
+//       }
+//     });
+//   }
 
   currentPath = path.join(homeDirectory, "SODA");
   newPath = path.join(homeDirectory, "SODA2");
@@ -8966,20 +8966,20 @@ $("#resetSODASettings").on("click", () => {
   }
 });
 
-$("#restoreSODASettings").on("click", async () => {
-  let currentPath = path.join(homeDirectory, ".pennsieve2");
-  let newPath = path.join(homeDirectory, ".pennsieve");
-
-  if (fs.existsSync(currentPath)) {
-    if (fs.existsSync(newPath)) {
-      await fs.removeSync(newPath);
-    }
-    fs.rename(currentPath, newPath, function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
-  }
+// $("#restoreSODASettings").on("click", async () => {
+//   let currentPath = path.join(homeDirectory, ".pennsieve2");
+//   let newPath = path.join(homeDirectory, ".pennsieve");
+//
+//   if (fs.existsSync(currentPath)) {
+//     if (fs.existsSync(newPath)) {
+//       await fs.removeSync(newPath);
+//     }
+//     fs.rename(currentPath, newPath, function (err) {
+//       if (err) {
+//         console.log(err);
+//       }
+//     });
+//   }
 
   currentPath = path.join(homeDirectory, "SODA2");
   newPath = path.join(homeDirectory, "SODA");
