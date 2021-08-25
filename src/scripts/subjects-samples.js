@@ -373,6 +373,42 @@ function addSubjectIDToJSON(subjectID) {
   }
 }
 
+/// function to add Species - subjects + samples
+async function addSpecies(ev, type) {
+  $("#bootbox-"+type+"-species").val("")
+  const { value: value } = await Swal.fire({
+    title: "Add/Edit a species",
+    html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
+    focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    customClass: {
+      confirmButton: "confirm-disabled",
+    },
+    didOpen: () => {
+      $(".swal2-confirm").attr("id", "btn-confirm-species");
+      createSpeciesAutocomplete("sweetalert-"+type+"-species")
+    },
+    preConfirm: () => {
+      if (document.getElementById("sweetalert-"+type+"-species").value === "") {
+        Swal.showValidationMessage("Please enter a species.")
+      }
+      return document.getElementById("sweetalert-"+type+"-species").value;
+    },
+  });
+  if (value) {
+    if (value !== "") {
+      $("#bootbox-"+type+"-species").val(value)
+      $("#bootbox-"+type+"-species").css("display", "block");
+      $("#bootbox-"+type+"-species").attr("readonly", true);
+      $("#bootbox-"+type+"-species").css("background", "#f5f5f5");
+      $(ev).html("<i class='pen icon'></i>Edit")
+    }
+  }
+}
+
+
 // populate RRID
 function populateRRID(strain, type) {
   var rridHostname = "scicrunch.org";

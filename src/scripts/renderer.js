@@ -1860,6 +1860,7 @@ function createSpeciesAutocomplete(id) {
     document.getElementById(id).value = selection;
     // Replace Input value with the selected value
     autoCompleteJS2.input.value = selection;
+    $("#btn-confirm-species").removeClass("confirm-disabled");
   });
 }
 
@@ -1933,10 +1934,10 @@ function createStrain(id, type) {
 }
 
 $(document).ready(function () {
-  createSpeciesAutocomplete("bootbox-subject-species");
-  createSpeciesAutocomplete("bootbox-sample-species");
-  createStrain("bootbox-sample-strain", "samples");
-  createStrain("bootbox-subject-strain", "subjects");
+  // createSpeciesAutocomplete("bootbox-subject-species");
+  // createSpeciesAutocomplete("bootbox-sample-species");
+  // createStrain("bootbox-sample-strain", "samples");
+  // createStrain("bootbox-subject-strain", "subjects");
 });
 
 async function loadTaxonomySpecies(commonName, destinationInput) {
@@ -1966,8 +1967,26 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
             "Make sure you enter a correct species name.",
             "error"
           );
+          if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
+            $("#btn-confirm-species").addClass("confirm-disabled");
+          }
+          if (destinationInput.includes("subject")) {
+            if ($("#bootbox-subject-species").val() === "") {
+              $("#bootbox-subject-species").css("display", "none");
+            }
+            // set the Edit species button back to "+ Add species"
+            $("#button-add-species-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`)
+          }
+          if (destinationInput.includes("sample")) {
+            if ($("#bootbox-sample-species").val() === "") {
+              $("#bootbox-sample-species").css("display", "none");
+            }
+            // set the Edit species button back to "+ Add species"
+            $("#button-add-species-sample").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`)
+          }
         } else {
           $("#" + destinationInput).val(res[commonName]["ScientificName"]);
+          $("#btn-confirm-species").removeClass("confirm-disabled");
         }
       }
     }

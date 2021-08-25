@@ -1672,3 +1672,20 @@ body.swal2-shown > [aria-hidden="true"] {
   border-radius: 0 !important;
   color: inherit !important;
 }
+
+.button-add-species {
+  width: 115px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: #e7f1ff;
+  color: #0c63e4;
+  font-weight: 600;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.button-add-species:hover {
+  background: #0c63e4;
+  color: #e7f1ff;
+}
