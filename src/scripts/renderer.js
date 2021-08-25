@@ -8942,29 +8942,29 @@ function addAirtableAccountInsideSweetalert(keyword) {
 //     });
 //   }
 
-  currentPath = path.join(homeDirectory, "SODA");
-  newPath = path.join(homeDirectory, "SODA2");
-
-  if (fs.existsSync(currentPath)) {
-    fs.rename(currentPath, newPath, function (err) {
-      if (err) {
-        Swal.fire({
-          icon: "error",
-          text: `Reset failed! - ${err}`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-        });
-      } else {
-        Swal.fire({
-          icon: "success",
-          text: "Reset successful!",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-        });
-      }
-    });
-  }
-});
+//   currentPath = path.join(homeDirectory, "SODA");
+//   newPath = path.join(homeDirectory, "SODA2");
+//
+//   if (fs.existsSync(currentPath)) {
+//     fs.rename(currentPath, newPath, function (err) {
+//       if (err) {
+//         Swal.fire({
+//           icon: "error",
+//           text: `Reset failed! - ${err}`,
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0,0.4)",
+//         });
+//       } else {
+//         Swal.fire({
+//           icon: "success",
+//           text: "Reset successful!",
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0,0.4)",
+//         });
+//       }
+//     });
+//   }
+// });
 
 // $("#restoreSODASettings").on("click", async () => {
 //   let currentPath = path.join(homeDirectory, ".pennsieve2");
@@ -8979,31 +8979,31 @@ function addAirtableAccountInsideSweetalert(keyword) {
 //         console.log(err);
 //       }
 //     });
+  // }
+
+//   currentPath = path.join(homeDirectory, "SODA2");
+//   newPath = path.join(homeDirectory, "SODA");
+//
+//   if (fs.existsSync(currentPath)) {
+//     if (fs.existsSync(newPath)) {
+//       await fs.removeSync(newPath);
+//     }
+//     fs.rename(currentPath, newPath, function (err) {
+//       if (err) {
+//         Swal.fire({
+//           icon: "error",
+//           text: `Restore failed! - ${err}`,
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0,0.4)",
+//         });
+//       } else {
+//         Swal.fire({
+//           icon: "success",
+//           text: "Restore successful!",
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0,0.4)",
+//         });
+//       }
+//     });
 //   }
-
-  currentPath = path.join(homeDirectory, "SODA2");
-  newPath = path.join(homeDirectory, "SODA");
-
-  if (fs.existsSync(currentPath)) {
-    if (fs.existsSync(newPath)) {
-      await fs.removeSync(newPath);
-    }
-    fs.rename(currentPath, newPath, function (err) {
-      if (err) {
-        Swal.fire({
-          icon: "error",
-          text: `Restore failed! - ${err}`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-        });
-      } else {
-        Swal.fire({
-          icon: "success",
-          text: "Restore successful!",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-        });
-      }
-    });
-  }
-});
+// });
