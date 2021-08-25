@@ -961,7 +961,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         .find("#curatebfdatasetlist")
         .find("option")
         .empty()
-        .append('<option value="Select dataset">Select dataset</option>')
+        .append('<option value="Select dataset">Search here...</option>')
         .val("Select dataset");
 
       $(datasetPermissionDiv)
@@ -1194,7 +1194,7 @@ const updateDatasetList = (bfaccount) => {
   $("#div-filter-datasets-progress-2").css("display", "block");
 
   removeOptions(curateDatasetDropdown);
-  addOption(curateDatasetDropdown, "Select dataset", "Select dataset");
+  addOption(curateDatasetDropdown, "Search here...", "Select dataset");
 
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 

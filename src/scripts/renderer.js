@@ -1172,123 +1172,9 @@ milestoneTagify1.on("add", function () {
         completionDateArray[i]
       );
     }
-
-    // if ($("#Question-prepare-submission-7").hasClass("show")) {
-    //   var res = showPreviewSubmission();
-    //   var awardRes = res["awards"];
-    //   var dateRes = res["date"];
-    //   var milestonesRes = res["milestones"];
-    //   var milestoneValues = [];
-    //   $("#submission-SPARC-award-span").text(awardRes);
-    //   $("#submission-completion-date-span").text(dateRes);
-    //   milestonesRes.forEach((item, i) => {
-    //     milestoneValues.push(milestonesRes[i].value);
-    //   });
-    //   $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    // }
   } else {
     $(buttonDiv).hide();
     $("#Question-prepare-submission-4")
-      .nextAll()
-      .removeClass("show")
-      .removeClass("prev");
-  }
-});
-
-milestoneTagify1.on("remove", function () {
-  var buttonDiv = $($("#selected-milestone-1").parents()[1]).find(
-    ".div-confirm-enter-milestone"
-  );
-  if (milestoneTagify1.value.length !== 0) {
-    if (!$("#Question-prepare-submission-4").hasClass("prev")) {
-      $(buttonDiv).show();
-      $($(buttonDiv).children()[0]).show();
-    }
-    if ($("#Question-prepare-submission-7").hasClass("show")) {
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $(buttonDiv).hide();
-    $("#Question-prepare-submission-4")
-      .nextAll()
-      .removeClass("show")
-      .removeClass("prev");
-  }
-});
-
-const milestoneInput2 = document.getElementById("selected-milestone-2");
-var milestoneTagify2 = new Tagify(milestoneInput2, {
-  duplicates: false,
-  delimiters: null,
-});
-
-milestoneTagify2.on("add", function () {
-  var buttonDiv = $($("#selected-milestone-2").parents()[1]).find(
-    ".div-confirm-enter-milestone"
-  );
-  if (milestoneTagify2.value.length !== 0) {
-    if (!$("#Question-prepare-submission-no-skip-2").hasClass("prev")) {
-      $(buttonDiv).show();
-      $($(buttonDiv).children()[0]).show();
-    }
-    if ($("#Question-prepare-submission-7").hasClass("show")) {
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $(buttonDiv).hide();
-    $("#Question-prepare-submission-no-skip-2").removeClass("prev");
-    $("#Question-prepare-submission-no-skip-2")
-      .nextAll()
-      .removeClass("show")
-      .removeClass("prev");
-  }
-});
-
-milestoneTagify2.on("remove", function () {
-  var buttonDiv = $($("#selected-milestone-2").parents()[1]).find(
-    ".div-confirm-enter-milestone"
-  );
-  if (milestoneTagify2.value.length !== 0) {
-    if (!$("#Question-prepare-submission-no-skip-2").hasClass("prev")) {
-      $(buttonDiv).show();
-      $($(buttonDiv).children()[0]).show();
-    }
-    if ($("#Question-prepare-submission-7").hasClass("show")) {
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $(buttonDiv).hide();
-    $("#Question-prepare-submission-no-skip-2")
       .nextAll()
       .removeClass("show")
       .removeClass("prev");
@@ -2444,7 +2330,7 @@ function loadContributorInfo(lastName, firstName) {
 const clearDatasetDropdowns = () => {
   for (let list of [curateDatasetDropdown]) {
     removeOptions(list);
-    addOption(list, "Select dataset", "Select dataset");
+    addOption(list, "Search here...", "Select dataset");
     list.options[0].disabled = true;
   }
 };

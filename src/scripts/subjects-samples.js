@@ -2631,11 +2631,15 @@ async function helpSPARCAward(filetype) {
             if (boolean.isConfirmed) {
               milestoneTagify1.removeAllTags();
               $("#submission-sparc-award").val(award);
+              $("#ds-description-award-input").val(award);
+              loadContributorInfofromAirtable(award)
             }
           });
         } else {
           milestoneTagify1.removeAllTags();
           $("#submission-sparc-award").val(award);
+          $("#ds-description-award-input").val(award);
+          loadContributorInfofromAirtable(award)
         }
       }
     } else {
@@ -2683,7 +2687,11 @@ function changeAward(award) {
     },
   }).then((result) => {});
   $("#ds-description-award-input").val(award);
+  $("#submission-sparc-award").val(award);
+  loadContributorInfofromAirtable(award)
+}
 
+function loadContributorInfofromAirtable(award) {
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();
