@@ -2963,7 +2963,6 @@ $("input:radio[name=main_tabs]").click(function () {
 
 $(document).ready(() => {
   // Enable the popover content for the main-tab buttons
-  $(".content-button").popover();
   $(".option-card-disseminate-dataset").each(function () {
     var $this = $(this);
     $this.popover({
@@ -3031,6 +3030,7 @@ $(document).ready(() => {
       }
     });
   });
+  $(".content-button").popover();
 });
 
 $("#manage_dataset_tab").click();

@@ -407,6 +407,7 @@ async function addSpecies(ev, type) {
     }
   } else {
     $("#bootbox-"+type+"-species").css("display", "none");
+    $("#bootbox-"+type+"-species").val("")
     if (type.includes("subject")) {
       $("#button-add-species-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
     } else {
@@ -448,6 +449,7 @@ async function addStrain(ev, type) {
     }
   } else {
     $("#bootbox-"+type+"-strain").css("display", "none");
+    $("#bootbox-"+type+"-strain-RRID").val("")
     if (type.includes("subject")) {
       $("#button-add-strain-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
     } else {
