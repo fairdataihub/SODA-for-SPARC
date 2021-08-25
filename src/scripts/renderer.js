@@ -1921,11 +1921,7 @@ function createStrain(id, type) {
     var feedback = event.detail;
     var selection = feedback.selection.value;
     document.querySelector("#" + id).value = selection;
-    if (type === "subjects") {
-      var strain = $("#bootbox-subject-strain").val();
-    } else if (type === "samples") {
-      var strain = $("#bootbox-sample-strain").val();
-    }
+    var strain = $("#sweetalert-"+type+"-strain").val();
     if (strain !== "") {
       populateRRID(strain, type);
     }

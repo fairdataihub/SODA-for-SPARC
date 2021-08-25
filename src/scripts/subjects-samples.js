@@ -408,6 +408,47 @@ async function addSpecies(ev, type) {
   }
 }
 
+async function addStrain(ev, type) {
+  $("#bootbox-"+type+"-strain").val("")
+  const { value: value } = await Swal.fire({
+    title: "Add/Edit a strain",
+    html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
+    focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    customClass: {
+      confirmButton: "confirm-disabled",
+    },
+    didOpen: () => {
+      $(".swal2-confirm").attr("id", "btn-confirm-strain");
+      createStrain("sweetalert-"+type+"-strain", type);
+    },
+    preConfirm: () => {
+      if (document.getElementById("sweetalert-"+type+"-strain").value === "") {
+        Swal.showValidationMessage("Please enter a strain.")
+      }
+      return document.getElementById("sweetalert-"+type+"-strain").value;
+    },
+  });
+  if (value) {
+    if (value !== "") {
+      $("#bootbox-"+type+"-strain").val(value)
+      $("#bootbox-"+type+"-strain").css("display", "block");
+      $("#bootbox-"+type+"-strain").attr("readonly", true);
+      $("#bootbox-"+type+"-strain").css("background", "#f5f5f5");
+      $(ev).html("<i class='pen icon'></i>Edit")
+    }
+  } else {
+    $("#bootbox-"+type+"-strain").css("display", "none");
+    if (type.includes("subject")) {
+      $("#button-add-strain-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+    } else {
+      $("#button-add-strain-sample").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+    }
+  }
+}
+
 
 // populate RRID
 function populateRRID(strain, type) {
@@ -450,14 +491,25 @@ function populateRRID(strain, type) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
-          if (type === "subjects") {
-            $("#bootbox-subject-strain").val("");
-            $("#bootbox-subject-strain-RRID").val("");
-          } else if (type === "samples") {
-            $("#bootbox-sample-strain").val("");
-            $("#bootbox-sample-strain-RRID").val("");
+          $("#bootbox-"+type+"-strain").val("");
+          $("#bootbox-"+type+"-strain-RRID").val("");
+          $("#bootbox-"+type+"-strain").css("display", "none");
+          if (type.includes("subject")) {
+            $("#button-add-strain-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+          } else {
+            $("#button-add-strain-sample").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
           }
         } else {
+          $("#bootbox-"+type+"-strain").val(strain);
+          $("#btn-confirm-strain").removeClass("confirm-disabled");
+          $("#bootbox-"+type+"-strain").css("display", "block")
+          $("#bootbox-"+type+"-strain").attr("readonly", true);
+          $("#bootbox-"+type+"-strain").css("background", "#f5f5f5");
+          if (type.includes("subject")) {
+            $("#button-add-strain-subject").html("<i class='pen icon'></i>Edit")
+          } else {
+            $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit")
+          }
           Swal.fire(
             `Successfully retrieved the RRID for "${strain}".`,
             "",
@@ -466,13 +518,8 @@ function populateRRID(strain, type) {
         }
       });
     } else {
-      if (type === "subjects") {
-        $("#bootbox-subject-strain").val("");
-        $("#bootbox-subject-strain-RRID").val("");
-      } else if (type === "samples") {
-        $("#bootbox-sample-strain").val("");
-        $("#bootbox-sample-strain-RRID").val("");
-      }
+      $("#bootbox-"+type+"-strain").val("");
+      $("#bootbox-"+type+"-strain-RRID").val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
         text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
@@ -2357,23 +2404,13 @@ function readXMLScicrunch(xml, type) {
       break;
     }
   }
-  if (type === "subjects") {
     if (rrid !== "") {
-      $("#bootbox-subject-strain-RRID").val(rrid);
+      $("#bootbox-"+type+"-strain-RRID").val(rrid);
       res = true;
     } else {
-      $("#bootbox-subject-strain-RRID").val("");
+      $("#bootbox-"+type+"-strain-RRID").val("");
       res = false;
     }
-  } else {
-    if (rrid !== "") {
-      $("#bootbox-sample-strain-RRID").val(rrid);
-      res = true;
-    } else {
-      $("#bootbox-sample-strain-RRID").val("");
-      res = false;
-    }
-  }
   return res;
 }
 
