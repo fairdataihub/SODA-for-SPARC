@@ -1132,13 +1132,6 @@ milestoneTagify1.on("add", function () {
       $(buttonDiv).show();
       $($(buttonDiv).children()[0]).show();
     }
-
-    console.log(milestoneTagify1.value);
-
-    document.getElementById("selected-milestone-date").value = "";
-    document.getElementById("input-milestone-date").value = "";
-    actionEnterNewDate("none");
-    document.getElementById("para-save-submission-status").innerHTML = "";
     removeOptions(descriptionDateInput);
     addOption(descriptionDateInput, "Select an option", "Select");
 
@@ -1193,86 +1186,6 @@ const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
   },
 });
 
-//// when users click on Import
-function importMilestoneDocument() {
-  $("#upload-DDD-spinner").show();
-  if (event.currentTarget.id == "button-import-milestone") {
-    document.getElementById("para-milestone-document-info-long").style.display =
-      "none";
-    document.getElementById("para-milestone-document-info").innerHTML = "";
-    var filepath = document.getElementById(
-      "input-milestone-select"
-    ).placeholder;
-    if (filepath === "Browse here") {
-      document.getElementById("para-milestone-document-info").innerHTML =
-        "<span style='color: red ;'>" +
-        "Please select a data deliverables document first!</span>";
-      $("#upload-DDD-spinner").hide();
-    } else {
-      var award =
-        presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-      client.invoke("api_extract_milestone_info", filepath, (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          document.getElementById(
-            "para-milestone-document-info-long"
-          ).style.display = "block";
-          document.getElementById(
-            "para-milestone-document-info-long"
-          ).innerHTML = "<span style='color: red;'> " + emessage + ".</span>";
-          $("#upload-DDD-spinner").hide();
-        } else {
-          milestoneObj = res;
-          createMetadataDir();
-          var informationJson = {};
-          informationJson = parseJson(milestonePath);
-          informationJson[award] = milestoneObj;
-          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-          document.getElementById("para-milestone-document-info").innerHTML =
-            "<span style='color: black ;'>" + "Imported!</span>";
-          document.getElementById("input-milestone-select").placeholder =
-            "Browse here";
-          removeOptions(descriptionDateInput);
-          milestoneTagify1.removeAllTags();
-          milestoneTagify1.settings.whitelist = [];
-          milestoneTagify2.settings.whitelist = [];
-          changeAwardInput();
-          $("#div-cancel-DDD-import").hide();
-          $("#div-confirm-DDD-import button").click();
-          $("#upload-DDD-spinner").hide();
-        }
-      });
-    }
-  } else if (event.currentTarget.id == "button-import-milestone-reupload") {
-  }
-}
-
-ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      // used to communicate value to button-import-milestone click event-listener
-      document.getElementById("input-milestone-select").placeholder =
-        filepath[0];
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Metadata - Add DDD",
-        defaultBfAccount
-      );
-    }
-  }
-  if (
-    document.getElementById("input-milestone-select").placeholder !==
-    "Browse here"
-  ) {
-    $("#button-import-milestone").show();
-  } else {
-    $("#button-import-milestone").hide();
-  }
-});
-
 // generate subjects file
 ipcRenderer.on(
   "selected-generate-metadata-subjects",
@@ -1281,14 +1194,35 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0];
+          "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
         Swal.fire({
-          icon: "error",
+          icon: "warning",
           title: "Metadata file already exists",
           text: `${emessage}`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-        });
+          showConfirmButton: true,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: "Generating the subjects.xlsx file",
+              html: "Please wait...",
+              timer: 30000,
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              timerProgressBar: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            }).then((result) => {});
+            generateSubjectsFileHelper(destinationPath)
+          }
+        });;
       } else {
         Swal.fire({
           title: "Generating the subjects.xlsx file",
@@ -1303,53 +1237,57 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        // new client that has a longer timeout
-        let clientLongTimeout = new zerorpc.Client({
-          timeout: 300000,
-          heartbeatInterval: 60000,
-        });
-        clientLongTimeout.connect("tcp://127.0.0.1:4242");
-        clientLongTimeout.invoke(
-          "api_save_subjects_file",
-          destinationPath,
-          subjectsTableData,
-          (error, res) => {
-            if (error) {
-              var emessage = userError(error);
-              log.error(error);
-              console.error(error);
-              Swal.fire(
-                "Failed to generate the subjects.xlsx file.",
-                `${emessage}`,
-                "error"
-              );
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Create subjects.xlsx",
-                subjectsTableData
-              );
-            } else {
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Prepare Metadata - Create subjects.xlsx",
-                subjectsTableData
-              );
-              Swal.fire({
-                title:
-                  "The subjects.xlsx file has been successfully generated at the specified location.",
-                icon: "success",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-            }
-          }
-        );
+        generateSubjectsFileHelper(destinationPath)
       }
     }
   }
 );
+
+function generateSubjectsFileHelper(mypath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke(
+    "api_save_subjects_file",
+    mypath,
+    subjectsTableData,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire(
+          "Failed to generate the subjects.xlsx file.",
+          `${emessage}`,
+          "error"
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create subjects.xlsx",
+          subjectsTableData
+        );
+      } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create subjects.xlsx",
+          subjectsTableData
+        );
+        Swal.fire({
+          title:
+            "The subjects.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      }
+    }
+  );
+}
 
 // generate samples file
 ipcRenderer.on(
@@ -1359,14 +1297,35 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0];
+        "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
         Swal.fire({
-          icon: "error",
+          icon: "warning",
           title: "Metadata file already exists",
           text: `${emessage}`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-        });
+          showConfirmButton: true,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: "Generating the samples.xlsx file",
+              html: "Please wait...",
+              timer: 30000,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              timerProgressBar: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            }).then((result) => {});
+            generateSamplesFileHelper(destinationPath)
+          }
+        });;
       } else {
         Swal.fire({
           title: "Generating the samples.xlsx file",
@@ -1381,53 +1340,57 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        // new client that has a longer timeout
-        let clientLongTimeout = new zerorpc.Client({
-          timeout: 300000,
-          heartbeatInterval: 60000,
-        });
-        clientLongTimeout.connect("tcp://127.0.0.1:4242");
-        clientLongTimeout.invoke(
-          "api_save_samples_file",
-          destinationPath,
-          samplesTableData,
-          (error, res) => {
-            if (error) {
-              var emessage = userError(error);
-              log.error(error);
-              console.error(error);
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Create samples.xlsx",
-                samplesTableData
-              );
-              Swal.fire(
-                "Failed to generate the samples.xlsx file.",
-                `${emessage}`,
-                "error"
-              );
-            } else {
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Prepare Metadata - Create samples.xlsx",
-                samplesTableData
-              );
-              Swal.fire({
-                title:
-                  "The samples.xlsx file has been successfully generated at the specified location.",
-                icon: "success",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-            }
-          }
-        );
+        generateSamplesFileHelper(destinationPath)
       }
     }
   }
 );
+
+function generateSamplesFileHelper(mypath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke(
+    "api_save_samples_file",
+    mypath,
+    samplesTableData,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create samples.xlsx",
+          samplesTableData
+        );
+        Swal.fire(
+          "Failed to generate the samples.xlsx file.",
+          `${emessage}`,
+          "error"
+        );
+      } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create samples.xlsx",
+          samplesTableData
+        );
+        Swal.fire({
+          title:
+            "The samples.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      }
+    }
+  );
+}
 
 // import Primary folder
 ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
@@ -2022,10 +1985,6 @@ function loadAwardData() {
 
 function changeAwardInput() {
   var ddBolean;
-  document.getElementById("selected-milestone-date").value = "";
-  document.getElementById("input-milestone-date").value = "";
-  actionEnterNewDate("none");
-  document.getElementById("para-save-submission-status").innerHTML = "";
   milestoneTagify1.removeAllTags();
   milestoneTagify1.settings.whitelist = [];
   milestoneTagify2.removeAllTags();
@@ -2073,15 +2032,6 @@ function changeAwardInput() {
 }
 
 const submissionDateInput = document.getElementById("input-milestone-date");
-
-function actionEnterNewDate(action) {
-  document.getElementById(
-    "div-submission-enter-different-date-1"
-  ).style.display = action;
-  document.getElementById(
-    "div-submission-enter-different-date-3"
-  ).style.display = action;
-}
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
@@ -2819,16 +2769,22 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0];
+          "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
         Swal.fire({
-          icon: "error",
+          icon: "warning",
           title: "Metadata file already exists",
           text: `${emessage}`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: true,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            generateDDFile(dirpath, destinationPath)
+          }
         });
-
-        // $("#generate-dd-spinner").hide();
       } else {
         Swal.fire({
           title: "Generating the dataset_description.xlsx file",
@@ -2843,91 +2799,93 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-
-        var datasetInfoValueArray = grabDSInfoEntries();
-
-        //// process obtained values to pass to an array ///
-        ///////////////////////////////////////////////////
-        var keywordVal = [];
-        for (var i = 0; i < datasetInfoValueArray["keywords"].length; i++) {
-          keywordVal.push(datasetInfoValueArray["keywords"][i].value);
-        }
-        /// replace keywordArray with keywordVal array
-        datasetInfoValueArray["keywords"] = keywordVal;
-
-        //// push to all ds info values to dsSectionArray
-        var dsSectionArray = [];
-        for (let elementDS in datasetInfoValueArray) {
-          dsSectionArray.push(datasetInfoValueArray[elementDS]);
-        }
-        //// grab entries from contributor info section and pass values to conSectionArray
-        var contributorObj = grabConInfoEntries();
-        /// grab entries from other misc info section
-        var miscObj = combineLinksSections();
-
-        /// grab entries from other optional info section
-        var completenessSectionObj = grabCompletenessInfo();
-
-        ///////////// stringify JSON objects //////////////////////
-        json_str_ds = JSON.stringify(dsSectionArray);
-        json_str_misc = JSON.stringify(miscObj);
-        json_str_completeness = JSON.stringify(completenessSectionObj);
-        json_str_con = JSON.stringify(contributorObj);
-
-        /// get current, selected Pennsieve account
-        var bfaccountname = $("#current-bf-account").text();
-
-        /// call python function to save file
-        if (dirpath != null) {
-          client.invoke(
-            "api_save_ds_description_file",
-            bfaccountname,
-            destinationPath,
-            json_str_ds,
-            json_str_misc,
-            json_str_completeness,
-            json_str_con,
-            (error, res) => {
-              if (error) {
-                var emessage = userError(error);
-                log.error(error);
-                console.error(error);
-                Swal.fire({
-                  title: "Failed to generate the dataset_description file.",
-                  text: emessage,
-                  icon: "error",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                ipcRenderer.send(
-                  "track-event",
-                  "Error",
-                  "Prepare Metadata - Create dataset_description",
-                  defaultBfDataset
-                );
-              } else {
-                Swal.fire({
-                  title:
-                    "The dataset_description.xlsx file has been successfully generated at the specified location.",
-                  icon: "success",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                ipcRenderer.send(
-                  "track-event",
-                  "Success",
-                  "Prepare Metadata - Create dataset_description",
-                  defaultBfDataset
-                );
-                // $("#generate-dd-spinner").hide();
-              }
-            }
-          );
-        }
+        generateDDFile(dirpath, destinationPath)
       }
     }
   }
 );
+
+function generateDDFile(fullpath, destinationPath) {
+  var datasetInfoValueArray = grabDSInfoEntries();
+
+  //// process obtained values to pass to an array ///
+  ///////////////////////////////////////////////////
+  var keywordVal = [];
+  for (var i = 0; i < datasetInfoValueArray["keywords"].length; i++) {
+    keywordVal.push(datasetInfoValueArray["keywords"][i].value);
+  }
+  /// replace keywordArray with keywordVal array
+  datasetInfoValueArray["keywords"] = keywordVal;
+
+  //// push to all ds info values to dsSectionArray
+  var dsSectionArray = [];
+  for (let elementDS in datasetInfoValueArray) {
+    dsSectionArray.push(datasetInfoValueArray[elementDS]);
+  }
+  //// grab entries from contributor info section and pass values to conSectionArray
+  var contributorObj = grabConInfoEntries();
+  /// grab entries from other misc info section
+  var miscObj = combineLinksSections();
+
+  /// grab entries from other optional info section
+  var completenessSectionObj = grabCompletenessInfo();
+
+  ///////////// stringify JSON objects //////////////////////
+  json_str_ds = JSON.stringify(dsSectionArray);
+  json_str_misc = JSON.stringify(miscObj);
+  json_str_completeness = JSON.stringify(completenessSectionObj);
+  json_str_con = JSON.stringify(contributorObj);
+
+  /// get current, selected Pennsieve account
+  var bfaccountname = $("#current-bf-account").text();
+
+  /// call python function to save file
+  if (fullpath != null) {
+    client.invoke(
+      "api_save_ds_description_file",
+      bfaccountname,
+      destinationPath,
+      json_str_ds,
+      json_str_misc,
+      json_str_completeness,
+      json_str_con,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            title: "Failed to generate the dataset_description file.",
+            text: emessage,
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create dataset_description",
+            defaultBfDataset
+          );
+        } else {
+          Swal.fire({
+            title:
+              "The dataset_description.xlsx file has been successfully generated at the specified location.",
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create dataset_description",
+            defaultBfDataset
+          );
+        }
+      }
+    );
+  }
+}
 
 //////////////////////////End of Ds description section ///////////////////////////////////
 //////////////// //////////////// //////////////// //////////////// ////////////////////////

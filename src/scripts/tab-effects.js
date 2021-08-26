@@ -1790,20 +1790,6 @@ async function transitionFreeFormMode(
   $("#para-share-with-sparc-consortium-status").text("");
   $("#para-submit_prepublishing_review-status").text("");
 
-  if (ev.getAttribute("data-next") == "Question-prepare-submission-7") {
-    var res = showPreviewSubmission();
-    var awardRes = res["awards"];
-    var dateRes = res["date"];
-    var milestonesRes = res["milestones"];
-    var milestoneValues = [];
-    $("#submission-SPARC-award-span").text(awardRes);
-    $("#submission-completion-date-span").text(dateRes);
-    milestonesRes.forEach((item, i) => {
-      milestoneValues.push(milestonesRes[i].value);
-    });
-    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-  }
-
   if (ev.getAttribute("data-next") == "div_make_pi_owner_permissions") {
     let nodeStorage = new JSONStorage(app.getPath("userData"));
     let previous_choice = nodeStorage.getItem("previously_selected_PI");

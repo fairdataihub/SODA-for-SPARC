@@ -146,17 +146,24 @@ $(document).ready(function () {
 
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
-      // $("#generate-submission-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0];
+          "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
         Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          text: `${emessage}`,
+          icon: "warning",
           title: "Metadata file already exists",
+          text: `${emessage}`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: true,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            generateSubmissionHelper(dirpath, destinationPath)
+          }
         });
       } else {
         Swal.fire({
@@ -165,160 +172,99 @@ $(document).ready(function () {
           timer: 15000,
           allowEscapeKey: false,
           allowOutsideClick: false,
+          showConfirmButton: false,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           timerProgressBar: false,
-        }).then((result) => {});
-        var awardRes = $("#submission-sparc-award").val();
-        var dateRes = $("#submission-completion-date").val();
-        var milestonesRes = $("#selected-milestone-1").val();
-        let milestoneValue = JSON.parse(milestonesRes);
-        // var milestoneValue = milestonesRes.split(", \n");
-        if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            icon: "error",
-            text: "Please fill in all of the required fields.",
-            title: "Incomplete information",
-          });
-          return;
-        }
-        var json_arr = [];
-        json_arr.push({
-          award: awardRes,
-          date: dateRes,
-          milestone: milestoneValue[0].value,
-        });
-        if (milestoneValue.length > 0) {
-          for (var index = 1; index < milestoneValue.length; index++) {
-            json_arr.push({
-              award: "",
-              date: "",
-              milestone: milestoneValue[index].value,
-            });
+          didOpen: () => {
+            Swal.showLoading()
           }
-        }
-        json_str = JSON.stringify(json_arr);
-        // var awardRes = "";
-        // var dateRes = "";
-        // var milestonesRes = "";
-        // Swal.fire({
-        //   title: "Generating the submission.xlsx file",
-        //   html: "Please wait...",
-        //   timer: 15000,
-        //   allowEscapeKey: false,
-        //   allowOutsideClick: false,
-        //   heightAuto: false,
-        //   backdrop: "rgba(0,0,0, 0.4)",
-        //   timerProgressBar: false,
-        //   didOpen: () => {
-        //     Swal.showLoading();
-        //   },
-        //   preConfirm: () => {
-        //     awardRes = $("#submission-sparc-award").val();
-        //     dateRes = $("#submission-completion-date").val();
-        //     milestonesRes = $("#selected-milestone-1").val();
-        //     if (awardRes == "" || dateRes == "" || milestonesRes == "") {
-        //       Swal.fire({
-        //         backdrop: "rgba(0,0,0, 0.4)",
-        //         heightAuto: false,
-        //         icon: "error",
-        //         text: `Please fill in all fields before generating the submission.xlsx file`,
-        //         title: "Required fields incomplete",
-        //       });
-        //     }
-        //   }
-        // })
-        //   //
-        //   //
-        //   // return;
-        // }
-        // // TODO: convert this milestonesRes tagify into array of values
-        // let milestoneValue = JSON.parse(milestonesRes);
-        // // var milestoneValue = milestonesRes.split(", \n");
-        // var json_arr = [];
-        // json_arr.push({
-        //   award: awardRes,
-        //   date: dateRes,
-        //   milestone: milestoneValue[0].value,
-        // });
-        // if (milestoneValue.length > 0) {
-        //   for (var index = 1; index < milestoneValue.length; index++) {
-        //     json_arr.push({
-        //       award: "",
-        //       date: "",
-        //       milestone: milestoneValue[index],
-        //     });
-        //   }
-        // }
-        // json_str = JSON.stringify(json_arr);
-        if (dirpath != null) {
-          client.invoke(
-            "api_save_submission_file",
-            destinationPath,
-            json_str,
-            (error, res) => {
-              if (error) {
-                var emessage = userError(error);
-                log.error(error);
-                console.error(error);
-                Swal.fire({
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  heightAuto: false,
-                  icon: "error",
-                  text: emessage,
-                  title: "Failed to generate the submission file",
-                });
-                ipcRenderer.send(
-                  "track-event",
-                  "Error",
-                  "Prepare Metadata - Create Submission",
-                  defaultBfDataset
-                );
-              } else {
-                Swal.fire({
-                  title:
-                    "The submission.xlsx file has been successfully generated at the specified location.",
-                  icon: "success",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                ipcRenderer.send(
-                  "track-event",
-                  "Success",
-                  "Prepare Metadata - Create Submission",
-                  defaultBfDataset
-                );
-              }
-            }
-          );
-        }
-      }
-    }
-  });
-  ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
-    if (filepath.length > 0) {
-      if (filepath != null) {
-        // used to communicate value to button-import-milestone click event-listener
-        document.getElementById("input-milestone-select-reupload").placeholder =
-          filepath[0];
-        $("#div-confirm-select-SPARC-awards").show();
-        $("#div-cancel-reupload-DDD").hide();
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Add DDD",
-          defaultBfAccount
-        );
+        }).then((result) => {});
+          generateSubmissionHelper(dirpath, destinationPath)
       }
     }
   });
 });
 
+function generateSubmissionHelper(fullpath, destinationPath) {
+  var awardRes = $("#submission-sparc-award").val();
+  var dateRes = $("#submission-completion-date").val();
+  var milestonesRes = $("#selected-milestone-1").val();
+  let milestoneValue = [""];
+  if (milestonesRes !== "") {
+    milestoneValue = JSON.parse(milestonesRes);
+  }
+  if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please fill in all of the required fields.",
+      title: "Incomplete information",
+    });
+    return;
+  }
+  var json_arr = [];
+  json_arr.push({
+    award: awardRes,
+    date: dateRes,
+    milestone: milestoneValue[0].value,
+  });
+  if (milestoneValue.length > 0) {
+    for (var index = 1; index < milestoneValue.length; index++) {
+      json_arr.push({
+        award: "",
+        date: "",
+        milestone: milestoneValue[index].value,
+      });
+    }
+  }
+  json_str = JSON.stringify(json_arr);
+  if (fullpath != null) {
+    client.invoke(
+      "api_save_submission_file",
+      destinationPath,
+      json_str,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            text: emessage,
+            title: "Failed to generate the submission file",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create Submission",
+            defaultBfDataset
+          );
+        } else {
+          Swal.fire({
+            title:
+              "The submission.xlsx file has been successfully generated at the specified location.",
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create Submission",
+            defaultBfDataset
+          );
+        }
+      }
+    );
+  }
+}
+
 $("#submission-completion-date").change(function () {
   const text = $("#submission-completion-date").val();
-  console.log(text);
   if (text == "Enter my own date") {
     Swal.fire({
       allowOutsideClick: false,
@@ -747,99 +693,6 @@ function checkAirtableStatus(keyword) {
   }
 }
 
-// Related to Upload DDD part (Show and Import and Cancel DDD upload)
-function showDDDUploadDiv() {
-  document.getElementById("para-milestone-document-info").innerHTML = "";
-  document.getElementById("para-milestone-document-info-long").innerHTML = "";
-  $("#Question-prepare-submission-DDD").removeClass("prev");
-  $("#Question-prepare-submission-DDD")
-    .nextAll()
-    .removeClass("show")
-    .removeClass("prev");
-  $("#div-buttons-show-DDD").hide();
-  $("#input-milestone-select").prop("placeholder", "Browse here");
-  $("#button-import-milestone").hide();
-  $("#div-upload-DDD").show();
-  $("#div-cancel-DDD-import").css("display", "flex");
-}
-
-$("#btn-cancel-DDD-import").click(function () {
-  $("#div-cancel-DDD-import").css("display", "none");
-  $("#div-upload-DDD").hide();
-  $("#div-buttons-show-DDD").show();
-});
-
-$("#reupload-DDD").click(function () {
-  // 1. current individual question hide & reupload individual question added (maybe onclick on transitionFreeFormMode)
-  $("#Question-prepare-submission-4").removeClass("show prev");
-  $("#Question-prepare-submission-4").nextAll().removeClass("show prev");
-  // first, handle target or the next div to show
-  var target = document.getElementById(
-    "Question-prepare-submission-reupload-DDD"
-  );
-  // display the target tab (data-next tab)
-  if (!$(target).hasClass("show")) {
-    $(target).addClass("show");
-  }
-  // append to parentDiv
-  document.getElementById("create_submission-tab").appendChild(target);
-  // auto-scroll to bottom of div
-  document.getElementById("create_submission-tab").scrollTop =
-    document.getElementById("create_submission-tab").scrollHeight;
-  $("#div-cancel-reupload-DDD").show();
-});
-// 2. clone import DDD button
-$("#button-import-milestone-reupload").click(function () {
-  document.getElementById(
-    "para-milestone-document-info-long-reupload"
-  ).style.display = "none";
-  document.getElementById("para-milestone-document-info-reupload").innerHTML =
-    "";
-  var filepath = document.getElementById(
-    "input-milestone-select-reupload"
-  ).placeholder;
-  if (filepath === "Select a file") {
-    document.getElementById("para-milestone-document-info-reupload").innerHTML =
-      "<span style='color: red ;'>" +
-      "Please select a data deliverables document first!</span>";
-    $("#div-confirm-DDD-reupload").hide();
-  } else {
-    var award =
-      presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-    client.invoke("api_extract_milestone_info", filepath, (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        document.getElementById(
-          "para-milestone-document-info-long-reupload"
-        ).style.display = "block";
-        document.getElementById(
-          "para-milestone-document-info-long-reupload"
-        ).innerHTML = "<span style='color: red;'> " + emessage + "</span>";
-        $("#div-confirm-DDD-reupload").hide();
-      } else {
-        milestoneObj = res;
-        createMetadataDir();
-        var informationJson = {};
-        informationJson = parseJson(milestonePath);
-        informationJson[award] = milestoneObj;
-        fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-        document.getElementById(
-          "para-milestone-document-info-reupload"
-        ).innerHTML = "<span style='color: black ;'>" + "Imported!</span>";
-        document.getElementById("input-milestone-select-reupload").placeholder =
-          "Select a file";
-        removeOptions(descriptionDateInput);
-        milestoneTagify1.removeAllTags();
-        changeAwardInput();
-        $("#div-confirm-DDD-reupload").show();
-        $("#div-cancel-reupload-DDD").hide();
-        $($("#div-confirm-DDD-reupload").children()[0]).show();
-      }
-    });
-  }
-});
 $("#input-milestone-select-reupload").click(function () {
   document.getElementById(
     "para-milestone-document-info-long-reupload"
@@ -904,113 +757,12 @@ $("#textarea-SPARC-award-raw-input").keyup(function () {
   }
 });
 
-// 3A. Select a completion date
-$("#input-milestone-date").change(function () {
-  if ($(this).val() !== "") {
-    if (!$("#Question-prepare-submission-6").hasClass("prev")) {
-      $("#div-confirm-completion-date").show();
-      $($("#div-confirm-completion-date").children()[0]).show();
-    }
-    var res = showPreviewSubmission();
-    var awardRes = res["awards"];
-    var dateRes = res["date"];
-    var milestonesRes = res["milestones"];
-    var milestoneValues = [];
-    $("#submission-SPARC-award-span").text(awardRes);
-    $("#submission-completion-date-span").text(dateRes);
-    milestonesRes.forEach((item, i) => {
-      milestoneValues.push(milestonesRes[i].value);
-    });
-    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-  } else {
-    $("#div-confirm-completion-date").hide();
-  }
-});
-
-$("#selected-milestone-date").change(function () {
-  document.getElementById("input-milestone-date").value = "";
-  if ($("#selected-milestone-date").val() !== "") {
-    if (descriptionDateInput.value === "Enter my own date") {
-      actionEnterNewDate("flex");
-    } else {
-      actionEnterNewDate("none");
-      if (!$("#Question-prepare-submission-6").hasClass("prev")) {
-        $("#div-confirm-completion-date").show();
-        $($("#div-confirm-completion-date").children()[0]).show();
-      }
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $("#div-confirm-completion-date").hide();
-  }
-});
-// 3B. Manually type a completion date
-$("#input-milestone-date-raw").change(function () {
-  if ($("#input-milestone-date-raw").val() !== "mm/dd/yyyy") {
-    if (!$("#Question-prepare-submission-no-skip-3").hasClass("prev")) {
-      $("#div-confirm-completion-date-raw").show();
-      $($("#div-confirm-completion-date-raw").children()[0]).show();
-    }
-    var res = showPreviewSubmission();
-    var awardRes = res["awards"];
-    var dateRes = res["date"];
-    var milestonesRes = res["milestones"];
-    var milestoneValues = [];
-    $("#submission-SPARC-award-span").text(awardRes);
-    $("#submission-completion-date-span").text(dateRes);
-    milestonesRes.forEach((item, i) => {
-      milestoneValues.push(milestonesRes[i].value);
-    });
-    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-  } else {
-    $("#div-confirm-completion-date-raw").hide();
-  }
-});
-
 $(document).ready(function () {
   $("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
 });
 
-// Preview submission file entries before Generating
-function showPreviewSubmission() {
-  var sparcAwardRes = "";
-  var milestonesRes = [];
-  var dateRes = "";
-  for (var div of $("#create_submission-tab .individual-question.show")) {
-    if (div.id == "Question-prepare-submission-3") {
-      sparcAwardRes = $("#select-presaved-grant-info-list").val();
-    } else if (div.id == "Question-prepare-submission-no-skip-1") {
-      sparcAwardRes = $("#textarea-SPARC-award-raw-input").val();
-    } else if (div.id == "Question-prepare-submission-6") {
-      if ($("#selected-milestone-date").val() === "Enter my own date") {
-        dateRes = $("#input-milestone-date").val();
-      } else {
-        dateRes = $("#selected-milestone-date").val();
-      }
-    } else if (div.id == "Question-prepare-submission-no-skip-3") {
-      dateRes = $("#input-milestone-date-raw").val();
-    } else if (div.id == "Question-prepare-submission-no-skip-2") {
-      milestonesRes = milestoneTagify2.value;
-    } else if (div.id == "Question-prepare-submission-4") {
-      milestonesRes = milestoneTagify1.value;
-    }
-  }
-  return { awards: sparcAwardRes, date: dateRes, milestones: milestonesRes };
-}
-
 // generateSubmissionFile function takes all the values from the preview card's spans
 function generateSubmissionFile() {
-  document.getElementById("para-save-submission-status").innerHTML = "";
   ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
 }
 
@@ -1557,11 +1309,6 @@ function resetSubmission() {
       for (var field of selectFields) {
         $(field).val("Select");
       }
-
-      document.getElementById("para-milestone-document-info").innerHTML = "";
-      document.getElementById("para-milestone-document-info-long").innerHTML =
-        "";
-      document.getElementById("para-save-submission-status").innerHTML = "";
       checkAirtableStatus("");
     }
   });
@@ -1679,20 +1426,6 @@ function helpMilestoneSubmission() {
           Swal.close();
 
           const filepath = result.value.filepath;
-          // document.getElementById(
-          //   "para-milestone-document-info-long"
-          // ).style.display = "none";
-          // document.getElementById("para-milestone-document-info").innerHTML =
-          //   "";
-          // var filepath = document.getElementById(
-          //   "input-milestone-select"
-          // ).placeholder;
-          // if (filepath === "Browse here") {
-          // document.getElementById("para-milestone-document-info").innerHTML =
-          //   "<span style='color: red ;'>" +
-          //   "Please select a data deliverables document first!</span>";
-          // $("#upload-DDD-spinner").hide();
-          // } else {
           var award =
             presavedAwardArray1.options[presavedAwardArray1.selectedIndex]
               .value;
@@ -1704,20 +1437,12 @@ function helpMilestoneSubmission() {
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                // document.getElementById(
-                //   "para-milestone-document-info-long"
-                // ).style.display = "block";
-                // document.getElementById(
-                //   "para-milestone-document-info-long"
-                // ).innerHTML =
-                //   "<span style='color: red;'> " + emessage + ".</span>";
                 Swal.fire({
                   backdrop: "rgba(0,0,0, 0.4)",
                   heightAuto: false,
                   icon: "error",
                   text: `${emessage}`,
                 });
-                // $("#upload-DDD-spinner").hide();
               } else {
                 milestoneObj = res;
                 createMetadataDir();
@@ -1736,24 +1461,14 @@ function helpMilestoneSubmission() {
                   icon: "success",
                   text: `Successfully loaded your DataDeliverables.docx document`,
                 });
-                // document.getElementById(
-                //   "para-milestone-document-info"
-                // ).innerHTML =
-                //   "<span style='color: black ;'>" + "Imported!</span>";
-                // document.getElementById("input-milestone-select").placeholder =
-                //   "Browse here";
                 removeOptions(descriptionDateInput);
                 milestoneTagify1.removeAllTags();
                 milestoneTagify1.settings.whitelist = [];
                 milestoneTagify2.settings.whitelist = [];
                 changeAwardInput();
-                // $("#div-cancel-DDD-import").hide();
-                // $("#div-confirm-DDD-import button").click();
-                // $("#upload-DDD-spinner").hide();
               }
             }
           );
-          // }
         });
       }
     });
@@ -1761,12 +1476,6 @@ function helpMilestoneSubmission() {
 }
 
 function openDDDimport() {
-  // console.log("here");
-  document.getElementById("para-milestone-document-info").innerHTML = "";
-  document.getElementById("para-milestone-document-info-long").innerHTML = "";
-  document.getElementById("para-milestone-document-info-long").style.display =
-    "none";
-  // ipcRenderer.send("open-file-dialog-milestone-doc");
 
   const dialog = require("electron").remote.dialog;
   const BrowserWindow = require("electron").remote.BrowserWindow;
@@ -1781,9 +1490,6 @@ function openDDDimport() {
       if (filepath) {
         if (filepath.length > 0) {
           if (filepath != null) {
-            // used to communicate value to button-import-milestone click event-listener
-            // console.log(document.getElementById("input-milestone-select"));
-            // console.log(document.querySelector("#input-milestone-select"));
             document.getElementById("input-milestone-select").placeholder =
               filepath[0];
             ipcRenderer.send(
@@ -1794,14 +1500,6 @@ function openDDDimport() {
             );
           }
         }
-        // if (
-        //   document.getElementById("input-milestone-select").placeholder !==
-        //   "Browse here"
-        // ) {
-        //   $("#button-import-milestone").show();
-        // } else {
-        //   $("#button-import-milestone").hide();
-        // }
       }
     }
   );

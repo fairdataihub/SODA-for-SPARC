@@ -2713,8 +2713,10 @@ function loadContributorInfofromAirtable(award) {
         records.forEach(function (record) {
           var firstName = record.get("First_name");
           var lastName = record.get("Last_name");
-          globalContributorNameObject[lastName] = firstName;
-          currentContributorsLastNames.push(lastName);
+          if (firstName !== undefined && lastName !== undefined) {
+            globalContributorNameObject[lastName] = firstName;
+            currentContributorsLastNames.push(lastName);
+          }
         }),
           fetchNextPage();
       });
