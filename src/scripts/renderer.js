@@ -8340,14 +8340,14 @@ const curation_consortium_check = (mode = "") => {
                       $("#sparc-consortium-unshare-btn").show();
                       $("#sparc-consortium-share-btn").hide();
                       if (mode != "update") {
-                        Swal.fire({
-                          title: "You are all set!",
-                          text: "This dataset has already been shared with the SPARC Consortium.",
-                          icon: "success",
-                          showConfirmButton: true,
-                          heightAuto: false,
-                          backdrop: "rgba(0,0,0, 0.4)",
-                        });
+                        // Swal.fire({
+                        //   title: "You are all set!",
+                        //   text: "This dataset has already been shared with the SPARC Consortium.",
+                        //   icon: "success",
+                        //   showConfirmButton: true,
+                        //   heightAuto: false,
+                        //   backdrop: "rgba(0,0,0, 0.4)",
+                        // });
                       }
                     }
 
