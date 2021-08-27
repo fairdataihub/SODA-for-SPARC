@@ -27,11 +27,6 @@ function disseminateShowPublishingStatus(callback, account, dataset) {
 const disseminateDataset = (option) => {
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
-    $("#para-share-curation_team-status").text("");
-    // ipcRenderer.send(
-    //   "warning-share-with-curation-team",
-    //   formBannerHeight.value
-    // );
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -61,8 +56,6 @@ const disseminateDataset = (option) => {
     });
   } else if (option === "share-with-sparc-consortium") {
     $("#share-with-sparc-consortium-spinner").show();
-    $("#para-share-with-sparc-consortium-status").text("");
-    // ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
@@ -121,10 +114,8 @@ const unshareDataset = (option) => {
     if (result.isConfirmed) {
       $(".spinner.post-curation").show();
       if (option === "share-with-curation-team") {
-        $("#para-share-curation_team-status").text("");
         disseminateCurationTeam(defaultBfAccount, defaultBfDataset, "unshare");
       } else if (option === "share-with-sparc-consortium") {
-        $("#para-share-with-sparc-consortium-status").text("");
         disseminateConsortium(defaultBfAccount, defaultBfDataset, "unshare");
       }
     }
@@ -333,8 +324,14 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#para-share-curation_team-status").css("color", "red");
-        $("#para-share-curation_team-status").text(emessage);
+        Swal.fire({
+          title: "Failed to share with Curation team!",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         $("#share-curation-team-spinner").hide();
         $(".spinner.post-curation").hide();
         $("#curation-team-share-btn").prop("disabled", false);
@@ -364,12 +361,17 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
               log.error(error);
               console.error(error);
               var emessage = userError(error);
-              $("#para-share-curation_team-status").css("color", "red");
-              $("#para-share-curation_team-status").text(emessage);
+              Swal.fire({
+                title: "Failed to share with Curation team!",
+                text: emessage,
+                icon: "error",
+                showConfirmButton: true,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+              });
               $("#share-curation-team-spinner").hide();
               $("#curation-team-share-btn").prop("disabled", false);
               $("#curation-team-unshare-btn").prop("disabled", false);
-
               ipcRenderer.send(
                 "track-event",
                 "Error",
@@ -378,23 +380,29 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
               );
               $(".spinner.post-curation").hide();
             } else {
-              $("#para-share-curation_team-status").css(
-                "color",
-                "var(--color-light-green)"
-              );
 
               $("#share-curation-team-spinner").hide();
 
               if (share_status === "unshare") {
-                $("#para-share-curation_team-status").text(
-                  `Success - Removed the Curation Team's manager permissions and set dataset status to "Work In Progress"`
-                );
+                Swal.fire({
+                  title: "Successfully shared with Curation team!",
+                  text: `Removed the Curation Team's manager permissions and set dataset status to "Work In Progress"`,
+                  icon: "success",
+                  showConfirmButton: true,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
                 $("#curation-team-unshare-btn").hide();
                 $("#curation-team-share-btn").show();
               } else {
-                $("#para-share-curation_team-status").text(
-                  'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
-                );
+                Swal.fire({
+                  title: "Successfully shared with Curation team!",
+                  text: 'This provided the Curation Team manager permissions and set your dataset status to "Ready for Curation"',
+                  icon: "success",
+                  showConfirmButton: true,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
                 $("#curation-team-unshare-btn").show();
                 $("#curation-team-share-btn").hide();
               }
@@ -442,8 +450,14 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#para-share-with-sparc-consortium-status").css("color", "red");
-        $("#para-share-with-sparc-consortium-status").text(emessage);
+        Swal.fire({
+          title: "Failed to share with SPARC Consortium!",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         $("#share-with-sparc-consortium-spinner").hide();
         $(".spinner.post-curation").hide();
         $("#sparc-consortium-share-btn").prop("disabled", false);
@@ -477,30 +491,47 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               log.error(error);
               console.error(error);
               var emessage = userError(error);
-              $("#para-share-with-sparc-consortium-status").css("color", "red");
-              $("#para-share-with-sparc-consortium-status").text(emessage);
+              Swal.fire({
+                title: "Failed to share with Consortium!",
+                text: emessage,
+                icon: "error",
+                showConfirmButton: true,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+              });
               $("#share-with-sparc-consortium-spinner").hide();
               $("#sparc-consortium-share-btn").prop("disabled", false);
               $("#sparc-consortium-unshare-btn").prop("disabled", false);
               $(".spinner.post-curation").hide();
             } else {
-              $("#para-share-with-sparc-consortium-status").css(
-                "color",
-                "var(--color-light-green)"
-              );
-              $("#para-share-with-sparc-consortium-status").text(
-                'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
-              );
+              Swal.fire({
+                title: "Successfully shared with Consortium!",
+                text: `This provided viewer permissions to Consortium members and set dataset status to "Under Embargo"`,
+                icon: "success",
+                showConfirmButton: true,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+              });
               if (share_status === "unshare") {
-                $("#para-share-with-sparc-consortium-status").text(
-                  `Success - Removed the SPARC Consortium's viewer permissions and set dataset status to "Curated & Awaiting PI Approval"`
-                );
+                Swal.fire({
+                  title: "Removed successfully!",
+                  text: `Removed the SPARC Consortium's viewer permissions and set dataset status to "Curated & Awaiting PI Approval"`,
+                  icon: "success",
+                  showConfirmButton: true,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
                 $("#sparc-consortium-unshare-btn").hide();
                 $("#sparc-consortium-share-btn").show();
               } else {
-                $("#para-share-with-sparc-consortium-status").text(
-                  'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
-                );
+                Swal.fire({
+                  title: "Successully shared with Consortium!",
+                  text: `This provided viewer permissions to Consortium members and set dataset status to "Under Embargo"`,
+                  icon: "success",
+                  showConfirmButton: true,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
                 $("#sparc-consortium-unshare-btn").show();
                 $("#sparc-consortium-share-btn").hide();
               }
@@ -521,7 +552,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
 }
 
 function disseminateShowCurrentPermission(bfAcct, bfDS) {
-  $("#para-share-curation_team-status").css("color", "#000");
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
@@ -554,11 +584,9 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
   if (dataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
-    datasetStatusStatus.innerHTML = "";
     removeOptions(bfListDatasetStatus);
     bfListDatasetStatus.style.color = "black";
   } else {
-    datasetStatusStatus.innerHTML = "";
     client.invoke(
       "api_bf_get_dataset_status",
       account,
@@ -568,9 +596,6 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
-          datasetStatusStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          //bfCurrentDatasetStatusProgress.style.display = "none";
           $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
         } else {
@@ -588,7 +613,6 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
           //bfCurrentDatasetStatusProgress.style.display = "none";
           $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
-          datasetStatusStatus.innerHTML = "";
           if (callback !== "") {
             callback();
           }

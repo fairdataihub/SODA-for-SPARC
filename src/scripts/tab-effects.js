@@ -1786,8 +1786,6 @@ async function transitionFreeFormMode(
     .addClass("non-selected");
 
   // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
-  $("#para-share-curation_team-status").text("");
-  $("#para-share-with-sparc-consortium-status").text("");
   $("#para-submit_prepublishing_review-status").text("");
 
   if (ev.getAttribute("data-next") == "div_make_pi_owner_permissions") {
@@ -2979,7 +2977,6 @@ $(document).ready(() => {
       }
     }
 
-    $("#para-add-new-dataset-status").html("");
     $("#main-nav").addClass("active");
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");

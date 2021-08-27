@@ -781,9 +781,6 @@ const bfNewDatasetName = document.querySelector("#bf-new-dataset-name");
 const bfCreateNewDatasetBtn = document.getElementById(
   "button-create-bf-new-dataset"
 );
-const bfCreateNewDatasetStatus = document.querySelector(
-  "#para-add-new-dataset-status"
-);
 const bfSubmitDatasetBtn = document.getElementById("button-submit-dataset");
 const selectLocalDsSubmit = document.getElementById(
   "selected-local-dataset-submit"
@@ -795,27 +792,13 @@ const progressUploadBf = document.getElementById("div-progress-submit");
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 const bfRenameDatasetBtn = document.getElementById("button-rename-dataset");
 const renameDatasetName = document.querySelector("#bf-rename-dataset-name");
-const bfRenameDatasetStatus = document.getElementById(
-  "para-rename-dataset-status"
-);
 const datasetPermissionDiv = document.getElementById("div-permission-list-2");
-
-// Pennsieve dataset metadata //
-// const bfCurrentMetadataProgress = document.querySelector(
-//   "#div-bf-current-metadata-progress"
-// );
 const bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
 const bfDatasetSubtitleCharCount = document.querySelector(
   "#para-char-count-metadata"
 );
 const bfAddSubtitleBtn = document.getElementById("button-add-subtitle");
-const datasetSubtitleStatus = document.querySelector(
-  "#para-dataset-subtitle-status"
-);
 const bfAddDescriptionBtn = document.getElementById("button-add-description");
-const datasetDescriptionStatus = document.querySelector(
-  "#para-dataset-description-status"
-);
 const bfCurrentBannerImg = document.getElementById("current-banner-img");
 const bfImportBannerImageBtn = document.getElementById(
   "button-import-banner-image"
@@ -832,9 +815,6 @@ const currentDatasetLicense = document.querySelector(
 );
 const bfListLicense = document.querySelector("#bf-license-list");
 const bfAddLicenseBtn = document.getElementById("button-add-license");
-const datasetLicenseStatus = document.querySelector(
-  "#para-dataset-license-status"
-);
 
 // Pennsieve dataset permission //
 //const bfPermissionForm = document.querySelector("#pennsieve-permission-form");
@@ -855,9 +835,7 @@ const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 const bfAddPermissionPIBtn = document.getElementById(
   "button-add-permission-pi"
 );
-const datasetPermissionStatusPI = document.querySelector(
-  "#para-dataset-permission-status-pi"
-);
+
 const bfAddPermissionCurationTeamBtn = document.getElementById(
   "button-add-permission-curation-team"
 );
@@ -867,26 +845,16 @@ const datasetPermissionStatusCurationTeam = document.querySelector(
 const bfListUsers = document.querySelector("#bf_list_users");
 const bfListRoles = document.querySelector("#bf_list_roles");
 const bfAddPermissionBtn = document.getElementById("button-add-permission");
-const datasetPermissionStatus = document.querySelector(
-  "#para-dataset-permission-status"
-);
 const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById(
   "button-add-permission-team"
 );
-const datasetPermissionStatusTeam = document.querySelector(
-  "#para-dataset-permission-status-team"
-);
-
 //Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
 );
 const bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
-const datasetStatusStatus = document.querySelector(
-  "#para-dataset-status-status"
-);
 
 //Pennsieve post curation
 const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
@@ -3313,8 +3281,6 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
   setTimeout(function () {
     log.info(`Creating a new dataset with the name: ${bfNewDatasetName.value}`);
     bfCreateNewDatasetBtn.disabled = true;
-    $("#para-new-name-dataset-message").html("");
-    $("#para-add-new-dataset-status").html("");
     $("#bf-create-new-dataset-spinner").css("visibility", "visible");
     var selectedbfaccount = defaultBfAccount;
     client.invoke(
@@ -3326,12 +3292,15 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
+          Swal.fire({
+            title: `Failed to create a new dataset.`,
+            text: emessage,
+            showCancelButton: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            icon: "error",
+          });
           $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
-          bfCreateNewDatasetStatus.innerHTML =
-            "<span style='color: red; font-size: 15px;'> " +
-            emessage +
-            ". </span>" +
-            sadCan;
           bfCreateNewDatasetBtn.disabled = false;
           ipcRenderer.send(
             "track-event",
@@ -3340,17 +3309,18 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             bfNewDatasetName.value
           );
         } else {
+          Swal.fire({
+            title: "Created successfully!",
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           log.info(`Created dataset successfully`);
           $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
           $(bfCreateNewDatasetBtn).hide();
           defaultBfDataset = bfNewDatasetName.value;
           refreshDatasetList();
-          bfCreateNewDatasetStatus.innerHTML =
-            "<span style='font-size: 15px; color: #13716D;'>Success: Created dataset" +
-            " '" +
-            bfNewDatasetName.value +
-            "'. </span>" +
-            smileyCan;
           currentDatasetPermission.innerHTML = "";
           currentAddEditDatasetPermission.innerHTML = "";
           bfCreateNewDatasetBtn.disabled = false;
@@ -3401,12 +3371,17 @@ bfRenameDatasetBtn.addEventListener("click", () => {
 
     if (currentDatasetName === "Select dataset") {
       emessage = "Please select a valid dataset";
-      bfRenameDatasetStatus.innerHTML =
-        "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
+      Swal.fire({
+        title: "Failed to rename dataset",
+        text:emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     } else {
       $("#bf-rename-dataset-spinner").css("visibility", "visible");
       bfRenameDatasetBtn.disabled = true;
-      bfRenameDatasetStatus.innerHTML = "";
       client.invoke(
         "api_bf_rename_dataset",
         selectedbfaccount,
@@ -3418,8 +3393,14 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             console.error(error);
             var emessage = userError(error);
             $("#bf-rename-dataset-spinner").css("visibility", "hidden");
-            bfRenameDatasetStatus.innerHTML =
-              "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
+            Swal.fire({
+              title: "Failed to rename dataset",
+              text: emessage,
+              icon: "error",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
             bfRenameDatasetBtn.disabled = false;
             ipcRenderer.send(
               "track-event",
@@ -3433,16 +3414,21 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             $(".bf-dataset-span").html(renamedDatasetName);
             refreshDatasetList();
             renameDatasetName.value = renamedDatasetName;
-            bfRenameDatasetStatus.innerHTML =
-              "Success: Renamed dataset" +
+            Swal.fire({
+              title: "Renamed successfully!",
+              text: "Renamed dataset" +
               " '" +
               currentDatasetName +
               "'" +
               " to" +
               " '" +
               renamedDatasetName +
-              "'. " +
-              smileyCan;
+              "'. ",
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
             bfRenameDatasetBtn.disabled = false;
             ipcRenderer.send(
               "track-event",
@@ -3733,7 +3719,6 @@ selectLocalDsSubmit.addEventListener("click", function () {
 ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
-      $("#para-info-local-submit").html("");
       $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
 
       valid_dataset = verify_sparc_folder(filepath[0]);
@@ -3791,10 +3776,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
 const metadataDatasetlistChange = () => {
   // bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
-  datasetSubtitleStatus.innerHTML = "";
-  datasetLicenseStatus.innerHTML = "";
   bfDatasetSubtitle.value = "";
-  // datasetDescriptionStatus.innerHTML = "";
   datasetBannerImageStatus.innerHTML = "";
   showCurrentSubtitle();
   showCurrentDescription();
@@ -3803,11 +3785,7 @@ const metadataDatasetlistChange = () => {
 };
 
 // Manage dataset permission
-
 const permissionDatasetlistChange = () => {
-  //console.log("permission")
-  // bfCurrentPermissionProgress.style.display = "block";
-  // bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
 };
 
@@ -3826,7 +3804,6 @@ $(bfListDatasetStatus).on("change", () => {
   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
 
-  datasetStatusStatus.innerHTML = "";
   selectOptionColor(bfListDatasetStatus);
 
   var selectedBfAccount = defaultBfAccount;
@@ -3851,8 +3828,14 @@ $(bfListDatasetStatus).on("change", () => {
         console.error(error);
         var emessage = userError(error);
         function showErrorDatasetStatus() {
-          datasetStatusStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
+          Swal.fire({
+            title: "Failed to change dataset status!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
         }
@@ -3866,7 +3849,13 @@ $(bfListDatasetStatus).on("change", () => {
         );
         $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
         $("#bf-dataset-status-spinner").css("display", "none");
-        datasetStatusStatus.innerHTML = res;
+        Swal.fire({
+          title: res,
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
       }
     }
   );
@@ -3896,9 +3885,14 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           console.error(error);
           var emessage = userError(error);
           $("#bf-add-subtitle-dataset-spinner").hide();
-          datasetSubtitleStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentMetadataProgress.style.display = "none";
+          Swal.fire({
+            title: "Failed to add subtitle!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(".synced-progress").css("display", "none");
           $("#ds-description").val("");
           ipcRenderer.send(
@@ -3911,8 +3905,13 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           log.info("Added subtitle to dataset");
           $("#bf-add-subtitle-dataset-spinner").hide();
           $("#ds-description").val(inputSubtitle);
-          datasetSubtitleStatus.innerHTML = res;
-          // bfCurrentMetadataProgress.style.display = "none";
+          Swal.fire({
+            title: "Successfully added!",
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(".synced-progress").css("display", "none");
           ipcRenderer.send(
             "track-event",
@@ -4020,9 +4019,14 @@ const addDescription = (
         console.error(error);
         var emessage = userError(error);
         $("#bf-add-description-dataset-spinner").hide();
-        datasetDescriptionStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
-        // bfCurrentMetadataProgress.style.display = "none";
+        Swal.fire({
+          title: "Failed to add description!",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         $(".synced-progress").css("display", "none");
         ipcRenderer.send(
           "track-event",
@@ -4032,8 +4036,13 @@ const addDescription = (
         );
       } else {
         $("#bf-add-description-dataset-spinner").hide();
-        datasetDescriptionStatus.innerHTML = res;
-        // bfCurrentMetadataProgress.style.display = "none";
+        Swal.fire({
+          title: "Successfully added description!",
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         $(".synced-progress").css("display", "none");
         showDatasetDescription();
         changeDatasetUnderDD();
@@ -4392,7 +4401,6 @@ bfAddLicenseBtn.addEventListener("click", () => {
     // bfCurrentMetadataProgress.style.display = "block";
     $(".synced-progress").css("display", "block");
     $("#bf-add-license-dataset-spinner").show();
-    datasetLicenseStatus.innerHTML = "";
 
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
@@ -4409,9 +4417,14 @@ bfAddLicenseBtn.addEventListener("click", () => {
           console.error(error);
           var emessage = userError(error);
           $("#bf-add-license-dataset-spinner").hide();
-          datasetLicenseStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentMetadataProgress.style.display = "none";
+          Swal.fire({
+            title: "Failed to add the license to your dataset!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(".synced-progress").css("display", "none");
           ipcRenderer.send(
             "track-event",
@@ -4421,7 +4434,13 @@ bfAddLicenseBtn.addEventListener("click", () => {
           );
         } else {
           $("#bf-add-license-dataset-spinner").hide();
-          datasetLicenseStatus.innerHTML = res;
+          Swal.fire({
+            title: "Successfully added license to your dataset!",
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           showCurrentLicense();
           ipcRenderer.send(
             "track-event",
@@ -4437,7 +4456,6 @@ bfAddLicenseBtn.addEventListener("click", () => {
 
 // Make PI owner //
 bfAddPermissionPIBtn.addEventListener("click", () => {
-  datasetPermissionStatusPI.innerHTML = "";
   Swal.fire({
     icon: "warning",
     text: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
@@ -4458,8 +4476,6 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");
       $("#bf-add-permission-pi-spinner").css("visibility", "visible");
-      datasetPermissionStatusPI.innerHTML = "";
-      //disableform(bfPermissionForm);
 
       var selectedBfAccount = defaultBfAccount;
       var selectedBfDataset = defaultBfDataset;
@@ -4485,10 +4501,14 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
             log.error(error);
             console.error(error);
             var emessage = userError(error);
-            datasetPermissionStatusPI.innerHTML =
-              "<span style='color: red;'> " + emessage + "</span>";
-            // bfCurrentPermissionProgress.style.display = "none";
-            // bfAddEditCurrentPermissionProgress.style.display = "none";
+            Swal.fire({
+              title: "Failed to change PI permission!",
+              text: emessage,
+              icon: "error",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
           } else {
             log.info("Changed PI Owner of datset");
             ipcRenderer.send(
@@ -4500,9 +4520,17 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
             let nodeStorage = new JSONStorage(app.getPath("userData"));
             nodeStorage.setItem("previously_selected_PI", selectedUser);
             $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-            datasetPermissionStatusPI.innerHTML = res;
+
             showCurrentPermission();
             changeDatasetRolePI(selectedBfDataset);
+            Swal.fire({
+              title: "Loaded successfully!",
+              text: res,
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
           }
         }
       );
@@ -4510,71 +4538,12 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   });
 });
 
-// ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
-//   $("#bf-add-permission-pi-spinner").css("visibility", "visible");
-//   datasetPermissionStatusPI.innerHTML = "";
-//   //disableform(bfPermissionForm);
-
-//   var selectedBfAccount = defaultBfAccount;
-//   var selectedBfDataset = defaultBfDataset;
-//   var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
-//   var selectedRole = "owner";
-
-//   if (index === 0) {
-//     client.invoke(
-//       "api_bf_add_permission",
-//       selectedBfAccount,
-//       selectedBfDataset,
-//       selectedUser,
-//       selectedRole,
-//       (error, res) => {
-//         if (error) {
-//           ipcRenderer.send(
-//             "track-event",
-//             "Error",
-//             "Manage Dataset - Change PI Owner",
-//             selectedBfDataset
-//           );
-//           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-//           log.error(error);
-//           console.error(error);
-//           var emessage = userError(error);
-//           datasetPermissionStatusPI.innerHTML =
-//             "<span style='color: red;'> " + emessage + "</span>";
-//           // bfCurrentPermissionProgress.style.display = "none";
-//           // bfAddEditCurrentPermissionProgress.style.display = "none";
-//         } else {
-//           ipcRenderer.send(
-//             "track-event",
-//             "Success",
-//             "Manage Dataset - Change PI Owner",
-//             selectedBfDataset
-//           );
-//           let nodeStorage = new JSONStorage(app.getPath("userData"));
-//           nodeStorage.setItem("previously_selected_PI", selectedUser);
-//           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-//           datasetPermissionStatusPI.innerHTML = res;
-//           showCurrentPermission();
-//           changeDatasetRolePI(selectedBfDataset);
-//         }
-//       }
-//     );
-//   } else {
-//     // bfCurrentPermissionProgress.style.display = "none";
-//     // bfAddEditCurrentPermissionProgress.style.display = "none";
-//     $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-//   }
-// });
 
 // Add permission for user //
 bfAddPermissionBtn.addEventListener("click", () => {
   setTimeout(function () {
     log.info("Adding a permission for a user on a dataset");
     $("#bf-add-permission-user-spinner").show();
-    datasetPermissionStatus.innerHTML = "";
-    // bfCurrentPermissionProgress.style.display = "block";
-    // bfAddEditCurrentPermissionProgress.style.display = "block";
-    //disableform(bfPermissionForm);
 
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
@@ -4587,49 +4556,14 @@ bfAddPermissionBtn.addEventListener("click", () => {
       selectedUser,
       selectedRole
     );
-
-    // if (selectedRole === "owner") {
-    //   ipcRenderer.send("warning-add-permission-owner");
-    // } else {
-    // }
   }, delayAnimation);
 });
-
-// ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
-//   var selectedBfAccount = defaultBfAccount;
-//   var selectedBfDataset = defaultBfDataset;
-//   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
-//   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
-
-//   datasetPermissionStatus.innerHTML = "";
-
-//   if (index === 0) {
-//     addPermissionUser(
-//       selectedBfAccount,
-//       selectedBfDataset,
-//       selectedUser,
-//       selectedRole
-//     );
-//     ipcRenderer.send(
-//       "track-event",
-//       "Success",
-//       "Manage Dataset - Add User Permission",
-//       selectedBfDataset
-//     );
-//     $("#bf-add-permission-user-spinner").hide();
-//   } else {
-//     $("#bf-add-permission-user-spinner").hide();
-//     // bfCurrentPermissionProgress.style.display = "none";
-//     // bfAddEditCurrentPermissionProgress.style.display = "none";
-//   }
-// });
 
 // Add permission for team
 bfAddPermissionTeamBtn.addEventListener("click", () => {
   setTimeout(function () {
     log.info("Adding a permission for a team on a dataset");
     $("#bf-add-permission-team-spinner").show();
-    datasetPermissionStatusTeam.innerHTML = "";
 
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
@@ -4649,14 +4583,25 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
           console.error(error);
           var emessage = userError(error);
           $("#bf-add-permission-team-spinner").hide();
-          datasetPermissionStatusTeam.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentPermissionProgress.style.display = "none";
-          // bfAddEditCurrentPermissionProgress.style.display = "none";
+          Swal.fire({
+            title: "Failed to change permission!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
         } else {
           log.info("Added permission for the team");
           $("#bf-add-permission-team-spinner").hide();
-          datasetPermissionStatusTeam.innerHTML = res + ". " + smileyCan;
+          Swal.fire({
+            title: "Successfully changed permission!",
+            text: res,
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           showCurrentPermission();
         }
       }
@@ -5213,15 +5158,25 @@ function addPermissionUser(
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        datasetPermissionStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
-        // bfCurrentPermissionProgress.style.display = "none";
-        // bfAddEditCurrentPermissionProgress.style.display = "none";
+        Swal.fire({
+          title: "Failed to change permission!",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
       } else {
         log.info("Dataset permission added");
-        datasetPermissionStatus.innerHTML = res;
+        Swal.fire({
+          title: "Successfully changed permission!",
+          text: res,
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         showCurrentPermission();
-
         // refresh dataset lists with filter
         client.invoke("api_get_username", selectedBfAccount, (error, res1) => {
           if (error) {
@@ -5271,12 +5226,10 @@ function showCurrentDatasetStatus(callback) {
   if (selectedBfDataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
-    datasetStatusStatus.innerHTML = "";
     removeOptions(bfListDatasetStatus);
     removeRadioOptions("dataset_status_ul");
     bfListDatasetStatus.style.color = "black";
   } else {
-    datasetStatusStatus.innerHTML = "";
     client.invoke(
       "api_bf_get_dataset_status",
       selectedBfAccount,
@@ -5286,8 +5239,14 @@ function showCurrentDatasetStatus(callback) {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
-          datasetStatusStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
+          Swal.fire({
+            title: "Failed to change dataset status!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
         } else {
@@ -5314,7 +5273,6 @@ function showCurrentDatasetStatus(callback) {
           selectOptionColor(bfListDatasetStatus);
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
-          datasetStatusStatus.innerHTML = "";
           if (callback !== undefined) {
             callback();
           }
@@ -5475,9 +5433,6 @@ function showCurrentDOI() {
 function showPublishingStatus(callback) {
   if (callback == "noClear") {
     var nothing;
-  } else {
-    $("#para-share-curation_team-status").text("");
-    $("#para-share-with-sparc-consortium-status").text("");
   }
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span")
@@ -7147,7 +7102,6 @@ $("#bf-rename-dataset-name").keyup(function () {
 
 $("#bf-new-dataset-name").keyup(function () {
   let newName = $("#bf-new-dataset-name").val().trim();
-  $("#para-add-new-dataset-status").text("");
 
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
@@ -8178,15 +8132,6 @@ const curation_consortium_check = (mode = "") => {
   let selected_dataset = defaultBfDataset;
 
   $(".spinner.post-curation").show();
-  $("#para-share-curation_team-status").css(
-    "color",
-    "var(--color-light-green)"
-  );
-  $("#para-share-with-sparc-consortium-status").css(
-    "color",
-    "var(--color-light-green)"
-  );
-
   $("#curation-team-unshare-btn").hide();
   $("#sparc-consortium-unshare-btn").hide();
   $("#curation-team-share-btn").hide();
@@ -8213,15 +8158,22 @@ const curation_consortium_check = (mode = "") => {
       if (res.search("SPARC Consortium") == -1) {
         $("#current_curation_team_status").text("None");
         $("#current_sparc_consortium_status").text("None");
-
-        $("#para-share-curation_team-status").css("color", "red");
-        $("#para-share-curation_team-status").text(
-          "This account is not in the SPARC Consortium organization. Please switch accounts and try again"
-        );
-        $("#para-share-with-sparc-consortium-status").css("color", "red");
-        $("#para-share-with-sparc-consortium-status").text(
-          "This account is not in the SPARC Consortium organization. Please switch accounts and try again"
-        );
+        Swal.fire({
+          title: "Failed to share with Curation team!",
+          text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again",
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        Swal.fire({
+          title: "Failed to share with the SPARC Consortium!",
+          text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again.",
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
 
         if (mode != "update") {
           $("#curation-team-unshare-btn").hide();
@@ -8367,9 +8319,14 @@ const curation_consortium_check = (mode = "") => {
                       $("#curation-team-unshare-btn").show();
                       $("#curation-team-share-btn").hide();
                       if (mode != "update") {
-                        $("#para-share-curation_team-status").text(
-                          "You are all set! This dataset has already been shared with the Curation team."
-                        );
+                        // Swal.fire({
+                        //   title: "You are all set!",
+                        //   text: "This dataset has already been shared with the Curation team.",
+                        //   icon: "success",
+                        //   showConfirmButton: true,
+                        //   heightAuto: false,
+                        //   backdrop: "rgba(0,0,0, 0.4)",
+                        // });
                       }
                     }
 
@@ -8383,9 +8340,14 @@ const curation_consortium_check = (mode = "") => {
                       $("#sparc-consortium-unshare-btn").show();
                       $("#sparc-consortium-share-btn").hide();
                       if (mode != "update") {
-                        $("#para-share-with-sparc-consortium-status").text(
-                          "You are all set! This dataset has already been shared with the SPARC Consortium."
-                        );
+                        Swal.fire({
+                          title: "You are all set!",
+                          text: "This dataset has already been shared with the SPARC Consortium.",
+                          icon: "success",
+                          showConfirmButton: true,
+                          heightAuto: false,
+                          backdrop: "rgba(0,0,0, 0.4)",
+                        });
                       }
                     }
 
