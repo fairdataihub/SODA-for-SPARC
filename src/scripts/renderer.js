@@ -817,20 +817,12 @@ const bfListLicense = document.querySelector("#bf-license-list");
 const bfAddLicenseBtn = document.getElementById("button-add-license");
 
 // Pennsieve dataset permission //
-//const bfPermissionForm = document.querySelector("#pennsieve-permission-form");
-//const bfDatasetListPermission = document.querySelector("#bfdatasetlist_permission");
 const currentDatasetPermission = document.querySelector(
   "#para-dataset-permission-current"
 );
 const currentAddEditDatasetPermission = document.querySelector(
   "#para-add-edit-dataset-permission-current"
 );
-// const bfCurrentPermissionProgress = document.querySelector(
-//   "#div-bf-current-permission-progress"
-// );
-// const bfAddEditCurrentPermissionProgress = document.querySelector(
-//   "#div-bf-add-edit-current-permission-progress"
-// );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 const bfAddPermissionPIBtn = document.getElementById(
   "button-add-permission-pi"
@@ -1091,69 +1083,6 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
   },
 });
 
-milestoneTagify1.on("add", function () {
-  var buttonDiv = $($("#selected-milestone-1").parents()[1]).find(
-    ".div-confirm-enter-milestone"
-  );
-  if (milestoneTagify1.value.length !== 0) {
-    if (!$("#Question-prepare-submission-4").hasClass("prev")) {
-      $(buttonDiv).show();
-      $($(buttonDiv).children()[0]).show();
-    }
-    removeOptions(descriptionDateInput);
-    addOption(descriptionDateInput, "Select an option", "Select");
-
-    const award =
-      presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-    var informationJson = parseJson(milestonePath);
-
-    var completionDateArray = [];
-    completionDateArray.push("Enter my own date");
-
-    /// when DD is provided
-    if (award in informationJson) {
-      var milestoneObj = informationJson[award];
-      // Load milestone values once users choose an award number
-      var milestoneKey = milestoneTagify1.value[0].value;
-
-      /// add milestones to Tagify suggestion tag list and options to completion date dropdown
-
-      if (milestoneKey in milestoneObj) {
-        for (var j = 0; j < milestoneObj[milestoneKey].length; j++) {
-          completionDateArray.push(
-            milestoneObj[milestoneKey][j]["Expected date of completion"]
-          );
-        }
-      }
-    }
-    for (var i = 0; i < completionDateArray.length; i++) {
-      addOption(
-        descriptionDateInput,
-        completionDateArray[i],
-        completionDateArray[i]
-      );
-    }
-  } else {
-    $(buttonDiv).hide();
-    $("#Question-prepare-submission-4")
-      .nextAll()
-      .removeClass("show")
-      .removeClass("prev");
-  }
-});
-
-const existingSPARCAwards = document.getElementById("input-existing-grants");
-const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
-  duplicates: false,
-  delimiters: null,
-  editTags: false,
-  whitelist: [],
-  dropdown: {
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-
 // generate subjects file
 ipcRenderer.on(
   "selected-generate-metadata-subjects",
@@ -1178,7 +1107,6 @@ ipcRenderer.on(
             Swal.fire({
               title: "Generating the subjects.xlsx file",
               html: "Please wait...",
-              timer: 30000,
               allowEscapeKey: false,
               allowOutsideClick: false,
               heightAuto: false,
@@ -1195,7 +1123,6 @@ ipcRenderer.on(
         Swal.fire({
           title: "Generating the subjects.xlsx file",
           html: "Please wait...",
-          timer: 30000,
           allowEscapeKey: false,
           allowOutsideClick: false,
           heightAuto: false,
@@ -1281,7 +1208,6 @@ ipcRenderer.on(
             Swal.fire({
               title: "Generating the samples.xlsx file",
               html: "Please wait...",
-              timer: 30000,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               allowEscapeKey: false,
@@ -1298,7 +1224,6 @@ ipcRenderer.on(
         Swal.fire({
           title: "Generating the samples.xlsx file",
           html: "Please wait...",
-          timer: 30000,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
@@ -1364,12 +1289,6 @@ function generateSamplesFileHelper(mypath) {
 ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
     importPrimaryFolderSubjects(primaryFolderPath[0]);
-    // $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
-    // $("#div-confirm-primary-folder-import").show()
-    // $($("#div-confirm-primary-folder-import").find("button")[0]).show();
-  } else {
-    // $("#primary-folder-destination-input").prop("placeholder", "Browse here")
-    // $("#div-confirm-primary-folder-import").find("button").hide()
   }
 });
 ipcRenderer.on(
@@ -1377,12 +1296,6 @@ ipcRenderer.on(
   (event, primaryFolderPath) => {
     if (primaryFolderPath.length > 0) {
       importPrimaryFolderSamples(primaryFolderPath[0]);
-      // $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
-      // $("#div-confirm-primary-folder-import-samples").show()
-      // $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
-    } else {
-      // $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
-      // $("#div-confirm-primary-folder-import-samples").find("button").hide()
     }
   }
 );
@@ -1746,18 +1659,10 @@ function createStrain(id, type) {
   });
 }
 
-$(document).ready(function () {
-  // createSpeciesAutocomplete("bootbox-subject-species");
-  // createSpeciesAutocomplete("bootbox-sample-species");
-  // createStrain("bootbox-sample-strain", "samples");
-  // createStrain("bootbox-subject-strain", "subjects");
-});
-
 async function loadTaxonomySpecies(commonName, destinationInput) {
   Swal.fire({
     title: "Finding the scientific name for " + commonName + "...",
     html: "Please wait...",
-    timer: 1500,
     heightAuto: false,
     allowOutsideClick: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -1814,89 +1719,6 @@ function addOption(selectbox, text, value) {
   selectbox.options.add(opt);
 }
 
-// Function to auto load existing awards
-function loadAwards() {
-  if (!fs.existsSync(awardPath)) {
-    return {};
-  }
-  var contents = fs.readFileSync(awardPath, "utf8");
-  var awards = JSON.parse(contents);
-  var awardSpan = "";
-  var awardList = [];
-  removeOptions(presavedAwardArray1);
-  removeOptions(dsAwardArray);
-  addOption(presavedAwardArray1, "Select an award", "Select");
-  addOption(dsAwardArray, "Select an award", "Select");
-  for (var key in awards) {
-    // Add options to dropdown lists
-    addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
-    addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
-    awardList.push({
-      value: eval(JSON.stringify(awards[key])),
-      "award-number": key,
-    });
-    awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n\n";
-  }
-  existingSPARCAwardsTagify.removeAllTags();
-  existingSPARCAwardsTagify.addTags(awardList);
-  $("#current-users-awards").text(awardSpan.slice(0));
-  $("#current-users-awards-dd").text(awardSpan.slice(0));
-}
-
-loadAwards();
-
-// Save grant information
-function addSPARCAwards() {
-  var message = "";
-  var tagifyArray = existingSPARCAwardsTagify.value;
-  var spanMessage = "";
-  // create empty milestone json files for newly added award
-  createMetadataDir();
-  var awardsJson = {};
-  awardsJson = parseJson(awardPath);
-  if (tagifyArray.length === 0) {
-    awardsJson = {};
-    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    $("#current-users-awards").text("None");
-    $("#current-users-awards-dd").text("None");
-  } else {
-    var awardVal = [];
-    for (var i = 0; i < tagifyArray.length; i++) {
-      awardVal.push(tagifyArray[i].value);
-    }
-    var awardNoAray = [];
-    for (var award of awardVal) {
-      var awardNo = award.slice(0, award.indexOf(" ("));
-      var keyValuePair = { "award-number": awardNo, "award-full-title": award };
-      awardNoAray.push(keyValuePair);
-    }
-    removeOptions(presavedAwardArray1);
-    removeOptions(dsAwardArray);
-    awardsJson = {};
-    for (var keyValuePair of awardNoAray) {
-      addOption(
-        presavedAwardArray1,
-        keyValuePair["award-full-title"],
-        keyValuePair["award-number"]
-      );
-      addOption(
-        dsAwardArray,
-        keyValuePair["award-full-title"],
-        keyValuePair["award-number"]
-      );
-      spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n\n";
-      awardsJson[keyValuePair["award-number"]] =
-        keyValuePair["award-full-title"];
-    }
-
-    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    $("#current-users-awards").text(spanMessage);
-    $("#current-users-awards-dd").text(spanMessage);
-  }
-  loadAwards();
-  return message;
-}
-
 var awardObj = {};
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
@@ -1940,7 +1762,6 @@ function loadAwardData() {
               // create set to remove duplicates
               var awardSet = new Set(awardResultArray);
               var resultArray = [...awardSet];
-              existingSPARCAwardsTagify.settings.whitelist = resultArray;
             }
           }
         );
@@ -1950,54 +1771,6 @@ function loadAwardData() {
 
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
-
-function changeAwardInput() {
-  var ddBolean;
-  milestoneTagify1.removeAllTags();
-  milestoneTagify1.settings.whitelist = [];
-  milestoneTagify2.removeAllTags();
-  milestoneTagify2.settings.whitelist = [];
-  removeOptions(descriptionDateInput);
-  addOption(descriptionDateInput, "Select an option", "Select");
-
-  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  var informationJson = parseJson(milestonePath);
-
-  var completionDateArray = [];
-  var milestoneValueArray = [];
-  completionDateArray.push("Enter my own date");
-
-  /// when DD is provided
-  if (award in informationJson) {
-    ddBolean = true;
-    var milestoneObj = informationJson[award];
-    // Load milestone values once users choose an award number
-    var milestoneKey = Object.keys(milestoneObj);
-
-    /// add milestones to Tagify suggestion tag list and options to completion date dropdown
-    for (var i = 0; i < milestoneKey.length; i++) {
-      milestoneValueArray.push(milestoneKey[i]);
-      for (var j = 0; j < milestoneObj[milestoneKey[i]].length; j++) {
-        completionDateArray.push(
-          milestoneObj[milestoneKey[i]][j]["Expected date of completion"]
-        );
-      }
-    }
-    milestoneValueArray.push("Not specified in the Data Deliverables document");
-  } else {
-    ddBolean = false;
-  }
-  milestoneTagify1.settings.whitelist = milestoneValueArray;
-  milestoneTagify2.settings.whitelist = milestoneValueArray;
-  for (var i = 0; i < completionDateArray.length; i++) {
-    addOption(
-      descriptionDateInput,
-      completionDateArray[i],
-      completionDateArray[i]
-    );
-  }
-  return ddBolean;
-}
 
 const submissionDateInput = document.getElementById("input-milestone-date");
 
@@ -2116,17 +1889,6 @@ function onchangeLastNames() {
     $("#dd-contributor-first-name")
       .val(globalContributorNameObject[conLastname])
       .trigger("onchange");
-
-    // delete contributor names from list after it's added
-    // delete globalContributorNameObject[conLastname];
-    // var newConLastNames = currentContributorsLastNames.filter(function (
-    //   value,
-    //   index,
-    //   arr
-    // ) {
-    //   return value !== conLastname;
-    // });
-    // currentContributorsLastNames = newConLastNames;
   }
   $("#dd-contributor-first-name").attr("disabled", false);
 }
@@ -2676,7 +2438,6 @@ function detectEmptyRequiredFields(funding) {
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
 generateDSBtn.addEventListener("click", (event) => {
-  document.getElementById("para-generate-description-status").innerHTML = "";
   var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
@@ -2757,7 +2518,6 @@ ipcRenderer.on(
         Swal.fire({
           title: "Generating the dataset_description.xlsx file",
           html: "Please wait...",
-          timer: 300000,
           allowEscapeKey: false,
           allowOutsideClick: false,
           heightAuto: false,
@@ -4826,14 +4586,6 @@ function removeOptions(selectbox) {
   }
 }
 
-// function clearStrings() {
-//   document.getElementById("para-save-file-organization-status").innerHTML = "";
-//   document.getElementById(
-//     "para-preview-organization-status-metadata"
-//   ).innerHTML = "";
-//   document.getElementById("para-selected-dataset").innerHTML = "";
-// }
-
 function userError(error) {
   var myerror = error.message;
   return myerror;
@@ -4986,7 +4738,6 @@ function showCurrentLicense() {
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
-    // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
   } else {
     client.invoke(
@@ -4997,16 +4748,21 @@ function showCurrentLicense() {
         if (error) {
           log.error(error);
           console.error(error);
-          // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
         } else {
           currentDatasetLicense.innerHTML = res;
           if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
             $("#assign-a-license-header").hide();
-            $("#para-dataset-license-status").html(
-              "You are all set. This dataset already has the correct license assigned."
-            );
+            if ($("#add_license-section").hasClass("is-shown")) {
+              Swal.fire({
+                title: "You are all set. This dataset already has the correct license assigned.",
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                showConfirmButton: true,
+                icon: "success",
+              })
+            }
           } else {
             $("#button-add-license").show();
             $("#assign-a-license-header").show();
@@ -5835,50 +5591,6 @@ var bfAddAccountBootboxMessage = `<form>
   </form>`;
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
-
-var editSPARCAwardsTitle =
-  "<h3 style='text-align:center'> Add/Remove your SPARC Award(s) below: <i class='fas fa-info-circle popover-tooltip' data-content='The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on Add to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.' rel='popover' data-placement='right' data-html='true' data-trigger='hover'></i></h3>";
-
-function editSPARCAwardsBootbox() {
-  $(sparcAwardEditMessage).css("display", "block");
-  var bootb = bootbox.dialog({
-    title: editSPARCAwardsTitle,
-    message: sparcAwardEditMessage,
-    buttons: {
-      cancel: {
-        label: "Cancel",
-      },
-      confirm: {
-        label: "Confirm",
-        className: "btn btn-primary bootbox-add-airtable-class",
-        callback: function () {
-          $(bootb).find(".modal-footer span").remove();
-          var message = addSPARCAwards();
-          bootb.find(".modal-footer").prepend(message);
-          if (
-            $(".bootbox-add-airtable-class").text() == "Confirm" &&
-            $(bootb).find(".modal-footer span").text() == ""
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        },
-      },
-    },
-    size: "medium",
-    centerVertical: true,
-    onShown: function (e) {
-      $(".popover-tooltip").each(function () {
-        var $this = $(this);
-        $this.popover({
-          trigger: "hover",
-          container: $this,
-        });
-      });
-    },
-  });
-}
 
 retrieveBFAccounts();
 
@@ -7084,18 +6796,17 @@ $("#bf-rename-dataset-name").keyup(function () {
 
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      $("#para-rename-dataset-message").html(
-        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
-      );
+      Swal.fire({
+        title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+      })
       $("#button-rename-dataset").hide();
     } else {
-      $("#para-rename-dataset-message").html("");
       $("#button-rename-dataset").show();
     }
   } else {
-    if (newName == "") {
-      $("#para-rename-dataset-message").html("");
-    }
     $("#button-rename-dataset").hide();
   }
 });
@@ -7105,12 +6816,14 @@ $("#bf-new-dataset-name").keyup(function () {
 
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      $("#para-new-name-dataset-message").html(
-        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
-      );
+      Swal.fire({
+        title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        icon: "error",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+      })
       $("#button-create-bf-new-dataset").hide();
     } else {
-      $("#para-new-name-dataset-message").html("");
       $("#button-create-bf-new-dataset").show();
     }
   } else {
@@ -7155,40 +6868,12 @@ $("#inputNewNameDataset").keyup(function () {
 
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
-      // $("#nextBtn").prop("disabled", false);
     }
   } else {
     $("#div-confirm-inputNewNameDataset").css("display", "none");
     $("#btn-confirm-new-dataset-name").hide();
-    // $("#nextBtn").prop("disabled", true);
   }
 });
-
-// Defined above
-// $("#inputNewNameDataset").click(function () {
-//   var newName = $("#inputNewNameDataset").val().trim();
-
-//   if (newName !== "") {
-//     if (check_forbidden_characters_bf(newName)) {
-//       document.getElementById("div-confirm-inputNewNameDataset").style.display =
-//         "none";
-//       $("#btn-confirm-new-dataset-name").hide();
-//       $("#nextBtn").prop("disabled", true);
-//       $("#Question-generate-dataset-generate-div-old").removeClass("show");
-//     } else {
-//       $("#div-confirm-inputNewNameDataset").css("display", "flex");
-//       $("#btn-confirm-new-dataset-name").show();
-//       $("#Question-generate-dataset-generate-div").show();
-//       $("#Question-generate-dataset-generate-div").children().show();
-
-//       $("#Question-generate-dataset-generate-div-old").addClass("show");
-//       document.getElementById("para-new-name-dataset-message").innerHTML = "";
-//       $("#nextBtn").prop("disabled", false);
-//     }
-//   } else {
-//     $("#nextBtn").prop("disabled", true);
-//   }
-// });
 
 //// Select to choose a local dataset (getting started)
 document
@@ -7489,8 +7174,6 @@ document
             message += error_message_folders;
           }
 
-          // $("#save-progress-btn").hide();
-
           if (message) {
             message += "Would you like to continue?";
             message = "<div style='text-align: left'>" + message + "</div>";
@@ -7517,9 +7200,6 @@ document
               } else {
                 console.log("Stop");
                 $("#sidebarCollapse").prop("disabled", false);
-                // then show the sidebar again
-                // forceActionSidebar("show");
-                // $("#save-progress-btn").show();
                 document.getElementById(
                   "para-please-wait-new-curate"
                 ).innerHTML = "Return to make changes";
@@ -7527,28 +7207,13 @@ document
                   "flex";
               }
             });
-            // ipcRenderer.send('warning-empty-files-folders-generate', message)
           } else {
             initiate_generate();
           }
         }
       }
     );
-    // }, 250);
   });
-
-// ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
-//   if (index === 0) {
-//     console.log("Continue")
-//     initiate_generate()
-//   } else {
-//     console.log("Stop")
-//     // then show the sidebar again
-//     forceActionSidebar('show')
-//     document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
-//     document.getElementById('div-generate-comeback').style.display = "flex"
-//   }
-// })
 
 const delete_imported_manifest = () => {
   for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -8318,16 +7983,6 @@ const curation_consortium_check = (mode = "") => {
                       );
                       $("#curation-team-unshare-btn").show();
                       $("#curation-team-share-btn").hide();
-                      if (mode != "update") {
-                        // Swal.fire({
-                        //   title: "You are all set!",
-                        //   text: "This dataset has already been shared with the Curation team.",
-                        //   icon: "success",
-                        //   showConfirmButton: true,
-                        //   heightAuto: false,
-                        //   backdrop: "rgba(0,0,0, 0.4)",
-                        // });
-                      }
                     }
 
                     if (consortium_return_status) {
@@ -8339,16 +7994,6 @@ const curation_consortium_check = (mode = "") => {
                       );
                       $("#sparc-consortium-unshare-btn").show();
                       $("#sparc-consortium-share-btn").hide();
-                      if (mode != "update") {
-                        // Swal.fire({
-                        //   title: "You are all set!",
-                        //   text: "This dataset has already been shared with the SPARC Consortium.",
-                        //   icon: "success",
-                        //   showConfirmButton: true,
-                        //   heightAuto: false,
-                        //   backdrop: "rgba(0,0,0, 0.4)",
-                        // });
-                      }
                     }
 
                     if (curation_return_status && consortium_return_status) {

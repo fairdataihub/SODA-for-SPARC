@@ -700,7 +700,6 @@ function checkAirtableStatus(keyword) {
               $("#current-airtable-account").text(airKeyName);
               var awardSet = new Set(sparcAwards);
               var resultArray = [...awardSet];
-              existingSPARCAwardsTagify.settings.whitelist = resultArray;
               airtableRes = [true, airKeyName];
               if (keyword === "dd") {
                 helpSPARCAward("dd");
@@ -741,67 +740,10 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
   $("#submission-connect-Airtable").text("Yes, let's connect");
 }
 
-// Below is all the actions that show/hide Confirm buttons per the onclick/onchange/keyup... events
-// under Prepare metadata
-
-// 1A. Select SPARC award
-$("#select-presaved-grant-info-list").change(function () {
-  $("#Question-prepare-submission-3")
-    .nextAll()
-    .removeClass("show")
-    .removeClass("prev");
-  if ($("#select-presaved-grant-info-list").val() !== "Select") {
-    $("#div-confirm-select-SPARC-awards").show();
-    $($("#div-confirm-select-SPARC-awards").children()[0]).show();
-    var existingDDDBoolean = changeAwardInput();
-    if (existingDDDBoolean) {
-      $("#btn-confirm-select-SPARC-awards").attr(
-        "data-next",
-        "Question-prepare-submission-4"
-      );
-    } else {
-      $("#btn-confirm-select-SPARC-awards").attr(
-        "data-next",
-        "Question-prepare-submission-DDD"
-      );
-    }
-  } else {
-    $("#div-confirm-select-SPARC-awards").hide();
-    $($("#div-confirm-select-SPARC-awards").children()[0]).hide();
-  }
-});
-// 1B. Manually enter SPARC award
-$("#textarea-SPARC-award-raw-input").keyup(function () {
-  if ($("#textarea-SPARC-award-raw-input").val() !== "") {
-    $("#div-confirm-enter-SPARC-award").show();
-    $($("#div-confirm-enter-SPARC-award").children()[0]).show();
-  } else {
-    $("#div-confirm-enter-SPARC-award").hide();
-    $($("#div-confirm-enter-SPARC-award").children()[0]).hide();
-  }
-});
-
-$(document).ready(function () {
-  $("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
-});
-
 // generateSubmissionFile function takes all the values from the preview card's spans
 function generateSubmissionFile() {
   ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
 }
-
-// prepare dataset description each section (go in and out effects)
-$(".button-individual-dd-section.remove").click(function () {
-  var metadataFileStatus = $($(this).parents()[1]).find(
-    ".para-metadata-file-status"
-  );
-  $($(this).parents()[1])
-    .find(".div-dd-section-confirm")
-    .css("display", "none");
-  $($(this).parents()[1])
-    .find(".div-dd-section-go-back")
-    .css("display", "flex");
-});
 
 $(".prepare-dd-cards").click(function () {
   $("create_dataset_description-tab").removeClass("show");
