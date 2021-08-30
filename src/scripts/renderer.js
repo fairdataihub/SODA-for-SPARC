@@ -7117,6 +7117,12 @@ document
   .addEventListener("click", async function () {
     // setTimeout(function () {
     $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+    document.getElementById(
+      "para-new-curate-progress-bar-error-status"
+    ).innerHTML = "";
+    document.getElementById(
+      "para-please-wait-new-curate"
+    ).innerHTML = "";
     document.getElementById("prevBtn").style.display = "none";
     document.getElementById("start-over-btn").style.display = "none";
     document.getElementById("div-vertical-progress-bar").style.display = "none";
