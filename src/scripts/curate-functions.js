@@ -1,6 +1,6 @@
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
-const nonAllowedCharacters = '<>:";/|?*\\'
+const nonAllowedCharacters = '<>:";[]{}()/|?*!%&+#\\'
 
 // Function to clear the confirm options in the curate feature
 const confirm_click_account_function = () => {

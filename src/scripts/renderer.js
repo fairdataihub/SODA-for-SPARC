@@ -5889,13 +5889,39 @@ organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-folders-organize-datasets", (event, path) => {
+ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  addFoldersfunction(path, myPath);
+  for (var ele of pathElement) {
+    detectIrregularFolders(path.basename(ele), ele)
+  }
+  if (irregularFolderArray.length > 0) {
+    Swal.fire({
+      title: 'The following folders contain non-allowed characters in their name. How should we handle them?',
+      html: "<div>"+irregularFolderArray.join(", ")+"</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Replace characters with (-)",
+      denyButtonText: "Remove characters",
+      cancelButtonText: "Don't import those folders",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        addFoldersfunction("replace", irregularFolderArray, pathElement, myPath);
+      } else if (result.isDenied) {
+        addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
+      } else {
+        addFoldersfunction("ignore", irregularFolderArray, pathElement, myPath);
+      }
+    })
+  } else {
+    addFoldersfunction("", pathElement, myPath);
+  }
 });
 
-function addFoldersfunction(folderArray, currentLocation) {
+function addFoldersfunction(action, nonallowedFolderArray, folderArray, currentLocation) {
   var uiFolders = {};
   var importedFolders = {};
 
@@ -5914,23 +5940,41 @@ function addFoldersfunction(folderArray, currentLocation) {
       backdrop: "rgba(0,0,0, 0.4)",
     });
   } else {
+    // if non-allowed characters are detected, do the action
+    // AND
     // check for duplicates/folders with the same name
     for (var i = 0; i < folderArray.length; i++) {
       var j = 1;
       var originalFolderName = path.basename(folderArray[i]);
       var renamedFolderName = originalFolderName;
-      while (
-        renamedFolderName in uiFolders ||
-        renamedFolderName in importedFolders
-      ) {
-        renamedFolderName = `${originalFolderName} (${j})`;
-        j++;
-      }
-      importedFolders[renamedFolderName] = {
-        path: folderArray[i],
-        "original-basename": originalFolderName,
-      };
+
+      if (nonallowedFolderArray.includes(folderArray[i])) {
+        if (action !== "ignore") {
+          if (action === "remove") {
+            renamedFolderName = removeIrregularFolders(folderArray[i]);
+          } else if (action === "replace") {
+            renamedFolderName = replaceIrregularFolders(folderArray[i])
+          }
+          importedFolders[renamedFolderName] = {
+            path: folderArray[i],
+            "original-basename": originalFolderName,
+          };
+        }
+      } else {
+          while (
+            renamedFolderName in uiFolders ||
+            renamedFolderName in importedFolders
+          ) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {
+            path: folderArray[i],
+            "original-basename": originalFolderName,
+          };
+       }
     }
+
     if (Object.keys(importedFolders).length > 0) {
       for (var element in importedFolders) {
         currentLocation["folders"][element] = {
@@ -6185,6 +6229,58 @@ async function drop(ev) {
     }
   }
   $("body").removeClass("waiting");
+}
+
+
+var irregularFolderArray = []
+function detectIrregularFolders(folderName, pathEle) {
+  if (checkIrregularNameBoolean(folderName)) {
+    irregularFolderArray.push(pathEle)
+  }
+  if (fs.lstatSync(pathEle).isDirectory()) {
+    fs.readdirSync(pathEle).forEach(function(folder) {
+        var stat = fs.statSync(path.join(pathEle, folder));
+        if (stat && stat.isDirectory()) {
+          detectIrregularFolders(folder, path.join(pathEle, folder))
+        }
+        return irregularFolderArray
+    });
+  }
+}
+
+function checkIrregularNameBoolean(folderName) {
+  for (var char of nonAllowedCharacters) {
+    if (folderName.includes(char)) {
+      return true
+    }
+  }
+  return false
+}
+
+/* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
+   or remove the characters from the names.
+   All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
+                                     "paths": array of all the paths with special characters detected}
+*/
+
+function replaceIrregularFolders(pathElement) {
+  var str = path.basename(pathElement)
+  for (var char of nonAllowedCharacters) {
+    if (str.includes(char)) {
+      str = str.replace(char, "-");
+    }
+  }
+  return str
+}
+
+function removeIrregularFolders(pathElement) {
+  var str = path.basename(pathElement)
+  for (var char of nonAllowedCharacters) {
+    if (str.includes(char)) {
+      str = str.replace(char, "");
+    }
+  }
+  return str
 }
 
 // SAVE FILE ORG
