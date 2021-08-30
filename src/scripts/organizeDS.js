@@ -414,14 +414,6 @@ function checkValidRenameInput(
       }
     }
     if (duplicate) {
-      // $(myBootboxDialog).find(".modal-footer span").remove();
-      // myBootboxDialog
-      //   .find(".modal-footer")
-      //   .prepend(
-      //     "<span style='color:red;padding-right:10px;display:inline-block;'>The file name: " +
-      //       newName +
-      //       " already exists, please rename to a different name!</span>"
-      //   );
       Swal.fire({
         icon: "error",
         text: `The file name: ${newName} already exists, please rename to a different name!`,
@@ -441,14 +433,6 @@ function checkValidRenameInput(
       }
     }
     if (duplicate) {
-      // $(myBootboxDialog).find(".modal-footer span").remove();
-      // myBootboxDialog
-      //   .find(".modal-footer")
-      //   .prepend(
-      //     "<span style='color:red;padding-right:10px;display:inline-block;'>The folder name: " +
-      //       input.trim() +
-      //       " already exists, please rename to a different name!</span>"
-      //   );
       Swal.fire({
         icon: "error",
         text: `The folder name: ${newName} already exists, please rename to a different name!`,
@@ -554,6 +538,13 @@ function renameFolder(
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
+      preConfirm: (value) => {
+        for (var char of nonAllowedCharacters) {
+          if (value.includes(char)) {
+            Swal.showValidationMessage(`The folder name cannot contains the following characters /|\:;*?"<>, please rename to a different name!`)
+          }
+        }
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         var returnedName = checkValidRenameInput(
@@ -566,7 +557,6 @@ function renameFolder(
           // myBootboxDialog
         );
         if (returnedName !== "") {
-          // myBootboxDialog.modal("hide");
           Swal.fire({
             icon: "success",
             text: "Successfully renamed!.",

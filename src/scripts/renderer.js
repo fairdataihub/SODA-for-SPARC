@@ -5412,6 +5412,13 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
+      preConfirm: (value) => {
+        for (var char of nonAllowedCharacters) {
+          if (value.includes(char)) {
+            Swal.showValidationMessage(`The folder name cannot contains the following characters /|\:;*?"<>, please enter a different name!`)
+          }
+        }
+      }
     }).then((result) => {
       if (result.value) {
         if (result.value !== null && result.value !== "") {
@@ -7115,7 +7122,6 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 document
   .getElementById("button-generate")
   .addEventListener("click", async function () {
-    // setTimeout(function () {
     $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
@@ -7130,8 +7136,6 @@ document
     document.getElementById("generate-dataset-progress-tab").style.display =
       "flex";
     $("#sidebarCollapse").prop("disabled", true);
-
-    // forceActionSidebar("hide");
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
