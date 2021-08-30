@@ -1772,6 +1772,62 @@ function loadAwardData() {
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
 
+function changeAwardInput() {
+  var ddBolean;
+  document.getElementById("input-milestone-date").value = "";
+  actionEnterNewDate("none");
+  milestoneTagify1.removeAllTags();
+  milestoneTagify1.settings.whitelist = [];
+  removeOptions(descriptionDateInput);
+  addOption(descriptionDateInput, "Select an option", "Select");
+
+  award = $("#submission-sparc-award");
+  var informationJson = parseJson(milestonePath);
+
+  var completionDateArray = [];
+  var milestoneValueArray = [];
+  completionDateArray.push("Enter my own date");
+
+  /// when DD is provided
+  if (award in informationJson) {
+    ddBolean = true;
+    var milestoneObj = informationJson[award];
+    // Load milestone values once users choose an award number
+    var milestoneKey = Object.keys(milestoneObj);
+
+    /// add milestones to Tagify suggestion tag list and options to completion date dropdown
+    for (var i = 0; i < milestoneKey.length; i++) {
+      milestoneValueArray.push(milestoneKey[i]);
+      for (var j = 0; j < milestoneObj[milestoneKey[i]].length; j++) {
+        completionDateArray.push(
+          milestoneObj[milestoneKey[i]][j]["Expected date of completion"]
+        );
+      }
+    }
+    milestoneValueArray.push("Not specified in the Data Deliverables document");
+  } else {
+    ddBolean = false;
+  }
+  milestoneTagify1.settings.whitelist = milestoneValueArray;
+  for (var i = 0; i < completionDateArray.length; i++) {
+    addOption(
+      descriptionDateInput,
+      completionDateArray[i],
+      completionDateArray[i]
+    );
+  }
+  return ddBolean;
+}
+
+function actionEnterNewDate(action) {
+  document.getElementById(
+    "div-submission-enter-different-date-1"
+  ).style.display = action;
+  document.getElementById(
+    "div-submission-enter-different-date-3"
+  ).style.display = action;
+}
+
 const submissionDateInput = document.getElementById("input-milestone-date");
 
 //////////////// Dataset description file ///////////////////////
@@ -1835,7 +1891,7 @@ function changeAwardInputDsDescription() {
     ).prop("disabled", true);
   }
 
-  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  var awardVal = $("#ds-description-award-input");
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length !== 0) {
     var airKeyInput = airKeyContent["api-key"];

@@ -1270,7 +1270,6 @@ function resetSubmission() {
       for (var field of textAreaFields) {
         $(field).val("");
       }
-      milestoneTagify2.removeAllTags();
       milestoneTagify1.removeAllTags();
       for (var field of selectFields) {
         $(field).val("Select");
@@ -1373,7 +1372,7 @@ function helpMilestoneSubmission() {
       if (result.isConfirmed) {
         Swal.fire({
           title: "Importing the Data Deliverables document",
-          html: `<div class="container-milestone-upload" style="display: flex"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #fff; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
+          html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           preConfirm: () => {
@@ -1392,9 +1391,7 @@ function helpMilestoneSubmission() {
           Swal.close();
 
           const filepath = result.value.filepath;
-          var award =
-            presavedAwardArray1.options[presavedAwardArray1.selectedIndex]
-              .value;
+          var award = $("#submission-sparc-award");
           client.invoke(
             "api_extract_milestone_info",
             filepath,
@@ -1430,8 +1427,7 @@ function helpMilestoneSubmission() {
                 removeOptions(descriptionDateInput);
                 milestoneTagify1.removeAllTags();
                 milestoneTagify1.settings.whitelist = [];
-                milestoneTagify2.settings.whitelist = [];
-                changeAwardInput();
+                changeAwardInput()
               }
             }
           );
