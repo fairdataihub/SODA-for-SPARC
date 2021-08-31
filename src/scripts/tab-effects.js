@@ -1167,7 +1167,7 @@ async function transitionSubQuestions(
 }
 
 // Create the dataset structure for sodaJSONObj
-const create_json_object = (sodaJSONObj) => {
+const create_json_object = (action, sodaJSONObj) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -1218,7 +1218,6 @@ const create_json_object = (sodaJSONObj) => {
       }
     }
   });
-
   // go through each individual high level folder and create the structure
   // If a manifest file exists, read information from the manifest file into a json object
   for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -1238,6 +1237,7 @@ const create_json_object = (sodaJSONObj) => {
         .getJsonFromCsv(sodaJSONObj["starting-point"][folder]["path"]);
     }
     recursive_structure_create(
+      action,
       sodaJSONObj["dataset-structure"]["folders"][folder],
       folder,
       path.join(root_folder_path, folder)
@@ -1273,6 +1273,7 @@ const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
 // Create the dataset structure for each high level folder.
 // If a manifest file exists, read the file to get any additional metadata from the file.
 const recursive_structure_create = (
+  action,
   dataset_folder,
   high_level_folder,
   root_folder_path
@@ -1400,17 +1401,37 @@ const recursive_structure_create = (
       }
     }
     if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
-      dataset_folder["folders"][file] = {
-        folders: {},
-        files: {},
-        path: current_file_path,
-        type: "local",
-        action: ["existing"],
-      };
+      if (irregularFolderArray.includes(current_file_path)) {
+        var renamedFolderName = ""
+        if (action !== "ignore" && action !== "") {
+          if (action === "remove") {
+            renamedFolderName = removeIrregularFolders(file);
+          } else if (action === "replace") {
+            renamedFolderName = replaceIrregularFolders(file)
+          }
+          dataset_folder["folders"][renamedFolderName] = {
+            folders: {},
+            files: {},
+            path: current_file_path,
+            type: "local",
+            action: ["existing"],
+          };
+          // file = renamedFolderName
+        }
+      } else {
+        dataset_folder["folders"][file] = {
+          folders: {},
+          files: {},
+          path: current_file_path,
+          type: "local",
+          action: ["existing"],
+        };
+      }
     }
   });
   for (folder in dataset_folder["folders"]) {
     recursive_structure_create(
+      action,
       dataset_folder["folders"][folder],
       high_level_folder,
       root_folder_path

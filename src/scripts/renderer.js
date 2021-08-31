@@ -5919,7 +5919,7 @@ ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
   if (irregularFolderArray.length > 0) {
     Swal.fire({
       title: 'The following folders contain non-allowed characters in their name. How should we handle them?',
-      html: "<div>"+irregularFolderArray.join(", ")+"</div>",
+      html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join(", </br>")+"</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -7128,7 +7128,7 @@ document
     $("#para-continue-location-dataset-getting-started").text("");
     document.getElementById("nextBtn").disabled = true;
     ipcRenderer.send("open-file-dialog-local-destination-curate");
-  });
+});
 
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
@@ -7147,16 +7147,53 @@ ipcRenderer.on(
             document.getElementById("input-destination-getting-started-locally")
               .placeholder
           );
-          sodaJSONObj["starting-point"]["local-path"] = filepath[0];
-          create_json_object(sodaJSONObj);
-          datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-          populate_existing_folders(datasetStructureJSONObj);
-          populate_existing_metadata(sodaJSONObj);
           if (valid_dataset == true) {
-            $("#para-continue-location-dataset-getting-started").text(
-              "Please continue below."
-            );
-            $("#nextBtn").prop("disabled", false);
+            var action = "";
+            irregularFolderArray = []
+            detectIrregularFolders(path.basename(filepath[0]), filepath[0])
+
+            if (irregularFolderArray.length > 0) {
+              Swal.fire({
+                title: 'The following folders contain non-allowed characters in their name. How should we handle them?',
+                html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join(", </br>")+"</div>",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Replace characters with (-)",
+                denyButtonText: "Remove characters",
+                cancelButtonText: "Don't import those folders",
+              }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                  action = "replace"
+                } else if (result.isDenied) {
+                  action = "remove"
+                } else if (result.isDismissed) {
+                  action = "ignore"
+                }
+                sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+                create_json_object(action, sodaJSONObj);
+                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                populate_existing_folders(datasetStructureJSONObj);
+                populate_existing_metadata(sodaJSONObj);
+                $("#para-continue-location-dataset-getting-started").text(
+                  "Please continue below."
+                );
+                $("#nextBtn").prop("disabled", false);
+              })
+            } else {
+              action = ""
+              sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+              create_json_object(action, sodaJSONObj);
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              populate_existing_folders(datasetStructureJSONObj);
+              populate_existing_metadata(sodaJSONObj);
+              $("#para-continue-location-dataset-getting-started").text(
+                "Please continue below."
+              );
+              $("#nextBtn").prop("disabled", false);
+            }
           } else {
             Swal.fire({
               icon: "warning",
@@ -7178,10 +7215,6 @@ ipcRenderer.on(
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                $("#nextBtn").prop("disabled", false);
-                $("#para-continue-location-dataset-getting-started").text(
-                  "Please continue below."
-                );
               } else {
                 document.getElementById(
                   "input-destination-getting-started-locally"
