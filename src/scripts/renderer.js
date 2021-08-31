@@ -6327,7 +6327,7 @@ function dropHelper(
         '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         importedFiles[element]["basename"] +
         "</div></div>";
-      $(appendString).appendTo(ev.target);
+      $(appendString).appendTo(ev2);
       listItems(myPath, "#items");
       getInFolder(
         ".single-item",
