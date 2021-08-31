@@ -212,7 +212,7 @@ function initialize() {
         window_reloaded == false
       ) {
       }
-      run_pre_flight_checks();
+      // run_pre_flight_checks();
     });
   });
 
