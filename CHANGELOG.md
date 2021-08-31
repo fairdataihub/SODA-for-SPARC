@@ -5,6 +5,26 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v4.7.0 - 2021-08-31
+
+### Feature additions:
+
+- Changed user interface for `Prepare metadata - Create submission.xlsx file`. This user interface was changed to be even more user-friendly and consistent with the user interface of `Prepare metadata - Create dataset_description.xlsx file`.
+- Added user oonboarding tutorials to help first time users of the app understand Step 3 of Organizing datasets better.
+- Changed strain and species retrieval under Create subjects.xlsx and Create samples.xlsx from input search to button clicks.
+- Changed all of the remaining status elements into Sweetalert popups for consistency in the app.
+- Added an option to replace metadata files when generating if one already exists at the destination folder.
+- Added restrictions to the folder creation user interface to be more in line with the requirements from Pennsieve.
+
+### Bug fixes:
+
+- Switched popover libraries to ensure that hyperlinks are clickable when required.
+- Changed table tooltip (Edit/Copy/Delete a subject or sample) in the features: Create subjects.xlsx and Create samples.xlsx to be text-based for clearer instructions for users.
+- Fixed a bug with samples file generation where copying fields would cause an error when generating the final file.
+- Fixed an issue where libraries were being loaded out of order leading to errors when opening SODA for the first time.
+- When uploading a dataset, we have now locked the sidebar to prevent accidental clicks that would take you out of the UI.
+- Fixed a bug where loading an award from Airtable would require two attempts.
+
 ## v4.6.2 - 2021-08-13
 
 ### Bug fixes:
@@ -74,6 +94,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## v4.4.0 - 2021-06-03
 
 ### Feature additions:
+
 - Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid.
 - Added a button to paste your API keys into the application more easily.
 - Added better warnings for when a backend module fails. This should give tou more information about the status of SODA and if a restart of the app maybe neccessary.
