@@ -5910,6 +5910,8 @@ organizeDSaddFolders.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
+  var footer =
+    `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   irregularFolderArray = []
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -5918,23 +5920,25 @@ ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
   }
   if (irregularFolderArray.length > 0) {
     Swal.fire({
-      title: 'The following folders contain non-allowed characters in their name. How should we handle them?',
-      html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join(", </br>")+"</div>",
+      title: 'The following folders contain non-allowed characters in their names. How should we handle them?',
+      html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join("</br>")+"</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: "Replace characters with (-)",
       denyButtonText: "Remove characters",
-      cancelButtonText: "Don't import those folders",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+      footer: footer,
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         addFoldersfunction("replace", irregularFolderArray, pathElement, myPath);
       } else if (result.isDenied) {
         addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-      } else if (result.isDismissed) {
-        addFoldersfunction("ignore", irregularFolderArray, pathElement, myPath);
       }
     })
   } else {
@@ -6075,25 +6079,31 @@ function drop(ev) {
     var ele = ev.dataTransfer.files[i].path
     detectIrregularFolders(path.basename(ele), ele)
   }
+  var footer =
+    `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   if (irregularFolderArray.length > 0) {
     Swal.fire({
-      title: 'The following folders contain non-allowed characters in their name. How should we handle them?',
-      html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join(", </br>")+"</div>",
+      title: 'The following folders contain non-allowed characters in their names. How should we handle them?',
+      html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join("</br>")+"</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: "Replace characters with (-)",
       denyButtonText: "Remove characters",
-      cancelButtonText: "Don't import those folders",
+      cancelButtonText: "Cancel",
+      footer: footer,
+      didOpen: () => {
+        $(".swal-popover").popover();
+      }
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         action = "replace"
       } else if (result.isDenied) {
         action = "remove"
-      } else if (result.isDismissed){
-        action = "ignore"
+      } else {
+        return
       }
       dropHelper(filesElement, targetElement, action, myPath, importedFiles, importedFolders, nonAllowedDuplicateFiles, uiFiles, uiFolders)
     })
@@ -7151,26 +7161,35 @@ ipcRenderer.on(
             var action = "";
             irregularFolderArray = []
             detectIrregularFolders(path.basename(filepath[0]), filepath[0])
-
+            var footer =
+              `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
             if (irregularFolderArray.length > 0) {
               Swal.fire({
-                title: 'The following folders contain non-allowed characters in their name. How should we handle them?',
-                html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join(", </br>")+"</div>",
+                title: 'The following folders contain non-allowed characters in their names. How should we handle them?',
+                html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join("</br>")+"</div>",
                 heightAuto: false,
                 backdrop: "rgba(0,0,0, 0.4)",
                 showDenyButton: true,
                 showCancelButton: true,
                 confirmButtonText: "Replace characters with (-)",
                 denyButtonText: "Remove characters",
-                cancelButtonText: "Don't import those folders",
+                cancelButtonText: "Cancel",
+                didOpen: () => {
+                  $(".swal-popover").popover();
+                }
               }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                   action = "replace"
                 } else if (result.isDenied) {
                   action = "remove"
-                } else if (result.isDismissed) {
-                  action = "ignore"
+                } else {
+                  document.getElementById(
+                    "input-destination-getting-started-locally"
+                  ).placeholder = "Browse here";
+                  sodaJSONObj["starting-point"]["local-path"] = "";
+                  $("#para-continue-location-dataset-getting-started").text("");
+                  return
                 }
                 sodaJSONObj["starting-point"]["local-path"] = filepath[0];
                 create_json_object(action, sodaJSONObj);
