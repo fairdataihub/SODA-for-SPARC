@@ -140,7 +140,11 @@ $(document).ready(function () {
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
+          "File '" +
+          filename +
+          "' already exists in " +
+          dirpath[0] +
+          ". Do you want to replace it?";
         Swal.fire({
           icon: "warning",
           title: "Metadata file already exists",
@@ -153,7 +157,7 @@ $(document).ready(function () {
           confirmButtonText: "Yes",
         }).then((result) => {
           if (result.isConfirmed) {
-            generateSubmissionHelper(dirpath, destinationPath)
+            generateSubmissionHelper(dirpath, destinationPath);
           }
         });
       } else {
@@ -168,10 +172,10 @@ $(document).ready(function () {
           backdrop: "rgba(0,0,0, 0.4)",
           timerProgressBar: false,
           didOpen: () => {
-            Swal.showLoading()
-          }
+            Swal.showLoading();
+          },
         }).then((result) => {});
-          generateSubmissionHelper(dirpath, destinationPath)
+        generateSubmissionHelper(dirpath, destinationPath);
       }
     }
   });
@@ -380,7 +384,6 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
               );
               $(".spinner.post-curation").hide();
             } else {
-
               $("#share-curation-team-spinner").hide();
 
               if (share_status === "unshare") {
@@ -672,7 +675,7 @@ function checkAirtableStatus(keyword) {
       // var base = new Airtable({
       //   apiKey: airKeyInput,
       // }).base("appSDqnnxSuM1s2F7");
-      var base = Airtable.base("appiYd1Tz9Sv857GZ")
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
       base("sparc_members")
         .select({
           view: "All members (ungrouped)",
@@ -1427,7 +1430,7 @@ function helpMilestoneSubmission() {
                 removeOptions(descriptionDateInput);
                 milestoneTagify1.removeAllTags();
                 milestoneTagify1.settings.whitelist = [];
-                changeAwardInput()
+                changeAwardInput();
               }
             }
           );
@@ -1438,7 +1441,6 @@ function helpMilestoneSubmission() {
 }
 
 function openDDDimport() {
-
   const dialog = require("electron").remote.dialog;
   const BrowserWindow = require("electron").remote.BrowserWindow;
 

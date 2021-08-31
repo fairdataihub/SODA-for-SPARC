@@ -1402,12 +1402,12 @@ const recursive_structure_create = (
     }
     if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
       if (irregularFolderArray.includes(current_file_path)) {
-        var renamedFolderName = ""
+        var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
             renamedFolderName = removeIrregularFolders(file);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(file)
+            renamedFolderName = replaceIrregularFolders(file);
           }
           dataset_folder["folders"][renamedFolderName] = {
             folders: {},

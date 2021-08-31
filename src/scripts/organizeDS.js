@@ -541,10 +541,12 @@ function renameFolder(
       preConfirm: (value) => {
         for (var char of nonAllowedCharacters) {
           if (value.includes(char)) {
-            Swal.showValidationMessage(`The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`)
+            Swal.showValidationMessage(
+              `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
+            );
           }
         }
-      }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         var returnedName = checkValidRenameInput(
@@ -831,8 +833,6 @@ function addFilesfunction(
   }
 }
 
-
-
 ///// function to load details to show in display once
 ///// users click Show details
 function loadDetailsContextMenu(
@@ -873,7 +873,6 @@ function loadDetailsContextMenu(
 }
 
 //path_label = document.querySelector("#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label");
-
 
 function triggerManageDetailsPrompts(
   ev,
