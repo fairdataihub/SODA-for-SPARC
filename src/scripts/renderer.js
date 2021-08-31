@@ -5415,7 +5415,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       preConfirm: (value) => {
         for (var char of nonAllowedCharacters) {
           if (value.includes(char)) {
-            Swal.showValidationMessage(`The folder name cannot contains the following characters /|\:;*?"<>, please enter a different name!`)
+            Swal.showValidationMessage(`The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`)
           }
         }
       }

@@ -541,7 +541,7 @@ function renameFolder(
       preConfirm: (value) => {
         for (var char of nonAllowedCharacters) {
           if (value.includes(char)) {
-            Swal.showValidationMessage(`The folder name cannot contains the following characters /|\:;*?"<>, please rename to a different name!`)
+            Swal.showValidationMessage(`The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`)
           }
         }
       }
