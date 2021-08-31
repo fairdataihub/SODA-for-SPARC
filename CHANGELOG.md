@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed an issue where libraries were being loaded out of order leading to errors when opening SODA for the first time.
 - When uploading a dataset, we have now locked the sidebar to prevent accidental clicks that would take you out of the UI.
 - Fixed a bug where loading an award from Airtable would require two attempts.
+- Fixed a bug where macOS version of SODA would run the pre-check message everytime the app lost focus.
 
 ## v4.6.2 - 2021-08-13
 
