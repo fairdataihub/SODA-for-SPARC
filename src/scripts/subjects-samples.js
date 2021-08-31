@@ -375,7 +375,7 @@ function addSubjectIDToJSON(subjectID) {
 
 /// function to add Species - subjects + samples
 async function addSpecies(ev, type) {
-  $("#bootbox-"+type+"-species").val("")
+  $("#bootbox-" + type + "-species").val("");
   const { value: value } = await Swal.fire({
     title: "Add/Edit a species",
     html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
@@ -388,36 +388,42 @@ async function addSpecies(ev, type) {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-species");
-      createSpeciesAutocomplete("sweetalert-"+type+"-species")
+      createSpeciesAutocomplete("sweetalert-" + type + "-species");
     },
     preConfirm: () => {
-      if (document.getElementById("sweetalert-"+type+"-species").value === "") {
-        Swal.showValidationMessage("Please enter a species.")
+      if (
+        document.getElementById("sweetalert-" + type + "-species").value === ""
+      ) {
+        Swal.showValidationMessage("Please enter a species.");
       }
-      return document.getElementById("sweetalert-"+type+"-species").value;
+      return document.getElementById("sweetalert-" + type + "-species").value;
     },
   });
   if (value) {
     if (value !== "") {
-      $("#bootbox-"+type+"-species").val(value)
-      $("#bootbox-"+type+"-species").css("display", "block");
-      $("#bootbox-"+type+"-species").attr("readonly", true);
-      $("#bootbox-"+type+"-species").css("background", "#f5f5f5");
-      $(ev).html("<i class='pen icon'></i>Edit")
+      $("#bootbox-" + type + "-species").val(value);
+      $("#bootbox-" + type + "-species").css("display", "block");
+      $("#bootbox-" + type + "-species").attr("readonly", true);
+      $("#bootbox-" + type + "-species").css("background", "#f5f5f5");
+      $(ev).html("<i class='pen icon'></i>Edit");
     }
   } else {
-    $("#bootbox-"+type+"-species").css("display", "none");
-    $("#bootbox-"+type+"-species").val("")
+    $("#bootbox-" + type + "-species").css("display", "none");
+    $("#bootbox-" + type + "-species").val("");
     if (type.includes("subject")) {
-      $("#button-add-species-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+      $("#button-add-species-subject").html(
+        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+      );
     } else {
-      $("#button-add-species-sample").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+      $("#button-add-species-sample").html(
+        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+      );
     }
   }
 }
 
 async function addStrain(ev, type) {
-  $("#bootbox-"+type+"-strain").val("")
+  $("#bootbox-" + type + "-strain").val("");
   const { value: value } = await Swal.fire({
     title: "Add/Edit a strain",
     html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
@@ -430,34 +436,39 @@ async function addStrain(ev, type) {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-strain");
-      createStrain("sweetalert-"+type+"-strain", type);
+      createStrain("sweetalert-" + type + "-strain", type);
     },
     preConfirm: () => {
-      if (document.getElementById("sweetalert-"+type+"-strain").value === "") {
-        Swal.showValidationMessage("Please enter a strain.")
+      if (
+        document.getElementById("sweetalert-" + type + "-strain").value === ""
+      ) {
+        Swal.showValidationMessage("Please enter a strain.");
       }
-      return document.getElementById("sweetalert-"+type+"-strain").value;
+      return document.getElementById("sweetalert-" + type + "-strain").value;
     },
   });
   if (value) {
     if (value !== "") {
-      $("#bootbox-"+type+"-strain").val(value)
-      $("#bootbox-"+type+"-strain").css("display", "block");
-      $("#bootbox-"+type+"-strain").attr("readonly", true);
-      $("#bootbox-"+type+"-strain").css("background", "#f5f5f5");
-      $(ev).html("<i class='pen icon'></i>Edit")
+      $("#bootbox-" + type + "-strain").val(value);
+      $("#bootbox-" + type + "-strain").css("display", "block");
+      $("#bootbox-" + type + "-strain").attr("readonly", true);
+      $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
+      $(ev).html("<i class='pen icon'></i>Edit");
     }
   } else {
-    $("#bootbox-"+type+"-strain").css("display", "none");
-    $("#bootbox-"+type+"-strain-RRID").val("")
+    $("#bootbox-" + type + "-strain").css("display", "none");
+    $("#bootbox-" + type + "-strain-RRID").val("");
     if (type.includes("subject")) {
-      $("#button-add-strain-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+      $("#button-add-strain-subject").html(
+        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+      );
     } else {
-      $("#button-add-strain-sample").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+      $("#button-add-strain-sample").html(
+        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+      );
     }
   }
 }
-
 
 // populate RRID
 function populateRRID(strain, type) {
@@ -499,24 +510,30 @@ function populateRRID(strain, type) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
-          $("#bootbox-"+type+"-strain").val("");
-          $("#bootbox-"+type+"-strain-RRID").val("");
-          $("#bootbox-"+type+"-strain").css("display", "none");
+          $("#bootbox-" + type + "-strain").val("");
+          $("#bootbox-" + type + "-strain-RRID").val("");
+          $("#bootbox-" + type + "-strain").css("display", "none");
           if (type.includes("subject")) {
-            $("#button-add-strain-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+            $("#button-add-strain-subject").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+            );
           } else {
-            $("#button-add-strain-sample").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`)
+            $("#button-add-strain-sample").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+            );
           }
         } else {
-          $("#bootbox-"+type+"-strain").val(strain);
+          $("#bootbox-" + type + "-strain").val(strain);
           $("#btn-confirm-strain").removeClass("confirm-disabled");
-          $("#bootbox-"+type+"-strain").css("display", "block")
-          $("#bootbox-"+type+"-strain").attr("readonly", true);
-          $("#bootbox-"+type+"-strain").css("background", "#f5f5f5");
+          $("#bootbox-" + type + "-strain").css("display", "block");
+          $("#bootbox-" + type + "-strain").attr("readonly", true);
+          $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
           if (type.includes("subject")) {
-            $("#button-add-strain-subject").html("<i class='pen icon'></i>Edit")
+            $("#button-add-strain-subject").html(
+              "<i class='pen icon'></i>Edit"
+            );
           } else {
-            $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit")
+            $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit");
           }
           Swal.fire(
             `Successfully retrieved the RRID for "${strain}".`,
@@ -526,8 +543,8 @@ function populateRRID(strain, type) {
         }
       });
     } else {
-      $("#bootbox-"+type+"-strain").val("");
-      $("#bootbox-"+type+"-strain-RRID").val("");
+      $("#bootbox-" + type + "-strain").val("");
+      $("#bootbox-" + type + "-strain-RRID").val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
         text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
@@ -1228,7 +1245,7 @@ function updateOrderIDTable(table, json, type) {
     j = 1;
   }
   for (var index = 1; index < length; index++) {
-    var id = table.rows[index].cells[j+1].innerText;
+    var id = table.rows[index].cells[j + 1].innerText;
     for (var ind of json.slice(1)) {
       if (ind[j] === id) {
         orderedTableData[i] = ind;
@@ -2411,13 +2428,13 @@ function readXMLScicrunch(xml, type) {
       break;
     }
   }
-    if (rrid !== "") {
-      $("#bootbox-"+type+"-strain-RRID").val(rrid);
-      res = true;
-    } else {
-      $("#bootbox-"+type+"-strain-RRID").val("");
-      res = false;
-    }
+  if (rrid !== "") {
+    $("#bootbox-" + type + "-strain-RRID").val(rrid);
+    res = true;
+  } else {
+    $("#bootbox-" + type + "-strain-RRID").val("");
+    res = false;
+  }
   return res;
 }
 
@@ -2630,14 +2647,14 @@ async function helpSPARCAward(filetype) {
               milestoneTagify1.removeAllTags();
               $("#submission-sparc-award").val(award);
               $("#ds-description-award-input").val(award);
-              loadContributorInfofromAirtable(award)
+              loadContributorInfofromAirtable(award);
             }
           });
         } else {
           milestoneTagify1.removeAllTags();
           $("#submission-sparc-award").val(award);
           $("#ds-description-award-input").val(award);
-          loadContributorInfofromAirtable(award)
+          loadContributorInfofromAirtable(award);
         }
       }
     } else {
@@ -2686,7 +2703,7 @@ function changeAward(award) {
   }).then((result) => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
-  loadContributorInfofromAirtable(award)
+  loadContributorInfofromAirtable(award);
 }
 
 function loadContributorInfofromAirtable(award) {
