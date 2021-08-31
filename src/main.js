@@ -200,6 +200,7 @@ function initialize() {
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
         }
+        run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
@@ -239,6 +240,7 @@ function initialize() {
 }
 
 function run_pre_flight_checks() {
+  console.log("Running pre-checks");
   mainWindow.webContents.send("run_pre_flight_checks");
 }
 
