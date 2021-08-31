@@ -7176,7 +7176,8 @@ ipcRenderer.on(
                 cancelButtonText: "Cancel",
                 didOpen: () => {
                   $(".swal-popover").popover();
-                }
+                },
+                footer: footer 
               }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
