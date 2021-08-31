@@ -5503,27 +5503,47 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
-function populateJSONObjFolder(jsonObject, folderPath) {
+function populateJSONObjFolder(action, jsonObject, folderPath) {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
     if (statsObj.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(element)) {
-      jsonObject["folders"][element] = {
-        type: "local",
-        folders: {},
-        files: {},
-        action: ["new"],
-      };
-      populateJSONObjFolder(jsonObject["folders"][element], addedElement);
+      if (irregularFolderArray.includes(addedElement)) {
+        var renamedFolderName = ""
+        if (action !== "ignore" && action !== "") {
+          if (action === "remove") {
+            renamedFolderName = removeIrregularFolders(element);
+          } else if (action === "replace") {
+            renamedFolderName = replaceIrregularFolders(element)
+          }
+          jsonObject["folders"][renamedFolderName] = {
+            type: "local",
+            folders: {},
+            files: {},
+            path: addedElement,
+            action: ["new", "renamed"],
+          };
+          element = renamedFolderName
+        }
+      } else {
+        jsonObject["folders"][element] = {
+          type: "local",
+          folders: {},
+          files: {},
+          path: addedElement,
+          action: ["new"],
+        };
+      }
+      populateJSONObjFolder(action, jsonObject["folders"][element], addedElement);
     } else if (statsObj.isFile() && !/(^|\/)\.[^\/\.]/g.test(element)) {
-      jsonObject["files"][element] = {
-        path: addedElement,
-        description: "",
-        "additional-metadata": "",
-        type: "local",
-        action: ["new"],
-      };
+        jsonObject["files"][element] = {
+          path: addedElement,
+          description: "",
+          "additional-metadata": "",
+          type: "local",
+          action: ["new"],
+        };
     }
   });
 }
@@ -5890,6 +5910,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
+  irregularFolderArray = []
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   for (var ele of pathElement) {
@@ -5912,12 +5933,12 @@ ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
         addFoldersfunction("replace", irregularFolderArray, pathElement, myPath);
       } else if (result.isDenied) {
         addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-      } else {
+      } else if (result.isDismissed) {
         addFoldersfunction("ignore", irregularFolderArray, pathElement, myPath);
       }
     })
   } else {
-    addFoldersfunction("", pathElement, myPath);
+    addFoldersfunction("", irregularFolderArray, pathElement, myPath);
   }
 });
 
@@ -5949,7 +5970,7 @@ function addFoldersfunction(action, nonallowedFolderArray, folderArray, currentL
       var renamedFolderName = originalFolderName;
 
       if (nonallowedFolderArray.includes(folderArray[i])) {
-        if (action !== "ignore") {
+        if (action !== "ignore" && action !== "") {
           if (action === "remove") {
             renamedFolderName = removeIrregularFolders(folderArray[i]);
           } else if (action === "replace") {
@@ -5985,6 +6006,7 @@ function addFoldersfunction(action, nonallowedFolderArray, folderArray, currentL
           action: ["new"],
         };
         populateJSONObjFolder(
+          action,
           currentLocation["folders"][element],
           importedFolders[element]["path"]
         );
@@ -6021,9 +6043,14 @@ function allowDrop(ev) {
   ev.preventDefault();
 }
 
-async function drop(ev) {
+var filesElement;
+var targetElement;
+function drop(ev) {
+  irregularFolderArray = [];
+  var action = "";
+  filesElement = ev.dataTransfer.files;
+  targetElement = ev.target;
   // get global path
-
   var currentPath = organizeDSglobalPath.value;
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -6044,16 +6071,47 @@ async function drop(ev) {
   for (var folder in myPath["folders"]) {
     uiFolders[path.parse(folder).name] = 1;
   }
-
   for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+    var ele = ev.dataTransfer.files[i].path
+    detectIrregularFolders(path.basename(ele), ele)
+  }
+  if (irregularFolderArray.length > 0) {
+    Swal.fire({
+      title: 'The following folders contain non-allowed characters in their name. How should we handle them?',
+      html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join(", </br>")+"</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Replace characters with (-)",
+      denyButtonText: "Remove characters",
+      cancelButtonText: "Don't import those folders",
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        action = "replace"
+      } else if (result.isDenied) {
+        action = "remove"
+      } else if (result.isDismissed){
+        action = "ignore"
+      }
+      dropHelper(filesElement, targetElement, action, myPath, importedFiles, importedFolders, nonAllowedDuplicateFiles, uiFiles, uiFolders)
+    })
+  } else {
+    dropHelper(filesElement, targetElement, "", myPath, importedFiles, importedFolders, nonAllowedDuplicateFiles, uiFiles, uiFolders)
+  }
+}
+
+function dropHelper(ev1, ev2, action, myPath, importedFiles, importedFolders, nonAllowedDuplicateFiles, uiFiles, uiFolders) {
+  for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
-    var itemPath = ev.dataTransfer.files[i].path;
+    var itemPath = ev1[i].path;
     var itemName = path.parse(itemPath).base;
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
     // check for duplicate or files with the same name
-    for (var j = 0; j < ev.target.children.length; j++) {
-      if (itemName === ev.target.children[j].innerText) {
+    for (var j = 0; j < ev2.children.length; j++) {
+      if (itemName === ev2.children[j].innerText) {
         duplicate = true;
         break;
       }
@@ -6120,17 +6178,32 @@ async function drop(ev) {
         var j = 1;
         var originalFolderName = itemName;
         var renamedFolderName = originalFolderName;
-        while (
-          renamedFolderName in uiFolders ||
-          renamedFolderName in importedFolders
-        ) {
-          renamedFolderName = `${originalFolderName} (${j})`;
-          j++;
-        }
-        importedFolders[renamedFolderName] = {
-          path: itemPath,
-          "original-basename": originalFolderName,
-        };
+
+        if (irregularFolderArray.includes(itemPath)) {
+          if (action !== "ignore" && action !== "") {
+            if (action === "remove") {
+              renamedFolderName = removeIrregularFolders(itemName);
+            } else if (action === "replace") {
+              renamedFolderName = replaceIrregularFolders(itemName)
+            }
+            importedFolders[renamedFolderName] = {
+              path: itemPath,
+              "original-basename": originalFolderName,
+            };
+          }
+        } else {
+            while (
+              renamedFolderName in uiFolders ||
+              renamedFolderName in importedFolders
+            ) {
+              renamedFolderName = `${originalFolderName} (${j})`;
+              j++;
+            }
+            importedFolders[renamedFolderName] = {
+              path: itemPath,
+              "original-basename": originalFolderName,
+            };
+         }
       }
     }
   }
@@ -6202,12 +6275,14 @@ async function drop(ev) {
         '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
         element +
         "... </div></div>";
-      $(placeholderString).appendTo(ev.target);
-      await listItems(myPath, "#items");
+      $(placeholderString).appendTo(ev2);
+      // await listItems(myPath, "#items");
+      listItems(myPath, "#items");
       if (element !== originalName) {
         myPath["folders"][element]["action"].push("renamed");
       }
       populateJSONObjFolder(
+        action,
         myPath["folders"][element],
         importedFolders[element]["path"]
       );
@@ -6216,7 +6291,7 @@ async function drop(ev) {
         element +
         "</div></div>";
       $("#placeholder_element").remove();
-      $(appendString).appendTo(ev.target);
+      $(appendString).appendTo(ev2);
       listItems(myPath, "#items");
       getInFolder(
         ".single-item",
