@@ -14,7 +14,7 @@ const { fstat } = require("fs");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = "beta";
+autoUpdater.channel = "latest";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
@@ -200,6 +200,7 @@ function initialize() {
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
         }
+        run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
@@ -239,6 +240,7 @@ function initialize() {
 }
 
 function run_pre_flight_checks() {
+  console.log("Running pre-checks");
   mainWindow.webContents.send("run_pre_flight_checks");
 }
 

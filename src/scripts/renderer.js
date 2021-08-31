@@ -48,7 +48,7 @@ var datasetStructureJSONObj = {
 };
 
 let introStatus = {
-  organizeStep3: false,
+  organizeStep3: true,
 };
 
 //////////////////////////////////
@@ -1091,7 +1091,11 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
+          "File '" +
+          filename +
+          "' already exists in " +
+          dirpath[0] +
+          ". Do you want to replace it?";
         Swal.fire({
           icon: "warning",
           title: "Metadata file already exists",
@@ -1116,9 +1120,9 @@ ipcRenderer.on(
                 Swal.showLoading();
               },
             }).then((result) => {});
-            generateSubjectsFileHelper(destinationPath)
+            generateSubjectsFileHelper(destinationPath);
           }
-        });;
+        });
       } else {
         Swal.fire({
           title: "Generating the subjects.xlsx file",
@@ -1132,7 +1136,7 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateSubjectsFileHelper(destinationPath)
+        generateSubjectsFileHelper(destinationPath);
       }
     }
   }
@@ -1192,7 +1196,11 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-        "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
+          "File '" +
+          filename +
+          "' already exists in " +
+          dirpath[0] +
+          ". Do you want to replace it?";
         Swal.fire({
           icon: "warning",
           title: "Metadata file already exists",
@@ -1217,9 +1225,9 @@ ipcRenderer.on(
                 Swal.showLoading();
               },
             }).then((result) => {});
-            generateSamplesFileHelper(destinationPath)
+            generateSamplesFileHelper(destinationPath);
           }
-        });;
+        });
       } else {
         Swal.fire({
           title: "Generating the samples.xlsx file",
@@ -1233,7 +1241,7 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateSamplesFileHelper(destinationPath)
+        generateSamplesFileHelper(destinationPath);
       }
     }
   }
@@ -1651,7 +1659,7 @@ function createStrain(id, type) {
     var feedback = event.detail;
     var selection = feedback.selection.value;
     document.querySelector("#" + id).value = selection;
-    var strain = $("#sweetalert-"+type+"-strain").val();
+    var strain = $("#sweetalert-" + type + "-strain").val();
     if (strain !== "") {
       populateRRID(strain, type);
     }
@@ -1693,14 +1701,18 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
               $("#bootbox-subject-species").css("display", "none");
             }
             // set the Edit species button back to "+ Add species"
-            $("#button-add-species-subject").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`)
+            $("#button-add-species-subject").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+            );
           }
           if (destinationInput.includes("sample")) {
             if ($("#bootbox-sample-species").val() === "") {
               $("#bootbox-sample-species").css("display", "none");
             }
             // set the Edit species button back to "+ Add species"
-            $("#button-add-species-sample").html(`<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`)
+            $("#button-add-species-sample").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+            );
           }
         } else {
           $("#" + destinationInput).val(res[commonName]["ScientificName"]);
@@ -2554,7 +2566,11 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
+          "File '" +
+          filename +
+          "' already exists in " +
+          dirpath[0] +
+          ". Do you want to replace it?";
         Swal.fire({
           icon: "warning",
           title: "Metadata file already exists",
@@ -2567,7 +2583,7 @@ ipcRenderer.on(
           confirmButtonText: "Yes",
         }).then((result) => {
           if (result.isConfirmed) {
-            generateDDFile(dirpath, destinationPath)
+            generateDDFile(dirpath, destinationPath);
           }
         });
       } else {
@@ -2583,7 +2599,7 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateDDFile(dirpath, destinationPath)
+        generateDDFile(dirpath, destinationPath);
       }
     }
   }
@@ -3189,7 +3205,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
       emessage = "Please select a valid dataset";
       Swal.fire({
         title: "Failed to rename dataset",
-        text:emessage,
+        text: emessage,
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
@@ -3232,14 +3248,15 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             renameDatasetName.value = renamedDatasetName;
             Swal.fire({
               title: "Renamed successfully!",
-              text: "Renamed dataset" +
-              " '" +
-              currentDatasetName +
-              "'" +
-              " to" +
-              " '" +
-              renamedDatasetName +
-              "'. ",
+              text:
+                "Renamed dataset" +
+                " '" +
+                currentDatasetName +
+                "'" +
+                " to" +
+                " '" +
+                renamedDatasetName +
+                "'. ",
               icon: "success",
               showConfirmButton: true,
               heightAuto: false,
@@ -4354,7 +4371,6 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   });
 });
 
-
 // Add permission for user //
 bfAddPermissionBtn.addEventListener("click", () => {
   setTimeout(function () {
@@ -4812,12 +4828,13 @@ function showCurrentLicense() {
             $("#assign-a-license-header").hide();
             if ($("#add_license-section").hasClass("is-shown")) {
               Swal.fire({
-                title: "You are all set. This dataset already has the correct license assigned.",
+                title:
+                  "You are all set. This dataset already has the correct license assigned.",
                 backdrop: "rgba(0,0,0, 0.4)",
                 heightAuto: false,
                 showConfirmButton: true,
                 icon: "success",
-              })
+              });
             }
           } else {
             $("#button-add-license").show();
@@ -5415,10 +5432,12 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       preConfirm: (value) => {
         for (var char of nonAllowedCharacters) {
           if (value.includes(char)) {
-            Swal.showValidationMessage(`The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`)
+            Swal.showValidationMessage(
+              `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
+            );
           }
         }
-      }
+      },
     }).then((result) => {
       if (result.value) {
         if (result.value !== null && result.value !== "") {
@@ -5510,12 +5529,12 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
     var addedElement = path.join(folderPath, element);
     if (statsObj.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(element)) {
       if (irregularFolderArray.includes(addedElement)) {
-        var renamedFolderName = ""
+        var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
             renamedFolderName = removeIrregularFolders(element);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(element)
+            renamedFolderName = replaceIrregularFolders(element);
           }
           jsonObject["folders"][renamedFolderName] = {
             type: "local",
@@ -5524,7 +5543,7 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
             path: addedElement,
             action: ["new", "renamed"],
           };
-          element = renamedFolderName
+          element = renamedFolderName;
         }
       } else {
         jsonObject["folders"][element] = {
@@ -5535,15 +5554,19 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
           action: ["new"],
         };
       }
-      populateJSONObjFolder(action, jsonObject["folders"][element], addedElement);
+      populateJSONObjFolder(
+        action,
+        jsonObject["folders"][element],
+        addedElement
+      );
     } else if (statsObj.isFile() && !/(^|\/)\.[^\/\.]/g.test(element)) {
-        jsonObject["files"][element] = {
-          path: addedElement,
-          description: "",
-          "additional-metadata": "",
-          type: "local",
-          action: ["new"],
-        };
+      jsonObject["files"][element] = {
+        path: addedElement,
+        description: "",
+        "additional-metadata": "",
+        type: "local",
+        action: ["new"],
+      };
     }
   });
 }
@@ -5910,18 +5933,21 @@ organizeDSaddFolders.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
-  var footer =
-    `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  irregularFolderArray = []
+  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+  irregularFolderArray = [];
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   for (var ele of pathElement) {
-    detectIrregularFolders(path.basename(ele), ele)
+    detectIrregularFolders(path.basename(ele), ele);
   }
   if (irregularFolderArray.length > 0) {
     Swal.fire({
-      title: 'The following folders contain non-allowed characters in their names. How should we handle them?',
-      html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join("</br>")+"</div>",
+      title:
+        "The following folders contain non-allowed characters in their names. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        irregularFolderArray.join("</br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -5936,17 +5962,27 @@ ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        addFoldersfunction("replace", irregularFolderArray, pathElement, myPath);
+        addFoldersfunction(
+          "replace",
+          irregularFolderArray,
+          pathElement,
+          myPath
+        );
       } else if (result.isDenied) {
         addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
       }
-    })
+    });
   } else {
     addFoldersfunction("", irregularFolderArray, pathElement, myPath);
   }
 });
 
-function addFoldersfunction(action, nonallowedFolderArray, folderArray, currentLocation) {
+function addFoldersfunction(
+  action,
+  nonallowedFolderArray,
+  folderArray,
+  currentLocation
+) {
   var uiFolders = {};
   var importedFolders = {};
 
@@ -5978,7 +6014,7 @@ function addFoldersfunction(action, nonallowedFolderArray, folderArray, currentL
           if (action === "remove") {
             renamedFolderName = removeIrregularFolders(folderArray[i]);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(folderArray[i])
+            renamedFolderName = replaceIrregularFolders(folderArray[i]);
           }
           importedFolders[renamedFolderName] = {
             path: folderArray[i],
@@ -5986,18 +6022,18 @@ function addFoldersfunction(action, nonallowedFolderArray, folderArray, currentL
           };
         }
       } else {
-          while (
-            renamedFolderName in uiFolders ||
-            renamedFolderName in importedFolders
-          ) {
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
-          }
-          importedFolders[renamedFolderName] = {
-            path: folderArray[i],
-            "original-basename": originalFolderName,
-          };
-       }
+        while (
+          renamedFolderName in uiFolders ||
+          renamedFolderName in importedFolders
+        ) {
+          renamedFolderName = `${originalFolderName} (${j})`;
+          j++;
+        }
+        importedFolders[renamedFolderName] = {
+          path: folderArray[i],
+          "original-basename": originalFolderName,
+        };
+      }
     }
 
     if (Object.keys(importedFolders).length > 0) {
@@ -6076,15 +6112,18 @@ function drop(ev) {
     uiFolders[path.parse(folder).name] = 1;
   }
   for (var i = 0; i < ev.dataTransfer.files.length; i++) {
-    var ele = ev.dataTransfer.files[i].path
-    detectIrregularFolders(path.basename(ele), ele)
+    var ele = ev.dataTransfer.files[i].path;
+    detectIrregularFolders(path.basename(ele), ele);
   }
-  var footer =
-    `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   if (irregularFolderArray.length > 0) {
     Swal.fire({
-      title: 'The following folders contain non-allowed characters in their names. How should we handle them?',
-      html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join("</br>")+"</div>",
+      title:
+        "The following folders contain non-allowed characters in their names. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        irregularFolderArray.join("</br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -6095,24 +6134,54 @@ function drop(ev) {
       footer: footer,
       didOpen: () => {
         $(".swal-popover").popover();
-      }
+      },
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        action = "replace"
+        action = "replace";
       } else if (result.isDenied) {
-        action = "remove"
+        action = "remove";
       } else {
-        return
+        return;
       }
-      dropHelper(filesElement, targetElement, action, myPath, importedFiles, importedFolders, nonAllowedDuplicateFiles, uiFiles, uiFolders)
-    })
+      dropHelper(
+        filesElement,
+        targetElement,
+        action,
+        myPath,
+        importedFiles,
+        importedFolders,
+        nonAllowedDuplicateFiles,
+        uiFiles,
+        uiFolders
+      );
+    });
   } else {
-    dropHelper(filesElement, targetElement, "", myPath, importedFiles, importedFolders, nonAllowedDuplicateFiles, uiFiles, uiFolders)
+    dropHelper(
+      filesElement,
+      targetElement,
+      "",
+      myPath,
+      importedFiles,
+      importedFolders,
+      nonAllowedDuplicateFiles,
+      uiFiles,
+      uiFolders
+    );
   }
 }
 
-function dropHelper(ev1, ev2, action, myPath, importedFiles, importedFolders, nonAllowedDuplicateFiles, uiFiles, uiFolders) {
+function dropHelper(
+  ev1,
+  ev2,
+  action,
+  myPath,
+  importedFiles,
+  importedFolders,
+  nonAllowedDuplicateFiles,
+  uiFiles,
+  uiFolders
+) {
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
@@ -6194,7 +6263,7 @@ function dropHelper(ev1, ev2, action, myPath, importedFiles, importedFolders, no
             if (action === "remove") {
               renamedFolderName = removeIrregularFolders(itemName);
             } else if (action === "replace") {
-              renamedFolderName = replaceIrregularFolders(itemName)
+              renamedFolderName = replaceIrregularFolders(itemName);
             }
             importedFolders[renamedFolderName] = {
               path: itemPath,
@@ -6202,18 +6271,18 @@ function dropHelper(ev1, ev2, action, myPath, importedFiles, importedFolders, no
             };
           }
         } else {
-            while (
-              renamedFolderName in uiFolders ||
-              renamedFolderName in importedFolders
-            ) {
-              renamedFolderName = `${originalFolderName} (${j})`;
-              j++;
-            }
-            importedFolders[renamedFolderName] = {
-              path: itemPath,
-              "original-basename": originalFolderName,
-            };
-         }
+          while (
+            renamedFolderName in uiFolders ||
+            renamedFolderName in importedFolders
+          ) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {
+            path: itemPath,
+            "original-basename": originalFolderName,
+          };
+        }
       }
     }
   }
@@ -6316,19 +6385,18 @@ function dropHelper(ev1, ev2, action, myPath, importedFiles, importedFolders, no
   $("body").removeClass("waiting");
 }
 
-
-var irregularFolderArray = []
+var irregularFolderArray = [];
 function detectIrregularFolders(folderName, pathEle) {
   if (checkIrregularNameBoolean(folderName)) {
-    irregularFolderArray.push(pathEle)
+    irregularFolderArray.push(pathEle);
   }
   if (fs.lstatSync(pathEle).isDirectory()) {
-    fs.readdirSync(pathEle).forEach(function(folder) {
-        var stat = fs.statSync(path.join(pathEle, folder));
-        if (stat && stat.isDirectory()) {
-          detectIrregularFolders(folder, path.join(pathEle, folder))
-        }
-        return irregularFolderArray
+    fs.readdirSync(pathEle).forEach(function (folder) {
+      var stat = fs.statSync(path.join(pathEle, folder));
+      if (stat && stat.isDirectory()) {
+        detectIrregularFolders(folder, path.join(pathEle, folder));
+      }
+      return irregularFolderArray;
     });
   }
 }
@@ -6336,10 +6404,10 @@ function detectIrregularFolders(folderName, pathEle) {
 function checkIrregularNameBoolean(folderName) {
   for (var char of nonAllowedCharacters) {
     if (folderName.includes(char)) {
-      return true
+      return true;
     }
   }
-  return false
+  return false;
 }
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
@@ -6349,23 +6417,23 @@ function checkIrregularNameBoolean(folderName) {
 */
 
 function replaceIrregularFolders(pathElement) {
-  var str = path.basename(pathElement)
+  var str = path.basename(pathElement);
   for (var char of nonAllowedCharacters) {
     if (str.includes(char)) {
       str = str.replace(char, "-");
     }
   }
-  return str
+  return str;
 }
 
 function removeIrregularFolders(pathElement) {
-  var str = path.basename(pathElement)
+  var str = path.basename(pathElement);
   for (var char of nonAllowedCharacters) {
     if (str.includes(char)) {
       str = str.replace(char, "");
     }
   }
-  return str
+  return str;
 }
 
 // SAVE FILE ORG
@@ -7041,11 +7109,12 @@ $("#bf-rename-dataset-name").keyup(function () {
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       Swal.fire({
-        title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        title:
+          "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
-      })
+      });
       $("#button-rename-dataset").hide();
     } else {
       $("#button-rename-dataset").show();
@@ -7061,11 +7130,12 @@ $("#bf-new-dataset-name").keyup(function () {
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       Swal.fire({
-        title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        title:
+          "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
-      })
+      });
       $("#button-create-bf-new-dataset").hide();
     } else {
       $("#button-create-bf-new-dataset").show();
@@ -7138,7 +7208,7 @@ document
     $("#para-continue-location-dataset-getting-started").text("");
     document.getElementById("nextBtn").disabled = true;
     ipcRenderer.send("open-file-dialog-local-destination-curate");
-});
+  });
 
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
@@ -7159,14 +7229,17 @@ ipcRenderer.on(
           );
           if (valid_dataset == true) {
             var action = "";
-            irregularFolderArray = []
-            detectIrregularFolders(path.basename(filepath[0]), filepath[0])
-            var footer =
-              `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+            irregularFolderArray = [];
+            detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+            var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
             if (irregularFolderArray.length > 0) {
               Swal.fire({
-                title: 'The following folders contain non-allowed characters in their names. How should we handle them?',
-                html: "<div style='max-height:300px; overflow-y:auto'>"+irregularFolderArray.join("</br>")+"</div>",
+                title:
+                  "The following folders contain non-allowed characters in their names. How should we handle them?",
+                html:
+                  "<div style='max-height:300px; overflow-y:auto'>" +
+                  irregularFolderArray.join("</br>") +
+                  "</div>",
                 heightAuto: false,
                 backdrop: "rgba(0,0,0, 0.4)",
                 showDenyButton: true,
@@ -7177,20 +7250,20 @@ ipcRenderer.on(
                 didOpen: () => {
                   $(".swal-popover").popover();
                 },
-                footer: footer 
+                footer: footer
               }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
-                  action = "replace"
+                  action = "replace";
                 } else if (result.isDenied) {
-                  action = "remove"
+                  action = "remove";
                 } else {
                   document.getElementById(
                     "input-destination-getting-started-locally"
                   ).placeholder = "Browse here";
                   sodaJSONObj["starting-point"]["local-path"] = "";
                   $("#para-continue-location-dataset-getting-started").text("");
-                  return
+                  return;
                 }
                 sodaJSONObj["starting-point"]["local-path"] = filepath[0];
                 create_json_object(action, sodaJSONObj);
@@ -7201,9 +7274,9 @@ ipcRenderer.on(
                   "Please continue below."
                 );
                 $("#nextBtn").prop("disabled", false);
-              })
+              });
             } else {
-              action = ""
+              action = "";
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               create_json_object(action, sodaJSONObj);
               datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
@@ -7350,9 +7423,7 @@ document
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
     ).innerHTML = "";
-    document.getElementById(
-      "para-please-wait-new-curate"
-    ).innerHTML = "";
+    document.getElementById("para-please-wait-new-curate").innerHTML = "";
     document.getElementById("prevBtn").style.display = "none";
     document.getElementById("start-over-btn").style.display = "none";
     document.getElementById("div-vertical-progress-bar").style.display = "none";
@@ -8735,7 +8806,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
 //         console.log(err);
 //       }
 //     });
-  // }
+// }
 
 //   currentPath = path.join(homeDirectory, "SODA2");
 //   newPath = path.join(homeDirectory, "SODA");
