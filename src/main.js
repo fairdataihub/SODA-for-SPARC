@@ -114,7 +114,7 @@ function initialize() {
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
-        autoUpdater.checkForUpdatesAndNotify();
+        // autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
@@ -200,7 +200,7 @@ function initialize() {
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
         }
-        autoUpdater.checkForUpdatesAndNotify();
+        // autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
@@ -312,16 +312,16 @@ ipcMain.on("app_version", (event) => {
 
 autoUpdater.on("update-available", () => {
   log.info("update_available");
-  mainWindow.webContents.send("update_available");
+  // mainWindow.webContents.send("update_available");
 });
 
 autoUpdater.on("update-downloaded", () => {
   log.info("update_downloaded");
-  mainWindow.webContents.send("update_downloaded");
+  // mainWindow.webContents.send("update_downloaded");
 });
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
   log.info("quitAndInstall");
-  autoUpdater.quitAndInstall();
+  // autoUpdater.quitAndInstall();
 });
