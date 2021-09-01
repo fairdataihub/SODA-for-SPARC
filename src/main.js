@@ -200,16 +200,20 @@ function initialize() {
           nodeStorage.setItem("firstlaunch", false);
           run_pre_flight_checks();
         }
+        run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
 
     mainWindow.on("show", () => {
-      // var first_launch = nodeStorage.getItem("firstlaunch");
-      // if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
-      // }
-      run_pre_flight_checks();
+      var first_launch = nodeStorage.getItem("firstlaunch");
+      if (
+        (first_launch == true || first_launch == undefined) &&
+        window_reloaded == false
+      ) {
+      }
+      // run_pre_flight_checks();
     });
   });
 
@@ -236,6 +240,7 @@ function initialize() {
 }
 
 function run_pre_flight_checks() {
+  console.log("Running pre-checks");
   mainWindow.webContents.send("run_pre_flight_checks");
 }
 

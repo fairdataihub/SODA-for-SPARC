@@ -1,7 +1,7 @@
 {
   "name": "SODA",
   "productName": "SODA",
-  "version": "4.6.2",
+  "version": "4.7.0",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -86,9 +86,11 @@
     "electron-shortcut-normalizer": "^1.0.0",
     "electron-updater": "^4.3.9",
     "fomantic-ui": "^2.8.8",
+    "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
     "html2canvas": "^1.0.0-rc.5",
     "image-data-uri": "^2.0.1",
+    "intro.js": "^4.1.0",
     "jimp": "^0.16.1",
     "jquery": "^3.6.0",
     "jstree": "^3.3.11",
@@ -99,6 +101,7 @@
     "remove-markdown": "^0.3.0",
     "spur-template": "^1.1.0",
     "sweetalert2": "^10.16.9",
+    "tippy.js": "^6.3.1",
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",

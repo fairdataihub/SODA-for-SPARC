@@ -3,7 +3,7 @@
 //////////////////////////////////
 
 const zerorpc = require("zerorpc");
-const fs = require("fs");
+const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
 const { ipcRenderer } = require("electron");
@@ -27,6 +27,9 @@ const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
+const tippy = require("tippy.js").default;
+const introJs = require("intro.js");
+const selectpicker = require("bootstrap-select");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -42,6 +45,10 @@ var datasetStructureJSONObj = {
   folders: {},
   files: {},
   type: "",
+};
+
+let introStatus = {
+  organizeStep3: true,
 };
 
 //////////////////////////////////
@@ -66,6 +73,8 @@ client.invoke("echo", "server ready", (error, res) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
     }).then(async (result) => {
       if (result.isConfirmed) {
         app.relaunch();
@@ -90,14 +99,6 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 // App launch actions
 //////////////////////////////////
-
-// $(window).load(function () {
-//   run_pre_flight_checks();
-// });
-
-// $(document).ready(function () {
-//   run_pre_flight_checks()d
-// });
 
 // Log file settings //
 log.transports.console.level = false;
@@ -685,7 +686,7 @@ var globalContributorNameObject = {};
 
 // Prepare Submission File
 const airtableAccountBootboxMessage =
-  "<form><div class='form-group row'><label for='bootbox-airtable-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-airtable-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
+  "<form><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
 const generateSubmissionBtn = document.getElementById("generate-submission");
 
 // Prepare Dataset Description File
@@ -780,9 +781,6 @@ const bfNewDatasetName = document.querySelector("#bf-new-dataset-name");
 const bfCreateNewDatasetBtn = document.getElementById(
   "button-create-bf-new-dataset"
 );
-const bfCreateNewDatasetStatus = document.querySelector(
-  "#para-add-new-dataset-status"
-);
 const bfSubmitDatasetBtn = document.getElementById("button-submit-dataset");
 const selectLocalDsSubmit = document.getElementById(
   "selected-local-dataset-submit"
@@ -794,27 +792,13 @@ const progressUploadBf = document.getElementById("div-progress-submit");
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 const bfRenameDatasetBtn = document.getElementById("button-rename-dataset");
 const renameDatasetName = document.querySelector("#bf-rename-dataset-name");
-const bfRenameDatasetStatus = document.getElementById(
-  "para-rename-dataset-status"
-);
 const datasetPermissionDiv = document.getElementById("div-permission-list-2");
-
-// Pennsieve dataset metadata //
-// const bfCurrentMetadataProgress = document.querySelector(
-//   "#div-bf-current-metadata-progress"
-// );
 const bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
 const bfDatasetSubtitleCharCount = document.querySelector(
   "#para-char-count-metadata"
 );
 const bfAddSubtitleBtn = document.getElementById("button-add-subtitle");
-const datasetSubtitleStatus = document.querySelector(
-  "#para-dataset-subtitle-status"
-);
 const bfAddDescriptionBtn = document.getElementById("button-add-description");
-const datasetDescriptionStatus = document.querySelector(
-  "#para-dataset-description-status"
-);
 const bfCurrentBannerImg = document.getElementById("current-banner-img");
 const bfImportBannerImageBtn = document.getElementById(
   "button-import-banner-image"
@@ -831,32 +815,19 @@ const currentDatasetLicense = document.querySelector(
 );
 const bfListLicense = document.querySelector("#bf-license-list");
 const bfAddLicenseBtn = document.getElementById("button-add-license");
-const datasetLicenseStatus = document.querySelector(
-  "#para-dataset-license-status"
-);
 
 // Pennsieve dataset permission //
-//const bfPermissionForm = document.querySelector("#pennsieve-permission-form");
-//const bfDatasetListPermission = document.querySelector("#bfdatasetlist_permission");
 const currentDatasetPermission = document.querySelector(
   "#para-dataset-permission-current"
 );
 const currentAddEditDatasetPermission = document.querySelector(
   "#para-add-edit-dataset-permission-current"
 );
-// const bfCurrentPermissionProgress = document.querySelector(
-//   "#div-bf-current-permission-progress"
-// );
-// const bfAddEditCurrentPermissionProgress = document.querySelector(
-//   "#div-bf-add-edit-current-permission-progress"
-// );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 const bfAddPermissionPIBtn = document.getElementById(
   "button-add-permission-pi"
 );
-const datasetPermissionStatusPI = document.querySelector(
-  "#para-dataset-permission-status-pi"
-);
+
 const bfAddPermissionCurationTeamBtn = document.getElementById(
   "button-add-permission-curation-team"
 );
@@ -866,26 +837,16 @@ const datasetPermissionStatusCurationTeam = document.querySelector(
 const bfListUsers = document.querySelector("#bf_list_users");
 const bfListRoles = document.querySelector("#bf_list_roles");
 const bfAddPermissionBtn = document.getElementById("button-add-permission");
-const datasetPermissionStatus = document.querySelector(
-  "#para-dataset-permission-status"
-);
 const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById(
   "button-add-permission-team"
 );
-const datasetPermissionStatusTeam = document.querySelector(
-  "#para-dataset-permission-status-team"
-);
-
 //Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
 );
 const bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
-const datasetStatusStatus = document.querySelector(
-  "#para-dataset-status-status"
-);
 
 //Pennsieve post curation
 const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
@@ -1106,7 +1067,9 @@ ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
 //////////////// //////////////// //////////////// //////////////// ///////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
-const descriptionDateInput = document.getElementById("selected-milestone-date");
+const descriptionDateInput = document.getElementById(
+  "submission-completion-date"
+);
 
 const milestoneInput1 = document.getElementById("selected-milestone-1");
 var milestoneTagify1 = new Tagify(milestoneInput1, {
@@ -1120,238 +1083,6 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
   },
 });
 
-milestoneTagify1.on("add", function () {
-  var buttonDiv = $($("#selected-milestone-1").parents()[1]).find(
-    ".div-confirm-enter-milestone"
-  );
-  if (milestoneTagify1.value.length !== 0) {
-    if (!$("#Question-prepare-submission-4").hasClass("prev")) {
-      $(buttonDiv).show();
-      $($(buttonDiv).children()[0]).show();
-    }
-    if ($("#Question-prepare-submission-7").hasClass("show")) {
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $(buttonDiv).hide();
-    $("#Question-prepare-submission-4")
-      .nextAll()
-      .removeClass("show")
-      .removeClass("prev");
-  }
-});
-
-milestoneTagify1.on("remove", function () {
-  var buttonDiv = $($("#selected-milestone-1").parents()[1]).find(
-    ".div-confirm-enter-milestone"
-  );
-  if (milestoneTagify1.value.length !== 0) {
-    if (!$("#Question-prepare-submission-4").hasClass("prev")) {
-      $(buttonDiv).show();
-      $($(buttonDiv).children()[0]).show();
-    }
-    if ($("#Question-prepare-submission-7").hasClass("show")) {
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $(buttonDiv).hide();
-    $("#Question-prepare-submission-4")
-      .nextAll()
-      .removeClass("show")
-      .removeClass("prev");
-  }
-});
-
-const milestoneInput2 = document.getElementById("selected-milestone-2");
-var milestoneTagify2 = new Tagify(milestoneInput2, {
-  duplicates: false,
-  delimiters: null,
-});
-
-milestoneTagify2.on("add", function () {
-  var buttonDiv = $($("#selected-milestone-2").parents()[1]).find(
-    ".div-confirm-enter-milestone"
-  );
-  if (milestoneTagify2.value.length !== 0) {
-    if (!$("#Question-prepare-submission-no-skip-2").hasClass("prev")) {
-      $(buttonDiv).show();
-      $($(buttonDiv).children()[0]).show();
-    }
-    if ($("#Question-prepare-submission-7").hasClass("show")) {
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $(buttonDiv).hide();
-    $("#Question-prepare-submission-no-skip-2").removeClass("prev");
-    $("#Question-prepare-submission-no-skip-2")
-      .nextAll()
-      .removeClass("show")
-      .removeClass("prev");
-  }
-});
-
-milestoneTagify2.on("remove", function () {
-  var buttonDiv = $($("#selected-milestone-2").parents()[1]).find(
-    ".div-confirm-enter-milestone"
-  );
-  if (milestoneTagify2.value.length !== 0) {
-    if (!$("#Question-prepare-submission-no-skip-2").hasClass("prev")) {
-      $(buttonDiv).show();
-      $($(buttonDiv).children()[0]).show();
-    }
-    if ($("#Question-prepare-submission-7").hasClass("show")) {
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $(buttonDiv).hide();
-    $("#Question-prepare-submission-no-skip-2")
-      .nextAll()
-      .removeClass("show")
-      .removeClass("prev");
-  }
-});
-
-const existingSPARCAwards = document.getElementById("input-existing-grants");
-const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
-  duplicates: false,
-  delimiters: null,
-  editTags: false,
-  whitelist: [],
-  dropdown: {
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-
-//// when users click on Import
-function importMilestoneDocument() {
-  $("#upload-DDD-spinner").show();
-  if (event.currentTarget.id == "button-import-milestone") {
-    document.getElementById("para-milestone-document-info-long").style.display =
-      "none";
-    document.getElementById("para-milestone-document-info").innerHTML = "";
-    var filepath = document.getElementById(
-      "input-milestone-select"
-    ).placeholder;
-    if (filepath === "Browse here") {
-      document.getElementById("para-milestone-document-info").innerHTML =
-        "<span style='color: red ;'>" +
-        "Please select a data deliverables document first!</span>";
-      $("#upload-DDD-spinner").hide();
-    } else {
-      var award =
-        presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-      client.invoke("api_extract_milestone_info", filepath, (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          document.getElementById(
-            "para-milestone-document-info-long"
-          ).style.display = "block";
-          document.getElementById(
-            "para-milestone-document-info-long"
-          ).innerHTML = "<span style='color: red;'> " + emessage + ".</span>";
-          $("#upload-DDD-spinner").hide();
-        } else {
-          milestoneObj = res;
-          createMetadataDir();
-          var informationJson = {};
-          informationJson = parseJson(milestonePath);
-          informationJson[award] = milestoneObj;
-          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-          document.getElementById("para-milestone-document-info").innerHTML =
-            "<span style='color: black ;'>" + "Imported!</span>";
-          document.getElementById("input-milestone-select").placeholder =
-            "Browse here";
-          removeOptions(descriptionDateInput);
-          milestoneTagify1.removeAllTags();
-          milestoneTagify1.settings.whitelist = [];
-          milestoneTagify2.settings.whitelist = [];
-          changeAwardInput();
-          $("#div-cancel-DDD-import").hide();
-          $("#div-confirm-DDD-import button").click();
-          $("#upload-DDD-spinner").hide();
-        }
-      });
-    }
-  } else if (event.currentTarget.id == "button-import-milestone-reupload") {
-  }
-}
-
-document
-  .getElementById("input-milestone-select")
-  .addEventListener("click", function () {
-    document.getElementById("para-milestone-document-info").innerHTML = "";
-    document.getElementById("para-milestone-document-info-long").innerHTML = "";
-    document.getElementById("para-milestone-document-info-long").style.display =
-      "none";
-    ipcRenderer.send("open-file-dialog-milestone-doc");
-  });
-ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      // used to communicate value to button-import-milestone click event-listener
-      document.getElementById("input-milestone-select").placeholder =
-        filepath[0];
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Metadata - Add DDD",
-        defaultBfAccount
-      );
-    }
-  }
-  if (
-    document.getElementById("input-milestone-select").placeholder !==
-    "Browse here"
-  ) {
-    $("#button-import-milestone").show();
-  } else {
-    $("#button-import-milestone").hide();
-  }
-});
-
 // generate subjects file
 ipcRenderer.on(
   "selected-generate-metadata-subjects",
@@ -1360,19 +1091,42 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0];
+          "File '" +
+          filename +
+          "' already exists in " +
+          dirpath[0] +
+          ". Do you want to replace it?";
         Swal.fire({
-          icon: "error",
+          icon: "warning",
           title: "Metadata file already exists",
           text: `${emessage}`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: true,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: "Generating the subjects.xlsx file",
+              html: "Please wait...",
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              timerProgressBar: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            }).then((result) => {});
+            generateSubjectsFileHelper(destinationPath);
+          }
         });
       } else {
         Swal.fire({
           title: "Generating the subjects.xlsx file",
           html: "Please wait...",
-          timer: 30000,
           allowEscapeKey: false,
           allowOutsideClick: false,
           heightAuto: false,
@@ -1382,53 +1136,57 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        // new client that has a longer timeout
-        let clientLongTimeout = new zerorpc.Client({
-          timeout: 300000,
-          heartbeatInterval: 60000,
-        });
-        clientLongTimeout.connect("tcp://127.0.0.1:4242");
-        clientLongTimeout.invoke(
-          "api_save_subjects_file",
-          destinationPath,
-          subjectsTableData,
-          (error, res) => {
-            if (error) {
-              var emessage = userError(error);
-              log.error(error);
-              console.error(error);
-              Swal.fire(
-                "Failed to generate the subjects.xlsx file.",
-                `${emessage}`,
-                "error"
-              );
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Create subjects.xlsx",
-                subjectsTableData
-              );
-            } else {
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Prepare Metadata - Create subjects.xlsx",
-                subjectsTableData
-              );
-              Swal.fire({
-                title:
-                  "The subjects.xlsx file has been successfully generated at the specified location.",
-                icon: "success",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-            }
-          }
-        );
+        generateSubjectsFileHelper(destinationPath);
       }
     }
   }
 );
+
+function generateSubjectsFileHelper(mypath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke(
+    "api_save_subjects_file",
+    mypath,
+    subjectsTableData,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire(
+          "Failed to generate the subjects.xlsx file.",
+          `${emessage}`,
+          "error"
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create subjects.xlsx",
+          subjectsTableData
+        );
+      } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create subjects.xlsx",
+          subjectsTableData
+        );
+        Swal.fire({
+          title:
+            "The subjects.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      }
+    }
+  );
+}
 
 // generate samples file
 ipcRenderer.on(
@@ -1438,19 +1196,42 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0];
+          "File '" +
+          filename +
+          "' already exists in " +
+          dirpath[0] +
+          ". Do you want to replace it?";
         Swal.fire({
-          icon: "error",
+          icon: "warning",
           title: "Metadata file already exists",
           text: `${emessage}`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: true,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: "Generating the samples.xlsx file",
+              html: "Please wait...",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              timerProgressBar: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            }).then((result) => {});
+            generateSamplesFileHelper(destinationPath);
+          }
         });
       } else {
         Swal.fire({
           title: "Generating the samples.xlsx file",
           html: "Please wait...",
-          timer: 30000,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
@@ -1460,64 +1241,62 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        // new client that has a longer timeout
-        let clientLongTimeout = new zerorpc.Client({
-          timeout: 300000,
-          heartbeatInterval: 60000,
-        });
-        clientLongTimeout.connect("tcp://127.0.0.1:4242");
-        clientLongTimeout.invoke(
-          "api_save_samples_file",
-          destinationPath,
-          samplesTableData,
-          (error, res) => {
-            if (error) {
-              var emessage = userError(error);
-              log.error(error);
-              console.error(error);
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Create samples.xlsx",
-                samplesTableData
-              );
-              Swal.fire(
-                "Failed to generate the samples.xlsx file.",
-                `${emessage}`,
-                "error"
-              );
-            } else {
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Prepare Metadata - Create samples.xlsx",
-                samplesTableData
-              );
-              Swal.fire({
-                title:
-                  "The samples.xlsx file has been successfully generated at the specified location.",
-                icon: "success",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-            }
-          }
-        );
+        generateSamplesFileHelper(destinationPath);
       }
     }
   }
 );
 
+function generateSamplesFileHelper(mypath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke(
+    "api_save_samples_file",
+    mypath,
+    samplesTableData,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create samples.xlsx",
+          samplesTableData
+        );
+        Swal.fire(
+          "Failed to generate the samples.xlsx file.",
+          `${emessage}`,
+          "error"
+        );
+      } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create samples.xlsx",
+          samplesTableData
+        );
+        Swal.fire({
+          title:
+            "The samples.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      }
+    }
+  );
+}
+
 // import Primary folder
 ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
     importPrimaryFolderSubjects(primaryFolderPath[0]);
-    // $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
-    // $("#div-confirm-primary-folder-import").show()
-    // $($("#div-confirm-primary-folder-import").find("button")[0]).show();
-  } else {
-    // $("#primary-folder-destination-input").prop("placeholder", "Browse here")
-    // $("#div-confirm-primary-folder-import").find("button").hide()
   }
 });
 ipcRenderer.on(
@@ -1525,12 +1304,6 @@ ipcRenderer.on(
   (event, primaryFolderPath) => {
     if (primaryFolderPath.length > 0) {
       importPrimaryFolderSamples(primaryFolderPath[0]);
-      // $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
-      // $("#div-confirm-primary-folder-import-samples").show()
-      // $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
-    } else {
-      // $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
-      // $("#div-confirm-primary-folder-import-samples").find("button").hide()
     }
   }
 );
@@ -1716,7 +1489,6 @@ const specimenType = [
   "whole mount",
 ];
 function createSpecimenTypeAutocomplete(id) {
-  // var listID = "autocomplete" + id;
   var autoCompleteJS3 = new autoComplete({
     selector: "#" + id,
     data: {
@@ -1826,6 +1598,7 @@ function createSpeciesAutocomplete(id) {
     document.getElementById(id).value = selection;
     // Replace Input value with the selected value
     autoCompleteJS2.input.value = selection;
+    $("#btn-confirm-species").removeClass("confirm-disabled");
   });
 }
 
@@ -1886,11 +1659,7 @@ function createStrain(id, type) {
     var feedback = event.detail;
     var selection = feedback.selection.value;
     document.querySelector("#" + id).value = selection;
-    if (type === "subjects") {
-      var strain = $("#bootbox-subject-strain").val();
-    } else if (type === "samples") {
-      var strain = $("#bootbox-sample-strain").val();
-    }
+    var strain = $("#sweetalert-" + type + "-strain").val();
     if (strain !== "") {
       populateRRID(strain, type);
     }
@@ -1898,18 +1667,10 @@ function createStrain(id, type) {
   });
 }
 
-$(document).ready(function () {
-  createSpeciesAutocomplete("bootbox-subject-species");
-  createSpeciesAutocomplete("bootbox-sample-species");
-  createStrain("bootbox-sample-strain", "samples");
-  createStrain("bootbox-subject-strain", "subjects");
-});
-
 async function loadTaxonomySpecies(commonName, destinationInput) {
   Swal.fire({
     title: "Finding the scientific name for " + commonName + "...",
     html: "Please wait...",
-    timer: 1500,
     heightAuto: false,
     allowOutsideClick: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -1932,8 +1693,30 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
             "Make sure you enter a correct species name.",
             "error"
           );
+          if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
+            $("#btn-confirm-species").addClass("confirm-disabled");
+          }
+          if (destinationInput.includes("subject")) {
+            if ($("#bootbox-subject-species").val() === "") {
+              $("#bootbox-subject-species").css("display", "none");
+            }
+            // set the Edit species button back to "+ Add species"
+            $("#button-add-species-subject").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+            );
+          }
+          if (destinationInput.includes("sample")) {
+            if ($("#bootbox-sample-species").val() === "") {
+              $("#bootbox-sample-species").css("display", "none");
+            }
+            // set the Edit species button back to "+ Add species"
+            $("#button-add-species-sample").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+            );
+          }
         } else {
           $("#" + destinationInput).val(res[commonName]["ScientificName"]);
+          $("#btn-confirm-species").removeClass("confirm-disabled");
         }
       }
     }
@@ -1946,89 +1729,6 @@ function addOption(selectbox, text, value) {
   opt.text = text;
   opt.value = value;
   selectbox.options.add(opt);
-}
-
-// Function to auto load existing awards
-function loadAwards() {
-  if (!fs.existsSync(awardPath)) {
-    return {};
-  }
-  var contents = fs.readFileSync(awardPath, "utf8");
-  var awards = JSON.parse(contents);
-  var awardSpan = "";
-  var awardList = [];
-  removeOptions(presavedAwardArray1);
-  removeOptions(dsAwardArray);
-  addOption(presavedAwardArray1, "Select an award", "Select");
-  addOption(dsAwardArray, "Select an award", "Select");
-  for (var key in awards) {
-    // Add options to dropdown lists
-    addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
-    addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
-    awardList.push({
-      value: eval(JSON.stringify(awards[key])),
-      "award-number": key,
-    });
-    awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n\n";
-  }
-  existingSPARCAwardsTagify.removeAllTags();
-  existingSPARCAwardsTagify.addTags(awardList);
-  $("#current-users-awards").text(awardSpan.slice(0));
-  $("#current-users-awards-dd").text(awardSpan.slice(0));
-}
-
-loadAwards();
-
-// Save grant information
-function addSPARCAwards() {
-  var message = "";
-  var tagifyArray = existingSPARCAwardsTagify.value;
-  var spanMessage = "";
-  // create empty milestone json files for newly added award
-  createMetadataDir();
-  var awardsJson = {};
-  awardsJson = parseJson(awardPath);
-  if (tagifyArray.length === 0) {
-    awardsJson = {};
-    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    $("#current-users-awards").text("None");
-    $("#current-users-awards-dd").text("None");
-  } else {
-    var awardVal = [];
-    for (var i = 0; i < tagifyArray.length; i++) {
-      awardVal.push(tagifyArray[i].value);
-    }
-    var awardNoAray = [];
-    for (var award of awardVal) {
-      var awardNo = award.slice(0, award.indexOf(" ("));
-      var keyValuePair = { "award-number": awardNo, "award-full-title": award };
-      awardNoAray.push(keyValuePair);
-    }
-    removeOptions(presavedAwardArray1);
-    removeOptions(dsAwardArray);
-    awardsJson = {};
-    for (var keyValuePair of awardNoAray) {
-      addOption(
-        presavedAwardArray1,
-        keyValuePair["award-full-title"],
-        keyValuePair["award-number"]
-      );
-      addOption(
-        dsAwardArray,
-        keyValuePair["award-full-title"],
-        keyValuePair["award-number"]
-      );
-      spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n\n";
-      awardsJson[keyValuePair["award-number"]] =
-        keyValuePair["award-full-title"];
-    }
-
-    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    $("#current-users-awards").text(spanMessage);
-    $("#current-users-awards-dd").text(spanMessage);
-  }
-  loadAwards();
-  return message;
 }
 
 var awardObj = {};
@@ -2074,7 +1774,6 @@ function loadAwardData() {
               // create set to remove duplicates
               var awardSet = new Set(awardResultArray);
               var resultArray = [...awardSet];
-              existingSPARCAwardsTagify.settings.whitelist = resultArray;
             }
           }
         );
@@ -2087,23 +1786,19 @@ function loadAwardData() {
 
 function changeAwardInput() {
   var ddBolean;
-  document.getElementById("selected-milestone-date").value = "";
   document.getElementById("input-milestone-date").value = "";
   actionEnterNewDate("none");
-  document.getElementById("para-save-submission-status").innerHTML = "";
   milestoneTagify1.removeAllTags();
   milestoneTagify1.settings.whitelist = [];
-  milestoneTagify2.removeAllTags();
-  milestoneTagify2.settings.whitelist = [];
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
 
-  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  award = $("#submission-sparc-award");
   var informationJson = parseJson(milestonePath);
 
   var completionDateArray = [];
   var milestoneValueArray = [];
-  completionDateArray.push("Enter a date");
+  completionDateArray.push("Enter my own date");
 
   /// when DD is provided
   if (award in informationJson) {
@@ -2126,7 +1821,6 @@ function changeAwardInput() {
     ddBolean = false;
   }
   milestoneTagify1.settings.whitelist = milestoneValueArray;
-  milestoneTagify2.settings.whitelist = milestoneValueArray;
   for (var i = 0; i < completionDateArray.length; i++) {
     addOption(
       descriptionDateInput,
@@ -2137,8 +1831,6 @@ function changeAwardInput() {
   return ddBolean;
 }
 
-const submissionDateInput = document.getElementById("input-milestone-date");
-
 function actionEnterNewDate(action) {
   document.getElementById(
     "div-submission-enter-different-date-1"
@@ -2147,6 +1839,8 @@ function actionEnterNewDate(action) {
     "div-submission-enter-different-date-3"
   ).style.display = action;
 }
+
+const submissionDateInput = document.getElementById("input-milestone-date");
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
@@ -2209,7 +1903,7 @@ function changeAwardInputDsDescription() {
     ).prop("disabled", true);
   }
 
-  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  var awardVal = $("#ds-description-award-input");
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length !== 0) {
     var airKeyInput = airKeyContent["api-key"];
@@ -2263,17 +1957,6 @@ function onchangeLastNames() {
     $("#dd-contributor-first-name")
       .val(globalContributorNameObject[conLastname])
       .trigger("onchange");
-
-    // delete contributor names from list after it's added
-    // delete globalContributorNameObject[conLastname];
-    // var newConLastNames = currentContributorsLastNames.filter(function (
-    //   value,
-    //   index,
-    //   arr
-    // ) {
-    //   return value !== conLastname;
-    // });
-    // currentContributorsLastNames = newConLastNames;
   }
   $("#dd-contributor-first-name").attr("disabled", false);
 }
@@ -2395,7 +2078,7 @@ function loadContributorInfo(lastName, firstName) {
 const clearDatasetDropdowns = () => {
   for (let list of [curateDatasetDropdown]) {
     removeOptions(list);
-    addOption(list, "Select dataset", "Select dataset");
+    addOption(list, "Search here...", "Select dataset");
     list.options[0].disabled = true;
   }
 };
@@ -2521,7 +2204,7 @@ $("#table-subjects").mousedown(function (e) {
 });
 
 $("#table-samples").mousedown(function (e) {
-  var length = document.getElementById("table-samples").rows.length;
+  var length = document.getElementById("table-samples").rows.length - 1;
   var tr = $(e.target).closest("tr"),
     sy = e.pageY,
     drag;
@@ -2567,7 +2250,7 @@ $("#table-samples").mousedown(function (e) {
 });
 
 $("#contributor-table-dd").mousedown(function (e) {
-  var length = document.getElementById("contributor-table-dd").rows.length;
+  var length = document.getElementById("contributor-table-dd").rows.length - 1;
   var tr = $(e.target).closest("tr"),
     sy = e.pageY,
     drag;
@@ -2823,7 +2506,6 @@ function detectEmptyRequiredFields(funding) {
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
 generateDSBtn.addEventListener("click", (event) => {
-  document.getElementById("para-generate-description-status").innerHTML = "";
   var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
@@ -2884,21 +2566,30 @@ ipcRenderer.on(
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage =
-          "File '" + filename + "' already exists in " + dirpath[0];
+          "File '" +
+          filename +
+          "' already exists in " +
+          dirpath[0] +
+          ". Do you want to replace it?";
         Swal.fire({
-          icon: "error",
+          icon: "warning",
           title: "Metadata file already exists",
           text: `${emessage}`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: true,
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            generateDDFile(dirpath, destinationPath);
+          }
         });
-
-        // $("#generate-dd-spinner").hide();
       } else {
         Swal.fire({
           title: "Generating the dataset_description.xlsx file",
           html: "Please wait...",
-          timer: 300000,
           allowEscapeKey: false,
           allowOutsideClick: false,
           heightAuto: false,
@@ -2908,92 +2599,93 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-
-        var datasetInfoValueArray = grabDSInfoEntries();
-
-        //// process obtained values to pass to an array ///
-        ///////////////////////////////////////////////////
-        var keywordVal = [];
-        for (var i = 0; i < datasetInfoValueArray["keywords"].length; i++) {
-          keywordVal.push(datasetInfoValueArray["keywords"][i].value);
-        }
-        /// replace keywordArray with keywordVal array
-        datasetInfoValueArray["keywords"] = keywordVal;
-
-        //// push to all ds info values to dsSectionArray
-        var dsSectionArray = [];
-        for (let elementDS in datasetInfoValueArray) {
-          dsSectionArray.push(datasetInfoValueArray[elementDS]);
-        }
-        //// grab entries from contributor info section and pass values to conSectionArray
-        var contributorObj = grabConInfoEntries();
-        /// grab entries from other misc info section
-        var miscObj = combineLinksSections();
-
-        /// grab entries from other optional info section
-        var completenessSectionObj = grabCompletenessInfo();
-
-        ///////////// stringify JSON objects //////////////////////
-        json_str_ds = JSON.stringify(dsSectionArray);
-        json_str_misc = JSON.stringify(miscObj);
-        json_str_completeness = JSON.stringify(completenessSectionObj);
-        json_str_con = JSON.stringify(contributorObj);
-
-        /// get current, selected Pennsieve account
-        var bfaccountname = $("#current-bf-account").text();
-
-        /// call python function to save file
-        if (dirpath != null) {
-          client.invoke(
-            "api_save_ds_description_file",
-            bfaccountname,
-            destinationPath,
-            json_str_ds,
-            json_str_misc,
-            json_str_completeness,
-            json_str_con,
-            (error, res) => {
-              if (error) {
-                var emessage = userError(error);
-                log.error(error);
-                console.error(error);
-                Swal.fire({
-                  title:
-                    "Failed to generate the dataset_description file.",
-                  text:emessage,
-                  icon: "error",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                ipcRenderer.send(
-                  "track-event",
-                  "Error",
-                  "Prepare Metadata - Create dataset_description",
-                  defaultBfDataset
-                );
-              } else {
-                Swal.fire({
-                  title:
-                    "The dataset_description.xlsx file has been successfully generated at the specified location.",
-                  icon: "success",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                ipcRenderer.send(
-                  "track-event",
-                  "Success",
-                  "Prepare Metadata - Create dataset_description",
-                  defaultBfDataset
-                );
-                // $("#generate-dd-spinner").hide();
-              }
-            }
-          );
-        }
+        generateDDFile(dirpath, destinationPath);
       }
     }
   }
 );
+
+function generateDDFile(fullpath, destinationPath) {
+  var datasetInfoValueArray = grabDSInfoEntries();
+
+  //// process obtained values to pass to an array ///
+  ///////////////////////////////////////////////////
+  var keywordVal = [];
+  for (var i = 0; i < datasetInfoValueArray["keywords"].length; i++) {
+    keywordVal.push(datasetInfoValueArray["keywords"][i].value);
+  }
+  /// replace keywordArray with keywordVal array
+  datasetInfoValueArray["keywords"] = keywordVal;
+
+  //// push to all ds info values to dsSectionArray
+  var dsSectionArray = [];
+  for (let elementDS in datasetInfoValueArray) {
+    dsSectionArray.push(datasetInfoValueArray[elementDS]);
+  }
+  //// grab entries from contributor info section and pass values to conSectionArray
+  var contributorObj = grabConInfoEntries();
+  /// grab entries from other misc info section
+  var miscObj = combineLinksSections();
+
+  /// grab entries from other optional info section
+  var completenessSectionObj = grabCompletenessInfo();
+
+  ///////////// stringify JSON objects //////////////////////
+  json_str_ds = JSON.stringify(dsSectionArray);
+  json_str_misc = JSON.stringify(miscObj);
+  json_str_completeness = JSON.stringify(completenessSectionObj);
+  json_str_con = JSON.stringify(contributorObj);
+
+  /// get current, selected Pennsieve account
+  var bfaccountname = $("#current-bf-account").text();
+
+  /// call python function to save file
+  if (fullpath != null) {
+    client.invoke(
+      "api_save_ds_description_file",
+      bfaccountname,
+      destinationPath,
+      json_str_ds,
+      json_str_misc,
+      json_str_completeness,
+      json_str_con,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            title: "Failed to generate the dataset_description file.",
+            text: emessage,
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create dataset_description",
+            defaultBfDataset
+          );
+        } else {
+          Swal.fire({
+            title:
+              "The dataset_description.xlsx file has been successfully generated at the specified location.",
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create dataset_description",
+            defaultBfDataset
+          );
+        }
+      }
+    );
+  }
+}
 
 //////////////////////////End of Ds description section ///////////////////////////////////
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
@@ -3005,7 +2697,7 @@ const tuiInstance = new Editor({
   previewStyle: "vertical",
   height: "400px",
   hideModeSwitch: true,
-  placeholder: "Add your description here",
+  placeholder: "Add a description here: ",
   toolbarItems: [
     "heading",
     "bold",
@@ -3421,8 +3113,6 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
   setTimeout(function () {
     log.info(`Creating a new dataset with the name: ${bfNewDatasetName.value}`);
     bfCreateNewDatasetBtn.disabled = true;
-    $("#para-new-name-dataset-message").html("");
-    $("#para-add-new-dataset-status").html("");
     $("#bf-create-new-dataset-spinner").css("visibility", "visible");
     var selectedbfaccount = defaultBfAccount;
     client.invoke(
@@ -3434,12 +3124,15 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
+          Swal.fire({
+            title: `Failed to create a new dataset.`,
+            text: emessage,
+            showCancelButton: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            icon: "error",
+          });
           $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
-          bfCreateNewDatasetStatus.innerHTML =
-            "<span style='color: red; font-size: 15px;'> " +
-            emessage +
-            ". </span>" +
-            sadCan;
           bfCreateNewDatasetBtn.disabled = false;
           ipcRenderer.send(
             "track-event",
@@ -3448,17 +3141,18 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             bfNewDatasetName.value
           );
         } else {
+          Swal.fire({
+            title: "Created successfully!",
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           log.info(`Created dataset successfully`);
           $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
           $(bfCreateNewDatasetBtn).hide();
           defaultBfDataset = bfNewDatasetName.value;
           refreshDatasetList();
-          bfCreateNewDatasetStatus.innerHTML =
-            "<span style='font-size: 15px; color: #13716D;'>Success: Created dataset" +
-            " '" +
-            bfNewDatasetName.value +
-            "'. </span>" +
-            smileyCan;
           currentDatasetPermission.innerHTML = "";
           currentAddEditDatasetPermission.innerHTML = "";
           bfCreateNewDatasetBtn.disabled = false;
@@ -3509,12 +3203,17 @@ bfRenameDatasetBtn.addEventListener("click", () => {
 
     if (currentDatasetName === "Select dataset") {
       emessage = "Please select a valid dataset";
-      bfRenameDatasetStatus.innerHTML =
-        "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
+      Swal.fire({
+        title: "Failed to rename dataset",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     } else {
       $("#bf-rename-dataset-spinner").css("visibility", "visible");
       bfRenameDatasetBtn.disabled = true;
-      bfRenameDatasetStatus.innerHTML = "";
       client.invoke(
         "api_bf_rename_dataset",
         selectedbfaccount,
@@ -3526,8 +3225,14 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             console.error(error);
             var emessage = userError(error);
             $("#bf-rename-dataset-spinner").css("visibility", "hidden");
-            bfRenameDatasetStatus.innerHTML =
-              "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
+            Swal.fire({
+              title: "Failed to rename dataset",
+              text: emessage,
+              icon: "error",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
             bfRenameDatasetBtn.disabled = false;
             ipcRenderer.send(
               "track-event",
@@ -3541,16 +3246,22 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             $(".bf-dataset-span").html(renamedDatasetName);
             refreshDatasetList();
             renameDatasetName.value = renamedDatasetName;
-            bfRenameDatasetStatus.innerHTML =
-              "Success: Renamed dataset" +
-              " '" +
-              currentDatasetName +
-              "'" +
-              " to" +
-              " '" +
-              renamedDatasetName +
-              "'. " +
-              smileyCan;
+            Swal.fire({
+              title: "Renamed successfully!",
+              text:
+                "Renamed dataset" +
+                " '" +
+                currentDatasetName +
+                "'" +
+                " to" +
+                " '" +
+                renamedDatasetName +
+                "'. ",
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
             bfRenameDatasetBtn.disabled = false;
             ipcRenderer.send(
               "track-event",
@@ -3841,7 +3552,6 @@ selectLocalDsSubmit.addEventListener("click", function () {
 ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
-      $("#para-info-local-submit").html("");
       $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
 
       valid_dataset = verify_sparc_folder(filepath[0]);
@@ -3899,10 +3609,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
 const metadataDatasetlistChange = () => {
   // bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
-  datasetSubtitleStatus.innerHTML = "";
-  datasetLicenseStatus.innerHTML = "";
   bfDatasetSubtitle.value = "";
-  // datasetDescriptionStatus.innerHTML = "";
   datasetBannerImageStatus.innerHTML = "";
   showCurrentSubtitle();
   showCurrentDescription();
@@ -3911,11 +3618,7 @@ const metadataDatasetlistChange = () => {
 };
 
 // Manage dataset permission
-
 const permissionDatasetlistChange = () => {
-  //console.log("permission")
-  // bfCurrentPermissionProgress.style.display = "block";
-  // bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
 };
 
@@ -3934,7 +3637,6 @@ $(bfListDatasetStatus).on("change", () => {
   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
 
-  datasetStatusStatus.innerHTML = "";
   selectOptionColor(bfListDatasetStatus);
 
   var selectedBfAccount = defaultBfAccount;
@@ -3959,8 +3661,14 @@ $(bfListDatasetStatus).on("change", () => {
         console.error(error);
         var emessage = userError(error);
         function showErrorDatasetStatus() {
-          datasetStatusStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
+          Swal.fire({
+            title: "Failed to change dataset status!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
         }
@@ -3974,7 +3682,13 @@ $(bfListDatasetStatus).on("change", () => {
         );
         $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
         $("#bf-dataset-status-spinner").css("display", "none");
-        datasetStatusStatus.innerHTML = res;
+        Swal.fire({
+          title: res,
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
       }
     }
   );
@@ -4004,10 +3718,16 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           console.error(error);
           var emessage = userError(error);
           $("#bf-add-subtitle-dataset-spinner").hide();
-          datasetSubtitleStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentMetadataProgress.style.display = "none";
+          Swal.fire({
+            title: "Failed to add subtitle!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(".synced-progress").css("display", "none");
+          $("#ds-description").val("");
           ipcRenderer.send(
             "track-event",
             "Error",
@@ -4017,8 +3737,14 @@ bfAddSubtitleBtn.addEventListener("click", () => {
         } else {
           log.info("Added subtitle to dataset");
           $("#bf-add-subtitle-dataset-spinner").hide();
-          datasetSubtitleStatus.innerHTML = res;
-          // bfCurrentMetadataProgress.style.display = "none";
+          $("#ds-description").val(inputSubtitle);
+          Swal.fire({
+            title: "Successfully added!",
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(".synced-progress").css("display", "none");
           ipcRenderer.send(
             "track-event",
@@ -4031,6 +3757,33 @@ bfAddSubtitleBtn.addEventListener("click", () => {
     );
   }, delayAnimation);
 });
+
+const validateDescription = (description) => {
+  description = description.trim();
+
+  if (
+    description.search("[*][*]Study Purpose[*][*]") == -1 &&
+    description.search("[*][*]Study Purpose:[*][*]") == -1 &&
+    description.search("[*][*]Study Purpose :[*][*]") == -1
+  ) {
+    return false;
+  }
+  if (
+    description.search("[*][*]Data Collection[*][*]") == -1 &&
+    description.search("[*][*]Data Collection:[*][*]") == -1 &&
+    description.search("[*][*]Data Collection :[*][*]") == -1
+  ) {
+    return false;
+  }
+  if (
+    description.search("[*][*]Primary Conclusion[*][*]") == -1 &&
+    description.search("[*][*]Primary Conclusion:[*][*]") == -1 &&
+    description.search("[*][*]Primary Conclusion :[*][*]") == -1
+  ) {
+    return false;
+  }
+  return true;
+};
 
 // Add description //
 bfAddDescriptionBtn.addEventListener("click", () => {
@@ -4042,48 +3795,100 @@ bfAddDescriptionBtn.addEventListener("click", () => {
     var selectedBfDataset = defaultBfDataset;
     var markdownDescription = tuiInstance.getMarkdown();
 
-    log.info("Adding description to dataset");
-    log.info(markdownDescription);
+    let response = validateDescription(markdownDescription);
 
-    client.invoke(
-      "api_bf_add_description",
-      selectedBfAccount,
-      selectedBfDataset,
-      markdownDescription,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-          $("#bf-add-description-dataset-spinner").hide();
-          datasetDescriptionStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentMetadataProgress.style.display = "none";
-          $(".synced-progress").css("display", "none");
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Manage Dataset - Add/Edit Description",
-            selectedBfDataset
-          );
-        } else {
-          log.info("Added description to dataset");
-          $("#bf-add-description-dataset-spinner").hide();
-          datasetDescriptionStatus.innerHTML = res;
-          $(".synced-progress").css("display", "none");
-          showDatasetDescription();
-          // changeDatasetUnderDD();
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Manage Dataset - Add/Edit Description",
-            selectedBfDataset
-          );
-        }
-      }
-    );
+    if (!response) {
+      Swal.fire({
+        icon: "warning",
+        html: `This description does not seem to follow the SPARC guidelines.
+          Your descriptions should looke like this:
+          <br> <br>
+          <p style="text-align:left">
+            <strong> Study Purpose: </strong> <br>
+            <strong> Data Collection: </strong> <br>
+            <strong> Primary Conclusion: </strong>
+          </p>
+          <br> <br>
+          Are you sure you want to continue?`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Continue",
+        cancelButtonText: "No, I want to edit my description",
+        reverseButtons: true,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then(() => {
+        addDescription(
+          selectedBfAccount,
+          selectedBfDataset,
+          markdownDescription
+        );
+      });
+    } else {
+      addDescription(selectedBfAccount, selectedBfDataset, markdownDescription);
+    }
   }, delayAnimation);
 });
+
+const addDescription = (
+  selectedBfAccount,
+  selectedBfDataset,
+  markdownDescription
+) => {
+  client.invoke(
+    "api_bf_add_description",
+    selectedBfAccount,
+    selectedBfDataset,
+    markdownDescription,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+        var emessage = userError(error);
+        $("#bf-add-description-dataset-spinner").hide();
+        Swal.fire({
+          title: "Failed to add description!",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        $(".synced-progress").css("display", "none");
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Manage Dataset - Add/Edit Description",
+          selectedBfDataset
+        );
+      } else {
+        $("#bf-add-description-dataset-spinner").hide();
+        Swal.fire({
+          title: "Successfully added description!",
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        $(".synced-progress").css("display", "none");
+        showDatasetDescription();
+        changeDatasetUnderDD();
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Manage Dataset - Add/Edit Description",
+          selectedBfDataset
+        );
+      }
+    }
+  );
+};
 
 // upload banner image //
 const Cropper = require("cropperjs");
@@ -4429,7 +4234,6 @@ bfAddLicenseBtn.addEventListener("click", () => {
     // bfCurrentMetadataProgress.style.display = "block";
     $(".synced-progress").css("display", "block");
     $("#bf-add-license-dataset-spinner").show();
-    datasetLicenseStatus.innerHTML = "";
 
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
@@ -4446,9 +4250,14 @@ bfAddLicenseBtn.addEventListener("click", () => {
           console.error(error);
           var emessage = userError(error);
           $("#bf-add-license-dataset-spinner").hide();
-          datasetLicenseStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentMetadataProgress.style.display = "none";
+          Swal.fire({
+            title: "Failed to add the license to your dataset!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(".synced-progress").css("display", "none");
           ipcRenderer.send(
             "track-event",
@@ -4458,7 +4267,13 @@ bfAddLicenseBtn.addEventListener("click", () => {
           );
         } else {
           $("#bf-add-license-dataset-spinner").hide();
-          datasetLicenseStatus.innerHTML = res;
+          Swal.fire({
+            title: "Successfully added license to your dataset!",
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           showCurrentLicense();
           ipcRenderer.send(
             "track-event",
@@ -4474,7 +4289,6 @@ bfAddLicenseBtn.addEventListener("click", () => {
 
 // Make PI owner //
 bfAddPermissionPIBtn.addEventListener("click", () => {
-  datasetPermissionStatusPI.innerHTML = "";
   Swal.fire({
     icon: "warning",
     text: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
@@ -4495,8 +4309,6 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");
       $("#bf-add-permission-pi-spinner").css("visibility", "visible");
-      datasetPermissionStatusPI.innerHTML = "";
-      //disableform(bfPermissionForm);
 
       var selectedBfAccount = defaultBfAccount;
       var selectedBfDataset = defaultBfDataset;
@@ -4522,10 +4334,14 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
             log.error(error);
             console.error(error);
             var emessage = userError(error);
-            datasetPermissionStatusPI.innerHTML =
-              "<span style='color: red;'> " + emessage + "</span>";
-            // bfCurrentPermissionProgress.style.display = "none";
-            // bfAddEditCurrentPermissionProgress.style.display = "none";
+            Swal.fire({
+              title: "Failed to change PI permission!",
+              text: emessage,
+              icon: "error",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
           } else {
             log.info("Changed PI Owner of datset");
             ipcRenderer.send(
@@ -4537,9 +4353,17 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
             let nodeStorage = new JSONStorage(app.getPath("userData"));
             nodeStorage.setItem("previously_selected_PI", selectedUser);
             $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-            datasetPermissionStatusPI.innerHTML = res;
+
             showCurrentPermission();
             changeDatasetRolePI(selectedBfDataset);
+            Swal.fire({
+              title: "Loaded successfully!",
+              text: res,
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
           }
         }
       );
@@ -4547,71 +4371,11 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   });
 });
 
-// ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
-//   $("#bf-add-permission-pi-spinner").css("visibility", "visible");
-//   datasetPermissionStatusPI.innerHTML = "";
-//   //disableform(bfPermissionForm);
-
-//   var selectedBfAccount = defaultBfAccount;
-//   var selectedBfDataset = defaultBfDataset;
-//   var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
-//   var selectedRole = "owner";
-
-//   if (index === 0) {
-//     client.invoke(
-//       "api_bf_add_permission",
-//       selectedBfAccount,
-//       selectedBfDataset,
-//       selectedUser,
-//       selectedRole,
-//       (error, res) => {
-//         if (error) {
-//           ipcRenderer.send(
-//             "track-event",
-//             "Error",
-//             "Manage Dataset - Change PI Owner",
-//             selectedBfDataset
-//           );
-//           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-//           log.error(error);
-//           console.error(error);
-//           var emessage = userError(error);
-//           datasetPermissionStatusPI.innerHTML =
-//             "<span style='color: red;'> " + emessage + "</span>";
-//           // bfCurrentPermissionProgress.style.display = "none";
-//           // bfAddEditCurrentPermissionProgress.style.display = "none";
-//         } else {
-//           ipcRenderer.send(
-//             "track-event",
-//             "Success",
-//             "Manage Dataset - Change PI Owner",
-//             selectedBfDataset
-//           );
-//           let nodeStorage = new JSONStorage(app.getPath("userData"));
-//           nodeStorage.setItem("previously_selected_PI", selectedUser);
-//           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-//           datasetPermissionStatusPI.innerHTML = res;
-//           showCurrentPermission();
-//           changeDatasetRolePI(selectedBfDataset);
-//         }
-//       }
-//     );
-//   } else {
-//     // bfCurrentPermissionProgress.style.display = "none";
-//     // bfAddEditCurrentPermissionProgress.style.display = "none";
-//     $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
-//   }
-// });
-
 // Add permission for user //
 bfAddPermissionBtn.addEventListener("click", () => {
   setTimeout(function () {
     log.info("Adding a permission for a user on a dataset");
     $("#bf-add-permission-user-spinner").show();
-    datasetPermissionStatus.innerHTML = "";
-    // bfCurrentPermissionProgress.style.display = "block";
-    // bfAddEditCurrentPermissionProgress.style.display = "block";
-    //disableform(bfPermissionForm);
 
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
@@ -4624,49 +4388,14 @@ bfAddPermissionBtn.addEventListener("click", () => {
       selectedUser,
       selectedRole
     );
-
-    // if (selectedRole === "owner") {
-    //   ipcRenderer.send("warning-add-permission-owner");
-    // } else {
-    // }
   }, delayAnimation);
 });
-
-// ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
-//   var selectedBfAccount = defaultBfAccount;
-//   var selectedBfDataset = defaultBfDataset;
-//   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
-//   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
-
-//   datasetPermissionStatus.innerHTML = "";
-
-//   if (index === 0) {
-//     addPermissionUser(
-//       selectedBfAccount,
-//       selectedBfDataset,
-//       selectedUser,
-//       selectedRole
-//     );
-//     ipcRenderer.send(
-//       "track-event",
-//       "Success",
-//       "Manage Dataset - Add User Permission",
-//       selectedBfDataset
-//     );
-//     $("#bf-add-permission-user-spinner").hide();
-//   } else {
-//     $("#bf-add-permission-user-spinner").hide();
-//     // bfCurrentPermissionProgress.style.display = "none";
-//     // bfAddEditCurrentPermissionProgress.style.display = "none";
-//   }
-// });
 
 // Add permission for team
 bfAddPermissionTeamBtn.addEventListener("click", () => {
   setTimeout(function () {
     log.info("Adding a permission for a team on a dataset");
     $("#bf-add-permission-team-spinner").show();
-    datasetPermissionStatusTeam.innerHTML = "";
 
     var selectedBfAccount = defaultBfAccount;
     var selectedBfDataset = defaultBfDataset;
@@ -4686,14 +4415,25 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
           console.error(error);
           var emessage = userError(error);
           $("#bf-add-permission-team-spinner").hide();
-          datasetPermissionStatusTeam.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
-          // bfCurrentPermissionProgress.style.display = "none";
-          // bfAddEditCurrentPermissionProgress.style.display = "none";
+          Swal.fire({
+            title: "Failed to change permission!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
         } else {
           log.info("Added permission for the team");
           $("#bf-add-permission-team-spinner").hide();
-          datasetPermissionStatusTeam.innerHTML = res + ". " + smileyCan;
+          Swal.fire({
+            title: "Successfully changed permission!",
+            text: res,
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           showCurrentPermission();
         }
       }
@@ -4918,14 +4658,6 @@ function removeOptions(selectbox) {
   }
 }
 
-// function clearStrings() {
-//   document.getElementById("para-save-file-organization-status").innerHTML = "";
-//   document.getElementById(
-//     "para-preview-organization-status-metadata"
-//   ).innerHTML = "";
-//   document.getElementById("para-selected-dataset").innerHTML = "";
-// }
-
 function userError(error) {
   var myerror = error.message;
   return myerror;
@@ -4993,12 +4725,14 @@ function showCurrentDescription() {
           log.error(error);
           console.error(error);
         } else {
-          tuiInstance.setMarkdown(res);
-          if ((res = "")) {
+          if (res == "") {
+            res = `**Study Purpose:** &nbsp; \n \n **Data Collection:** &nbsp; \n \n **Primary Conclusion:** &nbsp; `;
+            tuiInstance.setMarkdown(res);
             $("#button-add-description > .btn_animated-inside").html(
               "Add description"
             );
           } else {
+            tuiInstance.setMarkdown(res);
             $("#button-add-description > .btn_animated-inside").html(
               "Edit description"
             );
@@ -5076,7 +4810,6 @@ function showCurrentLicense() {
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
-    // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
   } else {
     client.invoke(
@@ -5087,16 +4820,22 @@ function showCurrentLicense() {
         if (error) {
           log.error(error);
           console.error(error);
-          // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
         } else {
           currentDatasetLicense.innerHTML = res;
           if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
             $("#assign-a-license-header").hide();
-            $("#para-dataset-license-status").html(
-              "You are all set. This dataset already has the correct license assigned."
-            );
+            if ($("#add_license-section").hasClass("is-shown")) {
+              Swal.fire({
+                title:
+                  "You are all set. This dataset already has the correct license assigned.",
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                showConfirmButton: true,
+                icon: "success",
+              });
+            }
           } else {
             $("#button-add-license").show();
             $("#assign-a-license-header").show();
@@ -5248,15 +4987,25 @@ function addPermissionUser(
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        datasetPermissionStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
-        // bfCurrentPermissionProgress.style.display = "none";
-        // bfAddEditCurrentPermissionProgress.style.display = "none";
+        Swal.fire({
+          title: "Failed to change permission!",
+          text: emessage,
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
       } else {
         log.info("Dataset permission added");
-        datasetPermissionStatus.innerHTML = res;
+        Swal.fire({
+          title: "Successfully changed permission!",
+          text: res,
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
         showCurrentPermission();
-
         // refresh dataset lists with filter
         client.invoke("api_get_username", selectedBfAccount, (error, res1) => {
           if (error) {
@@ -5306,12 +5055,10 @@ function showCurrentDatasetStatus(callback) {
   if (selectedBfDataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
-    datasetStatusStatus.innerHTML = "";
     removeOptions(bfListDatasetStatus);
     removeRadioOptions("dataset_status_ul");
     bfListDatasetStatus.style.color = "black";
   } else {
-    datasetStatusStatus.innerHTML = "";
     client.invoke(
       "api_bf_get_dataset_status",
       selectedBfAccount,
@@ -5321,8 +5068,14 @@ function showCurrentDatasetStatus(callback) {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
-          datasetStatusStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
+          Swal.fire({
+            title: "Failed to change dataset status!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
         } else {
@@ -5349,7 +5102,6 @@ function showCurrentDatasetStatus(callback) {
           selectOptionColor(bfListDatasetStatus);
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
-          datasetStatusStatus.innerHTML = "";
           if (callback !== undefined) {
             callback();
           }
@@ -5420,10 +5172,10 @@ function populateDatasetDropdowns(mylist) {
   // changeDatasetUnderDD();
 }
 
-// function changeDatasetUnderDD() {
-//   datasetDescriptionFileDataset.value = defaultBfDataset;
-//   showDatasetDescription();
-// }
+function changeDatasetUnderDD() {
+  datasetDescriptionFileDataset.value = defaultBfDataset;
+  showDatasetDescription();
+}
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 function loadDefaultAccount() {
@@ -5510,9 +5262,6 @@ function showCurrentDOI() {
 function showPublishingStatus(callback) {
   if (callback == "noClear") {
     var nothing;
-  } else {
-    $("#para-share-curation_team-status").text("");
-    $("#para-share-with-sparc-consortium-status").text("");
   }
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span")
@@ -5680,6 +5429,15 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
+      preConfirm: (value) => {
+        for (var char of nonAllowedCharacters) {
+          if (value.includes(char)) {
+            Swal.showValidationMessage(
+              `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
+            );
+          }
+        }
+      },
     }).then((result) => {
       if (result.value) {
         if (result.value !== null && result.value !== "") {
@@ -5764,19 +5522,43 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
-function populateJSONObjFolder(jsonObject, folderPath) {
+function populateJSONObjFolder(action, jsonObject, folderPath) {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
     if (statsObj.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(element)) {
-      jsonObject["folders"][element] = {
-        type: "local",
-        folders: {},
-        files: {},
-        action: ["new"],
-      };
-      populateJSONObjFolder(jsonObject["folders"][element], addedElement);
+      if (irregularFolderArray.includes(addedElement)) {
+        var renamedFolderName = "";
+        if (action !== "ignore" && action !== "") {
+          if (action === "remove") {
+            renamedFolderName = removeIrregularFolders(element);
+          } else if (action === "replace") {
+            renamedFolderName = replaceIrregularFolders(element);
+          }
+          jsonObject["folders"][renamedFolderName] = {
+            type: "local",
+            folders: {},
+            files: {},
+            path: addedElement,
+            action: ["new", "renamed"],
+          };
+          element = renamedFolderName;
+        }
+      } else {
+        jsonObject["folders"][element] = {
+          type: "local",
+          folders: {},
+          files: {},
+          path: addedElement,
+          action: ["new"],
+        };
+      }
+      populateJSONObjFolder(
+        action,
+        jsonObject["folders"][element],
+        addedElement
+      );
     } else if (statsObj.isFile() && !/(^|\/)\.[^\/\.]/g.test(element)) {
       jsonObject["files"][element] = {
         path: addedElement,
@@ -5915,50 +5697,6 @@ var bfAddAccountBootboxMessage = `<form>
   </form>`;
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
-
-var editSPARCAwardsTitle =
-  "<h3 style='text-align:center'> Add/Remove your SPARC Award(s) below: <i class='fas fa-info-circle popover-tooltip' data-content='The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on Add to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.' rel='popover' data-placement='right' data-html='true' data-trigger='hover'></i></h3>";
-
-function editSPARCAwardsBootbox() {
-  $(sparcAwardEditMessage).css("display", "block");
-  var bootb = bootbox.dialog({
-    title: editSPARCAwardsTitle,
-    message: sparcAwardEditMessage,
-    buttons: {
-      cancel: {
-        label: "Cancel",
-      },
-      confirm: {
-        label: "Confirm",
-        className: "btn btn-primary bootbox-add-airtable-class",
-        callback: function () {
-          $(bootb).find(".modal-footer span").remove();
-          var message = addSPARCAwards();
-          bootb.find(".modal-footer").prepend(message);
-          if (
-            $(".bootbox-add-airtable-class").text() == "Confirm" &&
-            $(bootb).find(".modal-footer span").text() == ""
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        },
-      },
-    },
-    size: "medium",
-    centerVertical: true,
-    onShown: function (e) {
-      $(".popover-tooltip").each(function () {
-        var $this = $(this);
-        $this.popover({
-          trigger: "hover",
-          container: $this,
-        });
-      });
-    },
-  });
-}
 
 retrieveBFAccounts();
 
@@ -6194,13 +5932,57 @@ organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-folders-organize-datasets", (event, path) => {
+ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
+  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+  irregularFolderArray = [];
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  addFoldersfunction(path, myPath);
+  for (var ele of pathElement) {
+    detectIrregularFolders(path.basename(ele), ele);
+  }
+  if (irregularFolderArray.length > 0) {
+    Swal.fire({
+      title:
+        "The following folders contain non-allowed characters in their names. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        irregularFolderArray.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Replace characters with (-)",
+      denyButtonText: "Remove characters",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+      footer: footer,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        addFoldersfunction(
+          "replace",
+          irregularFolderArray,
+          pathElement,
+          myPath
+        );
+      } else if (result.isDenied) {
+        addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
+      }
+    });
+  } else {
+    addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+  }
 });
 
-function addFoldersfunction(folderArray, currentLocation) {
+function addFoldersfunction(
+  action,
+  nonallowedFolderArray,
+  folderArray,
+  currentLocation
+) {
   var uiFolders = {};
   var importedFolders = {};
 
@@ -6219,23 +6001,41 @@ function addFoldersfunction(folderArray, currentLocation) {
       backdrop: "rgba(0,0,0, 0.4)",
     });
   } else {
+    // if non-allowed characters are detected, do the action
+    // AND
     // check for duplicates/folders with the same name
     for (var i = 0; i < folderArray.length; i++) {
       var j = 1;
       var originalFolderName = path.basename(folderArray[i]);
       var renamedFolderName = originalFolderName;
-      while (
-        renamedFolderName in uiFolders ||
-        renamedFolderName in importedFolders
-      ) {
-        renamedFolderName = `${originalFolderName} (${j})`;
-        j++;
+
+      if (nonallowedFolderArray.includes(folderArray[i])) {
+        if (action !== "ignore" && action !== "") {
+          if (action === "remove") {
+            renamedFolderName = removeIrregularFolders(folderArray[i]);
+          } else if (action === "replace") {
+            renamedFolderName = replaceIrregularFolders(folderArray[i]);
+          }
+          importedFolders[renamedFolderName] = {
+            path: folderArray[i],
+            "original-basename": originalFolderName,
+          };
+        }
+      } else {
+        while (
+          renamedFolderName in uiFolders ||
+          renamedFolderName in importedFolders
+        ) {
+          renamedFolderName = `${originalFolderName} (${j})`;
+          j++;
+        }
+        importedFolders[renamedFolderName] = {
+          path: folderArray[i],
+          "original-basename": originalFolderName,
+        };
       }
-      importedFolders[renamedFolderName] = {
-        path: folderArray[i],
-        "original-basename": originalFolderName,
-      };
     }
+
     if (Object.keys(importedFolders).length > 0) {
       for (var element in importedFolders) {
         currentLocation["folders"][element] = {
@@ -6246,6 +6046,7 @@ function addFoldersfunction(folderArray, currentLocation) {
           action: ["new"],
         };
         populateJSONObjFolder(
+          action,
           currentLocation["folders"][element],
           importedFolders[element]["path"]
         );
@@ -6282,9 +6083,14 @@ function allowDrop(ev) {
   ev.preventDefault();
 }
 
-async function drop(ev) {
+var filesElement;
+var targetElement;
+function drop(ev) {
+  irregularFolderArray = [];
+  var action = "";
+  filesElement = ev.dataTransfer.files;
+  targetElement = ev.target;
   // get global path
-
   var currentPath = organizeDSglobalPath.value;
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -6305,16 +6111,86 @@ async function drop(ev) {
   for (var folder in myPath["folders"]) {
     uiFolders[path.parse(folder).name] = 1;
   }
-
   for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+    var ele = ev.dataTransfer.files[i].path;
+    detectIrregularFolders(path.basename(ele), ele);
+  }
+  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+  if (irregularFolderArray.length > 0) {
+    Swal.fire({
+      title:
+        "The following folders contain non-allowed characters in their names. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        irregularFolderArray.join("</br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Replace characters with (-)",
+      denyButtonText: "Remove characters",
+      cancelButtonText: "Cancel",
+      footer: footer,
+      didOpen: () => {
+        $(".swal-popover").popover();
+      },
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        action = "replace";
+      } else if (result.isDenied) {
+        action = "remove";
+      } else {
+        return;
+      }
+      dropHelper(
+        filesElement,
+        targetElement,
+        action,
+        myPath,
+        importedFiles,
+        importedFolders,
+        nonAllowedDuplicateFiles,
+        uiFiles,
+        uiFolders
+      );
+    });
+  } else {
+    dropHelper(
+      filesElement,
+      targetElement,
+      "",
+      myPath,
+      importedFiles,
+      importedFolders,
+      nonAllowedDuplicateFiles,
+      uiFiles,
+      uiFolders
+    );
+  }
+}
+
+function dropHelper(
+  ev1,
+  ev2,
+  action,
+  myPath,
+  importedFiles,
+  importedFolders,
+  nonAllowedDuplicateFiles,
+  uiFiles,
+  uiFolders
+) {
+  for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
-    var itemPath = ev.dataTransfer.files[i].path;
+    var itemPath = ev1[i].path;
     var itemName = path.parse(itemPath).base;
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
     // check for duplicate or files with the same name
-    for (var j = 0; j < ev.target.children.length; j++) {
-      if (itemName === ev.target.children[j].innerText) {
+    for (var j = 0; j < ev2.children.length; j++) {
+      if (itemName === ev2.children[j].innerText) {
         duplicate = true;
         break;
       }
@@ -6381,17 +6257,32 @@ async function drop(ev) {
         var j = 1;
         var originalFolderName = itemName;
         var renamedFolderName = originalFolderName;
-        while (
-          renamedFolderName in uiFolders ||
-          renamedFolderName in importedFolders
-        ) {
-          renamedFolderName = `${originalFolderName} (${j})`;
-          j++;
+
+        if (irregularFolderArray.includes(itemPath)) {
+          if (action !== "ignore" && action !== "") {
+            if (action === "remove") {
+              renamedFolderName = removeIrregularFolders(itemName);
+            } else if (action === "replace") {
+              renamedFolderName = replaceIrregularFolders(itemName);
+            }
+            importedFolders[renamedFolderName] = {
+              path: itemPath,
+              "original-basename": originalFolderName,
+            };
+          }
+        } else {
+          while (
+            renamedFolderName in uiFolders ||
+            renamedFolderName in importedFolders
+          ) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {
+            path: itemPath,
+            "original-basename": originalFolderName,
+          };
         }
-        importedFolders[renamedFolderName] = {
-          path: itemPath,
-          "original-basename": originalFolderName,
-        };
       }
     }
   }
@@ -6433,10 +6324,10 @@ async function drop(ev) {
         );
       }
       var appendString =
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         importedFiles[element]["basename"] +
         "</div></div>";
-      $(appendString).appendTo(ev.target);
+      $(appendString).appendTo(ev2);
       listItems(myPath, "#items");
       getInFolder(
         ".single-item",
@@ -6463,12 +6354,14 @@ async function drop(ev) {
         '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
         element +
         "... </div></div>";
-      $(placeholderString).appendTo(ev.target);
-      await listItems(myPath, "#items");
+      $(placeholderString).appendTo(ev2);
+      // await listItems(myPath, "#items");
+      listItems(myPath, "#items");
       if (element !== originalName) {
         myPath["folders"][element]["action"].push("renamed");
       }
       populateJSONObjFolder(
+        action,
         myPath["folders"][element],
         importedFolders[element]["path"]
       );
@@ -6477,7 +6370,7 @@ async function drop(ev) {
         element +
         "</div></div>";
       $("#placeholder_element").remove();
-      $(appendString).appendTo(ev.target);
+      $(appendString).appendTo(ev2);
       listItems(myPath, "#items");
       getInFolder(
         ".single-item",
@@ -6490,6 +6383,57 @@ async function drop(ev) {
     }
   }
   $("body").removeClass("waiting");
+}
+
+var irregularFolderArray = [];
+function detectIrregularFolders(folderName, pathEle) {
+  if (checkIrregularNameBoolean(folderName)) {
+    irregularFolderArray.push(pathEle);
+  }
+  if (fs.lstatSync(pathEle).isDirectory()) {
+    fs.readdirSync(pathEle).forEach(function (folder) {
+      var stat = fs.statSync(path.join(pathEle, folder));
+      if (stat && stat.isDirectory()) {
+        detectIrregularFolders(folder, path.join(pathEle, folder));
+      }
+      return irregularFolderArray;
+    });
+  }
+}
+
+function checkIrregularNameBoolean(folderName) {
+  for (var char of nonAllowedCharacters) {
+    if (folderName.includes(char)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
+   or remove the characters from the names.
+   All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
+                                     "paths": array of all the paths with special characters detected}
+*/
+
+function replaceIrregularFolders(pathElement) {
+  var str = path.basename(pathElement);
+  for (var char of nonAllowedCharacters) {
+    if (str.includes(char)) {
+      str = str.replace(char, "-");
+    }
+  }
+  return str;
+}
+
+function removeIrregularFolders(pathElement) {
+  var str = path.basename(pathElement);
+  for (var char of nonAllowedCharacters) {
+    if (str.includes(char)) {
+      str = str.replace(char, "");
+    }
+  }
+  return str;
 }
 
 // SAVE FILE ORG
@@ -7013,7 +6957,7 @@ function listItems(jsonObj, uiItem) {
       appendString +
       '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
       extension +
-      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc' +
+      '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
       cloud_item +
       '">' +
       item +
@@ -7164,34 +7108,36 @@ $("#bf-rename-dataset-name").keyup(function () {
 
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      $("#para-rename-dataset-message").html(
-        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
-      );
+      Swal.fire({
+        title:
+          "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+      });
       $("#button-rename-dataset").hide();
     } else {
-      $("#para-rename-dataset-message").html("");
       $("#button-rename-dataset").show();
     }
   } else {
-    if (newName == "") {
-      $("#para-rename-dataset-message").html("");
-    }
     $("#button-rename-dataset").hide();
   }
 });
 
 $("#bf-new-dataset-name").keyup(function () {
   let newName = $("#bf-new-dataset-name").val().trim();
-  $("#para-add-new-dataset-status").text("");
 
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      $("#para-new-name-dataset-message").html(
-        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
-      );
+      Swal.fire({
+        title:
+          "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        icon: "error",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+      });
       $("#button-create-bf-new-dataset").hide();
     } else {
-      $("#para-new-name-dataset-message").html("");
       $("#button-create-bf-new-dataset").show();
     }
   } else {
@@ -7236,40 +7182,12 @@ $("#inputNewNameDataset").keyup(function () {
 
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
-      // $("#nextBtn").prop("disabled", false);
     }
   } else {
     $("#div-confirm-inputNewNameDataset").css("display", "none");
     $("#btn-confirm-new-dataset-name").hide();
-    // $("#nextBtn").prop("disabled", true);
   }
 });
-
-// Defined above
-// $("#inputNewNameDataset").click(function () {
-//   var newName = $("#inputNewNameDataset").val().trim();
-
-//   if (newName !== "") {
-//     if (check_forbidden_characters_bf(newName)) {
-//       document.getElementById("div-confirm-inputNewNameDataset").style.display =
-//         "none";
-//       $("#btn-confirm-new-dataset-name").hide();
-//       $("#nextBtn").prop("disabled", true);
-//       $("#Question-generate-dataset-generate-div-old").removeClass("show");
-//     } else {
-//       $("#div-confirm-inputNewNameDataset").css("display", "flex");
-//       $("#btn-confirm-new-dataset-name").show();
-//       $("#Question-generate-dataset-generate-div").show();
-//       $("#Question-generate-dataset-generate-div").children().show();
-
-//       $("#Question-generate-dataset-generate-div-old").addClass("show");
-//       document.getElementById("para-new-name-dataset-message").innerHTML = "";
-//       $("#nextBtn").prop("disabled", false);
-//     }
-//   } else {
-//     $("#nextBtn").prop("disabled", true);
-//   }
-// });
 
 //// Select to choose a local dataset (getting started)
 document
@@ -7309,16 +7227,66 @@ ipcRenderer.on(
             document.getElementById("input-destination-getting-started-locally")
               .placeholder
           );
-          sodaJSONObj["starting-point"]["local-path"] = filepath[0];
-          create_json_object(sodaJSONObj);
-          datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-          populate_existing_folders(datasetStructureJSONObj);
-          populate_existing_metadata(sodaJSONObj);
           if (valid_dataset == true) {
-            $("#para-continue-location-dataset-getting-started").text(
-              "Please continue below."
-            );
-            $("#nextBtn").prop("disabled", false);
+            var action = "";
+            irregularFolderArray = [];
+            detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+            var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+            if (irregularFolderArray.length > 0) {
+              Swal.fire({
+                title:
+                  "The following folders contain non-allowed characters in their names. How should we handle them?",
+                html:
+                  "<div style='max-height:300px; overflow-y:auto'>" +
+                  irregularFolderArray.join("</br>") +
+                  "</div>",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Replace characters with (-)",
+                denyButtonText: "Remove characters",
+                cancelButtonText: "Cancel",
+                didOpen: () => {
+                  $(".swal-popover").popover();
+                },
+                footer: footer,
+              }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                  action = "replace";
+                } else if (result.isDenied) {
+                  action = "remove";
+                } else {
+                  document.getElementById(
+                    "input-destination-getting-started-locally"
+                  ).placeholder = "Browse here";
+                  sodaJSONObj["starting-point"]["local-path"] = "";
+                  $("#para-continue-location-dataset-getting-started").text("");
+                  return;
+                }
+                sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+                create_json_object(action, sodaJSONObj);
+                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                populate_existing_folders(datasetStructureJSONObj);
+                populate_existing_metadata(sodaJSONObj);
+                $("#para-continue-location-dataset-getting-started").text(
+                  "Please continue below."
+                );
+                $("#nextBtn").prop("disabled", false);
+              });
+            } else {
+              action = "";
+              sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+              create_json_object(action, sodaJSONObj);
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              populate_existing_folders(datasetStructureJSONObj);
+              populate_existing_metadata(sodaJSONObj);
+              $("#para-continue-location-dataset-getting-started").text(
+                "Please continue below."
+              );
+              $("#nextBtn").prop("disabled", false);
+            }
           } else {
             Swal.fire({
               icon: "warning",
@@ -7340,10 +7308,6 @@ ipcRenderer.on(
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                $("#nextBtn").prop("disabled", false);
-                $("#para-continue-location-dataset-getting-started").text(
-                  "Please continue below."
-                );
               } else {
                 document.getElementById(
                   "input-destination-getting-started-locally"
@@ -7455,15 +7419,18 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 document
   .getElementById("button-generate")
   .addEventListener("click", async function () {
-    // setTimeout(function () {
     $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+    document.getElementById(
+      "para-new-curate-progress-bar-error-status"
+    ).innerHTML = "";
+    document.getElementById("para-please-wait-new-curate").innerHTML = "";
     document.getElementById("prevBtn").style.display = "none";
     document.getElementById("start-over-btn").style.display = "none";
     document.getElementById("div-vertical-progress-bar").style.display = "none";
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
       "flex";
-    // forceActionSidebar("hide");
+    $("#sidebarCollapse").prop("disabled", true);
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
@@ -7499,6 +7466,7 @@ document
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
+        $("#sidebarCollapse").prop("disabled", false);
         return;
       }
     }
@@ -7546,6 +7514,7 @@ document
             "<span style='color: red;'> Error: " + emessage + "</span>";
           document.getElementById("para-please-wait-new-curate").innerHTML = "";
           console.error(error);
+          $("#sidebarCollapse").prop("disabled", false);
         } else {
           document.getElementById("para-please-wait-new-curate").innerHTML =
             "Please wait...";
@@ -7565,8 +7534,6 @@ document
               backend_to_frontend_warning_message(error_folders);
             message += error_message_folders;
           }
-
-          // $("#save-progress-btn").hide();
 
           if (message) {
             message += "Would you like to continue?";
@@ -7593,9 +7560,7 @@ document
                 initiate_generate();
               } else {
                 console.log("Stop");
-                // then show the sidebar again
-                // forceActionSidebar("show");
-                // $("#save-progress-btn").show();
+                $("#sidebarCollapse").prop("disabled", false);
                 document.getElementById(
                   "para-please-wait-new-curate"
                 ).innerHTML = "Return to make changes";
@@ -7603,28 +7568,13 @@ document
                   "flex";
               }
             });
-            // ipcRenderer.send('warning-empty-files-folders-generate', message)
           } else {
             initiate_generate();
           }
         }
       }
     );
-    // }, 250);
   });
-
-// ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
-//   if (index === 0) {
-//     console.log("Continue")
-//     initiate_generate()
-//   } else {
-//     console.log("Stop")
-//     // then show the sidebar again
-//     forceActionSidebar('show')
-//     document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
-//     document.getElementById('div-generate-comeback').style.display = "flex"
-//   }
-// })
 
 const delete_imported_manifest = () => {
   for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -7687,6 +7637,7 @@ function initiate_generate() {
 
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
+      $("#sidebarCollapse").prop("disabled", false);
       var emessage = userError(error);
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
@@ -7771,6 +7722,7 @@ function initiate_generate() {
         }
       );
     } else {
+      $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
       console.log("Completed curate function");
       if (manifest_files_requested) {
@@ -7980,6 +7932,7 @@ function initiate_generate() {
     });
 
     if (main_curate_status === "Done") {
+      $("#sidebarCollapse").prop("disabled", false);
       countDone++;
       if (countDone > 1) {
         log.info("Done curate track");
@@ -8205,15 +8158,6 @@ const curation_consortium_check = (mode = "") => {
   let selected_dataset = defaultBfDataset;
 
   $(".spinner.post-curation").show();
-  $("#para-share-curation_team-status").css(
-    "color",
-    "var(--color-light-green)"
-  );
-  $("#para-share-with-sparc-consortium-status").css(
-    "color",
-    "var(--color-light-green)"
-  );
-
   $("#curation-team-unshare-btn").hide();
   $("#sparc-consortium-unshare-btn").hide();
   $("#curation-team-share-btn").hide();
@@ -8240,15 +8184,22 @@ const curation_consortium_check = (mode = "") => {
       if (res.search("SPARC Consortium") == -1) {
         $("#current_curation_team_status").text("None");
         $("#current_sparc_consortium_status").text("None");
-
-        $("#para-share-curation_team-status").css("color", "red");
-        $("#para-share-curation_team-status").text(
-          "This account is not in the SPARC Consortium organization. Please switch accounts and try again"
-        );
-        $("#para-share-with-sparc-consortium-status").css("color", "red");
-        $("#para-share-with-sparc-consortium-status").text(
-          "This account is not in the SPARC Consortium organization. Please switch accounts and try again"
-        );
+        Swal.fire({
+          title: "Failed to share with Curation team!",
+          text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again",
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        Swal.fire({
+          title: "Failed to share with the SPARC Consortium!",
+          text: "This account is not in the SPARC Consortium organization. Please switch accounts and try again.",
+          icon: "error",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
 
         if (mode != "update") {
           $("#curation-team-unshare-btn").hide();
@@ -8393,11 +8344,6 @@ const curation_consortium_check = (mode = "") => {
                       );
                       $("#curation-team-unshare-btn").show();
                       $("#curation-team-share-btn").hide();
-                      if (mode != "update") {
-                        $("#para-share-curation_team-status").text(
-                          "You are all set! This dataset has already been shared with the Curation team."
-                        );
-                      }
                     }
 
                     if (consortium_return_status) {
@@ -8409,11 +8355,6 @@ const curation_consortium_check = (mode = "") => {
                       );
                       $("#sparc-consortium-unshare-btn").show();
                       $("#sparc-consortium-share-btn").hide();
-                      if (mode != "update") {
-                        $("#para-share-with-sparc-consortium-status").text(
-                          "You are all set! This dataset has already been shared with the SPARC Consortium."
-                        );
-                      }
                     }
 
                     if (curation_return_status && consortium_return_status) {
@@ -8496,6 +8437,12 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           var emessage = userError(error);
           log.error(error);
           console.error(error);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Retreive Dataset - Pennsieve",
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+          );
           $("body").removeClass("waiting");
           ipcRenderer.send(
             "track-event",
@@ -8508,8 +8455,8 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Generate Manifest - Local Preview",
-            dataset_name
+            "Retreive Dataset - Pennsieve",
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
         }
       }
@@ -8631,7 +8578,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
 }
 
 function showAddAirtableAccountSweetalert(keyword) {
-  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle swal-popover  " data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
   var bootb = Swal.fire({
     title: htmlTitle,
@@ -8644,6 +8591,8 @@ function showAddAirtableAccountSweetalert(keyword) {
     heightAuto: false,
     reverseButtons: reverseSwalButtons,
     customClass: "swal-wide",
+    footer:
+      "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank' style='text-decoration:none'> Where do i find my Airtable API key?</a>",
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
     },
@@ -8651,7 +8600,13 @@ function showAddAirtableAccountSweetalert(keyword) {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     didOpen: () => {
-      $(".swal-popover").popover();
+      // $(".swal-popover").popover();
+      tippy("[data-tippy-content]", {
+        allowHTML: true,
+        interactive: true,
+        placement: "right",
+        theme: "light",
+      });
     },
   }).then((result) => {
     if (result.isConfirmed) {
@@ -8661,7 +8616,8 @@ function showAddAirtableAccountSweetalert(keyword) {
 }
 
 function addAirtableAccountInsideSweetalert(keyword) {
-  var name = $("#bootbox-airtable-key-name").val();
+  // var name = $("#bootbox-airtable-key-name").val();
+  var name = "SODA-Airtable";
   var key = $("#bootbox-airtable-key").val();
   if (name.length === 0 || key.length === 0) {
     var errorMessage =
@@ -8680,7 +8636,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
     Swal.fire({
       icon: "warning",
       title: "Connect to Airtable",
-      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue?",
       heightAuto: false,
       showCancelButton: true,
       focusCancel: true,
@@ -8699,7 +8655,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
         const optionsSparcTable = {
           hostname: airtableHostname,
           port: 443,
-          path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+          path: "/v0/appSDqnnxSuM1s2F7/sparc_members",
           headers: { Authorization: `Bearer ${key}` },
         };
         var sparcTableSuccess;
@@ -8717,13 +8673,13 @@ function addAirtableAccountInsideSweetalert(keyword) {
             ).innerHTML = "";
             // $("#span-airtable-keyname").html(name);
             $("#current-airtable-account").html(name);
-            $("#bootbox-airtable-key-name").val("");
+            // $("#bootbox-airtable-key-name").val("");
             $("#bootbox-airtable-key").val("");
             loadAwardData();
-            ddNoAirtableMode("Off");
+            // ddNoAirtableMode("Off");
             Swal.fire({
               title: "Successfully connected. Loading your Airtable account...",
-              timer: 15000,
+              timer: 10000,
               timerProgressBar: false,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
@@ -8733,7 +8689,10 @@ function addAirtableAccountInsideSweetalert(keyword) {
               didOpen: () => {
                 Swal.showLoading();
               },
+            }).then((result) => {
+              helpSPARCAward("submission");
             });
+            // helpSPARCAward("submission")
             ipcRenderer.send(
               "track-event",
               "Success",
@@ -8797,3 +8756,81 @@ function addAirtableAccountInsideSweetalert(keyword) {
     });
   }
 }
+//
+// $("#resetSODASettings").on("click", () => {
+//   let currentPath = path.join(homeDirectory, ".pennsieve");
+//   let newPath = path.join(homeDirectory, ".pennsieve2");
+//
+//   if (fs.existsSync(currentPath)) {
+//     fs.rename(currentPath, newPath, function (err) {
+//       if (err) {
+//         console.log(err);
+//       }
+//     });
+//   }
+
+//   currentPath = path.join(homeDirectory, "SODA");
+//   newPath = path.join(homeDirectory, "SODA2");
+//
+//   if (fs.existsSync(currentPath)) {
+//     fs.rename(currentPath, newPath, function (err) {
+//       if (err) {
+//         Swal.fire({
+//           icon: "error",
+//           text: `Reset failed! - ${err}`,
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0,0.4)",
+//         });
+//       } else {
+//         Swal.fire({
+//           icon: "success",
+//           text: "Reset successful!",
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0,0.4)",
+//         });
+//       }
+//     });
+//   }
+// });
+
+// $("#restoreSODASettings").on("click", async () => {
+//   let currentPath = path.join(homeDirectory, ".pennsieve2");
+//   let newPath = path.join(homeDirectory, ".pennsieve");
+//
+//   if (fs.existsSync(currentPath)) {
+//     if (fs.existsSync(newPath)) {
+//       await fs.removeSync(newPath);
+//     }
+//     fs.rename(currentPath, newPath, function (err) {
+//       if (err) {
+//         console.log(err);
+//       }
+//     });
+// }
+
+//   currentPath = path.join(homeDirectory, "SODA2");
+//   newPath = path.join(homeDirectory, "SODA");
+//
+//   if (fs.existsSync(currentPath)) {
+//     if (fs.existsSync(newPath)) {
+//       await fs.removeSync(newPath);
+//     }
+//     fs.rename(currentPath, newPath, function (err) {
+//       if (err) {
+//         Swal.fire({
+//           icon: "error",
+//           text: `Restore failed! - ${err}`,
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0,0.4)",
+//         });
+//       } else {
+//         Swal.fire({
+//           icon: "success",
+//           text: "Restore successful!",
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0,0.4)",
+//         });
+//       }
+//     });
+//   }
+// });

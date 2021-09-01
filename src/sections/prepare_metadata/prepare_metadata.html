@@ -989,62 +989,820 @@
       <div
         class="individual-question prepare-submission show"
         id="Question-prepare-submission-1"
-        style="margin-top: 20px"
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Let's check your Airtable connection status:
+              >Please select an option below:
+            </label>
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+              "
+            >
+              <div style="margin: 15px 0">
+                <div
+                  class="option-card radio-button"
+                  data-next="Question-prepare-submission-2"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                  style="
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                  "
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="submission-1"
+                        type="radio"
+                        id="submission-1-B"
+                      />
+                      <label for="submission-1-B"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40px"
+                      height="40px"
+                      fill="var(--color-accent)"
+                      class="bi bi-file-earmark-plus"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                      />
+                    </svg>
+                    <h2>I want to start a new submission.xlsx file</h2>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="margin: 15px 0"
+                class="coming-soon-div"
+                data-content="Coming soon..."
+                rel="popover"
+                data-placement="bottom"
+                data-trigger="hover"
+              >
+                <div
+                  class="option-card radio-button"
+                  data-next="Question-prepare-submission-3"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                  style="
+                    pointer-events: none;
+                    background: #f6f6f6;
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                  "
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="submission-1"
+                        type="radio"
+                        id="submission-1-A"
+                      />
+                      <label for="submission-1-A"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-subtle)"
+                    ></i>
+                    <h2>
+                      I want to continue working on an existing submission.xlsx
+                      file
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-2"
+        style="margin-top: 20px"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="field">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                margin-bottom: 20px;
+                text-align: center;
+              "
+              >Fill out the sections below and generate your submission file
+            </label>
+            <div class="ui styled accordion" style="width: 100% !important">
+              <div
+                class="title active"
+                style="background: var(--color-bg-light-green-button)"
+              >
+                <i class="dropdown icon"></i>
+                Award and milestone information
+              </div>
+              <div class="content active">
+                <div
+                  style="
+                    display: block;
+                    width: 90%;
+                    margin: 0 auto;
+                    font-size: 13px;
+                  "
+                >
+                  <div>
+                    <div
+                      class="div-dd-info"
+                      style="
+                        margin-top: 10px;
+                        margin-bottom: 15px;
+                        flex-direction: column;
+                      "
+                    >
+                      <div
+                        class="demo-controls-head"
+                        style="text-align: left; width: 90%; margin-bottom: 5px"
+                      >
+                        <div style="width: 100%">
+                          <font style="font-weight: 600; color: #090909">
+                            SPARC Award number:
+                          </font>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="SPARC award associated with the dataset."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                            style="margin-left: 5px; color: black"
+                          ></i>
+                        </div>
+                      </div>
+                      <div class="demo-controls-body" style="width: 90%">
+                        <div class="ui input modified">
+                          <input
+                            type="text"
+                            id="submission-sparc-award"
+                            name="dataset name"
+                            placeholder="Type here..."
+                            style="font-size: 14px"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: center;
+                        margin: 0 auto;
+                        text-decoration: none;
+                        text-align: center;
+                        font-size: 14px;
+                        margin-top: 10px;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      <a onclick="helpSPARCAward('submission')" target="_blank">
+                        Click here to import my SPARC award from Airtable
+                      </a>
+                      <div
+                        id="select-sparc-award-submission-spinner"
+                        class="ui active green inline loader sparc-award small"
+                        style="display: none; margin-left: 10px"
+                      ></div>
+                    </div>
+                    <div
+                      class="div-dd-info"
+                      style="
+                        margin-top: 10px;
+                        margin-bottom: 15px;
+                        flex-direction: column;
+                      "
+                    >
+                      <div
+                        class="demo-controls-head"
+                        style="text-align: left; width: 90%; margin-bottom: 5px"
+                      >
+                        <div style="width: 100%">
+                          <font style="font-weight: 600; color: #090909">
+                            Enter the milestone(s):
+                          </font>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+                                  <br/><br/>
+                                  Hit 'Enter' to register it."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                            style="margin-left: 5px; color: black"
+                          ></i>
+                        </div>
+                      </div>
+                      <div class="demo-controls-body" style="width: 90%">
+                        <div class="ui input modified">
+                          <textarea
+                            id="selected-milestone-1"
+                            class="form-container-input-bf"
+                            placeholder="Type here and hit 'Enter' after each keyword."
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="div-dd-info"
+                    style="
+                      margin-top: 10px;
+                      margin-bottom: 15px;
+                      flex-direction: column;
+                    "
+                  >
+                    <div
+                      class="demo-controls-head"
+                      style="text-align: left; width: 90%; margin-bottom: 5px"
+                    >
+                      <div style="width: 100%">
+                        <font style="font-weight: 600; color: #090909"
+                          >Completion date:
+                        </font>
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Enter the completion date for your milestone(s) specified above."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: 90%">
+                      <div class="ui input modified">
+                        <!-- <input
+                              type="date"
+                              id="submission-completion-date"
+                            /> -->
+                        <select id="submission-completion-date">
+                          <option value="Select" selected>
+                            Select an option
+                          </option>
+                          <option value="Enter my own date">
+                            Enter my own date
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: center;
+                      margin: 0 auto;
+                      text-decoration: underline;
+                      text-align: center;
+                      font-size: 14px;
+                      margin-top: 25px;
+                      padding-bottom: 20px;
+                    "
+                  >
+                    <a onclick="helpMilestoneSubmission()">
+                      Click here to import milestones from my Data Deliverables
+                      document
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+            >
+              <button
+                onclick="generateSubmissionFile()"
+                class="btn_animated"
+                style="margin: 10px; width: 120px; border: none !important"
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-no-skip-1"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Enter your SPARC Award number below:
+            <i
+              class="fas fa-info-circle popover-tooltip"
+              data-content="Enter your SPARC award number as it appears on your Award notice."
+              rel="popover"
+              data-placement="right"
+              data-html="true"
+              data-trigger="hover"
+            ></i>
+          </label>
+
+          <div class="field">
+            <input
+              id="textarea-SPARC-award-raw-input"
+              style="width: 100%; margin-top: 15px"
+            />
+          </div>
+          <div
+            style="display: none; flex-direction: row; margin: 0 auto"
+            id="div-confirm-enter-SPARC-award"
+          >
+            <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-no-skip-2"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin-right: 10px;
+                width: 100px;
+                height: 30px;
+                color: #fff;
+                background: var(--color-light-green);
+                font-weight: 600;
+                border: none;
+                font-size: 14px;
+              "
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-3"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >Select the SPARC award for your submission file:
+            <i
+              class="fas fa-info-circle popover-tooltip"
+              data-content="Select your SPARC award to provide additional information about it."
+              rel="popover"
+              data-html="true"
+              data-placement="right"
+              data-trigger="hover"
+            ></i>
+          </label>
+          <div class="field">
+            <select
+              id="select-presaved-grant-info-list"
+              class="my-dropdown-metadata"
+              style="
+                width: 100%;
+                height: 35px;
+                line-height: 2;
+                padding: 6px 8px;
+                font-size: 14px;
+              "
+            >
+              <option value="Select">Select an option</option>
+            </select>
+          </div>
+          <div style="margin: 0 auto; text-decoration: underline">
+            <a id="a-SPARC-awards-not-listed"
+              >My award(s) is not listed above</a
+            >
+          </div>
+          <div
+            style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
+            id="div-confirm-select-SPARC-awards"
+          >
+            <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-DDD"
+              class="btn_animated"
+              style="margin: 10px auto; width: 100px"
+              id="btn-confirm-select-SPARC-awards"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-DDD"
+    >
+      <div class="ui form" style="width: 100%">
+        <div class="grouped fields">
+          <label style="font-size: 17px; color: var(--color-bg-plum)"
+            >There is currently no existing milestone information for this
+            award. Would you like to import your Data Deliverables document?
+            <i
+              class="fas fa-info-circle popover-tooltip"
+              data-content="The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document. Click <a target='_blank' href=https://github.com/bvhpatel/SODA/wiki/How-to-get-your-data-deliverables-document>here</a> to find out more about it and learn how to obtain the Data Deliverables document for your award.
+                <br/>
+                <br/>
+                Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
+                <br/><br/>
+                Note that you can import a new Dataset Deliverable to replace an existing one."
+              rel="popover"
+              data-html="true"
+              data-placement="right"
+              data-trigger="hover"
+            ></i>
+          </label>
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              margin: 0 auto;
+              margin-top: 30px;
+            "
+            id="div-buttons-show-DDD"
+          >
+            <button
+              id="button-skip-DDD"
+              class="btn_animated skip"
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-no-skip-2"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 35px;
+                background: #fff;
+                color: red;
+                font-weight: 600;
+                border: 1px solid red;
+                font-size: 14px;
+                margin-right: 15px;
+              "
+            >
+              No, skip
+            </button>
+            <button
+              onclick="showDDDUploadDiv()"
+              class="btn_animated"
+              style="margin: 10px auto; width: 100px"
+            >
+              Yes, import
+            </button>
+          </div>
+          <div
+            style="
+              display: none;
+              flex-direction: row;
+              margin: 0 15px;
+              margin-top: 30px;
+            "
+            id="div-upload-DDD"
+          >
+            <div id="div-show-milestone-info-no-existing">
+              <div
+                id="upload-DDD-spinner"
+                class="ui active green inline loader"
+                style="display: none; margin: 10px auto; width: 100%"
+              ></div>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 30px 0 auto;
+              "
+              id="div-cancel-DDD-import"
+            >
+              <button
+                id="button-import-milestone"
+                onclick="importMilestoneDocument(this)"
+                type="button"
+                class="btn_animated"
+                style="display: none; margin: 10px; width: 100px"
+              >
+                <i class="fas fa-check" style="margin-right: 7px"></i>Confirm
+              </button>
+              <button
+                id="btn-cancel-DDD-import"
+                class="btn_animated skip"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px;
+                  width: 100px;
+                  height: 35px;
+                  background: #fff;
+                  color: red;
+                  font-weight: 600;
+                  border: 1px solid red;
+                "
+              >
+                <i class="fas fa-times" style="margin-right: 7px"></i>
+                Cancel
+              </button>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-DDD-import"
+            >
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                data-next="Question-prepare-submission-4"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-4"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Select your milestone(s) associated with the dataset:
               <i
                 class="fas fa-info-circle popover-tooltip"
-                data-content="SODA makes use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
+                data-content="Enter/Select a milestone from the suggested list compiled from the Data Deliverables document imported to SODA. Choose 'Not specified in the Data Deliverables document' if this dataset is not associated with any milestone initially planned.
                 <br/><br/>
-                To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
-                <br/><br/>
-                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key' target='_blank'> Airtable Help page</a> to learn how to obtain or re-generate your API key."
+                Hit 'Enter' to register it."
+                rel="popover"
+                data-html="true"
+                data-placement="right"
+                data-trigger="hover"
+              ></i>
+            </label>
+
+            <div class="field">
+              <textarea class="form-container-textarea"></textarea>
+            </div>
+            <div style="margin: 0 auto; text-decoration: underline">
+              <a href="#" id="reupload-DDD"
+                >I want to re-upload my Data Deliverables Document</a
+              >
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              class="div-confirm-enter-milestone"
+            >
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-4', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                data-next="Question-prepare-submission-6"
+                class="btn_animated"
+                style="margin: 10px auto; width: 100px; border: none !important"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-no-skip-2"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Enter your milestone(s) associated with the dataset (press Enter
+              on your keyboard after each):
+              <i
+                class="fas fa-info-circle popover-tooltip"
+                data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+              <br/><br/>
+              Hit 'Enter' to register it."
+                rel="popover"
+                data-html="true"
+                data-placement="right"
+                data-trigger="hover"
+              ></i>
+            </label>
+
+            <div class="field">
+              <textarea
+                id="selected-milestone-2"
+                class="form-container-textarea"
+              ></textarea>
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              class="div-confirm-enter-milestone"
+            >
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                data-next="Question-prepare-submission-no-skip-3"
+                class="btn_animated"
+                style="margin: 10px auto; width: 100px; border: none !important"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-6"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >What is the completion date for the milestone(s):
+              <i
+                class="fas fa-info-circle popover-tooltip"
+                data-content="Select the date from the list of completion dates automatically extracted from the Data Deliverables document uploaded above."
                 rel="popover"
                 data-placement="right"
                 data-html="true"
                 data-trigger="hover"
               ></i>
             </label>
-
-            <!-- field that will show when AIrtable is not connected yet -->
-            <div
-              class="field"
-              style="width: 100%; display: none"
-              id="div-field-not-connected"
-            >
-              <!-- <div id="checking-airtable-connection" class="ui active green inline loader" style="display:block;margin:10px auto"></div> -->
-              <p
-                id="airtable-connection-status"
-                style="font-weight: 600; text-align: center; font-size: 16px"
-              >
-                <span style="color: #000"
-                  >You are not connected to Airtable. </span
-                ><br /><span style="color: #000"
-                  >We recommend you to create an Airtable account, get access to
-                  the SPARC Airtable spreadsheet, and connect your Airtable
-                  account with SODA so SODA can auto-populate information for
-                  your metadata files at your convenience. Would you like to
-                  connect your Airtable account?</span
-                >
-              </p>
+            <div class="field">
+              <select
+                class="my-dropdown-metadata"
+                style="
+                  height: 35px;
+                  line-height: 2;
+                  padding: 6px 8px;
+                  font-size: 14px;
+                  text-align: center;
+                "
+                id="selected-milestone-date"
+              ></select>
             </div>
-            <!-- field that will show when AIrtable is already connected -->
+            <div>
+              <div
+                style="display: none"
+                id="div-submission-enter-different-date-1"
+                class="form-container-ds"
+              >
+                <font color="black"> Enter Date: </font>
+              </div>
+            </div>
             <div
-              class="field"
-              style="width: 100%; display: flex"
-              id="div-field-already-connected"
+              class="demo-controls"
+              style="display: none"
+              id="div-submission-enter-different-date-3"
             >
+              <input
+                type="date"
+                id="input-milestone-date"
+                style="text-align: center; font-family: inherit"
+                required
+                class="form-container-input-bf"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-completion-date"
+            >
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                data-next="Question-prepare-submission-7"
+                class="btn_animated"
+                style="margin: 10px auto; width: 100px; border: none !important"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-no-skip-3"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >What is the completion date for your milestone(s)?
+              <i
+                class="fas fa-info-circle popover-tooltip"
+                data-content="Enter the completion date for your milestone(s) specified above."
+                rel="popover"
+                data-html="true"
+                data-placement="right"
+                data-trigger="hover"
+              ></i>
+            </label>
+            <div class="field">
+              <input
+                type="date"
+                id="input-milestone-date-raw"
+                style="font-family: inherit; text-align: center"
+                class="form-container-input-bf"
+              />
+            </div>
+            <div
+              style="display: none; flex-direction: row; margin: 0 auto"
+              id="div-confirm-completion-date-raw"
+            >
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                data-next="Question-prepare-submission-7"
+                class="btn_animated"
+                style="
+                  margin-right: 10px;
+                  width: 100px;
+                  border: none !important;
+                "
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-7"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Review and generate the file:
+            </label>
+            <div class="field">
               <div
                 style="
-                  width: 100%;
                   display: flex;
                   flex-direction: column;
                   justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
+                  margin: 15px 0 30px 0;
                   box-shadow: 0px 0px 10px #d5d5d5;
                   padding: 15px 25px;
                   border-radius: 5px;
@@ -1055,873 +1813,48 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin-bottom: 10px;
                   "
                 >
                   <div class="card-container prepare-submission">
-                    <h5 class="card-left" style="width: 30%">
-                      Airtable account:
-                    </h5>
-                    <h5
-                      class="card-right"
-                      id="current-airtable-account"
-                      style="width: 70%"
-                    >
-                      Loading...
+                    <h5 class="card-left">SPARC Award:</h5>
+                    <h5 class="card-right">
+                      <span id="submission-SPARC-award-span"></span>
                     </h5>
                   </div>
-                  <svg
-                    class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="showAddAirtableAccountSweetalert('submission')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
                 </div>
                 <div
                   style="
                     display: flex;
                     flex-direction: row;
-                    margin-bottom: 15px;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
                   "
                 >
-                  <div
-                    style="
-                      display: flex;
-                      width: 100%;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <h5 class="card-left" style="width: 30%">
-                        User's award(s):
-                      </h5>
-                      <h5
-                        class="card-right"
-                        id="current-users-awards"
-                        style="width: 70%"
-                      >
-                        None
-                      </h5>
-                    </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="editSPARCAwardsBootbox()"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
+                  <div class="card-container prepare-submission">
+                    <h5 class="card-left">Milestone(s):</h5>
+                    <h5 class="card-right">
+                      <span id="submission-milestones-span"></span>
+                    </h5>
                   </div>
                 </div>
-              </div>
-            </div>
-            <!-- This is the button (Confirm) that will appear if users are already connected to Airtable -->
-            <div
-              id="div-airtable-confirm-button"
-              style="
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-              "
-            >
-              <button
-                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                data-next="Question-prepare-submission-3"
-                class="btn_animated"
-                style="margin: 10px auto; width: 100px"
-              >
-                Confirm
-              </button>
-            </div>
-            <!-- this is the set of buttons that will appear if Airtable account is not connected -->
-            <div
-              id="div-airtable-award-button"
-              style="
-                display: none;
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-                margin-top: 30px;
-              "
-            >
-              <button
-                id="submission-no-airtable-mode"
-                class="btn_animated skip"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                data-next="Question-prepare-submission-no-skip-1"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 140px;
-                  background: #fff;
-                  color: red;
-                  font-weight: 600;
-                  border: 1px solid red;
-                  margin-right: 20px;
-                "
-              >
-                No, skip
-              </button>
-              <button
-                id="submission-connect-Airtable"
-                onclick="showAddAirtableAccountSweetalert('submission')"
-                class="btn_animated"
-                style="margin: 10px auto; width: 140px; border: none !important"
-              >
-                Yes, let's connect
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question prepare-submission"
-        id="Question-prepare-submission-no-skip-1"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Enter your SPARC Award number below:
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="Enter your SPARC award number as it appears on your Award notice."
-                rel="popover"
-                data-placement="right"
-                data-html="true"
-                data-trigger="hover"
-              ></i>
-            </label>
-
-            <div class="field">
-              <input
-                id="textarea-SPARC-award-raw-input"
-                style="width: 100%; margin-top: 15px"
-              />
-            </div>
-            <div
-              style="display: none; flex-direction: row; margin: 0 auto"
-              id="div-confirm-enter-SPARC-award"
-            >
-              <button
-                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                data-next="Question-prepare-submission-no-skip-2"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin-right: 10px;
-                  width: 100px;
-                  height: 30px;
-                  color: #fff;
-                  background: var(--color-light-green);
-                  font-weight: 600;
-                  border: none;
-                  font-size: 14px;
-                "
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question prepare-submission"
-        id="Question-prepare-submission-3"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Select the SPARC award for your submission file:
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="Select your SPARC award to provide additional information about it."
-                rel="popover"
-                data-html="true"
-                data-placement="right"
-                data-trigger="hover"
-              ></i>
-            </label>
-            <div class="field">
-              <select
-                id="select-presaved-grant-info-list"
-                class="my-dropdown-metadata"
-                style="
-                  width: 100%;
-                  height: 35px;
-                  line-height: 2;
-                  padding: 6px 8px;
-                  font-size: 14px;
-                "
-              >
-                <option value="Select">Select an option</option>
-              </select>
-            </div>
-            <div style="margin: 0 auto; text-decoration: underline">
-              <a id="a-SPARC-awards-not-listed"
-                >My award(s) is not listed above</a
-              >
-            </div>
-            <div
-              style="
-                display: none;
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-              "
-              id="div-confirm-select-SPARC-awards"
-            >
-              <button
-                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                data-next="Question-prepare-submission-DDD"
-                class="btn_animated"
-                style="margin: 10px auto; width: 100px"
-                id="btn-confirm-select-SPARC-awards"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question prepare-submission"
-        id="Question-prepare-submission-DDD"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >There is currently no existing milestone information for this
-              award. Would you like to import your Data Deliverables document?
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document. Click <a target='_blank' href=https://github.com/bvhpatel/SODA/wiki/How-to-get-your-data-deliverables-document>here</a> to find out more about it and learn how to obtain the Data Deliverables document for your award.
-                <br/>
-                <br/>
-                Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
-                <br/><br/>
-                Note that you can import a new Dataset Deliverable to replace an existing one."
-                rel="popover"
-                data-html="true"
-                data-placement="right"
-                data-trigger="hover"
-              ></i>
-            </label>
-            <div
-              style="
-                display: flex;
-                flex-direction: row;
-                margin: 0 auto;
-                margin-top: 30px;
-              "
-              id="div-buttons-show-DDD"
-            >
-              <button
-                id="button-skip-DDD"
-                class="btn_animated skip"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                data-next="Question-prepare-submission-no-skip-2"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 35px;
-                  background: #fff;
-                  color: red;
-                  font-weight: 600;
-                  border: 1px solid red;
-                  font-size: 14px;
-                  margin-right: 15px;
-                "
-              >
-                No, skip
-              </button>
-              <button
-                onclick="showDDDUploadDiv()"
-                class="btn_animated"
-                style="margin: 10px auto; width: 100px"
-              >
-                Yes, import
-              </button>
-            </div>
-            <div
-              style="
-                display: none;
-                flex-direction: row;
-                margin: 0 15px;
-                margin-top: 30px;
-              "
-              id="div-upload-DDD"
-            >
-              <div id="div-show-milestone-info-no-existing">
-                <div class="container-milestone-upload" style="display: flex">
-                  <input
-                    class="milestone-upload-text"
-                    id="input-milestone-select"
-                    style="
-                      text-align: center;
-                      height: 40px;
-                      border-radius: 0;
-                      background: #f9f9f9;
-                    "
-                    type="text"
-                    readonly
-                    placeholder="Browse here"
-                  />
-                </div>
-                <div
-                  id="upload-DDD-spinner"
-                  class="ui active green inline loader"
-                  style="display: none; margin: 10px auto; width: 100%"
-                ></div>
-
-                <p
-                  id="para-milestone-document-info"
-                  style="
-                    margin-top: 15px;
-                    text-align: center;
-                    vertical-align: middle;
-                  "
-                ></p>
-                <p
-                  id="para-milestone-document-info-long"
-                  style="
-                    display: none;
-                    margin-top: 5px;
-                    margin-bottom: 0;
-                    text-align: left;
-                    padding: 0 0;
-                  "
-                ></p>
-              </div>
-              <div
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 30px 0 auto;
-                "
-                id="div-cancel-DDD-import"
-              >
-                <button
-                  id="button-import-milestone"
-                  onclick="importMilestoneDocument(this)"
-                  type="button"
-                  class="btn_animated"
-                  style="display: none; margin: 10px; width: 100px"
-                >
-                  <i class="fas fa-check" style="margin-right: 7px"></i>Confirm
-                </button>
-                <button
-                  id="btn-cancel-DDD-import"
-                  class="btn_animated skip"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px;
-                    width: 100px;
-                    height: 35px;
-                    background: #fff;
-                    color: red;
-                    font-weight: 600;
-                    border: 1px solid red;
-                  "
-                >
-                  <i class="fas fa-times" style="margin-right: 7px"></i>
-                  Cancel
-                </button>
-              </div>
-              <div
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-                id="div-confirm-DDD-import"
-              >
-                <button
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                  data-next="Question-prepare-submission-4"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question prepare-submission"
-          id="Question-prepare-submission-4"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Select your milestone(s) associated with the dataset:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Enter/Select a milestone from the suggested list compiled from the Data Deliverables document imported to SODA. Choose 'Not specified in the Data Deliverables document' if this dataset is not associated with any milestone initially planned.
-                <br/><br/>
-                Hit 'Enter' to register it."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
-
-              <div class="field">
-                <textarea
-                  id="selected-milestone-1"
-                  class="form-container-textarea"
-                ></textarea>
-              </div>
-              <div style="margin: 0 auto; text-decoration: underline">
-                <a href="#" id="reupload-DDD"
-                  >I want to re-upload my Data Deliverables Document</a
-                >
-              </div>
-              <div
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-                class="div-confirm-enter-milestone"
-              >
-                <button
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-4', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                  data-next="Question-prepare-submission-6"
-                  class="btn_animated"
-                  style="
-                    margin: 10px auto;
-                    width: 100px;
-                    border: none !important;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question prepare-submission"
-          id="Question-prepare-submission-reupload-DDD"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Please re-upload your Data Deliverables below:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document. Click <a target='_blank' href=https://github.com/bvhpatel/SODA/wiki/How-to-get-your-data-deliverables-document>here</a> to find out more about it and learn how to obtain the Data Deliverables document for your award.
-                <br/>
-                <br/>
-                Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
-                <br/><br/>
-                Note that you can import a new Dataset Deliverable to replace an existing one."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  margin: 0 15px;
-                  margin-top: 30px;
-                "
-              >
-                <div style="width: 100%">
-                  <div class="container-milestone-upload" style="display: flex">
-                    <input
-                      class="milestone-upload-text"
-                      id="input-milestone-select-reupload"
-                      style="
-                        width: 85%;
-                        text-align: center;
-                        height: 40px;
-                        border-radius: 0;
-                      "
-                      type="text"
-                      readonly
-                      placeholder="Select a file"
-                    />
-                    <button
-                      id="button-import-milestone-reupload"
-                      onclick="importMilestoneDocument(this)"
-                      type="button"
-                      style="
-                        width: 15%;
-                        height: 40px;
-                        background: var(--color-light-green);
-                      "
-                      class="button-milestone-upload"
-                    >
-                      <b>Import</b>
-                    </button>
-                  </div>
-                  <p
-                    id="para-milestone-document-info-reupload"
-                    style="
-                      margin-top: 15px;
-                      text-align: center;
-                      vertical-align: middle;
-                    "
-                  ></p>
-                  <p
-                    id="para-milestone-document-info-long-reupload"
-                    style="
-                      display: none;
-                      margin-top: 5px;
-                      margin-bottom: 0;
-                      text-align: left;
-                      padding: 0 0;
-                    "
-                  ></p>
-                </div>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-                id="div-cancel-reupload-DDD"
-              >
-                <button
-                  id="cancel-reupload-DDD"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: #fff;
-                    color: red;
-                    font-weight: 600;
-                    border: 1px solid red;
-                    font-size: 13px;
-                  "
-                >
-                  Cancel
-                </button>
-              </div>
-              <div
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-                id="div-confirm-DDD-reupload"
-              >
-                <button
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-reupload-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                  data-next="Question-prepare-submission-4"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question prepare-submission"
-          id="Question-prepare-submission-no-skip-2"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Enter your milestone(s) associated with the dataset (press
-                Enter on your keyboard after each):
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
-              <br/><br/>
-              Hit 'Enter' to register it."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
-
-              <div class="field">
-                <textarea
-                  id="selected-milestone-2"
-                  class="form-container-textarea"
-                ></textarea>
-              </div>
-              <div
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-                class="div-confirm-enter-milestone"
-              >
-                <button
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                  data-next="Question-prepare-submission-no-skip-3"
-                  class="btn_animated"
-                  style="
-                    margin: 10px auto;
-                    width: 100px;
-                    border: none !important;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question prepare-submission"
-          id="Question-prepare-submission-6"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >What is the completion date for the milestone(s):
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Select the date from the list of completion dates automatically extracted from the Data Deliverables document uploaded above."
-                  rel="popover"
-                  data-placement="right"
-                  data-html="true"
-                  data-trigger="hover"
-                ></i>
-              </label>
-              <div class="field">
-                <select
-                  class="my-dropdown-metadata"
-                  style="
-                    height: 35px;
-                    line-height: 2;
-                    padding: 6px 8px;
-                    font-size: 14px;
-                    text-align: center;
-                  "
-                  id="selected-milestone-date"
-                ></select>
-              </div>
-              <div>
-                <div
-                  style="display: none"
-                  id="div-submission-enter-different-date-1"
-                  class="form-container-ds"
-                >
-                  <font color="black"> Enter Date: </font>
-                </div>
-              </div>
-              <div
-                class="demo-controls"
-                style="display: none"
-                id="div-submission-enter-different-date-3"
-              >
-                <input
-                  type="date"
-                  id="input-milestone-date"
-                  style="text-align: center; font-family: inherit"
-                  required
-                  class="form-container-input-bf"
-                />
-              </div>
-              <div
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-                id="div-confirm-completion-date"
-              >
-                <button
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                  data-next="Question-prepare-submission-7"
-                  class="btn_animated"
-                  style="
-                    margin: 10px auto;
-                    width: 100px;
-                    border: none !important;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question prepare-submission"
-          id="Question-prepare-submission-no-skip-3"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >What is the completion date for your milestone(s)?
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Enter the completion date for your milestone(s) specified above."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
-              <div class="field">
-                <input
-                  type="date"
-                  id="input-milestone-date-raw"
-                  style="font-family: inherit; text-align: center"
-                  class="form-container-input-bf"
-                />
-              </div>
-              <div
-                style="display: none; flex-direction: row; margin: 0 auto"
-                id="div-confirm-completion-date-raw"
-              >
-                <button
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                  data-next="Question-prepare-submission-7"
-                  class="btn_animated"
-                  style="
-                    margin-right: 10px;
-                    width: 100px;
-                    border: none !important;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="individual-question prepare-submission"
-          id="Question-prepare-submission-7"
-        >
-          <div class="ui form" style="width: 100%">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Review and generate the file:
-              </label>
-              <div class="field">
                 <div
                   style="
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row;
                     justify-content: space-between;
-                    margin: 15px 0 30px 0;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
+                    margin-bottom: 10px;
                   "
                 >
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 10px;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <h5 class="card-left">SPARC Award:</h5>
-                      <h5 class="card-right">
-                        <span id="submission-SPARC-award-span"></span>
-                      </h5>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 10px;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <h5 class="card-left">Milestone(s):</h5>
-                      <h5 class="card-right">
-                        <span id="submission-milestones-span"></span>
-                      </h5>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 10px;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <h5 class="card-left">Completion date:</h5>
-                      <h5 class="card-right">
-                        <span id="submission-completion-date-span"></span>
-                      </h5>
-                    </div>
+                  <div class="card-container prepare-submission">
+                    <h5 class="card-left">Completion date:</h5>
+                    <h5 class="card-right">
+                      <span id="submission-completion-date-span"></span>
+                    </h5>
                   </div>
                 </div>
-                <div
+              </div>
+              <!-- <div
                   style="
                     display: flex;
                     flex-direction: row;
@@ -1936,24 +1869,13 @@
                   >
                     Generate
                   </button>
-                </div>
-                <p
-                  id="para-save-submission-status"
-                  style="
-                    text-align: center;
-                    padding-top: 0;
-                    margin-right: 5px;
-                    margin-bottom: 0;
-                    margin-top: 0;
-                  "
-                ></p>
-              </div>
-              <!-- <div
+                </div> -->
+            </div>
+            <!-- <div
             id="generate-submission-spinner"
             class="ui active green inline loader"
             style="display: none; margin: 10px auto; width: 100%"
           ></div> -->
-            </div>
           </div>
         </div>
       </div>
@@ -2250,8 +2172,9 @@
                       <a
                         onclick="openDropdownPrompt('dataset')"
                         id="dd-select-pennsieve-dataset"
-                        >Help me select my dataset from Pennsieve</a
                       >
+                        Click here to select my dataset from Pennsieve
+                      </a>
                       <div
                         id="select-dataset-dd-spinner"
                         class="ui active green inline loader small"
@@ -2269,12 +2192,11 @@
                       >
                         <div style="width: 100%">
                           <font style="font-weight: 600; color: #090909">
-                            Brief description of your dataset:
+                            Brief description/subtitle of your dataset:
                           </font>
                           <i
                             class="fas fa-info-circle popover-tooltip"
-                            data-content="Provide a brief description equivalent to the abstract of a scientific paper. Include the rationale for the approach, the types of data collected, the techniques used, formats and number of files and an approximate size.
-                            "
+                            data-content="Provide a brief description of your dataset. This is usually the subtitle of the dataset that you provided on Pennsieve."
                             rel="popover"
                             data-placement="right"
                             data-html="true"
@@ -2493,7 +2415,7 @@
                                 <tr>
                                   <th style="width: 10%">Index</th>
                                   <th style="width: 25%">
-                                    Contributor (First, Last)
+                                    Contributor (Last, First)
                                   </th>
                                   <th style="width: 50%">Contact person</th>
                                   <th style="width: 15%">
@@ -2547,10 +2469,10 @@
                         margin-top: 10px;
                       "
                     >
-                      <a onclick="helpSPARCAward('dd')" target="_blank"
-                        >Help me with my award number and contributor
-                        information</a
-                      >
+                      <a onclick="helpSPARCAward('dd')" target="_blank">
+                        Click here to select my award number and import
+                        contributor info
+                      </a>
                       <i
                         class="fas fa-info-circle popover-tooltip subjects-form"
                         data-content="Click here if you have an Airtable account and would like SODA to extract your award and related contributor information."
@@ -2575,9 +2497,9 @@
               >
                 <i class="dropdown icon"></i>
                 Protocol Information
-                <span style="font-style: italic; opacity: 0.8"
-                  >(Mandatory)</span
-                >
+                <span style="font-style: italic; opacity: 0.8">
+                  (Mandatory)
+                </span>
               </div>
               <div class="content">
                 <div
@@ -2668,9 +2590,9 @@
                       margin-top: 10px;
                     "
                   >
-                    <a onclick="addExistingProtocol()" target="_blank"
-                      >Help me with my protocol information</a
-                    >
+                    <a onclick="addExistingProtocol()" target="_blank">
+                      Click here to import my protocol information
+                    </a>
                     <i
                       class="fas fa-info-circle popover-tooltip subjects-form"
                       data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. See <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>here for details about creating your protocol on protocols.io</a>.<br>"
@@ -3059,1318 +2981,6 @@
             Generate
           </button>
         </div>
-        <!-- <div
-        id="generate-dd-spinner"
-        class="ui active green inline loader"
-        style="display: none; margin: 10px auto"
-      ></div> -->
-      </div>
-
-      <div
-        class="individual-question prepare-dd"
-        id="Question-prepare-dd-1-old"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="field">
-            <div class="grouped fields">
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Let's check your Airtable connection status:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="SODA make use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
-                      <br/><br/>
-                      To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
-                      <br/><br/>
-                      Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key' target='_blank'> Airtable Help page</a> to learn how to obtain or re-generate your API key."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
-              <!-- field that will show when AIrtable is not connected yet -->
-              <div
-                class="field"
-                style="width: 100%; display: none"
-                id="div-field-not-connected-dd"
-              >
-                <!-- <div id="checking-airtable-connection" class="ui active green inline loader" style="display:block;margin:10px auto"></div> -->
-                <p
-                  id="airtable-connection-status"
-                  style="font-weight: 600; text-align: center; font-size: 16px"
-                >
-                  <span style="color: #000"
-                    >You are not connected to Airtable. </span
-                  ><br /><span style="color: #000"
-                    >We recommend you to create an Airtable account, get access
-                    to the SPARC Airtable spreadsheet, and connect your Airtable
-                    account with SODA so SODA can auto-populate information for
-                    your metadata files at your convenience. Would you like to
-                    connect your Airtable account?</span
-                  >
-                </p>
-              </div>
-              <!-- field that will show when Airtable is already connected -->
-              <div
-                class="field"
-                style="width: 100%; display: flex"
-                id="div-field-already-connected-dd"
-              >
-                <div
-                  style="
-                    width: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    margin-top: 15px;
-                    height: auto;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div class="card-container prepare-submission">
-                      <h5 class="card-left" style="margin-top: 0; width: 30%">
-                        Airtable account:
-                      </h5>
-                      <h5
-                        class="card-right"
-                        id="current-airtable-account-dd"
-                        style="margin-top: 0; width: 70%"
-                      >
-                        Loading...
-                      </h5>
-                    </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="showAddAirtableAccountSweetalert('submission')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div
-                      style="
-                        display: flex;
-                        width: 100%;
-                        flex-direction: row;
-                        justify-content: space-between;
-                        margin-bottom: 15px;
-                      "
-                    >
-                      <div class="card-container prepare-submission">
-                        <h5 class="card-left" style="width: 30%">
-                          User's awards:
-                        </h5>
-                        <h5
-                          class="card-right"
-                          id="current-users-awards-dd"
-                          style="width: 70%"
-                        >
-                          None
-                        </h5>
-                      </div>
-                      <svg
-                        class="svg-change-current-account bi bi-pencil-fill"
-                        onclick="editSPARCAwardsBootbox()"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        fill="#000"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                        />
-                      </svg>
-                    </div>
-                    <div style="display: none" id="div-SPARC-edit-awards">
-                      <label style="font-weight: 600"
-                        >Add/Remove your SPARC Award(s):
-                      </label>
-                      <br />
-                      <textarea
-                        id="input-existing-grants"
-                        list="select-grant-info-list"
-                        class="form-control"
-                        style="max-width: 100%; padding: 6px 8px"
-                      ></textarea>
-                      <br />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- This is the button (Confirm) that will appear if users are already connected to Airtable -->
-              <div
-                id="div-airtable-confirm-button-dd"
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')"
-                  data-next="Question-prepare-dd-4-sections"
-                  class="btn_animated"
-                  style="
-                    margin: 10px auto;
-                    width: 100px;
-                    border: none !important;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-              <!-- this is the set of buttons that will appear if Airtable account is not connected -->
-              <div
-                id="div-airtable-award-button-dd"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                  margin-top: 30px;
-                "
-              >
-                <button
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')"
-                  id="dataset-description-no-airtable-mode"
-                  class="btn_animated skip"
-                  data-next="Question-prepare-dd-4-sections"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 140px;
-                    background: #fff;
-                    color: red;
-                    font-weight: 600;
-                    border: 1px solid red;
-                    margin-right: 20px;
-                  "
-                >
-                  No, skip
-                </button>
-                <button
-                  onclick="showAddAirtableAccountSweetalert('dd')"
-                  class="btn_animated"
-                  style="
-                    margin: 10px auto;
-                    width: 140px;
-                    border: none !important;
-                  "
-                  id="dd-connect-Airtable"
-                >
-                  Yes, let's connect
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question prepare-dd"
-        id="Question-prepare-dd-4-sections"
-        style="width: 85%"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                margin-bottom: 20px;
-              "
-              >Fill out the five sections below and generate your
-              dataset_description file
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="After you complete all steps, click on 'Generate' to
-                        generate your dataset description file. A warning
-                        message may show up if any mandatory fields are missing.
-                        You may decide to go back and address the issues or
-                        generate the file anyway.
-                        <br/><br/>
-                        Click on 'Start over' to refresh the form."
-                rel="popover"
-                data-placement="right"
-                data-html="true"
-                data-trigger="hover"
-              ></i>
-            </label>
-            <div
-              style="
-                width: 100%;
-                position: relative;
-                padding: 2em;
-                margin-top: 1em;
-                margin-bottom: 2em;
-                border-radius: 6px;
-                box-shadow: 0px 0px 10px #d5d5d5;
-                background-color: #fff;
-              "
-            >
-              <h5 align="center">Note: Items marked with * are mandatory</h5>
-              <div class="multisteps-form__progress" style="margin: 40px 20px">
-                <button
-                  id="ds-dataset-info"
-                  class="multisteps-form__progress-btn js-active1"
-                  style="font-size: 15px"
-                  type="button"
-                  title="Dataset Info"
-                >
-                  <b>Dataset Info</b>
-                </button>
-                <button
-                  id="ds-award-info"
-                  class="multisteps-form__progress-btn"
-                  style="font-size: 15px"
-                  type="button"
-                  title="Award Info"
-                >
-                  <b>Award Info</b>
-                </button>
-                <button
-                  id="ds-contributor-info"
-                  class="multisteps-form__progress-btn"
-                  style="font-size: 15px"
-                  type="button"
-                  title="Contributor Info"
-                >
-                  <b>Contributor Info</b>
-                </button>
-                <button
-                  id="ds-misc-info"
-                  class="multisteps-form__progress-btn"
-                  style="font-size: 15px"
-                  type="button"
-                  title="Other Info"
-                >
-                  <b>Article(s) and protocol(s)</b>
-                </button>
-                <button
-                  id="ds-optional-info"
-                  class="multisteps-form__progress-btn"
-                  style="font-size: 15px"
-                  type="button"
-                  title="Optional Info"
-                >
-                  <b>Completeness Info</b>
-                </button>
-              </div>
-
-              <!-- Dataset Info -->
-              <div
-                style="
-                  display: block;
-                  width: 90%;
-                  margin: 0 auto;
-                  font-size: 13px;
-                "
-                id="div-ds-dataset-info"
-                class="datasetsaveoption"
-              >
-                <div>
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> Name*: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <select
-                        id="ds-name-select"
-                        class="form-container-input-bf"
-                        style="width: 100%; line-height: 2"
-                      >
-                        <option value="Select">Select dataset</option>
-                      </select>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        Select the Pennsieve dataset where the dataset
-                        description file will be uploaded. You can create a new
-                        dataset from the "Manage Datasets" section under the
-                        "Create a new dataset" feature.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> Description*: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <textarea
-                        id="ds-description-old"
-                        class="form-container-textarea"
-                        disabled
-                      ></textarea>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        The description will be automatically pulled from the
-                        subtitle associated with the selected Pennsieve dataset.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> Keywords*: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <textarea
-                        id="ds-keywords-old"
-                        class="form-container-textarea"
-                        style="border-left: 2px solid #258193"
-                      ></textarea>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext" style="z-index: 2">
-                        A set of 3-5 keywords other than the above that will aid
-                        in search. Hit "Enter" on your keyboard after each entry
-                        to register it.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> Number of subjects: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <input
-                        id="ds-subjects-no-old"
-                        type="number"
-                        class="form-container-input-bf"
-                        style="width: 100%"
-                        placeholder="Enter a number"
-                      />
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        Number of unique subjects in this dataset, should match
-                        subjects metadata file. Must be greater or equal to 1.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> Number of samples: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <input
-                        id="ds-samples-no-old"
-                        type="number"
-                        class="form-container-input-bf"
-                        placeholder="Enter a number"
-                      />
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        Number of unique samples in this dataset, should match
-                        samples metadata file. Set to 0 if there are no samples.
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div style="display: flex; justify-content: center">
-                  <button
-                    id="button-next-ds-award"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 35px"
-                  >
-                    <i class="fas fa-long-arrow-alt-right"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div
-                id="div-ds-award-info"
-                style="width: 90%; margin: 0 auto; font-size: 13px"
-                class="datasetsaveoption"
-              >
-                <div>
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> SPARC Award*: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <select
-                        id="ds-description-award-list"
-                        onchange="changeAwardInputDsDescription()"
-                        class="form-container-input-bf"
-                        style="font-size: 13px; line-height: 2"
-                      >
-                        <option value="Select">Select an option</option>
-                      </select>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        SPARC award associated with the dataset.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div
-                    class="div-dd-info"
-                    id="SPARC-Award-raw-input-div-dd"
-                    style="display: none"
-                  >
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> SPARC Award*: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <input
-                        id="ds-description-award-raw-input-dd"
-                        class="form-container-input-bf"
-                        style="font-size: 13px; line-height: 2"
-                      />
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        SPARC award associated with the dataset.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> Other funding source(s): </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <textarea
-                        id="ds-other-funding-old"
-                        class="form-container-textarea"
-                        style="border-left: 2px solid #258193"
-                      ></textarea>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        Other funding sources, if any. Hit 'Enter' on your
-                        keyboard after typing each. Leave empty if none.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black"> Acknowledgments: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <textarea
-                        id="ds-description-acknowledgments-old"
-                        class="form-container-textarea"
-                      >
-                      </textarea>
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        Acknowledgments beyond funding and contributors, if any.
-                        Leave empty if none.
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    margin-top: 30px;
-                  "
-                >
-                  <button
-                    id="button-prev-award-ds"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px; margin-right: 10px"
-                  >
-                    <i
-                      style="font-size: 18px"
-                      class="fas fa-long-arrow-alt-left"
-                    ></i>
-                  </button>
-                  <button
-                    id="button-next-award-contributor"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px"
-                  >
-                    <i class="fas fa-long-arrow-alt-right"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Contributor Info -->
-              <div
-                id="div-ds-contributor-info"
-                style="width: 90%; margin: 0 auto; font-size: 13px"
-                class="datasetsaveoption"
-              >
-                <!-- This div is for Other collaborators input -->
-                <div class="div-dd-info">
-                  <div
-                    class="demo-controls-head"
-                    id="div-other-collaborators-1"
-                    style="display: none"
-                  >
-                    <font color="black"> Collaborator name*: </font>
-                  </div>
-                  <div
-                    class="demo-controls-body"
-                    id="div-other-collaborators-2"
-                    style="display: none"
-                  >
-                    <input
-                      id="input-con-others"
-                      class="form-container-input-bf"
-                    />
-                  </div>
-                  <div
-                    class="tooltipnew demo-controls-end"
-                    id="div-other-collaborators-3"
-                    style="display: none"
-                  >
-                    <img class="info" src="assets/img/info.png" />
-                    <span class="tooltiptext">
-                      Name of a collaborator to the dataset not listed in the
-                      SPARC Airtable sheet. Must be in the format "Last, First".
-                    </span>
-                  </div>
-                </div>
-                <div
-                  id="div-current-contributors"
-                  style="
-                    width: 100%;
-                    margin: 0 auto;
-                    display: block;
-                    overflow-x: auto;
-                  "
-                >
-                  <h5 align="center" style="color: #000">
-                    Provide information for each contributor below to add them
-                    to your dataset_description file
-                    <br /><span style="font-weight: 500"
-                      >Tip: Drag and drop rows up and down to change the order
-                      that contributors appear in the dataset_description
-                      file.</span
-                    >
-                  </h5>
-
-                  <table
-                    class="ui celled table"
-                    style="text-align: center"
-                    id="table-current-contributors"
-                  >
-                    <style>
-                      /* style for grabbed contributor row for moving contributors */
-                      .grab {
-                        cursor: grab;
-                      }
-                      .grabbed {
-                        box-shadow: 0 0 6px #000;
-                      }
-                      .grabCursor,
-                      .grabCursor * {
-                        cursor: grabbing !important;
-                      }
-                    </style>
-
-                    <thead class="full-width">
-                      <tr>
-                        <th style="width: 15%">Last Name*</th>
-                        <th style="width: 15%">First Name*</th>
-                        <th style="width: 25%">
-                          ORCID ID*
-                          <div class="tooltipnew contributor">
-                            <img class="info" src="assets/img/info.png" />
-                            <span
-                              class="tooltiptext contributor"
-                              style="width: 300px; font-weight: bold"
-                            >
-                              If contributor doesn't have an ORCID ID, we
-                              suggest they sign up for one at
-                              <a
-                                href="https://orcid.org"
-                                style="color: white"
-                                target="_blank"
-                              >
-                                https://orcid.org
-                              </a>
-                            </span>
-                          </div>
-                        </th>
-                        <th style="width: 25%">
-                          Affiliation*
-                          <div class="tooltipnew contributor">
-                            <img class="info" src="assets/img/info.png" />
-                            <span class="tooltiptext contributor">
-                              Institutional affiliation for contributor. Hit
-                              "Enter" on your keyboard after each entry to
-                              register it.
-                            </span>
-                          </div>
-                        </th>
-                        <th style="width: 20%">
-                          Role*
-                          <div class="tooltipnew contributor">
-                            <img class="info" src="assets/img/info.png" />
-                            <span class="tooltiptext contributor">
-                              Role(s) of the contributor as per the Data Cite
-                              schema (c.f. associated dropdown list). Hit
-                              "Enter" after each entry to register it. Checkout
-                              the related
-                              <a
-                                href="https://schema.datacite.org/meta/kernel-4.3/"
-                                target="_blank"
-                                style="color: white"
-                              >
-                                documentation</a
-                              >
-                              for a definition of each of these roles.
-                            </span>
-                          </div>
-                        </th>
-                        <th style="width: 5%">
-                          Contact Person*
-                          <div class="tooltipnew contributor">
-                            <img class="info" src="assets/img/info.png" />
-                            <span class="tooltiptext contributor">
-                              Check if the contributor is a contact person for
-                              the dataset. At least one and only one of the
-                              contributors should be the contact person.
-                            </span>
-                          </div>
-                        </th>
-                        <th style="width: 5%">
-                          <div class="tooltipnew contributor">
-                            <img class="info" src="assets/img/info.png" />
-                            <span class="tooltiptext contributor">
-                              Click "Add" to add contributors to SODA's
-                              contributor table. Each contributor added to the
-                              table will be added to the dataset description
-                              file when it is generated.
-                            </span>
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr id="row-current-name1">
-                        <td
-                          class="contributor-table-row"
-                          id="dd-contributor-row-last-1-old"
-                        >
-                          <select
-                            id="ds-description-contributor-list-last-1-old"
-                            class="form-container-input-bf"
-                            onchange="onchangeLastNames(1)"
-                            style="font-size: 13px; line-height: 2"
-                          >
-                            <option value="Select an option">
-                              Select an option
-                            </option>
-                          </select>
-                        </td>
-                        <td
-                          class="contributor-table-row"
-                          id="dd-contributor-row-first-1"
-                        >
-                          <select
-                            id="ds-description-contributor-list-first-1-old"
-                            disabled
-                            class="form-container-input-bf"
-                            onchange="onchangeFirstNames(1)"
-                            style="font-size: 13px; line-height: 2"
-                          >
-                            <option value="Select an option">
-                              Select an option
-                            </option>
-                          </select>
-                        </td>
-                        <td
-                          class="contributor-table-row"
-                          id="dd-contributor-row-raw-last-1"
-                          style="display: none"
-                        >
-                          <input
-                            id="ds-description-raw-contributor-list-last-1"
-                            class="form-container-input-bf"
-                            style="font-size: 13px; line-height: 2"
-                          />
-                        </td>
-                        <td
-                          class="contributor-table-row"
-                          id="dd-contributor-row-raw-first-1"
-                          style="display: none"
-                        >
-                          <input
-                            id="ds-description-raw-contributor-list-first-1"
-                            class="form-container-input-bf"
-                            style="font-size: 13px; line-height: 2"
-                          />
-                        </td>
-                        <td class="contributor-table-row">
-                          <input
-                            id="input-con-ID-1-old"
-                            contenteditable="true"
-                          />
-                        </td>
-                        <td class="contributor-table-row">
-                          <input
-                            id="input-con-affiliation-1-old-old"
-                            contenteditable="true"
-                          />
-                        </td>
-                        <td class="contributor-table-row">
-                          <input
-                            id="input-con-role-1-old"
-                            contenteditable="true"
-                          />
-                        </td>
-                        <td class="contributor-table-row">
-                          <label class="switch">
-                            <input
-                              id="ds-contact-person-1-old"
-                              name="contact-person"
-                              type="checkbox"
-                              class="with-style-manifest"
-                              onchange="onChangeContactLabel(1)"
-                            />
-                            <span class="slider round"></span>
-                          </label>
-                        </td>
-                        <th>
-                          <div
-                            onclick="addNewRow('table-current-contributors')"
-                            class="contributor-add-row-button"
-                            style="
-                              border-radius: 2px;
-                              color: #fff;
-                              padding: 5px !important;
-                              width: 40px;
-                              font-size: 13px;
-                              height: 30px;
-                              background: dodgerblue;
-                              display: block;
-                            "
-                          >
-                            Add
-                          </div>
-                          <div
-                            class="
-                              ui
-                              small
-                              basic
-                              icon
-                              buttons
-                              contributor-helper-buttons
-                            "
-                            style="display: none"
-                          >
-                            <button
-                              class="ui button"
-                              onclick="delete_current_con(1)"
-                            >
-                              <i
-                                class="trash alternate outline icon"
-                                style="color: red"
-                              ></i>
-                            </button>
-                          </div>
-                        </th>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div style="text-align: center">
-                    <a
-                      style="text-decoration: underline"
-                      id="add-other-contributors"
-                      >Add contributors not listed above</a
-                    >
-                  </div>
-                  <p
-                    id="para-save-contributor-status"
-                    style="
-                      text-align: center;
-                      font-size: 14px;
-                      padding-top: 0;
-                      margin-right: 5px;
-                      margin-bottom: 0;
-                      margin-top: 15px;
-                      color: red;
-                    "
-                  ></p>
-                </div>
-
-                <div
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    margin-top: 30px;
-                  "
-                >
-                  <button
-                    id="button-prev-contributor-award"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px; margin-right: 10px"
-                  >
-                    <i
-                      style="font-size: 18px"
-                      class="fas fa-long-arrow-alt-left"
-                    ></i>
-                  </button>
-                  <button
-                    id="button-next-contributor-misc"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px"
-                  >
-                    <i class="fas fa-long-arrow-alt-right"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Protocols and Articles Info -->
-              <div
-                id="div-ds-misc-info"
-                style="width: 90%; margin: 0 auto; font-size: 13px"
-                class="datasetsaveoption"
-              >
-                <h5 align="center" style="color: #000">
-                  <br />To add a link to your dataset_description file, select
-                  the link type from the dropdown list and provide the link and
-                  its description.
-                </h5>
-
-                <table
-                  class="ui celled table"
-                  style="text-align: center"
-                  id="doi-table"
-                >
-                  <style>
-                    /* style for grabbed contributor row for moving contributors */
-                    .grab {
-                      cursor: grab;
-                    }
-                    .grabbed {
-                      box-shadow: 0 0 6px #000;
-                    }
-                    .grabCursor,
-                    .grabCursor * {
-                      cursor: grabbing !important;
-                    }
-                  </style>
-                  <thead class="full-width">
-                    <tr>
-                      <th style="width: 25%">
-                        Link type
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Select the nature of the link:
-                            <br />
-                            - Protocol URLs or DOIs: URLs (if still private) /
-                            DOIs (if public) of protocols from protocols.io
-                            related to this dataset.
-                            <br />
-                            - Originating Article DOIs: DOIs of published
-                            articles that were generated from this dataset.
-                            <br />
-                            - Additional links: URLs of additional resources
-                            used by this dataset (e.g., a link to a code
-                            repository).
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 30%">
-                        Link
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Enter the link.
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 35%">
-                        Description
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Optionally provide a short description of the link.
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 10%">
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Click on "Add" to register specified link to SODA's
-                            link table. All links and descriptions added to the
-                            table will be included in your dataset description
-                            file when it is generated.
-                            <br /><br />
-                            Note that at least one "Protocol URLs or DOIs" link
-                            is mandatory. The remaining is optional.
-                          </span>
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr id="row-current-link1">
-                      <td class="doi-table-row">
-                        <select
-                          onchange="populateProtocolLink(this)"
-                          id="select-misc-link"
-                          class="form-container-input-bf"
-                          style="font-size: 13px; line-height: 2"
-                        >
-                          <option value="Select">Select an option</option>
-                          <option value="Protocol URL or DOI*">
-                            Protocol URL or DOI*
-                          </option>
-                          <option value="Originating Article DOI">
-                            Originating Article DOI
-                          </option>
-                          <option value="Additional Link">
-                            Additional Link
-                          </option>
-                        </select>
-                      </td>
-                      <td class="doi-table-row">
-                        <input
-                          id="input-misc-links"
-                          class="form-container-input-bf"
-                          contenteditable="true"
-                          style="font-size: 13px; line-height: 2"
-                        />
-                      </td>
-                      <td class="doi-table-row">
-                        <input
-                          id="input-misc-link-description"
-                          style="line-height: 2"
-                          contenteditable="true"
-                        />
-                      </td>
-                      <th>
-                        <div
-                          onclick="addNewRow('doi-table')"
-                          class="doi-add-row-button"
-                          style="
-                            border-radius: 2px;
-                            color: #fff;
-                            padding: 5px !important;
-                            width: 40px;
-                            font-size: 13px;
-                            height: 30px;
-                            background: dodgerblue;
-                            display: block;
-                          "
-                        >
-                          Add
-                        </div>
-                        <div
-                          class="ui small basic icon buttons doi-helper-buttons"
-                          style="display: none"
-                        >
-                          <button onclick="delete_link(1)" class="ui button">
-                            <i
-                              class="trash alternate outline icon"
-                              style="color: red"
-                            ></i>
-                          </button>
-                        </div>
-                      </th>
-                    </tr>
-                  </tbody>
-                </table>
-                <p
-                  id="para-save-link-status"
-                  style="
-                    text-align: center;
-                    font-size: 14px;
-                    padding-top: 0;
-                    margin-right: 5px;
-                    margin-bottom: 0;
-                    margin-top: 15px;
-                    color: red;
-                  "
-                ></p>
-
-                <div
-                  style="display: flex; justify-content: center; margin: 20px"
-                >
-                  <button
-                    id="button-prev-misc-contributor"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px; margin-right: 10px"
-                  >
-                    <i class="fas fa-long-arrow-alt-left"></i>
-                  </button>
-                  <button
-                    id="button-next-misc-optional"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px"
-                  >
-                    <i class="fas fa-long-arrow-alt-right"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Completeness Info -->
-              <div
-                id="div-ds-optional-info"
-                style="width: 90%; margin: 0 auto; font-size: 13px"
-                class="datasetsaveoption"
-              >
-                <div>
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black">Completeness of dataset: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <input
-                        id="ds-completeness-old"
-                        class="form-container-input-bf"
-                      />
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        Is the data set as uploaded complete or is it part of an
-                        ongoing study? Select "hasNext" to indicate that you
-                        expect more data on different subjects as a continuation
-                        of this study. Select “hasChildren” to indicate that you
-                        expect more data on the same subjects or samples derived
-                        from those subjects. Leave empty if none.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black">Parent dataset(s): </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <input
-                        id="input-parent-ds-old"
-                        class="form-container-input-bf"
-                      />
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        If this is a part of a larger dataset, or references
-                        subjects or samples from a parent dataset, select the
-                        prior dataset. You need only the last dataset, not all
-                        datasets. If samples and subjects are from multiple
-                        parent datasets please select them all. Leave empty if
-                        none.
-                        <br /><br />
-                        Tip: Start typing to see the name of your dataset, and
-                        then press Enter to add your dataset.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black">Title for complete dataset: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <input
-                        id="input-completeds-title-old"
-                        class="form-container-input-bf"
-                      />
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span class="tooltiptext">
-                        Please give us a provisional title for the entire data
-                        set. Leave empty if not applicable.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head">
-                      <div style="width: 100%">
-                        <font color="black">Metadata Version: </font>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body">
-                      <input
-                        id="input-metadata-ver-old"
-                        value="1.2.3"
-                        disabled
-                        class="form-container-input-bf"
-                      />
-                    </div>
-                    <div class="tooltipnew demo-controls-end">
-                      <img
-                        class="info"
-                        src="assets/img/info.png"
-                        style="margin-top: -2px"
-                      />
-                      <span
-                        class="tooltiptext"
-                        style="width: 300px; font-weight: bold"
-                      >
-                        DO NOT CHANGE: 1.2.3
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div style="display: flex; justify-content: center">
-                  <button
-                    id="button-prev-optional-misc"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px; margin-right: 10px"
-                  >
-                    <i class="fas fa-long-arrow-alt-left"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div
-              style="
-                flex-direction: row;
-                justify-content: center;
-                margin: 0px auto;
-                height: 40px;
-              "
-            >
-              <button
-                id="button-generate-ds-description-old"
-                class="btn_animated"
-                style="margin: 10px; width: 120px; border: none !important"
-              >
-                Generate
-              </button>
-              <p
-                id="para-generate-description-status"
-                style="text-align: center; padding-top: 0; margin: 10px 0"
-              ></p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- main tabs' closing div -->
@@ -4727,8 +3337,8 @@
               style="
                 text-align: center;
                 display: none;
-                max-width: 750px;
-                with: 90%;
+                width: auto;
+                min-width: 550px;
                 margin: 10px auto;
               "
               id="table-subjects"
@@ -4749,16 +3359,17 @@
               <thead class="full-width">
                 <tr>
                   <th style="width: 10%">Index</th>
-                  <th style="width: 80%">subject_id</th>
-                  <th style="width: 10%">
-                    <i
+                  <th style="width: 60%">subject_id</th>
+                  <th style="width: 30%">
+                    Edit | Copy | Delete
+                    <!-- <i
                       class="fas fa-info-circle popover-tooltip"
                       data-content="Click on the corresponding button to edit/duplicate/delete a subject."
                       rel="popover"
                       data-placement="right"
                       data-html="true"
                       data-trigger="hover"
-                    ></i>
+                    ></i> -->
                   </th>
                 </tr>
               </thead>
@@ -4831,7 +3442,8 @@
                 href="#"
                 onclick="showPrimaryBrowseFolder()"
                 id="primary-folder-destination-input"
-                >I want to import subject ID(s) from my primary folder
+              >
+                I want to import subject ID(s) from my primary folder
               </a>
             </div>
             <div
@@ -5185,9 +3797,28 @@
                       id="bootbox-subject-species"
                       name="Species"
                       class="subjects-form-entry"
-                      placeholder="Search for species..."
-                      style="font-size: 14px"
+                      style="font-size: 14px; display: none"
                     />
+                    <button
+                      class="button-add-species"
+                      onclick="addSpecies(this, 'subject')"
+                      id="button-add-species-subject"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="vertical-align: middle"
+                        width="14"
+                        height="14"
+                        fill="currentColor"
+                        class="bi bi-plus"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                        />
+                      </svg>
+                      Add species
+                    </button>
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
@@ -5222,8 +3853,28 @@
                       id="bootbox-subject-strain"
                       name="Strain"
                       class="subjects-form-entry"
-                      placeholder="Type here and select from suggestions..."
+                      style="font-size: 13px; display: none"
                     />
+                    <button
+                      class="button-add-species"
+                      onclick="addStrain(this, 'subject')"
+                      id="button-add-strain-subject"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="vertical-align: middle"
+                        width="14"
+                        height="14"
+                        fill="currentColor"
+                        class="bi bi-plus"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                        />
+                      </svg>
+                      Add strain
+                    </button>
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
@@ -5539,9 +4190,12 @@
                   margin-top: 10px;
                 "
               >
-                <a onclick="preliminaryProtocolStep('subjects')" target="_blank"
-                  >Help me with my protocol information</a
+                <a
+                  onclick="preliminaryProtocolStep('subjects')"
+                  target="_blank"
                 >
+                  Click here to import my protocol information
+                </a>
                 <i
                   class="fas fa-info-circle popover-tooltip subjects-form"
                   data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. See
@@ -6089,8 +4743,8 @@
               style="
                 text-align: center;
                 display: none;
-                max-width: 750px;
-                with: 90%;
+                width: auto;
+                min-width: 550px;
                 margin: 10px auto;
               "
               id="table-samples"
@@ -6111,17 +4765,18 @@
               <thead class="full-width">
                 <tr>
                   <th style="width: 10%">Index</th>
-                  <th style="width: 40%">subject_id</th>
-                  <th style="width: 40%">sample_id</th>
-                  <th style="width: 10%">
-                    <i
+                  <th style="width: 30%">subject_id</th>
+                  <th style="width: 30%">sample_id</th>
+                  <th style="width: 30%">
+                    Edit | Copy | Delete
+                    <!-- <i
                       class="fas fa-info-circle popover-tooltip"
                       data-content="Click on the corresponding button to edit/duplicate/delete a sample."
                       rel="popover"
                       data-placement="right"
                       data-html="true"
                       data-trigger="hover"
-                    ></i>
+                    ></i> -->
                   </th>
                 </tr>
               </thead>
@@ -6193,8 +4848,8 @@
                 href="#"
                 onclick="showPrimaryBrowseFolderSamples()"
                 id="primary-folder-destination-input-samples"
-                >I want to import subject and sample ID(s) from my primary
-                folder
+              >
+                I want to import subject and sample ID(s) from my primary folder
               </a>
             </div>
             <div
@@ -6683,8 +5338,28 @@
                       id="bootbox-sample-species"
                       name="Species"
                       class="samples-form-entry"
-                      placeholder="Search for species..."
+                      style="display: none"
                     />
+                    <button
+                      class="button-add-species"
+                      onclick="addSpecies(this, 'sample')"
+                      id="button-add-species-sample"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="vertical-align: middle"
+                        width="14"
+                        height="14"
+                        fill="currentColor"
+                        class="bi bi-plus"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                        />
+                      </svg>
+                      Add species
+                    </button>
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
@@ -6717,8 +5392,28 @@
                       id="bootbox-sample-strain"
                       name="Strain"
                       class="samples-form-entry"
-                      placeholder="Type here and select from suggestions..."
+                      style="display: none"
                     />
+                    <button
+                      class="button-add-species"
+                      onclick="addStrain(this, 'sample')"
+                      id="button-add-strain-sample"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="vertical-align: middle"
+                        width="14"
+                        height="14"
+                        fill="currentColor"
+                        class="bi bi-plus"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                        />
+                      </svg>
+                      Add strain
+                    </button>
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
@@ -7036,9 +5731,9 @@
                   font-size: 14px;
                 "
               >
-                <a onclick="preliminaryProtocolStep('samples')" target="_blank"
-                  >Help me with my protocol information</a
-                >
+                <a onclick="preliminaryProtocolStep('samples')" target="_blank">
+                  Click here to import my protocol information
+                </a>
                 <i
                   class="fas fa-info-circle popover-tooltip subjects-form"
                   data-content="Connecting SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience."
@@ -7295,14 +5990,9 @@
   <script>
     window.$ = window.jQuery = require("jquery");
   </script>
-  <script src="node_modules/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
-
   <script
     src="./scripts/disseminate-and-metadata.js"
     type="text/javascript"
   ></script>
   <script src="./scripts/subjects-samples.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    require("./renderer-process/prepare-metadata/save-information.js");
-  </script>
 </template>

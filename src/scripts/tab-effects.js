@@ -103,6 +103,51 @@ const showParentTab = (tabNow, nextOrPrev) => {
     }
   }
 
+  if (tabNow == 2) {
+    if (!introStatus.organizeStep3) {
+      introJs()
+        .setOptions({
+          steps: [
+            {
+              title: "Welcome",
+              intro:
+                "This is where you will organize your dataset for curation",
+            },
+            {
+              title: "Expand folders",
+              element: document.querySelector(".div-organize-items"),
+              intro: "Double click on any of the folders to expand them.",
+            },
+            {
+              title: "More options",
+              element: document.querySelector(".single-item"),
+              intro:
+                "You can rename, delete and move folders and files by right clicking here.",
+            },
+            {
+              title: "Manifest info",
+              element: document.querySelector(".single-item"),
+              intro:
+                "You can also add descriptions to your manifest file by clicking the 'More details' options after right click.",
+            },
+            {
+              title: "Adding metadata",
+              element: document.querySelector("#nextBtn"),
+              intro:
+                "Click here after you are done organizing to add your metadata files to this dataset.",
+            },
+          ],
+          exitOnEsc: false,
+          exitOnOverlayClick: false,
+          disableInteraction: false,
+        })
+        .onbeforeexit(function () {
+          introStatus.organizeStep3 = true;
+        })
+        .start();
+    }
+  }
+
   if (tabNow == x.length - 1) {
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
@@ -1122,7 +1167,7 @@ async function transitionSubQuestions(
 }
 
 // Create the dataset structure for sodaJSONObj
-const create_json_object = (sodaJSONObj) => {
+const create_json_object = (action, sodaJSONObj) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -1173,7 +1218,6 @@ const create_json_object = (sodaJSONObj) => {
       }
     }
   });
-
   // go through each individual high level folder and create the structure
   // If a manifest file exists, read information from the manifest file into a json object
   for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -1193,6 +1237,7 @@ const create_json_object = (sodaJSONObj) => {
         .getJsonFromCsv(sodaJSONObj["starting-point"][folder]["path"]);
     }
     recursive_structure_create(
+      action,
       sodaJSONObj["dataset-structure"]["folders"][folder],
       folder,
       path.join(root_folder_path, folder)
@@ -1228,6 +1273,7 @@ const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
 // Create the dataset structure for each high level folder.
 // If a manifest file exists, read the file to get any additional metadata from the file.
 const recursive_structure_create = (
+  action,
   dataset_folder,
   high_level_folder,
   root_folder_path
@@ -1355,17 +1401,37 @@ const recursive_structure_create = (
       }
     }
     if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
-      dataset_folder["folders"][file] = {
-        folders: {},
-        files: {},
-        path: current_file_path,
-        type: "local",
-        action: ["existing"],
-      };
+      if (irregularFolderArray.includes(current_file_path)) {
+        var renamedFolderName = "";
+        if (action !== "ignore" && action !== "") {
+          if (action === "remove") {
+            renamedFolderName = removeIrregularFolders(file);
+          } else if (action === "replace") {
+            renamedFolderName = replaceIrregularFolders(file);
+          }
+          dataset_folder["folders"][renamedFolderName] = {
+            folders: {},
+            files: {},
+            path: current_file_path,
+            type: "local",
+            action: ["existing"],
+          };
+          // file = renamedFolderName
+        }
+      } else {
+        dataset_folder["folders"][file] = {
+          folders: {},
+          files: {},
+          path: current_file_path,
+          type: "local",
+          action: ["existing"],
+        };
+      }
     }
   });
   for (folder in dataset_folder["folders"]) {
     recursive_structure_create(
+      action,
       dataset_folder["folders"][folder],
       high_level_folder,
       root_folder_path
@@ -1741,23 +1807,7 @@ async function transitionFreeFormMode(
     .addClass("non-selected");
 
   // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
-  $("#para-share-curation_team-status").text("");
-  $("#para-share-with-sparc-consortium-status").text("");
   $("#para-submit_prepublishing_review-status").text("");
-
-  if (ev.getAttribute("data-next") == "Question-prepare-submission-7") {
-    var res = showPreviewSubmission();
-    var awardRes = res["awards"];
-    var dateRes = res["date"];
-    var milestonesRes = res["milestones"];
-    var milestoneValues = [];
-    $("#submission-SPARC-award-span").text(awardRes);
-    $("#submission-completion-date-span").text(dateRes);
-    milestonesRes.forEach((item, i) => {
-      milestoneValues.push(milestonesRes[i].value);
-    });
-    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-  }
 
   if (ev.getAttribute("data-next") == "div_make_pi_owner_permissions") {
     let nodeStorage = new JSONStorage(app.getPath("userData"));
@@ -2917,6 +2967,24 @@ $("input:radio[name=main_tabs]").click(function () {
 });
 
 $(document).ready(() => {
+  // Enable the popover content for the main-tab buttons
+  $(".option-card-disseminate-dataset").each(function () {
+    var $this = $(this);
+    $this.popover({
+      trigger: "hover",
+      container: $this,
+    });
+  });
+  $(".coming-soon-div").popover();
+  $("#button-submit-dataset").popover();
+  $(".popover-tooltip").each(function () {
+    var $this = $(this);
+    $this.popover({
+      trigger: "hover",
+      container: $this,
+    });
+  });
+
   $(".ui.accordion").accordion();
   $(".content-button").click(function () {
     let section = $(this).data("section");
@@ -2930,7 +2998,6 @@ $(document).ready(() => {
       }
     }
 
-    $("#para-add-new-dataset-status").html("");
     $("#main-nav").addClass("active");
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");
@@ -2967,6 +3034,7 @@ $(document).ready(() => {
       }
     });
   });
+  $(".content-button").popover();
 });
 
 $("#manage_dataset_tab").click();
@@ -3135,25 +3203,6 @@ $("#edit_banner_image_button").click(async () => {
       cropOptions
     );
   }
-});
-
-// Enable the popover content for the main-tab buttons
-$(".content-button").popover();
-$(".option-card-disseminate-dataset").each(function () {
-  var $this = $(this);
-  $this.popover({
-    trigger: "hover",
-    container: $this,
-  });
-});
-$(".coming-soon-div").popover();
-$("#button-submit-dataset").popover();
-$(".popover-tooltip").each(function () {
-  var $this = $(this);
-  $this.popover({
-    trigger: "hover",
-    container: $this,
-  });
 });
 
 initRipple = function (buttonEle) {

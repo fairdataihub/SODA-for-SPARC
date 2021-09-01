@@ -414,14 +414,6 @@ function checkValidRenameInput(
       }
     }
     if (duplicate) {
-      // $(myBootboxDialog).find(".modal-footer span").remove();
-      // myBootboxDialog
-      //   .find(".modal-footer")
-      //   .prepend(
-      //     "<span style='color:red;padding-right:10px;display:inline-block;'>The file name: " +
-      //       newName +
-      //       " already exists, please rename to a different name!</span>"
-      //   );
       Swal.fire({
         icon: "error",
         text: `The file name: ${newName} already exists, please rename to a different name!`,
@@ -441,14 +433,6 @@ function checkValidRenameInput(
       }
     }
     if (duplicate) {
-      // $(myBootboxDialog).find(".modal-footer span").remove();
-      // myBootboxDialog
-      //   .find(".modal-footer")
-      //   .prepend(
-      //     "<span style='color:red;padding-right:10px;display:inline-block;'>The folder name: " +
-      //       input.trim() +
-      //       " already exists, please rename to a different name!</span>"
-      //   );
       Swal.fire({
         icon: "error",
         text: `The folder name: ${newName} already exists, please rename to a different name!`,
@@ -554,6 +538,15 @@ function renameFolder(
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
+      preConfirm: (value) => {
+        for (var char of nonAllowedCharacters) {
+          if (value.includes(char)) {
+            Swal.showValidationMessage(
+              `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
+            );
+          }
+        }
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         var returnedName = checkValidRenameInput(
@@ -566,7 +559,6 @@ function renameFolder(
           // myBootboxDialog
         );
         if (returnedName !== "") {
-          // myBootboxDialog.modal("hide");
           Swal.fire({
             icon: "success",
             text: "Successfully renamed!.",
@@ -808,7 +800,7 @@ function addFilesfunction(
         ].push("renamed");
       }
       var appendString =
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         regularFiles[element]["basename"] +
         "</div></div>";
       $(uiItem).html(appendString);

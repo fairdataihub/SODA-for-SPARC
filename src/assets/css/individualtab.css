@@ -765,23 +765,23 @@
 
 @keyframes shakingeffect {
   0% {
-      transform: translateY(0px) rotate(0deg);
+    transform: translateY(0px) rotate(0deg);
   }
   20% {
-      transform: translateY(-2px) rotate(-4deg);
+    transform: translateY(-2px) rotate(-4deg);
   }
   40% {
-      transform: translateY(-2px) rotate(-2deg);
+    transform: translateY(-2px) rotate(-2deg);
   }
   60% {
-      transform: translateY(2px) rotate(4deg);
+    transform: translateY(2px) rotate(4deg);
   }
   80% {
-      transform: translateY(2px) rotate(2deg);
+    transform: translateY(2px) rotate(2deg);
   }
   100% {
-      transform: translateY(0px) rotate(0deg);
-    }
+    transform: translateY(0px) rotate(0deg);
+  }
 }
 
 .ui.positive.button.active {
@@ -953,29 +953,30 @@
   text-align: center;
 }
 
-.ui.input.modified>input {
-  border-bottom: 1px solid rgba(34,36,38,.15) !important;
+.ui.input.modified > input {
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15) !important;
   border-left: none !important;
   border-right: none !important;
   border-top: none !important;
   border-radius: 0 !important;
 }
 
-.ui.input.modified>input:focus {
+.ui.input.modified > input:focus {
   border-bottom: 1px solid var(--color-light-green) !important;
 }
 
 .ui.styled.accordion .title {
-  background: #fff !important
+  background: #fff !important;
 }
 
 .ui.styled.accordion .title.active {
   background: #e7f1ff !important;
-  color: #0c63e4 !important
+  color: #0c63e4 !important;
 }
 
-.ui.styled.accordion .accordion .title, .ui.styled.accordion .title {
-  color: rgba(0,0,0,.8) !important
+.ui.styled.accordion .accordion .title,
+.ui.styled.accordion .title {
+  color: rgba(0, 0, 0, 0.8) !important;
 }
 
 .invalid {
@@ -1316,7 +1317,7 @@
   color: #363636 !important;
   font-weight: 400 !important;
   /* width: 140px !important; */
-  /* font-size: 14px !important;
+/* font-size: 14px !important;
   padding: 8px 10px !important;
   background: #fff !important;
 } */
@@ -1349,7 +1350,7 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .swal2-footer a {
-  text-decoration: underline !important;
+  text-decoration: underline;
   /* color: var(--color-light-green) !important; */
 }
 
@@ -1591,17 +1592,17 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .popover-tooltip.subjects-form {
-    padding: 0;
-    font-size: 16px;
+  padding: 0;
+  font-size: 16px;
 }
-.popover-tooltip.subjects-form div{
-  min-width:180px
+.popover-tooltip.subjects-form div {
+  min-width: 180px;
 }
-.no_results_species{
+.no_results_species {
   line-height: 1.5;
   padding: 3px 5px;
   background: pink;
-  cursor: pointer
+  cursor: pointer;
 }
 
 .confirm-disabled {
@@ -1614,7 +1615,7 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .contributor-popup {
-  max-width: 90%
+  max-width: 90%;
 }
 
 .swal-content-additional-link #swal2-content {
@@ -1623,11 +1624,11 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .swal-content-additional-link #swal2-content label {
-  font-weight: 600
+  font-weight: 600;
 }
 
 .tagify.form-container-input-bf {
-  overflow-x: hidden
+  overflow-x: hidden;
 }
 
 #contributor-popup {
@@ -1646,19 +1647,20 @@ body.swal2-shown > [aria-hidden="true"] {
 #contributor-popup select {
   margin-bottom: 20px;
   margin-top: 15px;
-  height: 45px
+  height: 45px;
 }
 
 #contributor-popup label {
-  font-weight: 600
+  font-weight: 600;
 }
 
-.autoComplete_wrapper > ul > li mark, .mark {
-  padding: 0 !important
+.autoComplete_wrapper > ul > li mark,
+.mark {
+  padding: 0 !important;
 }
 
 .autoComplete_wrapper {
-  width: 100% !important
+  width: 100% !important;
 }
 
 .autoComplete_wrapper > input {
@@ -1666,7 +1668,24 @@ body.swal2-shown > [aria-hidden="true"] {
   font-size: inherit !important;
   min-height: 2.71428571em !important;
   border: none !important;
-  border-bottom: 1px solid rgba(34,36,38,.15) !important;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15) !important;
   border-radius: 0 !important;
   color: inherit !important;
+}
+
+.button-add-species {
+  width: 115px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: #e7f1ff;
+  color: #0c63e4;
+  font-weight: 600;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.button-add-species:hover {
+  background: #0c63e4;
+  color: #e7f1ff;
 }

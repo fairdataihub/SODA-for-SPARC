@@ -14,7 +14,6 @@ body {
   margin: 0; /* remove default margin */
 }
 
-
 /* enable text selection */
 
 .is-selectable,
@@ -24,10 +23,9 @@ code {
   cursor: auto;
 }
 
-
 /* Buttons and links */
 
-button{
+button {
   cursor: default;
 }
 
@@ -35,27 +33,28 @@ button{
 a {
   cursor: pointer;
   text-decoration: none;
-  border-bottom: 1px dashed;
   outline: none;
 }
 
 /* New window (target) + external links */
 a[target],
 a[href^="https://"],
-a[href^="http://"] {
+a[href^="http://"]
+{
   border-bottom: 1px solid;
 }
 /* For YouTube Video links */
-a[href^="https://www.youtube.com"] {
+a[href^="https://www.youtube.com"]
+{
   border-bottom: 0px solid;
 }
 
-.github-wiki-link{
+.github-wiki-link {
   text-decoration: none;
-  border:0px !important;
-  outline:none;
+  border: 0px !important;
+  outline: none;
   border-width: 0px;
-  outline-width:0px;
+  outline-width: 0px;
   border-bottom: none;
 }
 
@@ -63,7 +62,6 @@ a:hover,
 a:focus {
   border-bottom: none;
 }
-
 
 /* Images */
 

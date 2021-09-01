@@ -229,7 +229,7 @@ button[data-id="bf_list_users_pi"] {
   padding: 8px 10px !important;
   text-align: center;
   vertical-align: middle;
-  margin-top:;
+  margin-top: ;
 }
 
 .modal-footer {
@@ -702,7 +702,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.doc:before {
   background: url("../img/doc-file.png");
@@ -711,7 +711,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.docx:before {
   background: url("../img/doc-file.png");
@@ -720,7 +720,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.png:before {
   background: url("../img/png-file.png");
@@ -729,7 +729,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.PNG:before {
   background: url("../img/png-file.png");
@@ -738,7 +738,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.jpg:before {
   background: url("../img/jpeg-file.png");
@@ -747,7 +747,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.jpeg:before {
   background: url("../img/jpeg-file.png");
@@ -756,7 +756,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.JPEG:before {
   background: url("../img/jpeg-file.png");
@@ -765,7 +765,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.pdf:before {
   background: url("../img/pdf-file.png");
@@ -774,7 +774,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.txt:before {
   background: url("../img/txt-file.png");
@@ -783,7 +783,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .myFile.xlsx:before {
   background: url("../img/excel-file.png");
@@ -792,7 +792,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .myFile.xls:before {
@@ -802,7 +802,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .myFile.other:before {
@@ -812,7 +812,7 @@ button[data-id="bf_list_users_pi"] {
   position: absolute;
   width: 55px;
   height: 55px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .myFile.deleted_file:before {
@@ -1130,6 +1130,7 @@ button[data-id="bf_list_users_pi"] {
   height: auto;
   bottom: 70px;
   right: 0;
+  bottom: 70px;
   border-radius: 10px 0 0 10px;
   border: 1px solid #f0f0f0;
   background: #f5f5f5;

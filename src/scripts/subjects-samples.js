@@ -20,38 +20,38 @@ function showForm(type, editBoolean) {
 }
 
 function showFormSamples(type, editBoolean) {
-  if (samplesTableData.length > 1) {
-    var samplesDropdownOptions = [];
-    var subjectsDropdownOptions = [];
-    for (var i = 1; i < samplesTableData.length; i++) {
-      samplesDropdownOptions.push(samplesTableData[i][1]);
-      subjectsDropdownOptions.push(samplesTableData[i][0]);
-    }
-    if (!editBoolean) {
-      // prompt users if they want to import entries from previous sub_ids
-      Swal.fire({
-        title: "Would you like to re-use information from previous sample(s)?",
-        showCancelButton: true,
-        cancelButtonText: `No, start fresh!`,
-        cancelButtonColor: "#f44336",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes!",
-      }).then((boolean) => {
-        if (boolean.isConfirmed) {
-          promptImportPrevInfoSamples(
-            subjectsDropdownOptions,
-            samplesDropdownOptions
-          );
-        } else {
-          clearAllSubjectFormFields(samplesFormDiv);
-        }
-      });
-    }
-  } else {
-    if (type !== "edit") {
-      clearAllSubjectFormFields(samplesFormDiv);
-    }
+  // if (samplesTableData.length > 1) {
+  //   var samplesDropdownOptions = [];
+  //   var subjectsDropdownOptions = [];
+  //   for (var i = 1; i < samplesTableData.length; i++) {
+  //     samplesDropdownOptions.push(samplesTableData[i][1]);
+  //     subjectsDropdownOptions.push(samplesTableData[i][0]);
+  //   }
+  //   if (!editBoolean) {
+  //     // prompt users if they want to import entries from previous sub_ids
+  //     Swal.fire({
+  //       title: "Would you like to re-use information from previous sample(s)?",
+  //       showCancelButton: true,
+  //       cancelButtonText: `No, start fresh!`,
+  //       cancelButtonColor: "#f44336",
+  //       confirmButtonColor: "#3085d6",
+  //       confirmButtonText: "Yes!",
+  //     }).then((boolean) => {
+  //       if (boolean.isConfirmed) {
+  //         promptImportPrevInfoSamples(
+  //           subjectsDropdownOptions,
+  //           samplesDropdownOptions
+  //         );
+  //       } else {
+  //         clearAllSubjectFormFields(samplesFormDiv);
+  //       }
+  //     });
+  //   }
+  // } else {
+  if (type !== "edit") {
+    clearAllSubjectFormFields(samplesFormDiv);
   }
+  // }
   samplesFormDiv.style.display = "flex";
   $("#create_samples-tab").removeClass("show");
   $("#create_samples-tab").css("display", "none");
@@ -373,6 +373,103 @@ function addSubjectIDToJSON(subjectID) {
   }
 }
 
+/// function to add Species - subjects + samples
+async function addSpecies(ev, type) {
+  $("#bootbox-" + type + "-species").val("");
+  const { value: value } = await Swal.fire({
+    title: "Add/Edit a species",
+    html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
+    focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    customClass: {
+      confirmButton: "confirm-disabled",
+    },
+    didOpen: () => {
+      $(".swal2-confirm").attr("id", "btn-confirm-species");
+      createSpeciesAutocomplete("sweetalert-" + type + "-species");
+    },
+    preConfirm: () => {
+      if (
+        document.getElementById("sweetalert-" + type + "-species").value === ""
+      ) {
+        Swal.showValidationMessage("Please enter a species.");
+      }
+      return document.getElementById("sweetalert-" + type + "-species").value;
+    },
+  });
+  if (value) {
+    if (value !== "") {
+      $("#bootbox-" + type + "-species").val(value);
+      $("#bootbox-" + type + "-species").css("display", "block");
+      $("#bootbox-" + type + "-species").attr("readonly", true);
+      $("#bootbox-" + type + "-species").css("background", "#f5f5f5");
+      $(ev).html("<i class='pen icon'></i>Edit");
+    }
+  } else {
+    $("#bootbox-" + type + "-species").css("display", "none");
+    $("#bootbox-" + type + "-species").val("");
+    if (type.includes("subject")) {
+      $("#button-add-species-subject").html(
+        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+      );
+    } else {
+      $("#button-add-species-sample").html(
+        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+      );
+    }
+  }
+}
+
+async function addStrain(ev, type) {
+  $("#bootbox-" + type + "-strain").val("");
+  const { value: value } = await Swal.fire({
+    title: "Add/Edit a strain",
+    html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
+    focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    customClass: {
+      confirmButton: "confirm-disabled",
+    },
+    didOpen: () => {
+      $(".swal2-confirm").attr("id", "btn-confirm-strain");
+      createStrain("sweetalert-" + type + "-strain", type);
+    },
+    preConfirm: () => {
+      if (
+        document.getElementById("sweetalert-" + type + "-strain").value === ""
+      ) {
+        Swal.showValidationMessage("Please enter a strain.");
+      }
+      return document.getElementById("sweetalert-" + type + "-strain").value;
+    },
+  });
+  if (value) {
+    if (value !== "") {
+      $("#bootbox-" + type + "-strain").val(value);
+      $("#bootbox-" + type + "-strain").css("display", "block");
+      $("#bootbox-" + type + "-strain").attr("readonly", true);
+      $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
+      $(ev).html("<i class='pen icon'></i>Edit");
+    }
+  } else {
+    $("#bootbox-" + type + "-strain").css("display", "none");
+    $("#bootbox-" + type + "-strain-RRID").val("");
+    if (type.includes("subject")) {
+      $("#button-add-strain-subject").html(
+        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+      );
+    } else {
+      $("#button-add-strain-sample").html(
+        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+      );
+    }
+  }
+}
+
 // populate RRID
 function populateRRID(strain, type) {
   var rridHostname = "scicrunch.org";
@@ -389,7 +486,6 @@ function populateRRID(strain, type) {
     allowEscapeKey: false,
     allowOutsideClick: false,
     html: "Please wait...",
-    timer: 10000,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     timerProgressBar: true,
@@ -414,14 +510,31 @@ function populateRRID(strain, type) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
-          if (type === "subjects") {
-            $("#bootbox-subject-strain").val("");
-            $("#bootbox-subject-strain-RRID").val("");
-          } else if (type === "samples") {
-            $("#bootbox-sample-strain").val("");
-            $("#bootbox-sample-strain-RRID").val("");
+          $("#bootbox-" + type + "-strain").val("");
+          $("#bootbox-" + type + "-strain-RRID").val("");
+          $("#bootbox-" + type + "-strain").css("display", "none");
+          if (type.includes("subject")) {
+            $("#button-add-strain-subject").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+            );
+          } else {
+            $("#button-add-strain-sample").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+            );
           }
         } else {
+          $("#bootbox-" + type + "-strain").val(strain);
+          $("#btn-confirm-strain").removeClass("confirm-disabled");
+          $("#bootbox-" + type + "-strain").css("display", "block");
+          $("#bootbox-" + type + "-strain").attr("readonly", true);
+          $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
+          if (type.includes("subject")) {
+            $("#button-add-strain-subject").html(
+              "<i class='pen icon'></i>Edit"
+            );
+          } else {
+            $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit");
+          }
           Swal.fire(
             `Successfully retrieved the RRID for "${strain}".`,
             "",
@@ -430,13 +543,8 @@ function populateRRID(strain, type) {
         }
       });
     } else {
-      if (type === "subjects") {
-        $("#bootbox-subject-strain").val("");
-        $("#bootbox-subject-strain-RRID").val("");
-      } else if (type === "samples") {
-        $("#bootbox-sample-strain").val("");
-        $("#bootbox-sample-strain-RRID").val("");
-      }
+      $("#bootbox-" + type + "-strain").val("");
+      $("#bootbox-" + type + "-strain-RRID").val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
         text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
@@ -566,7 +674,7 @@ async function edit_current_protocol_id(ev) {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     preConfirm: () => {
-      return document.getElementById("DD-protocol-link").value
+      return document.getElementById("DD-protocol-link").value;
     },
   });
   if (value) {
@@ -580,10 +688,10 @@ async function edit_current_additional_link_id(ev) {
   var linkType = $(currentRow)[0].cells[1].innerText;
   // check which link type is being edited to hide/show the link description
   if (linkType === "Originating Article DOI") {
-    var display = "none"
-    var desc = ""
+    var display = "none";
+    var desc = "";
   } else {
-    var display = "block"
+    var display = "block";
     var desc = $(currentRow)[0].cells[3].innerText;
   }
   var link = $(currentRow)[0].cells[2].innerText;
@@ -594,7 +702,9 @@ async function edit_current_additional_link_id(ev) {
       '<input id="DD-additional-link" value="' +
       link +
       '" class="swal2-input" placeholder="Enter protocol link">' +
-      '<textarea style="display:'+display+'" id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description">' +
+      '<textarea style="display:' +
+      display +
+      '" id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description">' +
       desc +
       "</textarea>",
     focusConfirm: false,
@@ -870,6 +980,7 @@ function editSample(ev, sampleID) {
         break;
       }
     }
+    $(currentRow)[0].cells[1].innerText = samplesFileData[0];
     hideSamplesForm();
   } else {
     var table = document.getElementById("table-samples");
@@ -894,6 +1005,7 @@ function editSample(ev, sampleID) {
         }
       }
       $(currentRow)[0].cells[2].innerText = newID;
+      $(currentRow)[0].cells[1].innerText = samplesFileData[0];
       hideSamplesForm();
     }
   }
@@ -1002,8 +1114,7 @@ function delete_current_additional_link_id(ev) {
 
 async function copy_current_subject_id(ev) {
   const { value: newSubject } = await Swal.fire({
-    title: "Copying information from this subject: ",
-    text: "Enter an ID for the new subject: ",
+    title: "Enter an ID for the new subject:",
     input: "text",
     showCancelButton: true,
     heightAuto: false,
@@ -1042,12 +1153,14 @@ async function copy_current_subject_id(ev) {
 
 async function copy_current_sample_id(ev) {
   const { value: newSubSam } = await Swal.fire({
-    title: "Copying information from this sample: ",
-    text: "Enter an ID for the new subject and sample: ",
+    title: "Enter an ID for the new subject and sample: ",
     html:
       '<input id="new-subject" class="swal2-input" placeholder="Subject ID">' +
       '<input id="new-sample" class="swal2-input" placeholder="Sample ID">',
     focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
     preConfirm: () => {
       return [
         document.getElementById("new-subject").value,
@@ -1126,10 +1239,15 @@ function updateOrderIDTable(table, json, type) {
   orderedTableData[0] = json[0];
   // 3. loop through the UI table by index -> grab subject_id accordingly, find subject_id in json, append that to orderedSubjectsTableData
   i = 1;
+  if (type === "subjects") {
+    j = 0;
+  } else if (type === "samples") {
+    j = 1;
+  }
   for (var index = 1; index < length; index++) {
-    var id = table.rows[index].cells[1].innerText;
+    var id = table.rows[index].cells[j + 1].innerText;
     for (var ind of json.slice(1)) {
-      if (ind[0] === id) {
+      if (ind[j] === id) {
         orderedTableData[i] = ind;
         i += 1;
         break;
@@ -1192,18 +1310,24 @@ function importPrimaryFolderSubjects(folderPath) {
     headersArrSubjects.push(field.name);
   }
   if (folderPath === "Browse here") {
-    Swal.fire(
-      "No folder chosen",
-      "Please select a path to your primary folder",
-      "error"
-    );
+    Swal.fire({
+      title: "No folder chosen!",
+      text: "Please select a path to your primary folder",
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
   } else {
     if (path.parse(folderPath).base !== "primary") {
-      Swal.fire(
-        "Incorrect folder name",
-        "Your folder must be named 'primary' to be imported to SODA.",
-        "error"
-      );
+      Swal.fire({
+        title: "Incorrect folder name!",
+        text: "Your folder must be named 'primary' to be imported to SODA.",
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -1272,18 +1396,24 @@ function importPrimaryFolderSamples(folderPath) {
   }
   // var folderPath = $("#primary-folder-destination-input-samples").prop("placeholder");
   if (folderPath === "Browse here") {
-    Swal.fire(
-      "No folder chosen",
-      "Please select a path to your primary folder.",
-      "error"
-    );
+    Swal.fire({
+      title: "No folder chosen!",
+      text: "Please select a path to your primary folder.",
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
   } else {
     if (path.parse(folderPath).base !== "primary") {
-      Swal.fire(
-        "Incorrect folder name",
-        "Your folder must be named 'primary' to be imported to SODA.",
-        "error"
-      );
+      Swal.fire({
+        title: "Incorrect folder name!",
+        text: "Your folder must be named 'primary' to be imported to SODA.",
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -1304,7 +1434,7 @@ function importPrimaryFolderSamples(folderPath) {
                 samplesFileData.push("");
               }
               samplesTableData[j] = samplesFileData;
-              j += 1
+              j += 1;
             }
           }
         }
@@ -1712,11 +1842,15 @@ $(document).ready(function () {
           defaultBfAccount
         );
       } else {
-        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-subjects-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
       }
     } else {
-      document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+      document.getElementById(
+        "existing-subjects-file-destination"
+      ).placeholder = "Browse here";
       $("#div-confirm-existing-subjects-import").hide();
     }
     if (
@@ -1744,11 +1878,14 @@ $(document).ready(function () {
           defaultBfAccount
         );
       } else {
-        document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-samples-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-samples-import").hide();
       }
     } else {
-      document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+      document.getElementById("existing-samples-file-destination").placeholder =
+        "Browse here";
       $("#div-confirm-existing-samples-import").hide();
     }
     if (
@@ -1765,7 +1902,10 @@ $(document).ready(function () {
 });
 
 function showExistingSubjectsFile() {
-  if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
+  if (
+    $("#existing-subjects-file-destination").prop("placeholder") !==
+    "Browse here"
+  ) {
     Swal.fire({
       title: "Are you sure you want to import a different subjects file?",
       text: "This will delete all of your previous work on this file.",
@@ -1781,44 +1921,51 @@ function showExistingSubjectsFile() {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-subjects");
-        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-subjects-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
         $($("#div-confirm-existing-subjects-import button")[0]).hide();
-        $("#Question-prepare-subjects-3").removeClass("show")
+        $("#Question-prepare-subjects-3").removeClass("show");
       }
-    })
+    });
   } else {
     ipcRenderer.send("open-file-dialog-existing-subjects");
   }
 }
 
 function showExistingSamplesFile() {
-  if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
-     Swal.fire({
-       title: "Are you sure you want to import a different samples file?",
-       text: "This will delete all of your previous work on this file.",
-       showCancelButton: true,
-       heightAuto: false,
-       backdrop: "rgba(0,0,0, 0.4)",
-       cancelButtonText: `No!`,
-       cancelButtonColor: "#f44336",
-       confirmButtonColor: "#3085d6",
-       confirmButtonText: "Yes",
-       icon: "warning",
-       reverseButtons: reverseSwalButtons,
-     }).then((boolean) => {
-       if (boolean.isConfirmed) {
-         ipcRenderer.send("open-file-dialog-existing-samples");
-         document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
-         $("#div-confirm-existing-samples-import").hide();
-         $($("#div-confirm-existing-samples-import button")[0]).hide();
-         $("#Question-prepare-samples-3").removeClass("show")
-       }
-     })
-   } else {
-     ipcRenderer.send("open-file-dialog-existing-samples");
-   }
- }
+  if (
+    $("#existing-samples-file-destination").prop("placeholder") !==
+    "Browse here"
+  ) {
+    Swal.fire({
+      title: "Are you sure you want to import a different samples file?",
+      text: "This will delete all of your previous work on this file.",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: `No!`,
+      cancelButtonColor: "#f44336",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+    }).then((boolean) => {
+      if (boolean.isConfirmed) {
+        ipcRenderer.send("open-file-dialog-existing-samples");
+        document.getElementById(
+          "existing-samples-file-destination"
+        ).placeholder = "Browse here";
+        $("#div-confirm-existing-samples-import").hide();
+        $($("#div-confirm-existing-samples-import button")[0]).hide();
+        $("#Question-prepare-samples-3").removeClass("show");
+      }
+    });
+  } else {
+    ipcRenderer.send("open-file-dialog-existing-samples");
+  }
+}
 
 function importExistingSubjectsFile() {
   var filePath = $("#existing-subjects-file-destination").prop("placeholder");
@@ -1839,7 +1986,6 @@ function importExistingSubjectsFile() {
       Swal.fire({
         title: "Loading an existing subjects.xlsx file",
         html: "Please wait...",
-        timer: 2000,
         allowEscapeKey: false,
         allowOutsideClick: false,
         heightAuto: false,
@@ -1875,7 +2021,7 @@ function importExistingSamplesFile() {
         allowEscapeKey: false,
         allowOutsideClick: false,
         html: "Please wait...",
-        timer: 1500,
+        // timer: 1500,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         timerProgressBar: false,
@@ -1987,19 +2133,21 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             text: " For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
             confirmButtonText: "Add",
             cancelButtonText: "Cancel",
             allowEscapeKey: false,
             allowOutsideClick: false,
-            html:
-              '<input id="DD-protocol-link" class="swal2-input" placeholder="Enter protocol link">',
+            html: '<input id="DD-protocol-link" class="swal2-input" placeholder="Enter protocol link">',
             focusConfirm: false,
             preConfirm: () => {
               var link = document.getElementById("DD-protocol-link").value;
               if (checkDuplicateLink(link, "protocol-link-table-dd")) {
-                Swal.showValidationMessage("The link provided is already added to the table. Please provide a different protocol.")
+                Swal.showValidationMessage(
+                  "The link provided is already added to the table. Please provide a different protocol."
+                );
               }
-              return link
+              return link;
             },
           });
           if (formValue) {
@@ -2154,13 +2302,13 @@ async function showProtocolCredentials(email, filetype) {
       if (value) {
         if (filetype === "DD") {
           if (checkDuplicateLink(value, "protocol-link-table-dd")) {
-            return "The link provided is already added to the table. Please provide a different protocol."
+            return "The link provided is already added to the table. Please provide a different protocol.";
           }
         }
       } else {
-        return warningText
+        return warningText;
       }
-    }
+    },
   });
   if (protocol) {
     if (filetype === "subjects") {
@@ -2235,8 +2383,8 @@ async function addAdditionalLink() {
 }
 
 function hideDescriptionForDOIs() {
-  $("#DD-additional-link-description").val("")
-  $("#DD-additional-link").val("")
+  $("#DD-additional-link-description").val("");
+  $("#DD-additional-link").val("");
   if ($("#DD-additional-link-type").val() === "Originating Article DOI") {
     $("#DD-additional-link-description").css("display", "none");
     $("#label-additional-link-description").css("display", "none");
@@ -2280,22 +2428,12 @@ function readXMLScicrunch(xml, type) {
       break;
     }
   }
-  if (type === "subjects") {
-    if (rrid !== "") {
-      $("#bootbox-subject-strain-RRID").val(rrid);
-      res = true;
-    } else {
-      $("#bootbox-subject-strain-RRID").val("");
-      res = false;
-    }
+  if (rrid !== "") {
+    $("#bootbox-" + type + "-strain-RRID").val(rrid);
+    res = true;
   } else {
-    if (rrid !== "") {
-      $("#bootbox-sample-strain-RRID").val(rrid);
-      res = true;
-    } else {
-      $("#bootbox-sample-strain-RRID").val("");
-      res = false;
-    }
+    $("#bootbox-" + type + "-strain-RRID").val("");
+    res = false;
   }
   return res;
 }
@@ -2304,8 +2442,7 @@ function readXMLScicrunch(xml, type) {
 async function addProtocol() {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
-    html:
-      '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">',
+    html: '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">',
     focusConfirm: false,
     confirmButtonText: "Add",
     cancelButtonText: "Cancel",
@@ -2322,11 +2459,11 @@ async function addProtocol() {
         Swal.showValidationMessage(`Please enter a link!`);
       }
       if (checkDuplicateLink(link, "protocol-link-table-dd")) {
-        Swal.showValidationMessage("The link provided is already added to the table. Please provide a different protocol.")
+        Swal.showValidationMessage(
+          "The link provided is already added to the table. Please provide a different protocol."
+        );
       }
-      return [
-        $("#DD-protocol-link").val(),
-      ];
+      return [$("#DD-protocol-link").val()];
     },
   });
   if (values) {
@@ -2406,8 +2543,6 @@ async function helpSPARCAward(filetype) {
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
         html: htmlEle,
-        // input: 'select',
-        // inputOptions: awardObj,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         inputPlaceholder: "Select an award",
@@ -2415,8 +2550,9 @@ async function helpSPARCAward(filetype) {
         confirmButtonText: "Confirm",
         didOpen: () => {
           $("#select-sparc-award-dd-spinner").css("display", "none");
-          populateSelectSPARCAward(awardObj);
+          populateSelectSPARCAward(awardObj, "select-SPARC-award");
           $("#select-SPARC-award").selectpicker();
+          $("#bf_list_users_pi").selectpicker("refresh");
         },
         preConfirm: () => {
           if ($("#select-SPARC-award").val() === "Select") {
@@ -2440,13 +2576,10 @@ async function helpSPARCAward(filetype) {
             confirmButtonText: "Yes",
           }).then((boolean) => {
             if (boolean.isConfirmed) {
-              // var awardValue =  $("#select-SPARC-award").val()
-              // $("#ds-description-award-input").val(awardValue)
               changeAward(award);
             }
           });
         } else {
-          // var awardValue =  $("#select-SPARC-award").val()
           changeAward(award);
         }
       }
@@ -2469,27 +2602,111 @@ async function helpSPARCAward(filetype) {
       });
       $("#select-sparc-award-dd-spinner").css("display", "none");
     }
+  } else {
+    var res = airtableRes;
+    $("#select-sparc-award-submission-spinner").css("display", "block");
+    if (res[0]) {
+      var keyname = res[1];
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+        class="search-select-box"><select id="select-SPARC-award-submission" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
+      const { value: awardVal } = await Swal.fire({
+        html: htmlEle,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        inputPlaceholder: "Select an award",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        didOpen: () => {
+          $("#select-sparc-award-submission-spinner").css("display", "none");
+          populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
+          $("#select-SPARC-award-submission").selectpicker();
+          $("#bf_list_users_pi").selectpicker("refresh");
+        },
+        preConfirm: () => {
+          if ($("#select-SPARC-award-submission").val() === "Select") {
+            Swal.showValidationMessage("Please select an award.");
+          } else {
+            award = $("#select-SPARC-award-submission").val();
+          }
+        },
+      });
+      if (awardVal) {
+        if ($("#selected-milestone-1").val() !== "") {
+          Swal.fire({
+            title:
+              "Are you sure you want to delete all of the previous milestone information?",
+            showCancelButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: `No!`,
+            cancelButtonColor: "#f44336",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Yes",
+          }).then((boolean) => {
+            if (boolean.isConfirmed) {
+              milestoneTagify1.removeAllTags();
+              $("#submission-sparc-award").val(award);
+              $("#ds-description-award-input").val(award);
+              loadContributorInfofromAirtable(award);
+            }
+          });
+        } else {
+          milestoneTagify1.removeAllTags();
+          $("#submission-sparc-award").val(award);
+          $("#ds-description-award-input").val(award);
+          loadContributorInfofromAirtable(award);
+        }
+      }
+    } else {
+      Swal.fire({
+        title:
+          "At this moment, SODA is not connected with your Airtable account.",
+        text: "Would you like to connect your Airtable account with SODA?",
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: `No!`,
+        cancelButtonColor: "#f44336",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "Yes",
+      }).then((boolean) => {
+        if (boolean.isConfirmed) {
+          showAddAirtableAccountSweetalert("submission");
+        }
+      });
+      $("#select-sparc-award-submission-spinner").css("display", "none");
+    }
   }
 }
 
-function populateSelectSPARCAward(object) {
-  removeOptions(document.getElementById("select-SPARC-award"));
-  addOption(
-    document.getElementById("select-SPARC-award"),
-    "Select an award",
-    "Select"
-  );
+function populateSelectSPARCAward(object, id) {
+  removeOptions(document.getElementById(id));
+  addOption(document.getElementById(id), "Select an award", "Select");
   for (var award of Object.keys(object)) {
-    addOption(
-      document.getElementById("select-SPARC-award"),
-      object[award],
-      award
-    );
+    addOption(document.getElementById(id), object[award], award);
   }
 }
 
 function changeAward(award) {
+  Swal.fire({
+    title: "Loading your award and contributor information.",
+    html: "Please wait...",
+    timer: 3000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   $("#ds-description-award-input").val(award);
+  $("#submission-sparc-award").val(award);
+  loadContributorInfofromAirtable(award);
+}
+
+function loadContributorInfofromAirtable(award) {
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();
@@ -2511,18 +2728,12 @@ function changeAward(award) {
         records.forEach(function (record) {
           var firstName = record.get("First_name");
           var lastName = record.get("Last_name");
-          globalContributorNameObject[lastName] = firstName;
-          currentContributorsLastNames.push(lastName);
+          if (firstName !== undefined && lastName !== undefined) {
+            globalContributorNameObject[lastName] = firstName;
+            currentContributorsLastNames.push(lastName);
+          }
         }),
           fetchNextPage();
-        // var currentRowLeftID = $(
-        //   $($("#table-current-contributors").find("tr")[1].cells[0]).find(
-        //     "select"
-        //   )[0]
-        // ).prop("id");
-        // if (currentRowLeftID) {
-        //   cloneConNamesSelect(currentRowLeftID);
-        // }
       });
     function done(err) {
       if (err) {
@@ -2560,10 +2771,10 @@ function addContributortoTableDD(name, contactStatus) {
 }
 
 var contributorElement =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCID ID <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Contact Person <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
+  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCID ID <i class="fas fa-info-circle swal-popover" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Contact Person <i class="fas fa-info-circle swal-popover" data-tippy-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
 
 var contributorElementRaw =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCID ID <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Contact Person <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
+  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCID ID <i class="fas fa-info-circle swal-popover" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\'  target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Contact Person <i class="fas fa-info-circle swal-popover" data-tippy-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
 
 var contributorObject = [];
 
@@ -2598,6 +2809,13 @@ function showContributorSweetalert(key) {
     footer: footer,
     didOpen: () => {
       $(".swal-popover").popover();
+      tippy("[data-tippy-content]", {
+        allowHTML: true,
+        interactive: true,
+        placement: "right",
+        theme: "light",
+        interactiveBorder: 30,
+      });
       // first destroy old tagify
       $($("#input-con-affiliation").siblings()[0]).remove();
       $($("#input-con-role").siblings()[0]).remove();
@@ -2632,6 +2850,7 @@ function showContributorSweetalert(key) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
+          enforceWhitelist: true,
           duplicates: false,
         }
       );
@@ -2779,6 +2998,13 @@ function edit_current_con_id(ev) {
     allowOutsideClick: false,
     didOpen: () => {
       $(".swal-popover").popover();
+      tippy("[data-tippy-content]", {
+        allowHTML: true,
+        interactive: true,
+        placement: "right",
+        theme: "light",
+        interactiveBorder: 30,
+      });
       // disable first and last names (cannot edit these fields)
       // first destroy old tagify
       $($("#input-con-affiliation").siblings()[0]).remove();
@@ -2814,6 +3040,7 @@ function edit_current_con_id(ev) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
+          enforceWhitelist: true,
           duplicates: false,
         }
       );
@@ -3024,7 +3251,6 @@ function checkDuplicateLink(link, table) {
   return duplicate;
 }
 
-
 ///// Functions to grab each piece of info to generate the dd file
 
 // dataset info
@@ -3076,9 +3302,9 @@ function grabAdditionalLinkSection() {
   var additionalLinkArray = [];
   for (i = 1; i < rowcountLink; i++) {
     var linkType = table.rows[i].cells[1].innerText;
-    var link = table.rows[i].cells[2].innerText
+    var link = table.rows[i].cells[2].innerText;
     if (linkType === "Originating Article DOI") {
-      originatingDOIArray.push(link)
+      originatingDOIArray.push(link);
     } else if (linkType === "Additional Link") {
       var linkObject = {
         link: link,
