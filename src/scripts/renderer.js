@@ -8655,7 +8655,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
         const optionsSparcTable = {
           hostname: airtableHostname,
           port: 443,
-          path: "/v0/appSDqnnxSuM1s2F7/sparc_members",
+          path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
           headers: { Authorization: `Bearer ${key}` },
         };
         var sparcTableSuccess;
@@ -8668,9 +8668,9 @@ function addAirtableAccountInsideSweetalert(keyword) {
             content["key-name"] = name;
             fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
             checkAirtableStatus(keyword);
-            document.getElementById(
-              "para-generate-description-status"
-            ).innerHTML = "";
+            // document.getElementById(
+            //   "para-generate-description-status"
+            // ).innerHTML = "";
             // $("#span-airtable-keyname").html(name);
             $("#current-airtable-account").html(name);
             // $("#bootbox-airtable-key-name").val("");
