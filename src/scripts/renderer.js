@@ -2000,6 +2000,8 @@ function loadContributorInfo(lastName, firstName) {
     ],
     enforceWhitelist: true,
     dropdown: {
+      classname: "color-blue",
+      maxItems: 25,
       enabled: 0,
       closeOnSelect: true,
     },

@@ -1586,6 +1586,10 @@ function resetSubjects() {
       subjectsFileData = [];
       subjectsTableData = [];
 
+      // hide Strains and Species
+      $("#bootbox-subject-species").css("display", "none");
+      $("#bootbox-subject-strain").css("display", "none");
+
       // delete custom fields (if any)
       var fieldLength = $(".subjects-form-entry").length;
       if (fieldLength > 18) {
@@ -1636,6 +1640,10 @@ function resetSamples() {
         .prop("placeholder", "Browse here");
       samplesFileData = [];
       samplesTableData = [];
+
+      // hide Strains and Species
+      $("#bootbox-sample-species").css("display", "none");
+      $("#bootbox-sample-strain").css("display", "none");
 
       // delete custom fields (if any)
       var fieldLength = $(".samples-form-entry").length;
