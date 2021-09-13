@@ -23,3 +23,4 @@ tools/analytics/clients_secret.json
 tools/analytics/result_csv
 tools/analytics/.ipynb_checkpoints
 tools/analytics/client_secrets.json
+tools/analytics/iframe_figures

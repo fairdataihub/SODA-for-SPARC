@@ -42,7 +42,6 @@ ipcMain.on("open-file-dialog-local-destination-curate", (event) => {
   );
 });
 
-
 ipcMain.on("open-file-dialog-local-destination-curate-generate", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -297,7 +296,6 @@ ipcMain.on("open-file-dialog-submission", (event) => {
   );
 });
 
-
 ipcMain.on("open-file-dialog-description", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -438,7 +436,9 @@ ipcMain.on("open-file-dialog-import-banner-image", (event) => {
     BrowserWindow.getFocusedWindow(),
     {
       properties: ["openFile"],
-      filters: [{ name: "Image", extensions: ["jpg", "png", "jpeg","tiff", "tif"] }],
+      filters: [
+        { name: "Image", extensions: ["jpg", "png", "jpeg", "tiff", "tif"] },
+      ],
     },
     (files) => {
       if (files) {
@@ -517,7 +517,11 @@ ipcMain.on("open-folder-dialog-save-subjects", (event, filename) => {
     },
     (files) => {
       if (files) {
-        event.sender.send("selected-generate-metadata-subjects", files, filename);
+        event.sender.send(
+          "selected-generate-metadata-subjects",
+          files,
+          filename
+        );
       }
     }
   );
@@ -532,7 +536,11 @@ ipcMain.on("open-folder-dialog-save-samples", (event, filename) => {
     },
     (files) => {
       if (files) {
-        event.sender.send("selected-generate-metadata-samples", files, filename);
+        event.sender.send(
+          "selected-generate-metadata-samples",
+          files,
+          filename
+        );
       }
     }
   );
@@ -567,7 +575,6 @@ ipcMain.on("open-file-dialog-local-primary-folder-samples", (event) => {
     }
   );
 });
-
 
 //// DDD download
 ipcMain.on("open-folder-dialog-save-DDD", (event, filename) => {
