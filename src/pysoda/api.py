@@ -21,6 +21,8 @@ from organize_datasets import generate_dataset_locally, bf_get_dataset_files_fol
 import sys
 import zerorpc
 
+MIN_SODA_VERSION = "4.7.1"
+
 class SodaApi(object):
 
     ### import milestone document
@@ -363,6 +365,10 @@ class SodaApi(object):
     #         return get_auth_key()
     #     except Exception as e:
     #         raise e
+
+    ### Check Login to Python Server
+    def api_version_check(self):
+        return MIN_SODA_VERSION
 
     ### Check Login to Python Server
     def echo(self, text):
