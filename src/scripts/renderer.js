@@ -52,6 +52,25 @@ let introStatus = {
 };
 
 //////////////////////////////////
+// App launch actions
+//////////////////////////////////
+
+// Log file settings //
+log.transports.console.level = false;
+log.transports.file.maxSize = 1024 * 1024 * 10;
+const homeDirectory = app.getPath("home");
+const SODA_SPARC_API_KEY = "SODA-Pennsieve";
+
+//log user's OS version //
+log.info("User OS:", os.type(), os.platform(), "version:", os.release());
+console.log("User OS:", os.type(), os.platform(), "version:", os.release());
+
+// Check current app version //
+const appVersion = window.require("electron").remote.app.getVersion();
+log.info("Current SODA version:", appVersion);
+console.log("Current SODA version:", appVersion);
+
+//////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
@@ -90,30 +109,41 @@ client.invoke("echo", "server ready", (error, res) => {
       "Establishing Python Connection"
     );
 
-    //Load Default/global Pennsieve account if available
-    updateBfAccountList();
-    checkNewAppVersion(); // Added so that version will be displayed for new users
+    // verify backend api versions
+    client.invoke("api_version_check", (error, res) => {
+      if (error || res !== appVersion) {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Verifying App Version",
+          error
+        );
+
+        Swal.fire({
+          icon: "error",
+          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Close now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            app.exit();
+          }
+        });
+      } else {
+        ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+        //Load Default/global Pennsieve account if available
+        updateBfAccountList();
+        checkNewAppVersion(); // Added so that version will be displayed for new users
+      }
+    });
   }
 });
-
-//////////////////////////////////
-// App launch actions
-//////////////////////////////////
-
-// Log file settings //
-log.transports.console.level = false;
-log.transports.file.maxSize = 1024 * 1024 * 10;
-const homeDirectory = app.getPath("home");
-const SODA_SPARC_API_KEY = "SODA-Pennsieve";
-
-//log user's OS version //
-log.info("User OS:", os.type(), os.platform(), "version:", os.release());
-console.log("User OS:", os.type(), os.platform(), "version:", os.release());
-
-// Check current app version //
-const appVersion = window.require("electron").remote.app.getVersion();
-log.info("Current SODA version:", appVersion);
-console.log("Current SODA version:", appVersion);
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
