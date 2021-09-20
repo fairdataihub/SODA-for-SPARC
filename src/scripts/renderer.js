@@ -5461,15 +5461,27 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
-      preConfirm: (value) => {
-        for (var char of nonAllowedCharacters) {
-          if (value.includes(char)) {
-            Swal.showValidationMessage(
-              `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
-            );
+      didOpen: () => {
+        $('.swal2-input').attr('id','add-new-folder-input');
+        $(".swal2-confirm").attr('id','add-new-folder-button');
+        $("#add-new-folder-input").keyup(function() {
+          var val = $("#add-new-folder-input").val()
+          for (var char of nonAllowedCharacters) {
+            if (val.includes(char)) {
+              Swal.showValidationMessage(
+                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
+              );
+              $("#add-new-folder-button").attr("disabled", true)
+              return
+            }
+            $("#add-new-folder-button").attr("disabled", false)
           }
-        }
+        })
       },
+      didDestroy: () => {
+        $(".swal2-confirm").attr('id','');
+        $('.swal2-input').attr('id','');
+      }
     }).then((result) => {
       if (result.value) {
         if (result.value !== null && result.value !== "") {

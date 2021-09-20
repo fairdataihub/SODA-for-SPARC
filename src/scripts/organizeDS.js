@@ -538,15 +538,27 @@ function renameFolder(
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
-      preConfirm: (value) => {
-        for (var char of nonAllowedCharacters) {
-          if (value.includes(char)) {
-            Swal.showValidationMessage(
-              `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
-            );
+      didOpen: () => {
+        $('.swal2-input').attr('id','rename-folder-input');
+        $(".swal2-confirm").attr('id','rename-folder-button');
+        $("#rename-folder-input").keyup(function() {
+          var val = $("#rename-folder-input").val()
+          for (var char of nonAllowedCharacters) {
+            if (val.includes(char)) {
+              Swal.showValidationMessage(
+                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
+              );
+              $("#rename-folder-button").attr("disabled", true)
+              return
+            }
+            $("#rename-folder-button").attr("disabled", false)
           }
-        }
+        })
       },
+      didDestroy: () => {
+        $(".swal2-confirm").attr('id','');
+        $('.swal2-input').attr('id','');
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         var returnedName = checkValidRenameInput(
