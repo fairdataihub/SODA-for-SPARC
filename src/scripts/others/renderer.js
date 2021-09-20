@@ -692,54 +692,6 @@ const downloadSubjects = document.getElementById("a-subjects");
 const downloadDescription = document.getElementById("a-description");
 const downloadManifest = document.getElementById("a-manifest");
 
-/// save airtable api key
-const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
-
-// Save grant information
-const presavedAwardArray1 = document.getElementById(
-  "select-presaved-grant-info-list"
-);
-const addAwardBtn = document.getElementById("button-add-award");
-const deleteMilestoneBtn = document.getElementById("button-delete-milestone");
-const editMilestoneBtn = document.getElementById("button-edit-milestone");
-const addMilestoneBtn = document.getElementById("button-add-milestone");
-const deleteAwardBtn = document.getElementById("button-delete-award");
-const addNewMilestoneBtn = document.getElementById(
-  "button-default-save-milestone"
-);
-const saveInformationBtn = document.getElementById("button-save-milestone");
-var sparcAwardEditMessage = $("#div-SPARC-edit-awards");
-
-var currentContributorsLastNames = [];
-var currentContributorsFirstNames = [];
-var globalContributorNameObject = {};
-
-// Prepare Submission File
-const airtableAccountBootboxMessage =
-  "<form><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
-const generateSubmissionBtn = document.getElementById("generate-submission");
-
-// Prepare Dataset Description File
-const dsAwardArray = document.getElementById("ds-description-award-list");
-const dsContributorArrayLast1 = document.getElementById(
-  "ds-description-contributor-list-last-1"
-);
-const dsContributorArrayFirst1 = document.getElementById(
-  "ds-description-contributor-list-first-1"
-);
-
-// var contributorRoles = document.getElementById("input-con-role-1");
-// const affiliationInput = document.getElementById("input-con-affiliation-1");
-const addCurrentContributorsBtn = document.getElementById(
-  "button-ds-add-contributor"
-);
-const contactPerson = document.getElementById("ds-contact-person");
-const currentConTable = document.getElementById("table-current-contributors");
-const generateDSBtn = document.getElementById("button-generate-ds-description");
-const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
-const datasetDescriptionFileDataset = document.getElementById("ds-name");
-const parentDSDropdown = document.getElementById("input-parent-ds");
-
 /////// New Organize Datasets /////////////////////
 const organizeDSglobalPath = document.getElementById("input-global-path");
 const organizeDSbackButton = document.getElementById("button-back");
@@ -8308,12 +8260,6 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
           html: "<span>" + error + "</span>",
           heightAuto: false,
           backdrop: "rgba(0,0,0,0.4)",
-          // showClass: {
-          //   popup: ''
-          // },
-          // hideClass: {
-          //   popup: ''
-          // }
         }).then((result) => {
           if (result.isConfirmed) {
             showBFAddAccountSweetalert();

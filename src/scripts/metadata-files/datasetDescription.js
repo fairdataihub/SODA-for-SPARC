@@ -1,3 +1,27 @@
+// Prepare Dataset Description File
+const dsAwardArray = document.getElementById("ds-description-award-list");
+const dsContributorArrayLast1 = document.getElementById(
+  "ds-description-contributor-list-last-1"
+);
+const dsContributorArrayFirst1 = document.getElementById(
+  "ds-description-contributor-list-first-1"
+);
+
+var currentContributorsLastNames = [];
+var currentContributorsFirstNames = [];
+var globalContributorNameObject = {};
+
+// const affiliationInput = document.getElementById("input-con-affiliation-1");
+const addCurrentContributorsBtn = document.getElementById(
+  "button-ds-add-contributor"
+);
+const contactPerson = document.getElementById("ds-contact-person");
+const currentConTable = document.getElementById("table-current-contributors");
+const generateDSBtn = document.getElementById("button-generate-ds-description");
+const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
+const datasetDescriptionFileDataset = document.getElementById("ds-name");
+const parentDSDropdown = document.getElementById("input-parent-ds");
+
 // Main function to check Airtable status upon loading soda
 ///// config and load live data from Airtable
 var sparcAwards = [];
@@ -13,8 +37,68 @@ $(document).ready(function () {
       $(this).text("Add contributors not listed above");
     }
   });
-
+  ipcRenderer.on(
+    "selected-metadata-ds-description",
+    (event, dirpath, filename) => {
+      if (dirpath.length > 0) {
+        // $("#generate-dd-spinner").show();
+        var destinationPath = path.join(dirpath[0], filename);
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File '" +
+            filename +
+            "' already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              generateDDFile(dirpath, destinationPath);
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Generating the dataset_description.xlsx file",
+            html: "Please wait...",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {});
+          generateDDFile(dirpath, destinationPath);
+        }
+      }
+    }
+  );
   checkAirtableStatus("");
+  ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
+    if (index === 0) {
+      ipcRenderer.send(
+        "open-folder-dialog-save-ds-description",
+        "dataset_description.xlsx"
+      );
+    }
+  });
+
+  $(".prepare-dd-cards").click(function () {
+    $("create_dataset_description-tab").removeClass("show");
+    var target = $(this).attr("data-next");
+    $("#" + target).toggleClass("show");
+    document.getElementById("prevBtn").style.display = "none";
+  });
 });
 
 function checkAirtableStatus(keyword) {
@@ -454,7 +538,6 @@ function resetDD() {
   });
 }
 
-
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
 generateDSBtn.addEventListener("click", (event) => {
@@ -500,62 +583,6 @@ generateDSBtn.addEventListener("click", (event) => {
     );
   }
 });
-
-ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
-  if (index === 0) {
-    ipcRenderer.send(
-      "open-folder-dialog-save-ds-description",
-      "dataset_description.xlsx"
-    );
-  }
-});
-
-ipcRenderer.on(
-  "selected-metadata-ds-description",
-  (event, dirpath, filename) => {
-    if (dirpath.length > 0) {
-      // $("#generate-dd-spinner").show();
-      var destinationPath = path.join(dirpath[0], filename);
-      if (fs.existsSync(destinationPath)) {
-        var emessage =
-          "File '" +
-          filename +
-          "' already exists in " +
-          dirpath[0] +
-          ". Do you want to replace it?";
-        Swal.fire({
-          icon: "warning",
-          title: "Metadata file already exists",
-          text: `${emessage}`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: true,
-          showCancelButton: true,
-          cancelButtonText: "No",
-          confirmButtonText: "Yes",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            generateDDFile(dirpath, destinationPath);
-          }
-        });
-      } else {
-        Swal.fire({
-          title: "Generating the dataset_description.xlsx file",
-          html: "Please wait...",
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        }).then((result) => {});
-        generateDDFile(dirpath, destinationPath);
-      }
-    }
-  }
-);
 
 function generateDDFile(fullpath, destinationPath) {
   var datasetInfoValueArray = grabDSInfoEntries();
@@ -638,7 +665,6 @@ function generateDDFile(fullpath, destinationPath) {
     );
   }
 }
-
 
 ///// Functions to grab each piece of info to generate the dd file
 
@@ -1605,14 +1631,6 @@ function showAddAirtableAccountSweetalert(keyword) {
   });
 }
 
-
-$(".prepare-dd-cards").click(function () {
-  $("create_dataset_description-tab").removeClass("show");
-  var target = $(this).attr("data-next");
-  $("#" + target).toggleClass("show");
-  document.getElementById("prevBtn").style.display = "none";
-});
-
 // adding row for contributor table
 function addNewRow(table) {
   $("#para-save-link-status").text("");
@@ -1777,7 +1795,6 @@ function addNewRow(table) {
     }
   }
 }
-
 
 function addAirtableAccountInsideSweetalert(keyword) {
   // var name = $("#bootbox-airtable-key-name").val();

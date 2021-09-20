@@ -2,6 +2,29 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 
+/// save airtable api key
+const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
+
+// Save grant information
+const presavedAwardArray1 = document.getElementById(
+  "select-presaved-grant-info-list"
+);
+const addAwardBtn = document.getElementById("button-add-award");
+const deleteMilestoneBtn = document.getElementById("button-delete-milestone");
+const editMilestoneBtn = document.getElementById("button-edit-milestone");
+const addMilestoneBtn = document.getElementById("button-add-milestone");
+const deleteAwardBtn = document.getElementById("button-delete-award");
+const addNewMilestoneBtn = document.getElementById(
+  "button-default-save-milestone"
+);
+const saveInformationBtn = document.getElementById("button-save-milestone");
+var sparcAwardEditMessage = $("#div-SPARC-edit-awards");
+
+// Prepare Submission File
+const airtableAccountBootboxMessage =
+  "<form><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
+const generateSubmissionBtn = document.getElementById("generate-submission");
+
 function resetSubmission() {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -138,7 +161,6 @@ function helpMilestoneSubmission() {
   }
 }
 
-
 function openDDDimport() {
   const dialog = require("electron").remote.dialog;
   const BrowserWindow = require("electron").remote.BrowserWindow;
@@ -168,12 +190,10 @@ function openDDDimport() {
   );
 }
 
-
 // generateSubmissionFile function takes all the values from the preview card's spans
 function generateSubmissionFile() {
   ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
 }
-
 
 function changeAwardInput() {
   var ddBolean;
@@ -279,8 +299,6 @@ $(document).ready(function() {
     }
   });
 })
-
-
 
 function generateSubmissionHelper(fullpath, destinationPath) {
   var awardRes = $("#submission-sparc-award").val();
@@ -422,7 +440,6 @@ $("#cancel-reupload-DDD").click(function () {
   $("#div-confirm-select-SPARC-awards button").show();
   $("#div-confirm-select-SPARC-awards button").click();
 });
-
 
 // show which Airtable first div to show -< based on Airtable connection status
 function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {

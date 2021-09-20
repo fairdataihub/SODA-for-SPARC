@@ -20,38 +20,9 @@ function showForm(type, editBoolean) {
 }
 
 function showFormSamples(type, editBoolean) {
-  // if (samplesTableData.length > 1) {
-  //   var samplesDropdownOptions = [];
-  //   var subjectsDropdownOptions = [];
-  //   for (var i = 1; i < samplesTableData.length; i++) {
-  //     samplesDropdownOptions.push(samplesTableData[i][1]);
-  //     subjectsDropdownOptions.push(samplesTableData[i][0]);
-  //   }
-  //   if (!editBoolean) {
-  //     // prompt users if they want to import entries from previous sub_ids
-  //     Swal.fire({
-  //       title: "Would you like to re-use information from previous sample(s)?",
-  //       showCancelButton: true,
-  //       cancelButtonText: `No, start fresh!`,
-  //       cancelButtonColor: "#f44336",
-  //       confirmButtonColor: "#3085d6",
-  //       confirmButtonText: "Yes!",
-  //     }).then((boolean) => {
-  //       if (boolean.isConfirmed) {
-  //         promptImportPrevInfoSamples(
-  //           subjectsDropdownOptions,
-  //           samplesDropdownOptions
-  //         );
-  //       } else {
-  //         clearAllSubjectFormFields(samplesFormDiv);
-  //       }
-  //     });
-  //   }
-  // } else {
   if (type !== "edit") {
     clearAllSubjectFormFields(samplesFormDiv);
   }
-  // }
   samplesFormDiv.style.display = "flex";
   $("#create_samples-tab").removeClass("show");
   $("#create_samples-tab").css("display", "none");
@@ -98,7 +69,7 @@ function promptImportPrevInfoSamples(arr1, arr2) {
         populateFormsSamples(prevSubID, prevSamID, "import");
       }
     } else {
-      hideSamplesForm();
+      hideForm("sample");
     }
   });
 }
@@ -166,32 +137,28 @@ function warningBeforeHideForm(type) {
   }).then((result) => {
     if (result.isConfirmed) {
       if (type === "subjects") {
-        hideSubjectsForm();
+        hideForm("subject");
       } else {
-        hideSamplesForm();
+        hideForm("sample");
       }
     }
   });
 }
 
-function hideSubjectsForm() {
-  subjectsFormDiv.style.display = "none";
-  $("#create_subjects-tab").addClass("show");
-  $("#create_subjects-tab").css("display", "flex");
-  $("#footer-div-subjects").css("display", "flex");
+function hideForm(type) {
+  var formDiv;
+  if (type === "subject") {
+    formDiv = subjectsFormDiv
+  } else if (type === "sample") {
+    formDiv = samplesFormDiv
+  }
+  formDiv.style.display = "none";
+  $("#create_"+type+"s-tab").addClass("show");
+  $("#create_"+type+"s-tab").css("display", "flex");
+  $("#footer-div-"+type+"s").css("display", "flex");
   $("#sidebarCollapse").prop("disabled", false);
-  $("#btn-edit-subject").css("display", "none");
-  $("#btn-add-subject").css("display", "inline-block");
-}
-
-function hideSamplesForm() {
-  samplesFormDiv.style.display = "none";
-  $("#create_samples-tab").addClass("show");
-  $("#create_samples-tab").css("display", "flex");
-  $("#footer-div-samples").css("display", "flex");
-  $("#sidebarCollapse").prop("disabled", false);
-  $("#btn-edit-sample").css("display", "none");
-  $("#btn-add-sample").css("display", "inline-block");
+  $("#btn-edit-"+type+"").css("display", "none");
+  $("#btn-add-"+type+"").css("display", "inline-block");
 }
 
 function validateSubSamID(ev) {
@@ -595,7 +562,7 @@ function addTheRestSubjectEntriesToJSON() {
   $("#table-subjects").css("display", "block");
   $("#button-generate-subjects").css("display", "block");
   clearAllSubjectFormFields(subjectsFormDiv);
-  hideSubjectsForm();
+  hideForm("subject");
 }
 
 function addTheRestSampleEntriesToJSON() {
@@ -637,7 +604,7 @@ function addTheRestSampleEntriesToJSON() {
   $("#table-samples").css("display", "block");
   $("#button-generate-samples").css("display", "block");
   clearAllSubjectFormFields(samplesFormDiv);
-  hideSamplesForm();
+  hideForm('sample');
 }
 
 function addSampleIDtoJSON(sampleID) {
@@ -918,7 +885,7 @@ function editSubject(ev, subjectID) {
         break;
       }
     }
-    hideSubjectsForm();
+    hideForm("subject");
   } else {
     var table = document.getElementById("table-subjects");
     var duplicate = false;
@@ -942,7 +909,7 @@ function editSubject(ev, subjectID) {
         }
       }
       $(currentRow)[0].cells[1].innerText = newID;
-      hideSubjectsForm();
+      hideForm("subject");
     }
   }
   subjectsFileData = [];
@@ -981,7 +948,7 @@ function editSample(ev, sampleID) {
       }
     }
     $(currentRow)[0].cells[1].innerText = samplesFileData[0];
-    hideSamplesForm();
+    hideForm("sample");
   } else {
     var table = document.getElementById("table-samples");
     var duplicate = false;
@@ -1006,7 +973,7 @@ function editSample(ev, sampleID) {
       }
       $(currentRow)[0].cells[2].innerText = newID;
       $(currentRow)[0].cells[1].innerText = samplesFileData[0];
-      hideSamplesForm();
+      hideForm("sample");
     }
   }
   samplesFileData = [];
