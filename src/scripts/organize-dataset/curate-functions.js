@@ -634,8 +634,8 @@ $(document).ready(function () {
   $("#bf_list_users_pi").selectpicker("refresh");
   $("#bf_list_users").selectpicker();
   $("#bf_list_users").selectpicker("refresh");
-  $("#bf_list_roles").selectpicker();
-  $("#bf_list_roles").selectpicker("refresh");
+  $("#bf_list_roles_user").selectpicker();
+  $("#bf_list_roles_user").selectpicker("refresh");
   $("#bf_list_teams").selectpicker();
   $("#bf_list_teams").selectpicker("refresh");
   $("#bf_list_roles_team").selectpicker();

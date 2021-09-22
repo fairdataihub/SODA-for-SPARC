@@ -3041,23 +3041,23 @@ $("#manage_dataset_tab").click();
 
 $("#bf_list_users").on("change", () => {
   let user_val = $("#bf_list_users").val();
-  let user_role = $("#bf_list_roles").val();
+  let user_role = $("#bf_list_roles_user").val();
 
   if (user_val == "Select user" || user_role == "Select role") {
-    $("#button-add-permission").hide();
+    $("#button-add-permission-user").hide();
   } else {
-    $("#button-add-permission").show();
+    $("#button-add-permission-user").show();
   }
 });
 
-$("#bf_list_roles").on("change", () => {
+$("#bf_list_roles_user").on("change", () => {
   let user_val = $("#bf_list_users").val();
-  let user_role = $("#bf_list_roles").val();
+  let user_role = $("#bf_list_roles_user").val();
 
   if (user_val == "Select user" || user_role == "Select role") {
-    $("#button-add-permission").hide();
+    $("#button-add-permission-user").hide();
   } else {
-    $("#button-add-permission").show();
+    $("#button-add-permission-user").show();
   }
 });
 
@@ -3083,127 +3083,9 @@ $("#bf_list_roles_teams").on("change", () => {
   }
 });
 
-$("body").on("click", ".check", function () {
-  $(this).siblings("input[name=dataset_status_radio]:radio").click();
-});
 
-$("body").on(
-  "change",
-  "input[type=radio][name=dataset_status_radio]",
-  function () {
-    $("#bf_list_dataset_status").val(this.value).trigger("change");
-  }
-);
 
-const getBase64 = async (url) => {
-  const axios = require("axios");
-  return axios
-    .get(url, {
-      responseType: "arraybuffer",
-    })
-    .then((response) =>
-      Buffer.from(response.data, "binary").toString("base64")
-    );
-};
 
-// function for importing a banner image if one already exists
-$("#edit_banner_image_button").click(async () => {
-  $("#edit_banner_image_modal").modal("show");
-  if ($("#para-current-banner-img").text() === "None") {
-    //Do nothing... regular import
-  } else {
-    let img_src = $("#current-banner-img").attr("src");
-    let img_base64 = await getBase64(img_src); // encode image to base64
-
-    $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
-    $("#save-banner-image").css("visibility", "visible");
-    $("#div-img-container-holder").css("display", "none");
-    $("#div-img-container").css("display", "block");
-    $("#para-path-image").html("path");
-
-    // Look for the security token in the URL. If this this doesn't exist, something went wrong with the aws bucket link.
-    let position = img_src.search("X-Amz-Security-Token");
-
-    if (position != -1) {
-      // The image url will be before the security token
-      let new_img_src = img_src.substring(0, position - 1);
-      let new_position = new_img_src.lastIndexOf("."); //
-
-      if (new_position != -1) {
-        imageExtension = new_img_src.substring(new_position + 1);
-        if (imageExtension.toLowerCase() == "png") {
-          $("#image-banner").attr("src", "data:image/png;base64," + img_base64);
-        } else if (imageExtension.toLowerCase() == "jpeg") {
-          $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
-        } else if (imageExtension.toLowerCase() == "jpg") {
-          $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
-        } else {
-          log.error(`An error happened: ${img_src}`);
-          console.log(`An error happened: ${img_src}`);
-          Swal.fire({
-            icon: "error",
-            text: "An error occured when importing the image. Please try again later.",
-            showConfirmButton: "OK",
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-          });
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Importing Pennsieve Image",
-            img_src
-          );
-          return;
-        }
-      } else {
-        log.error(`An error happened: ${img_src}`);
-        console.log(`An error happened: ${img_src}`);
-
-        Swal.fire({
-          icon: "error",
-          text: "An error occured when importing the image. Please try again later.",
-          showConfirmButton: "OK",
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-        });
-
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Importing Pennsieve Image",
-          img_src
-        );
-        return;
-      }
-    } else {
-      log.error(`An error happened: ${img_src}`);
-      console.log(`An error happened: ${img_src}`);
-
-      Swal.fire({
-        icon: "error",
-        text: "An error occured when importing the image. Please try again later.",
-        showConfirmButton: "OK",
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-      });
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Importing Pennsieve Image",
-        img_src
-      );
-      return;
-    }
-
-    myCropper.destroy();
-    myCropper = new Cropper(
-      document.getElementById("image-banner"),
-      cropOptions
-    );
-  }
-});
 
 initRipple = function (buttonEle) {
   var inside = document.createElement("div");
