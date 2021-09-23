@@ -331,6 +331,22 @@ function clearAllSubjectFormFields(form) {
   for (var field of $(form).children().find("select")) {
     $(field).val("Select");
   }
+
+  // hide Strains and Species
+  if (form === subjectsFormDiv) {
+    var keyword = "subject";
+  } else if (form === samplesFormDiv) {
+    var keyword = "sample";
+  }
+  $("#bootbox-"+keyword+"-species").css("display", "none");
+  $("#bootbox-"+keyword+"-strain").css("display", "none");
+
+  $("#button-add-species-"+keyword+"").html(
+    `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+  );
+  $("#button-add-strain-"+keyword+"").html(
+    `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+  );
 }
 
 // add new subject ID to JSON file (main file to be converted to excel)
@@ -369,23 +385,10 @@ async function addSpecies(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-species").val(value);
-      $("#bootbox-" + type + "-species").css("display", "block");
-      $("#bootbox-" + type + "-species").attr("readonly", true);
-      $("#bootbox-" + type + "-species").css("background", "#f5f5f5");
-      $(ev).html("<i class='pen icon'></i>Edit");
+      switchSpeciesStrainInput(type, "species", "edit")
     }
   } else {
-    $("#bootbox-" + type + "-species").css("display", "none");
-    $("#bootbox-" + type + "-species").val("");
-    if (type.includes("subject")) {
-      $("#button-add-species-subject").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    } else {
-      $("#button-add-species-sample").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    }
+    switchSpeciesStrainInput(type, "species", "add")
   }
 }
 
@@ -417,23 +420,26 @@ async function addStrain(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-strain").val(value);
-      $("#bootbox-" + type + "-strain").css("display", "block");
-      $("#bootbox-" + type + "-strain").attr("readonly", true);
-      $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
-      $(ev).html("<i class='pen icon'></i>Edit");
+      switchSpeciesStrainInput(type, "strain", "edit")
     }
   } else {
-    $("#bootbox-" + type + "-strain").css("display", "none");
-    $("#bootbox-" + type + "-strain-RRID").val("");
-    if (type.includes("subject")) {
-      $("#button-add-strain-subject").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    } else {
-      $("#button-add-strain-sample").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    }
+    switchSpeciesStrainInput(type, "strain", "add")
+  }
+}
+
+// display/hide strain/species input fields based on edit/add mode
+function switchSpeciesStrainInput(type, field, mode) {
+  if (mode === "add") {
+    $(`#button-add-${field}-${type}`).html(
+      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${field}`
+    );
+    $(`#bootbox-${type}-${field}`).css("display", "none");
+    $(`#bootbox-${type}-${field}`).val("");
+  } else if (mode === "edit") {
+    $(`#bootbox-${type}-${field}`).css("display", "block");
+    $(`#bootbox-${type}-${field}`).attr("readonly", true);
+    $(`#bootbox-${type}-${field}`).css("background", "#f5f5f5");
+    $(`#button-add-${field}-${type}`).html("<i class='pen icon'></i>Edit");
   }
 }
 
@@ -502,11 +508,12 @@ function populateRRID(strain, type) {
           } else {
             $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit");
           }
-          Swal.fire(
-            `Successfully retrieved the RRID for "${strain}".`,
-            "",
-            "success"
-          );
+          Swal.fire({
+            title: `Successfully retrieved the RRID for "${strain}".`,
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
         }
       });
     } else {
@@ -755,6 +762,13 @@ function populateForms(subjectID, type) {
                 $("#bootbox-subject-age-info").val("N/A");
               }
             }
+          } else if (field.name === "Species" && infoJson[i] !== "") {
+            $("#bootbox-subject-species").val(infoJson[i]);
+            // manipulate the Add Strains/Species UI accordingly
+            switchSpeciesStrainInput("subject", "species", "edit")
+          } else if (field.name === "Strain" && infoJson[i] !== "") {
+            $("#bootbox-subject-strain").val(infoJson[i]);
+            switchSpeciesStrainInput("subject", "strain", "edit")
           } else {
             if (type === "import") {
               if (field.name === "subject_id") {
@@ -813,6 +827,13 @@ function populateFormsSamples(subjectID, sampleID, type) {
             } else {
               $("#bootbox-sample-age-info").val("N/A");
             }
+          } else if (field.name === "Species" && infoJson[i] !== "") {
+            $("#bootbox-sample-species").val(infoJson[i]);
+            // manipulate the Add Strains/Species UI accordingly
+            switchSpeciesStrainInput("sample", "species", "edit")
+          } else if (field.name === "Strain" && infoJson[i] !== "") {
+            $("#bootbox-sample-strain").val(infoJson[i]);
+            switchSpeciesStrainInput("sample", "strain", "edit")
           } else {
             if (type === "import") {
               if (field.name === "subject_id") {

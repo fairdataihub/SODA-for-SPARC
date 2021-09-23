@@ -1632,11 +1632,13 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         console.error(error);
       } else {
         if (Object.keys(res).length === 0) {
-          Swal.fire(
-            "Cannot find a scientific name for '" + commonName + "'",
-            "Make sure you enter a correct species name.",
-            "error"
-          );
+          Swal.fire({
+            title: "Cannot find a scientific name for '" + commonName + "'",
+            text: "Make sure you enter a correct species name.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
           if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
             $("#btn-confirm-species").addClass("confirm-disabled");
           }
