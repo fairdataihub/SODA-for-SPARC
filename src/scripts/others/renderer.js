@@ -49,6 +49,7 @@ var datasetStructureJSONObj = {
 
 let introStatus = {
   organizeStep3: true,
+  // metadataSubjects: true,
 };
 
 //////////////////////////////////

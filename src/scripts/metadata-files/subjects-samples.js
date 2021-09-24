@@ -111,6 +111,9 @@ function addSubject() {
   if (subjectsTableData.length !== 0) {
     $("#div-import-primary-folder-sub").hide();
   }
+  if (subjectsTableData.length === 2) {
+      onboardingMetadata("subject")
+  }
 }
 
 // for "Done adding" button - samples
@@ -120,6 +123,9 @@ function addSample() {
   addSampleIDtoDataBase(sampleID, subjectID);
   if (samplesTableData.length !== 0) {
     $("#div-import-primary-folder-sam").hide();
+  }
+  if (samplesTableData.length === 2) {
+    onboardingMetadata("sample")
   }
 }
 
@@ -1486,7 +1492,7 @@ function loadSubjectsDataToTable() {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    });
+    })
   } else {
     Swal.fire({
       title: "Loaded successfully!",
@@ -1495,7 +1501,7 @@ function loadSubjectsDataToTable() {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    });
+    })
   }
   Swal.fire({
     title: "Loaded successfully!",
@@ -1504,9 +1510,43 @@ function loadSubjectsDataToTable() {
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  });
+  })
+  // onboardingMetadata("subject")
   $("#button-generate-subjects").css("display", "block");
   $("#div-import-primary-folder-sub").hide();
+}
+
+function onboardingMetadata(type) {
+  var helperButtons = $($($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]).find(".contributor-helper-buttons")[0]
+  introJs()
+    .setOptions({
+      steps: [
+        {
+          title: "Buttons",
+          element: helperButtons,
+          intro: "Click on these buttons to manipulate a "+type+".",
+        },
+        {
+          title: `1. Edit a ${type}`,
+          element: $(helperButtons).children()[0],
+          intro: "Click here to edit the information about a corresponding "+type+".",
+        },
+        {
+          title: `2. Copy a ${type}`,
+          element: $(helperButtons).children()[1],
+          intro: "Click here to copy information from the corresponding "+type+" onto a new "+type+". Note: You have to enter an ID for the new "+type+" after clicking on this.",
+        },
+        {
+          title: `3. Delete a ${type}`,
+          element: $(helperButtons).children()[2],
+          intro: "Click here to delete a corresponding "+type+" from the table. This will permanently delete the "+type+" from SODA and cannot be reverted.",
+        },
+      ],
+      exitOnEsc: false,
+      exitOnOverlayClick: false,
+      disableInteraction: false,
+    })
+    .start();
 }
 
 function loadSamplesDataToTable() {
@@ -1527,7 +1567,7 @@ function loadSamplesDataToTable() {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    });
+    })
   } else {
     Swal.fire({
       title: "Loaded successfully!",
@@ -1536,7 +1576,7 @@ function loadSamplesDataToTable() {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    });
+    })
   }
   $("#button-generate-samples").css("display", "block");
   $("#div-import-primary-folder-sam").hide();
