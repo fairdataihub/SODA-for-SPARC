@@ -47,10 +47,10 @@ var datasetStructureJSONObj = {
   type: "",
 };
 
-let introStatus = {
-  organizeStep3: true,
-  // metadataSubjects: true,
-};
+// let introStatus = {
+//   organizeStep3: true,
+//   // metadataSubjects: true,
+// };
 
 //////////////////////////////////
 // App launch actions
@@ -626,6 +626,11 @@ ipcRenderer.on("update_downloaded", () => {
     "Update Downloaded",
     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
   );
+
+  // reset onboarding show status
+  let nodeStorage = new JSONStorage(app.getPath("userData"));
+  nodeStorage.setItem("ShowOnboardingOrganizeStep3", true);
+
   notyf.dismiss(update_available_notification);
   if (process.platform == "darwin") {
     update_downloaded_notification = notyf.open({

@@ -104,7 +104,9 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 2) {
-    if (!introStatus.organizeStep3) {
+    let nodeStorage = new JSONStorage(app.getPath("userData"));
+    let introStatus = nodeStorage.getItem("ShowOnboardingOrganizeStep3") || true;
+    if (introStatus) {
       introJs()
         .setOptions({
           steps: [
@@ -141,8 +143,9 @@ const showParentTab = (tabNow, nextOrPrev) => {
           exitOnOverlayClick: false,
           disableInteraction: false,
         })
-        .onbeforeexit(function () {
-          introStatus.organizeStep3 = true;
+        .onbeforeexit( () => {
+          let nodeStorage = new JSONStorage(app.getPath("userData"));
+          nodeStorage.setItem("ShowOnboardingOrganizeStep3", false);
         })
         .start();
     }
