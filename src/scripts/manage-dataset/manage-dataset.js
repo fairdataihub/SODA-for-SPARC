@@ -113,7 +113,7 @@ $("#button-create-bf-new-dataset").click(() => {
           log.info(`Created dataset successfully`);
 
           $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
-          $(bfCreateNewDatasetBtn).hide();
+          $("#button-create-bf-new-dataset").hide();
 
           defaultBfDataset = bfNewDatasetName;
           refreshDatasetList();
