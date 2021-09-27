@@ -142,6 +142,8 @@ function helpMilestoneSubmission() {
                 Swal.fire({
                   backdrop: "rgba(0,0,0, 0.4)",
                   heightAuto: false,
+                  timer: 3000,
+                  timerProgressBar: true,
                   icon: "success",
                   text: `Successfully loaded your DataDeliverables.docx document`,
                 });

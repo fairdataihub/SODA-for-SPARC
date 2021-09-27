@@ -104,10 +104,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 2) {
-    let nodeStorage = new JSONStorage(app.getPath("userData"));
-    let introStatus =
-      nodeStorage.getItem("ShowOnboardingOrganizeStep3") || true;
-    if (introStatus) {
+    if (!introStatus.organizeStep3) {
       introJs()
         .setOptions({
           steps: [
@@ -144,9 +141,8 @@ const showParentTab = (tabNow, nextOrPrev) => {
           exitOnOverlayClick: false,
           disableInteraction: false,
         })
-        .onbeforeexit(() => {
-          let nodeStorage = new JSONStorage(app.getPath("userData"));
-          nodeStorage.setItem("ShowOnboardingOrganizeStep3", false);
+        .onbeforeexit(function () {
+          introStatus.organizeStep3 = true;
         })
         .start();
     }
@@ -1729,6 +1725,7 @@ async function transitionFreeFormMode(
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "Yes",
         cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
       });
       if (!continueProgressSubjects) {
         return;
@@ -1767,6 +1764,7 @@ async function transitionFreeFormMode(
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "Yes",
         cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
       });
       if (!continueProgressSamples) {
         return;
@@ -1793,6 +1791,27 @@ async function transitionFreeFormMode(
       }
     } else {
       $("#existing-samples-file-destination").val("");
+    }
+  }
+
+  if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
+    if ($("#Question-prepare-dd-2").hasClass("show")) {
+      var { value: continueProgressDD } = await Swal.fire({
+        title:
+          "This will reset your progress so far with the dataset_description.xlsx file. Are you sure you want to continue?",
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
+      });
+      if (!continueProgressDD) {
+        return;
+      } else {
+        $("#existing-dd-file-destination").val("");
+        resetDDFields();
+      }
     }
   }
 
