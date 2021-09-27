@@ -1817,7 +1817,6 @@ $(currentConTable).mousedown(function (e) {
   $(document).mousemove(move).mouseup(up);
 });
 
-
 $("#contributor-table-dd").mousedown(function (e) {
   var length = document.getElementById("contributor-table-dd").rows.length - 1;
   var tr = $(e.target).closest("tr"),
