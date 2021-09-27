@@ -778,7 +778,6 @@ function grabCompletenessInfo() {
   return optionalSectionObj;
 }
 
-
 // add protocol function for DD file
 async function addProtocol() {
   const { value: values } = await Swal.fire({
@@ -1591,7 +1590,6 @@ function checkDuplicateLink(link, table) {
   }
   return duplicate;
 }
-
 
 function showAddAirtableAccountSweetalert(keyword) {
   var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;

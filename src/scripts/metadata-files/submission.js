@@ -74,7 +74,6 @@ function resetSubmission() {
   });
 }
 
-
 function helpMilestoneSubmission() {
   var filepath = "";
   var award = $("#submission-sparc-award").val();
@@ -253,7 +252,7 @@ function actionEnterNewDate(action) {
 
 const submissionDateInput = document.getElementById("input-milestone-date");
 
-$(document).ready(function() {
+$(document).ready(function () {
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
       var destinationPath = path.join(dirpath[0], filename);
@@ -298,7 +297,7 @@ $(document).ready(function() {
       }
     }
   });
-})
+});
 
 function generateSubmissionHelper(fullpath, destinationPath) {
   var awardRes = $("#submission-sparc-award").val();
@@ -425,7 +424,6 @@ $("#submission-completion-date").change(function () {
     });
   }
 });
-
 
 $("#input-milestone-select-reupload").click(function () {
   document.getElementById(

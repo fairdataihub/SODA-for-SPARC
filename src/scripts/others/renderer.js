@@ -2381,8 +2381,6 @@ const tuiInstance = new Editor({
   ],
 });
 
-
-
 var displaySize = 1000;
 
 //////////////////////////////////
@@ -2768,9 +2766,6 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 }
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
-
-
-
 const metadataDatasetlistChange = () => {
   $("#bf-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
@@ -2839,8 +2834,6 @@ var cropOptions = {
 
 var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
-
-
 
 function submitReviewDatasetCheck(res) {
   $("#submit_prepublishing_review-spinner").show();
@@ -3066,14 +3059,6 @@ function userError(error) {
 
 // Manage Datasets //
 
-
-
-
-
-
-
-
-
 function refreshBfUsersList() {
   var accountSelected = defaultBfAccount;
 
@@ -3148,14 +3133,12 @@ function refreshBfTeamsList(teamList) {
   }
 }
 
-
-const selectOptionColor = (mylist) =>{
+const selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
-}
+};
 
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
-
 
 // this function now is only used to load all datasets ("All" permission)
 // onto the dataset_description file ds-name select
@@ -3175,7 +3158,7 @@ const refreshDatasetList = () => {
   populateDatasetDropdowns(filteredDatasets);
   parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
-}
+};
 
 /// populate the dropdowns with refreshed dataset list
 const populateDatasetDropdowns = (mylist) => {
@@ -3194,7 +3177,7 @@ const populateDatasetDropdowns = (mylist) => {
   permissionDatasetlistChange();
   postCurationListChange();
   datasetStatusListChange();
-}
+};
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 function loadDefaultAccount() {

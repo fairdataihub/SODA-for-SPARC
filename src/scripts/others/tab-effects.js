@@ -105,7 +105,8 @@ const showParentTab = (tabNow, nextOrPrev) => {
 
   if (tabNow == 2) {
     let nodeStorage = new JSONStorage(app.getPath("userData"));
-    let introStatus = nodeStorage.getItem("ShowOnboardingOrganizeStep3") || true;
+    let introStatus =
+      nodeStorage.getItem("ShowOnboardingOrganizeStep3") || true;
     if (introStatus) {
       introJs()
         .setOptions({
@@ -143,7 +144,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
           exitOnOverlayClick: false,
           disableInteraction: false,
         })
-        .onbeforeexit( () => {
+        .onbeforeexit(() => {
           let nodeStorage = new JSONStorage(app.getPath("userData"));
           nodeStorage.setItem("ShowOnboardingOrganizeStep3", false);
         })
@@ -3085,10 +3086,6 @@ $("#bf_list_roles_teams").on("change", () => {
     $("#button-add-permission-team").show();
   }
 });
-
-
-
-
 
 initRipple = function (buttonEle) {
   var inside = document.createElement("div");

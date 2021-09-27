@@ -112,7 +112,7 @@ function addSubject() {
     $("#div-import-primary-folder-sub").hide();
   }
   if (subjectsTableData.length === 2) {
-      onboardingMetadata("subject")
+    onboardingMetadata("subject");
   }
 }
 
@@ -125,7 +125,7 @@ function addSample() {
     $("#div-import-primary-folder-sam").hide();
   }
   if (samplesTableData.length === 2) {
-    onboardingMetadata("sample")
+    onboardingMetadata("sample");
   }
 }
 
@@ -154,17 +154,17 @@ function warningBeforeHideForm(type) {
 function hideForm(type) {
   var formDiv;
   if (type === "subject") {
-    formDiv = subjectsFormDiv
+    formDiv = subjectsFormDiv;
   } else if (type === "sample") {
-    formDiv = samplesFormDiv
+    formDiv = samplesFormDiv;
   }
   formDiv.style.display = "none";
-  $("#create_"+type+"s-tab").addClass("show");
-  $("#create_"+type+"s-tab").css("display", "flex");
-  $("#footer-div-"+type+"s").css("display", "flex");
+  $("#create_" + type + "s-tab").addClass("show");
+  $("#create_" + type + "s-tab").css("display", "flex");
+  $("#footer-div-" + type + "s").css("display", "flex");
   $("#sidebarCollapse").prop("disabled", false);
-  $("#btn-edit-"+type+"").css("display", "none");
-  $("#btn-add-"+type+"").css("display", "inline-block");
+  $("#btn-edit-" + type + "").css("display", "none");
+  $("#btn-add-" + type + "").css("display", "inline-block");
 }
 
 function validateSubSamID(ev) {
@@ -344,13 +344,13 @@ function clearAllSubjectFormFields(form) {
   } else if (form === samplesFormDiv) {
     var keyword = "sample";
   }
-  $("#bootbox-"+keyword+"-species").css("display", "none");
-  $("#bootbox-"+keyword+"-strain").css("display", "none");
+  $("#bootbox-" + keyword + "-species").css("display", "none");
+  $("#bootbox-" + keyword + "-strain").css("display", "none");
 
-  $("#button-add-species-"+keyword+"").html(
+  $("#button-add-species-" + keyword + "").html(
     `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
   );
-  $("#button-add-strain-"+keyword+"").html(
+  $("#button-add-strain-" + keyword + "").html(
     `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
   );
 }
@@ -391,10 +391,10 @@ async function addSpecies(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-species").val(value);
-      switchSpeciesStrainInput(type, "species", "edit")
+      switchSpeciesStrainInput(type, "species", "edit");
     }
   } else {
-    switchSpeciesStrainInput(type, "species", "add")
+    switchSpeciesStrainInput(type, "species", "add");
   }
 }
 
@@ -426,10 +426,10 @@ async function addStrain(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-strain").val(value);
-      switchSpeciesStrainInput(type, "strain", "edit")
+      switchSpeciesStrainInput(type, "strain", "edit");
     }
   } else {
-    switchSpeciesStrainInput(type, "strain", "add")
+    switchSpeciesStrainInput(type, "strain", "add");
   }
 }
 
@@ -617,7 +617,7 @@ function addTheRestSampleEntriesToJSON() {
   $("#table-samples").css("display", "block");
   $("#button-generate-samples").css("display", "block");
   clearAllSubjectFormFields(samplesFormDiv);
-  hideForm('sample');
+  hideForm("sample");
 }
 
 function addSampleIDtoJSON(sampleID) {
@@ -771,10 +771,10 @@ function populateForms(subjectID, type) {
           } else if (field.name === "Species" && infoJson[i] !== "") {
             $("#bootbox-subject-species").val(infoJson[i]);
             // manipulate the Add Strains/Species UI accordingly
-            switchSpeciesStrainInput("subject", "species", "edit")
+            switchSpeciesStrainInput("subject", "species", "edit");
           } else if (field.name === "Strain" && infoJson[i] !== "") {
             $("#bootbox-subject-strain").val(infoJson[i]);
-            switchSpeciesStrainInput("subject", "strain", "edit")
+            switchSpeciesStrainInput("subject", "strain", "edit");
           } else {
             if (type === "import") {
               if (field.name === "subject_id") {
@@ -836,10 +836,10 @@ function populateFormsSamples(subjectID, sampleID, type) {
           } else if (field.name === "Species" && infoJson[i] !== "") {
             $("#bootbox-sample-species").val(infoJson[i]);
             // manipulate the Add Strains/Species UI accordingly
-            switchSpeciesStrainInput("sample", "species", "edit")
+            switchSpeciesStrainInput("sample", "species", "edit");
           } else if (field.name === "Strain" && infoJson[i] !== "") {
             $("#bootbox-sample-strain").val(infoJson[i]);
-            switchSpeciesStrainInput("sample", "strain", "edit")
+            switchSpeciesStrainInput("sample", "strain", "edit");
           } else {
             if (type === "import") {
               if (field.name === "subject_id") {
@@ -1492,7 +1492,7 @@ function loadSubjectsDataToTable() {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    })
+    });
   } else {
     Swal.fire({
       title: "Loaded successfully!",
@@ -1501,7 +1501,7 @@ function loadSubjectsDataToTable() {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    })
+    });
   }
   Swal.fire({
     title: "Loaded successfully!",
@@ -1510,36 +1510,53 @@ function loadSubjectsDataToTable() {
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  })
+  });
   // onboardingMetadata("subject")
   $("#button-generate-subjects").css("display", "block");
   $("#div-import-primary-folder-sub").hide();
 }
 
 function onboardingMetadata(type) {
-  var helperButtons = $($($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]).find(".contributor-helper-buttons")[0]
+  var helperButtons = $(
+    $($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]
+  ).find(".contributor-helper-buttons")[0];
   introJs()
     .setOptions({
       steps: [
         {
           title: "Buttons",
           element: helperButtons,
-          intro: "Click on these buttons to manipulate a "+type+".",
+          intro: "Click on these buttons to manipulate a " + type + ".",
         },
         {
           title: `1. Edit a ${type}`,
           element: $(helperButtons).children()[0],
-          intro: "Click here to edit the information about a corresponding "+type+".",
+          intro:
+            "Click here to edit the information about a corresponding " +
+            type +
+            ".",
         },
         {
           title: `2. Copy a ${type}`,
           element: $(helperButtons).children()[1],
-          intro: "Click here to copy information from the corresponding "+type+" onto a new "+type+". Note: You have to enter an ID for the new "+type+" after clicking on this.",
+          intro:
+            "Click here to copy information from the corresponding " +
+            type +
+            " onto a new " +
+            type +
+            ". Note: You have to enter an ID for the new " +
+            type +
+            " after clicking on this.",
         },
         {
           title: `3. Delete a ${type}`,
           element: $(helperButtons).children()[2],
-          intro: "Click here to delete a corresponding "+type+" from the table. This will permanently delete the "+type+" from SODA and cannot be reverted.",
+          intro:
+            "Click here to delete a corresponding " +
+            type +
+            " from the table. This will permanently delete the " +
+            type +
+            " from SODA and cannot be reverted.",
         },
       ],
       exitOnEsc: false,
@@ -1567,7 +1584,7 @@ function loadSamplesDataToTable() {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    })
+    });
   } else {
     Swal.fire({
       title: "Loaded successfully!",
@@ -1576,7 +1593,7 @@ function loadSamplesDataToTable() {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    })
+    });
   }
   $("#button-generate-samples").css("display", "block");
   $("#div-import-primary-folder-sam").hide();

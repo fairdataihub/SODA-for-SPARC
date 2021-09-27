@@ -1483,7 +1483,7 @@ const showCurrentLicense = () => {
       }
     );
   }
-}
+};
 
 $("#selected-local-dataset-submit").click(() => {
   ipcRenderer.send("open-file-dialog-submit-dataset");
