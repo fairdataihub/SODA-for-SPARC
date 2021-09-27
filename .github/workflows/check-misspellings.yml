@@ -1,3 +1,4 @@
+  
 # This is a basic workflow to help you get started with Actions
 
 name: misspell-fixer-action
@@ -24,9 +25,9 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - name: misspell-fixer-action
-        uses: sobolevn/misspell-fixer-action@0.1.0
-        #with:
-          # Any options for misspell-fixes tool
-          #options: # optional, default is -rsvn .
+      - uses: sobolevn/misspell-fixer-action@master
+      - uses: peter-evans/create-pull-request@v2.4.4
+        with:
+          token: ${{ secrets.SANJAY_SPELLING_TOKEN }}
+          commit-message: 'Fixes by misspell-fixer'
+          title: 'Typos fix by misspell-fixer'
