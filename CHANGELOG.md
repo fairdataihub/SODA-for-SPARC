@@ -5,6 +5,20 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v4.8.0 - 2021-09-13
+
+### Feature additions:
+
+- Added onboarding for subjects and samples tables.
+- Added validation checks for verifying the backend and front end app versions.
+- Refactored large parts of the code performane improvements.
+- Added onboarding for step 3 of the Organize dataset process.
+
+### Bug fixes:
+
+- Importing subjects + samples files have been adapted to new strain/species UI change
+- Changed the activation point for illegal character checks. 
+
 ## v4.7.1 - 2021-09-13
 
 ### Bug fixes:
@@ -14,12 +28,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed Contributor Role suggestion dropdown bug that only showed a maximum of 5 items.
 - Fixed `Start over` functions for subjects and samples files to adapt to the new Add strains and Add species UI change.
 
+### Known issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+
 ## v4.7.0 - 2021-08-31
 
 ### Feature additions:
 
 - Changed user interface for `Prepare metadata - Create submission.xlsx file`. This user interface was changed to be even more user-friendly and consistent with the user interface of `Prepare metadata - Create dataset_description.xlsx file`.
-- Added user oonboarding tutorials to help first time users of the app understand Step 3 of Organizing datasets better.
+- Added user onboarding tutorials to help first time users of the app understand Step 3 of Organizing datasets better.
 - Changed strain and species retrieval under Create subjects.xlsx and Create samples.xlsx from input search to button clicks.
 - Changed all of the remaining status elements into Sweetalert popups for consistency in the app.
 - Added an option to replace metadata files when generating if one already exists at the destination folder.
@@ -35,6 +53,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a bug where loading an award from Airtable would require two attempts.
 - Fixed a bug where macOS version of SODA would run the pre-check message everytime the app lost focus.
 
+### Known issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+
 ## v4.6.2 - 2021-08-13
 
 ### Bug fixes:
@@ -43,6 +65,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added a warning whenever users import another existing metadata file (subjects, samples, dataset_description) onto SODA.
 - Fixed margin bug for Details display (Prepare dataset -> Step 3).
 - Added warning for when a user imports an existing metadata file. If any values from the file does not follow SPARC standard values, they will be ignored and not imported onto SODA for edits.
+
+### Known issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 ## v4.6.1 - 2021-08-06
 
