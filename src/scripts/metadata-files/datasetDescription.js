@@ -1500,6 +1500,539 @@ function edit_current_con_id(ev) {
   });
 }
 
+//////////////// Dataset description file ///////////////////////
+//////////////// //////////////// //////////////// ////////////////
+
+//// get datasets and append that to option list for parent datasets
+function getParentDatasets() {
+  var parentDatasets = [];
+  for (var i = 0; i < datasetList.length; i++) {
+    parentDatasets.push(datasetList[i].name);
+  }
+  return parentDatasets;
+}
+
+function changeAwardInputDsDescription() {
+  if (dsContributorArrayLast1) {
+    removeOptions(dsContributorArrayLast1);
+  }
+  if (dsContributorArrayFirst1) {
+    removeOptions(dsContributorArrayFirst1);
+    addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
+  }
+
+  currentContributorsLastNames = [];
+  currentContributorsFirstNames = [];
+  globalContributorNameObject = {};
+
+  /// delete old table
+  $("#table-current-contributors").find("tr").slice(1, -1).remove();
+  for (
+    var i = 0;
+    i <
+    document.getElementById("table-current-contributors").rows[1].cells.length;
+    i++
+  ) {
+    $(
+      $($("#table-current-contributors").find("tr")[1].cells[i]).find(
+        "input"
+      )[0]
+    ).val("");
+    $(
+      $($("#table-current-contributors").find("tr")[1].cells[i]).find(
+        "textarea"
+      )[0]
+    ).val("");
+  }
+
+  var selectID = document.getElementById(
+    $(
+      $($("#table-current-contributors").find("tr")[1].cells[1]).find(
+        "select"
+      )[0]
+    ).prop("id")
+  );
+  if (selectID) {
+    removeOptions(selectID);
+    $(
+      $($("#table-current-contributors").find("tr")[1].cells[1]).find(
+        "select"
+      )[0]
+    ).prop("disabled", true);
+  }
+
+  var awardVal = $("#ds-description-award-input");
+  var airKeyContent = parseJson(airtableConfigPath);
+  if (Object.keys(airKeyContent).length !== 0) {
+    var airKeyInput = airKeyContent["api-key"];
+    Airtable.configure({
+      endpointUrl: "https://" + airtableHostname,
+      apiKey: airKeyInput,
+    });
+    var base = Airtable.base("appiYd1Tz9Sv857GZ");
+    base("sparc_members")
+      .select({
+        filterByFormula: `({SPARC_Award_#} = "${awardVal}")`,
+      })
+      .eachPage(function page(records, fetchNextPage) {
+        records.forEach(function (record) {
+          var firstName = record.get("First_name");
+          var lastName = record.get("Last_name");
+          globalContributorNameObject[lastName] = firstName;
+          currentContributorsLastNames.push(lastName);
+        }),
+          fetchNextPage();
+        var currentRowLeftID = $(
+          $($("#table-current-contributors").find("tr")[1].cells[0]).find(
+            "select"
+          )[0]
+        ).prop("id");
+        if (currentRowLeftID) {
+          cloneConNamesSelect(currentRowLeftID);
+        }
+      });
+    function done(err) {
+      if (err) {
+        log.error(err);
+        console.error(err);
+        return;
+      }
+    }
+  }
+}
+
+// on change event when users choose a contributor's last name
+function onchangeLastNames() {
+  $("#dd-contributor-first-name").attr("disabled", true);
+  var conLastname = $("#dd-contributor-last-name").val();
+  removeOptions(document.getElementById("dd-contributor-first-name"));
+  if (conLastname in globalContributorNameObject) {
+    addOption(
+      document.getElementById("dd-contributor-first-name"),
+      globalContributorNameObject[conLastname],
+      globalContributorNameObject[conLastname]
+    );
+    $("#dd-contributor-first-name")
+      .val(globalContributorNameObject[conLastname])
+      .trigger("onchange");
+  }
+  $("#dd-contributor-first-name").attr("disabled", false);
+}
+
+// on change event when users choose a contributor's first name -> Load con info
+function onchangeFirstNames() {
+  var conLastname = $("#dd-contributor-last-name").val();
+  var conFirstname = $("#dd-contributor-first-name").val();
+  if (conFirstname !== "Select") {
+    loadContributorInfo(conLastname, conFirstname);
+  }
+}
+
+// Auto populate once a contributor is selected
+function loadContributorInfo(lastName, firstName) {
+  // first destroy old tagifies
+  $($("#input-con-affiliation").siblings()[0]).remove();
+  $($("#input-con-role").siblings()[0]).remove();
+
+  var tagifyRole = new Tagify(document.getElementById("input-con-role"), {
+    whitelist: [
+      "PrincipleInvestigator",
+      "Creator",
+      "CoInvestigator",
+      "DataCollector",
+      "DataCurator",
+      "DataManager",
+      "Distributor",
+      "Editor",
+      "Producer",
+      "ProjectLeader",
+      "ProjectManager",
+      "ProjectMember",
+      "RelatedPerson",
+      "Researcher",
+      "ResearchGroup",
+      "Sponsor",
+      "Supervisor",
+      "WorkPackageLeader",
+      "Other",
+    ],
+    enforceWhitelist: true,
+    dropdown: {
+      classname: "color-blue",
+      maxItems: 25,
+      enabled: 0,
+      closeOnSelect: true,
+    },
+  });
+  var tagifyAffliation = new Tagify(
+    document.getElementById("input-con-affiliation"),
+    {
+      dropdown: {
+        classname: "color-blue",
+        enabled: 0, // show the dropdown immediately on focus
+        maxItems: 25,
+        closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+      },
+      delimiters: null,
+      duplicates: false,
+    }
+  );
+  tagifyRole.removeAllTags();
+  tagifyAffliation.removeAllTags();
+  var contactLabel = $("#ds-contact-person");
+  $(contactLabel).prop("checked", false);
+  document.getElementById("input-con-ID").value = "Loading...";
+
+  tagifyAffliation.loading(true);
+  tagifyRole.loading(true);
+
+  var airKeyContent = parseJson(airtableConfigPath);
+  var airKeyInput = airKeyContent["api-key"];
+  var airtableConfig = Airtable.configure({
+    endpointUrl: "https://" + airtableHostname,
+    apiKey: airKeyInput,
+  });
+  var base = Airtable.base("appiYd1Tz9Sv857GZ");
+  base("sparc_members")
+    .select({
+      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
+    })
+    .eachPage(function page(records, fetchNextPage) {
+      var conInfoObj = {};
+      records.forEach(function (record) {
+        conInfoObj["ID"] = record.get("ORCID");
+        conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
+        conInfoObj["Affiliation"] = record.get("Institution");
+      }),
+        fetchNextPage();
+
+      // if no records found, leave fields empty
+      leaveFieldsEmpty(
+        conInfoObj["ID"],
+        document.getElementById("input-con-ID")
+      );
+      leaveFieldsEmpty(
+        conInfoObj["Role"],
+        document.getElementById("input-con-role")
+      );
+      leaveFieldsEmpty(
+        conInfoObj["Affiliation"],
+        document.getElementById("input-con-affiliation")
+      );
+
+      tagifyAffliation.addTags(conInfoObj["Affiliation"]);
+      tagifyRole.addTags(conInfoObj["Role"]);
+    }),
+    function done(err) {
+      if (err) {
+        log.error(err);
+        console.error(err);
+        return;
+      }
+    };
+  tagifyAffliation.loading(false);
+  tagifyRole.loading(false);
+}
+
+//// De-populate dataset dropdowns to clear options
+const clearDatasetDropdowns = () => {
+  for (let list of [curateDatasetDropdown]) {
+    removeOptions(list);
+    addOption(list, "Search here...", "Select dataset");
+    list.options[0].disabled = true;
+  }
+};
+
+//////////////////////// Current Contributor(s) /////////////////////
+
+function delete_current_con(no) {
+  // after a contributor is deleted, add their name back to the contributor last name dropdown list
+  if (
+    $("#ds-description-contributor-list-last-" + no).length > 0 &&
+    $("#ds-description-contributor-list-first-" + no).length > 0
+  ) {
+    var deletedLastName = $(
+      "#ds-description-contributor-list-last-" + no
+    ).val();
+    var deletedFirstName = $(
+      "#ds-description-contributor-list-first-" + no
+    ).val();
+    globalContributorNameObject[deletedLastName] = deletedFirstName;
+    currentContributorsLastNames.push(deletedLastName);
+  }
+  document.getElementById("row-current-name" + no + "").outerHTML = "";
+}
+
+function delete_link(no) {
+  document.getElementById("row-current-link" + no + "").outerHTML = "";
+}
+
+//////////////////////// Article(s) and Protocol(s) /////////////////////
+
+//// function to leave fields empty if no data is found on Airtable
+function leaveFieldsEmpty(field, element) {
+  if (field !== undefined) {
+    element.value = field;
+  } else {
+    element.value = "";
+  }
+}
+
+$(currentConTable).mousedown(function (e) {
+  var length = currentConTable.rows.length - 1;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
+
+$("#contributor-table-dd").mousedown(function (e) {
+  var length = document.getElementById("contributor-table-dd").rows.length - 1;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    updateIndexForTable(document.getElementById("contributor-table-dd"));
+    updateOrderContributorTable(
+      document.getElementById("contributor-table-dd"),
+      contributorObject
+    );
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
+$("#protocol-link-table-dd").mousedown(function (e) {
+  var length = document.getElementById("protocol-link-table-dd").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    updateIndexForTable(document.getElementById("protocol-link-table-dd"));
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
+$("#additional-link-table-dd").mousedown(function (e) {
+  var length = document.getElementById("additional-link-table-dd").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    updateIndexForTable(document.getElementById("additional-link-table-dd"));
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
+const emptyDSInfoEntries = () => {
+  var fieldSatisfied = true;
+  var inforObj = grabDSInfoEntries();
+  var emptyFieldArray = [];
+  /// check for number of keywords
+  for (var element in inforObj) {
+    if (element === "keywords") {
+      if (inforObj[element].length < 3) {
+        emptyFieldArray.push("at least 3 keywords");
+        fieldSatisfied = false;
+      }
+    } else {
+      if (
+        inforObj[element].length === 0 ||
+        inforObj[element] === "Select dataset"
+      ) {
+        fieldSatisfied = false;
+        emptyFieldArray.push(element);
+      }
+    }
+  }
+  return [fieldSatisfied, emptyFieldArray];
+};
+
+function emptyLinkInfo() {
+  var tableCurrentLinks = document.getElementById("protocol-link-table-dd");
+  var fieldSatisfied = false;
+  if (tableCurrentLinks.rows.length > 1) {
+    fieldSatisfied = true;
+  }
+  return fieldSatisfied;
+}
+
+const emptyInfoEntries = (element) => {
+  var fieldSatisfied = true;
+  if (element === "") {
+    fieldSatisfied = false;
+  }
+  return fieldSatisfied;
+};
+
+/// detect empty required fields and raise a warning
+function detectEmptyRequiredFields(funding) {
+  /// dataset info
+  var dsContent = emptyDSInfoEntries();
+  var dsSatisfied = dsContent[0];
+  var dsEmptyField = dsContent[1];
+
+  /// protocol info check
+  var protocolSatisfied = emptyLinkInfo();
+
+  /// contributor info
+  var conEmptyField = [];
+  var conSatisfied = true;
+  var fundingSatisfied = emptyInfoEntries(funding);
+  var contactPersonExists = checkAtLeastOneContactPerson();
+  var contributorNumber = document.getElementById("contributor-table-dd").rows
+    .length;
+  if (!fundingSatisfied) {
+    conEmptyField.push("SPARC Award");
+  }
+  if (!contactPersonExists) {
+    conEmptyField.push("One contact person");
+  }
+  if (contributorNumber <= 1) {
+    conEmptyField.push("At least one contributor");
+  }
+  if (conEmptyField.length !== 0) {
+    conSatisfied = false;
+  }
+
+  /// detect empty required fields and raise a warning
+  var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
+  var emptyMessageArray = [
+    "- Missing required fields under Dataset Info section: " +
+      dsEmptyField.join(", "),
+    "- Missing required fields under Contributor Info section: " +
+      conEmptyField.join(", "),
+    "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
+  ];
+  var allFieldsSatisfied = true;
+  errorMessage = [];
+  for (var i = 0; i < emptyArray.length; i++) {
+    if (!emptyArray[i]) {
+      errorMessage.push(emptyMessageArray[i]);
+      allFieldsSatisfied = false;
+    }
+  }
+  return [allFieldsSatisfied, errorMessage];
+}
+
 function grabCurrentTagifyContributor(tagify) {
   var infoArray = [];
   // var element = document.getElementById(id)

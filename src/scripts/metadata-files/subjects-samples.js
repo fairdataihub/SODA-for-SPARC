@@ -433,6 +433,99 @@ async function addStrain(ev, type) {
   }
 }
 
+
+$("#table-subjects").mousedown(function (e) {
+  var length = document.getElementById("table-subjects").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    // the below functions updates the row index accordingly and update the order of subject IDs in json
+    updateIndexForTable(document.getElementById("table-subjects"));
+    updateOrderIDTable(
+      document.getElementById("table-subjects"),
+      subjectsTableData,
+      "subjects"
+    );
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
+$("#table-samples").mousedown(function (e) {
+  var length = document.getElementById("table-samples").rows.length - 1;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    // the below functions updates the row index accordingly and update the order of sample IDs in json
+    updateIndexForTable(document.getElementById("table-samples"));
+    updateOrderIDTable(
+      document.getElementById("table-samples"),
+      samplesTableData,
+      "samples"
+    );
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
 // display/hide strain/species input fields based on edit/add mode
 function switchSpeciesStrainInput(type, field, mode) {
   if (mode === "add") {
@@ -893,7 +986,8 @@ function editSubject(ev, subjectID) {
     ) {
       // if it's age, then add age info input (day/week/month/year)
       if (field.name === "Age") {
-        if ($("#bootbox-subject-age-info").val() !== "Select") {
+        if ($("#bootbox-subject-age-info").val() !== "Select" &&
+            $("#bootbox-subject-age-info").val() !== "N/A") {
           field.value =
             field.value + " " + $("#bootbox-subject-age-info").val();
         }
@@ -1281,6 +1375,488 @@ function generateSubjects() {
 function generateSamples() {
   ipcRenderer.send("open-folder-dialog-save-samples", "samples.xlsx");
 }
+
+function generateSubjectsFileHelper(mypath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke(
+    "api_save_subjects_file",
+    mypath,
+    subjectsTableData,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire(
+          "Failed to generate the subjects.xlsx file.",
+          `${emessage}`,
+          "error"
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create subjects.xlsx",
+          subjectsTableData
+        );
+      } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create subjects.xlsx",
+          subjectsTableData
+        );
+        Swal.fire({
+          title:
+            "The subjects.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      }
+    }
+  );
+}
+
+function generateSamplesFileHelper(mypath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke(
+    "api_save_samples_file",
+    mypath,
+    samplesTableData,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create samples.xlsx",
+          samplesTableData
+        );
+        Swal.fire(
+          "Failed to generate the samples.xlsx file.",
+          `${emessage}`,
+          "error"
+        );
+      } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create samples.xlsx",
+          samplesTableData
+        );
+        Swal.fire({
+          title:
+            "The samples.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      }
+    }
+  );
+}
+
+function transformImportedExcelFile(type, result) {
+  for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "nan");
+    for (var ind of indices) {
+      column[ind] = "";
+    }
+    if (type === "samples") {
+      if (!specimenType.includes(column[5])) {
+        column[5] = "";
+      }
+    }
+  }
+  return result;
+}
+
+function getAllIndexes(arr, val) {
+  var indexes = [],
+    i = -1;
+  while ((i = arr.indexOf(val, i + 1)) != -1) {
+    indexes.push(i);
+  }
+  return indexes;
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSubjectsFileToDataframe(filePath) {
+  var fieldSubjectEntries = [];
+  for (var field of $("#form-add-a-subject")
+    .children()
+    .find(".subjects-form-entry")) {
+    fieldSubjectEntries.push(field.name.toLowerCase());
+  }
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "subjects",
+    filePath,
+    fieldSubjectEntries,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+        var emessage = userError(error);
+        Swal.fire({
+          title: "Couldn't load existing subjects.xlsx file",
+          text: emessage,
+          icon: "error",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      } else {
+        // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+        if (res.length > 1) {
+          subjectsTableData = transformImportedExcelFile("subjects", res);
+          loadDataFrametoUI();
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            ""
+          );
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            error
+          );
+
+          Swal.fire({
+            title: "Couldn't load existing subjects.xlsx file",
+            text: "Please make sure there is at least one subject in the subjects.xlsx file.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        }
+      }
+    }
+  );
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSamplesFileToDataframe(filePath) {
+  var fieldSampleEntries = [];
+  for (var field of $("#form-add-a-sample")
+    .children()
+    .find(".samples-form-entry")) {
+    fieldSampleEntries.push(field.name.toLowerCase());
+  }
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "samples",
+    filePath,
+    fieldSampleEntries,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+        var emessage = userError(error);
+        Swal.fire({
+          title: "Couldn't load existing samples.xlsx file",
+          text: emessage,
+          icon: "error",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      } else {
+        // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
+        if (res.length > 1) {
+          samplesTableData = transformImportedExcelFile("samples", res);
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
+          loadDataFrametoUISamples();
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
+          Swal.fire({
+            title: "Couldn't load existing samples.xlsx file",
+            text: "Please make sure there is at least one sample in the samples.xlsx file.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        }
+      }
+    }
+  );
+}
+
+const specimenType = [
+  "whole organism",
+  "whole organ",
+  "fluid specimen",
+  "tissue",
+  "nerve",
+  "slice",
+  "section",
+  "cryosection",
+  "cell",
+  "nucleus",
+  "nucleic acid",
+  "slide",
+  "whole mount",
+];
+function createSpecimenTypeAutocomplete(id) {
+  var autoCompleteJS3 = new autoComplete({
+    selector: "#" + id,
+    data: {
+      cache: true,
+      src: specimenType,
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#" + id).value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"],
+      // condition: () => true
+    },
+    resultItem: {
+      destination: "#" + id,
+      highlight: {
+        render: true,
+      },
+    },
+    resultsList: {
+      // id: listID,
+      maxResults: 5,
+    },
+  });
+}
+
+function createSpeciesAutocomplete(id) {
+  // var listID = "autocomplete" + id;
+  var autoCompleteJS2 = new autoComplete({
+    selector: "#" + id,
+    data: {
+      src: [
+        {
+          "Canis lupus familiaris": "dogs, beagle dogs",
+          "Mustela putorius furo": "ferrets, black ferrets",
+          "Mus sp.": "mice",
+          "Mus musculus": "mouse, house mouse",
+          "Rattus norvegicus": "Norway rats",
+          Rattus: "rats",
+          "Sus scrofa": "pigs, swine, wild boar",
+          "Sus scrofa domesticus": "domestic pigs",
+          "Homo sapiens": "humans",
+          "Felis catus": "domestic cat",
+        },
+      ],
+      keys: [
+        "Canis lupus familiaris",
+        "Mustela putorius furo",
+        "Mus sp.",
+        "Mus musculus",
+        "Sus scrofa",
+        "Sus scrofa domesticus",
+        "Homo sapiens",
+        "Rattus",
+        "Felis catus",
+        "Rattus norvegicus",
+      ],
+    },
+    resultItem: {
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>
+        <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
+          ${data.key}
+        </span>`;
+      },
+      highlight: true,
+    },
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS2.start();
+        },
+      },
+    },
+    threshold: 0,
+    resultsList: {
+      element: (list, data) => {
+        const info = document.createElement("div");
+
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute(
+            "onclick",
+            "loadTaxonomySpecies('" + data.query + "', '" + id + "')"
+          );
+          info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
+      },
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true,
+    },
+  });
+
+  autoCompleteJS2.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.key;
+    // Render selected choice to selection div
+    document.getElementById(id).value = selection;
+    // Replace Input value with the selected value
+    autoCompleteJS2.input.value = selection;
+    $("#btn-confirm-species").removeClass("confirm-disabled");
+  });
+}
+
+function createStrain(id, type) {
+  var autoCompleteJS4 = new autoComplete({
+    selector: "#" + id,
+    data: {
+      src: [
+        "Wistar",
+        "Yucatan",
+        "C57/B6J",
+        "C57 BL/6J",
+        "mixed background",
+        "Sprague-Dawley",
+      ],
+    },
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS4.start();
+        },
+      },
+    },
+    resultItem: {
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>`;
+      },
+      highlight: true,
+    },
+    threshold: 0,
+    resultsList: {
+      element: (list, data) => {
+        const info = document.createElement("div");
+
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute(
+            "onclick",
+            "populateRRID('" + data.query + "', '" + type + "')"
+          );
+          info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
+      },
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true,
+    },
+  });
+
+  autoCompleteJS4.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.value;
+    document.querySelector("#" + id).value = selection;
+    var strain = $("#sweetalert-" + type + "-strain").val();
+    if (strain !== "") {
+      populateRRID(strain, type);
+    }
+    autoCompleteJS4.input.value = selection;
+  });
+}
+
+async function loadTaxonomySpecies(commonName, destinationInput) {
+  Swal.fire({
+    title: "Finding the scientific name for " + commonName + "...",
+    html: "Please wait...",
+    heightAuto: false,
+    allowOutsideClick: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+  await client.invoke(
+    "api_load_taxonomy_species",
+    [commonName],
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        if (Object.keys(res).length === 0) {
+          Swal.fire({
+            title: "Cannot find a scientific name for '" + commonName + "'",
+            text: "Make sure you enter a correct species name.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
+            $("#btn-confirm-species").addClass("confirm-disabled");
+          }
+          if (destinationInput.includes("subject")) {
+            if ($("#bootbox-subject-species").val() === "") {
+              $("#bootbox-subject-species").css("display", "none");
+            }
+            // set the Edit species button back to "+ Add species"
+            $("#button-add-species-subject").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+            );
+          }
+          if (destinationInput.includes("sample")) {
+            if ($("#bootbox-sample-species").val() === "") {
+              $("#bootbox-sample-species").css("display", "none");
+            }
+            // set the Edit species button back to "+ Add species"
+            $("#button-add-species-sample").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+            );
+          }
+        } else {
+          $("#" + destinationInput).val(res[commonName]["ScientificName"]);
+          $("#btn-confirm-species").removeClass("confirm-disabled");
+        }
+      }
+    }
+  );
+}
+
 
 function showPrimaryBrowseFolder() {
   ipcRenderer.send("open-file-dialog-local-primary-folder");
@@ -1856,6 +2432,65 @@ function addExistingCustomHeaderSamples(customName) {
 }
 
 $(document).ready(function () {
+  // generate subjects file
+  ipcRenderer.on(
+    "selected-generate-metadata-subjects",
+    (event, dirpath, filename) => {
+      if (dirpath.length > 0) {
+        var destinationPath = path.join(dirpath[0], filename);
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File '" +
+            filename +
+            "' already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Generating the subjects.xlsx file",
+                html: "Please wait...",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                timerProgressBar: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              }).then((result) => {});
+              generateSubjectsFileHelper(destinationPath);
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Generating the subjects.xlsx file",
+            html: "Please wait...",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {});
+          generateSubjectsFileHelper(destinationPath);
+        }
+      }
+    }
+  );
+
   loadExistingProtocolInfo();
   for (var field of $("#form-add-a-subject")
     .children()
@@ -1881,6 +2516,80 @@ $(document).ready(function () {
     }
     headersArrSamples.push(field.name);
   }
+
+  // import Primary folder
+  ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
+    if (primaryFolderPath.length > 0) {
+      importPrimaryFolderSubjects(primaryFolderPath[0]);
+    }
+  });
+  ipcRenderer.on(
+    "selected-local-primary-folder-samples",
+    (event, primaryFolderPath) => {
+      if (primaryFolderPath.length > 0) {
+        importPrimaryFolderSamples(primaryFolderPath[0]);
+      }
+    }
+  );
+
+  // generate samples file
+  ipcRenderer.on(
+    "selected-generate-metadata-samples",
+    (event, dirpath, filename) => {
+      if (dirpath.length > 0) {
+        var destinationPath = path.join(dirpath[0], filename);
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File '" +
+            filename +
+            "' already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Generating the samples.xlsx file",
+                html: "Please wait...",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                timerProgressBar: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              }).then((result) => {});
+              generateSamplesFileHelper(destinationPath);
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Generating the samples.xlsx file",
+            html: "Please wait...",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            timerProgressBar: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {});
+          generateSamplesFileHelper(destinationPath);
+        }
+      }
+    }
+  );
 
   ipcRenderer.on("selected-existing-subjects", (event, filepath) => {
     if (filepath.length > 0) {
