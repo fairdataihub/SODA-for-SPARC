@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bug fixes:
 
 - Importing subjects + samples files have been adapted to new strain/species UI change
-- Changed the activation point for illegal character checks. 
+- Changed the activation point for illegal character checks.
 
 ## v4.7.1 - 2021-09-13
 
@@ -133,7 +133,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid.
 - Added a button to paste your API keys into the application more easily.
-- Added better warnings for when a backend module fails. This should give tou more information about the status of SODA and if a restart of the app maybe neccessary.
+- Added better warnings for when a backend module fails. This should give you more information about the status of SODA and if a restart of the app maybe necessary.
 - Adjusted the ordering of message box buttons to better follow OS specific guidelines for Human Interface Design.
 
 ### Bug fixes:

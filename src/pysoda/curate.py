@@ -1140,7 +1140,7 @@ def create_high_level_manifest_files(soda_json_structure):
         manifest_files_structure: dict including the local path of the manifest files
     """
     double_extensions = ['.ome.tiff', '.ome.tif', '.ome.tf2,', '.ome.tf8', '.ome.btf', '.ome.xml', '.brukertiff.gz', '.mefd.gz', '.moberg.gz', '.nii.gz', '.mgh.gz', '.tar.gz', '.bcl.gz']
-    
+
     try:
         def get_name_extension(file_name):
             double_ext = False
@@ -1148,10 +1148,10 @@ def create_high_level_manifest_files(soda_json_structure):
                 if file_name.find(ext) != -1:
                     double_ext = True
                     break
-            
+
             ext = ""
             name = ""
-            
+
             if double_ext == False:
                 name = os.path.splitext(file_name)[0]
                 ext = os.path.splitext(file_name)[1]
@@ -1517,10 +1517,10 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
             if file_name.find(ext) != -1:
                 double_ext = True
                 break
-        
+
         ext = ""
         name = ""
-        
+
         if double_ext == False:
             name = os.path.splitext(file_name)[0]
             ext = os.path.splitext(file_name)[1]
@@ -1612,7 +1612,7 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
         manifest_files_structure: dict including the local path of the manifest files
     """
     double_extensions = ['.ome.tiff', '.ome.tif', '.ome.tf2,', '.ome.tf8', '.ome.btf', '.ome.xml', '.brukertiff.gz', '.mefd.gz', '.moberg.gz', '.nii.gz', '.mgh.gz', '.tar.gz', '.bcl.gz']
-    
+
     try:
         def get_name_extension(file_name):
             double_ext = False
@@ -1620,10 +1620,10 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
                 if file_name.find(ext) != -1:
                     double_ext = True
                     break
-            
+
             ext = ""
             name = ""
-            
+
             if double_ext == False:
                 name = os.path.splitext(file_name)[0]
                 ext = os.path.splitext(file_name)[1]
@@ -1901,7 +1901,7 @@ def bf_get_existing_files_details(bf_folder):
     def verify_file_name(file_name, extension):
         if extension == "":
             return file_name
-        
+
         double_ext = False
         for ext in double_extensions:
             if file_name.find(ext) != -1:
@@ -1909,12 +1909,12 @@ def bf_get_existing_files_details(bf_folder):
                 break
 
         extension_from_name = ""
-                
+
         if double_ext == False:
             extension_from_name = os.path.splitext(file_name)[1]
         else:
             extension_from_name = os.path.splitext(os.path.splitext(file_name)[0])[1] + os.path.splitext(file_name)[1]
-        
+
         if extension_from_name == ('.' + extension):
             return file_name
         else:
@@ -2273,7 +2273,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         if isfile(file_path):
                             initial_name = splitext(basename(file_path))[0]
                             initial_extension = splitext(basename(file_path))[1]
-                            initial_name_with_extention = basename(file_path)
+                            initial_name_with_extension = basename(file_path)
                             desired_name = splitext(file_key)[0]
                             desired_name_extension = splitext(file_key)[1]
                             desired_name_with_extension = file_key
@@ -2286,7 +2286,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             # check if initial filename exists on Pennsieve dataset and get the projected name of the file after upload
                             count_done = 0
                             count_exist = 0
-                            projected_name = initial_name_with_extention
+                            projected_name = initial_name_with_extension
                             while count_done == 0:
                                 if projected_name in my_bf_existing_files_name_with_extension:
                                     count_exist += 1

@@ -2191,7 +2191,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         if isfile(file_path):
                             initial_name = splitext(basename(file_path))[0]
                             initial_extension = splitext(basename(file_path))[1]
-                            initial_name_with_extention = basename(file_path)
+                            initial_name_with_extension = basename(file_path)
                             desired_name = splitext(file_key)[0]
                             desired_name_extension = splitext(file_key)[1]
                             desired_name_with_extension = file_key
@@ -2204,7 +2204,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             # check if initial filename exists on Blackfynn dataset and get the projected name of the file after upload
                             count_done = 0
                             count_exist = 0
-                            projected_name = initial_name_with_extention
+                            projected_name = initial_name_with_extension
                             while count_done == 0:
                                 if projected_name in my_bf_existing_files_name_with_extension:
                                     count_exist += 1
