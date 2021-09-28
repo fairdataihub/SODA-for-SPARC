@@ -4324,7 +4324,7 @@ let file_counter = 0;
 let folder_counter = 0;
 
 function initiate_generate() {
-  // Initiate curation by calling Python funtion
+  // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
@@ -4734,10 +4734,10 @@ var metadataIndividualFile = "";
 var metadataAllowedExtensions = [];
 var metadataParaElement = "";
 
-function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
+function importMetadataFiles(ev, metadataFile, extensionList, paraEle) {
   document.getElementById(paraEle).innerHTML = "";
   metadataIndividualFile = metadataFile;
-  metadataAllowedExtensions = extentionList;
+  metadataAllowedExtensions = extensionList;
   metadataParaElement = paraEle;
   ipcRenderer.send("open-file-dialog-metadata-curate");
 }
@@ -4848,7 +4848,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Retreive Dataset - Pennsieve",
+            "Retrieve Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
         } else {
@@ -4856,7 +4856,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Retreive Dataset - Pennsieve",
+            "Retrieve Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
         }
@@ -5153,7 +5153,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Retreive Dataset - Pennsieve",
+            "Retrieve Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
           $("body").removeClass("waiting");
@@ -5168,7 +5168,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Retreive Dataset - Pennsieve",
+            "Retrieve Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
         }

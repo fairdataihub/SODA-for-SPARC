@@ -1200,7 +1200,7 @@ class DictValidator:
                         if completeness not in self.completnessInfo and completeness != self.empty:
                             completenessformatfail = 1
 
-                        # Parent dataset ID must be comma seperated list and each ID must be of the format N:dataset:xxxx
+                        # Parent dataset ID must be comma separated list and each ID must be of the format N:dataset:xxxx
                         selectedEl = self.ddCol0Opt[5]
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
@@ -1266,7 +1266,7 @@ class DictValidator:
         check3_1 = "Negative statements ('None', 'N/A', etc.) are not allowed for optional element(s). Rectify/detele the 'Value' element for the folowing optional 'Metadata element': "
 
         check_keywords = "3 to 5 unique keywords are provided for the 'Keywords' field"
-        check_keywords_f = "Ensure that 3 to 5 unique keywords are provided, each one in a seperate column"
+        check_keywords_f = "Ensure that 3 to 5 unique keywords are provided, each one in a separate column"
 
         check_contributorsname = "Contributors names are unique and in the format 'Last, First Middle'"
         check_contributorsname_f1 = "The following contributor name(s) may have been included more than once: "
@@ -1285,7 +1285,7 @@ class DictValidator:
         check_contactperson_f1 = "The following 'Is Contact Person' element is not 'Yes' or 'No': "
         check_contactperson_f2 = "There must be one and only one 'Yes' for the 'Is Contact Person' field. Currently there is either none or more than one"
 
-        check_fundingsource = "Each funding source is mentioned in a seperate column"
+        check_fundingsource = "Each funding source is mentioned in a separate column"
         check_fundingsource_f = "Make sure the following refers to a single funding source: "
 
         check_links = "There is only one of the following in each Value column: Originating Article DOI, Protocol URL or DOI, or Additional Links"
@@ -1509,14 +1509,14 @@ def cleanDataFrame(df):
             elif np.isnan(df[column].iloc[rownum]):
                 df[column].iloc[rownum] = "empty"
 
-    #Trim last empty columns if imported (e.g. if user accidently include space)
+    #Trim last empty columns if imported (e.g. if user accidentally include space)
     for header in list(df)[::-1]:
         if "Empty." in df[header].iloc[0] and len(set(df[header].values[1:]))==1 and df[header].iloc[1]=='empty':
             df = df.drop(header, 1)
         else:
             break
 
-    #Trim last empty rows if imported (e.g. if user accidently include space)
+    #Trim last empty rows if imported (e.g. if user accidentally include space)
     for rownum in df.index.values[::-1]:
         if len(set(df.iloc[rownum].values))==1 and df[list(df)[0]].iloc[rownum] == 'empty':
             df = df.drop(rownum)
