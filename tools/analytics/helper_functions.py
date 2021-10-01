@@ -67,12 +67,12 @@ def progress_bar_counter(dt, ds, update_interval):
     start = dt - timedelta(days=dt.weekday())
     end = start + timedelta(days=6)
     weeks_counter = 0
-    
+
     while start <= ds:
       weeks_counter += 1
       start = start + timedelta(days=7)
       end = start + timedelta(days=6)
-    
+
     return weeks_counter
 
   months_counter = 0
@@ -82,10 +82,10 @@ def progress_bar_counter(dt, ds, update_interval):
     start = start.replace(day=1)
     end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
     months_counter = 0
-    
+
     # Get the number of months for the progress bar
     while start <= ds:
-      months_counter += 1 
+      months_counter += 1
       start = start + relativedelta(months=+1)
       end = start = start.replace(day=1)
       end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
@@ -108,8 +108,8 @@ def next_date_interval(start, end, update_interval):
     end = start = start.replace(day=1)
     end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
     return start, end
-    
-  if update_interval == "No Seperation":
+
+  if update_interval == "No Separation":
     start = end + relativedelta(months=+1)
     end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
     return start, end
@@ -120,20 +120,20 @@ def next_date_interval(start, end, update_interval):
 # if update_interval.value == "Monthly":
 #     dt = start_date.value
 #     ds = end_date.value
-  
+
 #     start = end = dt
-  
+
 #     start = start.replace(day=1)
 #     end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
 #     months_counter = 0
-  
+
 #     # Get the number of months for the progress bar
 #     while start <= ds:
-#         months_counter += 1 
+#         months_counter += 1
 #         start = start + relativedelta(months=+1)
 #         end = start = start.replace(day=1)
 #         end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
-  
+
 #     start = end = dt
 #     data = []
 
@@ -148,7 +148,7 @@ def next_date_interval(start, end, update_interval):
 #                     'dimensions': [{'name': 'ga:eventAction'}]
 #                 }]
 #             }
-          
+
 #             response = get_report(analytics, query)
 #             if "rows" in response["reports"][0]["data"]:
 #                 response_rows = response["reports"][0]["data"]["rows"]
@@ -156,7 +156,7 @@ def next_date_interval(start, end, update_interval):
 #                 response_rows = []
 #                 cell_data = [start.strftime("%b %Y"), 0]
 #                 data.append(cell_data)
-              
+
 #             for res in response_rows:
 #                 if res["dimensions"][0] == feature.value:
 #                     if response_rows != []:
@@ -165,29 +165,29 @@ def next_date_interval(start, end, update_interval):
 #                     else:
 #                         cell_data = [start.strftime("%b %Y"), 0]
 #                         data.append(cell_data)
-                      
+
 #             start = start + relativedelta(months=+1)
 #             end = start = start.replace(day=1)
 #             end = end.replace(day = calendar.monthrange(start.year, start.month)[1])
-          
+
 #     folder_path = os.path.join("result_csv", "graph_data")
 #     Path(folder_path).mkdir(parents=True, exist_ok=True)
 
 #     df = pd.DataFrame(data, columns = ['Month', 'Frequency'])
 #     result_path = os.path.join(folder_path, "monthly_graph-" + dt.strftime("%d %b, %Y") + " - " + ds.strftime("%d %b, %Y") + ".csv")
 #     df.to_csv(result_path, encoding='utf-8', index=False)
-  
+
 #     action_column = df.iloc[:, 0]
 #     frequency_column = df.iloc[:, 1]
 #     x_markers = pd.Series(action_column).array
 #     y_markers = pd.Series(frequency_column).array
 #     y_markers = y_markers.astype(int)
-  
+
 #     trace0 = go.Scatter(
 #         x = x_markers,
 #         y = y_markers
 #     )
-  
+
 #     plotly.offline.plot([trace0], "monthly_chart")
 
 ###########################################################
@@ -195,22 +195,22 @@ def next_date_interval(start, end, update_interval):
 # if update_interval.value == "Weekly":
 #     dt = start_date.value
 #     ds = end_date.value
-  
+
 #     start = dt - timedelta(days=dt.weekday())
 #     end = start + timedelta(days=6)
 #     weeks_counter = 0
-  
+
 #     # Get the number of weeks for the progress bar
 #     while start <= ds:
 #         weeks_counter += 1
 #         start = start + timedelta(days=7)
 #         end = start + timedelta(days=6)
-      
+
 #     start = dt - timedelta(days=dt.weekday())
 #     end = start + timedelta(days=6)
-  
+
 #     data = []
-  
+
 #     for i in trange(weeks_counter):
 #         if start <= ds:
 #             query = {
@@ -229,7 +229,7 @@ def next_date_interval(start, end, update_interval):
 #                 response_rows = []
 #                 cell_data = [start.strftime("%d %b, %Y") + " - " + end.strftime("%d %b, %Y") , 0]
 #                 data.append(cell_data)
-              
+
 #             for res in response_rows:
 #                 if res["dimensions"][0] == feature.value:
 #                     if response_rows != []:
@@ -238,28 +238,28 @@ def next_date_interval(start, end, update_interval):
 #                     else:
 #                         cell_data = [start.strftime("%d %b, %Y") + " - " + end.strftime("%d %b, %Y") , 0]
 #                         data.append(cell_data)
-                      
+
 #             start = start + timedelta(days=7)
 #             end = start + timedelta(days=6)
-          
+
 #     folder_path = os.path.join("result_csv", "graph_data")
 #     Path(folder_path).mkdir(parents=True, exist_ok=True)
 
 #     df = pd.DataFrame(data, columns = ['Week', 'Frequency'])
 #     result_path = os.path.join(folder_path, "weekly_graph-" + dt.strftime("%d %b, %Y") + " - " + ds.strftime("%d %b, %Y") + ".csv")
 #     df.to_csv(result_path, encoding='utf-8', index=False)
-  
+
 #     action_column = df.iloc[:, 0]
 #     frequency_column = df.iloc[:, 1]
 #     x_markers = pd.Series(action_column).array
 #     y_markers = pd.Series(frequency_column).array
 #     y_markers = y_markers.astype(int)
-  
+
 #     trace0 = go.Scatter(
 #         x = x_markers,
 #         y = y_markers
 #     )
-  
+
 #     plotly.offline.plot([trace0], "weekly_chart")
 
 ###########################################################
@@ -269,9 +269,9 @@ def next_date_interval(start, end, update_interval):
 #     ds = end_date.value
 #     start = dt
 #     end = start
-  
+
 #     data = []
-      
+
 #     for i in trange((ds - dt).days):
 #         if start <= ds:
 #             query = {
@@ -299,28 +299,28 @@ def next_date_interval(start, end, update_interval):
 #                     else:
 #                         cell_data = [start.strftime("%d %b, %Y") , 0]
 #                         data.append(cell_data)
-                  
+
 #             start = start + timedelta(days=1)
-#             end = start 
-  
+#             end = start
+
 #     folder_path = os.path.join("result_csv", "graph_data")
 #     Path(folder_path).mkdir(parents=True, exist_ok=True)
 
 #     df = pd.DataFrame(data, columns = ['Day', 'Frequency'])
 #     result_path = os.path.join(folder_path, "daily_graph-" + dt.strftime("%d %b, %Y") + "-" + ds.strftime("%d %b, %Y") + ".csv")
 #     df.to_csv(result_path, encoding='utf-8', index=False)
-  
+
 #     action_column = df.iloc[:, 0]
 #     frequency_column = df.iloc[:, 1]
 #     x_markers = pd.Series(action_column).array
 #     y_markers = pd.Series(frequency_column).array
 #     y_markers = y_markers.astype(int)
-  
+
 #     trace0 = go.Scatter(
 #         x = x_markers,
 #         y = y_markers
 #     )
-  
+
 #     plotly.offline.plot([trace0], "daily_chart")
 
 ###########################################################

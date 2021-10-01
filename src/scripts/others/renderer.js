@@ -3764,7 +3764,7 @@ var bfAddAccountBootboxMessage = `<form>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-content="See our dedicated <a target='_blank' href='https://fairdataihub.org/sodaforsparc/docs/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 retrieveBFAccounts();
 
@@ -5619,7 +5619,7 @@ let file_counter = 0;
 let folder_counter = 0;
 
 function initiate_generate() {
-  // Initiate curation by calling Python funtion
+  // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
@@ -6029,10 +6029,10 @@ var metadataIndividualFile = "";
 var metadataAllowedExtensions = [];
 var metadataParaElement = "";
 
-function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
+function importMetadataFiles(ev, metadataFile, extensionList, paraEle) {
   document.getElementById(paraEle).innerHTML = "";
   metadataIndividualFile = metadataFile;
-  metadataAllowedExtensions = extentionList;
+  metadataAllowedExtensions = extensionList;
   metadataParaElement = paraEle;
   ipcRenderer.send("open-file-dialog-metadata-curate");
 }
@@ -6143,7 +6143,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Retreive Dataset - Pennsieve",
+            "Retrieve Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
         } else {
@@ -6151,7 +6151,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Retreive Dataset - Pennsieve",
+            "Retrieve Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
         }
@@ -6448,7 +6448,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Retreive Dataset - Pennsieve",
+            "Retrieve Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
           $("body").removeClass("waiting");
@@ -6463,7 +6463,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Retreive Dataset - Pennsieve",
+            "Retrieve Dataset - Pennsieve",
             sodaJSONObj["bf-dataset-selected"]["dataset-name"]
           );
         }

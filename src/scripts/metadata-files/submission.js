@@ -76,13 +76,13 @@ function resetSubmission() {
 
 function helpMilestoneSubmission() {
   var filepath = "";
-  var award = $("#submission-sparc-award").val();
+  // var award = $("#submission-sparc-award").val();
   // read from milestonePath to see if associated milestones exist or not
   var informationJson = {};
-  informationJson = parseJson(milestonePath);
-  if (Object.keys(informationJson).includes(award)) {
-    informationJson[award] = milestoneObj;
-  } else {
+  // informationJson = parseJson(milestonePath);
+  // if (Object.keys(informationJson).includes(award)) {
+  //   informationJson[award] = milestoneObj;
+  // } else {
     Swal.fire({
       title: "Do you have the Data Deliverables document ready to import?",
       showCancelButton: true,
@@ -157,7 +157,7 @@ function helpMilestoneSubmission() {
         });
       }
     });
-  }
+  // }
 }
 
 function openDDDimport() {

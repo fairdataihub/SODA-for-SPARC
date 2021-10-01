@@ -192,7 +192,7 @@ class DictValidator:
                                    nonUTF8 = 1
                                    nonUTF8Files = " " + c + ","
                         else:
-                           subm0kb = 1 
+                           subm0kb = 1
                     else:
                         nonstand = 1
                         nonStandardFiles += " " + c + ","
@@ -286,23 +286,23 @@ class DictValidator:
         check2 = "A non-empty 'submission' metadata file is included in either xlsx, csv, or json format"
         check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA."
         check2f2 =  "Your file is empty (0 kb). Ensure that the required content is included in the file. You can prepare it in the 'Prepare Metadata' section of SODA."
-        
+
         check3 = "A 'dataset_description' metadata file is included in either xlsx, csv, or json format"
         check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA."
         check3f2 =  "Your file is empty (0 kb). Ensure that the required content is included in the file. You can prepare it in the 'Prepare Metadata' section of SODA."
-        
+
         check4 = "A 'subjects' metadata file is included in either xlsx, csv, or json format"
         check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
         check4f2 =  "Your file is empty (0 kb). Ensure that the required content is included in the file."
-        
+
         check5 = "A 'samples' metadata file is included in either xlsx, csv, or json format"
         check5f = "This is NOT a mandatory file but must be included (and be in the correct format) if your study includes samples (e.g., tissue slices). "
         check5f2 =  "Your file is empty (0 kb). Ensure that the required content is included in the file."
-        
+
         check6 = "A 'README' (all uppercase) metadata file is included in txt format"
         check6f = "This is NOT a mandatory file but suggested for all SPARC datasets. If included, it must be in the txt format."
         check6f2 =  "Your file is empty (0 kb). This is not a mandatory file but if included, ensure that the required content is included in the file."
-        
+
         check7 = "All csv metadata files are UTF-8 encoded"
         check7f = "As per requirement from the SPARC Curation Team, please change the csv encoding format to UTF-8 for the following metadata files: "
 
@@ -320,37 +320,37 @@ class DictValidator:
                 subm = 0
                 self.fatal.append(check2 + "--" + check2f2)
             else:
-                self.passes.append(check2) 
+                self.passes.append(check2)
         elif subm == 0:
             self.fatal.append(check2 + "--" + check2f)
-        
+
         if dd == 1:
             if dd0kb == 1:
                 dd = 0
                 self.fatal.append(check3 + "--" + check3f2)
             else:
-                self.passes.append(check3) 
+                self.passes.append(check3)
         elif dd == 0:
             self.fatal.append(check3 + "--" + check3f)
-            
+
         if subj == 1:
             if subj0kb == 1:
                 subj = 0
                 self.fatal.append(check4 + "--" + check4f2)
             else:
-                self.passes.append(check4) 
+                self.passes.append(check4)
         elif subj == 0:
             self.fatal.append(check4 + "--" + check4f)
-            
+
         if sam == 1:
             if sam0kb == 1:
                 sam = 0
                 self.fatal.append(check5 + "--" + check5f2)
             else:
-                self.passes.append(check5) 
+                self.passes.append(check5)
         elif sam == 0:
             self.fatal.append(check5 + "--" + check5f)
-  
+
         if not rm:
             if rm0kb == 1:
                 self.fatal.append(check6 + "--" + check6f2)
@@ -370,7 +370,7 @@ class DictValidator:
                 self.fatal.append(check8 + "--" + check8f + nonUniqueFiles[:-1])
             else:
                 self.passes.append(check8)
-                
+
         print('SUBM', subm)
 
         return subm, dd, subj, sam
@@ -1200,7 +1200,7 @@ class DictValidator:
                         if completeness not in self.completnessInfo and completeness != self.empty:
                             completenessformatfail = 1
 
-                        # Parent dataset ID must be comma seperated list and each ID must be of the format N:dataset:xxxx
+                        # Parent dataset ID must be comma separated list and each ID must be of the format N:dataset:xxxx
                         selectedEl = self.ddCol0Opt[5]
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
@@ -1266,7 +1266,7 @@ class DictValidator:
         check3_1 = "Negative statements ('None', 'N/A', etc.) are not allowed for optional element(s). Rectify/detele the 'Value' element for the folowing optional 'Metadata element': "
 
         check_keywords = "3 to 5 unique keywords are provided for the 'Keywords' field"
-        check_keywords_f = "Ensure that 3 to 5 unique keywords are provided, each one in a seperate column"
+        check_keywords_f = "Ensure that 3 to 5 unique keywords are provided, each one in a separate column"
 
         check_contributorsname = "Contributors names are unique and in the format 'Last, First Middle'"
         check_contributorsname_f1 = "The following contributor name(s) may have been included more than once: "
@@ -1285,7 +1285,7 @@ class DictValidator:
         check_contactperson_f1 = "The following 'Is Contact Person' element is not 'Yes' or 'No': "
         check_contactperson_f2 = "There must be one and only one 'Yes' for the 'Is Contact Person' field. Currently there is either none or more than one"
 
-        check_fundingsource = "Each funding source is mentioned in a seperate column"
+        check_fundingsource = "Each funding source is mentioned in a separate column"
         check_fundingsource_f = "Make sure the following refers to a single funding source: "
 
         check_links = "There is only one of the following in each Value column: Originating Article DOI, Protocol URL or DOI, or Additional Links"
@@ -1509,14 +1509,14 @@ def cleanDataFrame(df):
             elif np.isnan(df[column].iloc[rownum]):
                 df[column].iloc[rownum] = "empty"
 
-    #Trim last empty columns if imported (e.g. if user accidently include space)
+    #Trim last empty columns if imported (e.g. if user accidentally include space)
     for header in list(df)[::-1]:
         if "Empty." in df[header].iloc[0] and len(set(df[header].values[1:]))==1 and df[header].iloc[1]=='empty':
             df = df.drop(header, 1)
         else:
             break
 
-    #Trim last empty rows if imported (e.g. if user accidently include space)
+    #Trim last empty rows if imported (e.g. if user accidentally include space)
     for rownum in df.index.values[::-1]:
         if len(set(df.iloc[rownum].values))==1 and df[list(df)[0]].iloc[rownum] == 'empty':
             df = df.drop(rownum)

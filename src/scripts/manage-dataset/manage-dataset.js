@@ -951,7 +951,7 @@ $("#edit_banner_image_button").click(async () => {
           console.log(`An error happened: ${img_src}`);
           Swal.fire({
             icon: "error",
-            text: "An error occured when importing the image. Please try again later.",
+            text: "An error occurred when importing the image. Please try again later.",
             showConfirmButton: "OK",
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
@@ -972,7 +972,7 @@ $("#edit_banner_image_button").click(async () => {
 
         Swal.fire({
           icon: "error",
-          text: "An error occured when importing the image. Please try again later.",
+          text: "An error occurred when importing the image. Please try again later.",
           showConfirmButton: "OK",
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -993,7 +993,7 @@ $("#edit_banner_image_button").click(async () => {
 
       Swal.fire({
         icon: "error",
-        text: "An error occured when importing the image. Please try again later.",
+        text: "An error occurred when importing the image. Please try again later.",
         showConfirmButton: "OK",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
