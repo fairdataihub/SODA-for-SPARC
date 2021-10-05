@@ -1106,12 +1106,6 @@ ipcRenderer.on(
 );
 
 function generateSubjectsFileHelper(mypath) {
-  // new client that has a longer timeout
-  // let clientLongTimeout = new zerorpc.Client({
-  //   timeout: 300000,
-  //   heartbeatInterval: 60000,
-  // });
-  // clientLongTimeout.connect("tcp://127.0.0.1:4242");
   client.invoke(
     "api_save_subjects_file",
     mypath,
