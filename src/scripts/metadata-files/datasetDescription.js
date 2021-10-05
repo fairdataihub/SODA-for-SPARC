@@ -2044,3 +2044,209 @@ function addAirtableAccountInsideSweetalert(keyword) {
     });
   }
 }
+
+function importExistingDDFile() {
+  var filePath = $("#existing-dd-file-destination").prop("placeholder");
+  if (filePath === "Browse here") {
+    Swal.fire(
+      "No file chosen",
+      "Please select a path to your dataset_description.xlsx file,",
+      "error"
+    );
+  } else {
+    if (path.parse(filePath).base !== "dataset_description.xlsx") {
+      Swal.fire({
+        title: "Incorrect file name",
+        text: "Your file must be named 'dataset_description.xlsx' to be imported to SODA.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
+    } else {
+      Swal.fire({
+        title: "Loading an existing dataset_description.xlsx file",
+        html: "Please wait...",
+        // timer: 5000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {});
+      setTimeout(loadDDfileDataframe(filePath), 1000);
+    }
+  }
+}
+
+function loadDDfileDataframe(filePath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke("api_load_existing_DD_file", filePath, (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      console.log(error);
+      Swal.fire({
+        title: "Failed to load the existing dataset_description.xlsx file",
+        html: emessage,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
+    } else {
+      loadDDFileToUI(res);
+    }
+  });
+}
+
+function loadDDFileToUI(object) {
+  var basicInfoObj = object["Basic information"];
+  var studyInfoObj = object["Study information"];
+  var conInfo = object["Contributor information"];
+  var awardInfoObj = object["Award information"];
+  var relatedInfo = object["Related information"];
+
+  ///// populating Basic info UI
+  for (var arr of basicInfoObj) {
+    if (arr[0] === "Type") {
+      $("#ds-type").val(arr[1]);
+    } else if (arr[0] === "Title") {
+      $("#ds-name").val(arr[1]);
+    } else if (arr[0] === "Subtitle") {
+      $("#ds-description").val(arr[1]);
+    } else if (arr[0] === "Number of subjects") {
+      $("#ds-subjects-no").val(arr[1]);
+    } else if (arr[0] === "Number of samples") {
+      $("#ds-samples-no").val(arr[1]);
+    } else if (arr[0] === "Keywords") {
+      // populate keywords
+      populateTagifyDD(keywordTagify, arr.splice(1));
+    }
+  }
+  //// populating Study info UI
+  for (var arr of studyInfoObj) {
+    if (arr[0] === "Study purpose") {
+      $("#ds-study-purpose").val(arr[1]);
+    } else if (arr[0] === "Study data collection") {
+      $("#ds-study-data-collection").val(arr[1]);
+    } else if (arr[0] === "Study primary conclusion") {
+      $("#ds-study-primary-conclusion").val(arr[1]);
+    } else if (arr[0] === "Study organ system") {
+      // populate organ systems
+      populateTagifyDD(studyOrganSystemsTagify, arr.splice(1));
+    } else if (arr[0] === "Study approach") {
+      // populate approach
+      populateTagifyDD(studyApproachesTagify, arr.splice(1));
+    } else if (arr[0] === "Study technique") {
+      // populate technique
+      populateTagifyDD(studyTechniquesTagify, arr.splice(1));
+    } else if (arr[0] === "Study collection title") {
+      // populate collection title
+      $("#ds-study-collection-title").val(arr[1]);
+    }
+  }
+
+  for (var arr of awardInfoObj) {
+    if (arr[0] === "Acknowledgments") {
+      $("#ds-description-acknowledgments").val(arr[1]);
+    } else if (arr[0] === "Funding") {
+      // populate awards
+      globalSPARCAward = arr[1];
+      $("#ds-description-award-input").val(arr[1]);
+      changeAward(globalSPARCAward);
+      populateTagifyDD(otherFundingTagify, arr.splice(2));
+    }
+  }
+
+  /// populating Con info UI
+  loadContributorsToTable(conInfo);
+
+  /// populating Related info UI
+  loadRelatedInfoToTable(relatedInfo);
+
+  Swal.fire({
+    title: "Loaded successfully!",
+    icon: "success",
+    showConfirmButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.hideLoading();
+    },
+  });
+  $("#div-confirm-existing-dd-import").hide();
+  $($("#div-confirm-existing-dd-import button")[0]).hide();
+  $("#button-fake-confirm-existing-dd-file-load").click();
+}
+
+function populateTagifyDD(tagify, values) {
+  tagify.removeAllTags();
+  for (var value of values) {
+    if (value.trim() !== "") {
+      tagify.addTags(value.trim());
+    }
+  }
+}
+
+function loadContributorsToTable(array) {
+  contributorArray = [];
+  $("#contributor-table-dd tr:gt(0)").remove();
+  $("#div-contributor-table-dd").css("display", "none");
+  for (var arr of array.splice(1)) {
+    if (arr[0].trim() !== "") {
+      var myCurrentCon = {
+        conName: arr[0].trim(),
+        conID: arr[1].trim(),
+        conAffliation: arr[2].trim(),
+        conRole: arr[3].trim(),
+      };
+      contributorArray.push(myCurrentCon);
+      var contact = "";
+      if (myCurrentCon.conRole.includes("CorrespondingAuthor")) {
+        contact = "Yes";
+      } else {
+        contact = "No";
+      }
+      addContributortoTableDD(myCurrentCon.conName, contact);
+    }
+  }
+}
+
+function loadRelatedInfoToTable(array) {
+  $("#protocol-link-table-dd tr:gt(0)").remove();
+  $("#div-protocol-link-table-dd").css("display", "none");
+  $("#other-link-table-dd tr:gt(0)").remove();
+  $("#div-other-link-table-dd").css("display", "none");
+  for (var arr of array.splice(1)) {
+    if (arr[2].trim() !== "") {
+      var protocolBoolean = protocolCheck(arr);
+      if (protocolBoolean) {
+        addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
+      } else {
+        addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
+      }
+    }
+  }
+}
+
+// check if a link is a protocol for UI import purpose (Basic version, could be improved further for accuracy)
+// (nothing will be changed for the generating purpose, just for the UI link separation between protocols and other links)
+function protocolCheck(array) {
+  var boolean = false;
+  // if relation includes IsProtocolFor, HasProtocol OR if description includes the word "protocol"(s) at all
+  if (
+    array[1].includes("IsProtocolFor") ||
+    array[1].includes("HasProtocol") ||
+    array[0].includes("protocol") ||
+    array[0].includes("protocols")
+  ) {
+    boolean = true;
+  }
+  return boolean;
+}

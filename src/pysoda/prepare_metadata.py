@@ -545,13 +545,15 @@ def load_existing_DD_file(filepath):
 
     header_list = list(itertools.chain(basicInfoHeaders,studyInfoHeaders,contributorInfoHeaders, awardInfoHeaders, relatedInfoHeaders))
 
-    for header_name in header_list:
-        if header_name not in list(DD_df["Metadata element"]):
+    # check if Metadata Element a.k.a Header column exists
+    for key in ["Metadata element", "Description", "Example", "Value"]:
+        if key not in DD_df :
             raise Exception("The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description.")
 
-    # check if Metadata Element a.k.a Header column exists
-    if not "Metadata element" in DD_df:
-        raise Exception("The sub-header column 'Metadata element' is required to import an existing dataset_description file")
+    else:
+        for header_name in header_list:
+            if header_name not in set(DD_df["Metadata element"]):
+                raise Exception("The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description.")
 
     # check for at least 1 value is included
     non_empty_1st_value = checkEmptyColumn(DD_df["Value"])
