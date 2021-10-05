@@ -550,6 +550,9 @@ def load_existing_DD_file(filepath):
         if key not in DD_df :
             raise Exception("The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description.")
 
+    if not "Metadata element" in DD_df:
+        raise Exception("The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description.")
+
     else:
         for header_name in header_list:
             if header_name not in set(DD_df["Metadata element"]):
