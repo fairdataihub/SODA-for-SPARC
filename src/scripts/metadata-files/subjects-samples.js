@@ -535,6 +535,7 @@ function populateRRID(strain, type) {
             );
           }
         } else {
+          console.log(returnRes)
           $("#bootbox-" + type + "-strain").val(strain);
           $("#btn-confirm-strain").removeClass("confirm-disabled");
           $("#bootbox-" + type + "-strain").css("display", "block");
@@ -2680,7 +2681,7 @@ function readXMLScicrunch(xml, type) {
       break;
     }
   }
-  if (type === "subjects") {
+  if (type === "subject") {
     if (rrid.trim() !== "") {
       $("#bootbox-subject-strain-RRID").val(rrid.trim());
       res = true;

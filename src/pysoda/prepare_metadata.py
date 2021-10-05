@@ -329,7 +329,7 @@ def save_subjects_file(filepath, datastructure):
     # # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     # ws1.delete_rows(2, 2)
     # delete all optional columns first (from the template)
-    ws1.delete_cols(12, 15)
+    ws1.delete_cols(12, 18)
 
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
@@ -337,14 +337,14 @@ def save_subjects_file(filepath, datastructure):
                        end_color='FFD965',
                        fill_type='solid')
 
-    gevent.sleep(0)
+    # gevent.sleep(0)
     for column, header in zip(excel_columns(start_index=11), refinedDatastructure[0][11:headers_no]):
         cell = column + str(1)
         ws1[cell] = header
         ws1[cell].fill = orangeFill
         ws1[cell].font = Font(bold=True, size=12, name='Calibri')
 
-    gevent.sleep(0)
+    # gevent.sleep(0)
     # 3. populate matrices
     for i, item in enumerate(refinedDatastructure):
         if i == 0:
@@ -382,21 +382,21 @@ def save_samples_file(filepath, datastructure):
     else:
         refinedDatastructure = transposeMatrix(sortMatrix)
 
-    ws1.delete_cols(10, 9)
+    ws1.delete_cols(10, 15)
 
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
     orangeFill = PatternFill(start_color='FFD965',
                        end_color='FFD965',
                        fill_type='solid')
-    gevent.sleep(0)
+    # gevent.sleep(0)
     for column, header in zip(excel_columns(start_index=9), refinedDatastructure[0][9:headers_no]):
         cell = column + str(1)
         ws1[cell] = header
         ws1[cell].fill = orangeFill
         ws1[cell].font = Font(bold=True, size=12, name='Calibri')
 
-    gevent.sleep(0)
+    # gevent.sleep(0)
     # 3. populate matrices
     for i, item in enumerate(refinedDatastructure):
         if i == 0:
