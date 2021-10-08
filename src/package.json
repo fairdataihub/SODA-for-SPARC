@@ -1,7 +1,7 @@
 {
-  "name": "SODA",
-  "productName": "SODA",
-  "version": "4.7.1",
+  "name": "soda-for-sparc",
+  "productName": "SODA for SPARC",
+  "version": "5.0.0",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bvhpatel/SODA.git"
+    "url": "https://github.com/fairdataihub/SODA-for-SPARC.git"
   },
   "build": {
     "appId": "com.calmi2.soda",
@@ -58,7 +58,7 @@
     },
     "publish": {
       "provider": "github",
-      "repository": "https://github.com/bvhpatel/SODA.git"
+      "repository": "https://github.com/fairdataihub/SODA-for-SPARC.git"
     }
   },
   "keywords": [],

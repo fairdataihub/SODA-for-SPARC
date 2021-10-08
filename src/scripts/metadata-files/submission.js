@@ -91,80 +91,73 @@ function helpMilestoneSubmission() {
   // if (Object.keys(informationJson).includes(award)) {
   //   informationJson[award] = milestoneObj;
   // } else {
-    Swal.fire({
-      title: "Do you have the Data Deliverables document ready to import?",
-      showCancelButton: true,
-      showConfirmButton: true,
-      confirmButtonText: "Yes, let's import it",
-      cancelButtonText: "No",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Importing the Data Deliverables document",
-          html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          preConfirm: () => {
-            if (
-              $("#input-milestone-select").attr("placeholder") === "Browse here"
-            ) {
-              Swal.showValidationMessage("Please select a file");
-            } else {
-              filepath = $("#input-milestone-select").attr("placeholder");
-              return {
-                filepath: filepath,
-              };
-            }
-          },
-        }).then((result) => {
-          Swal.close();
+  Swal.fire({
+    title: "Do you have the Data Deliverables document ready to import?",
+    showCancelButton: true,
+    showConfirmButton: true,
+    confirmButtonText: "Yes, let's import it",
+    cancelButtonText: "No",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: "Importing the Data Deliverables document",
+        html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        preConfirm: () => {
+          if (
+            $("#input-milestone-select").attr("placeholder") === "Browse here"
+          ) {
+            Swal.showValidationMessage("Please select a file");
+          } else {
+            filepath = $("#input-milestone-select").attr("placeholder");
+            return {
+              filepath: filepath,
+            };
+          }
+        },
+      }).then((result) => {
+        Swal.close();
 
-          const filepath = result.value.filepath;
-          var award = $("#submission-sparc-award");
-          client.invoke(
-            "api_extract_milestone_info",
-            filepath,
-            (error, res) => {
-              if (error) {
-                var emessage = userError(error);
-                log.error(error);
-                console.error(error);
-                Swal.fire({
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  heightAuto: false,
-                  icon: "error",
-                  text: `${emessage}`,
-                });
-              } else {
-                milestoneObj = res;
-                createMetadataDir();
-                var informationJson = {};
-                informationJson = parseJson(milestonePath);
-                informationJson[award] = milestoneObj;
-                fs.writeFileSync(
-                  milestonePath,
-                  JSON.stringify(informationJson)
-                );
-                Swal.fire({
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  heightAuto: false,
-                  timer: 3000,
-                  timerProgressBar: true,
-                  icon: "success",
-                  text: `Successfully loaded your DataDeliverables.docx document`,
-                });
-                removeOptions(descriptionDateInput);
-                milestoneTagify1.removeAllTags();
-                milestoneTagify1.settings.whitelist = [];
-                changeAwardInput();
-              }
-            }
-          );
+        const filepath = result.value.filepath;
+        var award = $("#submission-sparc-award");
+        client.invoke("api_extract_milestone_info", filepath, (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              icon: "error",
+              text: `${emessage}`,
+            });
+          } else {
+            milestoneObj = res;
+            createMetadataDir();
+            var informationJson = {};
+            informationJson = parseJson(milestonePath);
+            informationJson[award] = milestoneObj;
+            fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+            Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              timer: 3000,
+              timerProgressBar: true,
+              icon: "success",
+              text: `Successfully loaded your DataDeliverables.docx document`,
+            });
+            removeOptions(descriptionDateInput);
+            milestoneTagify1.removeAllTags();
+            milestoneTagify1.settings.whitelist = [];
+            changeAwardInput();
+          }
         });
-      }
-    });
+      });
+    }
+  });
   // }
 }
 
@@ -199,28 +192,29 @@ function openDDDimport() {
 
 // onboarding for submission file
 function onboardingSubmission() {
-  setTimeout(function() {
+  setTimeout(function () {
     introJs()
-    .setOptions({
-      steps: [
-        {
-          // title: "1. Help with your SPARC Award number",
-          element: document.querySelector("#a-help-submission-Airtable"),
-          intro: "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
-        },
-        {
-          // title: "2. Help with your milestone information",
-          element: document.querySelector("#a-help-submission-milestones"),
-          intro:
-          "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
-        },
-      ],
-      exitOnEsc: false,
-      exitOnOverlayClick: false,
-      disableInteraction: false,
-    })
-    .start();
-  }, 500)
+      .setOptions({
+        steps: [
+          {
+            // title: "1. Help with your SPARC Award number",
+            element: document.querySelector("#a-help-submission-Airtable"),
+            intro:
+              "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
+          },
+          {
+            // title: "2. Help with your milestone information",
+            element: document.querySelector("#a-help-submission-milestones"),
+            intro:
+              "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
+          },
+        ],
+        exitOnEsc: false,
+        exitOnOverlayClick: false,
+        disableInteraction: false,
+      })
+      .start();
+  }, 500);
 }
 
 // generateSubmissionFile function takes all the values from the preview card's spans
@@ -304,9 +298,7 @@ function actionEnterNewDate(action) {
 const submissionDateInput = document.getElementById("input-milestone-date");
 
 $(document).ready(function () {
-
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
-
     if (dirpath.length > 0) {
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
@@ -328,27 +320,26 @@ $(document).ready(function () {
           confirmButtonText: "Yes",
         }).then((result) => {
           if (result.isConfirmed) {
-
             generateSubmissionHelper(dirpath, destinationPath);
           }
         });
       } else {
-          Swal.fire({
-            title: "Generating the submission.xlsx file",
-            html: "Please wait...",
-            timer: 15000,
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            timerProgressBar: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {});
-          generateSubmissionHelper(dirpath, destinationPath);
-        }
+        Swal.fire({
+          title: "Generating the submission.xlsx file",
+          html: "Please wait...",
+          timer: 15000,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then((result) => {});
+        generateSubmissionHelper(dirpath, destinationPath);
+      }
     }
   });
 });

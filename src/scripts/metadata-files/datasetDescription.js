@@ -506,8 +506,6 @@ function showExistingDDFile() {
   }
 }
 
-
-
 function resetDD() {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -2123,21 +2121,25 @@ function loadDDfileDataframe(filePath) {
     heartbeatInterval: 60000,
   });
   clientLongTimeout.connect("tcp://127.0.0.1:4242");
-  clientLongTimeout.invoke("api_load_existing_DD_file", filePath, (error, res) => {
-    if (error) {
-      var emessage = userError(error);
-      console.log(error);
-      Swal.fire({
-        title: "Failed to load the existing dataset_description.xlsx file",
-        html: emessage,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-      });
-    } else {
-      loadDDFileToUI(res);
+  clientLongTimeout.invoke(
+    "api_load_existing_DD_file",
+    filePath,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        console.log(error);
+        Swal.fire({
+          title: "Failed to load the existing dataset_description.xlsx file",
+          html: emessage,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "error",
+        });
+      } else {
+        loadDDFileToUI(res);
+      }
     }
-  });
+  );
 }
 
 function loadDDFileToUI(object) {

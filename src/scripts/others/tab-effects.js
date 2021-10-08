@@ -1795,7 +1795,7 @@ async function transitionFreeFormMode(
   }
 
   if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
-    onboardingSubmission()
+    onboardingSubmission();
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-dd-1") {

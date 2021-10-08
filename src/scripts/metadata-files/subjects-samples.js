@@ -215,8 +215,8 @@ function addSample() {
     $("#div-import-primary-folder-sam").hide();
   }
   if (samplesTableData.length === 2) {
-   onboardingMetadata("sample");
- }
+    onboardingMetadata("sample");
+  }
 }
 
 function warningBeforeHideForm(type) {
@@ -592,7 +592,7 @@ function populateRRID(strain, type) {
             );
           }
         } else {
-          console.log(returnRes)
+          console.log(returnRes);
           $("#bootbox-" + type + "-strain").val(strain);
           $("#btn-confirm-strain").removeClass("confirm-disabled");
           $("#bootbox-" + type + "-strain").css("display", "block");

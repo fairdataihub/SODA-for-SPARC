@@ -11,15 +11,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Updated Prepare metadata section to adapt to new SDS 2.0.0 version.
 - Added the feature to import existing dataset_description.xlsx file for edits in SODA.
-
-### Bug fixes:
-- Fixed subjects and samples file generation bug with extra optional column added.
-
-### Others:
-- Temporarily removed support for Protocols.io integration due to code change from Protocols.io.
 - Added onboarding for submission file.
 
-## v4.8.0 - 2021-09-13
+### Bug fixes:
+
+- Fixed subjects and samples file generation bug with extra optional column added.
+
+### Known issues:
+
+- Temporarily removed support for Protocols.io integration due to code change from Protocols.io.
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+
+## v4.8.0 - 2021-09-27
 
 ### Feature additions:
 
@@ -32,6 +35,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Importing subjects + samples files have been adapted to new strain/species UI change
 - Changed the activation point for illegal character checks.
+
+### Known issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 ## v4.7.1 - 2021-09-13
 
