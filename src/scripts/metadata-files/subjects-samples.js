@@ -2328,7 +2328,7 @@ async function connectProtocol(type) {
   }
 }
 
-const protocolHostname = "protocols.io";
+const protocolHostname = "www.protocols.io";
 var protocolResearcherList = {};
 
 function sendHttpsRequestProtocol(accessToken, accessType, filetype) {
