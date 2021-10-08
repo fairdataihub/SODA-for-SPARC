@@ -204,7 +204,7 @@ function onboardingSubmission() {
           // title: "2. Help with your milestone information",
           element: document.querySelector("#a-help-submission-milestones"),
           intro:
-          "Click here to conveniently retrieve your milestone(s) and completion date with SODA. <br>If you have access to the Data Deliverables document for your SPARC award, SODA can help you retrieve the milestone(s) and completion date for your convenience.",
+          "Click here to retrieve your milestone(s) and completion date with SODA. <br>If you have access to the Data Deliverables document for your SPARC award, SODA can help you retrieve the milestone(s) and completion date for your convenience.",
         },
       ],
       exitOnEsc: false,
