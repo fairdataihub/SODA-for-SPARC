@@ -2430,47 +2430,47 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
     headers: { Authorization: `Bearer ${token}` },
   };
   https.get(protocolInfoList, (res) => {
-    if (res.statusCode === 200) {
-      res.setEncoding("utf8");
-      res.on("data", function (body) {
-        var result = JSON.parse(body);
-        protocolResearcherList = {};
-        // for (var item of result["items"]) {
-        //   protocolResearcherList["https://www.protocols.io/view/" + item.uri] =
-        //   item.title;
-        // }
-        if (Object.keys(protocolResearcherList).length > 0) {
-          if (type === "first-time") {
-            Swal.fire({
-              title:
-                "Successfully connected! <br/>Loading your protocol information...",
-              timer: 2000,
-              timerProgressBar: true,
-              allowEscapeKey: false,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showConfirmButton: false,
-              allowOutsideClick: false,
-              didOpen: () => {
-                Swal.showLoading();
-              },
-            }).then((result) => {
-              showProtocolCredentials(email, filetype);
-            });
-          }
-        } else {
-          if (type === "first-time") {
-            Swal.fire({
-              title: "Successfully connected",
-              text: "However, at this moment, you do not have any protocol information for SODA to extract.",
-              icon: "success",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          }
-        }
-      });
-    }
+    // if (res.statusCode === 200) {
+    //   res.setEncoding("utf8");
+    //   res.on("data", function (body) {
+    //     var result = JSON.parse(body);
+    //     protocolResearcherList = {};
+    //     // for (var item of result["items"]) {
+    //     //   protocolResearcherList["https://www.protocols.io/view/" + item.uri] =
+    //     //   item.title;
+    //     // }
+    //     if (Object.keys(protocolResearcherList).length > 0) {
+    //       if (type === "first-time") {
+    //         Swal.fire({
+    //           title:
+    //             "Successfully connected! <br/>Loading your protocol information...",
+    //           timer: 2000,
+    //           timerProgressBar: true,
+    //           allowEscapeKey: false,
+    //           heightAuto: false,
+    //           backdrop: "rgba(0,0,0, 0.4)",
+    //           showConfirmButton: false,
+    //           allowOutsideClick: false,
+    //           didOpen: () => {
+    //             Swal.showLoading();
+    //           },
+    //         }).then((result) => {
+    //           showProtocolCredentials(email, filetype);
+    //         });
+    //       }
+    //     } else {
+    //       if (type === "first-time") {
+    //         Swal.fire({
+    //           title: "Successfully connected",
+    //           text: "However, at this moment, you do not have any protocol information for SODA to extract.",
+    //           icon: "success",
+    //           heightAuto: false,
+    //           backdrop: "rgba(0,0,0, 0.4)",
+    //         });
+    //       }
+    //     }
+    //   });
+    // }
   });
 }
 
