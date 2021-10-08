@@ -473,6 +473,41 @@ function checkEmptyConRowInfo(table, row) {
   return empty;
 }
 
+function showExistingDDFile() {
+  if (
+    $("#existing-dd-file-destination").prop("placeholder") !== "Browse here" &&
+    $("#Question-prepare-dd-2").hasClass("show")
+  ) {
+    Swal.fire({
+      title:
+        "Are you sure you want to import a different dataset_description file?",
+      text: "This will delete all of your previous work on this file.",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: `No!`,
+      cancelButtonColor: "#f44336",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+    }).then((boolean) => {
+      if (boolean.isConfirmed) {
+        ipcRenderer.send("open-file-dialog-existing-DD");
+        document.getElementById("existing-dd-file-destination").placeholder =
+          "Browse here";
+        $("#div-confirm-existing-dd-import").hide();
+        $($("#div-confirm-existing-dd-import button")[0]).hide();
+        $("#Question-prepare-dd-2").removeClass("show");
+      }
+    });
+  } else {
+    ipcRenderer.send("open-file-dialog-existing-DD");
+  }
+}
+
+
+
 function resetDD() {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",

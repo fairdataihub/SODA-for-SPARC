@@ -274,6 +274,13 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, study_str, co
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
 
+    ws1['D22'] = ""
+    ws1['E22'] = ""
+    ws1['D24'] = ""
+    ws1['E24'] = ""
+    ws1['D25'] = ""
+    ws1['E25'] = ""
+
     keyword_array = populate_dataset_info(ws1, val_obj_ds)
 
     study_array_len = populate_study_info(ws1, val_obj_study)

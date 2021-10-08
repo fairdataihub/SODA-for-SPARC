@@ -191,7 +191,24 @@ function openDDDimport() {
 
 // generateSubmissionFile function takes all the values from the preview card's spans
 function generateSubmissionFile() {
-  ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
+  var awardRes = $("#submission-sparc-award").val();
+  var dateRes = $("#submission-completion-date").val();
+  var milestonesRes = $("#selected-milestone-1").val();
+  let milestoneValue = [""];
+  if (milestonesRes !== "") {
+    milestoneValue = JSON.parse(milestonesRes);
+  }
+  if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please fill in all of the required fields.",
+      title: "Incomplete information",
+    });
+  } else {
+    ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
+  }
 }
 
 function changeAwardInput() {
@@ -253,7 +270,9 @@ function actionEnterNewDate(action) {
 const submissionDateInput = document.getElementById("input-milestone-date");
 
 $(document).ready(function () {
+
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
+
     if (dirpath.length > 0) {
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
@@ -275,26 +294,27 @@ $(document).ready(function () {
           confirmButtonText: "Yes",
         }).then((result) => {
           if (result.isConfirmed) {
+
             generateSubmissionHelper(dirpath, destinationPath);
           }
         });
       } else {
-        Swal.fire({
-          title: "Generating the submission.xlsx file",
-          html: "Please wait...",
-          timer: 15000,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          showConfirmButton: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        }).then((result) => {});
-        generateSubmissionHelper(dirpath, destinationPath);
-      }
+          Swal.fire({
+            title: "Generating the submission.xlsx file",
+            html: "Please wait...",
+            timer: 15000,
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {});
+          generateSubmissionHelper(dirpath, destinationPath);
+        }
     }
   });
 });
@@ -306,16 +326,6 @@ function generateSubmissionHelper(fullpath, destinationPath) {
   let milestoneValue = [""];
   if (milestonesRes !== "") {
     milestoneValue = JSON.parse(milestonesRes);
-  }
-  if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      text: "Please fill in all of the required fields.",
-      title: "Incomplete information",
-    });
-    return;
   }
   var json_arr = [];
   json_arr.push({
