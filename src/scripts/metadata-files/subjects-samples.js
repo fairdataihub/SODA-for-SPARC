@@ -78,6 +78,57 @@ function promptImportPrevInfoSamples(arr1, arr2) {
   });
 }
 
+// onboarding for subjects/samples file
+function onboardingMetadata(type) {
+  var helperButtons = $(
+    $($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]
+  ).find(".contributor-helper-buttons")[0];
+  introJs()
+    .setOptions({
+      steps: [
+        {
+          title: "Buttons",
+          element: helperButtons,
+          intro: "Click on these buttons to manipulate a " + type + ".",
+        },
+        {
+          title: `1. Edit a ${type}`,
+          element: $(helperButtons).children()[0],
+          intro:
+            "Click here to edit the information about a corresponding " +
+            type +
+            ".",
+        },
+        {
+          title: `2. Copy a ${type}`,
+          element: $(helperButtons).children()[1],
+          intro:
+            "Click here to copy information from the corresponding " +
+            type +
+            " onto a new " +
+            type +
+            ". Note: You have to enter an ID for the new " +
+            type +
+            " after clicking on this.",
+        },
+        {
+          title: `3. Delete a ${type}`,
+          element: $(helperButtons).children()[2],
+          intro:
+            "Click here to delete a corresponding " +
+            type +
+            " from the table. This will permanently delete the " +
+            type +
+            " from SODA and cannot be reverted.",
+        },
+      ],
+      exitOnEsc: false,
+      exitOnOverlayClick: false,
+      disableInteraction: false,
+    })
+    .start();
+}
+
 function promptImportPrevInfoSubject(arr1) {
   Swal.fire({
     title: "Choose a previous subject:",
@@ -150,6 +201,9 @@ function addSubject() {
   if (subjectsTableData.length !== 0) {
     $("#div-import-primary-folder-sub").hide();
   }
+  if (subjectsTableData.length === 2) {
+    onboardingMetadata("subject");
+  }
 }
 
 // for "Done adding" button - samples
@@ -160,6 +214,9 @@ function addSample() {
   if (samplesTableData.length !== 0) {
     $("#div-import-primary-folder-sam").hide();
   }
+  if (samplesTableData.length === 2) {
+   onboardingMetadata("sample");
+ }
 }
 
 function warningBeforeHideForm(type) {
@@ -2378,10 +2435,10 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
       res.on("data", function (body) {
         var result = JSON.parse(body);
         protocolResearcherList = {};
-        for (var item of result["items"]) {
-          protocolResearcherList["https://www.protocols.io/view/" + item.uri] =
-            item.title;
-        }
+        // for (var item of result["items"]) {
+        //   protocolResearcherList["https://www.protocols.io/view/" + item.uri] =
+        //   item.title;
+        // }
         if (Object.keys(protocolResearcherList).length > 0) {
           if (type === "first-time") {
             Swal.fire({

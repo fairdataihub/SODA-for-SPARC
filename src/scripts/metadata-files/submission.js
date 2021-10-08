@@ -189,6 +189,32 @@ function openDDDimport() {
   );
 }
 
+// onboarding for submission file
+function onboardingSubmission() {
+  setTimeout(function() {
+    introJs()
+    .setOptions({
+      steps: [
+        {
+          // title: "1. Help with your SPARC Award number",
+          element: document.querySelector("#a-help-submission-Airtable"),
+          intro: "Click here to retrieve your SPARC Award number with SODA. <br>Note: You will need to connect SODA with your Airtable account and have access to the \"sparc_members\" Airtable sheet.",
+        },
+        {
+          // title: "2. Help with your milestone information",
+          element: document.querySelector("#a-help-submission-milestones"),
+          intro:
+          "Click here to conveniently retrieve your milestone(s) and completion date with SODA. <br>If you have access to the Data Deliverables document for your SPARC award, SODA can help you retrieve the milestone(s) and completion date for your convenience.",
+        },
+      ],
+      exitOnEsc: false,
+      exitOnOverlayClick: false,
+      disableInteraction: false,
+    })
+    .start();
+  }, 500)
+}
+
 // generateSubmissionFile function takes all the values from the preview card's spans
 function generateSubmissionFile() {
   var awardRes = $("#submission-sparc-award").val();

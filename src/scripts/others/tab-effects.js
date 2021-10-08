@@ -1794,6 +1794,10 @@ async function transitionFreeFormMode(
     }
   }
 
+  if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
+    onboardingSubmission()
+  }
+
   if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
     if ($("#Question-prepare-dd-2").hasClass("show")) {
       var { value: continueProgressDD } = await Swal.fire({

@@ -1177,7 +1177,7 @@
                       padding-bottom: 20px;
                       "
                       >
-                      <a onclick="helpSPARCAward('submission')" target="_blank">
+                      <a onclick="helpSPARCAward('submission')" target="_blank" id="a-help-submission-Airtable">
                         Click here to import my SPARC award from Airtable
                       </a>
                       <div
@@ -1284,7 +1284,7 @@
                       padding-bottom: 20px;
                     "
                   >
-                    <a onclick="helpMilestoneSubmission()">
+                    <a onclick="helpMilestoneSubmission()" id="a-help-submission-milestones">
                       Click here to import milestones from my Data Deliverables
                       document
                     </a>
@@ -1330,7 +1330,6 @@
               data-trigger="hover"
             ></i>
           </label>
-
           <div class="field">
             <input
               id="textarea-SPARC-award-raw-input"
@@ -2971,6 +2970,7 @@
                       margin-bottom: 20px;
                       font-size: 14px;
                       margin-top: 10px;
+                      display: none;
                     "
                   >
                     <a onclick="addExistingProtocol()" target="_blank">
@@ -5858,6 +5858,7 @@
                   margin-bottom: 20px;
                   font-size: 14px;
                   margin-top: 10px;
+                  display: none;
                 "
               >
                 <a
@@ -7325,6 +7326,7 @@
                   text-align: center;
                   margin-bottom: 20px;
                   font-size: 14px;
+                  display: none;
                 "
               >
                 <a onclick="preliminaryProtocolStep('samples')" target="_blank">
