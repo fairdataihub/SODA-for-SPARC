@@ -48,6 +48,14 @@ function resetSubmission() {
       $("#Question-prepare-submission-1").removeClass("prev");
       $("#Question-prepare-submission-1").nextAll().removeClass("show");
       $("#Question-prepare-submission-1").nextAll().removeClass("prev");
+      $("#Question-prepare-submission-1-new")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-submission-1-new .folder-input-check").prop(
+        "checked",
+        false
+      );
 
       var inputFields = $("#Question-prepare-submission-1")
         .nextAll()
@@ -198,13 +206,13 @@ function onboardingSubmission() {
         {
           // title: "1. Help with your SPARC Award number",
           element: document.querySelector("#a-help-submission-Airtable"),
-          intro: "Click here to retrieve your SPARC Award number with SODA. <br>Note: You will need to connect SODA with your Airtable account and have access to the \"sparc_members\" Airtable sheet.",
+          intro: "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
         },
         {
           // title: "2. Help with your milestone information",
           element: document.querySelector("#a-help-submission-milestones"),
           intro:
-          "Click here to retrieve your milestone(s) and completion date with SODA. <br>If you have access to the Data Deliverables document for your SPARC award, SODA can help you retrieve the milestone(s) and completion date for your convenience.",
+          "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
         },
       ],
       exitOnEsc: false,
