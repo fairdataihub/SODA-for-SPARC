@@ -1344,7 +1344,7 @@ function create_child_node(
   type: "folder" or "file"
   ext: track ext of files to match with the right CSS icons
   openedState, selectedState: states of a jstree node
-  selectedOrginalLocation: current folder of selected items
+  selectedOriginalLocation: current folder of selected items
   viewOptions: preview or moveItems
   */
   var newFormatNode = {
@@ -1591,7 +1591,7 @@ $(document).ready(function () {
 async function moveItems(ev, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  var selectedOrginalLocation = filtered[filtered.length - 1];
+  var selectedOriginalLocation = filtered[filtered.length - 1];
   var selectedItem = ev.parentElement.innerText;
   /*
   Reset previously selected items first, create jsTreeData again with updated dataset structure JSON object.
@@ -1623,7 +1623,7 @@ async function moveItems(ev, category) {
     true,
     true,
     true,
-    selectedOrginalLocation,
+    selectedOriginalLocation,
     "moveItems"
   );
   // Note: somehow, html element "#data" was destroyed after closing the Swal popup.

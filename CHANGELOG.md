@@ -5,19 +5,40 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v4.8.0 - 2021-09-13
+## v5.0.0 - 2021-10-08
+
+### Feature additions:
+
+- Updated Prepare metadata section to adapt to new SDS 2.0.0 version.
+- Added the feature to import existing dataset_description.xlsx file for edits in SODA.
+- Added onboarding for submission file.
+
+### Bug fixes:
+
+- Fixed subjects and samples file generation bug with extra optional column added.
+
+### Known issues:
+
+- Temporarily removed support for Protocols.io integration due to code change from Protocols.io.
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+
+## v4.8.0 - 2021-09-27
 
 ### Feature additions:
 
 - Added onboarding for subjects and samples tables.
 - Added validation checks for verifying the backend and front end app versions.
-- Refactored large parts of the code performane improvements.
+- Refactored large parts of the code performance improvements.
 - Added onboarding for step 3 of the Organize dataset process.
 
 ### Bug fixes:
 
 - Importing subjects + samples files have been adapted to new strain/species UI change
-- Changed the activation point for illegal character checks. 
+- Changed the activation point for illegal character checks.
+
+### Known issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 ## v4.7.1 - 2021-09-13
 
@@ -133,7 +154,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added support for more stringent file check with regards to metadata files. This should prevent you from importing files that are not valid.
 - Added a button to paste your API keys into the application more easily.
-- Added better warnings for when a backend module fails. This should give tou more information about the status of SODA and if a restart of the app maybe neccessary.
+- Added better warnings for when a backend module fails. This should give you more information about the status of SODA and if a restart of the app maybe necessary.
 - Adjusted the ordering of message box buttons to better follow OS specific guidelines for Human Interface Design.
 
 ### Bug fixes:

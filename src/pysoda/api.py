@@ -1,27 +1,78 @@
 from __future__ import print_function
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey
+
+monkey.patch_all()
 import gevent
-from pysoda import submit_dataset_progress,  \
-    bf_add_account_api_key, bf_add_account_username, bf_account_list, bf_dataset_account, bf_account_details, \
-    bf_submit_dataset, bf_new_dataset_folder, bf_rename_dataset, bf_add_permission, bf_get_users, bf_get_permission, \
-    bf_get_teams, bf_add_permission_team, bf_add_subtitle, bf_get_subtitle, bf_get_description, \
-    bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
-    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, get_username, get_number_of_files_and_folders_locally, check_agent_install, get_pennsieve_api_key_secret, SODA_SPARC_API_KEY
+from pysoda import (
+    submit_dataset_progress,
+    bf_add_account_api_key,
+    bf_add_account_username,
+    bf_account_list,
+    bf_dataset_account,
+    bf_account_details,
+    bf_submit_dataset,
+    bf_new_dataset_folder,
+    bf_rename_dataset,
+    bf_add_permission,
+    bf_get_users,
+    bf_get_permission,
+    bf_get_teams,
+    bf_add_permission_team,
+    bf_add_subtitle,
+    bf_get_subtitle,
+    bf_get_description,
+    bf_add_description,
+    bf_get_banner_image,
+    bf_add_banner_image,
+    bf_get_license,
+    bf_add_license,
+    bf_get_dataset_status,
+    bf_change_dataset_status,
+    bf_default_account_load,
+    get_username,
+    get_number_of_files_and_folders_locally,
+    check_agent_install,
+    get_pennsieve_api_key_secret,
+    SODA_SPARC_API_KEY,
+)
 
-from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf_publish_dataset, bf_submit_review_dataset, bf_withdraw_review_dataset
+from disseminate import (
+    bf_get_doi,
+    bf_reserve_doi,
+    bf_get_publishing_status,
+    bf_publish_dataset,
+    bf_submit_review_dataset,
+    bf_withdraw_review_dataset,
+)
 
-from curate import validate_dataset, create_folder_level_manifest, \
-    check_empty_files_folders, main_curate_function, main_curate_function_progress, generate_manifest_file_locally
+from curate import (
+    validate_dataset,
+    create_folder_level_manifest,
+    check_empty_files_folders,
+    main_curate_function,
+    main_curate_function_progress,
+    generate_manifest_file_locally,
+)
 
-from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone, save_subjects_file, convert_subjects_samples_file_to_df, \
-    save_samples_file, load_taxonomy_species
+from prepare_metadata import (
+    save_submission_file,
+    save_ds_description_file,
+    extract_milestone_info,
+    import_milestone,
+    save_subjects_file,
+    convert_subjects_samples_file_to_df,
+    save_samples_file,
+    load_taxonomy_species,
+    load_existing_DD_file,
+)
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
 
 import sys
 import zerorpc
 
-MIN_SODA_VERSION = "4.8.0"
+MIN_SODA_VERSION = "5.0.0"
+
 
 class SodaApi(object):
 
@@ -35,8 +86,12 @@ class SodaApi(object):
         return save_submission_file(filepath, val_arr)
 
     ### Save Description file
-    def api_save_ds_description_file(self, bfaccount, filepath, val_arr1, val_arr2, val_arr3, val_arr4):
-        return save_ds_description_file(bfaccount, filepath, val_arr1, val_arr2, val_arr3, val_arr4)
+    def api_save_ds_description_file(
+        self, bfaccount, filepath, val_arr1, val_arr_study, val_arr2, val_arr3
+    ):
+        return save_ds_description_file(
+            bfaccount, filepath, val_arr1, val_arr_study, val_arr2, val_arr3
+        )
 
     ### Save subjects file
     def api_save_subjects_file(self, filepath, datastructure):
@@ -44,6 +99,9 @@ class SodaApi(object):
 
     def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
         return convert_subjects_samples_file_to_df(type, filepath, fields)
+
+    def api_load_existing_DD_file(self, filepath):
+        return load_existing_DD_file(filepath)
 
     ### Save samples file
     def api_save_samples_file(self, filepath, datastructure):
@@ -54,10 +112,14 @@ class SodaApi(object):
         return load_taxonomy_species(animalArr)
 
     ### Generate dataset locally
-    def api_generate_dataset_locally(self, destinationdataset, pathdataset, newdatasetname, jsonpath):
+    def api_generate_dataset_locally(
+        self, destinationdataset, pathdataset, newdatasetname, jsonpath
+    ):
 
         try:
-            return generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, jsonpath)
+            return generate_dataset_locally(
+                destinationdataset, pathdataset, newdatasetname, jsonpath
+            )
         except Exception as e:
             raise e
 
@@ -159,9 +221,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_rename_dataset(self, accountname, current_dataset_name, renamed_dataset_name):
+    def api_bf_rename_dataset(
+        self, accountname, current_dataset_name, renamed_dataset_name
+    ):
         try:
-            return bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name)
+            return bf_rename_dataset(
+                accountname, current_dataset_name, renamed_dataset_name
+            )
         except Exception as e:
             raise e
 
@@ -195,15 +261,23 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_add_permission(self, selected_bfaccount, selected_bfdataset, selected_user, selected_role):
+    def api_bf_add_permission(
+        self, selected_bfaccount, selected_bfdataset, selected_user, selected_role
+    ):
         try:
-            return bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, selected_role)
+            return bf_add_permission(
+                selected_bfaccount, selected_bfdataset, selected_user, selected_role
+            )
         except Exception as e:
             raise e
 
-    def api_bf_add_permission_team(self, selected_bfaccount, selected_bfdataset, selected_team, selected_role):
+    def api_bf_add_permission_team(
+        self, selected_bfaccount, selected_bfdataset, selected_team, selected_role
+    ):
         try:
-            return bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team, selected_role)
+            return bf_add_permission_team(
+                selected_bfaccount, selected_bfdataset, selected_team, selected_role
+            )
         except Exception as e:
             raise e
 
@@ -213,9 +287,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_add_subtitle(self, selected_bfaccount, selected_bfdataset, input_subtitle):
+    def api_bf_add_subtitle(
+        self, selected_bfaccount, selected_bfdataset, input_subtitle
+    ):
         try:
-            return bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle)
+            return bf_add_subtitle(
+                selected_bfaccount, selected_bfdataset, input_subtitle
+            )
         except Exception as e:
             raise e
 
@@ -225,9 +303,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_add_description(self, selected_bfaccount, selected_bfdataset, markdown_input):
+    def api_bf_add_description(
+        self, selected_bfaccount, selected_bfdataset, markdown_input
+    ):
         try:
-            return bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input)
+            return bf_add_description(
+                selected_bfaccount, selected_bfdataset, markdown_input
+            )
         except Exception as e:
             raise e
 
@@ -237,9 +319,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_add_banner_image(self, selected_bfaccount, selected_bfdataset, selected_banner_image):
+    def api_bf_add_banner_image(
+        self, selected_bfaccount, selected_bfdataset, selected_banner_image
+    ):
         try:
-            return bf_add_banner_image(selected_bfaccount, selected_bfdataset, selected_banner_image)
+            return bf_add_banner_image(
+                selected_bfaccount, selected_bfdataset, selected_banner_image
+            )
         except Exception as e:
             raise e
 
@@ -249,9 +335,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_add_license(self, selected_bfaccount, selected_bfdataset, selected_license):
+    def api_bf_add_license(
+        self, selected_bfaccount, selected_bfdataset, selected_license
+    ):
         try:
-            return bf_add_license(selected_bfaccount, selected_bfdataset, selected_license)
+            return bf_add_license(
+                selected_bfaccount, selected_bfdataset, selected_license
+            )
         except Exception as e:
             raise e
 
@@ -261,9 +351,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_change_dataset_status(self, selected_bfaccount, selected_bfdataset, selected_status):
+    def api_bf_change_dataset_status(
+        self, selected_bfaccount, selected_bfdataset, selected_status
+    ):
         try:
-            return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
+            return bf_change_dataset_status(
+                selected_bfaccount, selected_bfdataset, selected_status
+            )
         except Exception as e:
             raise e
 
@@ -330,9 +424,13 @@ class SodaApi(object):
     #     except Exception as e:
     #         raise e
 
-    def api_bf_get_dataset_files_folders(self, soda_json_structure, requested_sparc_only = True):
+    def api_bf_get_dataset_files_folders(
+        self, soda_json_structure, requested_sparc_only=True
+    ):
         try:
-            return bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only)
+            return bf_get_dataset_files_folders(
+                soda_json_structure, requested_sparc_only
+            )
         except Exception as e:
             raise e
 
@@ -354,7 +452,9 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_get_pennsieve_api_key_secret(self, email, password, keyname=SODA_SPARC_API_KEY):
+    def api_get_pennsieve_api_key_secret(
+        self, email, password, keyname=SODA_SPARC_API_KEY
+    ):
         try:
             return get_pennsieve_api_key_secret(email, password, keyname)
         except Exception as e:
@@ -383,16 +483,16 @@ def parse_port():
         port = int(sys.argv[1])
     except:
         pass
-    return '{}'.format(port)
+    return "{}".format(port)
 
 
 def main():
-    addr = 'tcp://127.0.0.1:' + parse_port()
+    addr = "tcp://127.0.0.1:" + parse_port()
     s = zerorpc.Server(SodaApi())
     s.bind(addr)
-    print('start running on {}'.format(addr))
+    print("start running on {}".format(addr))
     s.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

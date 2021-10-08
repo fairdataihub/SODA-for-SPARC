@@ -1,9 +1,25 @@
 ### Import required python modules
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey
+
+monkey.patch_all()
 import platform
 import os
 from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
-from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize, abspath
+from os.path import (
+    isdir,
+    isfile,
+    join,
+    splitext,
+    getmtime,
+    basename,
+    normpath,
+    exists,
+    expanduser,
+    split,
+    dirname,
+    getsize,
+    abspath,
+)
 import pandas as pd
 import time
 from time import strftime, localtime
@@ -39,23 +55,23 @@ from pysoda import bf_get_current_user_permission
 
 
 ### Global variables
-curateprogress = ' '
-curatestatus = ' '
-curateprintstatus = ' '
+curateprogress = " "
+curatestatus = " "
+curateprintstatus = " "
 total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
 
 userpath = expanduser("~")
-configpath = join(userpath, '.pennsieve', 'config.ini')
-submitdataprogress = ' '
-submitdatastatus = ' '
-submitprintstatus = ' '
+configpath = join(userpath, ".pennsieve", "config.ini")
+submitdataprogress = " "
+submitdatastatus = " "
+submitprintstatus = " "
 total_file_size = 1
 uploaded_file_size = 0
 start_time_bf_upload = 0
 start_submit = 0
-metadatapath = join(userpath, 'SODA', 'SODA_metadata')
+metadatapath = join(userpath, "SODA", "SODA_metadata")
 
 bf = ""
 myds = ""
@@ -73,37 +89,41 @@ forbidden_characters_bf = '\/:*?"<>'
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
 
+
 def checkLeafValue(leafName, leafNodeValue):
 
-    error, c = '', 0
+    error, c = "", 0
     total_dataset_size = 1
-    curatestatus = ''
+    curatestatus = ""
 
     if isinstance(leafNodeValue, list):
         filePath = leafNodeValue[0]
 
         if exists(filePath):
-            filePathSize =  getsize(filePath)
+            filePathSize = getsize(filePath)
             if filePathSize == 0:
                 c += 1
-                error = error + filePath + ' is 0 KB <br>'
+                error = error + filePath + " is 0 KB <br>"
             else:
                 total_dataset_size += filePathSize
         else:
             c += 1
-            error = error + filePath + ' doesn not exist! <br>'
+            error = error + filePath + " doesn not exist! <br>"
 
     elif isinstance(leafNodeValue, dict):
-            c += 1
-            error = error + leafName + ' is empty <br>'
+        c += 1
+        error = error + leafName + " is empty <br>"
 
     if c > 0:
-        error = error + '<br>Please remove invalid files/folders from your dataset and try again'
-        curatestatus = 'Done'
+        error = (
+            error
+            + "<br>Please remove invalid files/folders from your dataset and try again"
+        )
+        curatestatus = "Done"
         raise Exception(error)
 
     else:
-        return [True, total_dataset_size-1]
+        return [True, total_dataset_size - 1]
 
 
 def traverseForLeafNodes(jsonStructure):
@@ -130,6 +150,7 @@ def traverseForLeafNodes(jsonStructure):
 
     return total_dataset_size
 
+
 ######## CREATE FILES FOR CURATE_DATASET FUNCTION
 def createFiles(jsonpath, fileKey, distdir, listallfiles):
     # fileKey is the key in json structure that is a file (meaning that its value is an array)
@@ -140,13 +161,17 @@ def createFiles(jsonpath, fileKey, distdir, listallfiles):
     distfile = distdir
     listallfiles.append([srcfile, distfile])
 
+
 def ignore_empty_high_level_folders(jsonObject):
-    items_to_delete = [folder for folder in jsonObject.keys() if len(jsonObject[folder].keys()) == 0]
+    items_to_delete = [
+        folder for folder in jsonObject.keys() if len(jsonObject[folder].keys()) == 0
+    ]
 
     for item in items_to_delete:
         del jsonObject[item]
 
     return jsonObject
+
 
 def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, jsonpath):
     """
@@ -161,11 +186,11 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
         manifeststatus: boolean to check if user request manifest files
         jsonpath: path of the files to be included in the dataset (dictionary)
     """
-    global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
-    global curateprogress #GUI messages shown to user to provide update on progress
-    global curateprintstatus # If = "Curating" Progress messages are shown to user
-    global total_dataset_size # total size of the dataset to be generated
-    global curated_dataset_size # total size of the dataset generated (locally or on Pennsieve) at a given time
+    global curatestatus  # set to 'Done' when completed or error to stop progress tracking from front-end
+    global curateprogress  # GUI messages shown to user to provide update on progress
+    global curateprintstatus  # If = "Curating" Progress messages are shown to user
+    global total_dataset_size  # total size of the dataset to be generated
+    global curated_dataset_size  # total size of the dataset generated (locally or on Pennsieve) at a given time
     global start_time
     global bf
     global myds
@@ -173,10 +198,10 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     global start_submit
     global initial_bfdataset_size
 
-    curateprogress = ' '
-    curatestatus = ''
-    curateprintstatus = ' '
-    error, c = '', 0
+    curateprogress = " "
+    curatestatus = ""
+    curateprintstatus = " "
+    error, c = "", 0
     curated_dataset_size = 0
     start_time = 0
     upload_directly_to_bf = 0
@@ -185,16 +210,19 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
 
     jsonstructure_non_empty = ignore_empty_high_level_folders(jsonpath)
 
-    if destinationdataset == 'create new':
+    if destinationdataset == "create new":
         if not isdir(pathdataset):
-            curatestatus = 'Done'
-            raise Exception('Error: Please select a valid folder for new dataset')
+            curatestatus = "Done"
+            raise Exception("Error: Please select a valid folder for new dataset")
         if not newdatasetname:
-            curatestatus = 'Done'
-            raise Exception('Error: Please enter a valid name for new dataset folder')
+            curatestatus = "Done"
+            raise Exception("Error: Please enter a valid name for new dataset folder")
         if check_forbidden_characters(newdatasetname):
-            curatestatus = 'Done'
-            raise Exception('Error: A folder name cannot contain any of the following characters ' + forbidden_characters)
+            curatestatus = "Done"
+            raise Exception(
+                "Error: A folder name cannot contain any of the following characters "
+                + forbidden_characters
+            )
 
     total_dataset_size = 1
 
@@ -203,15 +231,15 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     total_dataset_size = total_dataset_size - 1
 
     # CREATE NEW
-    if destinationdataset == 'create new':
+    if destinationdataset == "create new":
         try:
             listallfiles = []
             pathnewdatasetfolder = join(pathdataset, newdatasetname)
-            pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
+            pathnewdatasetfolder = return_new_path(pathnewdatasetfolder)
             open_file(pathnewdatasetfolder)
 
-            curateprogress = 'Started'
-            curateprintstatus = 'Curating'
+            curateprogress = "Started"
+            curateprintstatus = "Curating"
             start_time = time.time()
             start_submit = 1
 
@@ -219,12 +247,12 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
             mkdir(pathdataset)
             create_dataset(pathdataset, jsonstructure_non_empty, listallfiles)
 
-            curateprogress = 'New dataset created'
-            curateprogress = 'Success: COMPLETED!'
-            curatestatus = 'Done'
+            curateprogress = "New dataset created"
+            curateprogress = "Success: COMPLETED!"
+            curatestatus = "Done"
 
         except Exception as e:
-            curatestatus = 'Done'
+            curatestatus = "Done"
             raise e
 
 
@@ -248,25 +276,35 @@ def create_folder_level_manifest(jsonpath, jsondescription):
         shutil.rmtree(datasetpath) if isdir(datasetpath) else 0
         makedirs(datasetpath)
         folders = list(jsonpath.keys())
-        if 'main' in folders:
-            folders.remove('main')
+        if "main" in folders:
+            folders.remove("main")
         # In each SPARC folder, generate a manifest file
         for folder in folders:
-            if (jsonpath[folder] != []):
+            if jsonpath[folder] != []:
                 # Initialize dataframe where manifest info will be stored
-                df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
-                                        'file type', 'Additional Metadata'])
+                df = pd.DataFrame(
+                    columns=[
+                        "filename",
+                        "timestamp",
+                        "description",
+                        "file type",
+                        "Additional Metadata",
+                    ]
+                )
                 # Get list of files/folders in the the folder
                 # Remove manifest file from the list if already exists
                 folderpath = join(datasetpath, folder)
                 allfiles = jsonpath[folder]
-                alldescription = jsondescription[folder + '_description']
-                manifestexists = join(folderpath, 'manifest.xlsx')
+                alldescription = jsondescription[folder + "_description"]
+                manifestexists = join(folderpath, "manifest.xlsx")
 
                 countpath = -1
                 for pathname in allfiles:
                     countpath += 1
-                    if basename(pathname) == 'manifest.csv' or basename(pathname) == 'manifest.xlsx':
+                    if (
+                        basename(pathname) == "manifest.csv"
+                        or basename(pathname) == "manifest.xlsx"
+                    ):
                         allfiles.pop(countpath)
                         alldescription.pop(countpath)
 
@@ -282,24 +320,40 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                                 gevent.sleep(0)
                                 filepath = pathlib.Path(paths) / subdir / file
                                 mtime = filepath.stat().st_mtime
-                                lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
-                                timestamp.append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
+                                lastmodtime = datetime.fromtimestamp(mtime).astimezone(
+                                    local_timezone
+                                )
+                                timestamp.append(
+                                    lastmodtime.isoformat()
+                                    .replace(".", ",")
+                                    .replace("+00:00", "Z")
+                                )
                                 fullfilename = filepath.name
 
-                                if folder == 'main': # if file in main folder
-                                    filename.append(fullfilename) if folder == '' else filename.append(join(folder, fullfilename))
+                                if folder == "main":  # if file in main folder
+                                    filename.append(
+                                        fullfilename
+                                    ) if folder == "" else filename.append(
+                                        join(folder, fullfilename)
+                                    )
                                 else:
-                                    subdirname = os.path.relpath(subdir, paths) # gives relative path of the directory of the file w.r.t paths
-                                    if subdirname == '.':
+                                    subdirname = os.path.relpath(
+                                        subdir, paths
+                                    )  # gives relative path of the directory of the file w.r.t paths
+                                    if subdirname == ".":
                                         filename.append(join(key, fullfilename))
                                     else:
-                                        filename.append(join(key, subdirname, fullfilename))
+                                        filename.append(
+                                            join(key, subdirname, fullfilename)
+                                        )
 
                                 fileextension = splitext(fullfilename)[1]
-                                if not fileextension:  # if empty (happens e.g. with Readme files)
-                                    fileextension = 'None'
+                                if (
+                                    not fileextension
+                                ):  # if empty (happens e.g. with Readme files)
+                                    fileextension = "None"
                                 filetype.append(fileextension)
-                                filedescription.append('')
+                                filedescription.append("")
                     else:
                         gevent.sleep(0)
                         countpath += 1
@@ -307,25 +361,33 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                         file = filepath.name
                         filename.append(file)
                         mtime = filepath.stat().st_mtime
-                        lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
-                        timestamp.append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
+                        lastmodtime = datetime.fromtimestamp(mtime).astimezone(
+                            local_timezone
+                        )
+                        timestamp.append(
+                            lastmodtime.isoformat()
+                            .replace(".", ",")
+                            .replace("+00:00", "Z")
+                        )
                         filedescription.append(alldescription[countpath])
                         if isdir(paths):
-                            filetype.append('folder')
+                            filetype.append("folder")
                         else:
                             fileextension = splitext(file)[1]
-                            if not fileextension:  #if empty (happens e.g. with Readme files)
-                                fileextension = 'None'
+                            if (
+                                not fileextension
+                            ):  # if empty (happens e.g. with Readme files)
+                                fileextension = "None"
                             filetype.append(fileextension)
 
-                df['filename'] = filename
-                df['timestamp'] = timestamp
-                df['file type'] = filetype
-                df['description'] = filedescription
+                df["filename"] = filename
+                df["timestamp"] = timestamp
+                df["file type"] = filetype
+                df["description"] = filedescription
 
                 makedirs(folderpath)
                 # Save manifest as Excel sheet
-                manifestfile = join(folderpath, 'manifest.xlsx')
+                manifestfile = join(folderpath, "manifest.xlsx")
                 df.to_excel(manifestfile, index=None, header=True)
                 total_dataset_size += path_size(manifestfile)
                 jsonpath[folder].append(manifestfile)
@@ -334,6 +396,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
 
     except Exception as e:
         raise e
+
 
 def check_forbidden_characters(my_string):
     """
@@ -345,11 +408,12 @@ def check_forbidden_characters(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile('[' + forbidden_characters + ']')
-    if(regex.search(my_string) == None and "\\" not in r"%r" % my_string):
+    regex = re.compile("[" + forbidden_characters + "]")
+    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
         return False
     else:
         return True
+
 
 def folder_size(path):
     """
@@ -361,12 +425,13 @@ def folder_size(path):
         total_size: total size of the folder in bytes (integer)
     """
     total_size = 0
-    start_path = '.'  # To get size of current directory
+    start_path = "."  # To get size of current directory
     for path, dirs, files in walk(path):
         for f in files:
             fp = join(path, f)
             total_size += getsize(fp)
     return total_size
+
 
 def open_file(file_path):
     """
@@ -380,7 +445,7 @@ def open_file(file_path):
     """
     try:
         if platform.system() == "Windows":
-            subprocess.Popen(r'explorer /select,' + str(file_path))
+            subprocess.Popen(r"explorer /select," + str(file_path))
         elif platform.system() == "Darwin":
             subprocess.Popen(["open", file_path])
         else:
@@ -398,10 +463,11 @@ def bf_dataset_size():
 
     try:
         selected_dataset_id = myds.id
-        bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
-        return bf_response['storage'] if 'storage' in bf_response.keys() else 0
+        bf_response = bf._api._get("/datasets/" + str(selected_dataset_id))
+        return bf_response["storage"] if "storage" in bf_response.keys() else 0
     except Exception as e:
         raise e
+
 
 def path_size(path):
     """
@@ -416,6 +482,7 @@ def path_size(path):
     else:
         return getsize(path)
 
+
 def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     """
     Copy file src to dst with metadata (timestamp, permission, etc.) conserved
@@ -429,13 +496,14 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     if not follow_symlinks and os.path.islink(src):
         os.symlink(os.readlink(src), dst)
     else:
-        with open(src, 'rb') as fsrc:
-            with open(dst, 'wb') as fdst:
+        with open(src, "rb") as fsrc:
+            with open(dst, "wb") as fdst:
                 mycopyfileobj(fsrc, fdst)
     shutil.copystat(src, dst)
     return dst
 
-def mycopyfileobj(fsrc, fdst, length=16*1024*16):
+
+def mycopyfileobj(fsrc, fdst, length=16 * 1024 * 16):
     """
     Helper function to copy file
 
@@ -455,6 +523,7 @@ def mycopyfileobj(fsrc, fdst, length=16*1024*16):
         fdst.write(buf)
         curated_dataset_size += len(buf)
 
+
 def return_new_path(topath):
     """
     This function checks if a folder already exists and in such cases,
@@ -468,8 +537,8 @@ def return_new_path(topath):
     if exists(topath):
         i = 2
         while True:
-            if not exists(topath + ' (' + str(i) + ')'):
-                return topath + ' (' + str(i) + ')'
+            if not exists(topath + " (" + str(i) + ")"):
+                return topath + " (" + str(i) + ")"
             i += 1
     else:
         return topath
@@ -509,11 +578,12 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
             for fileinfo in listallfiles:
                 srcfile = fileinfo[0]
                 distfile = fileinfo[1]
-                curateprogress = 'Copying ' + str(srcfile)
+                curateprogress = "Copying " + str(srcfile)
 
                 mycopyfile_with_metadata(srcfile, distfile)
 
-def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = True):
+
+def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True):
     """
     Function for importing Pennsieve data files info into the "dataset-structure" key of the soda json structure,
     including metadata from any existing manifest files in the high-level folders
@@ -525,35 +595,74 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         same soda structure with Pennsieve data file info included under the "dataset-structure" key
     """
 
-    high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
+    high_level_sparc_folders = [
+        "code",
+        "derivative",
+        "docs",
+        "primary",
+        "protocol",
+        "source",
+    ]
     manifest_sparc = ["manifest.xlsx", "manifest.csv"]
-    high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
+    high_level_metadata_sparc = [
+        "submission.xlsx",
+        "submission.csv",
+        "submission.json",
+        "dataset_description.xlsx",
+        "dataset_description.csv",
+        "dataset_description.json",
+        "subjects.xlsx",
+        "subjects.csv",
+        "subjects.json",
+        "samples.xlsx",
+        "samples.csv",
+        "samples.json",
+        "README.txt",
+        "CHANGES.txt",
+    ]
     manifest_error_message = []
-    double_extensions = ['.ome.tiff','.ome.tif','.ome.tf2,','.ome.tf8','.ome.btf','.ome.xml','.brukertiff.gz','.mefd.gz','.moberg.gz','.nii.gz','.mgh.gz','.tar.gz','.bcl.gz']
+    double_extensions = [
+        ".ome.tiff",
+        ".ome.tif",
+        ".ome.tf2,",
+        ".ome.tf8",
+        ".ome.btf",
+        ".ome.xml",
+        ".brukertiff.gz",
+        ".mefd.gz",
+        ".moberg.gz",
+        ".nii.gz",
+        ".mgh.gz",
+        ".tar.gz",
+        ".bcl.gz",
+    ]
 
-    #f = open("dataset_contents.soda", "a")
+    # f = open("dataset_contents.soda", "a")
 
     def verify_file_name(file_name, extension):
         if extension == "":
             return file_name
-        
+
         double_ext = False
         for ext in double_extensions:
             if file_name.find(ext) != -1:
                 double_ext = True
                 break
-            
+
         extension_from_name = ""
 
         if double_ext == False:
             extension_from_name = os.path.splitext(file_name)[1]
         else:
-            extension_from_name = os.path.splitext(os.path.splitext(file_name)[0])[1] + os.path.splitext(file_name)[1]
-        
-        if extension_from_name == ('.' + extension):
+            extension_from_name = (
+                os.path.splitext(os.path.splitext(file_name)[0])[1]
+                + os.path.splitext(file_name)[1]
+            )
+
+        if extension_from_name == ("." + extension):
             return file_name
         else:
-            return file_name + ('.' + extension)
+            return file_name + ("." + extension)
 
     # Add a new key containing the path to all the files and folders on the
     # local data structure..
@@ -561,19 +670,23 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         if "files" in folder.keys():
             for item in list(folder["files"]):
                 if "bfpath" not in folder["files"][item]:
-                    folder["files"][item]['bfpath'] = path[:]
+                    folder["files"][item]["bfpath"] = path[:]
 
         if "folders" in folder.keys():
             for item in list(folder["folders"]):
                 if "bfpath" not in folder["folders"][item]:
-                    folder["folders"][item]['bfpath'] = path[:]
-                    folder["folders"][item]['bfpath'].append(item)
-                recursive_item_path_create(folder["folders"][item], folder["folders"][item]['bfpath'][:])
+                    folder["folders"][item]["bfpath"] = path[:]
+                    folder["folders"][item]["bfpath"].append(item)
+                recursive_item_path_create(
+                    folder["folders"][item], folder["folders"][item]["bfpath"][:]
+                )
         return
 
     level = 0
 
-    def recursive_dataset_import(my_item, dataset_folder, metadata_files, my_folder_name, my_level, manifest_dict):
+    def recursive_dataset_import(
+        my_item, dataset_folder, metadata_files, my_folder_name, my_level, manifest_dict
+    ):
         level = 0
         col_count = 0
         file_count = 0
@@ -586,81 +699,113 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                     dataset_folder["files"] = {}
                 col_count += 1
                 folder_name = item.name
-                if my_level == 0 and folder_name not in high_level_sparc_folders and requested_sparc_only:  # only import SPARC folders
+                if (
+                    my_level == 0
+                    and folder_name not in high_level_sparc_folders
+                    and requested_sparc_only
+                ):  # only import SPARC folders
                     col_count -= 1
                     continue
                 if col_count == 1:
                     level = my_level + 1
                 dataset_folder["folders"][folder_name] = {
-                    "type": "bf", "action": ["existing"], "path": item.id}
+                    "type": "bf",
+                    "action": ["existing"],
+                    "path": item.id,
+                }
                 sub_folder = dataset_folder["folders"][folder_name]
                 if "folders" not in sub_folder:
                     sub_folder["folders"] = {}
                 if "files" not in sub_folder:
                     sub_folder["files"] = {}
                 recursive_dataset_import(
-                    item, sub_folder, metadata_files, folder_name, level, manifest_dict)
+                    item, sub_folder, metadata_files, folder_name, level, manifest_dict
+                )
             else:
                 if "folders" not in dataset_folder:
                     dataset_folder["folders"] = {}
                 if "files" not in dataset_folder:
                     dataset_folder["files"] = {}
                 package_id = item.id
-                package_details = bf._api._get(
-                    '/packages/' + str(package_id))
-                if ("extension" not in package_details):
+                package_details = bf._api._get("/packages/" + str(package_id))
+                if "extension" not in package_details:
                     file_name = verify_file_name(package_details["content"]["name"], "")
                 else:
-                    file_name = verify_file_name(package_details["content"]["name"], package_details["extension"])
+                    file_name = verify_file_name(
+                        package_details["content"]["name"], package_details["extension"]
+                    )
 
                 if my_level == 0 and file_name in high_level_metadata_sparc:
                     metadata_files[file_name] = {
-                        "type": "bf", "action": ["existing"], "path": item.id}
+                        "type": "bf",
+                        "action": ["existing"],
+                        "path": item.id,
+                    }
 
                 else:
                     file_count += 1
                     if my_level == 1 and file_name in manifest_sparc:
-                        file_details = bf._api._get('/packages/' + str(package_id) + '/view')
+                        file_details = bf._api._get(
+                            "/packages/" + str(package_id) + "/view"
+                        )
                         file_id = file_details[0]["content"]["id"]
                         manifest_url = bf._api._get(
-                            '/packages/' + str(package_id) + '/files/' + str(file_id))
+                            "/packages/" + str(package_id) + "/files/" + str(file_id)
+                        )
                         df = ""
                         try:
-                            if (file_name.lower() == 'manifest.xlsx'):
-                                df = pd.read_excel(manifest_url['url'], engine='openpyxl')
+                            if file_name.lower() == "manifest.xlsx":
+                                df = pd.read_excel(
+                                    manifest_url["url"], engine="openpyxl"
+                                )
                             else:
-                                df = pd.read_csv(manifest_url['url'])
+                                df = pd.read_csv(manifest_url["url"])
                             manifest_dict[my_folder_name] = df
                         except Exception as e:
-                            manifest_error_message.append(package_details["parent"]["content"]["name"])
+                            manifest_error_message.append(
+                                package_details["parent"]["content"]["name"]
+                            )
                             pass
                     else:
-                        timestamp = (package_details["content"]["createdAt"]
-                                     .replace('.', ',').replace('+00:00', 'Z'))
+                        timestamp = (
+                            package_details["content"]["createdAt"]
+                            .replace(".", ",")
+                            .replace("+00:00", "Z")
+                        )
                         dataset_folder["files"][file_name] = {
-                            "type": "bf","action": ["existing"], "path": item.id, "timestamp": timestamp}
+                            "type": "bf",
+                            "action": ["existing"],
+                            "path": item.id,
+                            "timestamp": timestamp,
+                        }
 
     def recursive_manifest_info_import(my_folder, my_relative_path, manifest_df):
 
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
-                    filename = join(my_relative_path, file_key)
-                    colum_headers = manifest_df.columns.tolist()
-                    filename = filename.replace("\\","/")
+                filename = join(my_relative_path, file_key)
+                colum_headers = manifest_df.columns.tolist()
+                filename = filename.replace("\\", "/")
 
-                    if filename in list(manifest_df["filename"].values):
-                        if "description" in colum_headers:
-                            mydescription = manifest_df[manifest_df['filename'] == filename]["description"].values[0]
-                            if mydescription:
-                                file["description"] = mydescription
-                        if "Additional Metadata" in colum_headers:
-                            my_additional_medata = manifest_df[manifest_df['filename'] == filename]["Additional Metadata"].values[0]
-                            if my_additional_medata:
-                                file["additional-metadata"] = my_additional_medata
-                        if "timestamp" in colum_headers:
-                            my_timestamp = manifest_df[manifest_df['filename'] == filename]["timestamp"].values[0]
-                            if my_timestamp:
-                                file["timestamp"] = my_timestamp
+                if filename in list(manifest_df["filename"].values):
+                    if "description" in colum_headers:
+                        mydescription = manifest_df[
+                            manifest_df["filename"] == filename
+                        ]["description"].values[0]
+                        if mydescription:
+                            file["description"] = mydescription
+                    if "Additional Metadata" in colum_headers:
+                        my_additional_medata = manifest_df[
+                            manifest_df["filename"] == filename
+                        ]["Additional Metadata"].values[0]
+                        if my_additional_medata:
+                            file["additional-metadata"] = my_additional_medata
+                    if "timestamp" in colum_headers:
+                        my_timestamp = manifest_df[manifest_df["filename"] == filename][
+                            "timestamp"
+                        ].values[0]
+                        if my_timestamp:
+                            file["timestamp"] = my_timestamp
 
         if "folders" in my_folder.keys():
             for folder_key, folder in my_folder["folders"].items():
@@ -681,7 +826,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     try:
         bf = Pennsieve(bf_account_name)
     except Exception as e:
-        error.append('Error: Please select a valid Pennsieve account')
+        error.append("Error: Please select a valid Pennsieve account")
         raise Exception(error)
 
     # check that the Pennsieve dataset is valid
@@ -692,15 +837,17 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     try:
         myds = bf.get_dataset(bf_dataset_name)
     except Exception as e:
-        error.append('Error: Please select a valid Pennsieve dataset')
+        error.append("Error: Please select a valid Pennsieve dataset")
         raise Exception(error)
 
     # check that the user has permission to edit this dataset
     try:
         role = bf_get_current_user_permission(bf, myds)
-        if role not in ['owner', 'manager', 'editor']:
-            curatestatus = 'Done'
-            error.append("Error: You don't have permissions for uploading to this Pennsieve dataset")
+        if role not in ["owner", "manager", "editor"]:
+            curatestatus = "Done"
+            error.append(
+                "Error: You don't have permissions for uploading to this Pennsieve dataset"
+            )
             raise Exception(error)
     except Exception as e:
         raise e
@@ -713,28 +860,37 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         metadata_files = soda_json_structure["metadata-files"]
         manifest_dict = {}
         folder_name = ""
-        recursive_dataset_import(myds, dataset_folder, metadata_files, folder_name, level, manifest_dict)
+        recursive_dataset_import(
+            myds, dataset_folder, metadata_files, folder_name, level, manifest_dict
+        )
 
-        #remove metadata files keys if empty
+        # remove metadata files keys if empty
         metadata_files = soda_json_structure["metadata-files"]
         if not metadata_files:
-            del soda_json_structure['metadata-files']
+            del soda_json_structure["metadata-files"]
 
         dataset_folder = soda_json_structure["dataset-structure"]
         # pull information from the manifest files if they satisfy the SPARC format
         if "folders" in dataset_folder.keys():
             for folder_key in manifest_dict.keys():
                 manifest_df = manifest_dict[folder_key]
-                manifest_df = manifest_df.fillna('')
+                manifest_df = manifest_df.fillna("")
                 colum_headers = manifest_df.columns.tolist()
                 folder = dataset_folder["folders"][folder_key]
                 if "filename" in colum_headers:
-                    if "description" in colum_headers or "Additional Metadata" in colum_headers:
+                    if (
+                        "description" in colum_headers
+                        or "Additional Metadata" in colum_headers
+                    ):
                         relative_path = ""
-                        recursive_manifest_info_import(folder, relative_path, manifest_df)
+                        recursive_manifest_info_import(
+                            folder, relative_path, manifest_df
+                        )
 
         recursive_item_path_create(soda_json_structure["dataset-structure"], [])
-        success_message = "Data files under a valid high-level SPARC folders have been imported"
+        success_message = (
+            "Data files under a valid high-level SPARC folders have been imported"
+        )
         return [soda_json_structure, success_message, manifest_error_message]
 
     except Exception as e:
