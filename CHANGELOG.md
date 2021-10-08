@@ -5,13 +5,27 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v5.0.0 - 2021-10-08
+
+### Feature additions:
+
+- Updated Prepare metadata section to adapt to new SDS 2.0.0 version.
+- Added the feature to import existing dataset_description.xlsx file for edits in SODA.
+
+### Bug fixes:
+- Fixed subjects and samples file generation bug with extra optional column added.
+
+### Others:
+- Temporarily removed support for Protocols.io integration due to code change from Protocols.io.
+- Added onboarding for submission file.
+
 ## v4.8.0 - 2021-09-13
 
 ### Feature additions:
 
 - Added onboarding for subjects and samples tables.
 - Added validation checks for verifying the backend and front end app versions.
-- Refactored large parts of the code performane improvements.
+- Refactored large parts of the code performance improvements.
 - Added onboarding for step 3 of the Organize dataset process.
 
 ### Bug fixes:
