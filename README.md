@@ -73,7 +73,7 @@ Although we would highly encourage you to use SODA for the entire organization a
 
 ## Full Documentation
 
-See the [Wiki](https://fairdataihub.org/sodaforsparc/docs/user-interface) for our full documentation, including details about each features and how to use them as well as guidance for using and contributing to our source code.
+See the [documentation](https://fairdataihub.org/sodaforsparc/docs/user-interface) for our full documentation, including details about each features and how to use them as well as guidance for using and contributing to our source code.
 
 ## Issues and Feedback
 To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/fairdataihub/SODA-for-SPARC/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
@@ -87,7 +87,7 @@ To report any issues with the software, suggest improvements, or request a new f
 
 ## Using the Source Code
 
-If you want to contribute, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer guidelines](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Using-the-source-code) of our documentation. 
+If you want to contribute, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer manual](https://github.com/fairdataihub/SODA-for-SPARC/wiki) of our documentation. 
 
 ## License
 SODA is distributed under the MIT License. See [LICENSE](https://github.com/fairdataihub/SODA-for-SPARC/blob/main/LICENSE) for more information.
