@@ -1316,10 +1316,30 @@
                 margin: 10px auto;
               "
             >
+              <!--
+                Tooltips don't seem to appear with overflow being set to hidden. 
+                Because of this, overwrite the overflow property to visible as 
+                the btn_animated CSS class has overflow: hidden; as a style.
+
+                Popover-tooltip is a CSS class that is targeted by the JQuery code to activate a popover. 
+             -->
               <button
+                type="button"
+                class="btn_animated popover-tooltip"
+                data-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                rel="popover"
+                data-placement="top"
+                data-trigger="hover"
+                id="save-progress-btn"
                 onclick="generateSubmissionFile()"
-                class="btn_animated"
-                style="margin: 10px; width: 120px; border: none !important"
+                style="
+                  margin: 10px;
+                  width: 140px;
+                  border: none !important;
+                  overflow: visible !important;
+                "
+                data-original-title=""
+                title=""
               >
                 Generate
               </button>
@@ -3153,6 +3173,13 @@
         </div>
         <div style="display: flex">
           <button
+            class="popover-tooltip"
+            data-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+            data-placement="top"
+            data-trigger="hover"
+            data-original-title=""
+            title=""
+            rel="popover"
             style="
               cursor: pointer;
               border-radius: 8px;
@@ -4406,6 +4433,13 @@
         </div>
         <div style="display: flex">
           <button
+            class="popover-tooltip"
+            data-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+            data-placement="top"
+            data-trigger="hover"
+            data-original-title=""
+            title=""
+            rel="popover"
             style="
               cursor: pointer;
               border-radius: 8px;
@@ -4857,6 +4891,13 @@
               </button>
               <button
                 onclick="generateSubjects()"
+                class="popover-tooltip"
+                data-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                data-placement="top"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+                rel="popover"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
@@ -6539,6 +6580,13 @@
                 Add a sample
               </button>
               <button
+                class="popover-tooltip"
+                data-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                data-placement="top"
+                data-trigger="hover"
+                data-original-title=""
+                title=""
+                rel="popover"
                 onclick="generateSamples()"
                 style="
                   cursor: pointer;
