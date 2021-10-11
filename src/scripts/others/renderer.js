@@ -372,7 +372,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
         Swal.fire({
           icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
