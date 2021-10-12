@@ -4735,6 +4735,15 @@ function fileContextMenu(event) {
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 }
 
+$(document).ready(function() {
+  tippy("[data-tippy-content]", {
+    allowHTML: true,
+    interactive: true,
+    placement: "top",
+    theme: "light",
+  });
+})
+
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
   // Avoid the real one
