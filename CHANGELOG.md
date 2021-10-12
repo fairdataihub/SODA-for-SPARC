@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bug fixes:
 
 - Fixed bug caused by external bug from protocols.io. HTTPs request returning insufficient information was fixed by protocols.io.  We integrated the fix on our side.
-- Fixed bug that caused "Generate" buttons in the prepare metadata sections from creating tooltips on hover. 
+- Fixed bug that caused "Generate" buttons in the prepare metadata sections from creating tooltips on hover.
 
 ## v5.0.0 - 2021-10-08
 
