@@ -1,7 +1,7 @@
 ^attache$
 benefitting
-occurence
+occurrence
 Sorce
 ^[Ss]pae
 ^untill
-^wether
+^whether
