@@ -197,18 +197,18 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                                 mtime = filepath.stat().st_mtime
                                 lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
                                 timestamp.append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
-                                fullfilename = filepath.name
+                                fulfilename = filepath.name
 
                                 if folder == 'main': # if file in main folder
-                                    filename.append(fullfilename) if folder == '' else filename.append(join(folder, fullfilename))
+                                    filename.append(fulfilename) if folder == '' else filename.append(join(folder, fulfilename))
                                 else:
                                     subdirname = os.path.relpath(subdir, paths) # gives relative path of the directory of the file w.r.t paths
                                     if subdirname == '.':
-                                        filename.append(join(key, fullfilename))
+                                        filename.append(join(key, fulfilename))
                                     else:
-                                        filename.append(join(key, subdirname, fullfilename))
+                                        filename.append(join(key, subdirname, fulfilename))
 
-                                fileextension = splitext(fullfilename)[1]
+                                fileextension = splitext(fulfilename)[1]
                                 if not fileextension:  # if empty (happens e.g. with Readme files)
                                     fileextension = 'None'
                                 filetype.append(fileextension)
