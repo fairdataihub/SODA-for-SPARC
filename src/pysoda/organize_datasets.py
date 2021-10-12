@@ -328,26 +328,26 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                                     .replace(".", ",")
                                     .replace("+00:00", "Z")
                                 )
-                                fullfilename = filepath.name
+                                full_filename = filepath.name
 
                                 if folder == "main":  # if file in main folder
                                     filename.append(
-                                        fullfilename
+                                        full_filename
                                     ) if folder == "" else filename.append(
-                                        join(folder, fullfilename)
+                                        join(folder, full_filename)
                                     )
                                 else:
                                     subdirname = os.path.relpath(
                                         subdir, paths
                                     )  # gives relative path of the directory of the file w.r.t paths
                                     if subdirname == ".":
-                                        filename.append(join(key, fullfilename))
+                                        filename.append(join(key, full_filename))
                                     else:
                                         filename.append(
-                                            join(key, subdirname, fullfilename)
+                                            join(key, subdirname, full_filename)
                                         )
 
-                                fileextension = splitext(fullfilename)[1]
+                                fileextension = splitext(full_filename)[1]
                                 if (
                                     not fileextension
                                 ):  # if empty (happens e.g. with Readme files)
