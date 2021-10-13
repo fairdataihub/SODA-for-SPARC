@@ -7639,7 +7639,7 @@
                 <div
                   class="option-card radio-button"
                   data-next="Question-prepare-changes-2"
-                  onclick="transitionFreeFormMode(this, 'Question-prepare-changes-1', 'create_changes-tab', '', 'individual-question prepare-changes')"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-changes-1', 'create_CHANGES-tab', '', 'individual-question prepare-changes')"
                   style="
                     max-width: 180px;
                     height: 220px !important;
@@ -7770,7 +7770,6 @@
               </div>
               <div style="display: flex; flex-direction: column">
                 <div
-                  id="div-button-generate-changes"
                   style="
                     display: flex;
                     flex-direction: column;
@@ -7781,7 +7780,7 @@
                   "
                 >
                   <button
-                    id="button-generate-changes"
+                    onclick="generateRCFiles('changes')"
                     class="btn_animated md"
                     style="width: 190px; height: 40px; font-size: 15px"
                   >
@@ -8030,7 +8029,6 @@
               </div>
               <div style="display: flex; flex-direction: column">
                 <div
-                  id="div-button-generate-readme"
                   style="
                     display: flex;
                     flex-direction: column;
@@ -8041,7 +8039,7 @@
                   "
                 >
                   <button
-                    id="button-generate-readme"
+                    onclick="generateRCFiles('readme')"
                     class="btn_animated md"
                     style="width: 190px; height: 40px; font-size: 15px"
                   >
@@ -8110,6 +8108,10 @@
   ></script>
   <script
     src="./scripts/metadata-files/submission.js"
+    type="text/javascript"
+  ></script>
+  <script
+    src="./scripts/metadata-files/readme-changes.js"
     type="text/javascript"
   ></script>
 </template>

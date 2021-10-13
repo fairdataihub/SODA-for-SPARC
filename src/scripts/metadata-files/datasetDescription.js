@@ -41,7 +41,6 @@ $(document).ready(function () {
     "selected-metadata-ds-description",
     (event, dirpath, filename) => {
       if (dirpath.length > 0) {
-        // $("#generate-dd-spinner").show();
         var destinationPath = path.join(dirpath[0], filename);
         if (fs.existsSync(destinationPath)) {
           var emessage =
@@ -675,7 +674,7 @@ function generateDDFile(dirpath, destinationPath) {
   var bfaccountname = $("#current-bf-account").text();
 
   /// call python function to save file
-  if (dirpath != null) {
+  if (dirpath !== null) {
     client.invoke(
       "api_save_ds_description_file",
       bfaccountname,

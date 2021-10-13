@@ -562,6 +562,44 @@ ipcMain.on("open-folder-dialog-save-samples", (event, filename) => {
   );
 });
 
+// Generate changes file
+ipcMain.on("open-folder-dialog-save-changes", (event, filename) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-generate-metadata-changes",
+          files,
+          filename
+        );
+      }
+    }
+  );
+});
+
+// Generate readme file
+ipcMain.on("open-folder-dialog-save-readme", (event, filename) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-generate-metadata-readme",
+          files,
+          filename
+        );
+      }
+    }
+  );
+});
+
 // open primary folder
 ipcMain.on("open-file-dialog-local-primary-folder", (event) => {
   dialog.showOpenDialog(
