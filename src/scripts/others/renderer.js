@@ -73,77 +73,102 @@ console.log("Current SODA version:", appVersion);
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-let client = new zerorpc.Client({ timeout: 300000 });
-client.connect("tcp://127.0.0.1:4242");
-client.invoke("echo", "server ready", (error, res) => {
-  if (error || res !== "server ready") {
-    log.error(error);
-    console.error(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Establishing Python Connection",
-      error
-    );
 
-    Swal.fire({
-      icon: "error",
-      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        app.relaunch();
-        app.exit();
-      }
-    });
-  } else {
-    console.log("Connected to Python back-end successfully");
-    log.info("Connected to Python back-end successfully");
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Establishing Python Connection"
-    );
-
-    // verify backend api versions
-    client.invoke("api_version_check", (error, res) => {
-      if (error || res !== appVersion) {
+// Outputs: An object with these properties: {connected: boolean, error: Error}
+//          connected is true when the server is healthy and the apiversion is current. false otherwise.
+//          error is an apiversion error, a python server connection error, or undefined if there was no error with the apiversion or the python server connection
+const check_server_connection_and_api_version = () => {
+  return new Promise(async (resolve) => {
+    // invoke a server method to check that a server connection can be created successfully
+    client.invoke("echo", "server ready", (error, res) => {
+      // there was an error establishing the Python connection
+      if (error || res !== "server ready") {
+        // log the error locally
         log.error(error);
         console.error(error);
+        // log the error to analytics
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Verifying App Version",
+          "Establishing Python Connection",
           error
         );
 
+        // create the popup message so the user can address the python server connection error
         Swal.fire({
           icon: "error",
-          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Close now",
+          confirmButtonText: "Restart now",
           allowOutsideClick: false,
           allowEscapeKey: false,
+          closeOnConfirm: true,
         }).then(async (result) => {
           if (result.isConfirmed) {
+            app.relaunch();
             app.exit();
           }
         });
-      } else {
-        ipcRenderer.send("track-event", "Success", "Verifying App Version");
 
-        //Load Default/global Pennsieve account if available
-        updateBfAccountList();
-        checkNewAppVersion(); // Added so that version will be displayed for new users
+        // no connection tell the caller
+        resolve({ connected: false, error: error });
+      } else {
+        console.log("Connected to Python back-end successfully");
+        log.info("Connected to Python back-end successfully");
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Establishing Python Connection"
+        );
+
+        // verify backend api versions
+        client.invoke("api_version_check", (error, res) => {
+          if (error || res !== appVersion) {
+            // log the api version error locally
+            log.error(error);
+            console.error(error);
+            // log the apu version error to analytics
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Verifying App Version",
+              error
+            );
+
+            // alert the user of the api version error and force them to address it before being able to continue using Soda
+            Swal.fire({
+              icon: "error",
+              html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: "Close now",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                app.exit();
+              }
+            });
+
+            resolve({ connected: false, error: error });
+          } else {
+            ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+            //Load Default/global Pennsieve account if available
+            updateBfAccountList();
+            checkNewAppVersion(); // Added so that version will be displayed for new users
+            resolve({ connected: true, error: undefined });
+          }
+        });
       }
     });
-  }
-});
+  });
+};
+
+let client = new zerorpc.Client({ timeout: 300000 });
+client.connect("tcp://127.0.0.1:4242");
+check_server_connection_and_api_version();
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -250,7 +275,11 @@ let update_downloaded_notification = "";
 
 // Check app version on current app and display in the side bar
 ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
-  run_pre_flight_checks();
+  try {
+    run_pre_flight_checks();
+  } catch (e) {
+    // do nothing for now -- errors are logged where they occur
+  }
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -261,140 +290,151 @@ const run_pre_flight_checks = async (check_update = true) => {
     let agent_version_response = "";
     let account_present = false;
 
-    // Check the internet connection and if available check the rest.
-    connection_response = await check_internet_connection();
-    if (!connection_response) {
-      Swal.fire({
-        icon: "error",
-        text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "I understand",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          // Do nothing
-        }
-      });
-      resolve(false);
-    } else {
-      await wait(500);
-
-      // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-      account_present = await check_api_key();
-      if (account_present) {
-        // Check for an installed Pennsieve agent
+    try {
+      // Check the internet connection and if available check the rest.
+      connection_response = await check_internet_connection();
+      if (!connection_response) {
+        Swal.fire({
+          icon: "error",
+          text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "I understand",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            // Do nothing
+          }
+        });
+        resolve(false);
+      } else {
         await wait(500);
-        [agent_installed_response, agent_version_response] =
-          await check_agent_installed();
-        // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
-        if (!agent_installed_response) {
-          Swal.fire({
-            icon: "error",
-            title: "Pennsieve Agent error!",
-            html: agent_version_response,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showCancelButton: true,
-            reverseButtons: reverseSwalButtons,
-            confirmButtonText: "Download now",
-            cancelButtonText: "Skip for now",
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              [browser_download_url, latest_agent_version] =
-                await get_latest_agent_version();
-              shell.openExternal(browser_download_url);
-              shell.openExternal(
-                "https://docs.pennsieve.io/docs/the-pennsieve-agent"
-              );
-            }
-          });
-          resolve(false);
-        } else {
+
+        // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+        account_present = await check_api_key();
+        if (account_present) {
+          // Check for an installed Pennsieve agent
           await wait(500);
-          // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          [browser_download_url, latest_agent_version] =
-            await check_agent_installed_version(agent_version_response);
-          if (browser_download_url != "") {
+          [agent_installed_response, agent_version_response] =
+            await check_agent_installed();
+          // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
+          if (!agent_installed_response) {
             Swal.fire({
-              icon: "warning",
-              text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+              icon: "error",
+              title: "Pennsieve Agent error!",
+              html: agent_version_response,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
+              reverseButtons: reverseSwalButtons,
               confirmButtonText: "Download now",
               cancelButtonText: "Skip for now",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
             }).then(async (result) => {
               if (result.isConfirmed) {
-                // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
                 [browser_download_url, latest_agent_version] =
                   await get_latest_agent_version();
                 shell.openExternal(browser_download_url);
                 shell.openExternal(
                   "https://docs.pennsieve.io/docs/the-pennsieve-agent"
                 );
-                resolve(false);
-              }
-              if (result.isDismissed) {
-                if (check_update) {
-                  checkNewAppVersion();
-                }
-                await wait(500);
-                notyf.open({
-                  type: "final",
-                  message: "You're all set!",
-                });
-                resolve(true);
               }
             });
-          } else {
-            if (check_update) {
-              checkNewAppVersion();
-            }
-            await wait(500);
-            notyf.open({
-              type: "final",
-              message: "You're all set!",
-            });
-            resolve(true);
-          }
-        }
-      } else {
-        if (check_update) {
-          checkNewAppVersion();
-        }
-        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
-        Swal.fire({
-          icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Yes",
-          showCancelButton: true,
-          reverseButtons: reverseSwalButtons,
-          cancelButtonText: "I'll do it later",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            openDropdownPrompt("bf");
             resolve(false);
           } else {
-            resolve(true);
+            await wait(500);
+            // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
+            [browser_download_url, latest_agent_version] =
+              await check_agent_installed_version(agent_version_response);
+            if (browser_download_url != "") {
+              Swal.fire({
+                icon: "warning",
+                text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                showCancelButton: true,
+                confirmButtonText: "Download now",
+                cancelButtonText: "Skip for now",
+                reverseButtons: reverseSwalButtons,
+                showClass: {
+                  popup: "animate__animated animate__zoomIn animate__faster",
+                },
+                hideClass: {
+                  popup: "animate__animated animate__zoomOut animate__faster",
+                },
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
+                  [browser_download_url, latest_agent_version] =
+                    await get_latest_agent_version();
+                  shell.openExternal(browser_download_url);
+                  shell.openExternal(
+                    "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+                  );
+                  resolve(false);
+                }
+                if (result.isDismissed) {
+                  if (check_update) {
+                    checkNewAppVersion();
+                  }
+                  await wait(500);
+                  notyf.open({
+                    type: "final",
+                    message: "You're all set!",
+                  });
+                  resolve(true);
+                }
+              });
+            } else {
+              if (check_update) {
+                checkNewAppVersion();
+              }
+              await wait(500);
+              notyf.open({
+                type: "final",
+                message: "You're all set!",
+              });
+              resolve(true);
+            }
           }
-        });
-        resolve(false);
+        } else {
+          if (check_update) {
+            checkNewAppVersion();
+          }
+          Swal.fire({
+            icon: "warning",
+            text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Yes",
+            showCancelButton: true,
+            reverseButtons: reverseSwalButtons,
+            cancelButtonText: "I'll do it later",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              openDropdownPrompt("bf");
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          });
+          resolve(false);
+        }
       }
+    } catch (e) {
+      // right now the backend systems not running/connecting is the only error
+      // that requires the program to stop execution ( when the user receives this message it
+      // requires them to restart the program ). This is because
+      // a majority of SODA's features are tied to the Python server.
+      // That error is logged in the check_server_connection procedure.
+      // For the moment throw the error to prevent any of the function's
+      // callers from getting unexpected behavior caused by resolving a
+      // pre_flight_check that experienced a server check error.
+      throw e;
     }
   });
 };
@@ -404,6 +444,16 @@ const wait = async (delay) => {
 };
 
 const check_internet_connection = async (show_notification = true) => {
+  // the client being connected to the server and having an api version that is up to date
+  // is a prerequisite to checking the interet status
+  let { connected, error } = await check_server_connection_and_api_version();
+
+  // server is in a bad state
+  if (!connected) {
+    // assumption failed so throw an error
+    throw new Error(error.message);
+  }
+
   let notification = null;
   if (show_notification) {
     notification = notyf.open({
@@ -2842,6 +2892,7 @@ function postCurationListChange() {
 const Cropper = require("cropperjs");
 const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
+const { assert, count } = require("console");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4735,15 +4786,6 @@ function fileContextMenu(event) {
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 }
 
-$(document).ready(function() {
-  tippy("[data-tippy-content]", {
-    allowHTML: true,
-    interactive: true,
-    placement: "top",
-    theme: "light",
-  });
-})
-
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
   // Avoid the real one
@@ -5493,10 +5535,19 @@ document
       "Please wait while we verify a few things...";
 
     if (dataset_destination == "Pennsieve") {
-      let supplementary_checks = await run_pre_flight_checks(false);
-      if (!supplementary_checks) {
-        $("#sidebarCollapse").prop("disabled", false);
-        return;
+      console.log("Running checks in the other part");
+
+      try {
+        // run pre flight check may throw
+        console.log("Ran in main curate new");
+        // TODO: Tips on how to test this?  Turning the server off while perfomring this event listener would introduce this situation. Is there a way to do that while the application is running?
+        let supplementary_checks = await run_pre_flight_checks(false);
+        if (!supplementary_checks) {
+          $("#sidebarCollapse").prop("disabled", false);
+          return;
+        }
+      } catch (e) {
+        // do nothing for now
       }
     }
 
