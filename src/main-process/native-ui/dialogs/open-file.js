@@ -388,6 +388,38 @@ ipcMain.on("open-file-dialog-existing-DD", (event) => {
   );
 });
 
+// import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-changes", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Text", extensions: ["txt"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-changes", files);
+      }
+    }
+  );
+});
+
+// import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-readme", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Text", extensions: ["txt"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-readme", files);
+      }
+    }
+  );
+});
+
 ////// milestone document
 ipcMain.on("open-file-dialog-milestone-doc", (event) => {
   dialog.showOpenDialog(

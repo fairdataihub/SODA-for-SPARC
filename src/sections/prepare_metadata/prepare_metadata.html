@@ -7638,6 +7638,7 @@
               <div style="margin: 15px 0">
                 <div
                   class="option-card radio-button"
+                  data-current="Question-prepare-changes-1"
                   data-next="Question-prepare-changes-2"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-changes-1', 'create_CHANGES-tab', '', 'individual-question prepare-changes')"
                   style="
@@ -7679,19 +7680,13 @@
               </div>
               <div
                 style="margin: 15px 0"
-                class="coming-soon-div"
-                data-content="Coming soon..."
-                rel="popover"
-                data-placement="bottom"
-                data-trigger="hover"
               >
                 <div
                   class="option-card radio-button"
+                  data-current="Question-prepare-changes-1"
                   data-next="Question-prepare-changes-3"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-changes-1', 'create_CHANGES-tab', '', 'individual-question prepare-changes')"
                   style="
-                    pointer-events: none;
-                    background: #f6f6f6;
                     max-width: 180px;
                     height: 220px !important;
                     width: 180px !important;
@@ -7711,7 +7706,7 @@
                   <div class="card-body">
                     <i
                       class="far fa-save"
-                      style="color: var(--color-subtle)"
+                      style="color: var(--color-bg-orange)"
                     ></i>
                     <h2>
                       I want to continue working on an existing CHANGES.txt
@@ -7788,6 +7783,88 @@
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Question 4: Ask for existing changes.txt file -->
+      <div
+        class="individual-question prepare-changes"
+        id="Question-prepare-changes-3"
+        style="width: 85%"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Browse for your <i>CHANGES.txt</i> file below:
+            </label>
+            <div
+              class="field"
+              style="margin: 15px auto; display: flex; justify-content: center"
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="showExistingRCFile('changes')"
+                id="existing-changes-file-destination"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-existing-changes-import"
+            >
+              <button
+                onclick="importExistingRCFile('changes')"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-changes-3', 'create_CHANGES-tab', '', 'individual-question prepare-changes')"
+                data-next="Question-prepare-changes-2"
+                id="button-fake-confirm-existing-changes-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display: none;
+                "
+              >
+                Fake Confirm
+              </button>
             </div>
           </div>
         </div>
@@ -7897,6 +7974,7 @@
               <div style="margin: 15px 0">
                 <div
                   class="option-card radio-button"
+                  data-current="Question-prepare-readme-1"
                   data-next="Question-prepare-readme-2"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-readme-1', 'create_README-tab', '', 'individual-question prepare-readme')"
                   style="
@@ -7936,21 +8014,14 @@
                   </div>
                 </div>
               </div>
-              <div
-                style="margin: 15px 0"
-                class="coming-soon-div"
-                data-content="Coming soon..."
-                rel="popover"
-                data-placement="bottom"
-                data-trigger="hover"
+              <div style="margin: 15px 0"
               >
                 <div
                   class="option-card radio-button"
                   data-next="Question-prepare-readme-3"
+                  data-current="Question-prepare-readme-1"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-readme-1', 'create_README-tab', '', 'individual-question prepare-readme')"
                   style="
-                    pointer-events: none;
-                    background: #f6f6f6;
                     max-width: 180px;
                     height: 220px !important;
                     width: 180px !important;
@@ -7970,7 +8041,7 @@
                   <div class="card-body">
                     <i
                       class="far fa-save"
-                      style="color: var(--color-subtle)"
+                      style="color: var(--color-bg-orange)"
                     ></i>
                     <h2>
                       I want to continue working on an existing README.txt
@@ -8047,6 +8118,88 @@
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Question 4: Ask for existing changes.txt file -->
+      <div
+        class="individual-question prepare-readme"
+        id="Question-prepare-readme-3"
+        style="width: 85%"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Browse for your <i>README.txt</i> file below:
+            </label>
+            <div
+              class="field"
+              style="margin: 15px auto; display: flex; justify-content: center"
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="showExistingRCFile('readme')"
+                id="existing-readme-file-destination"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-existing-readme-import"
+            >
+              <button
+                onclick="importExistingRCFile('readme')"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-readme-3', 'create_README-tab', '', 'individual-question prepare-readme')"
+                data-next="Question-prepare-readme-2"
+                id="button-fake-confirm-existing-readme-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display: none;
+                "
+              >
+                Fake Confirm
+              </button>
             </div>
           </div>
         </div>
