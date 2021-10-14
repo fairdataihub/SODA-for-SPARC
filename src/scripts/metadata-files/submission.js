@@ -588,7 +588,7 @@ function importExistingSubmissionFile(type) {
 
 // function to load existing README/CHANGES files
 function loadExistingSubmissionFile(filepath) {
-  clientLongTimeout.invoke(
+  client.invoke(
     "api_load_existing_submission_file",
     filepath,
     (error, res) => {
@@ -603,6 +603,7 @@ function loadExistingSubmissionFile(filepath) {
           icon: "error",
         });
       } else {
+        console.log(res)
         loadSubmissionFileToUI(res);
       }
     }
@@ -610,5 +611,18 @@ function loadExistingSubmissionFile(filepath) {
 }
 
 function loadSubmissionFileToUI(data) {
-  
+  milestoneTagify1.removeAllTags();
+  $("#submission-completion-date").val("Select");
+  $("#submission-sparc-award").val("")
+  // 1. populate milestones
+  for (var milestone in data["Milestone achieved"]) {
+    milestoneTagify1.addTags(milestone)
+  }
+  if (data["SPARC Award number"] !== "") {
+    $("#submission-sparc-award").val(data["SPARC Award number"])
+  }
+  if (data["Milestone completion date"] !== "") {
+    $("#submission-completion-date").val(data["Milestone completion date"])
+  }
+  Swal.hideLoading()
 }
