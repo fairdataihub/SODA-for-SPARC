@@ -1799,6 +1799,7 @@ async function transitionFreeFormMode(
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-changes-1") {
+    $("#textarea-create-changes").val("");
     if ($("#existing-changes-file-destination").attr("placeholder") !== "Browse here" || $("#textarea-create-changes").val().trim() !== "") {
       var { value: continueProgressChanges } = await Swal.fire({
         title:
@@ -1819,6 +1820,7 @@ async function transitionFreeFormMode(
     }
   }
   if ($(ev).attr("data-current") === "Question-prepare-readme-1") {
+    $("#textarea-create-readme").val("")
     if ($("#existing-readme-file-destination").attr("placeholder") !== "Browse here" || $("#textarea-create-readme").val().trim() !== "") {
       var { value: continueProgressReadme } = await Swal.fire({
         title:
