@@ -389,6 +389,22 @@ ipcMain.on("open-file-dialog-existing-DD", (event) => {
 });
 
 // import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-submission", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Text",  extensions: ["xlsx", "xls"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-submission", files);
+      }
+    }
+  );
+});
+
+// import existing subjects.xlsx to continue working on
 ipcMain.on("open-file-dialog-existing-changes", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),

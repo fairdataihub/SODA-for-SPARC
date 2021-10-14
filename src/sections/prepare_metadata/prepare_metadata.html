@@ -1047,19 +1047,13 @@
               </div>
               <div
                 style="margin: 15px 0"
-                class="coming-soon-div"
-                data-content="Coming soon..."
-                rel="popover"
-                data-placement="bottom"
-                data-trigger="hover"
               >
                 <div
                   class="option-card radio-button"
+                  data-current="Question-prepare-submission-1"
                   data-next="Question-prepare-submission-3"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
                   style="
-                    pointer-events: none;
-                    background: #f6f6f6;
                     max-width: 180px;
                     height: 220px !important;
                     width: 180px !important;
@@ -1079,7 +1073,7 @@
                   <div class="card-body">
                     <i
                       class="far fa-save"
-                      style="color: var(--color-subtle)"
+                      style="color: var(--color-orange)"
                     ></i>
                     <h2>
                       I want to continue working on an existing submission.xlsx
@@ -1347,6 +1341,90 @@
           </div>
         </div>
       </div>
+
+    </div>
+
+    <!-- Question 4: Ask for existing dataset_description.xlsx file -->
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-3"
+      style="width: 85%"
+    >
+      <div class="ui form" style="width: 450px">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >Browse for your <i>submission.xlsx</i> file below:
+          </label>
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
+            <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="showExistingSubmissionFile()"
+              id="existing-submission-file-destination"
+              type="text"
+              readonly
+              placeholder="Browse here"
+            />
+          </div>
+          <div
+            style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
+            id="div-confirm-existing-submission-import"
+          >
+            <button
+              onclick="importExistingSubmissionFile()"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+              "
+            >
+              Confirm
+            </button>
+            <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_Submission-tab', '', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-2"
+              id="button-fake-confirm-existing-submission-file-load"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+                display: none;
+              "
+            >
+              Fake Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     </div>
 
     <div

@@ -103,6 +103,9 @@ class SodaApi(object):
     def api_load_existing_DD_file(self, filepath):
         return load_existing_DD_file(filepath)
 
+    def api_load_existing_submission_file(self, filepath):
+        return load_existing_submission_file(filepath)
+
     ### Save samples file
     def api_save_samples_file(self, filepath, datastructure):
         return save_samples_file(filepath, datastructure)
