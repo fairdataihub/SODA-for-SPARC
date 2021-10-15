@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/fairdataihub/SODA-for-SPARC.git"
   },
-  "author": "",
+  "author": "fairdataihub-bot",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fairdataihub/SODA-for-SPARC/issues"
