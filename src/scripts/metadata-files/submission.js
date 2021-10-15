@@ -48,14 +48,20 @@ function resetSubmission() {
       $("#Question-prepare-submission-1").removeClass("prev");
       $("#Question-prepare-submission-1").nextAll().removeClass("show");
       $("#Question-prepare-submission-1").nextAll().removeClass("prev");
-      $("#Question-prepare-submission-1-new")
+      $("#Question-prepare-submission-1")
         .removeClass("checked")
         .removeClass("disabled")
         .removeClass("non-selected");
-      $("#Question-prepare-submission-1-new .folder-input-check").prop(
+      $("#Question-prepare-submission-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-submission-1 .option-card .folder-input-check").prop(
         "checked",
         false
       );
+
+      $("#existing-submission-file-destination").attr("placeholder", "Browse here")
 
       var inputFields = $("#Question-prepare-submission-1")
         .nextAll()

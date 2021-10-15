@@ -352,3 +352,44 @@ function loadExistingRCFile(filepath, type) {
     }
   });
 }
+
+function resetRCFile(type) {
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over!",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Are you sure you want to start over and reset your progress?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $(`#Question-prepare-${type}-1`).removeClass("prev");
+      $(`#Question-prepare-${type}-1`).nextAll().removeClass("show");
+      $(`#Question-prepare-${type}-1`).nextAll().removeClass("prev");
+      $(`#Question-prepare-${type}-1`)
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $(`#Question-prepare-${type}-1 .option-card`)
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $(`#Question-prepare-${type}-1 .option-card .folder-input-check`).prop(
+        "checked",
+        false
+      );
+      $(`#existing-${type}-file-destination`).attr("placeholder", "Browse here")
+      $(`#textarea-create-${type}`).val("");
+    }
+  });
+}
