@@ -26,8 +26,7 @@ jobs:
 
       # Prettier must be in `package.json`
       - name: Install Node.js dependencies
-        run: npm install
-        working-directory: src
+        run: npm ci
 
       - name: Run Prettier
         uses: wearerequired/lint-action@v1

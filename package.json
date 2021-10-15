@@ -1,0 +1,24 @@
+{
+  "name": "soda-for-sparc",
+  "version": "1.0.0",
+  "description": "package.json for linting actions",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fairdataihub/SODA-for-SPARC.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fairdataihub/SODA-for-SPARC/issues"
+  },
+  "homepage": "https://github.com/fairdataihub/SODA-for-SPARC#readme",
+  "devDependencies": {
+    "prettier": "^2.4.1"
+  }
+}
