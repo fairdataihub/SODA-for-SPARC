@@ -592,25 +592,21 @@ function importExistingSubmissionFile(type) {
 
 // function to load existing README/CHANGES files
 function loadExistingSubmissionFile(filepath) {
-  client.invoke(
-    "api_load_existing_submission_file",
-    filepath,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        console.log(error);
-        Swal.fire({
-          title: "Failed to load the existing submission.xlsx file.",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-        });
-      }
-      else {
-        loadSubmissionFileToUI(res);
-      }
-    })
+  client.invoke("api_load_existing_submission_file", filepath, (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      console.log(error);
+      Swal.fire({
+        title: "Failed to load the existing submission.xlsx file.",
+        html: emessage,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
+    } else {
+      loadSubmissionFileToUI(res);
+    }
+  });
 }
 
 function loadSubmissionFileToUI(data) {
