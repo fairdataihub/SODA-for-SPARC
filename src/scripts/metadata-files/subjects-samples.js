@@ -2433,7 +2433,7 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
       didOpen: () => {
         Swal.showLoading();
       },
-    })
+    });
   }
   var protocolInfoList = {
     hostname: protocolHostname,
@@ -2449,43 +2449,43 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
         data += d;
       });
       res.on("end", () => {
-          var result = JSON.parse(data);
-          protocolResearcherList = {};
-          for (var item of result["items"]) {
-            protocolResearcherList["https://www.protocols.io/view/" + item.uri] =
+        var result = JSON.parse(data);
+        protocolResearcherList = {};
+        for (var item of result["items"]) {
+          protocolResearcherList["https://www.protocols.io/view/" + item.uri] =
             item.title;
-          }
-          if (Object.keys(protocolResearcherList).length > 0) {
-            if (type === "first-time") {
-              Swal.fire({
-                title:
+        }
+        if (Object.keys(protocolResearcherList).length > 0) {
+          if (type === "first-time") {
+            Swal.fire({
+              title:
                 "Successfully connected! <br/>Loading your protocol information...",
-                timer: 2000,
-                timerProgressBar: false,
-                allowEscapeKey: false,
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                didOpen: () => {
-                  Swal.showLoading();
-                },
-              }).then((result) => {
-                showProtocolCredentials(email, filetype);
-              });
-            }
-          } else {
-            if (type === "first-time") {
-              Swal.fire({
-                title: "Successfully connected",
-                text: "However, at this moment, you do not have any protocol information for SODA to extract.",
-                icon: "success",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-            }
+              timer: 2000,
+              timerProgressBar: false,
+              allowEscapeKey: false,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            }).then((result) => {
+              showProtocolCredentials(email, filetype);
+            });
           }
-        })
+        } else {
+          if (type === "first-time") {
+            Swal.fire({
+              title: "Successfully connected",
+              text: "However, at this moment, you do not have any protocol information for SODA to extract.",
+              icon: "success",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+          }
+        }
+      });
     }
   });
 }
