@@ -610,8 +610,7 @@ function loadExistingSubmissionFile(filepath) {
       else {
         loadSubmissionFileToUI(res);
       }
-    }
-  });
+    })
 }
 
 function loadSubmissionFileToUI(data) {
