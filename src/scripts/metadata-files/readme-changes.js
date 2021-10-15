@@ -1,12 +1,9 @@
 // function to generate changes or readme
 function generateRCFiles(type) {
-  var textValue = $(`#textarea-create-${type}`).val().trim();;
+  var textValue = $(`#textarea-create-${type}`).val().trim();
   if (textValue !== "") {
     // write to a text file
-    ipcRenderer.send(
-      `open-folder-dialog-save-${type}`,
-      `${type}.txt`
-    );
+    ipcRenderer.send(`open-folder-dialog-save-${type}`, `${type}.txt`);
   } else {
     Swal.fire({
       title: "Incomplete information",
@@ -21,11 +18,11 @@ function generateRCFiles(type) {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    })
+    });
   }
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   ipcRenderer.on(
     "selected-generate-metadata-changes",
     (event, dirpath, filename) => {
@@ -68,10 +65,11 @@ $(document).ready(function() {
               Swal.showLoading();
             },
           }).then((result) => {});
-            saveRCFile(data, "changes", destinationPath);
+          saveRCFile(data, "changes", destinationPath);
         }
       }
-  })
+    }
+  );
   ipcRenderer.on(
     "selected-generate-metadata-readme",
     (event, dirpath, filename) => {
@@ -114,77 +112,82 @@ $(document).ready(function() {
               Swal.showLoading();
             },
           }).then((result) => {});
-            saveRCFile(data, "readme", destinationPath);
+          saveRCFile(data, "readme", destinationPath);
         }
       }
-    })
+    }
+  );
 
-    ipcRenderer.on("selected-existing-changes", (event, filepath) => {
-      if (filepath.length > 0) {
-        if (filepath !== null) {
-          document.getElementById("existing-changes-file-destination").placeholder =
-            filepath[0];
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Metadata - Continue with existing CHANGES.txt",
-            defaultBfAccount
-          );
-          if (
-            document.getElementById("existing-changes-file-destination")
-              .placeholder !== "Browse here"
-          ) {
-            $("#div-confirm-existing-changes-import").show();
-            $($("#div-confirm-existing-changes-import button")[0]).show();
-          } else {
-            $("#div-confirm-existing-changes-import").hide();
-            $($("#div-confirm-existing-changes-import button")[0]).hide();
-          }
+  ipcRenderer.on("selected-existing-changes", (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath !== null) {
+        document.getElementById(
+          "existing-changes-file-destination"
+        ).placeholder = filepath[0];
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Continue with existing CHANGES.txt",
+          defaultBfAccount
+        );
+        if (
+          document.getElementById("existing-changes-file-destination")
+            .placeholder !== "Browse here"
+        ) {
+          $("#div-confirm-existing-changes-import").show();
+          $($("#div-confirm-existing-changes-import button")[0]).show();
         } else {
-          document.getElementById("existing-changes-file-destination").placeholder =
-            "Browse here";
           $("#div-confirm-existing-changes-import").hide();
+          $($("#div-confirm-existing-changes-import button")[0]).hide();
         }
       } else {
-        document.getElementById("existing-changes-file-destination").placeholder =
-          "Browse here";
+        document.getElementById(
+          "existing-changes-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-changes-import").hide();
       }
-    });
+    } else {
+      document.getElementById("existing-changes-file-destination").placeholder =
+        "Browse here";
+      $("#div-confirm-existing-changes-import").hide();
+    }
+  });
 
-    ipcRenderer.on("selected-existing-readme", (event, filepath) => {
-      if (filepath.length > 0) {
-        if (filepath !== null) {
-          document.getElementById("existing-readme-file-destination").placeholder =
-            filepath[0];
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Metadata - Continue with existing README.txt",
-            defaultBfAccount
-          );
-          if (
-            document.getElementById("existing-readme-file-destination")
-              .placeholder !== "Browse here"
-          ) {
-            $("#div-confirm-existing-readme-import").show();
-            $($("#div-confirm-existing-readme-import button")[0]).show();
-          } else {
-            $("#div-confirm-existing-readme-import").hide();
-            $($("#div-confirm-existing-readme-import button")[0]).hide();
-          }
+  ipcRenderer.on("selected-existing-readme", (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath !== null) {
+        document.getElementById(
+          "existing-readme-file-destination"
+        ).placeholder = filepath[0];
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Continue with existing README.txt",
+          defaultBfAccount
+        );
+        if (
+          document.getElementById("existing-readme-file-destination")
+            .placeholder !== "Browse here"
+        ) {
+          $("#div-confirm-existing-readme-import").show();
+          $($("#div-confirm-existing-readme-import button")[0]).show();
         } else {
-          document.getElementById("existing-readme-file-destination").placeholder =
-            "Browse here";
           $("#div-confirm-existing-readme-import").hide();
+          $($("#div-confirm-existing-readme-import button")[0]).hide();
         }
       } else {
-        document.getElementById("existing-readme-file-destination").placeholder =
-          "Browse here";
+        document.getElementById(
+          "existing-readme-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-readme-import").hide();
-      };
-    });
-})
+      }
+    } else {
+      document.getElementById("existing-readme-file-destination").placeholder =
+        "Browse here";
+      $("#div-confirm-existing-readme-import").hide();
+    }
+  });
+});
 
 // write Readme or Changes files
 function saveRCFile(data, type, destinationPath) {
@@ -205,9 +208,9 @@ function saveRCFile(data, type, destinationPath) {
       });
     } else {
       if (type === "changes") {
-        var newName = path.join(path.dirname(destinationPath), "CHANGES.txt")
+        var newName = path.join(path.dirname(destinationPath), "CHANGES.txt");
       } else {
-        var newName = path.join(path.dirname(destinationPath), "README.txt")
+        var newName = path.join(path.dirname(destinationPath), "README.txt");
       }
       fs.rename(destinationPath, newName, (err) => {
         if (err) {
@@ -242,12 +245,12 @@ function saveRCFile(data, type, destinationPath) {
 // import existing Changes/README file
 function showExistingRCFile(type) {
   if (
-    $(`#existing-${type}-file-destination`).prop("placeholder") !== "Browse here" &&
+    $(`#existing-${type}-file-destination`).prop("placeholder") !==
+      "Browse here" &&
     $(`#Question-prepare-${type}-2`).hasClass("show")
   ) {
     Swal.fire({
-      title:
-        `Are you sure you want to import a different ${type} file?`,
+      title: `Are you sure you want to import a different ${type} file?`,
       text: "This will delete all of your previous work on this file.",
       showCancelButton: true,
       heightAuto: false,
@@ -261,8 +264,9 @@ function showExistingRCFile(type) {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send(`open-file-dialog-existing-${type}`);
-        document.getElementById(`existing-${type}-file-destination`).placeholder =
-          "Browse here";
+        document.getElementById(
+          `existing-${type}-file-destination`
+        ).placeholder = "Browse here";
         $(`#div-confirm-existing-${type}-import`).hide();
         $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
         $(`#Question-prepare-${type}-2`).removeClass("show");
@@ -276,17 +280,17 @@ function showExistingRCFile(type) {
 function importExistingRCFile(type) {
   var filePath = $(`#existing-${type}-file-destination`).prop("placeholder");
   if (type === "changes") {
-    var upperCaseLetter = "CHANGES"
+    var upperCaseLetter = "CHANGES";
   } else {
-    var upperCaseLetter = "README"
+    var upperCaseLetter = "README";
   }
   if (filePath === "Browse here") {
-      Swal.fire(
-        "No file chosen",
-        `Please select a path to your ${upperCaseLetter}.txt file`,
-        "error"
-      );
-    } else {
+    Swal.fire(
+      "No file chosen",
+      `Please select a path to your ${upperCaseLetter}.txt file`,
+      "error"
+    );
+  } else {
     if (path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
       Swal.fire({
         title: "Incorrect file name",
@@ -316,35 +320,35 @@ function importExistingRCFile(type) {
 // function to load existing README/CHANGES files
 function loadExistingRCFile(filepath, type) {
   // read file
-  fs.readFile(filepath, 'utf8', function (err, data) {
-  if (err) {
-    var emessage = userError(error);
-    console.log(err);
-    log.error(err);
-    Swal.fire({
-      title: "Failed to import existing file",
-      html: emessage,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      icon: "error",
-    });
-  } else {
-    // populate textarea
-    $(`#textarea-create-${type}`).val(data);
+  fs.readFile(filepath, "utf8", function (err, data) {
+    if (err) {
+      var emessage = userError(error);
+      console.log(err);
+      log.error(err);
+      Swal.fire({
+        title: "Failed to import existing file",
+        html: emessage,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
+    } else {
+      // populate textarea
+      $(`#textarea-create-${type}`).val(data);
 
-    Swal.fire({
-      title: "Loaded successfully!",
-      icon: "success",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      didOpen: () => {
-        Swal.hideLoading();
-      },
-    });
-    $(`#div-confirm-existing-${type}-import`).hide();
-    $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
-    $(`#button-fake-confirm-existing-${type}-file-load`).click();
-   }
+      Swal.fire({
+        title: "Loaded successfully!",
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      });
+      $(`#div-confirm-existing-${type}-import`).hide();
+      $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
+      $(`#button-fake-confirm-existing-${type}-file-load`).click();
+    }
   });
 }

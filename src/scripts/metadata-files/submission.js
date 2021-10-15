@@ -346,8 +346,9 @@ $(document).ready(function () {
   ipcRenderer.on("selected-existing-submission", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
-        document.getElementById("existing-submission-file-destination").placeholder =
-          filepath[0];
+        document.getElementById(
+          "existing-submission-file-destination"
+        ).placeholder = filepath[0];
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -365,13 +366,15 @@ $(document).ready(function () {
           $($("#div-confirm-existing-submission-import button")[0]).hide();
         }
       } else {
-        document.getElementById("existing-submission-file-destination").placeholder =
-          "Browse here";
+        document.getElementById(
+          "existing-submission-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-submission-import").hide();
       }
     } else {
-      document.getElementById("existing-submission-file-destination").placeholder =
-        "Browse here";
+      document.getElementById(
+        "existing-submission-file-destination"
+      ).placeholder = "Browse here";
       $("#div-confirm-existing-submission-import").hide();
     }
   });
@@ -520,12 +523,12 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 // import existing Changes/README file
 function showExistingSubmissionFile(type) {
   if (
-    $(`#existing-submission-file-destination`).prop("placeholder") !== "Browse here" &&
+    $(`#existing-submission-file-destination`).prop("placeholder") !==
+      "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
-      title:
-        `Are you sure you want to import a different submission file?`,
+      title: `Are you sure you want to import a different submission file?`,
       text: "This will delete all of your previous work on this file.",
       showCancelButton: true,
       heightAuto: false,
@@ -539,8 +542,9 @@ function showExistingSubmissionFile(type) {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send(`open-file-dialog-existing-submission`);
-        document.getElementById(`existing-submission-file-destination`).placeholder =
-          "Browse here";
+        document.getElementById(
+          `existing-submission-file-destination`
+        ).placeholder = "Browse here";
         $(`#div-confirm-existing-submission-import`).hide();
         $($(`#div-confirm-existing-submission-import button`)[0]).hide();
         $(`#Question-prepare-submission-2`).removeClass("show");
@@ -554,36 +558,36 @@ function showExistingSubmissionFile(type) {
 function importExistingSubmissionFile(type) {
   var filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
-      Swal.fire(
-        "No file chosen",
-        `Please select a path to your submission.xlsx file`,
-        "error"
-      );
+    Swal.fire(
+      "No file chosen",
+      `Please select a path to your submission.xlsx file`,
+      "error"
+    );
+  } else {
+    if (path.parse(filePath).base !== "submission.xlsx") {
+      Swal.fire({
+        title: "Incorrect file name",
+        text: `Your file must be named submission.xlsx to be imported to SODA.`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
     } else {
-        if (path.parse(filePath).base !== "submission.xlsx") {
-          Swal.fire({
-            title: "Incorrect file name",
-            text: `Your file must be named submission.xlsx to be imported to SODA.`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            icon: "error",
-          });
-        } else {
-          Swal.fire({
-            title: `Loading an existing submission.xlsx file`,
-            html: "Please wait...",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            timerProgressBar: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {});
-          setTimeout(loadExistingSubmissionFile(filePath), 1000);
-        }
-      }
+      Swal.fire({
+        title: `Loading an existing submission.xlsx file`,
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {});
+      setTimeout(loadExistingSubmissionFile(filePath), 1000);
+    }
+  }
 }
 
 // function to load existing README/CHANGES files
@@ -607,22 +611,22 @@ function loadExistingSubmissionFile(filepath) {
         loadSubmissionFileToUI(res);
       }
     }
-  );
+  });
 }
 
 function loadSubmissionFileToUI(data) {
   milestoneTagify1.removeAllTags();
   $("#submission-completion-date").val("Select");
-  $("#submission-sparc-award").val("")
+  $("#submission-sparc-award").val("");
   // 1. populate milestones
   for (var milestone in data["Milestone achieved"]) {
-    milestoneTagify1.addTags(milestone)
+    milestoneTagify1.addTags(milestone);
   }
   if (data["SPARC Award number"] !== "") {
-    $("#submission-sparc-award").val(data["SPARC Award number"])
+    $("#submission-sparc-award").val(data["SPARC Award number"]);
   }
   if (data["Milestone completion date"] !== "") {
-    $("#submission-completion-date").val(data["Milestone completion date"])
+    $("#submission-completion-date").val(data["Milestone completion date"]);
   }
-  Swal.hideLoading()
+  Swal.hideLoading();
 }
