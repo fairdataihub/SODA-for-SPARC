@@ -596,7 +596,7 @@ function loadExistingSubmissionFile(filepath) {
         var emessage = userError(error);
         console.log(error);
         Swal.fire({
-          title: "Failed to load the existing submission.xlsx file",
+          title: "Failed to load the existing submission.xlsx file.",
           html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
