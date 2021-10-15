@@ -394,7 +394,7 @@ ipcMain.on("open-file-dialog-existing-submission", (event) => {
     BrowserWindow.getFocusedWindow(),
     {
       properties: ["openFile"],
-      filters: [{ name: "Text",  extensions: ["xlsx", "xls"] }],
+      filters: [{ name: "Text", extensions: ["xlsx", "xls"] }],
     },
     (files) => {
       if (files) {
@@ -638,11 +638,7 @@ ipcMain.on("open-folder-dialog-save-readme", (event, filename) => {
     },
     (files) => {
       if (files) {
-        event.sender.send(
-          "selected-generate-metadata-readme",
-          files,
-          filename
-        );
+        event.sender.send("selected-generate-metadata-readme", files, filename);
       }
     }
   );
