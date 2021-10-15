@@ -17,8 +17,8 @@
   "bugs": {
     "url": "https://github.com/fairdataihub/SODA-for-SPARC/issues"
   },
-  "homepage": "https://github.com/fairdataihub/SODA-for-SPARC#readme",
+  "homepage": "https://fairdataihub.org/sodaforsparc",
   "devDependencies": {
-    "prettier": "^2.4.1"
+    "prettier": "^2.3.2"
   }
 }

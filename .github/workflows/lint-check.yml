@@ -32,7 +32,6 @@ jobs:
         uses: wearerequired/lint-action@v1
         with:
           prettier: true
-          prettier_dir: "./src"
           prettier_extensions: "css,html,js,json,jsx,md,sass,scss,ts,tsx,vue"
           auto_fix: true
           github_token: ${{ secrets.BOT_ACTIONS }}
