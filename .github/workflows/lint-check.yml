@@ -23,6 +23,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 10
+          
+      - name: Navigate to src folder
+        run: cd src/
 
       # Prettier must be in `package.json`
       - name: Install Node.js dependencies
