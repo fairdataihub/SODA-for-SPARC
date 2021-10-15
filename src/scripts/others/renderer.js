@@ -85,7 +85,6 @@ client.invoke("echo", "server ready", (error, res) => {
       "Establishing Python Connection",
       error
     );
-
     Swal.fire({
       icon: "error",
       html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,

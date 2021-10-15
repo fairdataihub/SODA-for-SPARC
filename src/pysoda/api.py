@@ -64,6 +64,7 @@ from prepare_metadata import (
     save_samples_file,
     load_taxonomy_species,
     load_existing_DD_file,
+    load_existing_submission_file
 )
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
@@ -102,6 +103,9 @@ class SodaApi(object):
 
     def api_load_existing_DD_file(self, filepath):
         return load_existing_DD_file(filepath)
+
+    def api_load_existing_submission_file(self, filepath):
+        return load_existing_submission_file(filepath)
 
     ### Save samples file
     def api_save_samples_file(self, filepath, datastructure):

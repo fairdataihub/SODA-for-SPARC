@@ -56,7 +56,7 @@ SODA (Software to Organize Data Automatically) for SPARC is a desktop software i
 
 SODA is distributed as an easy-to-install application for Windows, Mac OS, and Ubuntu. Follow the instructions provided in [our dedicated documentation](https://fairdataihub.org/sodaforsparc/docs/Download-Soda) to download the version suitable for your operating system.
 
-All our releases are also accessible in the [releases tab](https://github.com/fairdataihub/SODA-for-SPARC/releases).
+All our releases are also accessible in the [releases tab](https://github.com/fairdataihub/SODA-for-SPARC/releases/latest).
 
 ## Using SODA
 

@@ -388,6 +388,54 @@ ipcMain.on("open-file-dialog-existing-DD", (event) => {
   );
 });
 
+// import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-submission", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Text",  extensions: ["xlsx", "xls"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-submission", files);
+      }
+    }
+  );
+});
+
+// import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-changes", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Text", extensions: ["txt"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-changes", files);
+      }
+    }
+  );
+});
+
+// import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-readme", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Text", extensions: ["txt"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-readme", files);
+      }
+    }
+  );
+});
+
 ////// milestone document
 ipcMain.on("open-file-dialog-milestone-doc", (event) => {
   dialog.showOpenDialog(
@@ -554,6 +602,44 @@ ipcMain.on("open-folder-dialog-save-samples", (event, filename) => {
       if (files) {
         event.sender.send(
           "selected-generate-metadata-samples",
+          files,
+          filename
+        );
+      }
+    }
+  );
+});
+
+// Generate changes file
+ipcMain.on("open-folder-dialog-save-changes", (event, filename) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-generate-metadata-changes",
+          files,
+          filename
+        );
+      }
+    }
+  );
+});
+
+// Generate readme file
+ipcMain.on("open-folder-dialog-save-readme", (event, filename) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-generate-metadata-readme",
           files,
           filename
         );
