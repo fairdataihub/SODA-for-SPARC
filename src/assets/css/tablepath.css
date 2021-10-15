@@ -1,15 +1,11 @@
 /* Table path to organize data ------------------ */
 
-
-td
-{
-  width:100px;
+td {
+  width: 100px;
 }
-input[type="button"]
-{
-  margin-top:10px;
+input[type="button"] {
+  margin-top: 10px;
 }
-.save
-{
-  display:none;
+.save {
+  display: none;
 }
