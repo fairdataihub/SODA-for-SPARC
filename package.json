@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "version": "1.0.0",
-  "description": "package.json for linting actions",
+  "description": "This file is only used for linting via Github actions",
   "directories": {
     "doc": "docs"
   },
