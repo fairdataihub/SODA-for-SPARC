@@ -606,8 +606,8 @@ function loadExistingSubmissionFile(filepath) {
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
         });
-      } else {
-        console.log(res)
+      }
+      else {
         loadSubmissionFileToUI(res);
       }
     }
