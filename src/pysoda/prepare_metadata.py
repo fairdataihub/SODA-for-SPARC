@@ -672,6 +672,7 @@ def checkEmptyColumn(column):
         return True
     return False
 
+
 def load_existing_submission_file(filepath):
     DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
     DD_df = DD_df.dropna(axis=0, how="all")
@@ -680,7 +681,11 @@ def load_existing_submission_file(filepath):
     DD_df = DD_df.applymap(str.strip)
 
     basicColumns = ["Submission Item", "Definition", "Value"]
-    basicHeaders = ["SPARC Award number", "Milestone achieved", "Milestone completion date"]
+    basicHeaders = [
+        "SPARC Award number",
+        "Milestone achieved",
+        "Milestone completion date",
+    ]
 
     for key in basicColumns:
         if key not in DD_df:
@@ -713,6 +718,7 @@ def load_existing_submission_file(filepath):
         "Milestone achieved": milestones,
         "Milestone completion date": date,
     }
+
 
 ## import existing dataset_description.xlsx file
 def load_existing_DD_file(filepath):
