@@ -23,18 +23,17 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 10
-          
-      - name: Navigate to src folder
-        run: cd src/
 
       # Prettier must be in `package.json`
       - name: Install Node.js dependencies
         run: npm ci
+        working-directory: src
 
       - name: Run Prettier
         uses: wearerequired/lint-action@v1
         with:
           prettier: true
+          prettier_dir: "./src"
           prettier_extensions: "css,html,js,json,jsx,md,sass,scss,ts,tsx,vue"
           auto_fix: true
           github_token: ${{ secrets.BOT_ACTIONS }}
@@ -53,6 +52,7 @@ jobs:
         uses: wearerequired/lint-action@v1
         with:
           black: true
+          black_dir: "./src/pysoda"
           auto_fix: true
           github_token: ${{ secrets.BOT_ACTIONS }}
           git_email: "fairdataihub@gmail.com"
