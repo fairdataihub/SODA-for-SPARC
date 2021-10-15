@@ -214,7 +214,7 @@ function onboardingSubmission() {
         disableInteraction: false,
       })
       .start();
-  }, 500);
+  }, 1000);
 }
 
 // generateSubmissionFile function takes all the values from the preview card's spans
@@ -611,17 +611,35 @@ function loadExistingSubmissionFile(filepath) {
 
 function loadSubmissionFileToUI(data) {
   milestoneTagify1.removeAllTags();
+  removeOptions(descriptionDateInput);
+  addOption(descriptionDateInput, "Select an option", "Select");
   $("#submission-completion-date").val("Select");
   $("#submission-sparc-award").val("");
   // 1. populate milestones
-  for (var milestone in data["Milestone achieved"]) {
+  for (var milestone of data["Milestone achieved"]) {
     milestoneTagify1.addTags(milestone);
   }
+  // 2. populate SPARC award
   if (data["SPARC Award number"] !== "") {
     $("#submission-sparc-award").val(data["SPARC Award number"]);
   }
+  // 3. populate Completion date
   if (data["Milestone completion date"] !== "") {
-    $("#submission-completion-date").val(data["Milestone completion date"]);
+    addOption(descriptionDateInput, data["Milestone completion date"], data["Milestone completion date"]);
   }
-  Swal.hideLoading();
+  Swal.fire({
+    title: "Loaded successfully!",
+    icon: "success",
+    showConfirmButton: false,
+    timer: 500,
+    timerProgressBar: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.hideLoading();
+    }
+  })
+  $("#div-confirm-existing-submission-import").hide();
+  $($("#div-confirm-existing-submission-import button")[0]).hide();
+  $("#button-fake-confirm-existing-submission-file-load").click();
 }

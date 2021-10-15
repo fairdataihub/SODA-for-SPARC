@@ -10,7 +10,7 @@ function generateRCFiles(type) {
       text: "Plase fill in the textarea.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      icon: "warning",
+      icon: "error",
       showCancelButton: false,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
