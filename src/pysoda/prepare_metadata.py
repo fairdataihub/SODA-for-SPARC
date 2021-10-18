@@ -720,6 +720,7 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
+
 def import_bf_sub_DD(file_type, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -729,9 +730,7 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
         if myds.items[i].name == file_type:
 
             package_id = myds.items[i].id
-            file_details = bf._api._get(
-                "/packages/" + str(package_id) + "/view"
-            )
+            file_details = bf._api._get("/packages/" + str(package_id) + "/view")
             file_id = file_details[0]["content"]["id"]
             fileURL = bf._api._get(
                 "/packages/" + str(package_id) + "/files/" + str(file_id)
@@ -742,7 +741,10 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
             elif file_type == "dataset_description.xlsx":
                 return load_existing_DD_file(fileURL["url"])
 
-    raise Exception(f"No {file_type} file was found at the root of the dataset provided.")
+    raise Exception(
+        f"No {file_type} file was found at the root of the dataset provided."
+    )
+
 
 ## import existing dataset_description.xlsx file
 def load_existing_DD_file(filepath):
@@ -756,9 +758,7 @@ def load_existing_DD_file(filepath):
     # select the active sheet
     sheet = excel.active
     # writer object is created
-    col = csv.writer(open("tt.csv",
-                          'w',
-                          newline=""))
+    col = csv.writer(open("tt.csv", "w", newline=""))
 
     # writing the data in csv file
     for r in sheet.rows:
@@ -766,7 +766,9 @@ def load_existing_DD_file(filepath):
         # operation is perform
         col.writerow([cell.value for cell in r])
 
-    DD_df = pd.DataFrame(pd.read_csv("tt.csv", encoding = "ISO-8859-1", usecols=column_check, header=0))
+    DD_df = pd.DataFrame(
+        pd.read_csv("tt.csv", encoding="ISO-8859-1", usecols=column_check, header=0)
+    )
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)
