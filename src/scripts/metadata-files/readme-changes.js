@@ -388,7 +388,10 @@ function resetRCFile(type) {
         "checked",
         false
       );
-      $(`#existing-${type}-file-destination`).attr("placeholder", "Browse here")
+      $(`#existing-${type}-file-destination`).attr(
+        "placeholder",
+        "Browse here"
+      );
       $(`#textarea-create-${type}`).val("");
     }
   });

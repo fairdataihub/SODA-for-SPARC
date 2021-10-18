@@ -2200,21 +2200,26 @@ function importExistingSamplesFile() {
 }
 
 function checkBFImportSubjects(bfAccount, bfDataset) {
-  client.invoke("api_import_bf_sub_DD", defaultBfAccount, defaultBfDataset, (error, res) => {
-    if (error) {
-      var emessage = userError(error);
-      log.error(error);
-      console.error(error);
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: `${emessage}`,
-      });
-    } else {
-      loadDDFileToUI(res)
+  client.invoke(
+    "api_import_bf_sub_DD",
+    defaultBfAccount,
+    defaultBfDataset,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: `${emessage}`,
+        });
+      } else {
+        loadDDFileToUI(res);
+      }
     }
-  })
+  );
 }
 
 function loadDataFrametoUI() {
