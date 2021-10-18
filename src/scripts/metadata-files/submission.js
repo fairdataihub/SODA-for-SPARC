@@ -90,13 +90,7 @@ function resetSubmission() {
 
 function helpMilestoneSubmission() {
   var filepath = "";
-  // var award = $("#submission-sparc-award").val();
-  // read from milestonePath to see if associated milestones exist or not
   var informationJson = {};
-  // informationJson = parseJson(milestonePath);
-  // if (Object.keys(informationJson).includes(award)) {
-  //   informationJson[award] = milestoneObj;
-  // } else {
   Swal.fire({
     title: "Do you have the Data Deliverables document ready to import?",
     showCancelButton: true,
@@ -164,7 +158,6 @@ function helpMilestoneSubmission() {
       });
     }
   });
-  // }
 }
 
 function openDDDimport() {
@@ -622,8 +615,12 @@ function loadSubmissionFileToUI(data) {
   $("#submission-completion-date").val("Select");
   $("#submission-sparc-award").val("");
   // 1. populate milestones
-  for (var milestone of data["Milestone achieved"]) {
-    milestoneTagify1.addTags(milestone);
+  if (typeof data["Milestone achieved"] === "string") {
+    milestoneTagify1.addTags(data["Milestone achieved"]);
+  } else {
+    for (var milestone of data["Milestone achieved"]) {
+      milestoneTagify1.addTags(milestone);
+    }
   }
   // 2. populate SPARC award
   if (data["SPARC Award number"] !== "") {
@@ -632,6 +629,7 @@ function loadSubmissionFileToUI(data) {
   // 3. populate Completion date
   if (data["Milestone completion date"] !== "") {
     addOption(descriptionDateInput, data["Milestone completion date"], data["Milestone completion date"]);
+    $("#submission-completion-date").val(data["Milestone completion date"])
   }
   Swal.fire({
     title: "Loaded successfully!",
@@ -648,4 +646,23 @@ function loadSubmissionFileToUI(data) {
   $("#div-confirm-existing-submission-import").hide();
   $($("#div-confirm-existing-submission-import button")[0]).hide();
   $("#button-fake-confirm-existing-submission-file-load").click();
+}
+
+// function to check for existing submission file on Penn
+function checkBFImportSubmission() {
+  client.invoke("api_import_bf_sub_DD", "submission.xlsx", defaultBfAccount, defaultBfDataset, (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      log.error(error);
+      console.error(error);
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: `${emessage}`,
+      });
+    } else {
+      loadSubmissionFileToUI(res)
+    }
+  })
 }

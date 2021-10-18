@@ -2113,6 +2113,24 @@ function importExistingDDFile() {
   }
 }
 
+function checkBFImportDD() {
+  client.invoke("api_import_bf_sub_DD", "dataset_description.xlsx", defaultBfAccount, defaultBfDataset, (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      log.error(error);
+      console.error(error);
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: `${emessage}`,
+      });
+    } else {
+      loadDDFileToUI(res)
+    }
+  })
+}
+
 function loadDDfileDataframe(filePath) {
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({

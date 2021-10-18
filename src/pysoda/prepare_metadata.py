@@ -24,6 +24,7 @@ from os.path import (
     abspath,
 )
 import pandas as pd
+import csv
 import time
 from time import strftime, localtime
 import shutil
@@ -719,9 +720,58 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
+def import_bf_sub_DD(file_type, bfaccount, bfdataset):
+    bf = Pennsieve(bfaccount)
+    myds = bf.get_dataset(bfdataset)
+
+    for i in range(len(myds.items)):
+
+        if myds.items[i].name == file_type:
+
+            package_id = myds.items[i].id
+            file_details = bf._api._get(
+                "/packages/" + str(package_id) + "/view"
+            )
+            file_id = file_details[0]["content"]["id"]
+            fileURL = bf._api._get(
+                "/packages/" + str(package_id) + "/files/" + str(file_id)
+            )
+            if file_type == "submission.xlsx":
+                return load_existing_submission_file(fileURL["url"])
+
+            elif file_type == "dataset_description.xlsx":
+                return load_existing_DD_file(fileURL["url"])
+
+    raise Exception(f"No {file_type} file was found at the root of the dataset provided.")
 
 ## import existing dataset_description.xlsx file
 def load_existing_DD_file(filepath):
+
+    ### the following block of code converts .xlsx file into .csv for better performance from Pandas.
+    ### Currently pandas' read_excel is super slow - could take minutes.
+
+    # open given workbook
+    # and store in excel object
+    excel = load_workbook(filepath)
+    # select the active sheet
+    sheet = excel.active
+    # writer object is created
+    col = csv.writer(open("tt.csv",
+                          'w',
+                          newline=""))
+
+    # writing the data in csv file
+    for r in sheet.rows:
+        # row by row write
+        # operation is perform
+        col.writerow([cell.value for cell in r])
+
+    DD_df = pd.DataFrame(pd.read_csv("tt.csv", encoding = "ISO-8859-1", usecols=column_check, header=0))
+    DD_df = DD_df.dropna(axis=0, how="all")
+    DD_df = DD_df.replace(np.nan, "", regex=True)
+    DD_df = DD_df.applymap(str)
+    DD_df = DD_df.applymap(str.strip)
+
     basicInfoHeaders = [
         "Type",
         "Title",
@@ -752,12 +802,6 @@ def load_existing_DD_file(filepath):
         "Identifier",
         "Identifier type",
     ]
-
-    DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
-    DD_df = DD_df.dropna(axis=0, how="all")
-    DD_df = DD_df.replace(np.nan, "", regex=True)
-    DD_df = DD_df.applymap(str)
-    DD_df = DD_df.applymap(str.strip)
 
     header_list = list(
         itertools.chain(
@@ -827,4 +871,8 @@ def load_existing_DD_file(filepath):
         "Award information": awardInfoSection,
         "Related information": transposeMatrix(relatedInfoSection),
     }
+
+    ## delete temp csv file
+    os.remove("tt.csv")
+
     return transformedObj

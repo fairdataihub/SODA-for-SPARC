@@ -137,11 +137,7 @@ function promptImportPrevInfoSubject(arr1) {
     cancelButtonText: "Cancel",
     confirmButtonText: "Confirm",
     reverseButtons: reverseSwalButtons,
-    // customClass: {
-    //   confirmButton: "confirm-disabled",
-    // },
     onOpen: function () {
-      // $(".swal2-confirm").attr("id", "btn-confirm-previous-import-subject");
       removeOptions(document.getElementById("previous-subject-single"));
       $("#previous-subject-single").append(
         `<option value="Select">Select a subject</option>`
@@ -2201,6 +2197,24 @@ function importExistingSamplesFile() {
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
+}
+
+function checkBFImportSubjects(bfAccount, bfDataset) {
+  client.invoke("api_import_bf_sub_DD", defaultBfAccount, defaultBfDataset, (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      log.error(error);
+      console.error(error);
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: `${emessage}`,
+      });
+    } else {
+      loadDDFileToUI(res)
+    }
+  })
 }
 
 function loadDataFrametoUI() {
