@@ -727,6 +727,7 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
+
 def import_bf_sub_DD(file_type, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -736,9 +737,7 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
         if myds.items[i].name == file_type:
 
             package_id = myds.items[i].id
-            file_details = bf._api._get(
-                "/packages/" + str(package_id) + "/view"
-            )
+            file_details = bf._api._get("/packages/" + str(package_id) + "/view")
             file_id = file_details[0]["content"]["id"]
             fileURL = bf._api._get(
                 "/packages/" + str(package_id) + "/files/" + str(file_id)
@@ -749,7 +748,10 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
             elif file_type == "dataset_description.xlsx":
                 return load_existing_DD_file(fileURL["url"])
 
-    raise Exception(f"No {file_type} file was found at the root of the dataset provided.")
+    raise Exception(
+        f"No {file_type} file was found at the root of the dataset provided."
+    )
+
 
 ## import existing dataset_description.xlsx file
 def load_existing_DD_file(filepath):

@@ -61,7 +61,10 @@ function resetSubmission() {
         false
       );
 
-      $("#existing-submission-file-destination").attr("placeholder", "Browse here")
+      $("#existing-submission-file-destination").attr(
+        "placeholder",
+        "Browse here"
+      );
 
       var inputFields = $("#Question-prepare-submission-1")
         .nextAll()
@@ -628,8 +631,12 @@ function loadSubmissionFileToUI(data) {
   }
   // 3. populate Completion date
   if (data["Milestone completion date"] !== "") {
-    addOption(descriptionDateInput, data["Milestone completion date"], data["Milestone completion date"]);
-    $("#submission-completion-date").val(data["Milestone completion date"])
+    addOption(
+      descriptionDateInput,
+      data["Milestone completion date"],
+      data["Milestone completion date"]
+    );
+    $("#submission-completion-date").val(data["Milestone completion date"]);
   }
   Swal.fire({
     title: "Loaded successfully!",
@@ -641,8 +648,8 @@ function loadSubmissionFileToUI(data) {
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
       Swal.hideLoading();
-    }
-  })
+    },
+  });
   $("#div-confirm-existing-submission-import").hide();
   $($("#div-confirm-existing-submission-import button")[0]).hide();
   $("#button-fake-confirm-existing-submission-file-load").click();
@@ -650,19 +657,25 @@ function loadSubmissionFileToUI(data) {
 
 // function to check for existing submission file on Penn
 function checkBFImportSubmission() {
-  client.invoke("api_import_bf_sub_DD", "submission.xlsx", defaultBfAccount, defaultBfDataset, (error, res) => {
-    if (error) {
-      var emessage = userError(error);
-      log.error(error);
-      console.error(error);
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: `${emessage}`,
-      });
-    } else {
-      loadSubmissionFileToUI(res)
+  client.invoke(
+    "api_import_bf_sub_DD",
+    "submission.xlsx",
+    defaultBfAccount,
+    defaultBfDataset,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: `${emessage}`,
+        });
+      } else {
+        loadSubmissionFileToUI(res);
+      }
     }
-  })
+  );
 }
