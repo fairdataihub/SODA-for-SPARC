@@ -6125,6 +6125,8 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
             "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
         }
       } else {
+        console.log(metadataWithoutExtension)
+        console.log(metadataIndividualFile)
         document.getElementById(metadataParaElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
       }

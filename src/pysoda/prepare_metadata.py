@@ -742,11 +742,12 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
             fileURL = bf._api._get(
                 "/packages/" + str(package_id) + "/files/" + str(file_id)
             )
-            if file_type == "submission.xlsx":
-                return load_existing_submission_file(fileURL["url"])
-
-            elif file_type == "dataset_description.xlsx":
-                return load_existing_DD_file(fileURL["url"])
+            raise Exception(fileURL["url"])
+            # if file_type == "submission.xlsx":
+            #     return load_existing_submission_file(fileURL["url"])
+            #
+            # elif file_type == "dataset_description.xlsx":
+            #     return load_existing_DD_file(fileURL["url"])
 
     raise Exception(
         f"No {file_type} file was found at the root of the dataset provided."

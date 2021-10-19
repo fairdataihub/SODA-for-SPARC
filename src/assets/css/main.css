@@ -661,6 +661,10 @@ button[data-id="bf_list_users_pi"] {
   -webkit-transition: all 0.25s linear;
 }
 
+.metadata-button.button-generate-dataset.code-metadata {
+  display: none
+}
+
 .metadata-button.button-generate-dataset.done {
   border: 1px solid var(--color-light-green);
   transition: all 0.25s linear;

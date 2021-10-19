@@ -78,7 +78,14 @@ const showParentTab = (tabNow, nextOrPrev) => {
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
   } else {
-    $("#nextBtn").prop("disabled", false);
+      if (tabNow === 3) {
+        if (Object.keys(datasetStructureJSONObj["folders"]).includes("code")) {
+          $(".metadata-button.button-generate-dataset.code-metadata").css("display", "block");
+        } else {
+          $(".metadata-button.button-generate-dataset.code-metadata").css("display", "none");
+        }
+      }
+      $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 5) {
     // Disable the continue button if a destination has not been selected
@@ -612,6 +619,9 @@ const nextPrev = (n) => {
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
     var requiredFiles = ["submission", "dataset_description", "subjects"];
+    if ($(".metadata-button.button-generate-dataset.code-metadata").css("display") === "block") {
+      requiredFiles.push("code_description")
+    }
     var withoutExtMetadataArray = [];
     if (!("metadata-files" in sodaJSONObj)) {
       sodaJSONObj["metadata-files"] = {};
@@ -625,8 +635,13 @@ const nextPrev = (n) => {
       withoutExtMetadataArray.includes(val)
     );
     if (!subArrayBoolean) {
+      if (requiredFiles.includes("code_description")) {
+        var extraRequiredFile = "<li> code_description</li>"
+      } else {
+        var extraRequiredFile = ""
+      }
       var notIncludedMessage =
-        "<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?</div>";
+        `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
