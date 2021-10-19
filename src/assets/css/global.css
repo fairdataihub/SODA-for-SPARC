@@ -1,13 +1,12 @@
 /* Fonts ---------------------------- */
 
 @font-face {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   /* font-family: 'Source Code Pro'; */
   font-style: normal;
   font-weight: 400;
   /* src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype'); */
 }
-
 
 /* Global ---------------------------- */
 
@@ -17,7 +16,8 @@
 
 html {
   height: 100%;
-  font-family: 'BlinkMacSystemFont', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
+  font-family: "BlinkMacSystemFont", "Lucida Grande", "Segoe UI", Ubuntu,
+    Cantarell, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   overflow: hidden; /* Prevents rubber-band scrolling of the whole "page" */
@@ -62,23 +62,24 @@ h5 {
   font-weight: 600;
 }
 
-
 /* svg {
   fill: currentColor;
 } */
 
 /* Code */
 
-code, kbd {
-  font-family: 'Source Code Pro', monospace;
+code,
+kbd {
+  font-family: "Source Code Pro", monospace;
   border-radius: 4px;
   padding: 1px 4px;
   white-space: nowrap;
-  color: hsl(0,0%,36%);
-  background-color: hsla(0,0%,60%,.15);
+  color: hsl(0, 0%, 36%);
+  background-color: hsla(0, 0%, 60%, 0.15);
 }
 
-pre, kbd {
+pre,
+kbd {
   font-size: 13px;
   overflow: auto;
   padding: 1em;
@@ -102,9 +103,6 @@ kbd {
   padding: 0.5em;
 }
 
-
-
-
 /* Utilities ---------------------------- */
 
 .u-avoid-clicks {
@@ -127,7 +125,6 @@ kbd {
   display: none;
 }
 
-
 /* Content ------------------ */
 
 .content {
@@ -136,18 +133,17 @@ kbd {
   overflow: hidden;
   visibility: visible;
   opacity: 0;
-  border:none;
+  border: none;
   padding-top: 15px;
-  padding-bottom:20px;
+  padding-bottom: 20px;
   background: #fff;
-  max-width:100%;
+  max-width: 100%;
   margin-top: 10px;
 }
 .content.is-shown {
-  visibility: visible;;
+  visibility: visible;
   opacity: 1;
 }
-
 
 /* Hacks ---------------------------- */
 

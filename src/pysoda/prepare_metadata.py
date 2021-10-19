@@ -673,6 +673,53 @@ def checkEmptyColumn(column):
     return False
 
 
+def load_existing_submission_file(filepath):
+    DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
+    DD_df = DD_df.dropna(axis=0, how="all")
+    DD_df = DD_df.replace(np.nan, "", regex=True)
+    DD_df = DD_df.applymap(str)
+    DD_df = DD_df.applymap(str.strip)
+
+    basicColumns = ["Submission Item", "Definition", "Value"]
+    basicHeaders = [
+        "SPARC Award number",
+        "Milestone achieved",
+        "Milestone completion date",
+    ]
+
+    for key in basicColumns:
+        if key not in DD_df:
+            raise Exception(
+                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
+            )
+
+    for header_name in basicHeaders:
+        if header_name not in set(DD_df["Submission Item"]):
+            raise Exception(
+                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
+            )
+
+    awardNo = DD_df["Value"][0]
+
+    if "," in DD_df["Value"][1]:
+        milestones = DD_df["Value"][1].split(",")
+
+    else:
+        milestones = DD_df["Value"][1]
+
+    if DD_df["Value"][2]:
+        date = DD_df["Value"][2]
+
+    else:
+        date = ""
+
+    return {
+        "SPARC Award number": awardNo,
+        "Milestone achieved": milestones,
+        "Milestone completion date": date,
+    }
+
+
 ## import existing dataset_description.xlsx file
 def load_existing_DD_file(filepath):
     basicInfoHeaders = [

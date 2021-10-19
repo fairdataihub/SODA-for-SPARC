@@ -73,7 +73,6 @@ console.log("Current SODA version:", appVersion);
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-
 // Outputs: An object with these properties: {connected: boolean, error: Error}
 //          connected is true when the server is healthy and the apiversion is current. false otherwise.
 //          error is an apiversion error, a python server connection error, or undefined if there was no error with the apiversion or the python server connection
@@ -4779,6 +4778,16 @@ function fileContextMenu(event) {
     });
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 }
+
+$(document).ready(function () {
+  tippy("[data-tippy-content]", {
+    allowHTML: true,
+    interactive: true,
+    placement: "top",
+    theme: "light",
+  });
+});
+
 
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {

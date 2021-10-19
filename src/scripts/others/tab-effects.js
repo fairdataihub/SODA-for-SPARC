@@ -1798,6 +1798,63 @@ async function transitionFreeFormMode(
     onboardingSubmission();
   }
 
+  if ($(ev).attr("data-current") === "Question-prepare-changes-1") {
+    $("#textarea-create-changes").val("");
+    if (
+      $("#existing-changes-file-destination").attr("placeholder") !==
+        "Browse here" ||
+      $("#textarea-create-changes").val().trim() !== ""
+    ) {
+      var { value: continueProgressChanges } = await Swal.fire({
+        title:
+          "This will reset your progress so far with the CHANGES.txt file. Are you sure you want to continue?",
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
+      });
+      if (!continueProgressChanges) {
+        return;
+      } else {
+        $("#existing-changes-file-destination").attr(
+          "placeholder",
+          "Browse here"
+        );
+        $("#textarea-create-changes").val("");
+      }
+    }
+  }
+  if ($(ev).attr("data-current") === "Question-prepare-readme-1") {
+    $("#textarea-create-readme").val("");
+    if (
+      $("#existing-readme-file-destination").attr("placeholder") !==
+        "Browse here" ||
+      $("#textarea-create-readme").val().trim() !== ""
+    ) {
+      var { value: continueProgressReadme } = await Swal.fire({
+        title:
+          "This will reset your progress so far with the README.txt file. Are you sure you want to continue?",
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
+      });
+      if (!continueProgressReadme) {
+        return;
+      } else {
+        $("#existing-readme-file-destination").attr(
+          "placeholder",
+          "Browse here"
+        );
+        $("#textarea-create-readme").val("");
+      }
+    }
+  }
+
   if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
     if ($("#Question-prepare-dd-2").hasClass("show")) {
       var { value: continueProgressDD } = await Swal.fire({
@@ -1836,7 +1893,7 @@ async function transitionFreeFormMode(
   // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
   $("#para-submit_prepublishing_review-status").text("");
 
-  if (ev.getAttribute("data-next") == "div_make_pi_owner_permissions") {
+  if (ev.getAttribute("data-next") === "div_make_pi_owner_permissions") {
     let nodeStorage = new JSONStorage(app.getPath("userData"));
     let previous_choice = nodeStorage.getItem("previously_selected_PI");
     if ($(`#bf_list_users_pi option[value='${previous_choice}']`).length > 0) {
@@ -1845,7 +1902,7 @@ async function transitionFreeFormMode(
     }
   }
 
-  if (ev.getAttribute("data-next") == "div-rename-bf-dataset") {
+  if (ev.getAttribute("data-next") === "div-rename-bf-dataset") {
     let dataset_name = $("#rename_dataset_name").text();
     $("#bf-rename-dataset-name").val(dataset_name);
   }
@@ -1898,7 +1955,7 @@ async function transitionFreeFormMode(
   document.getElementById(parentDiv).appendChild(target);
   document.getElementById(currentDiv).classList.add("prev");
 
-  if (ev.getAttribute("data-next") == "Question-prepare-submission-DDD") {
+  if (ev.getAttribute("data-next") === "Question-prepare-submission-DDD") {
     $("#button-skip-DDD").show();
   }
 
@@ -1909,23 +1966,13 @@ async function transitionFreeFormMode(
     }, 300);
   }
 
-  if (ev.getAttribute("data-next") == "Question-prepare-dd-4-sections") {
+  if (ev.getAttribute("data-next") === "Question-prepare-dd-4-sections") {
     setTimeout(function () {
       $(target).addClass("test2");
     }, 300);
   }
 
-  if (ev.id == "dataset-description-no-airtable-mode") {
-    $("#div-airtable-award-button-dd").show();
-    $("#dd-connect-Airtable").css("display", "block");
-    ddNoAirtableMode("On");
-  }
-  if (ev.id == "submission-no-airtable-mode") {
-    $("#div-airtable-award-button").show();
-    $("#submission-connect-Airtable").css("display", "block");
-  }
-
-  if (ev.id == "button-skip-DDD") {
+  if (ev.id === "button-skip-DDD") {
     $($(ev).parents()[0]).css("display", "flex");
     $($(ev).siblings()[0]).show();
   }
