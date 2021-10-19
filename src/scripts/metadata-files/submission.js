@@ -661,7 +661,7 @@ function checkBFImportSubmission() {
     "api_import_bf_sub_DD",
     "submission.xlsx",
     defaultBfAccount,
-    defaultBfDataset,
+    $("#bf_dataset_load_submission").text().trim(),
     (error, res) => {
       if (error) {
         var emessage = userError(error);

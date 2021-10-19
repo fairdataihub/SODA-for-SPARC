@@ -727,7 +727,6 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
-
 def import_bf_sub_DD(file_type, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -752,7 +751,30 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
         f"No {file_type} file was found at the root of the dataset provided."
     )
 
+def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
+    bf = Pennsieve(bfaccount)
+    myds = bf.get_dataset(bfdataset)
 
+    for i in range(len(myds.items)):
+
+        if myds.items[i].name == file_type:
+
+            package_id = myds.items[i].id
+            file_details = bf._api._get("/packages/" + str(package_id) + "/view")
+            file_id = file_details[0]["content"]["id"]
+            fileURL = bf._api._get(
+                "/packages/" + str(package_id) + "/files/" + str(file_id)
+            )
+            if file_type == "subjects.xlsx":
+                return convert_subjects_samples_file_to_df(file_type, fileURL["url"], ui_fields)
+
+            elif file_type == "samples.xlsx":
+                return convert_subjects_samples_file_to_df(file_type, fileURL["url"], ui_fields)
+
+    raise Exception(
+        f"No {file_type} file was found at the root of the dataset provided."
+    )
+    
 ## import existing dataset_description.xlsx file
 def load_existing_DD_file(filepath):
 
@@ -761,7 +783,6 @@ def load_existing_DD_file(filepath):
     # open given workbook
     # and store in excel object
     excel = load_workbook(filepath)
-    # select the active sheet
     sheet = excel.active
     # writer object is created
     with tempfile.NamedTemporaryFile(mode="w", newline="", delete=False) as tf:

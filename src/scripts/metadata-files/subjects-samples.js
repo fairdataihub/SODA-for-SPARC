@@ -2199,11 +2199,19 @@ function importExistingSamplesFile() {
   }
 }
 
-function checkBFImportSubjects(bfAccount, bfDataset) {
+function checkBFImportSubjects(type, bfAccount, bfDataset) {
+  var fieldEntries = [];
+  for (var field of $("#form-add-a-subject")
+    .children()
+    .find(".subjects-form-entry")) {
+    fieldEntries.push(field.name.toLowerCase());
+  }
   client.invoke(
-    "api_import_bf_sub_DD",
+    "api_import_bf_sub_sam",
+    type,
+    fieldEntries,
     defaultBfAccount,
-    defaultBfDataset,
+    $("#bf_dataset_load_subjects").text().trim(),
     (error, res) => {
       if (error) {
         var emessage = userError(error);
@@ -2216,7 +2224,40 @@ function checkBFImportSubjects(bfAccount, bfDataset) {
           text: `${emessage}`,
         });
       } else {
-        loadDDFileToUI(res);
+        // loadDDFileToUI(res);
+        console.log(res)
+      }
+    }
+  );
+}
+
+function checkBFImportSamples(type, bfAccount, bfDataset) {
+  var fieldEntries = [];
+  for (var field of $("#form-add-a-sample")
+    .children()
+    .find(".samples-form-entry")) {
+    fieldEntries.push(field.name.toLowerCase());
+  }
+  client.invoke(
+    "api_import_bf_sub_sam",
+    type,
+    fieldEntries,
+    defaultBfAccount,
+    $("#bf_dataset_load_samples").text().trim(),
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: `${emessage}`,
+        });
+      } else {
+        console.log(res)
+        // loadDDFileToUI(res);
       }
     }
   );

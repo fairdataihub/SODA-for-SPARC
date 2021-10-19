@@ -2118,7 +2118,7 @@ function checkBFImportDD() {
     "api_import_bf_sub_DD",
     "dataset_description.xlsx",
     defaultBfAccount,
-    defaultBfDataset,
+    $("#bf_dataset_load_dd").text().trim(),
     (error, res) => {
       if (error) {
         var emessage = userError(error);
