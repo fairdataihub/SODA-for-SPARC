@@ -50,6 +50,7 @@ import pathlib
 
 from string import ascii_uppercase
 import itertools
+import tempfile
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
@@ -687,26 +688,32 @@ def load_existing_submission_file(filepath):
         "Milestone achieved",
         "Milestone completion date",
     ]
+    ## normalize the entries to lowercase just for Version Exception check
+    basicColumns = [x.lower() for x in basicColumns]
+    basicHeaders = [x.lower() for x in basicHeaders]
+    DD_df_lower = [x.lower() for x in DD_df]
 
     for key in basicColumns:
         if key not in DD_df:
             raise Exception(
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
+            return DD_df
 
     for header_name in basicHeaders:
+        submissionItems = [x.lower() for x in DD_df["Submission Item"]]
         if header_name not in set(DD_df["Submission Item"]):
             raise Exception(
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
+            return DD_df
 
     awardNo = DD_df["Value"][0]
+    milestones = [DD_df["Value"][1]]
 
-    if "," in DD_df["Value"][1]:
-        milestones = DD_df["Value"][1].split(",")
-
-    else:
-        milestones = DD_df["Value"][1]
+    for i in range(3, len(DD_df.columns)):
+        value = DD_df["Value "+str(i-1)]
+        milestones.append(value[1])
 
     if DD_df["Value"][2]:
         date = DD_df["Value"][2]
@@ -749,24 +756,21 @@ def load_existing_DD_file(filepath):
 
     ### the following block of code converts .xlsx file into .csv for better performance from Pandas.
     ### Currently pandas' read_excel is super slow - could take minutes.
-
     # open given workbook
     # and store in excel object
     excel = load_workbook(filepath)
     # select the active sheet
     sheet = excel.active
     # writer object is created
-    col = csv.writer(open("tt.csv",
-                          'w',
-                          newline=""))
+    with tempfile.NamedTemporaryFile(mode="w", newline="", delete=False) as tf:
+        col = csv.writer(tf)
+        # writing the data in csv file
+        for r in sheet.rows:
+            col.writerow([cell.value for cell in r])
 
-    # writing the data in csv file
-    for r in sheet.rows:
-        # row by row write
-        # operation is perform
-        col.writerow([cell.value for cell in r])
-
-    DD_df = pd.DataFrame(pd.read_csv("tt.csv", encoding = "ISO-8859-1", usecols=column_check, header=0))
+    DD_df = pd.DataFrame(
+        pd.read_csv(tf.name, encoding="ISO-8859-1", usecols=column_check, header=0)
+    )
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)
@@ -871,8 +875,5 @@ def load_existing_DD_file(filepath):
         "Award information": awardInfoSection,
         "Related information": transposeMatrix(relatedInfoSection),
     }
-
-    ## delete temp csv file
-    os.remove("tt.csv")
 
     return transformedObj
