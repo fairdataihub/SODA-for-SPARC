@@ -2225,7 +2225,7 @@ function checkBFImportSubjects(type, bfAccount, bfDataset) {
         });
       } else {
         // loadDDFileToUI(res);
-        console.log(res)
+        console.log(res);
       }
     }
   );
@@ -2256,7 +2256,7 @@ function checkBFImportSamples(type, bfAccount, bfDataset) {
           text: `${emessage}`,
         });
       } else {
-        console.log(res)
+        console.log(res);
         // loadDDFileToUI(res);
       }
     }
