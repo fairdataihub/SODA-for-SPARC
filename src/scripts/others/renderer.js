@@ -284,15 +284,19 @@ ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
-  return new Promise(async (resolve) => {
+  return new Promise(async (resolve, reject) => {
     let connection_response = "";
     let agent_installed_response = "";
     let agent_version_response = "";
     let account_present = false;
 
-    try {
       // Check the internet connection and if available check the rest.
-      connection_response = await check_internet_connection();
+      try {
+      connection_response = await check_internet_connection()
+      } catch(e) {
+        // return the rejected promise to prevent the rest of the code from executing
+        return reject(e)
+      }
       if (!connection_response) {
         Swal.fire({
           icon: "error",
@@ -425,17 +429,6 @@ const run_pre_flight_checks = async (check_update = true) => {
           resolve(false);
         }
       }
-    } catch (e) {
-      // right now the backend systems not running/connecting is the only error
-      // that requires the program to stop execution ( when the user receives this message it
-      // requires them to restart the program ). This is because
-      // a majority of SODA's features are tied to the Python server.
-      // That error is logged in the check_server_connection procedure.
-      // For the moment throw the error to prevent any of the function's
-      // callers from getting unexpected behavior caused by resolving a
-      // pre_flight_check that experienced a server check error.
-      throw e;
-    }
   });
 };
 
@@ -451,7 +444,7 @@ const check_internet_connection = async (show_notification = true) => {
   // server is in a bad state
   if (!connected) {
     // assumption failed so throw an error
-    throw new Error(error.message);
+     throw error
   }
 
   let notification = null;
@@ -489,6 +482,8 @@ const check_internet_connection = async (show_notification = true) => {
       connected_to_internet = true;
       return connected_to_internet;
     }
+
+  
   });
 };
 
@@ -5537,17 +5532,16 @@ document
     if (dataset_destination == "Pennsieve") {
       console.log("Running checks in the other part");
 
-      try {
-        // run pre flight check may throw
-        console.log("Ran in main curate new");
-        // TODO: Tips on how to test this?  Turning the server off while perfomring this event listener would introduce this situation. Is there a way to do that while the application is running?
+      try {  
         let supplementary_checks = await run_pre_flight_checks(false);
         if (!supplementary_checks) {
           $("#sidebarCollapse").prop("disabled", false);
           return;
         }
+
       } catch (e) {
-        // do nothing for now
+        // do nothing
+        return
       }
     }
 
