@@ -634,12 +634,12 @@ const nextPrev = (n) => {
     var subArrayBoolean = requiredFiles.every((val) =>
       withoutExtMetadataArray.includes(val)
     );
+    if (requiredFiles.includes("code_description")) {
+      var extraRequiredFile = "<li> code_description</li>"
+    } else {
+      var extraRequiredFile = ""
+    }
     if (!subArrayBoolean) {
-      if (requiredFiles.includes("code_description")) {
-        var extraRequiredFile = "<li> code_description</li>"
-      } else {
-        var extraRequiredFile = ""
-      }
       var notIncludedMessage =
         `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
@@ -2427,6 +2427,7 @@ const updateJSONStructureMetadataFiles = () => {
   var changesFilePath = document.getElementById(
     "para-changes-file-path"
   ).innerHTML;
+
   var invalidOptionsList = [
     "Please drag a file!",
     "Please only import SPARC metadata files!",
@@ -2434,6 +2435,36 @@ const updateJSONStructureMetadataFiles = () => {
     "Your SPARC metadata file must be in one of the formats listed above!",
     "Your SPARC metadata file must be named and formatted exactly as listed above!",
   ];
+
+  if ($(".metadata-button.button-generate-dataset.code-metadata").css("display") === "block") {
+    var codeDescriptionFilePath = document.getElementById(
+      "para-codeDescription-file-path"
+    ).innerHTML;
+    var inputsMetadataFilePath = document.getElementById(
+      "para-inputsMetadata-file-path"
+    ).innerHTML;
+    var outputsMetadataFilePath = document.getElementById(
+      "para-outputsMetadata-file-path"
+    ).innerHTML;
+    populateMetadataObject(
+      invalidOptionsList,
+      codeDescriptionFilePath,
+      "code_description",
+      sodaJSONObj
+    );
+    populateMetadataObject(
+      invalidOptionsList,
+      inputsMetadataFilePath,
+      "inputs_metadata",
+      sodaJSONObj
+    );
+    populateMetadataObject(
+      invalidOptionsList,
+      outputsMetadataFilePath,
+      "outputs_metadata",
+      sodaJSONObj
+    );
+  }
 
   populateMetadataObject(
     invalidOptionsList,

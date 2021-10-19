@@ -145,6 +145,8 @@ function dropHandler(ev, paraElement, metadataFile) {
           .find(".div-metadata-go-back")
           .css("display", "none");
       } else {
+        console.log(metadataWithoutExtension)
+        console.log(metadataIndividualFile)
         document.getElementById(paraElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
         $($("#" + paraElement).parents()[1])
