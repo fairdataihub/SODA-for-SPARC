@@ -168,7 +168,6 @@ const check_server_connection_and_api_version = () => {
 
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
-check_server_connection_and_api_version();
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
