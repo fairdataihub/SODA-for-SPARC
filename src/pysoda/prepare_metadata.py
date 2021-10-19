@@ -727,6 +727,7 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
+
 def import_bf_sub_DD(file_type, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -751,6 +752,7 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
         f"No {file_type} file was found at the root of the dataset provided."
     )
 
+
 def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -766,15 +768,20 @@ def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
                 "/packages/" + str(package_id) + "/files/" + str(file_id)
             )
             if file_type == "subjects.xlsx":
-                return convert_subjects_samples_file_to_df(file_type, fileURL["url"], ui_fields)
+                return convert_subjects_samples_file_to_df(
+                    file_type, fileURL["url"], ui_fields
+                )
 
             elif file_type == "samples.xlsx":
-                return convert_subjects_samples_file_to_df(file_type, fileURL["url"], ui_fields)
+                return convert_subjects_samples_file_to_df(
+                    file_type, fileURL["url"], ui_fields
+                )
 
     raise Exception(
         f"No {file_type} file was found at the root of the dataset provided."
     )
-    
+
+
 ## import existing dataset_description.xlsx file
 def load_existing_DD_file(filepath):
 

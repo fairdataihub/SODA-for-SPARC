@@ -112,8 +112,12 @@ class SodaApi(object):
     def api_import_bf_sub_DD(self, filetype, selected_bfaccount, selected_bfdataset):
         return import_bf_sub_DD(filetype, selected_bfaccount, selected_bfdataset)
 
-    def api_import_bf_sub_sam(self, filetype, ui_field, selected_bfaccount, selected_bfdataset):
-        return import_bf_sub_sam(filetype, ui_field, selected_bfaccount, selected_bfdataset)
+    def api_import_bf_sub_sam(
+        self, filetype, ui_field, selected_bfaccount, selected_bfdataset
+    ):
+        return import_bf_sub_sam(
+            filetype, ui_field, selected_bfaccount, selected_bfdataset
+        )
 
     ### Save samples file
     def api_save_samples_file(self, filepath, datastructure):
