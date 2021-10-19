@@ -288,145 +288,145 @@ const run_pre_flight_checks = async (check_update = true) => {
     let agent_version_response = "";
     let account_present = false;
 
-      // Check the internet connection and if available check the rest.
-      try {
-      connection_response = await check_internet_connection()
-      } catch(e) {
-        // return the rejected promise to prevent the rest of the code from executing
-        return reject(e)
-      }
-      if (!connection_response) {
-        Swal.fire({
-          icon: "error",
-          text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "I understand",
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            // Do nothing
-          }
-        });
-        resolve(false);
-      } else {
-        await wait(500);
+    // Check the internet connection and if available check the rest.
+    try {
+      connection_response = await check_internet_connection();
+    } catch (e) {
+      // return the rejected promise to prevent the rest of the code from executing
+      return reject(e);
+    }
+    if (!connection_response) {
+      Swal.fire({
+        icon: "error",
+        text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "I understand",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          // Do nothing
+        }
+      });
+      resolve(false);
+    } else {
+      await wait(500);
 
-        // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-        account_present = await check_api_key();
-        if (account_present) {
-          // Check for an installed Pennsieve agent
+      // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+      account_present = await check_api_key();
+      if (account_present) {
+        // Check for an installed Pennsieve agent
+        await wait(500);
+        [agent_installed_response, agent_version_response] =
+          await check_agent_installed();
+        // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
+        if (!agent_installed_response) {
+          Swal.fire({
+            icon: "error",
+            title: "Pennsieve Agent error!",
+            html: agent_version_response,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
+            reverseButtons: reverseSwalButtons,
+            confirmButtonText: "Download now",
+            cancelButtonText: "Skip for now",
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              [browser_download_url, latest_agent_version] =
+                await get_latest_agent_version();
+              shell.openExternal(browser_download_url);
+              shell.openExternal(
+                "https://docs.pennsieve.io/docs/the-pennsieve-agent"
+              );
+            }
+          });
+          resolve(false);
+        } else {
           await wait(500);
-          [agent_installed_response, agent_version_response] =
-            await check_agent_installed();
-          // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
-          if (!agent_installed_response) {
+          // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
+          [browser_download_url, latest_agent_version] =
+            await check_agent_installed_version(agent_version_response);
+          if (browser_download_url != "") {
             Swal.fire({
-              icon: "error",
-              title: "Pennsieve Agent error!",
-              html: agent_version_response,
+              icon: "warning",
+              text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
-              reverseButtons: reverseSwalButtons,
               confirmButtonText: "Download now",
               cancelButtonText: "Skip for now",
+              reverseButtons: reverseSwalButtons,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then(async (result) => {
               if (result.isConfirmed) {
+                // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
                 [browser_download_url, latest_agent_version] =
                   await get_latest_agent_version();
                 shell.openExternal(browser_download_url);
                 shell.openExternal(
                   "https://docs.pennsieve.io/docs/the-pennsieve-agent"
                 );
+                resolve(false);
+              }
+              if (result.isDismissed) {
+                if (check_update) {
+                  checkNewAppVersion();
+                }
+                await wait(500);
+                notyf.open({
+                  type: "final",
+                  message: "You're all set!",
+                });
+                resolve(true);
               }
             });
+          } else {
+            if (check_update) {
+              checkNewAppVersion();
+            }
+            await wait(500);
+            notyf.open({
+              type: "final",
+              message: "You're all set!",
+            });
+            resolve(true);
+          }
+        }
+      } else {
+        if (check_update) {
+          checkNewAppVersion();
+        }
+        Swal.fire({
+          icon: "warning",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Yes",
+          showCancelButton: true,
+          reverseButtons: reverseSwalButtons,
+          cancelButtonText: "I'll do it later",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            openDropdownPrompt("bf");
             resolve(false);
           } else {
-            await wait(500);
-            // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-            [browser_download_url, latest_agent_version] =
-              await check_agent_installed_version(agent_version_response);
-            if (browser_download_url != "") {
-              Swal.fire({
-                icon: "warning",
-                text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                showCancelButton: true,
-                confirmButtonText: "Download now",
-                cancelButtonText: "Skip for now",
-                reverseButtons: reverseSwalButtons,
-                showClass: {
-                  popup: "animate__animated animate__zoomIn animate__faster",
-                },
-                hideClass: {
-                  popup: "animate__animated animate__zoomOut animate__faster",
-                },
-              }).then(async (result) => {
-                if (result.isConfirmed) {
-                  // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
-                  [browser_download_url, latest_agent_version] =
-                    await get_latest_agent_version();
-                  shell.openExternal(browser_download_url);
-                  shell.openExternal(
-                    "https://docs.pennsieve.io/docs/the-pennsieve-agent"
-                  );
-                  resolve(false);
-                }
-                if (result.isDismissed) {
-                  if (check_update) {
-                    checkNewAppVersion();
-                  }
-                  await wait(500);
-                  notyf.open({
-                    type: "final",
-                    message: "You're all set!",
-                  });
-                  resolve(true);
-                }
-              });
-            } else {
-              if (check_update) {
-                checkNewAppVersion();
-              }
-              await wait(500);
-              notyf.open({
-                type: "final",
-                message: "You're all set!",
-              });
-              resolve(true);
-            }
+            resolve(true);
           }
-        } else {
-          if (check_update) {
-            checkNewAppVersion();
-          }
-          Swal.fire({
-            icon: "warning",
-            text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: "Yes",
-            showCancelButton: true,
-            reverseButtons: reverseSwalButtons,
-            cancelButtonText: "I'll do it later",
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              openDropdownPrompt("bf");
-              resolve(false);
-            } else {
-              resolve(true);
-            }
-          });
-          resolve(false);
-        }
+        });
+        resolve(false);
       }
+    }
   });
 };
 
@@ -442,7 +442,7 @@ const check_internet_connection = async (show_notification = true) => {
   // server is in a bad state
   if (!connected) {
     // assumption failed so throw an error
-     throw error
+    throw error;
   }
 
   let notification = null;
@@ -480,8 +480,6 @@ const check_internet_connection = async (show_notification = true) => {
       connected_to_internet = true;
       return connected_to_internet;
     }
-
-  
   });
 };
 
@@ -4788,7 +4786,6 @@ $(document).ready(function () {
   });
 });
 
-
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
   // Avoid the real one
@@ -5540,16 +5537,15 @@ document
     if (dataset_destination == "Pennsieve") {
       console.log("Running checks in the other part");
 
-      try {  
+      try {
         let supplementary_checks = await run_pre_flight_checks(false);
         if (!supplementary_checks) {
           $("#sidebarCollapse").prop("disabled", false);
           return;
         }
-
       } catch (e) {
         // do nothing
-        return
+        return;
       }
     }
 
