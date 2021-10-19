@@ -76,6 +76,7 @@ MIN_SODA_VERSION = "5.0.1"
 
 
 class SodaApi(object):
+
     ### import milestone document
     def api_extract_milestone_info(self, filepath):
         datalist = import_milestone(filepath)
