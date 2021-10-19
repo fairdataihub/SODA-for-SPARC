@@ -712,7 +712,7 @@ def load_existing_submission_file(filepath):
     milestones = [DD_df["Value"][1]]
 
     for i in range(3, len(DD_df.columns)):
-        value = DD_df["Value "+str(i-1)]
+        value = DD_df["Value " + str(i - 1)]
         milestones.append(value[1])
 
     if DD_df["Value"][2]:
