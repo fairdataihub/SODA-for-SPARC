@@ -1708,6 +1708,7 @@ async function transitionSubQuestionsButton(
   }
 }
 
+
 async function transitionFreeFormMode(
   ev,
   currentDiv,

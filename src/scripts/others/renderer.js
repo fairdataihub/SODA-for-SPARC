@@ -145,6 +145,13 @@ client.invoke("echo", "server ready", (error, res) => {
   }
 });
 
+
+// TODO: Remove after making more sophisticated
+var input = document.querySelector('input[name=tags]');
+// initialize Tagify on the above input node reference
+new Tagify(input)
+
+
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
   ripple: true,
