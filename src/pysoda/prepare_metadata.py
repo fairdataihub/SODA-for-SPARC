@@ -151,6 +151,7 @@ def save_submission_file(filepath, json_str):
     wb.save(destination)
 
 
+
 def excel_columns(start_index=0):
     """
     NOTE: does not support more than 699 contributors/links
@@ -694,19 +695,17 @@ def load_existing_submission_file(filepath):
     DD_df_lower = [x.lower() for x in DD_df]
 
     for key in basicColumns:
-        if key not in DD_df:
+        if key not in DD_df_lower:
             raise Exception(
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
-            return DD_df
 
     for header_name in basicHeaders:
         submissionItems = [x.lower() for x in DD_df["Submission Item"]]
-        if header_name not in set(DD_df["Submission Item"]):
+        if header_name not in set(submissionItems):
             raise Exception(
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
-            return DD_df
 
     awardNo = DD_df["Value"][0]
     milestones = [DD_df["Value"][1]]

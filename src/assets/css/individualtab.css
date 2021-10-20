@@ -236,6 +236,11 @@
   margin-top: 10px;
 }
 
+.card-body.metadata {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
 .card-end {
   padding: 5px;
   padding-bottom: 10px;
