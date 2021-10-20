@@ -688,6 +688,14 @@ const showCurrentSubtitle = () => {
   }
 };
 
+// Add tags to dataset
+$("#button-add-tags").click(() => {
+  $("#bf-add-tags-dataset-spinner").show();
+  setTimeout(function () {
+    $("#bf-add-tags-dataset-spinner").hide();
+  }, delayAnimation)
+})
+
 const validateDescription = (description) => {
   description = description.trim();
 
