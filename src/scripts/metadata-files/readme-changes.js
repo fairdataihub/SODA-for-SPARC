@@ -1,3 +1,6 @@
+/////// Load SPARC airtable data
+var pennsieveHostname = "https://api.pennsieve.io";
+
 // function to generate changes or readme
 function generateRCFiles(type) {
   var textValue = $(`#textarea-create-${type}`).val().trim();
@@ -186,6 +189,14 @@ $(document).ready(function () {
         "Browse here";
       $("#div-confirm-existing-readme-import").hide();
     }
+  });
+
+  $("#bf_dataset_load_changes").on('DOMSubtreeModified',function(){
+    $("#div-check-bf-import-changes").css("display", "flex")
+  });
+
+  $("#bf_dataset_load_readme").on('DOMSubtreeModified',function(){
+    $("#div-check-bf-import-readme").css("display", "flex")
   });
 });
 
@@ -395,4 +406,46 @@ function resetRCFile(type) {
       $(`#textarea-create-${type}`).val("");
     }
   });
+}
+
+function checkBFImportRC(filetype) {
+  client.invoke(
+    "api_import_bf_readme_changes",
+    defaultBfAccount,
+    $(`#bf_dataset_load_${filetype}`).text().trim(),
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: `${emessage}`,
+        });
+      } else {
+        var datasetID = res
+        if (filetype === "readme") {
+          getReadmeBF(datasetID)
+        } else if (filetype === "changes") {
+          getChangesBF(datasetID)
+        }
+      }
+    }
+  );
+}
+
+// HTTP call to Pennsieve to get readme description of the dataset
+function getReadmeBF(datasetID) {
+  console.log(datasetID)
+  const optionsReadme = {
+    hostname: pennsieveHostname,
+    port: 443,
+    path: `/datasets/${datasetID}/readme`,
+  };
+  https.get(optionsReadme, (res) => {
+    if (res.statusCode === 200) {
+    }
+  })
 }

@@ -677,7 +677,15 @@ def checkEmptyColumn(column):
 
 
 def load_existing_submission_file(filepath):
-    DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
+
+    try:
+        DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
+
+    except:
+        raise Exception(
+            "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
+        )
+
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)
@@ -731,26 +739,33 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
 
-    for i in range(len(myds.items)):
-
-        if myds.items[i].name == file_type:
-
-            package_id = myds.items[i].id
-            file_details = bf._api._get("/packages/" + str(package_id) + "/view")
-            file_id = file_details[0]["content"]["id"]
-            fileURL = bf._api._get(
-                "/packages/" + str(package_id) + "/files/" + str(file_id)
-            )
-            raise Exception(fileURL["url"])
-            # if file_type == "submission.xlsx":
-            #     return load_existing_submission_file(fileURL["url"])
-            #
-            # elif file_type == "dataset_description.xlsx":
-            #     return load_existing_DD_file(fileURL["url"])
-
-    raise Exception(
-        f"No {file_type} file was found at the root of the dataset provided."
-    )
+    return json.dumps(myds)
+    # # try:
+    # for i in range(len(myds.items)):
+    #
+    #     if myds.items[i].name == file_type:
+    #
+    #         package_id = myds.items[i].id
+    #         file_details = bf._api._get("/packages/" + str(package_id) + "/view")
+    #         file_id = file_details[0]["content"]["id"]
+    #         fileURL = bf._api._get(
+    #             "/packages/" + str(package_id) + "/files/" + str(file_id)
+    #         )
+    #         substring_index = fileURL["url"].find("submission.xlsx") + 15
+    #         url = fileURL["url"][:substring_index]
+    #
+    #         if file_type == "submission.xlsx":
+    #             return load_existing_submission_file(url)
+    #
+    #         elif file_type == "dataset_description.xlsx":
+    #             return load_existing_DD_file(url)
+    #
+    #     return json.dumps(myds.items)
+    #
+    # except:
+    #     raise Exception(
+    #         f"No {file_type} file was found at the root of the dataset provided."
+    #     )
 
 
 def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
