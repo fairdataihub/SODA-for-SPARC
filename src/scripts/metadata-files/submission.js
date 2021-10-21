@@ -381,10 +381,9 @@ $(document).ready(function () {
     }
   });
 
-  $("#bf_dataset_load_submission").on('DOMSubtreeModified',function(){
-    $("#div-check-bf-import-submission").css("display", "flex")
+  $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
+    $("#div-check-bf-import-submission").css("display", "flex");
   });
-
 });
 
 function generateSubmissionHelper(fullpath, destinationPath) {
