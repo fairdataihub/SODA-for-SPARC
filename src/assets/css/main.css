@@ -662,7 +662,7 @@ button[data-id="bf_list_users_pi"] {
 }
 
 .metadata-button.button-generate-dataset.code-metadata {
-  display: none
+  display: none;
 }
 
 .metadata-button.button-generate-dataset.done {

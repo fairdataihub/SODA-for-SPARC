@@ -78,14 +78,20 @@ const showParentTab = (tabNow, nextOrPrev) => {
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
   } else {
-      if (tabNow === 3) {
-        if (Object.keys(datasetStructureJSONObj["folders"]).includes("code")) {
-          $(".metadata-button.button-generate-dataset.code-metadata").css("display", "block");
-        } else {
-          $(".metadata-button.button-generate-dataset.code-metadata").css("display", "none");
-        }
+    if (tabNow === 3) {
+      if (Object.keys(datasetStructureJSONObj["folders"]).includes("code")) {
+        $(".metadata-button.button-generate-dataset.code-metadata").css(
+          "display",
+          "block"
+        );
+      } else {
+        $(".metadata-button.button-generate-dataset.code-metadata").css(
+          "display",
+          "none"
+        );
       }
-      $("#nextBtn").prop("disabled", false);
+    }
+    $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 5) {
     // Disable the continue button if a destination has not been selected
@@ -619,8 +625,12 @@ const nextPrev = (n) => {
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
     var requiredFiles = ["submission", "dataset_description", "subjects"];
-    if ($(".metadata-button.button-generate-dataset.code-metadata").css("display") === "block") {
-      requiredFiles.push("code_description")
+    if (
+      $(".metadata-button.button-generate-dataset.code-metadata").css(
+        "display"
+      ) === "block"
+    ) {
+      requiredFiles.push("code_description");
     }
     var withoutExtMetadataArray = [];
     if (!("metadata-files" in sodaJSONObj)) {
@@ -635,13 +645,12 @@ const nextPrev = (n) => {
       withoutExtMetadataArray.includes(val)
     );
     if (requiredFiles.includes("code_description")) {
-      var extraRequiredFile = "<li> code_description</li>"
+      var extraRequiredFile = "<li> code_description</li>";
     } else {
-      var extraRequiredFile = ""
+      var extraRequiredFile = "";
     }
     if (!subArrayBoolean) {
-      var notIncludedMessage =
-        `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
+      var notIncludedMessage = `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -2436,7 +2445,11 @@ const updateJSONStructureMetadataFiles = () => {
     "Your SPARC metadata file must be named and formatted exactly as listed above!",
   ];
 
-  if ($(".metadata-button.button-generate-dataset.code-metadata").css("display") === "block") {
+  if (
+    $(".metadata-button.button-generate-dataset.code-metadata").css(
+      "display"
+    ) === "block"
+  ) {
     var codeDescriptionFilePath = document.getElementById(
       "para-codeDescription-file-path"
     ).innerHTML;
