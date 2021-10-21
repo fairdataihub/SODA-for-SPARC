@@ -2131,7 +2131,7 @@ function checkBFImportDD() {
           text: `${emessage}`,
         });
       } else {
-          console.log(res)
+        console.log(res);
         // loadDDFileToUI(res);
       }
     }

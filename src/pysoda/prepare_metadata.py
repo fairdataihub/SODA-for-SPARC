@@ -151,7 +151,6 @@ def save_submission_file(filepath, json_str):
     wb.save(destination)
 
 
-
 def excel_columns(start_index=0):
     """
     NOTE: does not support more than 699 contributors/links
