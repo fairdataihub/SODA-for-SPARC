@@ -674,7 +674,8 @@ function checkBFImportSubmission() {
           text: `${emessage}`,
         });
       } else {
-        loadSubmissionFileToUI(res);
+        console.log(res)
+        // loadSubmissionFileToUI(res);
       }
     }
   );
