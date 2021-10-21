@@ -67,7 +67,7 @@ from prepare_metadata import (
     load_existing_submission_file,
     import_bf_sub_sam,
     import_bf_sub_DD,
-    import_bf_readme_changes
+    import_bf_readme_changes,
 )
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
@@ -120,12 +120,8 @@ class SodaApi(object):
             filetype, ui_field, selected_bfaccount, selected_bfdataset
         )
 
-    def api_import_bf_readme_changes(
-        self, selected_bfaccount, selected_bfdataset
-    ):
-        return import_bf_readme_changes(
-            selected_bfaccount, selected_bfdataset
-        )
+    def api_import_bf_readme_changes(self, selected_bfaccount, selected_bfdataset):
+        return import_bf_readme_changes(selected_bfaccount, selected_bfdataset)
 
     ### Save samples file
     def api_save_samples_file(self, filepath, datastructure):

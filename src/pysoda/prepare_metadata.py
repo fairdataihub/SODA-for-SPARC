@@ -678,7 +678,9 @@ def checkEmptyColumn(column):
 def load_existing_submission_file(filepath):
 
     try:
-        DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
+        DD_df = pd.read_excel(
+            filepath, engine="openpyxl", usecols=column_check, header=0
+        )
 
     except:
         raise Exception(
