@@ -6650,7 +6650,14 @@ async function get_api_key_and_secret() {
         cognitoUser.authenticateUser(authenticationDetails, {
           onSuccess: function(authenticationResponse) {
             // User authentication was successful and we received a CognitoUserSession object
-            console.log(authenticationResponse)
+            console.log("The authentication response from AWSCognito", authenticationResponse)
+
+            // fs.writeFile("cognitoSession.json", JSON.stringify(authenticationResponse), function (err) {
+            //   if(err) {
+            //     console.error(err)
+            //   }
+            //   console.log("Success")
+            // })
 
             // get the api_key from the CognitoUserSession 
             const api_key = authenticationResponse["accessToken"]["jwtToken"]
@@ -6675,6 +6682,9 @@ async function get_api_key_and_secret() {
               let changeOrganizationData = await changeOrganizationResponse.json()
 
              // TODO: Add back code that confirms user changed their organization
+
+
+             
 
 
             }).catch(err => {
