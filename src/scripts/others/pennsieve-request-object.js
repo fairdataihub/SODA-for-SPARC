@@ -91,3 +91,35 @@ class PennsieveRequestClient {
 // make any requests you want -- in some places the organization is set in advance so i need to be able to set that if they have it set and catch it if they don't and is required
 //                               or perhaps just let the api endpoint be their guide there
 // await ps.fetch("/user", {authenticate: true}, Methods.POST)
+
+
+
+
+
+// Alternative approach
+
+//  No classes. Use imported fetch client in each script where we make API requests to Pennsieve. 
+//  First to handle in the flow is to check if the user's given api key and api secret are in the .ini files
+//  This can be part of a getSettings function
+//  const getSettings = (sectionName) => {
+        // check that the user has an API key and an API secret as a prerequisiste to reading their setting information
+        //      If no key and secret then throw an error and halt processing
+        // create an empty object for the settings   
+//      // read the configuraton file at the given section name
+            // for each key place the values in the object
+        
+//      return a dictionary with all of the available values 
+//}
+
+// const authenticateAccountWithApiKeyAndSecret(api_key, api_secret){
+//  do all of the api stuff outlined before
+//  check if there was an error with validation
+//      throw if so
+//  else return the cognito session's access token
+//}
+
+// For all subsequent requests in a given function:
+//  const settings = await getSettings(section)
+//  const accessToken = await authenticateAccountWtihApiKeyAndSecret(api_key, api_secret)
+//  const url = "https://pennsieve.io/api/v1"
+//  let userDatasets = await fetch(`url/search/datasets?organizationId=${settings.organizationId}`, {headers: {Authorization: `Bearer ${accessToken}`}})
