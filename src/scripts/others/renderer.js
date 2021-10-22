@@ -31,6 +31,10 @@ const tippy = require("tippy.js").default;
 const introJs = require("intro.js");
 const selectpicker = require("bootstrap-select");
 
+
+require('cross-fetch/polyfill');
+const cognitoClient = require('amazon-cognito-identity-js');
+
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
@@ -145,12 +149,10 @@ client.invoke("echo", "server ready", (error, res) => {
   }
 });
 
-
 // TODO: Remove after making more sophisticated
-var input = document.querySelector('input[name=tags]');
+var input = document.querySelector("input[name=tags]");
 // initialize Tagify on the above input node reference
-new Tagify(input)
-
+new Tagify(input);
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -4742,14 +4744,14 @@ function fileContextMenu(event) {
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   tippy("[data-tippy-content]", {
     allowHTML: true,
     interactive: true,
     placement: "top",
     theme: "light",
   });
-})
+});
 
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
@@ -6587,4 +6589,115 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
       }
     }
   );
+}
+
+// TODO: Remove if this doesn't work
+async function get_api_key_and_secret() {
+  const PENNSIEVE_URL = "https://api.pennsieve.io";
+
+  https.get(`${PENNSIEVE_URL}/authentication/cognito-config`, (res) => {
+    console.log("statusCode:", res.statusCode);
+    console.log("headers:", res.rawHeaders);
+
+    let data = ""
+    let url = ""
+  
+    res
+      .on("data", (d) => {
+       data = JSON.parse(d)
+       console.log(data)
+      })
+      .on("end", function () {
+        if (!res.complete) console.error('The connection was terminated while the message was still being sent');
+
+        let cognito_app_client_id = data["userPool"]["appClientId"]
+        let cognito_pool_id = data["userPool"]["id"]
+        let cognito_region = data["userPool"]["region"]
+
+        console.log(data)
+        console.log(cognito_app_client_id)
+        console.log(cognito_region)
+
+        var authParams = {
+          Username: '',
+          Password: '',
+        };
+
+        
+        var authenticationDetails = new cognitoClient.AuthenticationDetails(
+          authParams
+        );
+
+        var poolData = {
+          UserPoolId: cognito_pool_id,
+          ClientId: cognito_app_client_id, // Your client id here
+        };
+
+        var userPool = new cognitoClient.CognitoUserPool(poolData);
+
+        var userData = {
+	          Username: '',
+	          Pool: userPool,
+        };
+
+        var cognitoUser = new cognitoClient.CognitoUser(userData);
+
+
+        // tell the cognito user object to login using a user password flow
+        cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH')
+
+        // authenticate the user 
+        cognitoUser.authenticateUser(authenticationDetails, {
+          onSuccess: function(authenticationResponse) {
+            // User authentication was successful and we received a CognitoUserSession object
+            console.log(authenticationResponse)
+
+            // get the api_key from the CognitoUserSession 
+            const api_key = authenticationResponse["accessToken"]["jwtToken"]
+
+            // give the Pennsieve endpoint the api key as a bearer token
+            fetch(`${PENNSIEVE_URL}/user`, {headers: {'Authorization': `Bearer ${api_key}`}}).then( async response => {
+              let userInformation = await response.json()
+              console.log(userInformation)
+
+              url = "https://api.pennsieve.io/session/switch-organization"
+              let sparc_org_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+              let queryString = {
+                "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+              }
+              let headers = {"Accept": "application/json", "Authorization": `Bearer ${api_key}`}
+
+              let changeOrganizationResponse = await fetch(`${url}?organization_id=${queryString["organization_id"]}`, {
+                method: 'PUT',
+                headers,
+              })
+
+              let changeOrganizationData = await changeOrganizationResponse.json()
+
+             // TODO: Add back code that confirms user changed their organization
+
+
+            }).catch(err => {
+              console.error(err)
+            })
+          },
+          onFailure: function(err) {
+            // User authentication was not successful
+            console.error(err)
+          },
+        })
+
+
+
+      });
+  });
+
+
+}
+
+get_api_key_and_secret();
+
+
+async function verify_api_key_and_secret() {
+
 }
