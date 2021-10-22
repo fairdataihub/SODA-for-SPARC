@@ -7,9 +7,6 @@
 // TODO: Check that this does everything important the Python client does
 //              Things not done:
 //                  -Request retries and keeping open a TCP connection for speed (not essential)
-//                  -Reading and storing the current user profile/settings like the client (essential? Maybe. It is nice that the client reads all of the session information from the config so we don't always have to)
-//                      - There also seems to be something interesting with the  global profile that I'm not sure is essential
-//                  -
 //                  -Pagination variables for defining the offset and limit, etc. (not essential since there are defaults )
 //                  -Integration with Pennsieve agent - this may be very important for performance, but perhaps there will be workarounds with other tools
 //              Things done:
@@ -22,12 +19,25 @@
 // Reservations: Won't we have problems with file uploads once we make the conversion?
 class PennsieveRequestClient {
 
+    //params list:
+
+    // settings: {
+        // baseURL: string
+        // api_key: string
+        // api_secret: string 
+        // account/profile?: string
+        // organization/context?: string
+    // }
+
+    // getters:
+    // getAccount() {return settings.account}
+    // getContext() {return settings.context}
+
     // constructor(configSection)
         // check for an api key and secret under the given config section
-            // if no api key or secret throw an error 
-        // set the api_key to the api-key key from the config
-        // set the secret from the secret-key key from the config
-        // set the organization/context, and token to null/undefined
+            // if no api key or secret throw an error
+        // read the settings file information and do that work as is defined in the function
+        
         
     
     // async populateBearerToken()
@@ -61,6 +71,10 @@ class PennsieveRequestClient {
     
     // fetch(endPointFromBase: string, queryParams?: paramList, bodyParams?: bodyList, method: Enum) 
         //  create the fetch options object using the parameters and the properties 
+
+        // const qs = Object.keys(params)
+        //     .map(key => `${key}=${params[key]}`)
+        //     .join('&');
 
         // make the request
 
