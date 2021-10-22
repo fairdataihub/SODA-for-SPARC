@@ -6758,4 +6758,17 @@ const api_bf_add_account_username = async (key_name, apiKey, apiSecret) => {
   //  throw the error to a central error handler or a callee that will return a status code error to the user 
 }
 
-const api_bf_add_account_details = async ()
+// 
+const api_bf_account_details = async (account) => {
+  // read the current settings and get the settings object
+  // authenticate the user using the ini information stored at the account 
+  // create a url to Pennsieve's base api url
+  // reach out to the bf user endpoint and get the user object
+  // if there is an error throw and let an error handler do the work or just return a status code
+  // get the email and organization out of the result and add them together into set of account details
+  // if a path to the config file exists then create the ini reader and read the ini file
+  // check if the ini file has the global section
+    //  if not add it as well as a default_profile key that uses the account as the value
+    //  else simply add the account under default_profile
+  // return the account detaul string that was created
+}
