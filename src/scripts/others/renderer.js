@@ -6684,9 +6684,10 @@ async function get_api_key_and_secret() {
              // TODO: Add back code that confirms user changed their organization
 
 
+             // get the access token by reaching out to Pennsieve apis
+
+             // send back this object: {"success", response["key"], response["secret"], response["name"]}
              
-
-
             }).catch(err => {
               console.error(err)
             })
@@ -6707,7 +6708,54 @@ async function get_api_key_and_secret() {
 
 get_api_key_and_secret();
 
-
-async function verify_api_key_and_secret() {
-
+// import authenticateUserWithAPIKeyAndSecret
+async function authenticateUserWithAPIKeyAndSecret() {
 }
+
+
+// step two in authentication flow:
+// Add account username to ini file
+const api_bf_add_account_username = async (key_name, apiKey, apiSecret) => {
+  // create a temporary key titled "SODA_temp_generated"
+
+  // join the path to the user's home directory with the path to the pennsieve folder
+
+  // configure the ini parser (imported from npm -- npm i ini )
+
+  // check that the path to the configuration file exists
+
+  //  if so read the configuration file
+  //  else create the pennsieve directory if it doesn't exists and create the cache file if it doesn't exist
+
+  // skip the agent section?
+
+  // add the temp key to the ini file and give it the apiKey and apiSecret
+
+  // authenticate the user's secret key and api key 
+  // if success do nothing 
+  // if error then delete the api key and secret by deleting the temp key 
+
+  // grab the user's organization from the cognito session information by verifying the claims
+
+    // check that the user's organization(s) is or has "Sparc Consortium" in the list
+    //  if not throw an error "Error: Please check that your account is within the SPARC Consortium Organization"
+
+    // check if the ini file does not have a global section
+      // add one if not
+  
+    // add to the global section a default_profile key and assign it the value SODA_SPARC_API_KEY
+
+    // check if the ini file does not have a SODA_SPARC_API_KEY section
+      // add one if not 
+
+    // add the api key and secret to the SODA_SPARC_API_KEY section of the ini file
+
+    // delete the temp keyname from the ini
+
+    // return "Successfully added account"
+
+  // if any error occurs delete the temp keyname from the account -- probably make this a separate function 
+  //  throw the error to a central error handler or a callee that will return a status code error to the user 
+}
+
+const api_bf_add_account_details = async ()

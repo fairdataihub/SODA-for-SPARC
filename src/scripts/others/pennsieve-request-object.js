@@ -34,10 +34,7 @@ class PennsieveRequestClient {
     // getContext() {return settings.context}
 
     // constructor(configSection)
-        // check for an api key and secret under the given config section
-            // if no api key or secret throw an error
-        // read the settings file information and do that work as is defined in the function
-        
+       // set all settings to null 
         
     
     // async populateBearerToken()
@@ -85,7 +82,7 @@ class PennsieveRequestClient {
 
     // reads the settings releveant for a user in the .ini file. 
     // sets setting values in the object to null if none are found
-    // readSettings(configSection)
+    // populateSettings(configSection)
         //  Go to the .ini file location and read the api_key and api_secret
 
         //read the context from the .ini file
@@ -129,11 +126,11 @@ class PennsieveRequestClient {
 //  do all of the api stuff outlined before
 //  check if there was an error with validation
 //      throw if so
-//  else return the cognito session's access token
+//  else return the cognito session
 //}
 
 // For all subsequent requests in a given function:
 //  const settings = await getSettings(section)
-//  const accessToken = await authenticateAccountWtihApiKeyAndSecret(api_key, api_secret)
+//  const accessToken = await authenticateAccountWtihApiKeyAndSecret(api_key, api_secret)["user"][accessToken]
 //  const url = "https://pennsieve.io/api/v1"
 //  let userDatasets = await fetch(`url/search/datasets?organizationId=${settings.organizationId}`, {headers: {Authorization: `Bearer ${accessToken}`}})
