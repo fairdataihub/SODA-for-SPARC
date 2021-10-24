@@ -30,6 +30,8 @@ const { JSONStorage } = require("node-localstorage");
 const tippy = require("tippy.js").default;
 const introJs = require("intro.js");
 const selectpicker = require("bootstrap-select");
+const ini = require("ini");
+const { homedir } = require("os");
 
 require("cross-fetch/polyfill");
 const cognitoClient = require("amazon-cognito-identity-js");
@@ -6670,21 +6672,42 @@ const authenticateWithCognito = async (
 };
 
 // read the .ini file for the current user's api key and secret
-const get_api_key_and_secret_from_ini = async () => {
+const get_api_key_and_secret_from_ini = () => {
+  const expanduser = (text) =>
+    text.replace(/^~([a-z]+|\/)/, (_, $1) =>
+      $1 === "/" ? homedir() : `${path.dirname(homedir())}/${$1}`
+    );
+
   // initialize the ini reader
-  // check that an ini file does not exist
-  // throw an error
-  // read the ini file
+  const userpath = expanduser("~/");
+  const config_path = path.join(userpath, ".pennsieve", "config.ini");
+  let config;
+  try {
+    config = ini.parse(fs.readFileSync(`${config_path}`, "utf-8"));
+  } catch (e) {
+    throw e;
+  }
+
   // check that an api key and secret does ot exist
-  // throw an error
+  if (
+    !config["SODA-Pennsieve"]["api_secret"] ||
+    !config["SODA-Pennsieve"]["api_token"]
+  ) {
+    // throw an error
+    throw new Error("No api token or secret");
+  }
+
   // return the user's api key and secret
+  const { api_key, api_secret } = config["SODA-Pennsieve"];
+  // console.log(api_key, api_secret)
+  return { api_key, api_secret };
 };
 
 const get_access_token = async () => {
   // read the current user's ini file and get back their api key and secret
   let userInformation;
   try {
-    userInformation = await get_api_key_and_secret_from_ini();
+    userInformation = get_api_key_and_secret_from_ini();
   } catch (e) {
     throw e;
   }
@@ -6699,13 +6722,18 @@ const get_access_token = async () => {
 
   // get the access token from the cognito service for this user using the api key and secret for the current user
   let access_token;
-  let { api_key, secret } = userInformation;
+  let { api_key, api_secret } = userInformation;
   try {
-    access_token = await authenticateWithCognito(configData, api_key, secret);
+    access_token = await authenticateWithCognito(
+      configData,
+      api_key,
+      api_secret
+    );
   } catch (e) {
     throw e;
   }
 
+  console.log(access_token);
   return access_token;
 };
 
