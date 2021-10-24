@@ -31,9 +31,8 @@ const tippy = require("tippy.js").default;
 const introJs = require("intro.js");
 const selectpicker = require("bootstrap-select");
 
-
-require('cross-fetch/polyfill');
-const cognitoClient = require('amazon-cognito-identity-js');
+require("cross-fetch/polyfill");
+const cognitoClient = require("amazon-cognito-identity-js");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -6591,184 +6590,174 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
   );
 }
 
-// TODO: Remove if this doesn't work
-async function get_api_key_and_secret() {
+const getCognitoConfig = async () => {
   const PENNSIEVE_URL = "https://api.pennsieve.io";
+  let cognitoCongigResponse;
+  try {
+    cognitoCongigResponse = await fetch(
+      `${PENNSIEVE_URL}/authentication/cognito-config`
+    );
+  } catch (e) {
+    throw e;
+  }
 
-  https.get(`${PENNSIEVE_URL}/authentication/cognito-config`, (res) => {
-    console.log("statusCode:", res.statusCode);
-    console.log("headers:", res.rawHeaders);
+  let cognitoConfigData = await cognitoCongigResponse.json();
+  console.log(`Result of cognito config is: ${cognitoConfigData}`);
+  return cognitoConfigData;
+};
 
-    let data = ""
-    let url = ""
-  
-    res
-      .on("data", (d) => {
-       data = JSON.parse(d)
-       console.log(data)
-      })
-      .on("end", function () {
-        if (!res.complete) console.error('The connection was terminated while the message was still being sent');
+// authenticate a user with username and password or api key and secret
+const authenticateWithCognito = async (
+  cognitoConfigurationData,
+  usernameOrApiKey,
+  passwordOrSecret
+) => {
+  let cognito_app_client_id =
+    cognitoConfigurationData["userPool"]["appClientId"];
+  let cognito_pool_id = cognitoConfigurationData["userPool"]["id"];
+  let cognito_region = cognitoConfigurationData["userPool"]["region"];
 
-        let cognito_app_client_id = data["userPool"]["appClientId"]
-        let cognito_pool_id = data["userPool"]["id"]
-        let cognito_region = data["userPool"]["region"]
+  var authParams = {
+    Username: `${usernameOrApiKey}`,
+    Password: `${passwordOrSecret}`,
+  };
 
-        console.log(data)
-        console.log(cognito_app_client_id)
-        console.log(cognito_region)
+  var authenticationDetails = new cognitoClient.AuthenticationDetails(
+    authParams
+  );
 
-        var authParams = {
-          Username: '',
-          Password: '',
-        };
+  var poolData = {
+    UserPoolId: cognito_pool_id,
+    ClientId: cognito_app_client_id, // Your client id here
+  };
 
-        
-        var authenticationDetails = new cognitoClient.AuthenticationDetails(
-          authParams
-        );
+  var userPool = new cognitoClient.CognitoUserPool(poolData);
 
-        var poolData = {
-          UserPoolId: cognito_pool_id,
-          ClientId: cognito_app_client_id, // Your client id here
-        };
+  var userData = {
+    Username: `${usernameOrApiKey}`,
+    Pool: userPool,
+  };
 
-        var userPool = new cognitoClient.CognitoUserPool(poolData);
+  var cognitoUser = new cognitoClient.CognitoUser(userData);
 
-        var userData = {
-	          Username: '',
-	          Pool: userPool,
-        };
+  // tell the cognito user object to login using a user password flow
+  cognitoUser.setAuthenticationFlowType("USER_PASSWORD_AUTH");
 
-        var cognitoUser = new cognitoClient.CognitoUser(userData);
+  console.log(data);
+  console.log(cognito_app_client_id);
+  console.log(cognito_region);
 
+  cognitoUser.authenticateUser(authenticationDetails, {
+    onSuccess: function (authenticationResponse) {
+      // User authentication was successful and we received a CognitoUserSession object
+      console.log(
+        "The authentication response from AWSCognito",
+        authenticationResponse
+      );
 
-        // tell the cognito user object to login using a user password flow
-        cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH')
+      // get the api_key/access token from the CognitoUserSession
+      const accessTokenOrApiKey =
+        authenticationResponse["accessToken"]["jwtToken"];
 
-        // authenticate the user 
-        cognitoUser.authenticateUser(authenticationDetails, {
-          onSuccess: function(authenticationResponse) {
-            // User authentication was successful and we received a CognitoUserSession object
-            console.log("The authentication response from AWSCognito", authenticationResponse)
-
-            // fs.writeFile("cognitoSession.json", JSON.stringify(authenticationResponse), function (err) {
-            //   if(err) {
-            //     console.error(err)
-            //   }
-            //   console.log("Success")
-            // })
-
-            // get the api_key from the CognitoUserSession 
-            const api_key = authenticationResponse["accessToken"]["jwtToken"]
-
-            // give the Pennsieve endpoint the api key as a bearer token
-            fetch(`${PENNSIEVE_URL}/user`, {headers: {'Authorization': `Bearer ${api_key}`}}).then( async response => {
-              let userInformation = await response.json()
-              console.log(userInformation)
-
-              url = "https://api.pennsieve.io/session/switch-organization"
-              let sparc_org_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-              let queryString = {
-                "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-              }
-              let headers = {"Accept": "application/json", "Authorization": `Bearer ${api_key}`}
-
-              let changeOrganizationResponse = await fetch(`${url}?organization_id=${queryString["organization_id"]}`, {
-                method: 'PUT',
-                headers,
-              })
-
-              let changeOrganizationData = await changeOrganizationResponse.json()
-
-             // TODO: Add back code that confirms user changed their organization
-
-
-             // get the access token by reaching out to Pennsieve apis
-
-             // send back this object: {"success", response["key"], response["secret"], response["name"]}
-             
-            }).catch(err => {
-              console.error(err)
-            })
-          },
-          onFailure: function(err) {
-            // User authentication was not successful
-            console.error(err)
-          },
-        })
-
-
-
-      });
+      return accessTokenOrApiKey;
+    },
+    onFailure: function (err) {
+      // User authentication was not successful
+      console.error(err);
+      throw err;
+    },
   });
+};
 
+// read the .ini file for the current user's api key and secret
+const get_api_key_and_secret_from_ini = async () => {
+  // initialize the ini reader
+  // check that an ini file does not exist
+  // throw an error
+  // read the ini file
+  // check that an api key and secret does ot exist
+  // throw an error
+  // return the user's api key and secret
+};
 
-}
+const get_access_token = async () => {
+  // read the current user's ini file and get back their api key and secret
+  let userInformation;
+  try {
+    userInformation = await get_api_key_and_secret_from_ini();
+  } catch (e) {
+    throw e;
+  }
 
-get_api_key_and_secret();
+  // get the cognito configuration data for the given user
+  let configData;
+  try {
+    configData = await getCognitoConfig();
+  } catch (e) {
+    throw e;
+  }
 
-// import authenticateUserWithAPIKeyAndSecret
-async function authenticateUserWithAPIKeyAndSecret() {
-}
+  // get the access token from the cognito service for this user using the api key and secret for the current user
+  let access_token;
+  let { api_key, secret } = userInformation;
+  try {
+    access_token = await authenticateWithCognito(configData, api_key, secret);
+  } catch (e) {
+    throw e;
+  }
 
+  return access_token;
+};
+
+get_access_token();
+
+// get the tags from the Pennsieve API
+const getDatasetTags = async (datasetId) => {
+  // get the user's access token
+  // fetch the tags for their dataset using the Pennsieve API
+  // return the tags
+};
 
 // step two in authentication flow:
 // Add account username to ini file
 const api_bf_add_account_username = async (key_name, apiKey, apiSecret) => {
   // create a temporary key titled "SODA_temp_generated"
-
   // join the path to the user's home directory with the path to the pennsieve folder
-
   // configure the ini parser (imported from npm -- npm i ini )
-
   // check that the path to the configuration file exists
-
   //  if so read the configuration file
   //  else create the pennsieve directory if it doesn't exists and create the cache file if it doesn't exist
-
   // skip the agent section?
-
   // add the temp key to the ini file and give it the apiKey and apiSecret
-
-  // authenticate the user's secret key and api key 
-  // if success do nothing 
-  // if error then delete the api key and secret by deleting the temp key 
-
+  // authenticate the user's secret key and api key
+  // if success do nothing
+  // if error then delete the api key and secret by deleting the temp key
   // grab the user's organization from the cognito session information by verifying the claims
+  // check that the user's organization(s) is or has "Sparc Consortium" in the list
+  //  if not throw an error "Error: Please check that your account is within the SPARC Consortium Organization"
+  // check if the ini file does not have a global section
+  // add one if not
+  // add to the global section a default_profile key and assign it the value SODA_SPARC_API_KEY
+  // check if the ini file does not have a SODA_SPARC_API_KEY section
+  // add one if not
+  // add the api key and secret to the SODA_SPARC_API_KEY section of the ini file
+  // delete the temp keyname from the ini
+  // return "Successfully added account"
+  // if any error occurs delete the temp keyname from the account -- probably make this a separate function
+  //  throw the error to a central error handler or a callee that will return a status code error to the user
+};
 
-    // check that the user's organization(s) is or has "Sparc Consortium" in the list
-    //  if not throw an error "Error: Please check that your account is within the SPARC Consortium Organization"
-
-    // check if the ini file does not have a global section
-      // add one if not
-  
-    // add to the global section a default_profile key and assign it the value SODA_SPARC_API_KEY
-
-    // check if the ini file does not have a SODA_SPARC_API_KEY section
-      // add one if not 
-
-    // add the api key and secret to the SODA_SPARC_API_KEY section of the ini file
-
-    // delete the temp keyname from the ini
-
-    // return "Successfully added account"
-
-  // if any error occurs delete the temp keyname from the account -- probably make this a separate function 
-  //  throw the error to a central error handler or a callee that will return a status code error to the user 
-}
-
-// 
+//
 const api_bf_account_details = async (account) => {
   // read the current settings and get the settings object
-  // authenticate the user using the ini information stored at the account 
+  // authenticate the user using the ini information stored at the account
   // create a url to Pennsieve's base api url
   // reach out to the bf user endpoint and get the user object
   // if there is an error throw and let an error handler do the work or just return a status code
   // get the email and organization out of the result and add them together into set of account details
   // if a path to the config file exists then create the ini reader and read the ini file
   // check if the ini file has the global section
-    //  if not add it as well as a default_profile key that uses the account as the value
-    //  else simply add the account under default_profile
+  //  if not add it as well as a default_profile key that uses the account as the value
+  //  else simply add the account under default_profile
   // return the account detaul string that was created
-}
+};
