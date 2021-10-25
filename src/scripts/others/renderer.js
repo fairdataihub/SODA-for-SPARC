@@ -6604,20 +6604,24 @@ const getCognitoConfig = async () => {
   }
 
   let cognitoConfigData = await cognitoCongigResponse.json();
-  console.log(`Result of cognito config is: ${cognitoConfigData}`);
+  console.log(`Result of cognito config is: `, cognitoConfigData);
   return cognitoConfigData;
 };
 
-// authenticate a user with username and password or api key and secret
+// authenticate a user with api key and api secret
+// this steo is to validate a user is who they say they are
 const authenticateWithCognito = async (
   cognitoConfigurationData,
   usernameOrApiKey,
   passwordOrSecret
 ) => {
+  console.log("aws cog: ", usernameOrApiKey);
+  console.log("aws cog: ", passwordOrSecret);
+
   let cognito_app_client_id =
-    cognitoConfigurationData["userPool"]["appClientId"];
-  let cognito_pool_id = cognitoConfigurationData["userPool"]["id"];
-  let cognito_region = cognitoConfigurationData["userPool"]["region"];
+    cognitoConfigurationData["tokenPool"]["appClientId"];
+  let cognito_pool_id = cognitoConfigurationData["tokenPool"]["id"];
+  let cognito_region = cognitoConfigurationData["region"];
 
   var authParams = {
     Username: `${usernameOrApiKey}`,
@@ -6688,6 +6692,8 @@ const get_api_key_and_secret_from_ini = () => {
     throw e;
   }
 
+  console.log(config);
+
   // check that an api key and secret does ot exist
   if (
     !config["SODA-Pennsieve"]["api_secret"] ||
@@ -6698,9 +6704,8 @@ const get_api_key_and_secret_from_ini = () => {
   }
 
   // return the user's api key and secret
-  const { api_key, api_secret } = config["SODA-Pennsieve"];
-  // console.log(api_key, api_secret)
-  return { api_key, api_secret };
+  const { api_token, api_secret } = config["SODA-Pennsieve"];
+  return { api_token, api_secret };
 };
 
 const get_access_token = async () => {
@@ -6722,11 +6727,11 @@ const get_access_token = async () => {
 
   // get the access token from the cognito service for this user using the api key and secret for the current user
   let access_token;
-  let { api_key, api_secret } = userInformation;
+  let { api_token, api_secret } = userInformation;
   try {
     access_token = await authenticateWithCognito(
       configData,
-      api_key,
+      api_token,
       api_secret
     );
   } catch (e) {
