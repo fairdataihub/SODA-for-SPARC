@@ -693,8 +693,8 @@ $("#button-add-tags").click(() => {
   $("#bf-add-tags-dataset-spinner").show();
   setTimeout(function () {
     $("#bf-add-tags-dataset-spinner").hide();
-  }, delayAnimation)
-})
+  }, delayAnimation);
+});
 
 const validateDescription = (description) => {
   description = description.trim();

@@ -1708,7 +1708,6 @@ async function transitionSubQuestionsButton(
   }
 }
 
-
 async function transitionFreeFormMode(
   ev,
   currentDiv,
@@ -1716,7 +1715,7 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
-  console.log("The event is coming from: ", ev)
+  console.log("The event is coming from: ", ev);
   if ($(ev).attr("data-current") === "Question-prepare-subjects-1") {
     if (subjectsTableData.length !== 0) {
       var { value: continueProgressSubjects } = await Swal.fire({
@@ -1853,9 +1852,9 @@ async function transitionFreeFormMode(
   }
 
   // first, handle target or the next div to show
-  console.log("Data next attribute is: ", ev.getAttribute('data-next'))
+  console.log("Data next attribute is: ", ev.getAttribute("data-next"));
   var target = document.getElementById(ev.getAttribute("data-next"));
-  console.log("Target is at firts:", target)
+  console.log("Target is at firts:", target);
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
@@ -1871,7 +1870,7 @@ async function transitionFreeFormMode(
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {
-    console.log(ev)
+    console.log(ev);
     if ($(ev).siblings().length > 0) {
       setTimeout(function () {
         $(ev).siblings().hide();
@@ -1900,9 +1899,9 @@ async function transitionFreeFormMode(
     }
   }
 
-  console.log("Parent div is:", parentDiv)
-  console.log("Target is: ", target)
-  console.log("Events attribute is", ev.getAttribute("data-next"))
+  console.log("Parent div is:", parentDiv);
+  console.log("Target is: ", target);
+  console.log("Events attribute is", ev.getAttribute("data-next"));
 
   document.getElementById(parentDiv).appendChild(target);
   document.getElementById(currentDiv).classList.add("prev");
