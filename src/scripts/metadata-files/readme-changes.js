@@ -191,12 +191,12 @@ $(document).ready(function () {
     }
   });
 
-  $("#bf_dataset_load_changes").on('DOMSubtreeModified',function(){
-    $("#div-check-bf-import-changes").css("display", "flex")
+  $("#bf_dataset_load_changes").on("DOMSubtreeModified", function () {
+    $("#div-check-bf-import-changes").css("display", "flex");
   });
 
-  $("#bf_dataset_load_readme").on('DOMSubtreeModified',function(){
-    $("#div-check-bf-import-readme").css("display", "flex")
+  $("#bf_dataset_load_readme").on("DOMSubtreeModified", function () {
+    $("#div-check-bf-import-readme").css("display", "flex");
   });
 });
 
@@ -425,11 +425,11 @@ function checkBFImportRC(filetype) {
           text: `${emessage}`,
         });
       } else {
-        var datasetID = res
+        var datasetID = res;
         if (filetype === "readme") {
-          getReadmeBF(datasetID)
+          getReadmeBF(datasetID);
         } else if (filetype === "changes") {
-          getChangesBF(datasetID)
+          getChangesBF(datasetID);
         }
       }
     }
@@ -438,7 +438,7 @@ function checkBFImportRC(filetype) {
 
 // HTTP call to Pennsieve to get readme description of the dataset
 function getReadmeBF(datasetID) {
-  console.log(datasetID)
+  console.log(datasetID);
   const optionsReadme = {
     hostname: pennsieveHostname,
     port: 443,
@@ -447,5 +447,5 @@ function getReadmeBF(datasetID) {
   https.get(optionsReadme, (res) => {
     if (res.statusCode === 200) {
     }
-  })
+  });
 }
