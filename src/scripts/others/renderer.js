@@ -6636,7 +6636,7 @@ const api_bf_account_details = async (account) => {
   // return the account detaul string that was created
 };
 
-const getCognitoConfig = async () => {
+const get_cognito_config = async () => {
   const PENNSIEVE_URL = "https://api.pennsieve.io";
   let cognitoCongigResponse;
   try {
@@ -6739,7 +6739,7 @@ const get_access_token = async () => {
   // get the cognito configuration data for the given user
   let configData;
   try {
-    configData = await getCognitoConfig();
+    configData = await get_cognito_config();
   } catch (e) {
     throw e;
   }
