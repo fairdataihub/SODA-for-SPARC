@@ -737,8 +737,7 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
-
-def import_bf_sub_DD(file_type, bfaccount, bfdataset):
+def import_bf_file(file_type, ui_fields, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
 
@@ -755,33 +754,17 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
             elif file_type == "dataset_description.xlsx":
                 return load_existing_DD_file("bf", url)
 
-    raise Exception(
-        f"No {file_type} file was found at the root of the dataset provided."
-    )
-
-
-def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
-    bf = Pennsieve(bfaccount)
-    myds = bf.get_dataset(bfdataset)
-
-    for i in range(len(myds.items)):
-
-        if myds.items[i].name == file_type:
-
-            item_id = myds.items[i].id
-            url = returnFileURL(bf, item_id)
-
-            if file_type == "subjects.xlsx":
+            elif file_type == "subjects.xlsx":
                 return convert_subjects_samples_file_to_df("subjects", url, ui_fields)
 
             elif file_type == "samples.xlsx":
                 return convert_subjects_samples_file_to_df("samples", url, ui_fields)
+
     raise Exception(
         f"No {file_type} file was found at the root of the dataset provided."
     )
 
-
-def import_bf_readme_changes(bfaccount, bfdataset):
+def import_bf_changes(bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
 

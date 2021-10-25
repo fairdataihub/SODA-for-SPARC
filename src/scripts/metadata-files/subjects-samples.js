@@ -2235,7 +2235,7 @@ function checkBFImportSubjects() {
     fieldEntries.push(field.name.toLowerCase());
   }
   client.invoke(
-    "api_import_bf_sub_sam",
+    "api_import_bf_metadata_file",
     "subjects.xlsx",
     fieldEntries,
     defaultBfAccount,
@@ -2280,7 +2280,7 @@ function checkBFImportSamples() {
     fieldEntries.push(field.name.toLowerCase());
   }
   client.invoke(
-    "api_import_bf_sub_sam",
+    "api_import_bf_metadata_file",
     "samples.xlsx",
     fieldEntries,
     defaultBfAccount,

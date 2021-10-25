@@ -678,8 +678,9 @@ function checkBFImportSubmission() {
     },
   }).then((result) => {});
   client.invoke(
-    "api_import_bf_sub_DD",
+    "api_import_bf_metadata_file",
     "submission.xlsx",
+    "",
     defaultBfAccount,
     $("#bf_dataset_load_submission").text().trim(),
     (error, res) => {

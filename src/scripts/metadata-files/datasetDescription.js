@@ -2134,8 +2134,9 @@ function checkBFImportDD() {
     },
   }).then((result) => {});
   client.invoke(
-    "api_import_bf_sub_DD",
+    "api_import_bf_metadata_file",
     "dataset_description.xlsx",
+    "",
     defaultBfAccount,
     $("#bf_dataset_load_dd").text().trim(),
     (error, res) => {
