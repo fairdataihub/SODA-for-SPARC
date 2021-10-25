@@ -737,6 +737,7 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
+
 def import_bf_sub_DD(file_type, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -758,6 +759,7 @@ def import_bf_sub_DD(file_type, bfaccount, bfdataset):
         f"No {file_type} file was found at the root of the dataset provided."
     )
 
+
 def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -770,17 +772,14 @@ def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
             url = returnFileURL(bf, item_id)
 
             if file_type == "subjects.xlsx":
-                return convert_subjects_samples_file_to_df(
-                    "subjects", url, ui_fields
-                )
+                return convert_subjects_samples_file_to_df("subjects", url, ui_fields)
 
             elif file_type == "samples.xlsx":
-                return convert_subjects_samples_file_to_df(
-                    "samples", url, ui_fields
-                )
+                return convert_subjects_samples_file_to_df("samples", url, ui_fields)
     raise Exception(
         f"No {file_type} file was found at the root of the dataset provided."
     )
+
 
 def import_bf_readme_changes(bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
@@ -799,6 +798,7 @@ def returnFileURL(bf_object, item_id):
 
     return file_url_info["url"]
 
+
 ## import existing dataset_description.xlsx file
 def load_existing_DD_file(import_type, filepath):
 
@@ -810,7 +810,9 @@ def load_existing_DD_file(import_type, filepath):
     if import_type == "bf":
         try:
 
-            DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
+            DD_df = pd.read_excel(
+                filepath, engine="openpyxl", usecols=column_check, header=0
+            )
 
         except:
             raise Exception(
