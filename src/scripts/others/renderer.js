@@ -6592,165 +6592,6 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
   );
 }
 
-const getCognitoConfig = async () => {
-  const PENNSIEVE_URL = "https://api.pennsieve.io";
-  let cognitoCongigResponse;
-  try {
-    cognitoCongigResponse = await fetch(
-      `${PENNSIEVE_URL}/authentication/cognito-config`
-    );
-  } catch (e) {
-    throw e;
-  }
-
-  let cognitoConfigData = await cognitoCongigResponse.json();
-  console.log(`Result of cognito config is: `, cognitoConfigData);
-  return cognitoConfigData;
-};
-
-// authenticate a user with api key and api secret
-// this steo is to validate a user is who they say they are
-const authenticateWithCognito = async (
-  cognitoConfigurationData,
-  usernameOrApiKey,
-  passwordOrSecret
-) => {
-  console.log("aws cog: ", usernameOrApiKey);
-  console.log("aws cog: ", passwordOrSecret);
-
-  let cognito_app_client_id =
-    cognitoConfigurationData["tokenPool"]["appClientId"];
-  let cognito_pool_id = cognitoConfigurationData["tokenPool"]["id"];
-  let cognito_region = cognitoConfigurationData["region"];
-
-  var authParams = {
-    Username: `${usernameOrApiKey}`,
-    Password: `${passwordOrSecret}`,
-  };
-
-  var authenticationDetails = new cognitoClient.AuthenticationDetails(
-    authParams
-  );
-
-  var poolData = {
-    UserPoolId: cognito_pool_id,
-    ClientId: cognito_app_client_id, // Your client id here
-  };
-
-  var userPool = new cognitoClient.CognitoUserPool(poolData);
-
-  var userData = {
-    Username: `${usernameOrApiKey}`,
-    Pool: userPool,
-  };
-
-  var cognitoUser = new cognitoClient.CognitoUser(userData);
-
-  // tell the cognito user object to login using a user password flow
-  cognitoUser.setAuthenticationFlowType("USER_PASSWORD_AUTH");
-
-  console.log(data);
-  console.log(cognito_app_client_id);
-  console.log(cognito_region);
-
-  cognitoUser.authenticateUser(authenticationDetails, {
-    onSuccess: function (authenticationResponse) {
-      // User authentication was successful and we received a CognitoUserSession object
-      console.log(
-        "The authentication response from AWSCognito",
-        authenticationResponse
-      );
-
-      // get the api_key/access token from the CognitoUserSession
-      const accessTokenOrApiKey =
-        authenticationResponse["accessToken"]["jwtToken"];
-
-      return accessTokenOrApiKey;
-    },
-    onFailure: function (err) {
-      // User authentication was not successful
-      console.error(err);
-      throw err;
-    },
-  });
-};
-
-// read the .ini file for the current user's api key and secret
-const get_api_key_and_secret_from_ini = () => {
-  const expanduser = (text) =>
-    text.replace(/^~([a-z]+|\/)/, (_, $1) =>
-      $1 === "/" ? homedir() : `${path.dirname(homedir())}/${$1}`
-    );
-
-  // initialize the ini reader
-  const userpath = expanduser("~/");
-  const config_path = path.join(userpath, ".pennsieve", "config.ini");
-  let config;
-  try {
-    config = ini.parse(fs.readFileSync(`${config_path}`, "utf-8"));
-  } catch (e) {
-    throw e;
-  }
-
-  console.log(config);
-
-  // check that an api key and secret does ot exist
-  if (
-    !config["SODA-Pennsieve"]["api_secret"] ||
-    !config["SODA-Pennsieve"]["api_token"]
-  ) {
-    // throw an error
-    throw new Error("No api token or secret");
-  }
-
-  // return the user's api key and secret
-  const { api_token, api_secret } = config["SODA-Pennsieve"];
-  return { api_token, api_secret };
-};
-
-const get_access_token = async () => {
-  // read the current user's ini file and get back their api key and secret
-  let userInformation;
-  try {
-    userInformation = get_api_key_and_secret_from_ini();
-  } catch (e) {
-    throw e;
-  }
-
-  // get the cognito configuration data for the given user
-  let configData;
-  try {
-    configData = await getCognitoConfig();
-  } catch (e) {
-    throw e;
-  }
-
-  // get the access token from the cognito service for this user using the api key and secret for the current user
-  let access_token;
-  let { api_token, api_secret } = userInformation;
-  try {
-    access_token = await authenticateWithCognito(
-      configData,
-      api_token,
-      api_secret
-    );
-  } catch (e) {
-    throw e;
-  }
-
-  console.log(access_token);
-  return access_token;
-};
-
-get_access_token();
-
-// get the tags from the Pennsieve API
-const getDatasetTags = async (datasetId) => {
-  // get the user's access token
-  // fetch the tags for their dataset using the Pennsieve API
-  // return the tags
-};
-
 // step two in authentication flow:
 // Add account username to ini file
 const api_bf_add_account_username = async (key_name, apiKey, apiSecret) => {
@@ -6794,3 +6635,163 @@ const api_bf_account_details = async (account) => {
   //  else simply add the account under default_profile
   // return the account detaul string that was created
 };
+
+const getCognitoConfig = async () => {
+  const PENNSIEVE_URL = "https://api.pennsieve.io";
+  let cognitoCongigResponse;
+  try {
+    cognitoCongigResponse = await fetch(
+      `${PENNSIEVE_URL}/authentication/cognito-config`
+    );
+  } catch (e) {
+    throw e;
+  }
+
+  let cognitoConfigData = await cognitoCongigResponse.json();
+  return cognitoConfigData;
+};
+
+// authenticate a user with api key and api secret
+// this steo is to validate a user is who they say they are
+const authenticate_with_cognito = async (
+  cognitoConfigurationData,
+  usernameOrApiKey,
+  passwordOrSecret
+) => {
+  let cognito_app_client_id =
+    cognitoConfigurationData["tokenPool"]["appClientId"];
+  let cognito_pool_id = cognitoConfigurationData["tokenPool"]["id"];
+
+  var authParams = {
+    Username: `${usernameOrApiKey}`,
+    Password: `${passwordOrSecret}`,
+  };
+
+  var authenticationDetails = new cognitoClient.AuthenticationDetails(
+    authParams
+  );
+
+  var poolData = {
+    UserPoolId: cognito_pool_id,
+    ClientId: cognito_app_client_id, // Your client id here
+  };
+
+  var userPool = new cognitoClient.CognitoUserPool(poolData);
+
+  var userData = {
+    Username: `${usernameOrApiKey}`,
+    Pool: userPool,
+  };
+
+  var cognitoUser = new cognitoClient.CognitoUser(userData);
+
+  // tell the cognito user object to login using a user password flow
+  cognitoUser.setAuthenticationFlowType("USER_PASSWORD_AUTH");
+
+  return new Promise((resolve, reject) => {
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: resolve,
+      onFailure: reject,
+    });
+  });
+};
+
+// read the .ini file for the current user's api key and secret
+const get_api_key_and_secret_from_ini = () => {
+  const expanduser = (text) =>
+    text.replace(/^~([a-z]+|\/)/, (_, $1) =>
+      $1 === "/" ? homedir() : `${path.dirname(homedir())}/${$1}`
+    );
+
+  // initialize the ini reader
+  const userpath = expanduser("~/");
+  const config_path = path.join(userpath, ".pennsieve", "config.ini");
+  let config;
+  try {
+    config = ini.parse(fs.readFileSync(`${config_path}`, "utf-8"));
+  } catch (e) {
+    throw e;
+  }
+
+  // check that an api key and secret does ot exist
+  if (
+    !config["SODA-Pennsieve"]["api_secret"] ||
+    !config["SODA-Pennsieve"]["api_token"]
+  ) {
+    // throw an error
+    throw new Error("No api token or secret");
+  }
+
+  // return the user's api key and secret
+  const { api_token, api_secret } = config["SODA-Pennsieve"];
+  return { api_token, api_secret };
+};
+
+const get_access_token = async () => {
+  // read the current user's ini file and get back their api key and secret
+  let userInformation;
+  try {
+    userInformation = get_api_key_and_secret_from_ini();
+  } catch (e) {
+    throw e;
+  }
+
+  // get the cognito configuration data for the given user
+  let configData;
+  try {
+    configData = await getCognitoConfig();
+  } catch (e) {
+    throw e;
+  }
+
+  // get the access token from the cognito service for this user using the api key and secret for the current user
+  let cognitoResponse;
+  let { api_token, api_secret } = userInformation;
+  try {
+    cognitoResponse = await authenticate_with_cognito(
+      configData,
+      api_token,
+      api_secret
+    );
+  } catch (e) {
+    throw e;
+  }
+
+  if (!cognitoResponse["accessToken"]["jwtToken"])
+    throw new Error("No access token available");
+
+  return cognitoResponse["accessToken"]["jwtToken"];
+};
+
+// get the tags from the Pennsieve API
+const get_dataset_tags = async (datasetId) => {
+  // at the moment I just use a random dataset ID that I have access to
+  datasetId = "N:dataset:fd2de29c-4f29-494c-8da4-b157a10223ef";
+
+  // get the user's access token
+  let jwt;
+  try {
+    jwt = await get_access_token();
+  } catch (e) {
+    throw e;
+  }
+
+  // fetch the tags for their dataset using the Pennsieve API
+  let datasetResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${datasetId}`,
+    {
+      headers: { Authorization: `Bearer ${jwt}` },
+    }
+  );
+
+  let datasetData = await datasetResponse.json();
+
+  // get the tags out of the dataset
+  const { tags } = datasetData["content"];
+
+  // return the tags
+  console.log(tags);
+  return tags;
+};
+
+get_dataset_tags("");
