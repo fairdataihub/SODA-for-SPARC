@@ -99,9 +99,9 @@ $(document).ready(function () {
     document.getElementById("prevBtn").style.display = "none";
   });
   if ($("#bf_dataset_load_dd").text().trim() !== "None") {
-    $("#div-check-bf-import-dd").css("display", "flex")
+    $("#div-check-bf-import-dd").css("display", "flex");
   } else {
-    $("#div-check-bf-import-dd").css("display", "none")
+    $("#div-check-bf-import-dd").css("display", "none");
   }
 });
 

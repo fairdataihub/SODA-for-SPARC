@@ -382,11 +382,10 @@ $(document).ready(function () {
   });
 
   if ($("#bf_dataset_load_submission").text().trim() !== "None") {
-    $("#div-check-bf-import-submission").css("display", "flex")
+    $("#div-check-bf-import-submission").css("display", "flex");
   } else {
-    $("#div-check-bf-import-submission").css("display", "none")
+    $("#div-check-bf-import-submission").css("display", "none");
   }
-
 });
 
 function generateSubmissionHelper(fullpath, destinationPath) {
