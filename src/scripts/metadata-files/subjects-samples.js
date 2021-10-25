@@ -2060,6 +2060,20 @@ $(document).ready(function () {
       $("#div-confirm-existing-dd-import").hide();
     }
   });
+  $("#bf_dataset_load_subjects").on('DOMSubtreeModified',function(){
+    if ($("#bf_dataset_load_subjects").text().trim() !== "None") {
+      $("#div-check-bf-import-subjects").css("display", "flex")
+    } else {
+      $("#div-check-bf-import-subjects").css("display", "none")
+    }
+  });
+  $("#bf_dataset_load_samples").on('DOMSubtreeModified',function(){
+    if ($("#bf_dataset_load_samples").text().trim() !== "None") {
+      $("#div-check-bf-import-samples").css("display", "flex")
+    } else {
+      $("#div-check-bf-import-samples").css("display", "none")
+    }
+  });
 });
 
 function showExistingSubjectsFile() {
@@ -2199,7 +2213,21 @@ function importExistingSamplesFile() {
   }
 }
 
-function checkBFImportSubjects(type, bfAccount, bfDataset) {
+function checkBFImportSubjects() {
+  Swal.fire({
+    title: "Importing the subjects.xlsx file",
+    html: "Please wait...",
+    timer: 15000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2208,7 +2236,7 @@ function checkBFImportSubjects(type, bfAccount, bfDataset) {
   }
   client.invoke(
     "api_import_bf_sub_sam",
-    type,
+    "subjects.xlsx",
     fieldEntries,
     defaultBfAccount,
     $("#bf_dataset_load_subjects").text().trim(),
@@ -2221,17 +2249,30 @@ function checkBFImportSubjects(type, bfAccount, bfDataset) {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "error",
-          text: `${emessage}`,
+          html: emessage,
         });
       } else {
-        // loadDDFileToUI(res);
-        console.log(res);
+        loadDDFileToUI(res);
       }
     }
   );
 }
 
-function checkBFImportSamples(type, bfAccount, bfDataset) {
+function checkBFImportSamples() {
+  Swal.fire({
+    title: "Importing the samples.xlsx file",
+    html: "Please wait...",
+    timer: 15000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
@@ -2240,7 +2281,7 @@ function checkBFImportSamples(type, bfAccount, bfDataset) {
   }
   client.invoke(
     "api_import_bf_sub_sam",
-    type,
+    "samples.xlsx",
     fieldEntries,
     defaultBfAccount,
     $("#bf_dataset_load_samples").text().trim(),
@@ -2253,11 +2294,10 @@ function checkBFImportSamples(type, bfAccount, bfDataset) {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "error",
-          text: `${emessage}`,
+          html: emessage,
         });
       } else {
-        console.log(res);
-        // loadDDFileToUI(res);
+        loadDDFileToUI(res);
       }
     }
   );

@@ -25,6 +25,7 @@ from os.path import (
 )
 import pandas as pd
 import csv
+import io
 import time
 from time import strftime, localtime
 import shutil
@@ -677,7 +678,9 @@ def checkEmptyColumn(column):
 
 def load_existing_submission_file(filepath):
 
+    ## TODO: check and read csv
     try:
+
         DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
 
     except:
@@ -733,39 +736,26 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
-
 def import_bf_sub_DD(file_type, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
 
-    return json.dumps(myds)
-    # # try:
-    # for i in range(len(myds.items)):
-    #
-    #     if myds.items[i].name == file_type:
-    #
-    #         package_id = myds.items[i].id
-    #         file_details = bf._api._get("/packages/" + str(package_id) + "/view")
-    #         file_id = file_details[0]["content"]["id"]
-    #         fileURL = bf._api._get(
-    #             "/packages/" + str(package_id) + "/files/" + str(file_id)
-    #         )
-    #         substring_index = fileURL["url"].find("submission.xlsx") + 15
-    #         url = fileURL["url"][:substring_index]
-    #
-    #         if file_type == "submission.xlsx":
-    #             return load_existing_submission_file(url)
-    #
-    #         elif file_type == "dataset_description.xlsx":
-    #             return load_existing_DD_file(url)
-    #
-    #     return json.dumps(myds.items)
-    #
-    # except:
-    #     raise Exception(
-    #         f"No {file_type} file was found at the root of the dataset provided."
-    #     )
+    for i in range(len(myds.items)):
 
+        if myds.items[i].name == file_type:
+
+            item_id = myds.items[i].id
+            url = returnFileURL(bf, item_id)
+
+            if file_type == "submission.xlsx":
+                return load_existing_submission_file(url)
+
+            elif file_type == "dataset_description.xlsx":
+                return load_existing_DD_file("bf", url)
+
+    raise Exception(
+        f"No {file_type} file was found at the root of the dataset provided."
+    )
 
 def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
@@ -775,46 +765,71 @@ def import_bf_sub_sam(file_type, ui_fields, bfaccount, bfdataset):
 
         if myds.items[i].name == file_type:
 
-            package_id = myds.items[i].id
-            file_details = bf._api._get("/packages/" + str(package_id) + "/view")
-            file_id = file_details[0]["content"]["id"]
-            fileURL = bf._api._get(
-                "/packages/" + str(package_id) + "/files/" + str(file_id)
-            )
+            item_id = myds.items[i].id
+            url = returnFileURL(bf, item_id)
+
             if file_type == "subjects.xlsx":
                 return convert_subjects_samples_file_to_df(
-                    file_type, fileURL["url"], ui_fields
+                    "subjects", url, ui_fields
                 )
 
             elif file_type == "samples.xlsx":
                 return convert_subjects_samples_file_to_df(
-                    file_type, fileURL["url"], ui_fields
+                    "samples", url, ui_fields
                 )
-
     raise Exception(
         f"No {file_type} file was found at the root of the dataset provided."
     )
 
+def import_bf_readme_changes(bfaccount, bfdataset):
+    bf = Pennsieve(bfaccount)
+    myds = bf.get_dataset(bfdataset)
+
+    return myds.id
+
+
+def returnFileURL(bf_object, item_id):
+
+    file_details = bf_object._api._get("/packages/" + str(item_id) + "/view")
+    file_id = file_details[0]["content"]["id"]
+    file_url_info = bf_object._api._get(
+        "/packages/" + str(item_id) + "/files/" + str(file_id)
+    )
+
+    return file_url_info["url"]
 
 ## import existing dataset_description.xlsx file
-def load_existing_DD_file(filepath):
+def load_existing_DD_file(import_type, filepath):
 
     ### the following block of code converts .xlsx file into .csv for better performance from Pandas.
     ### Currently pandas' read_excel is super slow - could take minutes.
     # open given workbook
     # and store in excel object
-    excel = load_workbook(filepath)
-    sheet = excel.active
-    # writer object is created
-    with tempfile.NamedTemporaryFile(mode="w", newline="", delete=False) as tf:
-        col = csv.writer(tf)
-        # writing the data in csv file
-        for r in sheet.rows:
-            col.writerow([cell.value for cell in r])
 
-    DD_df = pd.DataFrame(
-        pd.read_csv(tf.name, encoding="ISO-8859-1", usecols=column_check, header=0)
-    )
+    if import_type == "bf":
+        try:
+
+            DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
+
+        except:
+            raise Exception(
+                "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
+            )
+
+    else:
+        excel = load_workbook(filepath)
+        sheet = excel.active
+        # writer object is created
+        with tempfile.NamedTemporaryFile(mode="w", newline="", delete=False) as tf:
+            col = csv.writer(tf)
+            # writing the data in csv file
+            for r in sheet.rows:
+                col.writerow([cell.value for cell in r])
+
+        DD_df = pd.DataFrame(
+            pd.read_csv(tf.name, encoding="ISO-8859-1", usecols=column_check, header=0)
+        )
+
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)

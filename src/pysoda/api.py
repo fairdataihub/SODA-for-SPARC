@@ -104,8 +104,8 @@ class SodaApi(object):
     def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
         return convert_subjects_samples_file_to_df(type, filepath, fields)
 
-    def api_load_existing_DD_file(self, filepath):
-        return load_existing_DD_file(filepath)
+    def api_load_existing_DD_file(self, import_type, filepath):
+        return load_existing_DD_file(import_type, filepath)
 
     def api_load_existing_submission_file(self, filepath):
         return load_existing_submission_file(filepath)

@@ -98,6 +98,11 @@ $(document).ready(function () {
     $("#" + target).toggleClass("show");
     document.getElementById("prevBtn").style.display = "none";
   });
+  if ($("#bf_dataset_load_dd").text().trim() !== "None") {
+    $("#div-check-bf-import-dd").css("display", "flex")
+  } else {
+    $("#div-check-bf-import-dd").css("display", "none")
+  }
 });
 
 function checkAirtableStatus(keyword) {
@@ -2114,6 +2119,20 @@ function importExistingDDFile() {
 }
 
 function checkBFImportDD() {
+  Swal.fire({
+    title: "Importing the dataset_description.xlsx file",
+    html: "Please wait...",
+    timer: 15000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   client.invoke(
     "api_import_bf_sub_DD",
     "dataset_description.xlsx",
@@ -2128,11 +2147,10 @@ function checkBFImportDD() {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "error",
-          text: `${emessage}`,
+          html: emessage,
         });
       } else {
-        console.log(res);
-        // loadDDFileToUI(res);
+        loadDDFileToUI(res);
       }
     }
   );
@@ -2147,6 +2165,7 @@ function loadDDfileDataframe(filePath) {
   clientLongTimeout.connect("tcp://127.0.0.1:4242");
   clientLongTimeout.invoke(
     "api_load_existing_DD_file",
+    "local",
     filePath,
     (error, res) => {
       if (error) {

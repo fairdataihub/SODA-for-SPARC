@@ -380,10 +380,12 @@ $(document).ready(function () {
       $("#div-confirm-existing-submission-import").hide();
     }
   });
-
-  $("#bf_dataset_load_submission").on('DOMSubtreeModified',function(){
+  
+  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
     $("#div-check-bf-import-submission").css("display", "flex")
-  });
+  } else {
+    $("#div-check-bf-import-submission").css("display", "none")
+  }
 
 });
 
@@ -662,6 +664,20 @@ function loadSubmissionFileToUI(data) {
 
 // function to check for existing submission file on Penn
 function checkBFImportSubmission() {
+  Swal.fire({
+    title: "Importing the submission.xlsx file",
+    html: "Please wait...",
+    timer: 15000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   client.invoke(
     "api_import_bf_sub_DD",
     "submission.xlsx",
@@ -676,11 +692,10 @@ function checkBFImportSubmission() {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "error",
-          text: `${emessage}`,
+          html: emessage,
         });
       } else {
-        console.log(res);
-        // loadSubmissionFileToUI(res);
+        loadSubmissionFileToUI(res);
       }
     }
   );
