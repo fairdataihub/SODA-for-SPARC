@@ -380,12 +380,13 @@ $(document).ready(function () {
       $("#div-confirm-existing-submission-import").hide();
     }
   });
-
-  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
-    $("#div-check-bf-import-submission").css("display", "flex");
-  } else {
-    $("#div-check-bf-import-submission").css("display", "none");
-  }
+  $("#bf_dataset_load_submission").on('DOMSubtreeModified',function(){
+    if ($("#bf_dataset_load_submission").text().trim() !== "None") {
+      $("#div-check-bf-import-submission").css("display", "flex");
+    } else {
+      $("#div-check-bf-import-submission").css("display", "none");
+    }
+  })
 });
 
 function generateSubmissionHelper(fullpath, destinationPath) {

@@ -98,11 +98,13 @@ $(document).ready(function () {
     $("#" + target).toggleClass("show");
     document.getElementById("prevBtn").style.display = "none";
   });
-  if ($("#bf_dataset_load_dd").text().trim() !== "None") {
-    $("#div-check-bf-import-dd").css("display", "flex");
-  } else {
-    $("#div-check-bf-import-dd").css("display", "none");
-  }
+  $("#bf_dataset_load_dd").on('DOMSubtreeModified',function(){
+    if ($("#bf_dataset_load_dd").text().trim() !== "None") {
+      $("#div-check-bf-import-dd").css("display", "flex");
+    } else {
+      $("#div-check-bf-import-dd").css("display", "none");
+    }
+  })
 });
 
 function checkAirtableStatus(keyword) {

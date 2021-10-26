@@ -738,7 +738,7 @@ def load_existing_submission_file(filepath):
     }
 
 
-def import_bf_file(file_type, ui_fields, bfaccount, bfdataset):
+def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
 
