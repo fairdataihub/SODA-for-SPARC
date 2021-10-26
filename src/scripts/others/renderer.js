@@ -2831,6 +2831,8 @@ const metadataDatasetlistChange = () => {
   showCurrentDescription();
   showCurrentLicense();
   showCurrentBannerImage();
+  // TODO-NEW: Check flow
+  showCurrentTags();
 };
 
 // Manage dataset permission
@@ -6710,14 +6712,9 @@ const authenticate_with_cognito = async (
 
 // read the .ini file for the current user's api key and secret
 const get_api_key_and_secret_from_ini = () => {
-  const expanduser = (text) =>
-    text.replace(/^~([a-z]+|\/)/, (_, $1) =>
-      $1 === "/" ? homedir() : `${path.dirname(homedir())}/${$1}`
-    );
 
-  // create the path to the user's configuration file
-  const userpath = expanduser("~/");
-  const config_path = path.join(userpath, ".pennsieve", "config.ini");
+  // get the path to the configuration file
+  const config_path = path.join(app.getPath("home"), ".pennsieve", "config.ini");
   let config;
 
   // check that the user's configuration file exists
@@ -6776,6 +6773,7 @@ const get_access_token = async () => {
       api_token,
       api_secret
     );
+
   } catch (e) {
     throw e;
   }
@@ -6785,6 +6783,7 @@ const get_access_token = async () => {
 
   return cognitoResponse["accessToken"]["jwtToken"];
 };
+
 
 // get the tags from the Pennsieve API
 const get_dataset_tags = async (datasetId) => {
@@ -6842,4 +6841,42 @@ const get_dataset_tags = async (datasetId) => {
   return tags;
 };
 
-get_dataset_tags("asd");
+// to be used with an authenticated user that has a valid access token
+const get_dataset_by_name_id = async (datasetIdOrName) => {
+
+  console.log(datasetIdOrName)
+
+  function name_key(n) {
+    console.log("In name key", n)
+    return n.toLowerCase().trim().replace(" ", "").replace("_", "").replace("-", "")
+  }
+
+  let search_key = name_key(datasetIdOrName)
+
+  function is_match(ds){
+    return (name_key(ds.name) == search_key) || (ds.id == datasetIdOrName)
+  }
+
+  let jwt = await get_access_token()
+
+  // get the datasets from Pennsieve
+  let datasets_response = await fetch("https://api.pennsieve.io/datasets", {
+    headers: {
+      "Accept" : "application/json", 
+      "Authorization": `Bearer ${jwt}`
+    }
+  })
+
+  let data = await datasets_response.json()
+  console.log(data)
+
+  let matches = []
+  for(const dataset of data) {
+    if(is_match(dataset))
+      matches.push(dataset)
+  }
+  
+  return matches.length ?  matches[0] :  undefined
+}
+
+get_dataset_by_name_id("soda-test-set").then(res => console.log(res)).catch(err => console.error(err))
