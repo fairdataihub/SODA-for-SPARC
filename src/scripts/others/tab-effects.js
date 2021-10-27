@@ -1976,10 +1976,7 @@ async function transitionFreeFormMode(
     }
   }
 
-  document.getElementById(parentDiv).appendChild(target);
-  document.getElementById(currentDiv).classList.add("prev");
-
-  if (ev.getAttribute("data-next") === "Question-prepare-submission-DDD") {
+  if (ev.getAttribute("data-next") == "Question-prepare-submission-DDD") {
     $("#button-skip-DDD").show();
   }
 

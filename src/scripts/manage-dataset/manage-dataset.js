@@ -1380,6 +1380,109 @@ const showCurrentBannerImage = () => {
   }
 };
 
+// Add tags //
+
+// add or edit metadata tags for a user's selected dataset in the "add/edit tags" section of the manage-dataset menu
+$("#button-add-tags").click(async () => {
+  // show a loading spinner to the user
+  $("#bf-add-tags-dataset-spinner").show();
+
+  // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
+  const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
+    return tag.textContent;
+  });
+
+  // get the name of the currently selected dataset
+  var selectedBfDataset = defaultBfDataset;
+
+  // Add tags to dataset
+  try {
+    await update_dataset_tags(selectedBfDataset, tags);
+  } catch (e) {
+    // hide the loading spinner
+    $("#bf-add-tags-dataset-spinner").hide();
+
+    // log the error
+    log.error(e);
+    console.error(e);
+    // alert the user of the error
+    Swal.fire({
+      title: "Failed to edit your dataset tags!",
+      icon: "error",
+      text: e.message,
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    // halt execution
+    return;
+  }
+
+  // once the result has been retrieved hide the spinner
+  $("#bf-add-tags-dataset-spinner").hide();
+
+  // show success or failure to the user in a popup message
+  Swal.fire({
+    title: "Successfully edited tags!",
+    icon: "success",
+    showConfirmButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  });
+});
+
+// fetch a user's metadata tags
+// this function fires from two events:
+//    1. when a user clicks on the pencil icon to view their list of datasets in any of the manage-dataset sections
+//    2. after the user selects a dataset from the very same dropdown list
+const showCurrentTags = async () => {
+  var selectedBfAccount = defaultBfAccount;
+  var selectedBfDataset = defaultBfDataset;
+
+  if (selectedBfDataset === "Select dataset") {
+    // this code executes when the pencil icon that allows a user to select a dataset is clicked in the tags section
+    // for now do nothing
+  } else {
+    // remove all of the tags from the current input
+    datasetTagsTagify.removeAllTags();
+
+    // make the tags input display a loading spinner after a user selects a new dataset
+    datasetTagsTagify.loading(true);
+
+    // get the tags from the Pennsieve API
+    let tags;
+    try {
+      tags = await get_dataset_tags(selectedBfDataset);
+    } catch (e) {
+      // log the error
+      log.error(e);
+      console.error(e);
+      // alert the user of the error
+      Swal.fire({
+        title: "Failed to retrieve your selected dataset!",
+        icon: "error",
+        text: e.message,
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      // stop the loader -- no data can be fetched for this dataset
+      datasetTagsTagify.loading(false);
+
+      // halt execution
+      return;
+    }
+
+    // stop displaying the tag loading spinner
+    datasetTagsTagify.loading(false);
+
+    // display the retrieved tags
+    datasetTagsTagify.addTags(tags);
+  }
+};
+
 // Add license //
 $("#button-add-license").click(() => {
   setTimeout(function () {
