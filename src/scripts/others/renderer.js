@@ -6726,7 +6726,6 @@ const get_api_key_and_secret_from_ini = () => {
     );
   }
 
-
   try {
     // initialize the ini reader
     config = ini.parse(fs.readFileSync(`${config_path}`, "utf-8"));
@@ -6740,7 +6739,9 @@ const get_api_key_and_secret_from_ini = () => {
     !config["SODA-Pennsieve"]["api_token"]
   ) {
     // throw an error
-    throw new Error("Error: User must connect their Pennsieve account to SODA in order to access this feature.");
+    throw new Error(
+      "Error: User must connect their Pennsieve account to SODA in order to access this feature."
+    );
   }
 
   // return the user's api key and secret
