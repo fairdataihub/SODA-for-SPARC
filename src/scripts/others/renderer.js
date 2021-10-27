@@ -6648,17 +6648,15 @@ const get_cognito_config = async () => {
   }
 
   // check that there weren't any unexpected errors
-  if (cognitoConfigResponse.status === 404) {
+  let statusCode = cognitoConfigResponse.status;
+  if (statusCode === 404) {
     throw new Error(
-      `Error: ${cognitoConfigResponse.status} - Resource for authenticating not found.`
+      `${cognitoConfigResponse.status} - Resource for authenticating not found.`
     );
-  } else if (cognitoConfigResponse.status >= 500) {
-    throw new Error(`Error: Something is wrong with Pennsieve's servers.`);
-  } else if (cognitoConfigResponse.status !== 200) {
+  } else if (statusCode !== 200) {
     // something unexpected happened with the request
-    throw new Error(
-      `Error: Something is wrong in the Pennsieve user authentication flow.`
-    );
+    let statusText = await cognitoConfigResponse.json().statusText;
+    throw new Error(`${cognitoConfigResponse.status} - ${statusText}`);
   }
 
   let cognitoConfigData = await cognitoConfigResponse.json();
@@ -6790,6 +6788,9 @@ const get_access_token = async () => {
 
 // get the tags from the Pennsieve API
 const get_dataset_tags = async (datasetId) => {
+  if (datasetId === "" || datasetId === undefined) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
 
   // get the user's access token
   let jwt;
@@ -6800,12 +6801,37 @@ const get_dataset_tags = async (datasetId) => {
   }
 
   // fetch the tags for their dataset using the Pennsieve API
-  let datasetResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${datasetId}`,
-    {
-      headers: { Authorization: `Bearer ${jwt}` },
-    }
-  );
+  let datasetResponse;
+  try {
+    datasetResponse = await fetch(
+      `https://api.pennsieve.io/datasets/${datasetId}`,
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+      }
+    );
+  } catch (e) {
+    // something unexpected happened
+    throw e;
+  }
+
+  let statusCode = datasetResponse.status;
+  if (statusCode == 401) {
+    throw new Error(
+      `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
+    );
+  } else if (statusCode === 403) {
+    throw new Error(`${statusCode} - You do not have access to this dataset.`);
+  } else if (statusCode === 410) {
+    throw new Error(`${statusCode} - This dataset has yet to be published.`);
+  } else if (statusCode === 404) {
+    throw new Error(
+      `${statusCode} - This dataset cannot be found. Please select a valid dataset.`
+    );
+  } else if (statusCode !== 200) {
+    // something unexpected
+    let statusText = await datasetResponse.json().statusText;
+    throw new Error(`${statusCode} - ${statusText}`);
+  }
 
   let datasetData = await datasetResponse.json();
 
@@ -6815,3 +6841,5 @@ const get_dataset_tags = async (datasetId) => {
   // return the tags
   return tags;
 };
+
+get_dataset_tags("asd");
