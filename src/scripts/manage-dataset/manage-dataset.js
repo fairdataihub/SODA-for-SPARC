@@ -1402,6 +1402,9 @@ $("#button-add-tags").click(async () => {
     // hide the loading spinner
     $("#bf-add-tags-dataset-spinner").hide();
 
+    // log the error
+    log.error(e);
+    console.error(e);
     // alert the user of the error
     Swal.fire({
       title: "Failed to edit your dataset tags!",
@@ -1452,7 +1455,24 @@ const showCurrentTags = async () => {
     try {
       tags = await get_dataset_tags(selectedBfDataset);
     } catch (e) {
-      throw e;
+      // log the error
+      log.error(e);
+      console.error(e);
+      // alert the user of the error
+      Swal.fire({
+        title: "Failed to retrieve your selected dataset!",
+        icon: "error",
+        text: e.message,
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      // stop the loader -- no data can be fetched for this dataset
+      datasetTagsTagify.loading(false);
+
+      // halt execution
+      return;
     }
 
     // stop displaying the tag loading spinner

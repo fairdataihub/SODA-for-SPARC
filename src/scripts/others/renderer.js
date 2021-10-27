@@ -6658,6 +6658,7 @@ const get_cognito_config = async () => {
       `${PENNSIEVE_URL}/authentication/cognito-config`
     );
   } catch (e) {
+    // network error
     throw e;
   }
 
@@ -6817,7 +6818,7 @@ Manage Datasets Tag Section With Nodejs
 // Inputs:
 //    dataset_id_or_name: string
 //    jwt: string  (a valid JWT acquired from get_access_token)
-const get_dataset_by_name_id = async (dataset_id_or_Name, jwt) => {
+const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
   // a name on the Pennsieve side is not made unqiue by " ","-", or "_" so remove them
   function name_key(n) {
     return n
@@ -6836,12 +6837,19 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt) => {
   }
 
   // get the all of datasets from Pennsieve that the user has access to in their organization
-  let datasets_response = await fetch("https://api.pennsieve.io/datasets", {
+  let datasets_response;
+  
+  try {
+    datasets_response = await fetch("https://api.pennsieve.io/datasets", {
     headers: {
       Accept: "application/json",
       Authorization: `Bearer ${jwt}`,
     },
   });
+  } catch(e) {
+    // network error
+    throw e
+  }
 
   // check the status codes
   let statusCode = datasets_response.status;
@@ -6951,15 +6959,21 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
   }
 
   // update the the user's tags
-  let updateResponse = await fetch(`https://api.pennsieve.io/datasets/${id}`, options )
+  let updateResponse
+  try {
+    updateResponse = await fetch(`https://api.pennsieve.io/datasets/${id}`, options )
+  } catch(e) {
+    // network error 
+    throw e
+  }
 
 
   // Check status codes and respond accordingly
   let statusCode = updateResponse.status 
   if(statusCode  === 404) {
-    throw new Error(`${statusCode} - This dataset does not exist. Please select a valid dataset to add tags.`)
+    throw new Error(`${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add tags.`)
   } else if(statusCode === 401) {
-    throw new Error(`${statusCode} - Reauthenticate to access this dataset.`)
+    throw new Error(`${statusCode} - You do not have access this dataset at the moment.`)
   } else if(statusCode === 403) {
     throw new Error(`${statusCode} - You do not have access to this dataset. `)
   } else if (statusCode !== 200){
