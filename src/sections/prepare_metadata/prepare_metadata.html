@@ -1045,21 +1045,13 @@
                   </div>
                 </div>
               </div>
-              <div
-                style="margin: 15px 0"
-                class="coming-soon-div"
-                data-content="Coming soon..."
-                rel="popover"
-                data-placement="bottom"
-                data-trigger="hover"
-              >
+              <div style="margin: 15px 0">
                 <div
                   class="option-card radio-button"
+                  data-current="Question-prepare-submission-1"
                   data-next="Question-prepare-submission-3"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
                   style="
-                    pointer-events: none;
-                    background: #f6f6f6;
                     max-width: 180px;
                     height: 220px !important;
                     width: 180px !important;
@@ -1079,7 +1071,7 @@
                   <div class="card-body">
                     <i
                       class="far fa-save"
-                      style="color: var(--color-subtle)"
+                      style="color: var(--color-orange)"
                     ></i>
                     <h2>
                       I want to continue working on an existing submission.xlsx
@@ -1344,6 +1336,87 @@
                 Generate
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question 4: Ask for existing dataset_description.xlsx file -->
+    <div
+      class="individual-question prepare-submission"
+      id="Question-prepare-submission-3"
+      style="width: 85%"
+    >
+      <div class="ui form" style="width: 450px">
+        <div class="grouped fields">
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
+            >Browse for your <i>submission.xlsx</i> file below:
+          </label>
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
+            <input
+              class="form-control"
+              style="width: 450px !important"
+              onclick="showExistingSubmissionFile()"
+              id="existing-submission-file-destination"
+              type="text"
+              readonly
+              placeholder="Browse here"
+            />
+          </div>
+          <div
+            style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
+            id="div-confirm-existing-submission-import"
+          >
+            <button
+              onclick="importExistingSubmissionFile()"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+              "
+            >
+              Confirm
+            </button>
+            <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_Submission-tab', '', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-2"
+              id="button-fake-confirm-existing-submission-file-load"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+                display: none;
+              "
+            >
+              Fake Confirm
+            </button>
           </div>
         </div>
       </div>
@@ -6727,10 +6800,10 @@
       <button
         type="button"
         class="transition-btn prev"
-        id="shortcut-navigate-to-organize"
+        data-section="create_README"
         style="width: auto"
       >
-        Organize dataset files<i
+        Create README.txt<i
           class="fas fa-arrow-right"
           style="margin-left: 10px"
         ></i>
@@ -7573,6 +7646,668 @@
     </div>
   </section>
 
+  <section
+    id="create_CHANGES-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            border-bottom: 3px solid #b80d49;
+            margin-bottom: -5px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Prepare Metadata - Create CHANGES.txt</h2>
+            <a
+              target="_blank"
+              href="https://fairdataihub.org/sodaforsparc/docs/Create-submission-xlsx"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div
+      class="main-tabs show"
+      id="create_CHANGES-tab"
+      style="
+        height: calc(100% - 143px);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        margin-left: -70px;
+      "
+    >
+      <div
+        class="individual-question prepare-changes show"
+        id="Question-prepare-changes-1"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Please select an option below:
+            </label>
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+              "
+            >
+              <div style="margin: 15px 0">
+                <div
+                  class="option-card radio-button"
+                  data-current="Question-prepare-changes-1"
+                  data-next="Question-prepare-changes-2"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-changes-1', 'create_CHANGES-tab', '', 'individual-question prepare-changes')"
+                  style="
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                  "
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="changes-1"
+                        type="radio"
+                        id="changes-1-B"
+                      />
+                      <label for="changes-1-B"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40px"
+                      height="40px"
+                      fill="var(--color-accent)"
+                      class="bi bi-file-earmark-plus"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                      />
+                    </svg>
+                    <h2>I want to start a new CHANGES.txt file</h2>
+                  </div>
+                </div>
+              </div>
+              <div style="margin: 15px 0">
+                <div
+                  class="option-card radio-button"
+                  data-current="Question-prepare-changes-1"
+                  data-next="Question-prepare-changes-3"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-changes-1', 'create_CHANGES-tab', '', 'individual-question prepare-changes')"
+                  style="
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                  "
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="changes-1"
+                        type="radio"
+                        id="changes-1-A"
+                      />
+                      <label for="changes-1-A"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-bg-orange)"
+                    ></i>
+                    <h2>
+                      I want to continue working on an existing CHANGES.txt file
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-changes"
+        id="Question-prepare-changes-2"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 500px">
+          <div class="grouped fields" style="width: 500px; margin: auto">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+              >Draft your CHANGES file below:
+              <i
+                class="fas fa-info-circle popover-tooltip"
+                data-content="."
+                rel="popover"
+                data-html="true"
+                data-placement="right"
+                data-trigger="hover"
+              ></i>
+            </label>
+            <div
+              class="field"
+              style="
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex-direction: column;
+              "
+            >
+              <div style="width: 100%; position: relative">
+                <textarea
+                  id="textarea-create-changes"
+                  style="position: relative"
+                  value=""
+                  rows="10"
+                  placeholder="Start typing here..."
+                >
+                </textarea>
+              </div>
+              <div style="display: flex; flex-direction: column">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0 auto;
+                    padding-top: 20px;
+                  "
+                >
+                  <button
+                    onclick="generateRCFiles('changes')"
+                    class="btn_animated md"
+                    style="width: 190px; height: 40px; font-size: 15px"
+                  >
+                    Generate
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 4: Ask for existing changes.txt file -->
+      <div
+        class="individual-question prepare-changes"
+        id="Question-prepare-changes-3"
+        style="width: 85%"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Browse for your <i>CHANGES.txt</i> file below:
+            </label>
+            <div
+              class="field"
+              style="margin: 15px auto; display: flex; justify-content: center"
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="showExistingRCFile('changes')"
+                id="existing-changes-file-destination"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-existing-changes-import"
+            >
+              <button
+                onclick="importExistingRCFile('changes')"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-changes-3', 'create_CHANGES-tab', '', 'individual-question prepare-changes')"
+                data-next="Question-prepare-changes-2"
+                id="button-fake-confirm-existing-changes-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display: none;
+                "
+              >
+                Fake Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-div">
+      <button
+        type="button"
+        class="transition-btn prev"
+        data-section="main_tabs"
+      >
+        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+      </button>
+      <button
+        onclick="resetChanges()"
+        class="start-over"
+        style="
+          margin: 0;
+          position: absolute;
+          left: 48%;
+          transform: translateX(-55%);
+        "
+      >
+        <i
+          class="fas fa-sync-alt"
+          style="margin-right: 10px; font-size: inherit"
+        ></i>
+        Start over
+      </button>
+      <button
+        type="button"
+        class="transition-btn prev"
+        id="shortcut-navigate-to-organize"
+        style="width: auto"
+      >
+        Organize dataset files<i
+          class="fas fa-arrow-right"
+          style="margin-left: 10px"
+        ></i>
+      </button>
+    </div>
+  </section>
+
+  <section
+    id="create_README-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            border-bottom: 3px solid #b80d49;
+            margin-bottom: -5px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Prepare Metadata - Create README.txt</h2>
+            <a
+              target="_blank"
+              href="https://fairdataihub.org/sodaforsparc/docs/Create-submission-xlsx"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div
+      class="main-tabs show"
+      id="create_README-tab"
+      style="
+        height: calc(100% - 143px);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        margin-left: -70px;
+      "
+    >
+      <div
+        class="individual-question prepare-readme show"
+        id="Question-prepare-readme-1"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Please select an option below:
+            </label>
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+              "
+            >
+              <div style="margin: 15px 0">
+                <div
+                  class="option-card radio-button"
+                  data-current="Question-prepare-readme-1"
+                  data-next="Question-prepare-readme-2"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-readme-1', 'create_README-tab', '', 'individual-question prepare-readme')"
+                  style="
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                  "
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="readme-1"
+                        type="radio"
+                        id="readme-1-B"
+                      />
+                      <label for="readme-1-B"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40px"
+                      height="40px"
+                      fill="var(--color-accent)"
+                      class="bi bi-file-earmark-plus"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                      />
+                    </svg>
+                    <h2>I want to start a new README.txt file</h2>
+                  </div>
+                </div>
+              </div>
+              <div style="margin: 15px 0">
+                <div
+                  class="option-card radio-button"
+                  data-next="Question-prepare-readme-3"
+                  data-current="Question-prepare-readme-1"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-readme-1', 'create_README-tab', '', 'individual-question prepare-readme')"
+                  style="
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                  "
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="readme-1"
+                        type="radio"
+                        id="readme-1-A"
+                      />
+                      <label for="readme-1-A"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-bg-orange)"
+                    ></i>
+                    <h2>
+                      I want to continue working on an existing README.txt file
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-readme"
+        id="Question-prepare-readme-2"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 500px">
+          <div class="grouped fields" style="width: 500px; margin: auto">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+              >Draft your README file below:
+              <i
+                class="fas fa-info-circle popover-tooltip"
+                data-content="."
+                rel="popover"
+                data-html="true"
+                data-placement="right"
+                data-trigger="hover"
+              ></i>
+            </label>
+            <div
+              class="field"
+              style="
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex-direction: column;
+              "
+            >
+              <div style="width: 100%; position: relative">
+                <textarea
+                  id="textarea-create-readme"
+                  style="position: relative"
+                  value=""
+                  rows="10"
+                  placeholder="Start typing here..."
+                >
+                </textarea>
+              </div>
+              <div style="display: flex; flex-direction: column">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0 auto;
+                    padding-top: 20px;
+                  "
+                >
+                  <button
+                    onclick="generateRCFiles('readme')"
+                    class="btn_animated md"
+                    style="width: 190px; height: 40px; font-size: 15px"
+                  >
+                    Generate
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 4: Ask for existing changes.txt file -->
+      <div
+        class="individual-question prepare-readme"
+        id="Question-prepare-readme-3"
+        style="width: 85%"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Browse for your <i>README.txt</i> file below:
+            </label>
+            <div
+              class="field"
+              style="margin: 15px auto; display: flex; justify-content: center"
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="showExistingRCFile('readme')"
+                id="existing-readme-file-destination"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-existing-readme-import"
+            >
+              <button
+                onclick="importExistingRCFile('readme')"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-readme-3', 'create_README-tab', '', 'individual-question prepare-readme')"
+                data-next="Question-prepare-readme-2"
+                id="button-fake-confirm-existing-readme-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display: none;
+                "
+              >
+                Fake Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-div">
+      <button
+        type="button"
+        class="transition-btn prev"
+        data-section="main_tabs"
+      >
+        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+      </button>
+      <button
+        onclick="resetReadme()"
+        class="start-over"
+        style="
+          margin: 0;
+          position: absolute;
+          left: 48%;
+          transform: translateX(-55%);
+        "
+      >
+        <i
+          class="fas fa-sync-alt"
+          style="margin-right: 10px; font-size: inherit"
+        ></i>
+        Start over
+      </button>
+      <button
+        type="button"
+        class="transition-btn prev"
+        data-section="create_CHANGES"
+        style="width: auto"
+      >
+        Create CHANGES.txt<i
+          class="fas fa-arrow-right"
+          style="margin-left: 10px"
+        ></i>
+      </button>
+    </div>
+  </section>
+
   <script>
     window.$ = window.jQuery = require("jquery");
   </script>
@@ -7590,6 +8325,10 @@
   ></script>
   <script
     src="./scripts/metadata-files/submission.js"
+    type="text/javascript"
+  ></script>
+  <script
+    src="./scripts/metadata-files/readme-changes.js"
     type="text/javascript"
   ></script>
 </template>
