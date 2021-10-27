@@ -6787,8 +6787,6 @@ const get_access_token = async () => {
 
 // get the tags from the Pennsieve API
 const get_dataset_tags = async (datasetId) => {
-  // at the moment I just use a random dataset ID that I have access to
-  datasetId = "N:dataset:fd2de29c-4f29-494c-8da4-b157a10223ef";
 
   // get the user's access token
   let jwt;
@@ -6812,8 +6810,5 @@ const get_dataset_tags = async (datasetId) => {
   const { tags } = datasetData["content"];
 
   // return the tags
-  console.log(tags);
   return tags;
 };
-
-get_dataset_tags("");
