@@ -33,7 +33,6 @@ const selectpicker = require("bootstrap-select");
 const ini = require("ini");
 const { homedir } = require("os");
 
-require("cross-fetch/polyfill");
 const cognitoClient = require("amazon-cognito-identity-js");
 
 // const prevent_sleep_id = "";
