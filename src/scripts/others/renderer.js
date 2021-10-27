@@ -6712,9 +6712,12 @@ const authenticate_with_cognito = async (
 
 // read the .ini file for the current user's api key and secret
 const get_api_key_and_secret_from_ini = () => {
-
   // get the path to the configuration file
-  const config_path = path.join(app.getPath("home"), ".pennsieve", "config.ini");
+  const config_path = path.join(
+    app.getPath("home"),
+    ".pennsieve",
+    "config.ini"
+  );
   let config;
 
   // check that the user's configuration file exists
@@ -6747,6 +6750,7 @@ const get_api_key_and_secret_from_ini = () => {
   return { api_token, api_secret };
 };
 
+// get the currnet Pennsieve user's access token -- this is used before every request to Pennsieve APIs as a bearer token
 const get_access_token = async () => {
   // read the current user's ini file and get back their api key and secret
   let userInformation;
@@ -6773,7 +6777,6 @@ const get_access_token = async () => {
       api_token,
       api_secret
     );
-
   } catch (e) {
     throw e;
   }
@@ -6784,14 +6787,26 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-
-// get the tags from the Pennsieve API
-const get_dataset_tags = async (datasetId) => {
-  if (datasetId === "" || datasetId === undefined) {
-    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+// to be used with an authenticated user that has a valid access token
+const get_dataset_by_name_id = async (dataset_id_or_Name) => {
+  // a name on the Pennsieve side is not made unqiue by " ","-", or "_" so remove them
+  function name_key(n) {
+    return n
+      .toLowerCase()
+      .trim()
+      .replace(" ", "")
+      .replace("_", "")
+      .replace("-", "");
   }
 
-  // get the user's access token
+  let search_key = name_key(dataset_id_or_Name);
+
+  // a way to check if the given dataset's name or id matches one on the Pennsieve side
+  function is_match(ds) {
+    return name_key(ds.name) == search_key || ds.id == dataset_id_or_Name;
+  }
+
+  // get the access token so the user can access the Pennsieve api
   let jwt;
   try {
     jwt = await get_access_token();
@@ -6799,84 +6814,66 @@ const get_dataset_tags = async (datasetId) => {
     throw e;
   }
 
-  // fetch the tags for their dataset using the Pennsieve API
-  let datasetResponse;
-  try {
-    datasetResponse = await fetch(
-      `https://api.pennsieve.io/datasets/${datasetId}`,
-      {
-        headers: { Authorization: `Bearer ${jwt}` },
-      }
-    );
-  } catch (e) {
-    // something unexpected happened
-    throw e;
-  }
+  // get the all of datasets from Pennsieve that the user has access to in their organization
+  let datasets_response = await fetch("https://api.pennsieve.io/datasets", {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
 
-  let statusCode = datasetResponse.status;
+  // check the status codes
+  let statusCode = datasets_response.status;
   if (statusCode == 401) {
     throw new Error(
       `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
     );
   } else if (statusCode === 403) {
     throw new Error(`${statusCode} - You do not have access to this dataset.`);
-  } else if (statusCode === 410) {
-    throw new Error(`${statusCode} - This dataset has yet to be published.`);
-  } else if (statusCode === 404) {
-    throw new Error(
-      `${statusCode} - This dataset cannot be found. Please select a valid dataset.`
-    );
   } else if (statusCode !== 200) {
     // something unexpected
-    let statusText = await datasetResponse.json().statusText;
+    let statusText = await datasets_response.json().statusText;
     throw new Error(`${statusCode} - ${statusText}`);
   }
 
-  let datasetData = await datasetResponse.json();
+  // valid datasets result
+  let datasets = await datasets_response.json();
+
+  // search through the datasets for a match
+  let matches = [];
+  for (const dataset of datasets) {
+    if (is_match(dataset["content"])) matches.push(dataset);
+  }
+
+  // check if there is no matching dataset
+  if (!matches.length) {
+    // could not find the dataset that matches the user's requested id/name
+    throw new Error(
+      `The dataset identified as ${dataset_id_or_Name} does not exist.`
+    );
+  }
+
+  // return the first match
+  return matches[0];
+};
+
+// get the tags from the Pennsieve API
+const get_dataset_tags = async (dataset_id_or_name) => {
+  if (dataset_id_or_name === "" || dataset_id_or_name === undefined) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+
+  // fetch the tags for their dataset using the Pennsieve API
+  let dataset;
+  try {
+    dataset = await get_dataset_by_name_id(dataset_id_or_name);
+  } catch (e) {
+    throw e;
+  }
 
   // get the tags out of the dataset
-  const { tags } = datasetData["content"];
+  const { tags } = dataset["content"];
 
   // return the tags
   return tags;
 };
-
-// to be used with an authenticated user that has a valid access token
-const get_dataset_by_name_id = async (datasetIdOrName) => {
-
-  console.log(datasetIdOrName)
-
-  function name_key(n) {
-    console.log("In name key", n)
-    return n.toLowerCase().trim().replace(" ", "").replace("_", "").replace("-", "")
-  }
-
-  let search_key = name_key(datasetIdOrName)
-
-  function is_match(ds){
-    return (name_key(ds.name) == search_key) || (ds.id == datasetIdOrName)
-  }
-
-  let jwt = await get_access_token()
-
-  // get the datasets from Pennsieve
-  let datasets_response = await fetch("https://api.pennsieve.io/datasets", {
-    headers: {
-      "Accept" : "application/json", 
-      "Authorization": `Bearer ${jwt}`
-    }
-  })
-
-  let data = await datasets_response.json()
-  console.log(data)
-
-  let matches = []
-  for(const dataset of data) {
-    if(is_match(dataset))
-      matches.push(dataset)
-  }
-  
-  return matches.length ?  matches[0] :  undefined
-}
-
-get_dataset_by_name_id("soda-test-set").then(res => console.log(res)).catch(err => console.error(err))

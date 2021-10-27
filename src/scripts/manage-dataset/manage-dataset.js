@@ -1388,6 +1388,29 @@ const showCurrentBannerImage = () => {
   }
 };
 
+// Add tags //
+$("#button-add-tags").click(() => {});
+
+const showCurrentTags = async () => {
+  var selectedBfAccount = defaultBfAccount;
+  var selectedBfDataset = defaultBfDataset;
+
+  if (selectedBfDataset === "Select dataset") {
+  } else {
+    let tags;
+
+    // get the tags from the Pennsieve API
+    try {
+      tags = await get_dataset_tags(selectedBfDataset);
+    } catch (e) {
+      throw e;
+    }
+
+    $("#tagify-dataset-tags").attr("value", `${tags.join()}`);
+    $("#tagify-dataset-tags").css("background-color", "red");
+  }
+};
+
 // Add license //
 $("#button-add-license").click(() => {
   setTimeout(function () {
