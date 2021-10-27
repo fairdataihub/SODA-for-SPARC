@@ -6648,15 +6648,18 @@ const get_cognito_config = async () => {
   }
 
   // check that there weren't any unexpected errors
-  if(cognitoConfigResponse.status === 404) {
-    throw new Error(`Error: ${cognitoConfigResponse.status} - Resource for authenticating not found.`)
-  } else if (cognitoConfigResponse.status >= 500 ) {
-    throw new Error (`Error: Something is wrong with Pennsieve's servers.`)
+  if (cognitoConfigResponse.status === 404) {
+    throw new Error(
+      `Error: ${cognitoConfigResponse.status} - Resource for authenticating not found.`
+    );
+  } else if (cognitoConfigResponse.status >= 500) {
+    throw new Error(`Error: Something is wrong with Pennsieve's servers.`);
   } else if (cognitoConfigResponse.status !== 200) {
     // something unexpected happened with the request
-    throw new Error(`Error: Something is wrong in the Pennsieve user authentication flow.`)
+    throw new Error(
+      `Error: Something is wrong in the Pennsieve user authentication flow.`
+    );
   }
-
 
   let cognitoConfigData = await cognitoConfigResponse.json();
   return cognitoConfigData;
