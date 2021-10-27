@@ -6703,11 +6703,21 @@ const get_api_key_and_secret_from_ini = () => {
       $1 === "/" ? homedir() : `${path.dirname(homedir())}/${$1}`
     );
 
-  // initialize the ini reader
+  // create the path to the user's configuration file
   const userpath = expanduser("~/");
   const config_path = path.join(userpath, ".pennsieve", "config.ini");
   let config;
+
+  // check that the user's configuration file exists
+  if (!fs.existsSync(config_path)) {
+    throw new Error(
+      "Error: Could not read information. No configuration file."
+    );
+  }
+
+
   try {
+    // initialize the ini reader
     config = ini.parse(fs.readFileSync(`${config_path}`, "utf-8"));
   } catch (e) {
     throw e;
@@ -6719,7 +6729,7 @@ const get_api_key_and_secret_from_ini = () => {
     !config["SODA-Pennsieve"]["api_token"]
   ) {
     // throw an error
-    throw new Error("No api token or secret");
+    throw new Error("Error: User must connect their Pennsieve account to SODA in order to access this feature.");
   }
 
   // return the user's api key and secret
