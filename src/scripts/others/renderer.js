@@ -150,11 +150,6 @@ client.invoke("echo", "server ready", (error, res) => {
   }
 });
 
-// TODO: Remove after making more sophisticated
-var input = document.querySelector("input[name=tags]");
-// initialize Tagify on the above input node reference
-new Tagify(input);
-
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
   ripple: true,
@@ -940,6 +935,11 @@ var studyApproachesInput = document.getElementById("ds-study-approach"),
   studyApproachesTagify = new Tagify(studyApproachesInput, {
     duplicates: false,
   });
+
+// tagify the input inside of the "Add/edit tags" manage dataset section
+var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
+  // initialize Tagify on the above input node reference
+  datasetTagsTagify = new Tagify(datasetTagsInput);
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

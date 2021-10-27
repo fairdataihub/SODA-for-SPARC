@@ -1389,7 +1389,9 @@ const showCurrentBannerImage = () => {
 };
 
 // Add tags //
-$("#button-add-tags").click(() => {});
+$("#button-add-tags").click(() => {
+  console.log("Add tags event fired");
+});
 
 const showCurrentTags = async () => {
   var selectedBfAccount = defaultBfAccount;
@@ -1406,10 +1408,12 @@ const showCurrentTags = async () => {
       throw e;
     }
 
-    $("#tagify-dataset-tags").attr("value", `${tags.join()}`);
-    $("#tagify-dataset-tags").css("background-color", "red");
+    datasetTagsTagify.removeAllTags();
+    datasetTagsTagify.addTags(tags);
   }
 };
+
+const loadTags = () => {};
 
 // Add license //
 $("#button-add-license").click(() => {
