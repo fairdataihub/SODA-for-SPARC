@@ -6638,21 +6638,32 @@ const api_bf_account_details = async (account) => {
 
 const get_cognito_config = async () => {
   const PENNSIEVE_URL = "https://api.pennsieve.io";
-  let cognitoCongigResponse;
+  let cognitoConfigResponse;
   try {
-    cognitoCongigResponse = await fetch(
+    cognitoConfigResponse = await fetch(
       `${PENNSIEVE_URL}/authentication/cognito-config`
     );
   } catch (e) {
     throw e;
   }
 
-  let cognitoConfigData = await cognitoCongigResponse.json();
+  // check that there weren't any unexpected errors
+  if(cognitoConfigResponse.status === 404) {
+    throw new Error(`Error: ${cognitoConfigResponse.status} - Resource for authenticating not found.`)
+  } else if (cognitoConfigResponse.status >= 500 ) {
+    throw new Error (`Error: Something is wrong with Pennsieve's servers.`)
+  } else if (cognitoConfigResponse.status !== 200) {
+    // something unexpected happened with the request
+    throw new Error(`Error: Something is wrong in the Pennsieve user authentication flow.`)
+  }
+
+
+  let cognitoConfigData = await cognitoConfigResponse.json();
   return cognitoConfigData;
 };
 
 // authenticate a user with api key and api secret
-// this steo is to validate a user is who they say they are
+// this step is to validate a user is who they say they are
 const authenticate_with_cognito = async (
   cognitoConfigurationData,
   usernameOrApiKey,
@@ -6768,7 +6779,7 @@ const get_access_token = async () => {
   }
 
   if (!cognitoResponse["accessToken"]["jwtToken"])
-    throw new Error("No access token available");
+    throw new Error("Error: No access token available for this user.");
 
   return cognitoResponse["accessToken"]["jwtToken"];
 };
