@@ -6565,7 +6565,6 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
             updateBfAccountList();
           }
         });
-        // myBootboxDialog.modal("hide");
         Swal.fire({
           icon: "success",
           title: "Successfully added! <br/>Loading your account details...",
