@@ -816,10 +816,11 @@ $("#button-add-description").click(() => {
     
     // get the dataset readme 
     let readme = await get_dataset_readme(selectedBfDataset)
-  
-    console.log("The readme", readme)
+
+    $('#ds-study-purpose').val(readme)
   
     // create the parsed dataset read me object
+
   
     // check if any of the fields have data 
       // if so make the button say edit description
