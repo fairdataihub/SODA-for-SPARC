@@ -6984,3 +6984,72 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
     throw new Error(`${statusCode} - ${statusText}`);
   }
 };
+
+
+	
+	/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Description Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+// returns the readme of a dataset.
+// I: dataset_name_or_id : string
+// O: a dataset description as a string
+const get_dataset_readme = async (dataset_name_or_id) => {
+  // check that a dataset name or id is provided
+  if (!dataset_name_or_id) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+  // get the user's access token
+  let jwt;
+  try {
+    jwt = await get_access_token();
+  } catch (e) {
+    throw e;
+  }
+
+  // get the dataset
+  let dataset;
+  try {
+    dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
+  } catch (e) {
+    throw e;
+  }
+
+  // pull out the id from the result
+  const id = dataset["content"]["id"];
+
+  // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
+  let readmeResponse;
+  try {
+    readmeResponse = await fetch(
+      `https://api.pennsieve.io/datasets/${id}/readme`,
+      {
+        headers: {
+          Accept: "*/*",
+          Authorization: `Bearer ${jwt}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (e) {
+    // network error
+    throw e;
+  }
+
+  // grab the readme out of the response
+  let {readme} = await readmeResponse.json();
+
+  return readme;
+};
+
+get_dataset_readme("soda-test-set")
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err));
+  
+  
+
+
