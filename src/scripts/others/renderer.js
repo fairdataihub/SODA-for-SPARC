@@ -2459,25 +2459,25 @@ function detectEmptyRequiredFields(funding) {
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
 // New instance for description editor
-const tuiInstance = new Editor({
-  el: document.querySelector("#editorSection"),
-  initialEditType: "wysiwyg",
-  previewStyle: "vertical",
-  height: "400px",
-  hideModeSwitch: true,
-  placeholder: "Add a description here: ",
-  toolbarItems: [
-    "heading",
-    "bold",
-    "italic",
-    "strike",
-    "link",
-    "hr",
-    "divider",
-    "ul",
-    "ol",
-  ],
-});
+// const tuiInstance = new Editor({
+//   el: document.querySelector("#editorSection"),
+//   initialEditType: "wysiwyg",
+//   previewStyle: "vertical",
+//   height: "400px",
+//   hideModeSwitch: true,
+//   placeholder: "Add a description here: ",
+//   toolbarItems: [
+//     "heading",
+//     "bold",
+//     "italic",
+//     "strike",
+//     "link",
+//     "hr",
+//     "divider",
+//     "ul",
+//     "ol",
+//   ],
+// });
 
 var displaySize = 1000;
 
