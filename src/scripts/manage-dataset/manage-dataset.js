@@ -847,40 +847,45 @@ const showCurrentDescription = async () => {
 // searches the markdown for key sections and returns them divided into an easily digestible object
 // returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}
 const create_parsed_readme = (readme) => {
-  // -Read in the readme file and store it in a variable ( it is in markdown ) 
-  let mutableReadme = readme 
-	// 	-create the return object
-  const parsedReadme = {"Study Purpose": "", "Data Collection": "", "Primary Conclusion": "", "Invalid Text": ""}
+  // -Read in the readme file and store it in a variable ( it is in markdown )
+  let mutableReadme = readme;
+  // 	-create the return object
+  const parsedReadme = {
+    "Study Purpose": "",
+    "Data Collection": "",
+    "Primary Conclusion": "",
+    "Invalid Text": "",
+  };
 
-	// 	-search for the **Study Purpose:** and basic variations of spacing
-  let study_purpose_idx = mutableReadme.search("[*][*]Study Purpose:[*][*]")
-  
-	// If found place the following text into the studyPurpose property without the Study Purpose section title and markdown
-  if(study_purpose_idx !== -1) {
+  // 	-search for the **Study Purpose:** and basic variations of spacing
+  let study_purpose_idx = mutableReadme.search("[*][*]Study Purpose:[*][*]");
+
+  // If found place the following text into the studyPurpose property without the Study Purpose section title and markdown
+  if (study_purpose_idx !== -1) {
     let endOfSectionIdx;
-    for(let idx=study_purpose_idx + 14; idx < mutableReadme.length; idx++ ) {
-      if(mutableReadme["idx"] === '*') {
-        endOfSectionIdx = idx - 1
+    for (let idx = study_purpose_idx + 14; idx < mutableReadme.length; idx++) {
+      if (mutableReadme["idx"] === "*") {
+        endOfSectionIdx = idx - 1;
       }
     }
 
-	  // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
-    mutableReadme = mutableReadme.slice(0, study_purpose_idx) + mutableReadme.slice(endOfSectionIdx)
+    // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
+    mutableReadme =
+      mutableReadme.slice(0, study_purpose_idx) +
+      mutableReadme.slice(endOfSectionIdx);
   }
 
+  console.log(mutableReadme);
+  // 	-search for the **Data Collection** and basic variations of spacing
+  // 		-If found place the text into the data_collection property  without the Data Collection section title and markdown
+  // 	-search for the **Primary Conclusion** and basic variations of spacing
+  // 		-If found place the text into the primary_conclusion property  without the Primary Conclusion section title and markdown
 
-  console.log(mutableReadme)
-	// 	-search for the **Data Collection** and basic variations of spacing 
-	// 		-If found place the text into the data_collection property  without the Data Collection section title and markdown
-	// 	-search for the **Primary Conclusion** and basic variations of spacing 
-	// 		-If found place the text into the primary_conclusion property  without the Primary Conclusion section title and markdown
+  // 	-strip out any unrequired fields (Curator's notes, auxillary sections, etc )
 
+  // 	-check if final version of the description has any more text -- if so it is invalid text so place it in the invalidText section
 
-	// 	-strip out any unrequired fields (Curator's notes, auxillary sections, etc )
-
-	// 	-check if final version of the description has any more text -- if so it is invalid text so place it in the invalidText section 
-	     
-	// 	-return the parsed readme object
+  // 	-return the parsed readme object
 };
 
 const addDescription = (
