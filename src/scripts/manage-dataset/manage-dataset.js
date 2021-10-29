@@ -809,31 +809,14 @@ const showCurrentDescription = async () => {
   // check if the user is selecting a dataset
   if (selectedBfDataset == "Select dataset") {
     // remove the text from the boxes? Probably not
-  
-  
-   } else {
-    
-    // get the dataset readme 
-    let readme = await get_dataset_readme(selectedBfDataset)
+  } else {
+    // get the dataset readme
+    let readme = await get_dataset_readme(selectedBfDataset);
 
-    $('#ds-study-purpose').val(readme)
-  
+    $("#ds-study-purpose").val(readme);
+
     // create the parsed dataset read me object
-    let parsedReadme = s
-
-  
-    // check if any of the fields have data 
-      // if so make the button say edit description
-    // else 
-      // make the button say add description
-  
-    // check if there is any invalid text remaining 
-  
-      // if so fire an alert that informs the user that invalid text needs to be placed in the correct required boxes
-    
-    //  check if there is any study purpose text || Data Collection || Primary Conclusion 
-      // if so place the text into the text area for that field 
-   
+    let parsedReadme = s;
 
     // check if any of the fields have data
     // if so make the button say edit description
@@ -846,15 +829,24 @@ const showCurrentDescription = async () => {
 
     //  check if there is any study purpose text || Data Collection || Primary Conclusion
     // if so place the text into the text area for that field
-   }
+
+    // check if any of the fields have data
+    // if so make the button say edit description
+    // else
+    // make the button say add description
+
+    // check if there is any invalid text remaining
+
+    // if so fire an alert that informs the user that invalid text needs to be placed in the correct required boxes
+
+    //  check if there is any study purpose text || Data Collection || Primary Conclusion
+    // if so place the text into the text area for that field
+  }
 };
 
 // searches the markdown for key sections and returns them divided into an easily digestible object
-// returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""} 
-const create_parsed_readme = (readme) => {
-
-}
-
+// returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}
+const create_parsed_readme = (readme) => {};
 
 const addDescription = (
   selectedBfAccount,
