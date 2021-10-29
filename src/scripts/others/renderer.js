@@ -6985,9 +6985,7 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
   }
 };
 
-
-	
-	/*
+/*
 ******************************************************
 ******************************************************
 Manage Datasets Add/Edit Description Section With Nodejs
@@ -7041,7 +7039,7 @@ const get_dataset_readme = async (dataset_name_or_id) => {
   }
 
   // grab the readme out of the response
-  let {readme} = await readmeResponse.json();
+  let { readme } = await readmeResponse.json();
 
   return readme;
 };
@@ -7049,7 +7047,3 @@ const get_dataset_readme = async (dataset_name_or_id) => {
 get_dataset_readme("soda-test-set")
   .then((res) => console.log(res))
   .catch((err) => console.error(err));
-  
-  
-
-
