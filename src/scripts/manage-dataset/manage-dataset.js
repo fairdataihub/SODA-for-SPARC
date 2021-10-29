@@ -800,41 +800,35 @@ $("#button-add-description").click(() => {
 //   }
 // };
 
+// fires when a user selects a dataset in the add/edit description page
+const showCurrentDescription = async () => {
+  var selectedBfAccount = defaultBfAccount;
+  var selectedBfDataset = defaultBfDataset;
 
-  // fires when a user selects a dataset in the add/edit description page
-  const showCurrentDescription = async () =>  {
-
-    var selectedBfAccount = defaultBfAccount;
-    var selectedBfDataset = defaultBfDataset;
-  
   // check if the user is selecting a dataset
-  if(selectedBfDataset == "Select dataset") {
+  if (selectedBfDataset == "Select dataset") {
     // remove the text from the boxes? Probably not
-  
-  
-   } else {
-    
-    // get the dataset readme 
-    let readme = await get_dataset_readme(selectedBfDataset)
-  
-    console.log("The readme", readme)
-  
-    // create the parsed dataset read me object
-  
-    // check if any of the fields have data 
-      // if so make the button say edit description
-    // else 
-      // make the button say add description
-  
-    // check if there is any invalid text remaining 
-  
-      // if so fire an alert that informs the user that invalid text needs to be placed in the correct required boxes
-    
-    //  check if there is any study purpose text || Data Collection || Primary Conclusion 
-      // if so place the text into the text area for that field 
-   }
-  }
+  } else {
+    // get the dataset readme
+    let readme = await get_dataset_readme(selectedBfDataset);
 
+    console.log("The readme", readme);
+
+    // create the parsed dataset read me object
+
+    // check if any of the fields have data
+    // if so make the button say edit description
+    // else
+    // make the button say add description
+
+    // check if there is any invalid text remaining
+
+    // if so fire an alert that informs the user that invalid text needs to be placed in the correct required boxes
+
+    //  check if there is any study purpose text || Data Collection || Primary Conclusion
+    // if so place the text into the text area for that field
+  }
+};
 
 const addDescription = (
   selectedBfAccount,

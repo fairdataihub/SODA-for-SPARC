@@ -2169,428 +2169,426 @@
   </section>
 
   <section
-  id="add_edit_description-section"
-  class="section js-section u-category-windows"
-  style="padding-left: 15px"
->
-  <div
-    class="main-tabs show"
-    id="add_edit_description_parent-tabc"
-    style="display: flex; height: 100%; overflow-y: hidden"
+    id="add_edit_description-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px"
   >
-    <header class="section-header">
-      <div
-        style="
-          display: inline-flex;
-          align-items: center;
-          flex-direction: row;
-          width: 94.5%;
-          padding-right: 20px;
-          margin-bottom: 50px;
-        "
-      >
+    <div
+      class="main-tabs show"
+      id="add_edit_description_parent-tabc"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
+      <header class="section-header">
         <div
           style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
+            display: inline-flex;
+            align-items: center;
+            flex-direction: row;
+            width: 94.5%;
+            padding-right: 20px;
+            margin-bottom: 50px;
           "
         >
-          <div class="need-help-div">
-            <h2>Manage Datasets - Add/edit description</h2>
-            <a
-              target="_blank"
-              href="https://fairdataihub.org/sodaforsparc/docs/Add-edit-description"
-              >Need help?</a
-            >
+          <div
+            style="
+              width: 100%;
+              border-bottom: 3px solid #b80d49;
+              margin-bottom: -5px;
+            "
+          >
+            <div class="need-help-div">
+              <h2>Manage Datasets - Add/edit description</h2>
+              <a
+                target="_blank"
+                href="https://fairdataihub.org/sodaforsparc/docs/Add-edit-description"
+                >Need help?</a
+              >
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <div
-      id="add_edit_description_parent-tab"
-      style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
-    >
       <div
-        class="individual-question manage-dataset show"
-        id="add_edit_description_tab"
-        style="height: auto"
+        id="add_edit_description_parent-tab"
+        style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
       >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Pennsieve dataset would you like to work on?</label
-            >
-            <div class="field" style="margin: auto; width: 500px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
+        <div
+          class="individual-question manage-dataset show"
+          id="add_edit_description_tab"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Pennsieve dataset would you like to work on?</label
               >
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
-                        Current account:
-                      </h5>
-                      <h5 class="card-right bf-account-span">None</h5>
-                    </div>
-                  </div>
-                  <svg
-                    class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                  "
-                >
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px"
-                      >
-                        Current dataset:
-                      </h5>
-                      <h5 class="card-right bf-dataset-span">None</h5>
-                    </div>
-                  </div>
-                  <svg
-                    class="
-                      svg-change-current-account
-                      dataset
-                      bi bi-pencil-fill
-                    "
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
                   <div
-                    class="ui active green inline loader small"
-                    style="display: none"
-                  ></div>
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current account:
+                        </h5>
+                        <h5 class="card-right bf-account-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="svg-change-current-account bi bi-pencil-fill"
+                      onclick="openDropdownPrompt('bf')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Account details:
+                        </h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current dataset:
+                        </h5>
+                        <h5 class="card-right bf-dataset-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                    <div
+                      class="ui active green inline loader small"
+                      style="display: none"
+                    ></div>
+                  </div>
                 </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_edit_description_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_edit_description_tab', 'add_edit_description_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_add_edit_description"
-                  class="confirm-button"
+                <div
+                  class="div-confirm-button"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
                     margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
                   "
                 >
-                  Confirm
-                </button>
+                  <button
+                    id="button_add_edit_description_confirm"
+                    onclick="transitionFreeFormMode(this, 'add_edit_description_tab', 'add_edit_description_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div_add_edit_description"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question manage-dataset"
+          id="div_add_edit_description"
+          style="height: auto"
+        >
+          <!--Adding the test section out-->
+          <div class="ui form" style="width: 100%">
+            <div class="field" style="margin: auto; width: 500px">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  margin-bottom: 20px;
+                  text-align: center;
+                "
+                >Enter your description in the sections below
+
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                  data-original-title=""
+                  title=""
+                ></i>
+              </label>
+
+              <div
+                class="ui styled accordion"
+                id="dd-accordion"
+                style="width: 100% !important"
+              >
+                <div
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
+                >
+                  <i class="dropdown icon"></i>
+                  Study Purpose
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the purpose of your study below."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
+                </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div class="ui input modified">
+                            <textarea
+                              type="text"
+                              id="ds-description"
+                              placeholder="Enter your study purpose here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 15px 15px;
+                              "
+                              rows="4"
+                            >
+                            </textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
+                >
+                  <i class="dropdown icon"></i>
+                  Data Collection
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the method you used for data collection below."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
+                </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div class="ui input modified">
+                            <textarea
+                              type="text"
+                              id="ds-description"
+                              placeholder="Enter you data collection methods here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 15px 15px;
+                              "
+                              rows="4"
+                            >
+                            </textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
+                >
+                  <i class="dropdown icon"></i>
+                  Primary Conclusion
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the primary conclusion of your study below."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
+                </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div class="ui input modified">
+                            <textarea
+                              type="text"
+                              id="ds-description"
+                              placeholder="Enter your primary conclusion here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 15px 15px;
+                              "
+                              rows="4"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div
-        class="individual-question manage-dataset"
-        id="div_add_edit_description"
-        style="height: auto"
-      >
-        <!--Adding the test section out-->
-        <div class="ui form" style="width: 100%">
-          <div class="field" style="margin: auto; width: 500px">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                margin-bottom: 20px;
-                text-align: center;
-              "
-              >Enter your description in the sections below
-
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published."
-                rel="popover"
-                data-html="true"
-                data-placement="right"
-                data-trigger="hover"
-                data-original-title=""
-                title=""
-              ></i>
-            </label>
-
-            <div
-              class="ui styled accordion"
-              id="dd-accordion"
-              style="width: 100% !important"
-            >
-              <div
-                class="title"
-                style="background: var(--color-bg-light-green-button)"
-              >
-                <i class="dropdown icon"></i>
-                Study Purpose
-                <span style="font-style: italic; opacity: 0.8"
-                  >(Mandatory)</span
-                >
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Enter a paragraph that explains the purpose of your study below."
-                  rel="popover"
-                  data-placement="right"
-                  data-html="true"
-                  data-trigger="hover"
-                  style="margin-left: 5px; color: black"
-                ></i>
-              </div>
-              <div class="content">
-                <div
-                  style="
-                    display: block;
-                    width: 90%;
-                    margin: 0px auto;
-                    font-size: 13px;
-                    opacity: 0;
-                  "
-                >
-                  <div>
-                    <div
-                      class="div-dd-info subjects"
-                      style="flex-direction: column"
-                    >
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <textarea
-                            type="text"
-                            id="ds-description"
-                            placeholder="Enter your study purpose here..."
-                            style="
-                              font-size: 14px;
-                              width: 100%;
-                              margin: 15px 15px;
-                            "
-                            rows="4"
-                          >
-                          </textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="title"
-                style="background: var(--color-bg-light-green-button)"
-              >
-                <i class="dropdown icon"></i>
-                Data Collection
-                <span style="font-style: italic; opacity: 0.8"
-                  >(Mandatory)</span
-                >
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Enter a paragraph that explains the method you used for data collection below."
-                  rel="popover"
-                  data-placement="right"
-                  data-html="true"
-                  data-trigger="hover"
-                  style="margin-left: 5px; color: black"
-                ></i>
-              </div>
-              <div class="content">
-                <div
-                  style="
-                    display: block;
-                    width: 90%;
-                    margin: 0px auto;
-                    font-size: 13px;
-                    opacity: 0;
-                  "
-                >
-                  <div>
-                    <div
-                      class="div-dd-info subjects"
-                      style="flex-direction: column"
-                    >
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <textarea
-                            type="text"
-                            id="ds-description"
-                            placeholder="Enter you data collection methods here..."
-                            style="
-                              font-size: 14px;
-                              width: 100%;
-                              margin: 15px 15px;
-                            "
-                            rows="4"
-                          >
-                          </textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="title"
-                style="background: var(--color-bg-light-green-button)"
-              >
-                <i class="dropdown icon"></i>
-                Primary Conclusion
-                <span style="font-style: italic; opacity: 0.8"
-                  >(Mandatory)</span
-                >
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Enter a paragraph that explains the primary conclusion of your study below."
-                  rel="popover"
-                  data-placement="right"
-                  data-html="true"
-                  data-trigger="hover"
-                  style="margin-left: 5px; color: black"
-                ></i>
-              </div>
-              <div class="content">
-                <div
-                  style="
-                    display: block;
-                    width: 90%;
-                    margin: 0px auto;
-                    font-size: 13px;
-                    opacity: 0;
-                  "
-                >
-                  <div>
-                    <div
-                      class="div-dd-info subjects"
-                      style="flex-direction: column"
-                    >
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <textarea
-                            type="text"
-                            id="ds-description"
-                            placeholder="Enter your primary conclusion here..."
-                            style="
-                              font-size: 14px;
-                              width: 100%;
-                              margin: 15px 15px;
-                            "
-                            rows="4"
-                          >
-</textarea
-                          >
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="footer-div">
+        <div style="display: flex; flex-direction: row; width: 120px">
+          <button
+            type="button"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+          </button>
         </div>
-      </div>
-    </div>
-
-    <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 120px">
         <button
           type="button"
           class="transition-btn prev"
-          data-section="main_tabs"
+          data-section="add_edit_banner"
+          style="width: auto"
         >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+          Add a banner image to the dataset<i
+            class="fas fa-arrow-right"
+            style="margin-left: 10px"
+          ></i>
         </button>
       </div>
-      <button
-        type="button"
-        class="transition-btn prev"
-        data-section="add_edit_banner"
-        style="width: auto"
-      >
-        Add a banner image to the dataset<i
-          class="fas fa-arrow-right"
-          style="margin-left: 10px"
-        ></i>
-      </button>
     </div>
-  </div>
-</section>
+  </section>
 
   <section
     id="add_edit_banner-section"
