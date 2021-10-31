@@ -813,10 +813,10 @@ const showCurrentDescription = async () => {
     // get the dataset readme
     let readme = await get_dataset_readme(selectedBfDataset);
 
-    $("#ds-study-purpose").val(readme);
+    console.log("Reade me is before parsing", readme);
 
     // create the parsed dataset read me object
-    let parsedReadme = s;
+    let parsedReadme = create_parsed_readme(readme);
 
     // check if any of the fields have data
     // if so make the button say edit description
@@ -828,7 +828,15 @@ const showCurrentDescription = async () => {
     // if so fire an alert that informs the user that invalid text needs to be placed in the correct required boxes
 
     //  check if there is any study purpose text || Data Collection || Primary Conclusion
-    // if so place the text into the text area for that field
+    if (parsedReadme["Study Purpose"]) {
+      // if so place the text into the text area for that field
+      $("#ds-description-study-purpose").val(parsedReadme["Study Purpose"]);
+    }
+
+    if (parsedReadme["Data Collection"]) {
+      // if so place the text into the text area for that field
+      $("#ds-description-data-collection").val(parsedReadme["Data Collection"]);
+    }
 
     // check if any of the fields have data
     // if so make the button say edit description
@@ -847,9 +855,9 @@ const showCurrentDescription = async () => {
 // searches the markdown for key sections and returns them divided into an easily digestible object
 // returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}
 const create_parsed_readme = (readme) => {
-  // -Read in the readme file and store it in a variable ( it is in markdown )
+  // read in the readme file and store it in a variable ( it is in markdown )
   let mutableReadme = readme;
-  // 	-create the return object
+  // create the return object
   const parsedReadme = {
     "Study Purpose": "",
     "Data Collection": "",
@@ -857,29 +865,125 @@ const create_parsed_readme = (readme) => {
     "Invalid Text": "",
   };
 
-  // 	-search for the **Study Purpose:** and basic variations of spacing
+  // search for the **Study Purpose:** and basic variations of spacing
   let study_purpose_idx = mutableReadme.search("[*][*]Study Purpose:[*][*]");
 
   // If found place the following text into the studyPurpose property without the Study Purpose section title and markdown
   if (study_purpose_idx !== -1) {
     let endOfSectionIdx;
-    for (let idx = study_purpose_idx + 14; idx < mutableReadme.length; idx++) {
-      if (mutableReadme["idx"] === "*") {
-        endOfSectionIdx = idx - 1;
+    mutableReadme = mutableReadme.replace("**Study Purpose:**", "");
+    // console.log(
+    //   "Value of the rest of string before iteration",
+    //   mutableReadme.substring(study_purpose_idx)
+    // );
+    console.log("mutable readme after removing section", mutableReadme);
+    for (let idx = study_purpose_idx; idx < mutableReadme.length; idx++) {
+      if (mutableReadme[idx] === "*") {
+        endOfSectionIdx = idx;
+        break;
       }
     }
+
+    console.log(
+      "Should have study purpose text here:",
+      mutableReadme.slice(study_purpose_idx, endOfSectionIdx)
+    );
+    // store the value of the Study Purpose in the parsed readme
+    parsedReadme["Study Purpose"] = mutableReadme.slice(
+      study_purpose_idx,
+      endOfSectionIdx
+    );
+
+    console.log("Pared update:", parsedReadme);
 
     // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
     mutableReadme =
       mutableReadme.slice(0, study_purpose_idx) +
       mutableReadme.slice(endOfSectionIdx);
+    // console.log("First slice: ", mutableReadme.slice(0, study_purpose_idx));
+    // console.log("Second slcie:", mutableReadme.slice(endOfSectionIdx));
+    // console.log(
+    //   "Combined slice:",
+    //   mutableReadme.slice(0, study_purpose_idx) +
+    //     mutableReadme.slice(endOfSectionIdx)
+    // );
   }
 
-  console.log(mutableReadme);
-  // 	-search for the **Data Collection** and basic variations of spacing
-  // 		-If found place the text into the data_collection property  without the Data Collection section title and markdown
-  // 	-search for the **Primary Conclusion** and basic variations of spacing
-  // 		-If found place the text into the primary_conclusion property  without the Primary Conclusion section title and markdown
+  // search for the **Data Collection** and basic variations of spacing
+  let data_collection_idx = mutableReadme.search(
+    "[*][*]Data Collection:[*][*]"
+  );
+
+  // If found place the text into the data_collection property  without the Data Collection section title and markdown
+  if (data_collection_idx !== -1) {
+    let endOfSectionIdx;
+    mutableReadme = mutableReadme.replace("**Data Collection:**", "");
+    for (let idx = data_collection_idx; idx < mutableReadme.length; idx++) {
+      if (mutableReadme[idx] === "*") {
+        endOfSectionIdx = idx;
+        break;
+      }
+    }
+    // store the value of the Data Collection in the parsed readme
+    parsedReadme["Data Collection"] = mutableReadme.slice(
+      data_collection_idx,
+      endOfSectionIdx
+    );
+
+    // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
+    mutableReadme =
+      mutableReadme.slice(0, data_collection_idx) +
+      mutableReadme.slice(endOfSectionIdx);
+    // console.log("First slice: ", mutableReadme.slice(0, study_purpose_idx));
+    // console.log("Second slcie:", mutableReadme.slice(endOfSectionIdx));
+    // console.log(
+    //   "Combined slice:",
+    //   mutableReadme.slice(0, study_purpose_idx) +
+    //     mutableReadme.slice(endOfSectionIdx)
+    // );
+  }
+
+  // search for the **Primary Conclusion** and basic variations of spacing
+  let primary_conclusion_idx = mutableReadme.search(
+    "[*][*]Primary Conclusion:[*][*]"
+  );
+
+  // If found place the text into the primary_conclusion property  without the Primary Conclusion section title and markdown
+  if (primary_conclusion_idx !== -1) {
+    let endOfSectionIdx;
+    mutableReadme = mutableReadme.replace("**Primary Conclusion:**", "");
+    // console.log(
+    //   "Value of the rest of string before iteration",
+    //   mutableReadme.substring(study_purpose_idx)
+    // );
+    for (let idx = primary_conclusion_idx; idx < mutableReadme.length; idx++) {
+      if (mutableReadme[idx] === "*") {
+        endOfSectionIdx = idx;
+        break;
+      }
+    }
+    // store the value of the Data Collection in the parsed readme
+    parsedReadme["Primary Conclusion"] = mutableReadme.slice(
+      primary_conclusion_idx,
+      endOfSectionIdx
+    );
+
+    // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
+    mutableReadme =
+      mutableReadme.slice(0, primary_conclusion_idx) +
+      mutableReadme.slice(endOfSectionIdx);
+    // console.log("First slice: ", mutableReadme.slice(0, study_purpose_idx));
+    // console.log("Second slcie:", mutableReadme.slice(endOfSectionIdx));
+    // console.log(
+    //   "Combined slice:",
+    //   mutableReadme.slice(0, study_purpose_idx) +
+    //     mutableReadme.slice(endOfSectionIdx)
+    // );
+  }
+
+  console.log("The current mutable readme: ", mutableReadme);
+
+  return parsedReadme;
 
   // 	-strip out any unrequired fields (Curator's notes, auxillary sections, etc )
 
