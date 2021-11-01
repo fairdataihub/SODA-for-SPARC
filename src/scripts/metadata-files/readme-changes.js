@@ -408,15 +408,42 @@ function resetRCFile(type) {
   });
 }
 
-function getDatasetID(datasetName, jwt) {
+async function getDatasetID(datasetName, jwt) {
   // fetch the tags for their dataset using the Pennsieve API
   let dataset;
   dataset = await get_dataset_by_name_id(datasetName, jwt);
-
   // grab the dataset's id
   const id = dataset["content"]["id"];
 
-  // setup the request options
+  return id;
+}
+
+const getReadme = async () => {
+  // loading popup
+  Swal.fire({
+    title: "Loading an existing README.txt file",
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+
+  let datasetName = $(`#bf_dataset_load_readme`).text().trim();
+
+  // authenticate the user
+  let jwt;
+  jwt = await get_access_token();
+
+  let datasetID = await getDatasetID(datasetName, jwt);
+
+  // obtain readme description
+  let readmeDescription;
   let options = {
     method: "GET",
     headers: {
@@ -426,49 +453,46 @@ function getDatasetID(datasetName, jwt) {
     },
   };
 
-  return id;
-}
-
-const getReadme = async () => {
-  let datasetName = $(`#bf_dataset_load_readme`).text().trim();
-
-  // authenticate the user
-  let jwt;
-  jwt = await get_access_token();
-
-  let datasetID = getDatasetID(datasetName, jwt);
-
-  // obtain readme description
-  let readmeDescription;
-
   readmeDescription = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/readme`,
+    `https://api.pennsieve.io/datasets/${datasetID}/readme`,
     options
-  )
-    .then((res) => res.json())
-    .then(
-      // this is the readme
-      (json) => console.log(json)
-    );
+  ).then((res) => res.json())
+   .then(
+      (json) => json
+    )
+   .catch(err => {
+     var errorMessage = 'Failed to load README file from selected dataset: ' + err
+     console.error(errorMessage)
+     Swal.fire({
+       icon: "error",
+       html: errorMessage,
+       heightAuto: false,
+       backdrop: "rgba(0,0,0,0.4)",
+     })
+   });
 
-  // TODO: Changes text and stuff below
-  let statusCode = readmeDescription.status;
-
-  if (statusCode === 404) {
-    throw new Error(
-      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add tags.`
-    );
-  } else if (statusCode === 401) {
-    throw new Error(
-      `${statusCode} - You do not have access this dataset at the moment.`
-    );
-  } else if (statusCode === 403) {
-    throw new Error(`${statusCode} - You do not have access to this dataset. `);
-  } else if (statusCode !== 200) {
-    // something unexpected happened
-    let statusText = await readmeDescription.json().statusText;
-    throw new Error(`${statusCode} - ${statusText}`);
-  }
+   if (readmeDescription.readme.trim() !== "")  {
+     $("#textarea-create-readme").val(readmeDescription.readme.trim());
+     Swal.fire({
+       title: "Loaded successfully!",
+       icon: "success",
+       showConfirmButton: true,
+       heightAuto: false,
+       backdrop: "rgba(0,0,0, 0.4)",
+       didOpen: () => {
+         Swal.hideLoading();
+       },
+     })
+   } else {
+     Swal.fire({
+       icon: "warning",
+       text: "The current README file is empty. Please edit it in the following textarea.",
+       heightAuto: false,
+       backdrop: "rgba(0,0,0,0.4)",
+     })
+   }
+   $($("#button-fake-confirm-existing-bf-readme-file-load").siblings()[0]).hide();
+   $("#button-fake-confirm-existing-bf-readme-file-load").click();
 };
 
 const getChanges = async () => {
@@ -478,20 +502,51 @@ const getChanges = async () => {
   let jwt;
   jwt = await get_access_token();
 
-  let datasetID = getDatasetID(datasetName, jwt);
+  let datasetID = await getDatasetID(datasetName, jwt);
 
   // obtain readme description
   let changes;
-
-  // First, obtain dataset version
-  let datasetVer;
-  datasetVer = await fetch(
-    `https://api.pennsieve.io/discover/datasets/${datasetID}`,
+  let options = {
+    method: "GET",
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    },
+  };
+  // this is the changelog
+  let datasetInfo = await fetch(
+    `https://api.pennsieve.io/datasets/${datasetID}`,
     options
   )
-    .then((res) => res.json())
-    .then(
-      // this is the dataset version
-      (json) => console.log(json)
-    );
+  .then((res) => res.json())
+  .then(
+    // this is the dataset information that contains all files/folders of a dataset
+    (json) => json)
+  .catch(err => console.error('This is the error with the HTTP call:' + err));
+
+  let changesFileId = ""
+  for (var i in datasetInfo["children"]) {
+    let child = datasetInfo["children"][i];
+    if (Object.keys(child).includes("extension")
+        && child["extension"] === "txt"
+        && child["content"]["name"].toLowerCase() === "changes.txt"
+        ) {
+      changesFileId = child["content"]["id"]
+
+      break;
+    }
+  }
+  console.log(changesFileId)
+
+  let changesFile = await fetch(
+    `https://api.pennsieve.io/packages/${changesFileId}/sources/`,
+    options
+  )
+  .then((res) => res.json())
+  .then(
+    (json) => console.log(json)
+  )
+
+  console.log(changesFile)
 };
