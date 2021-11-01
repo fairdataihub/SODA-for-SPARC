@@ -1039,6 +1039,16 @@ const addDescription = async (
   // search for the "Primary Conclusion" and basic variations of spacing
   readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion")
 
+  // put the new readme data in the readme on Pennsieve
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ readme: userMarkdownInput }),
+  };
+  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
 
   // read the Curator's notes and auxillary sections from the readme 
   let staticSections = getUnrequiredFieldsFromReadme(readme)
