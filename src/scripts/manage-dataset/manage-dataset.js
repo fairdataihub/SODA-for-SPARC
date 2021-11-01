@@ -732,7 +732,7 @@ const showCurrentDescription = async () => {
     // create the parsed dataset read me object
     let parsedReadme = create_parsed_readme(readme);
 
-    console.log("The parsed readme file is", parsedReadme)
+    console.log("The parsed readme file is", parsedReadme);
 
     // check if any of the fields have data
     if (
@@ -796,15 +796,27 @@ const create_parsed_readme = (readme) => {
   };
 
   // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Study Purpose", parsedReadme)
-  console.log("Muable readme after a slice", mutableReadme)
+  mutableReadme = stripRequiredSectionFromReadme(
+    mutableReadme,
+    "Study Purpose",
+    parsedReadme
+  );
+  console.log("Muable readme after a slice", mutableReadme);
 
   // remove the "Data Collection" section from the readme file and place its value in the parsed readme
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Data Collection", parsedReadme)
-  console.log("Muable readme after a slice", mutableReadme)
+  mutableReadme = stripRequiredSectionFromReadme(
+    mutableReadme,
+    "Data Collection",
+    parsedReadme
+  );
+  console.log("Muable readme after a slice", mutableReadme);
   // search for the "Primary Conclusion" and basic variations of spacing
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Primary Conclusion", parsedReadme)
-  console.log("Muable readme after a slice", mutableReadme)
+  mutableReadme = stripRequiredSectionFromReadme(
+    mutableReadme,
+    "Primary Conclusion",
+    parsedReadme
+  );
+  console.log("Muable readme after a slice", mutableReadme);
   // find the Curator's Notes section and remove everything from the readme that occurs after it
   // (IMP:A user should not be able to edit the Curator's Notes sections)
   let curators_section_idx = mutableReadme.search(
@@ -814,7 +826,6 @@ const create_parsed_readme = (readme) => {
     // remove the curators notes from the current readme
     mutableReadme = mutableReadme.slice(0, curators_section_idx);
   }
-
 
   // strip out any unrequired sections -- user does not edit these on SODA for now
   while (mutableReadme.search("[*][*].*[*][*]") !== -1) {
@@ -870,14 +881,14 @@ const create_parsed_readme = (readme) => {
 const stripRequiredSectionFromReadme = (
   readme,
   sectionName = undefined,
-  parsedReadme = undefined,
+  parsedReadme = undefined
 ) => {
   let mutableReadme = readme;
   // search for the **Study Purpose:** and basic variations of spacing
   let section_idx;
   if (sectionName) {
     section_idx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
-  } 
+  }
 
   if (section_idx === -1) {
     return mutableReadme;
@@ -894,7 +905,7 @@ const stripRequiredSectionFromReadme = (
     }
   }
 
-  if(endOfSectionIdx >= mutableReadme.length) endOfSectionIdx -= 1
+  if (endOfSectionIdx >= mutableReadme.length) endOfSectionIdx -= 1;
 
   // store the value of the Study Purpose in the parsed readme if one was provided
   if (parsedReadme) {
@@ -911,19 +922,20 @@ const stripRequiredSectionFromReadme = (
   return mutableReadme;
 };
 
-// strip the unrequired fields from the readme file and return a string that only contains their values 
+// strip the unrequired fields from the readme file and return a string that only contains their values
 // Assumption: Used after stripping out the required fields
 const getUnrequiredFieldsFromReadme = (readme) => {
-  let mutableReadme = readme 
+  let mutableReadme = readme;
 
-  let first_auxillary_section_found_idx = mutableReadme.search("[*][*].*[*][*]")
+  let first_auxillary_section_found_idx =
+    mutableReadme.search("[*][*].*[*][*]");
 
-  if(first_auxillary_section_found_idx === -1) {
-    return mutableReadme
+  if (first_auxillary_section_found_idx === -1) {
+    return mutableReadme;
   }
 
-  return mutableReadme.slice(first_auxillary_section_found_idx)
-}
+  return mutableReadme.slice(first_auxillary_section_found_idx);
+};
 
 $("#button-add-description").click(() => {
   setTimeout(() => {
@@ -1028,16 +1040,16 @@ const addDescription = async (
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-  let {readme} = await readmeResponse.json();
+  let { readme } = await readmeResponse.json();
 
   // strip out the required sections
-  readme = stripRequiredSectionFromReadme(readme, "Study Purpose")
+  readme = stripRequiredSectionFromReadme(readme, "Study Purpose");
 
   // remove the "Data Collection" section from the readme file and place its value in the parsed readme
-  readme = stripRequiredSectionFromReadme(readme, "Data Collection")
+  readme = stripRequiredSectionFromReadme(readme, "Data Collection");
 
   // search for the "Primary Conclusion" and basic variations of spacing
-  readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion")
+  readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion");
 
   // put the new readme data in the readme on Pennsieve
   const options = {
@@ -1050,13 +1062,13 @@ const addDescription = async (
   };
   await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
 
-  // read the Curator's notes and auxillary sections from the readme 
-  let staticSections = getUnrequiredFieldsFromReadme(readme)
-  
-  // join the user_markdown_input with the static_markdown_input
-  let completeReadme = userMarkdownInput + staticSections
+  // read the Curator's notes and auxillary sections from the readme
+  let staticSections = getUnrequiredFieldsFromReadme(readme);
 
-  console.log("The merged object", completeReadme)
+  // join the user_markdown_input with the static_markdown_input
+  let completeReadme = userMarkdownInput + staticSections;
+
+  console.log("The merged object", completeReadme);
 
   // put the new readme data in the readme on Pennsieve
   const options = {
