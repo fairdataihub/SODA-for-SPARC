@@ -237,7 +237,7 @@ function generateSubmissionFile() {
       title: "Incomplete information",
     });
   } else {
-    openFileBrowserDestination("submission")
+    openFileBrowserDestination("submission");
   }
 }
 
@@ -298,10 +298,9 @@ function actionEnterNewDate(action) {
 }
 
 const submissionDateInput = document.getElementById("input-milestone-date");
-var submissionDestinationPath = ""
+var submissionDestinationPath = "";
 
 $(document).ready(function () {
-
   ipcRenderer.on("selected-existing-submission", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
@@ -342,8 +341,9 @@ $(document).ready(function () {
     "selected-destination-generate-submission-locally",
     (event, dirpath) => {
       if (dirpath.length > 0) {
-        document.getElementById("input-destination-generate-submission-locally").placeholder =
-          dirpath[0];
+        document.getElementById(
+          "input-destination-generate-submission-locally"
+        ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "submission.xlsx");
         if (fs.existsSync(destinationPath)) {
           var emessage =
@@ -362,16 +362,23 @@ $(document).ready(function () {
             confirmButtonText: "Yes",
           }).then((result) => {
             if (result.isConfirmed) {
-              submissionDestinationPath = destinationPath
-              $("#div-confirm-destination-submission-locally").css("display", "flex");
+              submissionDestinationPath = destinationPath;
+              $("#div-confirm-destination-submission-locally").css(
+                "display",
+                "flex"
+              );
             }
           });
         } else {
-          $("#div-confirm-destination-submission-locally").css("display", "flex");
-          submissionDestinationPath = destinationPath
+          $("#div-confirm-destination-submission-locally").css(
+            "display",
+            "flex"
+          );
+          submissionDestinationPath = destinationPath;
         }
       }
-  })
+    }
+  );
 
   $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_load_submission").text().trim() !== "None") {
@@ -400,7 +407,7 @@ function generateSubmissionHelper() {
   var awardRes = $("#submission-sparc-award").val();
   var dateRes = $("#submission-completion-date").val();
   var milestonesRes = $("#selected-milestone-1").val();
-  let milestoneValue = [{value: ""}];
+  let milestoneValue = [{ value: "" }];
   if (milestonesRes !== "") {
     milestoneValue = JSON.parse(milestonesRes);
   }
