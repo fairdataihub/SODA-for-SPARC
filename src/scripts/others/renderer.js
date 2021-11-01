@@ -6856,7 +6856,6 @@ const get_dataset_tags = async (dataset_id_or_name) => {
   } catch (e) {
     throw e;
   }
-
   // get the tags out of the dataset
   const { tags } = dataset["content"];
 
