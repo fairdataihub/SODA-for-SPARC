@@ -407,3 +407,133 @@ function resetRCFile(type) {
     }
   });
 }
+
+function getDatasetID(datasetName, jwt) {
+  // fetch the tags for their dataset using the Pennsieve API
+  let dataset;
+  dataset = await get_dataset_by_name_id(datasetName, jwt);
+
+  // grab the dataset's id
+  const id = dataset["content"]["id"];
+
+  // setup the request options
+  let options = {
+    method: "GET",
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+  return id;
+}
+
+const getReadme = async () => {
+  let datasetName = $(`#bf_dataset_load_readme`).text().trim();
+
+  // authenticate the user
+  let jwt;
+  jwt = await get_access_token();
+
+  let datasetID = getDatasetID(datasetName, jwt);
+
+  // obtain readme description
+  let readmeDescription;
+
+  readmeDescription = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/readme`,
+    options
+  )
+    .then((res) => res.json())
+    .then(
+      // this is the readme
+      (json) => console.log(json)
+    );
+
+  // TODO: Changes text and stuff below
+  let statusCode = readmeDescription.status;
+
+  if (statusCode === 404) {
+    throw new Error(
+      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add tags.`
+    );
+  } else if (statusCode === 401) {
+    throw new Error(
+      `${statusCode} - You do not have access this dataset at the moment.`
+    );
+  } else if (statusCode === 403) {
+    throw new Error(`${statusCode} - You do not have access to this dataset. `);
+  } else if (statusCode !== 200) {
+    // something unexpected happened
+    let statusText = await readmeDescription.json().statusText;
+    throw new Error(`${statusCode} - ${statusText}`);
+  }
+};
+
+const getChanges = async () => {
+  let datasetName = $(`#bf_dataset_load_changes`).text().trim();
+
+  // authenticate the user
+  let jwt;
+  jwt = await get_access_token();
+
+  let datasetID = getDatasetID(datasetName, jwt);
+
+  // obtain readme description
+  let changes;
+
+  // First, obtain dataset version
+  let datasetVer;
+  datasetVer = await fetch(
+    `https://api.pennsieve.io/discover/datasets/${datasetID}`,
+    options
+  )
+    .then((res) => res.json())
+    .then(
+      // this is the dataset version
+      (json) => console.log(json)
+    );
+};
+
+// function checkBFImportRC(filetype) {
+//   client.invoke(
+//     "api_import_bf_readme_changes",
+//     defaultBfAccount,
+//     $(`#bf_dataset_load_${filetype}`).text().trim(),
+//     (error, res) => {
+//       if (error) {
+//         var emessage = userError(error);
+//         log.error(error);
+//         console.error(error);
+//         Swal.fire({
+//           backdrop: "rgba(0,0,0, 0.4)",
+//           heightAuto: false,
+//           icon: "error",
+//           text: `${emessage}`,
+//         });
+//       } else {
+//         var datasetID = res;
+//         if (filetype === "readme") {
+//           getReadmeBF(datasetID);
+//         } else if (filetype === "changes") {
+//           getChangesBF(datasetID);
+//         }
+//       }
+//     }
+//   );
+// }
+
+// HTTP call to Pennsieve to get readme description of the dataset
+function getReadmeBF(datasetID) {
+  console.log(datasetID);
+  const optionsReadme = {
+    hostname: pennsieveHostname,
+    port: 443,
+    path: `/datasets/${datasetID}/readme`,
+  };
+  https.get(optionsReadme, (res) => {
+    if (res.statusCode === 200) {
+    }
+  });
+}

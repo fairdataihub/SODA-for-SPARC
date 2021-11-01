@@ -6591,8 +6591,6 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
   );
 }
 
-
-
 /*
 ******************************************************
 ******************************************************
@@ -6755,11 +6753,6 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-
-
-
-
-
 /*
 ******************************************************
 ******************************************************
@@ -6792,17 +6785,17 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
 
   // get the all of datasets from Pennsieve that the user has access to in their organization
   let datasets_response;
-  
+
   try {
     datasets_response = await fetch("https://api.pennsieve.io/datasets", {
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-  } catch(e) {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+  } catch (e) {
     // network error
-    throw e
+    throw e;
   }
 
   // check the status codes
@@ -6863,7 +6856,6 @@ const get_dataset_tags = async (dataset_id_or_name) => {
   } catch (e) {
     throw e;
   }
-
   // get the tags out of the dataset
   const { tags } = dataset["content"];
 
@@ -6880,14 +6872,13 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
   if (dataset_id_or_name === "" || dataset_id_or_name === undefined) {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
   }
-    // authenticate the user
-    let jwt;
-    try {
-      jwt = await get_access_token();
-    } catch (e) {
-      throw e;
-    }
-  
+  // authenticate the user
+  let jwt;
+  try {
+    jwt = await get_access_token();
+  } catch (e) {
+    throw e;
+  }
 
   // fetch the tags for their dataset using the Pennsieve API
   let dataset;
@@ -6897,43 +6888,47 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
     throw e;
   }
 
-  // grab the dataset's id 
-  const id = dataset["content"]["id"]
-
+  // grab the dataset's id
+  const id = dataset["content"]["id"];
 
   // setup the request options
   let options = {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Accept': "*/*",
-      'Authorization': `Bearer ${jwt}`,
-      'Content-Type': 'application/json'
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({tags: tags}),
-  }
+    body: JSON.stringify({ tags: tags }),
+  };
 
   // update the the user's tags
-  let updateResponse
+  let updateResponse;
   try {
-    updateResponse = await fetch(`https://api.pennsieve.io/datasets/${id}`, options )
-  } catch(e) {
-    // network error 
-    throw e
+    updateResponse = await fetch(
+      `https://api.pennsieve.io/datasets/${id}`,
+      options
+    );
+  } catch (e) {
+    // network error
+    throw e;
   }
-
 
   // Check status codes and respond accordingly
-  let statusCode = updateResponse.status 
-  if(statusCode  === 404) {
-    throw new Error(`${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add tags.`)
-  } else if(statusCode === 401) {
-    throw new Error(`${statusCode} - You do not have access this dataset at the moment.`)
-  } else if(statusCode === 403) {
-    throw new Error(`${statusCode} - You do not have access to this dataset. `)
-  } else if (statusCode !== 200){
-    // something unexpected happened 
-    let statusText = await updateResponse.json().statusText
-    throw new Error(`${statusCode} - ${statusText}`)
+  let statusCode = updateResponse.status;
+  if (statusCode === 404) {
+    throw new Error(
+      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add tags.`
+    );
+  } else if (statusCode === 401) {
+    throw new Error(
+      `${statusCode} - You do not have access this dataset at the moment.`
+    );
+  } else if (statusCode === 403) {
+    throw new Error(`${statusCode} - You do not have access to this dataset. `);
+  } else if (statusCode !== 200) {
+    // something unexpected happened
+    let statusText = await updateResponse.json().statusText;
+    throw new Error(`${statusCode} - ${statusText}`);
   }
 };
-

@@ -1885,7 +1885,10 @@ async function transitionFreeFormMode(
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
-    if ($("#Question-prepare-dd-2").hasClass("show") || $("#Question-prepare-dd-2").hasClass("show")) {
+    if (
+      $("#Question-prepare-dd-2").hasClass("show") ||
+      $("#Question-prepare-dd-2").hasClass("show")
+    ) {
       var { value: continueProgressDD } = await Swal.fire({
         title:
           "This will reset your progress so far with the dataset_description.xlsx file. Are you sure you want to continue?",
