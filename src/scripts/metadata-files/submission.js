@@ -237,7 +237,7 @@ function generateSubmissionFile() {
       title: "Incomplete information",
     });
   } else {
-    ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
+    openFileBrowserDestination("submission")
   }
 }
 
@@ -298,52 +298,9 @@ function actionEnterNewDate(action) {
 }
 
 const submissionDateInput = document.getElementById("input-milestone-date");
+var submissionDestinationPath = ""
 
 $(document).ready(function () {
-  ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
-    if (dirpath.length > 0) {
-      var destinationPath = path.join(dirpath[0], filename);
-      if (fs.existsSync(destinationPath)) {
-        var emessage =
-          "File '" +
-          filename +
-          "' already exists in " +
-          dirpath[0] +
-          ". Do you want to replace it?";
-        Swal.fire({
-          icon: "warning",
-          title: "Metadata file already exists",
-          text: `${emessage}`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: true,
-          showCancelButton: true,
-          cancelButtonText: "No",
-          confirmButtonText: "Yes",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            generateSubmissionHelper(dirpath, destinationPath);
-          }
-        });
-      } else {
-        Swal.fire({
-          title: "Generating the submission.xlsx file",
-          html: "Please wait...",
-          timer: 15000,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          showConfirmButton: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        }).then((result) => {});
-        generateSubmissionHelper(dirpath, destinationPath);
-      }
-    }
-  });
 
   ipcRenderer.on("selected-existing-submission", (event, filepath) => {
     if (filepath.length > 0) {
@@ -380,6 +337,42 @@ $(document).ready(function () {
       $("#div-confirm-existing-submission-import").hide();
     }
   });
+  // generate samples file
+  ipcRenderer.on(
+    "selected-destination-generate-submission-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById("input-destination-generate-submission-locally").placeholder =
+          dirpath[0];
+        var destinationPath = path.join(dirpath[0], "submission.xlsx");
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File submission.xlsx already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              submissionDestinationPath = destinationPath
+              $("#div-confirm-destination-submission-locally").css("display", "flex");
+            }
+          });
+        } else {
+          $("#div-confirm-destination-submission-locally").css("display", "flex");
+          submissionDestinationPath = destinationPath
+        }
+      }
+  })
+
   $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_load_submission").text().trim() !== "None") {
       $("#div-check-bf-import-submission").css("display", "flex");
@@ -389,11 +382,25 @@ $(document).ready(function () {
   });
 });
 
-function generateSubmissionHelper(fullpath, destinationPath) {
+function generateSubmissionHelper() {
+  Swal.fire({
+    title: "Generating the submission.xlsx file",
+    html: "Please wait...",
+    timer: 15000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   var awardRes = $("#submission-sparc-award").val();
   var dateRes = $("#submission-completion-date").val();
   var milestonesRes = $("#selected-milestone-1").val();
-  let milestoneValue = [""];
+  let milestoneValue = [{value: ""}];
   if (milestonesRes !== "") {
     milestoneValue = JSON.parse(milestonesRes);
   }
@@ -413,47 +420,45 @@ function generateSubmissionHelper(fullpath, destinationPath) {
     }
   }
   json_str = JSON.stringify(json_arr);
-  if (fullpath != null) {
-    client.invoke(
-      "api_save_submission_file",
-      destinationPath,
-      json_str,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            icon: "error",
-            text: emessage,
-            title: "Failed to generate the submission file",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Prepare Metadata - Create Submission",
-            defaultBfDataset
-          );
-        } else {
-          Swal.fire({
-            title:
-              "The submission.xlsx file has been successfully generated at the specified location.",
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Metadata - Create Submission",
-            defaultBfDataset
-          );
-        }
+  client.invoke(
+    "api_save_submission_file",
+    submissionDestinationPath,
+    json_str,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: emessage,
+          title: "Failed to generate the submission file",
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create Submission",
+          defaultBfDataset
+        );
+      } else {
+        Swal.fire({
+          title:
+            "The submission.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create Submission",
+          defaultBfDataset
+        );
       }
-    );
-  }
+    }
+  );
 }
 
 $("#submission-completion-date").change(function () {
@@ -562,6 +567,10 @@ function showExistingSubmissionFile(type) {
   } else {
     ipcRenderer.send(`open-file-dialog-existing-submission`);
   }
+}
+
+function openFileBrowserDestination(metadataType) {
+  ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
 }
 
 function importExistingSubmissionFile(type) {

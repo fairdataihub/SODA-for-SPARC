@@ -89,6 +89,108 @@ ipcMain.on("open-file-dialog-metadata-curate", (event) => {
   );
 });
 
+ipcMain.on("open-destination-generate-submission-locally", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-destination-generate-submission-locally",
+          files
+        );
+      }
+    }
+  );
+});
+
+ipcMain.on("open-destination-generate-dd-locally", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-destination-generate-dd-locally",
+          files
+        );
+      }
+    }
+  );
+});
+
+ipcMain.on("open-destination-generate-subjects-locally", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-destination-generate-subjects-locally",
+          files
+        );
+      }
+    }
+  );
+});
+
+ipcMain.on("open-destination-generate-samples-locally", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-destination-generate-samples-locally",
+          files
+        );
+      }
+    }
+  );
+});
+
+ipcMain.on("open-destination-generate-changes-locally", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-destination-generate-changes-locally",
+          files
+        );
+      }
+    }
+  );
+});
+
+ipcMain.on("open-destination-generate-readme-locally", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "selected-destination-generate-readme-locally",
+          files
+        );
+      }
+    }
+  );
+});
+
 ipcMain.on("open-file-dialog-submission", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),

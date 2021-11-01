@@ -1105,7 +1105,7 @@
                 <div
                   class="option-card radio-button"
                   id="Question-prepare-submission-3-new"
-                  data-next="Question-prepare-submission-6"
+                  data-next="Question-prepare-submission-4"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', '', 'individual-question prepare-submission')"
                   style="
                     max-width: 180px;
@@ -1382,13 +1382,14 @@
             </label>
             <div class="ui styled accordion" style="width: 100% !important">
               <div
+                id="submission-title-accordion"
                 class="title active"
                 style="background: var(--color-bg-light-green-button)"
               >
                 <i class="dropdown icon"></i>
                 Award and milestone information
               </div>
-              <div class="content active">
+              <div class="content active" id="submission-accordion">
                 <div
                   style="
                     display: block;
@@ -1594,8 +1595,9 @@
                 rel="popover"
                 data-placement="top"
                 data-trigger="hover"
-                id="save-progress-btn"
-                onclick="generateSubmissionFile()"
+                data-next="Question-prepare-submission-6"
+                data-current="Generate-submission"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
                 style="
                   margin: 10px;
                   width: 140px;
@@ -1829,6 +1831,7 @@
               <input
                 class="form-control"
                 style="width: 450px !important"
+                onclick="generateSubmissionFile()"
                 id="input-destination-generate-submission-locally"
                 type="text"
                 readonly
@@ -1848,7 +1851,7 @@
             <button
               id="btn-confirm-local-submission-destination"
               class="btn_animated"
-              onclick="transitionSubQuestions(this, 'Question-prepare-submission-7', 'create_submission-tab', 'delete', 'prepare-submission')"
+              onclick="generateSubmissionHelper()"
               style="
                 margin: 0 10px;
                 width: 100px;

@@ -1822,6 +1822,11 @@ async function transitionFreeFormMode(
     onboardingSubmission();
   }
 
+  if ($(ev).attr("data-current") === "Generate-submission") {
+    $("#submission-accordion").removeClass("active");
+    $("#submission-title-accordion").removeClass("active");
+  }
+
   if ($(ev).attr("data-current") === "Question-prepare-changes-1") {
     $("#textarea-create-changes").val("");
     if (
