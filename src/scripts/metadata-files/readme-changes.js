@@ -409,7 +409,6 @@ function resetRCFile(type) {
 }
 
 function getDatasetID(datasetName, jwt) {
-
   // fetch the tags for their dataset using the Pennsieve API
   let dataset;
   dataset = await get_dataset_by_name_id(datasetName, jwt);
@@ -427,7 +426,7 @@ function getDatasetID(datasetName, jwt) {
     },
   };
 
-  return id
+  return id;
 }
 
 const getReadme = async () => {
@@ -445,11 +444,12 @@ const getReadme = async () => {
   readmeDescription = await fetch(
     `https://api.pennsieve.io/datasets/${id}/readme`,
     options
-  ).then(res => res.json())
-  .then(
-    // this is the readme
-    json => console.log(json)
-  );
+  )
+    .then((res) => res.json())
+    .then(
+      // this is the readme
+      (json) => console.log(json)
+    );
 
   // TODO: Changes text and stuff below
   let statusCode = readmeDescription.status;
@@ -469,7 +469,7 @@ const getReadme = async () => {
     let statusText = await readmeDescription.json().statusText;
     throw new Error(`${statusCode} - ${statusText}`);
   }
-}
+};
 
 const getChanges = async () => {
   let datasetName = $(`#bf_dataset_load_changes`).text().trim();
@@ -488,13 +488,13 @@ const getChanges = async () => {
   datasetVer = await fetch(
     `https://api.pennsieve.io/discover/datasets/${datasetID}`,
     options
-  ).then(res => res.json())
-  .then(
-    // this is the dataset version
-    json => console.log(json)
-  );
-
-}
+  )
+    .then((res) => res.json())
+    .then(
+      // this is the dataset version
+      (json) => console.log(json)
+    );
+};
 
 // function checkBFImportRC(filetype) {
 //   client.invoke(
