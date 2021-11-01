@@ -716,54 +716,214 @@ const validateDescription = (description) => {
 };
 
 // Add description //
-// $("#button-add-description").click(() => {
-//   setTimeout(() => {
-//     $("#bf-add-description-dataset-spinner").show();
 
-//     let selectedBfAccount = defaultBfAccount;
-//     let selectedBfDataset = defaultBfDataset;
-//     let markdownDescription = tuiInstance.getMarkdown();
+// fires when a user selects a dataset in the add/edit description page
+const showCurrentDescription = async () => {
+  var selectedBfAccount = defaultBfAccount;
+  var selectedBfDataset = defaultBfDataset;
 
-//     let response = validateDescription(markdownDescription);
+  // check if the user is selecting a dataset
+  if (selectedBfDataset == "Select dataset") {
+    // remove the text from the boxes? Probably not
+  } else {
+    // get the dataset readme
+    let readme = await get_dataset_readme(selectedBfDataset);
 
-//     if (!response) {
-//       Swal.fire({
-//         icon: "warning",
-//         html: `This description does not seem to follow the SPARC guidelines.
-//             Your descriptions should looke like this:
-//             <br> <br>
-//             <p style="text-align:left">
-//               <strong> Study Purpose: </strong> <br>
-//               <strong> Data Collection: </strong> <br>
-//               <strong> Primary Conclusion: </strong>
-//             </p>
-//             <br> <br>
-//             Are you sure you want to continue?`,
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         showCancelButton: true,
-//         focusCancel: true,
-//         confirmButtonText: "Continue",
-//         cancelButtonText: "No, I want to edit my description",
-//         reverseButtons: true,
-//         showClass: {
-//           popup: "animate__animated animate__zoomIn animate__faster",
-//         },
-//         hideClass: {
-//           popup: "animate__animated animate__zoomOut animate__faster",
-//         },
-//       }).then(() => {
-//         addDescription(
-//           selectedBfAccount,
-//           selectedBfDataset,
-//           markdownDescription
-//         );
-//       });
-//     } else {
-//       addDescription(selectedBfAccount, selectedBfDataset, markdownDescription);
-//     }
-//   }, delayAnimation);
-// });
+    // create the parsed dataset read me object
+    let parsedReadme = create_parsed_readme(readme);
+
+    console.log("The parsed readme file is", parsedReadme)
+
+    // check if any of the fields have data
+    if (
+      parsedReadme["Study Purpose"] ||
+      parsedReadme["Data Collection"] ||
+      parsedReadme["Primary Conclusion"]
+    ) {
+      //if so make the button say edit description
+      $("#button-add-description > .btn_animated-inside").html(
+        "Edit description"
+      );
+    } else {
+      //make the button say add description
+      $("#button-add-description > .btn_animated-inside").html(
+        "Add description"
+      );
+    }
+
+    //  check if there is any study purpose text || Data Collection || Primary Conclusion
+    if (parsedReadme["Study Purpose"]) {
+      // if so place the text into the text area for that field
+      $("#ds-description-study-purpose").val(parsedReadme["Study Purpose"]);
+    }
+
+    if (parsedReadme["Data Collection"]) {
+      // if so place the text into the text area for that field
+      $("#ds-description-data-collection").val(parsedReadme["Data Collection"]);
+    }
+
+    if (parsedReadme["Primary Conclusion"]) {
+      // if so place the text into the text area for that field
+      $("#ds-description-primary-conclusion").val(
+        parsedReadme["Primary Conclusion"]
+      );
+    }
+
+    // check if there is any invalid text remaining
+    if (parsedReadme["Invalid Text"]) {
+      // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
+
+      // if so add it to the first section
+      $("#ds-description-study-purpose").val(
+        parsedReadme["Study Purpose"] + parsedReadme["Invalid Text"]
+      );
+    }
+  }
+};
+
+// searches the markdown for key sections and returns them divided into an easily digestible object
+// returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}
+const create_parsed_readme = (readme) => {
+  // read in the readme file and store it in a variable ( it is in markdown )
+  let mutableReadme = readme;
+
+  // create the return object
+  const parsedReadme = {
+    "Study Purpose": "",
+    "Data Collection": "",
+    "Primary Conclusion": "",
+    "Invalid Text": "",
+  };
+
+  // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Study Purpose", parsedReadme)
+  console.log("Muable readme after a slice", mutableReadme)
+
+  // remove the "Data Collection" section from the readme file and place its value in the parsed readme
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Data Collection", parsedReadme)
+  console.log("Muable readme after a slice", mutableReadme)
+  // search for the "Primary Conclusion" and basic variations of spacing
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Primary Conclusion", parsedReadme)
+  console.log("Muable readme after a slice", mutableReadme)
+  // find the Curator's Notes section and remove everything from the readme that occurs after it
+  // (IMP:A user should not be able to edit the Curator's Notes sections)
+  let curators_section_idx = mutableReadme.search(
+    "[*][*]Curator's Notes[*][*]"
+  );
+  if (curators_section_idx !== -1) {
+    // remove the curators notes from the current readme
+    mutableReadme = mutableReadme.slice(0, curators_section_idx);
+  }
+
+
+  // strip out any unrequired sections -- user does not edit these on SODA for now
+  while (mutableReadme.search("[*][*].*[*][*]") !== -1) {
+    let auxillary_section_idx = mutableReadme.search("[*][*].*[*][*]");
+    let start_of_section_text_idx = auxillary_section_idx;
+
+    // skip the first two markdown * characters
+    start_of_section_text_idx += 2;
+    // move to end of section title -- the end of the section is indicated by two closing markdown '**' characters
+    while (
+      start_of_section_text_idx < mutableReadme.length &&
+      (mutableReadme[start_of_section_text_idx] !== "*" ||
+        mutableReadme[start_of_section_text_idx - 1] !== "*")
+    ) {
+      start_of_section_text_idx += 1;
+    }
+    // move off the final * character
+    start_of_section_text_idx += 1;
+
+    end_of_section_text_idx = start_of_section_text_idx;
+
+    // check if auxillary section idx is still in bounds
+    if (end_of_section_text_idx < mutableReadme.length) {
+      // search for the next title if one exists
+      while (
+        end_of_section_text_idx < mutableReadme.length &&
+        (mutableReadme[end_of_section_text_idx] !== "*" ||
+          mutableReadme[end_of_section_text_idx - 1] !== "*")
+      ) {
+        end_of_section_text_idx += 1;
+      }
+
+      // strip the section out of the current readme
+      mutableReadme =
+        mutableReadme.slice(0, auxillary_section_idx) +
+        mutableReadme.slice(end_of_section_text_idx - 1);
+    } else {
+      // TODO: get rid of the section header
+    }
+  }
+
+  //check if final version of the description has any more text
+  if (mutableReadme.length) {
+    //store it as invalid text -- this is because it is does not belong to a section or because we cannot assume it belongs to a section
+    //this only occurs when a user has no section in their readme or has text before any of their sections in the readme.
+    parsedReadme["Invalid Text"] = mutableReadme;
+  }
+
+  //return the parsed readme object
+  return parsedReadme;
+};
+
+const stripRequiredSectionFromReadme = (
+  readme,
+  sectionName = undefined,
+  parsedReadme = undefined,
+) => {
+  let mutableReadme = readme;
+  // search for the **Study Purpose:** and basic variations of spacing
+  let section_idx;
+  if (sectionName) {
+    section_idx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
+  } 
+
+  if (section_idx === -1) {
+    return mutableReadme;
+  }
+
+  // If found place the following text into the studyPurpose property without the Study Purpose section title and markdown
+  let endOfSectionIdx;
+  mutableReadme = mutableReadme.replace(`**${sectionName}:**`, "");
+  let idx = 0;
+  for (idx = section_idx; idx < mutableReadme.length; idx++) {
+    if (mutableReadme[idx] === "*") {
+      endOfSectionIdx = idx;
+      break;
+    }
+  }
+
+  if(endOfSectionIdx >= mutableReadme.length) endOfSectionIdx -= 1
+
+  // store the value of the Study Purpose in the parsed readme if one was provided
+  if (parsedReadme) {
+    parsedReadme[`${sectionName}`] = mutableReadme.slice(
+      section_idx,
+      endOfSectionIdx
+    );
+  }
+
+  // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
+  mutableReadme =
+    mutableReadme.slice(0, section_idx) + mutableReadme.slice(endOfSectionIdx);
+
+  return mutableReadme;
+};
+
+// strip the unrequired fields from the readme file and return a string that only contains their values 
+// Assumption: Used after stripping out the required fields
+const getUnrequiredFieldsFromReadme = (readme) => {
+  let mutableReadme = readme 
+
+  let first_auxillary_section_found_idx = mutableReadme.search("[*][*].*[*][*]")
+
+  if(first_auxillary_section_found_idx === -1) {
+    return mutableReadme
+  }
+
+  return mutableReadme.slice(first_auxillary_section_found_idx)
+}
 
 $("#button-add-description").click(() => {
   setTimeout(() => {
@@ -830,356 +990,75 @@ $("#button-add-description").click(() => {
   }, delayAnimation);
 });
 
-// const showCurrentDescription = () => {
-//   var selectedBfAccount = defaultBfAccount;
-//   var selectedBfDataset = defaultBfDataset;
-
-//   if (selectedBfDataset === "Select dataset") {
-//     tuiInstance.setMarkdown("");
-//   } else {
-//     client.invoke(
-//       "api_bf_get_description",
-//       selectedBfAccount,
-//       selectedBfDataset,
-//       (error, res) => {
-//         if (error) {
-//           log.error(error);
-//           console.error(error);
-//         } else {
-//           if (res == "") {
-//             res = `**Study Purpose:** &nbsp; \n \n **Data Collection:** &nbsp; \n \n **Primary Conclusion:** &nbsp; `;
-//             tuiInstance.setMarkdown(res);
-
-//             $("#button-add-description > .btn_animated-inside").html(
-//               "Add description"
-//             );
-//           } else {
-//             tuiInstance.setMarkdown(res);
-//             $("#button-add-description > .btn_animated-inside").html(
-//               "Edit description"
-//             );
-//           }
-//         }
-//       }
-//     );
-//   }
-// };
-
-// fires when a user selects a dataset in the add/edit description page
-const showCurrentDescription = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-
-  // check if the user is selecting a dataset
-  if (selectedBfDataset == "Select dataset") {
-    // remove the text from the boxes? Probably not
-  } else {
-    // get the dataset readme
-    let readme = await get_dataset_readme(selectedBfDataset);
-
-    // create the parsed dataset read me object
-    let parsedReadme = create_parsed_readme(readme);
-
-    // check if any of the fields have data
-    if (
-      parsedReadme["Study Purpose"] ||
-      parsedReadme["Data Collection"] ||
-      parsedReadme["Primary Conclusion"]
-    ) {
-      //if so make the button say edit description
-      $("#button-add-description > .btn_animated-inside").html(
-        "Edit description"
-      );
-    } else {
-      //make the button say add description
-      $("#button-add-description > .btn_animated-inside").html(
-        "Add description"
-      );
-    }
-
-    //  check if there is any study purpose text || Data Collection || Primary Conclusion
-    if (parsedReadme["Study Purpose"]) {
-      // if so place the text into the text area for that field
-      $("#ds-description-study-purpose").val(parsedReadme["Study Purpose"]);
-    }
-
-    if (parsedReadme["Data Collection"]) {
-      // if so place the text into the text area for that field
-      $("#ds-description-data-collection").val(parsedReadme["Data Collection"]);
-    }
-
-    if (parsedReadme["Primary Conclusion"]) {
-      // if so place the text into the text area for that field
-      $("#ds-description-primary-conclusion").val(
-        parsedReadme["Primary Conclusion"]
-      );
-    }
-
-    // check if there is any invalid text remaining
-    if (parsedReadme["Invalid Text"]) {
-      // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
-
-      // if so add it to the first section
-      $("#ds-description-study-purpose").val(
-        parsedReadme["Study Purpose"] + parsedReadme["Invalid Text"]
-      );
-    }
-  }
-};
-
-// searches the markdown for key sections and returns them divided into an easily digestible object
-// returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}
-const create_parsed_readme = (readme) => {
-  // read in the readme file and store it in a variable ( it is in markdown )
-  let mutableReadme = readme;
-  // create the return object
-  const parsedReadme = {
-    "Study Purpose": "",
-    "Data Collection": "",
-    "Primary Conclusion": "",
-    "Invalid Text": "",
-  };
-
-  // search for the **Study Purpose:** and basic variations of spacing
-  let study_purpose_idx = mutableReadme.search("[*][*]Study Purpose:[*][*]");
-
-  // If found place the following text into the studyPurpose property without the Study Purpose section title and markdown
-  if (study_purpose_idx !== -1) {
-    let endOfSectionIdx;
-    mutableReadme = mutableReadme.replace("**Study Purpose:**", "");
-    for (let idx = study_purpose_idx; idx < mutableReadme.length; idx++) {
-      if (mutableReadme[idx] === "*") {
-        endOfSectionIdx = idx;
-        break;
-      }
-    }
-
-    // store the value of the Study Purpose in the parsed readme
-    parsedReadme["Study Purpose"] = mutableReadme.slice(
-      study_purpose_idx,
-      endOfSectionIdx
-    );
-
-    // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
-    mutableReadme =
-      mutableReadme.slice(0, study_purpose_idx) +
-      mutableReadme.slice(endOfSectionIdx);
-  }
-
-  // search for the **Data Collection** and basic variations of spacing
-  let data_collection_idx = mutableReadme.search(
-    "[*][*]Data Collection:[*][*]"
-  );
-
-  // If found place the text into the data_collection property  without the Data Collection section title and markdown
-  if (data_collection_idx !== -1) {
-    let endOfSectionIdx;
-    mutableReadme = mutableReadme.replace("**Data Collection:**", "");
-    for (let idx = data_collection_idx; idx < mutableReadme.length; idx++) {
-      if (mutableReadme[idx] === "*") {
-        endOfSectionIdx = idx;
-        break;
-      }
-    }
-    // store the value of the Data Collection in the parsed readme
-    parsedReadme["Data Collection"] = mutableReadme.slice(
-      data_collection_idx,
-      endOfSectionIdx
-    );
-
-    // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
-    mutableReadme =
-      mutableReadme.slice(0, data_collection_idx) +
-      mutableReadme.slice(endOfSectionIdx);
-  }
-
-  // search for the **Primary Conclusion** and basic variations of spacing
-  let primary_conclusion_idx = mutableReadme.search(
-    "[*][*]Primary Conclusion:[*][*]"
-  );
-
-  // If found place the text into the primary_conclusion property  without the Primary Conclusion section title and markdown
-  if (primary_conclusion_idx !== -1) {
-    let endOfSectionIdx;
-    mutableReadme = mutableReadme.replace("**Primary Conclusion:**", "");
-    for (let idx = primary_conclusion_idx; idx < mutableReadme.length; idx++) {
-      if (mutableReadme[idx] === "*") {
-        endOfSectionIdx = idx;
-        break;
-      }
-    }
-    // store the value of the Data Collection in the parsed readme
-    parsedReadme["Primary Conclusion"] = mutableReadme.slice(
-      primary_conclusion_idx,
-      endOfSectionIdx
-    );
-
-    // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
-    mutableReadme =
-      mutableReadme.slice(0, primary_conclusion_idx) +
-      mutableReadme.slice(endOfSectionIdx);
-  }
-
-  // strip out the Curator's Notes section
-  let curators_section_idx = mutableReadme.search(
-    "[*][*]Curator's Notes[*][*]"
-  );
-  if (curators_section_idx !== -1) {
-    // remove the curators notes from the current readme
-    mutableReadme = mutableReadme.slice(0, curators_section_idx);
-  }
-
-  // strip out any unrequired sections -- user does not edit these on SODA for now
-  while (mutableReadme.search("[*][*].*[*][*]") !== -1) {
-    let auxillary_section_idx = mutableReadme.search("[*][*].*[*][*]");
-    let start_of_section_text_idx = auxillary_section_idx;
-
-    // skip the first two markdown * characters
-    start_of_section_text_idx += 2;
-    // move to end of section title -- the end of the section is indicated by two closing markdown '**' characters
-    while (
-      start_of_section_text_idx < mutableReadme.length &&
-      (mutableReadme[start_of_section_text_idx] !== "*" ||
-        mutableReadme[start_of_section_text_idx - 1] !== "*")
-    ) {
-      start_of_section_text_idx += 1;
-    }
-    // move off the final * character
-    start_of_section_text_idx += 1;
-
-    end_of_section_text_idx = start_of_section_text_idx;
-
-    // check if auxillary section idx is still in bounds
-    if (end_of_section_text_idx < mutableReadme.length) {
-      // search for the next title if one exists
-      while (
-        end_of_section_text_idx < mutableReadme.length &&
-        (mutableReadme[end_of_section_text_idx] !== "*" ||
-          mutableReadme[end_of_section_text_idx - 1] !== "*")
-      ) {
-        end_of_section_text_idx += 1;
-      }
-
-      // strip the section out of the current readme
-      mutableReadme =
-        mutableReadme.slice(0, auxillary_section_idx) +
-        mutableReadme.slice(end_of_section_text_idx - 1);
-    } else {
-      // TODO: get rid of the section header
-    }
-  }
-
-  //check if final version of the description has any more text
-  if (mutableReadme.length) {
-    //store it as invalid text -- this is because it is does not belong to a section or because we cannot assume it belongs to a section
-    //this only occurs when a user has no section in their readme or has text before any of their sections in the readme.
-    parsedReadme["Invalid Text"] = mutableReadme;
-  }
-
-  //return the parsed readme object
-  return parsedReadme;
-};
-
-// I: user_markdown_input: A string that holds the user's markdown text 
+// I: user_markdown_input: A string that holds the user's markdown text
 //    static_markdown_input: A string that contains curators notes or any other field we do not support editing.
-const addDescription = async (selectedBfAccount, selectedBfDataset, userMarkdownInput) => {
-  console.log(userMarkdownInput)
+const addDescription = async (
+  selectedBfAccount,
+  selectedBfDataset,
+  userMarkdownInput
+) => {
   // get access token for the current user
-  let jwt = await get_access_token()
-		
-	// get the dataset the user wants to edit
-  let dataset = await get_dataset_by_name_id(selectedBfDataset, jwt)
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(selectedBfDataset, jwt);
 
   // get the id out of the dataset
-  let id = dataset.content.id
+  let id = dataset.content.id;
 
-	// get the user's permissions
-  let roleResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/role`, {headers: {Authorization: `Bearer ${jwt}`}})
-  const {role} = await roleResponse.json()
-  console.log("My role is:", role)
+  // get the user's permissions
+  let roleResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/role`,
+    { headers: { Authorization: `Bearer ${jwt}` } }
+  );
+  const { role } = await roleResponse.json();
 
-	// check if the user permissions do not include "owner" or "manager"
-  if(!["owner", "manager"].includes(role)) {
-	  // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
-    throw new Error("You don't have permissions for editing metadata on this Pennsieve dataset")
+  // check if the user permissions do not include "owner" or "manager"
+  if (!["owner", "manager"].includes(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    throw new Error(
+      "You don't have permissions for editing metadata on this Pennsieve dataset"
+    );
   }
 
-	// get the readme of the dataset 
-		
-	// add the markdown titles back to the study purpose, data collection, and primary conclusion section
-		
-	// pull out the static_sections -- curators notes and other sections we do not allow the user to edit -- use the functon that finds all headers that aren't required (ignores invalid text )
+  // get the original version of the readme for the dataset
+  let readmeResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/readme`,
+    {
+      headers: { Authorization: `Bearer ${jwt}` },
+    }
+  );
+  let {readme} = await readmeResponse.json();
 
-	// join the user_markdown_input with the static_markdown_input
+  // strip out the required sections
+  readme = stripRequiredSectionFromReadme(readme, "Study Purpose")
 
-	// put the new readme data in the readme on Pennsieve
+  // remove the "Data Collection" section from the readme file and place its value in the parsed readme
+  readme = stripRequiredSectionFromReadme(readme, "Data Collection")
+
+  // search for the "Primary Conclusion" and basic variations of spacing
+  readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion")
+
+
+  // read the Curator's notes and auxillary sections from the readme 
+  let staticSections = getUnrequiredFieldsFromReadme(readme)
+  
+  // join the user_markdown_input with the static_markdown_input
+  let completeReadme = userMarkdownInput + staticSections
+
+  console.log("The merged object", completeReadme)
+
+  // put the new readme data in the readme on Pennsieve
   const options = {
-    method: 'PUT',
-    headers: {'Content-Type': 'application/json',  'Authorization': `Bearer ${jwt}`},
-    body: JSON.stringify({readme: userMarkdownInput}),
-  }
-  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options)
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ readme: completeReadme }),
+  };
+  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
 };
-
-
-
-// const addDescription = (
-//   selectedBfAccount,
-//   selectedBfDataset,
-//   markdownDescription
-// ) => {
-//   client.invoke(
-//     "api_bf_add_description",
-//     selectedBfAccount,
-//     selectedBfDataset,
-//     markdownDescription,
-//     (error, res) => {
-//       if (error) {
-//         log.error(error);
-//         console.error(error);
-//         let emessage = userError(error);
-
-//         $("#bf-add-description-dataset-spinner").hide();
-
-//         Swal.fire({
-//           title: "Failed to add description!",
-//           text: emessage,
-//           icon: "error",
-//           showConfirmButton: true,
-//           heightAuto: false,
-//           backdrop: "rgba(0,0,0, 0.4)",
-//         });
-
-//         ipcRenderer.send(
-//           "track-event",
-//           "Error",
-//           "Manage Dataset - Add/Edit Description",
-//           selectedBfDataset
-//         );
-//       } else {
-//         $("#bf-add-description-dataset-spinner").hide();
-
-//         Swal.fire({
-//           title: "Successfully added description!",
-//           icon: "success",
-//           showConfirmButton: true,
-//           heightAuto: false,
-//           backdrop: "rgba(0,0,0, 0.4)",
-//         });
-
-//         showDatasetDescription();
-//         changeDatasetUnderDD();
-
-//         ipcRenderer.send(
-//           "track-event",
-//           "Success",
-//           "Manage Dataset - Add/Edit Description",
-//           selectedBfDataset
-//         );
-//       }
-//     }
-//   );
-// };
 
 const changeDatasetUnderDD = () => {
   datasetDescriptionFileDataset.value = defaultBfDataset;
