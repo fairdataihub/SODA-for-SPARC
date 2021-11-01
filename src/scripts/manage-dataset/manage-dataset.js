@@ -1080,48 +1080,58 @@ const create_parsed_readme = (readme) => {
   return parsedReadme;
 };
 
-// I: user_markdown_input: A string that holds the user's markdown text 
+// I: user_markdown_input: A string that holds the user's markdown text
 //    static_markdown_input: A string that contains curators notes or any other field we do not support editing.
-const addDescription = async (selectedBfAccount, selectedBfDataset, userMarkdownInput) => {
-  console.log(userMarkdownInput)
+const addDescription = async (
+  selectedBfAccount,
+  selectedBfDataset,
+  userMarkdownInput
+) => {
+  console.log(userMarkdownInput);
   // get access token for the current user
-  let jwt = await get_access_token()
-		
-	// get the dataset the user wants to edit
-  let dataset = await get_dataset_by_name_id(selectedBfDataset, jwt)
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(selectedBfDataset, jwt);
 
   // get the id out of the dataset
-  let id = dataset.content.id
+  let id = dataset.content.id;
 
-	// get the user's permissions
-  let roleResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/role`, {headers: {Authorization: `Bearer ${jwt}`}})
-  const {role} = await roleResponse.json()
-  console.log("My role is:", role)
+  // get the user's permissions
+  let roleResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/role`,
+    { headers: { Authorization: `Bearer ${jwt}` } }
+  );
+  const { role } = await roleResponse.json();
+  console.log("My role is:", role);
 
-	// check if the user permissions do not include "owner" or "manager"
-  if(!["owner", "manager"].includes(role)) {
-	  // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
-    throw new Error("You don't have permissions for editing metadata on this Pennsieve dataset")
+  // check if the user permissions do not include "owner" or "manager"
+  if (!["owner", "manager"].includes(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    throw new Error(
+      "You don't have permissions for editing metadata on this Pennsieve dataset"
+    );
   }
 
-	// get the readme of the dataset 
-		
-	// add the markdown titles back to the study purpose, data collection, and primary conclusion section
-		
-	// pull out the static_sections -- curators notes and other sections we do not allow the user to edit -- use the functon that finds all headers that aren't required (ignores invalid text )
+  // get the readme of the dataset
 
-	// join the user_markdown_input with the static_markdown_input
+  // add the markdown titles back to the study purpose, data collection, and primary conclusion section
 
-	// put the new readme data in the readme on Pennsieve
+  // pull out the static_sections -- curators notes and other sections we do not allow the user to edit -- use the functon that finds all headers that aren't required (ignores invalid text )
+
+  // join the user_markdown_input with the static_markdown_input
+
+  // put the new readme data in the readme on Pennsieve
   const options = {
-    method: 'PUT',
-    headers: {'Content-Type': 'application/json',  'Authorization': `Bearer ${jwt}`},
-    body: JSON.stringify({readme: userMarkdownInput}),
-  }
-  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options)
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ readme: userMarkdownInput }),
+  };
+  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
 };
-
-
 
 // const addDescription = (
 //   selectedBfAccount,
