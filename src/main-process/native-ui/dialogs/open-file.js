@@ -114,10 +114,7 @@ ipcMain.on("open-destination-generate-dd-locally", (event) => {
     },
     (files) => {
       if (files) {
-        event.sender.send(
-          "selected-destination-generate-dd-locally",
-          files
-        );
+        event.sender.send("selected-destination-generate-dd-locally", files);
       }
     }
   );
