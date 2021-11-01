@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+## v5.0.2 - 2021-11-01
+
+### Bug fixes:
+
+- Edited documentation links according to the new changes made to SODA's documentation website.
+
 ## v5.0.1 - 2021-10-12
 
 ### Bug fixes:
