@@ -192,11 +192,19 @@ $(document).ready(function () {
   });
 
   $("#bf_dataset_load_changes").on("DOMSubtreeModified", function () {
-    $("#div-check-bf-import-changes").css("display", "flex");
+    if ($("#bf_dataset_load_changes").text().trim() !== "None") {
+      $("#div-check-bf-import-changes").css("display", "flex");
+    } else {
+      $("#div-check-bf-import-changes").css("display", "none");
+    }
   });
 
   $("#bf_dataset_load_readme").on("DOMSubtreeModified", function () {
-    $("#div-check-bf-import-readme").css("display", "flex");
+    if ($("#bf_dataset_load_readme").text().trim() !== "None") {
+      $("#div-check-bf-import-readme").css("display", "flex");
+    } else {
+      $("#div-check-bf-import-readme").css("display", "none");
+    }
   });
 });
 
@@ -498,59 +506,61 @@ const getReadme = async () => {
 };
 
 const getChanges = async () => {
-  let datasetName = $(`#bf_dataset_load_changes`).text().trim();
-
-  // authenticate the user
-  let jwt;
-  jwt = await get_access_token();
-
-  let datasetID = await getDatasetID(datasetName, jwt);
-
-  // obtain readme description
-  let changes;
-  let options = {
-    method: "GET",
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
+  // loading popup
+  Swal.fire({
+    title: "Loading an existing README.txt file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
     },
-  };
-  // this is the changelog
-  let datasetInfo = await fetch(
-    `https://api.pennsieve.io/datasets/${datasetID}`,
-    options
-  )
-    .then((res) => res.json())
-    .then(
-      // this is the dataset information that contains all files/folders of a dataset
-      (json) => json
-    )
-    .catch((err) =>
-      console.error("This is the error with the HTTP call:" + err)
-    );
+  }).then((result) => {});
 
-  let changesFileId = "";
-  for (var i in datasetInfo["children"]) {
-    let child = datasetInfo["children"][i];
-    if (
-      Object.keys(child).includes("extension") &&
-      child["extension"] === "txt" &&
-      child["content"]["name"].toLowerCase() === "changes.txt"
-    ) {
-      changesFileId = child["content"]["id"];
-
-      break;
+  let datasetName = $(`#bf_dataset_load_changes`).text().trim();
+  client.invoke("api_import_bf_changes",
+  defaultBfAccount,
+  datasetName,
+  (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      log.error(error);
+      console.error(error);
+      Swal.fire({
+        title: "Failed to load existing CHANGES.txt file",
+        text: emessage,
+        icon: "warning",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    } else {
+      if (res.trim() !== "") {
+        $("#textarea-create-changes").val(res.trim());
+        Swal.fire({
+          title: "Loaded successfully!",
+          icon: "success",
+          showConfirmButton: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        });
+      } else {
+        Swal.fire({
+          icon: "warning",
+          text: "The current CHANGES file is empty. Please edit it in the following textarea.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+        });
+      }
+      $(
+        $("#button-fake-confirm-existing-bf-changes-file-load").siblings()[0]
+      ).hide();
+      $("#button-fake-confirm-existing-bf-changes-file-load").click();
     }
-  }
-  console.log(changesFileId);
-
-  let changesFile = await fetch(
-    `https://api.pennsieve.io/packages/${changesFileId}/sources/`,
-    options
-  )
-    .then((res) => res.json())
-    .then((json) => console.log(json));
-
-  console.log(changesFile);
+  })
 };

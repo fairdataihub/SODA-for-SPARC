@@ -1740,82 +1740,10 @@ async function transitionFreeFormMode(
   category
 ) {
   if ($(ev).attr("data-current") === "Question-prepare-subjects-1") {
-    if (subjectsTableData.length !== 0) {
-      var { value: continueProgressSubjects } = await Swal.fire({
-        title:
-          "This will reset your progress so far with the subjects.xlsx file. Are you sure you want to continue?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-        reverseButtons: reverseSwalButtons,
-      });
-      if (!continueProgressSubjects) {
-        return;
-      } else {
-        $("#existing-subjects-file-destination").val("");
-        subjectsTableData = [];
-        // delete table rows except headers
-        $("#table-subjects tr:gt(0)").remove();
-        $("#table-subjects").css("display", "none");
-        // Hide Generate button
-        $("#button-generate-subjects").css("display", "none");
-        $("#div-import-primary-folder-sub").show();
-        $("#existing-subjects-file-destination").attr(
-          "placeholder",
-          "Browse here"
-        );
-        // delete custom fields (if any)
-        var fieldLength = $(".subjects-form-entry").length;
-        if (fieldLength > 18) {
-          for (var field of $(".subjects-form-entry").slice(18, fieldLength)) {
-            $($(field).parents()[2]).remove();
-          }
-        }
-      }
-    } else {
-      $("#existing-subjects-file-destination").val("");
-    }
+    switchMetadataSubSamFirstQuestion("subjects")
   }
   if ($(ev).attr("data-current") === "Question-prepare-samples-1") {
-    if (samplesTableData.length !== 0) {
-      var { value: continueProgressSamples } = await Swal.fire({
-        title:
-          "This will reset your progress so far with the samples.xlsx file. Are you sure you want to continue?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-        reverseButtons: reverseSwalButtons,
-      });
-      if (!continueProgressSamples) {
-        return;
-      } else {
-        $("#existing-samples-file-destination").val("");
-        samplesTableData = [];
-        // delete table rows except headers
-        $("#table-samples tr:gt(0)").remove();
-        $("#table-samples").css("display", "none");
-        // Hide Generate button
-        $("#button-generate-samples").css("display", "none");
-        $("#div-import-primary-folder-sam").show();
-        $("#existing-samples-file-destination").attr(
-          "placeholder",
-          "Browse here"
-        );
-        // delete custom fields (if any)
-        var fieldLength = $(".samples-form-entry").length;
-        if (fieldLength > 21) {
-          for (var field of $(".samples-form-entry").slice(21, fieldLength)) {
-            $($(field).parents()[2]).remove();
-          }
-        }
-      }
-    } else {
-      $("#existing-samples-file-destination").val("");
-    }
+    switchMetadataSubSamFirstQuestion("samples")
   }
 
   if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
@@ -1828,65 +1756,38 @@ async function transitionFreeFormMode(
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-changes-1") {
-    $("#textarea-create-changes").val("");
-    if (
-      $("#existing-changes-file-destination").attr("placeholder") !==
-        "Browse here" ||
-      $("#textarea-create-changes").val().trim() !== ""
-    ) {
-      var { value: continueProgressChanges } = await Swal.fire({
-        title:
-          "This will reset your progress so far with the CHANGES.txt file. Are you sure you want to continue?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-        reverseButtons: reverseSwalButtons,
-      });
-      if (!continueProgressChanges) {
-        return;
-      } else {
-        $("#existing-changes-file-destination").attr(
-          "placeholder",
-          "Browse here"
-        );
-        $("#textarea-create-changes").val("");
-      }
-    }
+    switchMetadataRCFirstQuestion("changes")
   }
   if ($(ev).attr("data-current") === "Question-prepare-readme-1") {
-    $("#textarea-create-readme").val("");
-    if (
-      $("#existing-readme-file-destination").attr("placeholder") !==
-        "Browse here" ||
-      $("#textarea-create-readme").val().trim() !== ""
-    ) {
-      var { value: continueProgressReadme } = await Swal.fire({
-        title:
-          "This will reset your progress so far with the README.txt file. Are you sure you want to continue?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-        reverseButtons: reverseSwalButtons,
-      });
-      if (!continueProgressReadme) {
-        return;
-      } else {
-        $("#existing-readme-file-destination").attr(
-          "placeholder",
-          "Browse here"
-        );
-        $("#textarea-create-readme").val("");
-      }
-    }
+    switchMetadataRCFirstQuestion("readme")
+  }
+
+  if ($(ev).attr("data-current") === "Question-prepare-readme-4") {
+    switchMetadataRCFirstQuestion("readme")
+  }
+
+  if ($(ev).attr("data-current") === "Question-prepare-changes-4") {
+    switchMetadataRCFirstQuestion("changes")
+  }
+
+  if ($(ev).attr("data-current") === "Question-prepare-submission-3") {
+
+  }
+
+  if ($(ev).attr("data-current") === "Question-prepare-dd-4") {
+
+  }
+
+  if ($(ev).attr("data-current") === "Question-prepare-subjects-2") {
+    switchMetadataSubSamFirstQuestion()
+  }
+
+  if ($(ev).attr("data-current") === "Question-prepare-samples-2") {
+    switchMetadataSubSamFirstQuestion()
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
     if (
-      $("#Question-prepare-dd-2").hasClass("show") ||
       $("#Question-prepare-dd-2").hasClass("show")
     ) {
       var { value: continueProgressDD } = await Swal.fire({
@@ -2018,6 +1919,103 @@ async function transitionFreeFormMode(
 
   if (ev.getAttribute("data-next") === "Question-prepare-samples-2") {
     $("#Question-prepare-samples-2 button").show();
+  }
+}
+
+// handles it when users switch options between Locally and on Pennsieve (Question 2 for each metadata file)
+// 1. Readme and Changes (MetadataRC)
+const switchMetadataRCImportBFQuestions = async (metadataRCFileType) => {
+  if ($(`#textarea-create-${metadataRCFileType}`).val().trim() !== "") {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: reverseSwalButtons,
+    });
+    if (!continueProgress) {
+      return;
+    } else {
+      $(`#existing-${metadataRCFileType}-file-destination`).attr(
+        "placeholder",
+        "Browse here"
+      );
+      $(`#textarea-create-${metadataRCFileType}`).val("");
+    }
+  }
+}
+
+// handles it when users switch options in the first question (Metadata files)
+// 1. Readme and Changes (MetadataRC)
+async function switchMetadataRCFirstQuestion(metadataRCFileType) {
+  if ($(`#textarea-create-${metadataRCFileType}`).text().trim() !== "") {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+      `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: reverseSwalButtons,
+    });
+    if (!continueProgress) {
+      return;
+    } else {
+      $(`#existing-${metadataRCFileType}-file-destination`).attr(
+        "placeholder",
+        "Browse here"
+      );
+      $(`#textarea-create-${metadataRCFileType}`).val("");
+    }
+  }
+}
+// 2. Subjects and Samples (MetadataSubSam)
+async function switchMetadataSubSamFirstQuestion(metadataSubSamFile) {
+  var tableData = subjectsTableData
+  if (metadataSubSamFile === "samples") {
+    tableData = samplesTableData
+  }
+
+  if (tableData.length !== 0) {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        `This will reset your progress so far with the ${metadataSubSamFile}.xlsx file. Are you sure you want to continue?`,
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: reverseSwalButtons,
+    });
+    if (!continueProgress) {
+      return;
+    } else {
+      $(`#existing-${metadataSubSamFile}-file-destination`).val("");
+      tableData = [];
+      // delete table rows except headers
+      $(`#table-${metadataSubSamFile} tr:gt(0)0`).remove();
+      $(`#table-${metadataSubSamFile}`).css("display", "none");
+      // Hide Generate button
+      $(`#button-generate-${metadataSubSamFile}`).css("display", "none");
+      $(`#div-import-primary-folder-${metadataSubSamFile}`).show();
+      $(`#existing-${metadataSubSamFile}-file-destination`).attr(
+        "placeholder",
+        "Browse here"
+      );
+      // delete custom fields (if any)
+      var fieldLength = $(`.${metadataSubSamFile}-form-entry`).length;
+      if (fieldLength > 21) {
+        for (var field of $(`.${metadataSubSamFile}-form-entry`).slice(21, fieldLength)) {
+          $($(field).parents()[2]).remove();
+        }
+      }
+    }
+  } else {
+    $(`#existing-${metadataSubSamFile}-file-destination`).val("");
   }
 }
 

@@ -195,7 +195,7 @@ function addSubject() {
   var subjectID = $("#bootbox-subject-id").val();
   addSubjectIDtoDataBase(subjectID);
   if (subjectsTableData.length !== 0) {
-    $("#div-import-primary-folder-sub").hide();
+    $("#div-import-primary-folder-subjects").hide();
   }
   if (subjectsTableData.length === 2) {
     onboardingMetadata("subject");
@@ -208,7 +208,7 @@ function addSample() {
   var subjectID = $("#bootbox-subject-id-samples").val();
   addSampleIDtoDataBase(sampleID, subjectID);
   if (samplesTableData.length !== 0) {
-    $("#div-import-primary-folder-sam").hide();
+    $("#div-import-primary-folder-samples").hide();
   }
   if (samplesTableData.length === 2) {
     onboardingMetadata("sample");
@@ -1479,7 +1479,7 @@ function importPrimaryFolderSubjects(folderPath) {
           if (subjectsTableData.length > 1) {
             loadSubjectsDataToTable();
             $("#table-subjects").show();
-            $("#div-import-primary-folder-sub").hide();
+            $("#div-import-primary-folder-subjects").hide();
           } else {
             Swal.fire(
               "Could not load subject IDs from the imported primary folder!",
@@ -1577,7 +1577,7 @@ function importPrimaryFolderSamples(folderPath) {
           if (samplesTableData.length > 1) {
             loadSamplesDataToTable();
             $("#table-samples").show();
-            $("#div-import-primary-folder-sam").hide();
+            $("#div-import-primary-folder-samples").hide();
             // $("#div-confirm-primary-folder-import-samples").hide();
             // $("#button-fake-confirm-primary-folder-load-samples").click();
           } else {
@@ -1632,7 +1632,7 @@ function loadSubjectsDataToTable() {
     backdrop: "rgba(0,0,0, 0.4)",
   });
   $("#button-generate-subjects").css("display", "block");
-  $("#div-import-primary-folder-sub").hide();
+  $("#div-import-primary-folder-subjects").hide();
 }
 
 function loadSamplesDataToTable() {
@@ -1665,7 +1665,7 @@ function loadSamplesDataToTable() {
     });
   }
   $("#button-generate-samples").css("display", "block");
-  $("#div-import-primary-folder-sam").hide();
+  $("#div-import-primary-folder-samples").hide();
 }
 
 function resetSubjects() {
@@ -1713,13 +1713,13 @@ function resetSubjects() {
         }
       }
       // show Primary import hyperlink again
-      $("#div-import-primary-folder-sub").show();
+      $("#div-import-primary-folder-subjects").show();
 
       // delete table rows except headers
       $("#table-subjects tr:gt(0)").remove();
       $("#table-subjects").css("display", "none");
 
-      $("#div-import-primary-folder-sub").show();
+      $("#div-import-primary-folder-subjects").show();
 
       // Hide Generate button
       $("#button-generate-subjects").css("display", "none");
@@ -1771,7 +1771,7 @@ function resetSamples() {
           $($(field).parents()[2]).remove();
         }
       }
-      $("#div-import-primary-folder-sam").show();
+      $("#div-import-primary-folder-samples").show();
       // delete table rows except headers
       $("#table-samples tr:gt(0)").remove();
       $("#table-samples").css("display", "none");

@@ -4210,7 +4210,7 @@
             </div>
             <div
               style="margin: 0 auto; text-decoration: underline"
-              id="div-import-primary-folder-sub"
+              id="div-import-primary-folder-subjects"
             >
               <a
                 href="#"
@@ -5738,7 +5738,7 @@
             </div>
             <div
               style="margin: 0 auto; text-decoration: underline"
-              id="div-import-primary-folder-sam"
+              id="div-import-primary-folder-samples"
             >
               <a
                 href="#"
@@ -7049,7 +7049,7 @@
               <div style="margin: 15px 0">
                 <div
                   class="option-card radio-button"
-                  data-current="Question-prepare-changes-1-new"
+                  data-current="Question-prepare-changes-1"
                   data-next="Question-prepare-changes-2"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-changes-1', 'create_CHANGES-tab', '', 'individual-question prepare-changes')"
                   style="
@@ -7407,74 +7407,6 @@
         </div>
       </div>
 
-      <div
-        class="individual-question prepare-changes"
-        id="Question-prepare-changes-2"
-        style="height: auto"
-      >
-        <div class="ui form" style="width: 500px">
-          <div class="grouped fields" style="width: 500px; margin: auto">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >Draft your CHANGES file below:
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="."
-                rel="popover"
-                data-html="true"
-                data-placement="right"
-                data-trigger="hover"
-              ></i>
-            </label>
-            <div
-              class="field"
-              style="
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                flex-direction: column;
-              "
-            >
-              <div style="width: 100%; position: relative">
-                <textarea
-                  id="textarea-create-changes"
-                  style="position: relative; white-space: nowrap"
-                  value=""
-                  rows="15"
-                  placeholder="Start typing here..."
-                >
-                </textarea>
-              </div>
-              <div style="display: flex; flex-direction: column">
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    margin: 0 auto;
-                    padding-top: 20px;
-                  "
-                >
-                  <button
-                    onclick="generateRCFiles('changes')"
-                    class="btn_animated md"
-                    style="width: 190px; height: 40px; font-size: 15px"
-                  >
-                    Generate
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Question 4: Ask for existing changes.txt file -->
       <div
         class="individual-question prepare-changes"
@@ -7551,6 +7483,74 @@
               >
                 Fake Confirm
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-changes"
+        id="Question-prepare-changes-2"
+        style="height: auto"
+      >
+        <div class="ui form" style="width: 500px">
+          <div class="grouped fields" style="width: 500px; margin: auto">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+              >Draft your CHANGES file below:
+              <i
+                class="fas fa-info-circle popover-tooltip"
+                data-content="."
+                rel="popover"
+                data-html="true"
+                data-placement="right"
+                data-trigger="hover"
+              ></i>
+            </label>
+            <div
+              class="field"
+              style="
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex-direction: column;
+              "
+            >
+              <div style="width: 100%; position: relative">
+                <textarea
+                  id="textarea-create-changes"
+                  style="position: relative; white-space: nowrap"
+                  value=""
+                  rows="15"
+                  placeholder="Start typing here..."
+                >
+                </textarea>
+              </div>
+              <div style="display: flex; flex-direction: column">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0 auto;
+                    padding-top: 20px;
+                  "
+                >
+                  <button
+                    onclick="generateRCFiles('changes')"
+                    class="btn_animated md"
+                    style="width: 190px; height: 40px; font-size: 15px"
+                  >
+                    Generate
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

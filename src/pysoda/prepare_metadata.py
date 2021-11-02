@@ -48,6 +48,7 @@ import json
 import collections
 from threading import Thread
 import pathlib
+import requests
 
 from string import ascii_uppercase
 import itertools
@@ -770,7 +771,21 @@ def import_bf_changes(bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
 
-    return myds.id
+    for i in range(len(myds.items)):
+
+        if myds.items[i].name.lower() == "changes.txt":
+
+            item_id = myds.items[i].id
+            url = returnFileURL(bf, item_id)
+
+            response = requests.get(url)
+            data = response.text
+
+            return data
+
+    raise Exception(
+        f"No {file_type} file was found at the root of the dataset provided."
+    )
 
 
 def returnFileURL(bf_object, item_id):
