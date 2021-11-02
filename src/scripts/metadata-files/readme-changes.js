@@ -456,43 +456,45 @@ const getReadme = async () => {
   readmeDescription = await fetch(
     `https://api.pennsieve.io/datasets/${datasetID}/readme`,
     options
-  ).then((res) => res.json())
-   .then(
-      (json) => json
-    )
-   .catch(err => {
-     var errorMessage = 'Failed to load README file from selected dataset: ' + err
-     console.error(errorMessage)
-     Swal.fire({
-       icon: "error",
-       html: errorMessage,
-       heightAuto: false,
-       backdrop: "rgba(0,0,0,0.4)",
-     })
-   });
+  )
+    .then((res) => res.json())
+    .then((json) => json)
+    .catch((err) => {
+      var errorMessage =
+        "Failed to load README file from selected dataset: " + err;
+      console.error(errorMessage);
+      Swal.fire({
+        icon: "error",
+        html: errorMessage,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
+    });
 
-   if (readmeDescription.readme.trim() !== "")  {
-     $("#textarea-create-readme").val(readmeDescription.readme.trim());
-     Swal.fire({
-       title: "Loaded successfully!",
-       icon: "success",
-       showConfirmButton: true,
-       heightAuto: false,
-       backdrop: "rgba(0,0,0, 0.4)",
-       didOpen: () => {
-         Swal.hideLoading();
-       },
-     })
-   } else {
-     Swal.fire({
-       icon: "warning",
-       text: "The current README file is empty. Please edit it in the following textarea.",
-       heightAuto: false,
-       backdrop: "rgba(0,0,0,0.4)",
-     })
-   }
-   $($("#button-fake-confirm-existing-bf-readme-file-load").siblings()[0]).hide();
-   $("#button-fake-confirm-existing-bf-readme-file-load").click();
+  if (readmeDescription.readme.trim() !== "") {
+    $("#textarea-create-readme").val(readmeDescription.readme.trim());
+    Swal.fire({
+      title: "Loaded successfully!",
+      icon: "success",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    });
+  } else {
+    Swal.fire({
+      icon: "warning",
+      text: "The current README file is empty. Please edit it in the following textarea.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+    });
+  }
+  $(
+    $("#button-fake-confirm-existing-bf-readme-file-load").siblings()[0]
+  ).hide();
+  $("#button-fake-confirm-existing-bf-readme-file-load").click();
 };
 
 const getChanges = async () => {
@@ -519,34 +521,36 @@ const getChanges = async () => {
     `https://api.pennsieve.io/datasets/${datasetID}`,
     options
   )
-  .then((res) => res.json())
-  .then(
-    // this is the dataset information that contains all files/folders of a dataset
-    (json) => json)
-  .catch(err => console.error('This is the error with the HTTP call:' + err));
+    .then((res) => res.json())
+    .then(
+      // this is the dataset information that contains all files/folders of a dataset
+      (json) => json
+    )
+    .catch((err) =>
+      console.error("This is the error with the HTTP call:" + err)
+    );
 
-  let changesFileId = ""
+  let changesFileId = "";
   for (var i in datasetInfo["children"]) {
     let child = datasetInfo["children"][i];
-    if (Object.keys(child).includes("extension")
-        && child["extension"] === "txt"
-        && child["content"]["name"].toLowerCase() === "changes.txt"
-        ) {
-      changesFileId = child["content"]["id"]
+    if (
+      Object.keys(child).includes("extension") &&
+      child["extension"] === "txt" &&
+      child["content"]["name"].toLowerCase() === "changes.txt"
+    ) {
+      changesFileId = child["content"]["id"];
 
       break;
     }
   }
-  console.log(changesFileId)
+  console.log(changesFileId);
 
   let changesFile = await fetch(
     `https://api.pennsieve.io/packages/${changesFileId}/sources/`,
     options
   )
-  .then((res) => res.json())
-  .then(
-    (json) => console.log(json)
-  )
+    .then((res) => res.json())
+    .then((json) => console.log(json));
 
-  console.log(changesFile)
+  console.log(changesFile);
 };
