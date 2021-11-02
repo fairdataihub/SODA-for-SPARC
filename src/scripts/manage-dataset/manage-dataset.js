@@ -843,7 +843,11 @@ const stripRequiredSectionFromReadme = (
   // If found place the following text into the studyPurpose property without the Study Purpose section title and markdown
   let endOfSectionIdx;
   mutableReadme = mutableReadme.replace(`**${sectionName}:**`, "");
-  for (endOfSectionIdx = section_idx; endOfSectionIdx < mutableReadme.length; endOfSectionIdx++) {
+  for (
+    endOfSectionIdx = section_idx;
+    endOfSectionIdx < mutableReadme.length;
+    endOfSectionIdx++
+  ) {
     if (mutableReadme[endOfSectionIdx] === "*") {
       break;
     }
@@ -859,7 +863,10 @@ const stripRequiredSectionFromReadme = (
 
   // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
   mutableReadme =
-    mutableReadme.slice(0, section_idx) + mutableReadme.slice(endOfSectionIdx >= mutableReadme.length ? undefined : endOfSectionIdx);
+    mutableReadme.slice(0, section_idx) +
+    mutableReadme.slice(
+      endOfSectionIdx >= mutableReadme.length ? undefined : endOfSectionIdx
+    );
 
   return mutableReadme;
 };
