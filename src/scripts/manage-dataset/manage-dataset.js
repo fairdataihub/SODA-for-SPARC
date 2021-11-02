@@ -759,7 +759,6 @@ const showCurrentDescription = async () => {
       );
     }
 
-
     // remove any text that was already in the section
     $("#ds-description-study-purpose").val("");
     $("#ds-description-data-collection").val("");
