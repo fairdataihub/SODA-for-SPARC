@@ -819,24 +819,7 @@ const create_parsed_readme = (readme) => {
   // remove the invalid text from the readme contents
   mutableReadme = stripInvalidTextFromReadme(mutableReadme, parsedReadme);
 
-  // find if there is an auxillary section
-  let auxillarySectionIdx = mutableReadme.search("[*][*].*[*][*]");
-
-  // there is an auxillary section so remove check if there is any invalid text before it
-  let invalidTextIdx = -1;
-  if (auxillarySectionIdx !== -1) {
-    // search for invalid text that occurs before the auxillary section
-    invalidTextIdx = mutableReadme.search(".*[*][*]");
-    // if there is no invalid text then parsing is done
-    if (invalidTextIdx === -1) return parsedReadme;
-
-    // place the invalid text into the parsed readme
-    parsedReadme["Invalid Text"] = mutableReadme.slice(0, auxillarySectionIdx);
-  } else {
-    // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
-    parsedReadme["Invalid Text"] = mutableReadme;
-  }
-
+  // return the parsed readme
   return parsedReadme;
 };
 
@@ -846,7 +829,7 @@ const stripRequiredSectionFromReadme = (
   sectionName = undefined,
   parsedReadme = undefined
 ) => {
-  let mutableReadme = readme;
+  let mutableReadme = readme.trim();
   // search for the **Study Purpose:** and basic variations of spacing
   let section_idx;
   if (sectionName) {
@@ -860,29 +843,23 @@ const stripRequiredSectionFromReadme = (
   // If found place the following text into the studyPurpose property without the Study Purpose section title and markdown
   let endOfSectionIdx;
   mutableReadme = mutableReadme.replace(`**${sectionName}:**`, "");
-  let idx = 0;
-  for (idx = section_idx; idx < mutableReadme.length; idx++) {
-    endOfSectionIdx = idx;
-    if (mutableReadme[idx] === "*") {
+  for (endOfSectionIdx = section_idx; endOfSectionIdx < mutableReadme.length; endOfSectionIdx++) {
+    if (mutableReadme[endOfSectionIdx] === "*") {
       break;
     }
-  }
-
-  if (endOfSectionIdx >= mutableReadme.length) {
-    endOfSectionIdx = 1;
   }
 
   // store the value of the Study Purpose in the parsed readme if one was provided
   if (parsedReadme) {
     parsedReadme[`${sectionName}`] = mutableReadme.slice(
       section_idx,
-      endOfSectionIdx
+      endOfSectionIdx >= mutableReadme.length ? undefined : endOfSectionIdx
     );
   }
 
   // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
   mutableReadme =
-    mutableReadme.slice(0, section_idx) + mutableReadme.slice(endOfSectionIdx);
+    mutableReadme.slice(0, section_idx) + mutableReadme.slice(endOfSectionIdx >= mutableReadme.length ? undefined : endOfSectionIdx);
 
   return mutableReadme;
 };
