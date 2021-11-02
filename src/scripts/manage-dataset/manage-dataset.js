@@ -826,7 +826,7 @@ $("#button-add-description").click(() => {
         if (!result.isConfirmed) {
           // hide the spinner
           $("#bf-add-description-dataset-spinner").hide();
-          return
+          return;
         }
         addDescription(
           selectedBfAccount,
