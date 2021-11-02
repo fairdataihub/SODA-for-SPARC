@@ -732,7 +732,7 @@ const showCurrentDescription = async () => {
     // create the parsed dataset read me object
     let parsedReadme = create_parsed_readme(readme);
 
-    console.log("The parsed readme file is", parsedReadme);
+    // console.log("The parsed readme file is", parsedReadme);
 
     // check if any of the fields have data
     if (
@@ -795,13 +795,15 @@ const create_parsed_readme = (readme) => {
     "Invalid Text": "",
   };
 
+  // console.log("Before slice", mutableReadme);
+  // console.log("");
+
   // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
   mutableReadme = stripRequiredSectionFromReadme(
     mutableReadme,
     "Study Purpose",
     parsedReadme
   );
-  console.log("Muable readme after a slice", mutableReadme);
 
   // remove the "Data Collection" section from the readme file and place its value in the parsed readme
   mutableReadme = stripRequiredSectionFromReadme(
@@ -809,72 +811,96 @@ const create_parsed_readme = (readme) => {
     "Data Collection",
     parsedReadme
   );
-  console.log("Muable readme after a slice", mutableReadme);
+
   // search for the "Primary Conclusion" and basic variations of spacing
   mutableReadme = stripRequiredSectionFromReadme(
     mutableReadme,
     "Primary Conclusion",
     parsedReadme
   );
-  console.log("Muable readme after a slice", mutableReadme);
+
+  // console.log("After", mutableReadme);
+
+  // remove the invalid text from the string (invalid text is text at the beginning of the readme or any text that does not appear after a section. Assume text after a section is just part of that section)
+  let invalidTextIdx = mutableReadme.search(".*s*[*][*]");
+
+  // check if there is any invalid text in the remaining readme file
+  if (invalidTextIdx !== -1) {
+    console.log("Invalid text found");
+
+    let endOfInvalidTextSection = invalidTextIdx;
+    while (endOfInvalidTextSection < mutableReadme.length) {
+      if (mutableReadme[endOfInvalidTextSection] === "*") {
+        break;
+      }
+      endOfInvalidTextSection += 1;
+    }
+
+    // place the invalid text into the parsed readme
+    parsedReadme["Invalid Text"] = mutableReadme.slice(
+      0,
+      endOfInvalidTextSection
+    );
+  }
   // find the Curator's Notes section and remove everything from the readme that occurs after it
   // (IMP:A user should not be able to edit the Curator's Notes sections)
-  let curators_section_idx = mutableReadme.search(
-    "[*][*]Curator's Notes[*][*]"
-  );
-  if (curators_section_idx !== -1) {
-    // remove the curators notes from the current readme
-    mutableReadme = mutableReadme.slice(0, curators_section_idx);
-  }
+  // let curators_section_idx = mutableReadme.search(
+  //   "[*][*]Curator's Notes[*][*]"
+  // );
+  // if (curators_section_idx !== -1) {
+  //   // remove the curators notes from the current readme
+  //   mutableReadme = mutableReadme.slice(0, curators_section_idx);
+  // }
 
-  // strip out any unrequired sections -- user does not edit these on SODA for now
-  while (mutableReadme.search("[*][*].*[*][*]") !== -1) {
-    let auxillary_section_idx = mutableReadme.search("[*][*].*[*][*]");
-    let start_of_section_text_idx = auxillary_section_idx;
+  // // strip out any unrequired sections -- user does not edit these on SODA for now
+  // while (mutableReadme.search("[*][*].*[*][*]") !== -1) {
+  //   let auxillary_section_idx = mutableReadme.search("[*][*].*[*][*]");
+  //   let start_of_section_text_idx = auxillary_section_idx;
 
-    // skip the first two markdown * characters
-    start_of_section_text_idx += 2;
-    // move to end of section title -- the end of the section is indicated by two closing markdown '**' characters
-    while (
-      start_of_section_text_idx < mutableReadme.length &&
-      (mutableReadme[start_of_section_text_idx] !== "*" ||
-        mutableReadme[start_of_section_text_idx - 1] !== "*")
-    ) {
-      start_of_section_text_idx += 1;
-    }
-    // move off the final * character
-    start_of_section_text_idx += 1;
+  //   // skip the first two markdown * characters
+  //   start_of_section_text_idx += 2;
+  //   // move to end of section title -- the end of the section is indicated by two closing markdown '**' characters
+  //   while (
+  //     start_of_section_text_idx < mutableReadme.length &&
+  //     (mutableReadme[start_of_section_text_idx] !== "*" ||
+  //       mutableReadme[start_of_section_text_idx - 1] !== "*")
+  //   ) {
+  //     start_of_section_text_idx += 1;
+  //   }
+  //   // move off the final * character
+  //   start_of_section_text_idx += 1;
 
-    end_of_section_text_idx = start_of_section_text_idx;
+  //   end_of_section_text_idx = start_of_section_text_idx;
 
-    // check if auxillary section idx is still in bounds
-    if (end_of_section_text_idx < mutableReadme.length) {
-      // search for the next title if one exists
-      while (
-        end_of_section_text_idx < mutableReadme.length &&
-        (mutableReadme[end_of_section_text_idx] !== "*" ||
-          mutableReadme[end_of_section_text_idx - 1] !== "*")
-      ) {
-        end_of_section_text_idx += 1;
-      }
+  //   // check if auxillary section idx is still in bounds
+  //   if (end_of_section_text_idx < mutableReadme.length) {
+  //     // search for the next title if one exists
+  //     while (
+  //       end_of_section_text_idx < mutableReadme.length &&
+  //       (mutableReadme[end_of_section_text_idx] !== "*" ||
+  //         mutableReadme[end_of_section_text_idx - 1] !== "*")
+  //     ) {
+  //       end_of_section_text_idx += 1;
+  //     }
 
-      // strip the section out of the current readme
-      mutableReadme =
-        mutableReadme.slice(0, auxillary_section_idx) +
-        mutableReadme.slice(end_of_section_text_idx - 1);
-    } else {
-      // TODO: get rid of the section header
-    }
-  }
+  //     // strip the section out of the current readme
+  //     mutableReadme =
+  //       mutableReadme.slice(0, auxillary_section_idx) +
+  //       mutableReadme.slice(end_of_section_text_idx - 1);
+  //   } else {
+  //     // TODO: get rid of the section header
+  //   }
+  // }
 
-  //check if final version of the description has any more text
-  if (mutableReadme.length) {
-    //store it as invalid text -- this is because it is does not belong to a section or because we cannot assume it belongs to a section
-    //this only occurs when a user has no section in their readme or has text before any of their sections in the readme.
-    parsedReadme["Invalid Text"] = mutableReadme;
-  }
+  // //check if final version of the description has any more text
+  // if (mutableReadme.length) {
+  //   //store it as invalid text -- this is because it is does not belong to a section or because we cannot assume it belongs to a section
+  //   //this only occurs when a user has no section in their readme or has text before any of their sections in the readme.
+  //   parsedReadme["Invalid Text"] = mutableReadme;
+  // }
 
   //return the parsed readme object
+
   return parsedReadme;
 };
 
@@ -899,13 +925,15 @@ const stripRequiredSectionFromReadme = (
   mutableReadme = mutableReadme.replace(`**${sectionName}:**`, "");
   let idx = 0;
   for (idx = section_idx; idx < mutableReadme.length; idx++) {
+    endOfSectionIdx = idx;
     if (mutableReadme[idx] === "*") {
-      endOfSectionIdx = idx;
       break;
     }
   }
 
-  if (endOfSectionIdx >= mutableReadme.length) endOfSectionIdx -= 1;
+  if (endOfSectionIdx >= mutableReadme.length) {
+    endOfSectionIdx -= 1;
+  }
 
   // store the value of the Study Purpose in the parsed readme if one was provided
   if (parsedReadme) {
@@ -1051,17 +1079,6 @@ const addDescription = async (
   // search for the "Primary Conclusion" and basic variations of spacing
   readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion");
 
-  // put the new readme data in the readme on Pennsieve
-  const options = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-    body: JSON.stringify({ readme: userMarkdownInput }),
-  };
-  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
-
   // read the Curator's notes and auxillary sections from the readme
   let staticSections = getUnrequiredFieldsFromReadme(readme);
 
@@ -1071,7 +1088,7 @@ const addDescription = async (
   console.log("The merged object", completeReadme);
 
   // put the new readme data in the readme on Pennsieve
-  const options = {
+  options = {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
