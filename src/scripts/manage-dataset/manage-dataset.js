@@ -915,13 +915,19 @@ $("#button-add-description").click(() => {
     // get the text from the three boxes and store them in their own variables
     let requiredFields = [];
     requiredFields.push(
-      "**Study Purpose:**" + $("#ds-description-study-purpose").val().trim() + "\n"
+      "**Study Purpose:**" +
+        $("#ds-description-study-purpose").val().trim() +
+        "\n"
     );
     requiredFields.push(
-      "**Data Collection:**" + $("#ds-description-data-collection").val().trim() + "\n"
+      "**Data Collection:**" +
+        $("#ds-description-data-collection").val().trim() +
+        "\n"
     );
     requiredFields.push(
-      "**Primary Conclusion:**" + $("#ds-description-primary-conclusion").val().trim() + "\n"
+      "**Primary Conclusion:**" +
+        $("#ds-description-primary-conclusion").val().trim() +
+        "\n"
     );
 
     // validate the new markdown description the user created
