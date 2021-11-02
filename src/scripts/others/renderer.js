@@ -7044,8 +7044,7 @@ const get_dataset_readme = async (dataset_name_or_id) => {
   return readme;
 };
 
-
-const update_dataset_readme = async (dataset_name_or_id, updated_readme) =>  {
+const update_dataset_readme = async (dataset_name_or_id, updated_readme) => {
   // get access token for the current user
   let jwt = await get_access_token();
 
@@ -7081,5 +7080,4 @@ const update_dataset_readme = async (dataset_name_or_id, updated_readme) =>  {
   };
 
   await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
-}
-
+};

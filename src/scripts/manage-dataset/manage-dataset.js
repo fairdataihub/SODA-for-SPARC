@@ -858,7 +858,7 @@ const addDescription = async (
   userMarkdownInput
 ) => {
   // get the dataset readme
-  let readme  = await get_dataset_readme(selectedBfDataset);
+  let readme = await get_dataset_readme(selectedBfDataset);
 
   // strip out the required sections
   readme = stripRequiredSectionFromReadme(readme, "Study Purpose");
