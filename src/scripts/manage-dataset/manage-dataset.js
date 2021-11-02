@@ -859,7 +859,7 @@ const stripRequiredSectionFromReadme = (
 
   // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
   mutableReadme =
-    mutableReadme.slice(0, section_idx) + mutableReadme.slice(endOfSectionIdx >= mutableReadme.length ? undefined : endOfSectionIdx);
+    mutableReadme.slice(0, section_idx) + mutableReadme.slice(endOfSectionIdx);
 
   return mutableReadme;
 };
