@@ -795,9 +795,6 @@ const create_parsed_readme = (readme) => {
     "Invalid Text": "",
   };
 
-  // console.log("Before slice", mutableReadme);
-  // console.log("");
-
   // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
   mutableReadme = stripRequiredSectionFromReadme(
     mutableReadme,
@@ -819,91 +816,31 @@ const create_parsed_readme = (readme) => {
     parsedReadme
   );
 
-  // console.log("After", mutableReadme);
+  // remove the invalid text from the readme contents
+  mutableReadme = stripInvalidTextFromReadme(mutableReadme, parsedReadme)
 
-  // remove the invalid text from the string (invalid text is text at the beginning of the readme or any text that does not appear after a section. Assume text after a section is just part of that section)
-  let invalidTextIdx = mutableReadme.search(".*s*[*][*]");
+  // find if there is an auxillary section
+  let auxillarySectionIdx = mutableReadme.search("[*][*].*[*][*]");
 
-  // check if there is any invalid text in the remaining readme file
-  if (invalidTextIdx !== -1) {
-    console.log("Invalid text found");
-
-    let endOfInvalidTextSection = invalidTextIdx;
-    while (endOfInvalidTextSection < mutableReadme.length) {
-      if (mutableReadme[endOfInvalidTextSection] === "*") {
-        break;
-      }
-      endOfInvalidTextSection += 1;
-    }
+  // there is an auxillary section so remove check if there is any invalid text before it
+  let invalidTextIdx = -1;
+  if (auxillarySectionIdx !== -1) {
+    // search for invalid text that occurs before the auxillary section
+    invalidTextIdx = mutableReadme.search(".*[*][*]");
+    // if there is no invalid text then parsing is done
+    if (invalidTextIdx === -1) return parsedReadme;
 
     // place the invalid text into the parsed readme
-    parsedReadme["Invalid Text"] = mutableReadme.slice(
-      0,
-      endOfInvalidTextSection
-    );
+    parsedReadme["Invalid Text"] = mutableReadme.slice(0, auxillarySectionIdx);
+  } else {
+    // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
+    parsedReadme["Invalid Text"] = mutableReadme;
   }
-  // find the Curator's Notes section and remove everything from the readme that occurs after it
-  // (IMP:A user should not be able to edit the Curator's Notes sections)
-  // let curators_section_idx = mutableReadme.search(
-  //   "[*][*]Curator's Notes[*][*]"
-  // );
-  // if (curators_section_idx !== -1) {
-  //   // remove the curators notes from the current readme
-  //   mutableReadme = mutableReadme.slice(0, curators_section_idx);
-  // }
-
-  // // strip out any unrequired sections -- user does not edit these on SODA for now
-  // while (mutableReadme.search("[*][*].*[*][*]") !== -1) {
-  //   let auxillary_section_idx = mutableReadme.search("[*][*].*[*][*]");
-  //   let start_of_section_text_idx = auxillary_section_idx;
-
-  //   // skip the first two markdown * characters
-  //   start_of_section_text_idx += 2;
-  //   // move to end of section title -- the end of the section is indicated by two closing markdown '**' characters
-  //   while (
-  //     start_of_section_text_idx < mutableReadme.length &&
-  //     (mutableReadme[start_of_section_text_idx] !== "*" ||
-  //       mutableReadme[start_of_section_text_idx - 1] !== "*")
-  //   ) {
-  //     start_of_section_text_idx += 1;
-  //   }
-  //   // move off the final * character
-  //   start_of_section_text_idx += 1;
-
-  //   end_of_section_text_idx = start_of_section_text_idx;
-
-  //   // check if auxillary section idx is still in bounds
-  //   if (end_of_section_text_idx < mutableReadme.length) {
-  //     // search for the next title if one exists
-  //     while (
-  //       end_of_section_text_idx < mutableReadme.length &&
-  //       (mutableReadme[end_of_section_text_idx] !== "*" ||
-  //         mutableReadme[end_of_section_text_idx - 1] !== "*")
-  //     ) {
-  //       end_of_section_text_idx += 1;
-  //     }
-
-  //     // strip the section out of the current readme
-  //     mutableReadme =
-  //       mutableReadme.slice(0, auxillary_section_idx) +
-  //       mutableReadme.slice(end_of_section_text_idx - 1);
-  //   } else {
-  //     // TODO: get rid of the section header
-  //   }
-  // }
-
-  // //check if final version of the description has any more text
-  // if (mutableReadme.length) {
-  //   //store it as invalid text -- this is because it is does not belong to a section or because we cannot assume it belongs to a section
-  //   //this only occurs when a user has no section in their readme or has text before any of their sections in the readme.
-  //   parsedReadme["Invalid Text"] = mutableReadme;
-  // }
-
-  //return the parsed readme object
 
   return parsedReadme;
 };
 
+// TODO: Fix trimming off last character bug
 const stripRequiredSectionFromReadme = (
   readme,
   sectionName = undefined,
@@ -932,7 +869,7 @@ const stripRequiredSectionFromReadme = (
   }
 
   if (endOfSectionIdx >= mutableReadme.length) {
-    endOfSectionIdx -= 1;
+    endOfSectionIdx = 1;
   }
 
   // store the value of the Study Purpose in the parsed readme if one was provided
@@ -950,19 +887,45 @@ const stripRequiredSectionFromReadme = (
   return mutableReadme;
 };
 
-// strip the unrequired fields from the readme file and return a string that only contains their values
-// Assumption: Used after stripping out the required fields
-const getUnrequiredFieldsFromReadme = (readme) => {
-  let mutableReadme = readme;
+// find invalid text
+// Text is invalid in these scenarios:
+//   1. any text that occurs before an auxillary section is invalid text because we cannot assume it belongs to one of the auxillary sections below
+//   2. any text in a string where there are no sections
+const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
+  // find if there is an auxillary section
+  let auxillarySectionIdx = readme.search("[*][*].*[*][*]");
 
-  let first_auxillary_section_found_idx =
-    mutableReadme.search("[*][*].*[*][*]");
+  // there is an auxillary section so remove check if there is any invalid text before it
+  let invalidTextIdx = -1;
+  if (auxillarySectionIdx !== -1) {
+    // search for invalid text that occurs before the auxillary section
+    invalidTextIdx = readme.search(".*[*][*]");
+    // if there is no invalid text then parsing is done
+    if (invalidTextIdx === -1) return readme;
 
-  if (first_auxillary_section_found_idx === -1) {
-    return mutableReadme;
+    // check if the user wants to store the invalid text in a parsed readme 
+    if (parsedReadme) {
+      // place the invalid text into the parsed readme
+      parsedReadme["Invalid Text"] = readme.slice(
+        0,
+        auxillarySectionIdx
+      );
+    }
+
+    // remove the text from the readme 
+    readme = readme.slice(auxillarySectionIdx)
+
+    // return the readme file
+    return readme
+  } else {
+    if (parsedReadme) {
+      // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
+      parsedReadme["Invalid Text"] = readme;
+    }
+
+    // remove the text from the readme === return an empty string 
+    return ""
   }
-
-  return mutableReadme.slice(first_auxillary_section_found_idx);
 };
 
 $("#button-add-description").click(() => {
@@ -1079,11 +1042,11 @@ const addDescription = async (
   // search for the "Primary Conclusion" and basic variations of spacing
   readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion");
 
-  // read the Curator's notes and auxillary sections from the readme
-  let staticSections = getUnrequiredFieldsFromReadme(readme);
+  // remove any invalid text
+  readme = stripInvalidTextFromReadme(readme)
 
-  // join the user_markdown_input with the static_markdown_input
-  let completeReadme = userMarkdownInput + staticSections;
+  // join the user_markdown_input with untouched sections of the original readme
+  let completeReadme = userMarkdownInput + readme;
 
   console.log("The merged object", completeReadme);
 
