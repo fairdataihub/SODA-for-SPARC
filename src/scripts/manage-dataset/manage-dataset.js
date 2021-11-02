@@ -714,7 +714,6 @@ const showCurrentDescription = async () => {
   // check if the user is selecting a dataset
   if (selectedBfDataset == "Select dataset") {
     // remove the text from the boxes? Probably not
-    
   } else {
     // get the dataset readme
     let readme;
@@ -739,7 +738,7 @@ const showCurrentDescription = async () => {
         "Manage Dataset - Add/Edit Description",
         selectedBfDataset
       );
-      return
+      return;
     }
     // create the parsed dataset read me object
     let parsedReadme = create_parsed_readme(readme);
