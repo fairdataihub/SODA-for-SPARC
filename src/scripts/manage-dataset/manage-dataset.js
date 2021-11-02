@@ -817,7 +817,7 @@ const create_parsed_readme = (readme) => {
   );
 
   // remove the invalid text from the readme contents
-  mutableReadme = stripInvalidTextFromReadme(mutableReadme, parsedReadme)
+  mutableReadme = stripInvalidTextFromReadme(mutableReadme, parsedReadme);
 
   // find if there is an auxillary section
   let auxillarySectionIdx = mutableReadme.search("[*][*].*[*][*]");
@@ -903,28 +903,25 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     // if there is no invalid text then parsing is done
     if (invalidTextIdx === -1) return readme;
 
-    // check if the user wants to store the invalid text in a parsed readme 
+    // check if the user wants to store the invalid text in a parsed readme
     if (parsedReadme) {
       // place the invalid text into the parsed readme
-      parsedReadme["Invalid Text"] = readme.slice(
-        0,
-        auxillarySectionIdx
-      );
+      parsedReadme["Invalid Text"] = readme.slice(0, auxillarySectionIdx);
     }
 
-    // remove the text from the readme 
-    readme = readme.slice(auxillarySectionIdx)
+    // remove the text from the readme
+    readme = readme.slice(auxillarySectionIdx);
 
     // return the readme file
-    return readme
+    return readme;
   } else {
     if (parsedReadme) {
       // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
       parsedReadme["Invalid Text"] = readme;
     }
 
-    // remove the text from the readme === return an empty string 
-    return ""
+    // remove the text from the readme === return an empty string
+    return "";
   }
 };
 
@@ -1043,7 +1040,7 @@ const addDescription = async (
   readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion");
 
   // remove any invalid text
-  readme = stripInvalidTextFromReadme(readme)
+  readme = stripInvalidTextFromReadme(readme);
 
   // join the user_markdown_input with untouched sections of the original readme
   let completeReadme = userMarkdownInput + readme;
