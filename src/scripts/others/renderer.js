@@ -7044,4 +7044,42 @@ const get_dataset_readme = async (dataset_name_or_id) => {
   return readme;
 };
 
-// get_access_token().then(console.log)
+
+const update_dataset_readme = async (dataset_name_or_id, updated_readme) =>  {
+  // get access token for the current user
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
+
+  // get the id out of the dataset
+  let id = dataset.content.id;
+
+  // get the user's permissions
+  let roleResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/role`,
+    { headers: { Authorization: `Bearer ${jwt}` } }
+  );
+  const { role } = await roleResponse.json();
+
+  // check if the user permissions do not include "owner" or "manager"
+  if (!["owner", "manager"].includes(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    throw new Error(
+      "You don't have permissions for editing metadata on this Pennsieve dataset"
+    );
+  }
+
+  // put the new readme data in the readme on Pennsieve
+  options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ readme: updated_readme.trim() }),
+  };
+
+  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
+}
+

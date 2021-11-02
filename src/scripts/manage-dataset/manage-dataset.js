@@ -732,8 +732,6 @@ const showCurrentDescription = async () => {
     // create the parsed dataset read me object
     let parsedReadme = create_parsed_readme(readme);
 
-    // console.log("The parsed readme file is", parsedReadme);
-
     // check if any of the fields have data
     if (
       parsedReadme["Study Purpose"] ||
@@ -779,6 +777,151 @@ const showCurrentDescription = async () => {
       );
     }
   }
+};
+
+$("#button-add-description").click(() => {
+  setTimeout(() => {
+    $("#bf-add-description-dataset-spinner").show();
+
+    let selectedBfAccount = defaultBfAccount;
+    let selectedBfDataset = defaultBfDataset;
+
+    // get the text from the three boxes and store them in their own variables
+    let requiredFields = [];
+    requiredFields.push(
+      "**Study Purpose:**" +
+        $("#ds-description-study-purpose").val().trim() +
+        "\n"
+    );
+    requiredFields.push(
+      "**Data Collection:**" +
+        $("#ds-description-data-collection").val().trim() +
+        "\n"
+    );
+    requiredFields.push(
+      "**Primary Conclusion:**" +
+        $("#ds-description-primary-conclusion").val().trim() +
+        "\n"
+    );
+
+    // validate the new markdown description the user created
+    let response = validateDescription(requiredFields.join("\n"));
+
+    if (!response) {
+      Swal.fire({
+        icon: "warning",
+        html: `This description does not seem to follow the SPARC guidelines.
+        Your descriptions should look like this:
+        <br> <br>
+        <p style="text-align:left">
+          <strong> Study Purpose: </strong> <br>
+          <strong> Data Collection: </strong> <br>
+          <strong> Primary Conclusion: </strong>
+        </p>
+        <br> <br>
+        Are you sure you want to continue?`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Continue",
+        cancelButtonText: "No, I want to edit my description",
+        reverseButtons: true,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then(() => {
+        addDescription()(
+          selectedBfAccount,
+          selectedBfDataset,
+          requiredFields.join("\n")
+        );
+      });
+    } else {
+      addDescription(
+        selectedBfAccount,
+        selectedBfDataset,
+        requiredFields.join("\n")
+      );
+    }
+  }, delayAnimation);
+});
+
+// I: user_markdown_input: A string that holds the user's markdown text.
+// Merges user readme file changes with the original readme file.
+const addDescription = async (
+  selectedBfAccount,
+  selectedBfDataset,
+  userMarkdownInput
+) => {
+  // get the dataset readme
+  let readme  = await get_dataset_readme(selectedBfDataset);
+
+  // strip out the required sections
+  readme = stripRequiredSectionFromReadme(readme, "Study Purpose");
+
+  // remove the "Data Collection" section from the readme file and place its value in the parsed readme
+  readme = stripRequiredSectionFromReadme(readme, "Data Collection");
+
+  // search for the "Primary Conclusion" and basic variations of spacing
+  readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion");
+
+  // remove any invalid text
+  readme = stripInvalidTextFromReadme(readme);
+
+  // join the user_markdown_input with untouched sections of the original readme
+  let completeReadme = userMarkdownInput + readme;
+
+  // update the readme file
+  try {
+    await update_dataset_readme(selectedBfDataset, completeReadme);
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    let emessage = userError(error);
+
+    $("#bf-add-description-dataset-spinner").hide();
+
+    Swal.fire({
+      title: "Failed to add description!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
+    );
+    return;
+  }
+
+  $("#bf-add-description-dataset-spinner").hide();
+
+  Swal.fire({
+    title: "Successfully added description!",
+    icon: "success",
+    showConfirmButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  });
+
+  // showDatasetDescription();
+  // changeDatasetUnderDD();
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Manage Dataset - Add/Edit Description",
+    selectedBfDataset
+  );
 };
 
 // searches the markdown for key sections and returns them divided into an easily digestible object
@@ -903,140 +1046,6 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     // remove the text from the readme === return an empty string
     return "";
   }
-};
-
-$("#button-add-description").click(() => {
-  setTimeout(() => {
-    $("#bf-add-description-dataset-spinner").show();
-
-    let selectedBfAccount = defaultBfAccount;
-    let selectedBfDataset = defaultBfDataset;
-
-    // get the text from the three boxes and store them in their own variables
-    let requiredFields = [];
-    requiredFields.push(
-      "**Study Purpose:**" + $("#ds-description-study-purpose").val().trim() + "\n"
-    );
-    requiredFields.push(
-      "**Data Collection:**" + $("#ds-description-data-collection").val().trim() + "\n"
-    );
-    requiredFields.push(
-      "**Primary Conclusion:**" + $("#ds-description-primary-conclusion").val().trim() + "\n"
-    );
-
-    // validate the new markdown description the user created
-    let response = validateDescription(requiredFields.join("\n"));
-
-    if (!response) {
-      Swal.fire({
-        icon: "warning",
-        html: `This description does not seem to follow the SPARC guidelines.
-        Your descriptions should look like this:
-        <br> <br>
-        <p style="text-align:left">
-          <strong> Study Purpose: </strong> <br>
-          <strong> Data Collection: </strong> <br>
-          <strong> Primary Conclusion: </strong>
-        </p>
-        <br> <br>
-        Are you sure you want to continue?`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showCancelButton: true,
-        focusCancel: true,
-        confirmButtonText: "Continue",
-        cancelButtonText: "No, I want to edit my description",
-        reverseButtons: true,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then(() => {
-        addDescription()(
-          selectedBfAccount,
-          selectedBfDataset,
-          requiredFields.join("\n")
-        );
-      });
-    } else {
-      addDescription(
-        selectedBfAccount,
-        selectedBfDataset,
-        requiredFields.join("\n")
-      );
-    }
-  }, delayAnimation);
-});
-
-// I: user_markdown_input: A string that holds the user's markdown text
-//    static_markdown_input: A string that contains curators notes or any other field we do not support editing.
-const addDescription = async (
-  selectedBfAccount,
-  selectedBfDataset,
-  userMarkdownInput
-) => {
-  // get access token for the current user
-  let jwt = await get_access_token();
-
-  // get the dataset the user wants to edit
-  let dataset = await get_dataset_by_name_id(selectedBfDataset, jwt);
-
-  // get the id out of the dataset
-  let id = dataset.content.id;
-
-  // get the user's permissions
-  let roleResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/role`,
-    { headers: { Authorization: `Bearer ${jwt}` } }
-  );
-  const { role } = await roleResponse.json();
-
-  // check if the user permissions do not include "owner" or "manager"
-  if (!["owner", "manager"].includes(role)) {
-    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
-    throw new Error(
-      "You don't have permissions for editing metadata on this Pennsieve dataset"
-    );
-  }
-
-  // get the original version of the readme for the dataset
-  let readmeResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/readme`,
-    {
-      headers: { Authorization: `Bearer ${jwt}` },
-    }
-  );
-  let { readme } = await readmeResponse.json();
-
-  // strip out the required sections
-  readme = stripRequiredSectionFromReadme(readme, "Study Purpose");
-
-  // remove the "Data Collection" section from the readme file and place its value in the parsed readme
-  readme = stripRequiredSectionFromReadme(readme, "Data Collection");
-
-  // search for the "Primary Conclusion" and basic variations of spacing
-  readme = stripRequiredSectionFromReadme(readme, "Primary Conclusion");
-
-  // remove any invalid text
-  readme = stripInvalidTextFromReadme(readme);
-
-  // join the user_markdown_input with untouched sections of the original readme
-  let completeReadme = userMarkdownInput + readme;
-
-  console.log("The merged object", completeReadme);
-
-  // put the new readme data in the readme on Pennsieve
-  options = {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-    body: JSON.stringify({ readme: completeReadme.trim() }),
-  };
-  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
 };
 
 const changeDatasetUnderDD = () => {
