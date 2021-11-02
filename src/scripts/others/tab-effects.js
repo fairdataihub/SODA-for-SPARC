@@ -1740,10 +1740,10 @@ async function transitionFreeFormMode(
   category
 ) {
   if ($(ev).attr("data-current") === "Question-prepare-subjects-1") {
-    switchMetadataSubSamFirstQuestion("subjects")
+    switchMetadataSubSamFirstQuestion("subjects");
   }
   if ($(ev).attr("data-current") === "Question-prepare-samples-1") {
-    switchMetadataSubSamFirstQuestion("samples")
+    switchMetadataSubSamFirstQuestion("samples");
   }
 
   if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
@@ -1756,40 +1756,36 @@ async function transitionFreeFormMode(
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-changes-1") {
-    switchMetadataRCFirstQuestion("changes")
+    switchMetadataRCFirstQuestion("changes");
   }
   if ($(ev).attr("data-current") === "Question-prepare-readme-1") {
-    switchMetadataRCFirstQuestion("readme")
+    switchMetadataRCFirstQuestion("readme");
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-readme-4") {
-    switchMetadataRCFirstQuestion("readme")
+    switchMetadataRCFirstQuestion("readme");
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-changes-4") {
-    switchMetadataRCFirstQuestion("changes")
+    switchMetadataRCFirstQuestion("changes");
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-submission-3") {
-
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-dd-4") {
-
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-subjects-2") {
-    switchMetadataSubSamFirstQuestion()
+    switchMetadataSubSamFirstQuestion();
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-samples-2") {
-    switchMetadataSubSamFirstQuestion()
+    switchMetadataSubSamFirstQuestion();
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
-    if (
-      $("#Question-prepare-dd-2").hasClass("show")
-    ) {
+    if ($("#Question-prepare-dd-2").hasClass("show")) {
       var { value: continueProgressDD } = await Swal.fire({
         title:
           "This will reset your progress so far with the dataset_description.xlsx file. Are you sure you want to continue?",
@@ -1927,8 +1923,7 @@ async function transitionFreeFormMode(
 const switchMetadataRCImportBFQuestions = async (metadataRCFileType) => {
   if ($(`#textarea-create-${metadataRCFileType}`).val().trim() !== "") {
     var { value: continueProgress } = await Swal.fire({
-      title:
-        `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,
+      title: `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,
       showCancelButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1946,15 +1941,14 @@ const switchMetadataRCImportBFQuestions = async (metadataRCFileType) => {
       $(`#textarea-create-${metadataRCFileType}`).val("");
     }
   }
-}
+};
 
 // handles it when users switch options in the first question (Metadata files)
 // 1. Readme and Changes (MetadataRC)
 async function switchMetadataRCFirstQuestion(metadataRCFileType) {
   if ($(`#textarea-create-${metadataRCFileType}`).text().trim() !== "") {
     var { value: continueProgress } = await Swal.fire({
-      title:
-      `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,
+      title: `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,
       showCancelButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1975,15 +1969,14 @@ async function switchMetadataRCFirstQuestion(metadataRCFileType) {
 }
 // 2. Subjects and Samples (MetadataSubSam)
 async function switchMetadataSubSamFirstQuestion(metadataSubSamFile) {
-  var tableData = subjectsTableData
+  var tableData = subjectsTableData;
   if (metadataSubSamFile === "samples") {
-    tableData = samplesTableData
+    tableData = samplesTableData;
   }
 
   if (tableData.length !== 0) {
     var { value: continueProgress } = await Swal.fire({
-      title:
-        `This will reset your progress so far with the ${metadataSubSamFile}.xlsx file. Are you sure you want to continue?`,
+      title: `This will reset your progress so far with the ${metadataSubSamFile}.xlsx file. Are you sure you want to continue?`,
       showCancelButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -2009,7 +2002,10 @@ async function switchMetadataSubSamFirstQuestion(metadataSubSamFile) {
       // delete custom fields (if any)
       var fieldLength = $(`.${metadataSubSamFile}-form-entry`).length;
       if (fieldLength > 21) {
-        for (var field of $(`.${metadataSubSamFile}-form-entry`).slice(21, fieldLength)) {
+        for (var field of $(`.${metadataSubSamFile}-form-entry`).slice(
+          21,
+          fieldLength
+        )) {
           $($(field).parents()[2]).remove();
         }
       }
