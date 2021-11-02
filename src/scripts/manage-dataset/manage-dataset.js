@@ -823,7 +823,6 @@ const create_parsed_readme = (readme) => {
   return parsedReadme;
 };
 
-// TODO: Fix trimming off last character bug
 const stripRequiredSectionFromReadme = (
   readme,
   sectionName = undefined,
@@ -916,13 +915,13 @@ $("#button-add-description").click(() => {
     // get the text from the three boxes and store them in their own variables
     let requiredFields = [];
     requiredFields.push(
-      "**Study Purpose:**" + $("#ds-description-study-purpose").val()
+      "**Study Purpose:**" + $("#ds-description-study-purpose").val().trim() + "\n"
     );
     requiredFields.push(
-      "**Data Collection:**" + $("#ds-description-data-collection").val()
+      "**Data Collection:**" + $("#ds-description-data-collection").val().trim() + "\n"
     );
     requiredFields.push(
-      "**Primary Conclusion:**" + $("#ds-description-primary-conclusion").val()
+      "**Primary Conclusion:**" + $("#ds-description-primary-conclusion").val().trim() + "\n"
     );
 
     // validate the new markdown description the user created
@@ -1035,7 +1034,7 @@ const addDescription = async (
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ readme: completeReadme }),
+    body: JSON.stringify({ readme: completeReadme.trim() }),
   };
   await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
 };
