@@ -6,11 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## v5.0.2 - 2021-11-01
+## v5.0.2 - 2021-11-02
 
 ### Bug fixes:
 
 - Edited documentation links according to the new changes made to SODA's documentation website.
+
+### Known issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 ## v5.0.1 - 2021-10-12
 
