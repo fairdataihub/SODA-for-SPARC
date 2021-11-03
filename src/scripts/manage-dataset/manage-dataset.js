@@ -822,7 +822,7 @@ $("#button-add-description").click(() => {
     let primaryConclusion = $("#ds-description-primary-conclusion")
       .val()
       .trim();
-    primaryConclusion.replace("**Primary Conclusion**", "");
+    primaryConclusion.replace("**Primary Conclusion:**", "");
     requiredFields.push("**Primary Conclusion:**" + primaryConclusion + "\n");
 
     // validate the new markdown description the user created
@@ -1018,7 +1018,7 @@ const stripRequiredSectionFromReadme = (
   sectionName,
   parsedReadme = undefined
 ) => {
-  let mutableReadme = readme.trim();
+  let mutableReadme = readme.trim()
 
   // serch for the start of the given section
   let sectionIdx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
