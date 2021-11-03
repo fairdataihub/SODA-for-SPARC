@@ -759,12 +759,11 @@ const showCurrentDescription = async () => {
       );
     }
 
-    // remove any text that is already in the fields
-    $("#ds-description-study-purpose").val("");
+
     // remove any text that was already in the section
     $("#ds-description-study-purpose").val("");
-    // remove any text that was already in the section
-    $("#ds-description-study-purpose").val("");
+    $("#ds-description-data-collection").val("");
+    $("#ds-description-primary-conclusion").val("");
 
     //  check if there is any study purpose text || Data Collection || Primary Conclusion
     if (parsedReadme["Study Purpose"]) {
