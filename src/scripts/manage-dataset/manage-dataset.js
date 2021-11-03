@@ -901,7 +901,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     return;
   }
 
-  // strip out the required sections (don't check for errors here because we check for them in create_parsed_readme for the same functions and the same readme)
+  // strip out the required sections (don't check for errors here because we check for them in showCurrentDescription for the same functions and the same readme)
   readme = stripRequiredSectionFromReadme(readme, "Study Purpose");
 
   // remove the "Data Collection" section from the readme file and place its value in the parsed readme
