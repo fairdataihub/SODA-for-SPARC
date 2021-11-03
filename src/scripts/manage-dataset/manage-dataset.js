@@ -740,7 +740,7 @@ const showCurrentDescription = async () => {
         "Manage Dataset - Add/Edit Description",
         selectedBfDataset
       );
-      return
+      return;
     }
     // create the parsed dataset read me object
     let parsedReadme = create_parsed_readme(readme);
