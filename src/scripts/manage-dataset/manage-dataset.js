@@ -1020,8 +1020,9 @@ const stripRequiredSectionFromReadme = (
 ) => {
   let mutableReadme = readme.trim()
 
-  // serch for the start of the given section
-  let sectionIdx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
+  // serch for the start of the given section -- it can have one or more whitespace between the colon
+  let searchRegExp = new RegExp(`[*][*]${sectionName}[ ]*:[*][*]`)
+  let sectionIdx = mutableReadme.search(searchRegExp);
 
   // if the section is not found return the readme unchanged
   if (sectionIdx === -1) {
@@ -1029,7 +1030,7 @@ const stripRequiredSectionFromReadme = (
   }
 
   // remove the section title text
-  mutableReadme = mutableReadme.replace(`**${sectionName}:**`, "");
+  mutableReadme = mutableReadme.replace(searchRegExp, "");
 
   // search for the end of the removed section's text
   let endOfSectionIdx;
