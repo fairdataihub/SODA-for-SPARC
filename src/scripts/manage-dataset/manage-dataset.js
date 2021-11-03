@@ -735,7 +735,7 @@ const showCurrentDescription = async () => {
   // get the dataset readme
   let readme;
   try {
-    readme = await get_dataset_readme(selectedBfDataset);
+    readme = await getDatasetReadme(selectedBfDataset);
   } catch (error) {
     log.error(error);
     console.error(error);
@@ -758,8 +758,31 @@ const showCurrentDescription = async () => {
     return;
   }
   // create the parsed dataset read me object
-  let parsedReadme = create_parsed_readme(readme);
+  let parsedReadme;
+  try {
+   parsedReadme =  createParsedReadme(readme);
+  } catch(error) {
+    // log the error and send it to analytics
+    log.error(error);
+    console.error(error);
+    let emessage = userError(error);
+    Swal.fire({
+      title: "Failed to get read description!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
+    );
+    return;
+  }
   // check if any of the fields have data
   if (
     parsedReadme["Study Purpose"] ||
@@ -890,14 +913,13 @@ $("#button-add-description").click(() => {
 // I: user_markdown_input: A string that holds the user's markdown text.
 // Merges user readme file changes with the original readme file.
 const addDescription = async (
-  selectedBfAccount,
   selectedBfDataset,
   userMarkdownInput
 ) => {
   // get the dataset readme
   let readme;
   try {
-    readme = await get_dataset_readme(selectedBfDataset);
+    readme = await getDatasetReadme(selectedBfDataset);
   } catch (err) {
     log.error(error);
     console.error(error);
@@ -923,7 +945,7 @@ const addDescription = async (
     return;
   }
 
-  // strip out the required sections
+  // strip out the required sections (don't check for errors here because we check for them in create_parsed_readme for the same functions and the same readme)
   readme = stripRequiredSectionFromReadme(readme, "Study Purpose");
 
   // remove the "Data Collection" section from the readme file and place its value in the parsed readme
@@ -940,7 +962,7 @@ const addDescription = async (
 
   // update the readme file
   try {
-    await update_dataset_readme(selectedBfDataset, completeReadme);
+    await updateDatasetReadme(selectedBfDataset, completeReadme);
   } catch (error) {
     log.error(error);
     console.error(error);
@@ -987,9 +1009,9 @@ const addDescription = async (
   );
 };
 
-// searches the markdown for key sections and returns them divided into an easily digestible object
+// searches the markdown for key sections and returns them as an easily digestible object
 // returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}
-const create_parsed_readme = (readme) => {
+const createParsedReadme = (readme) => {
   // read in the readme file and store it in a variable ( it is in markdown )
   let mutableReadme = readme;
 
@@ -1029,26 +1051,36 @@ const create_parsed_readme = (readme) => {
   return parsedReadme;
 };
 
+
+// strips the required section starting with the given section name from a copy of the given readme string. Returns the mutated string. If given a parsed readme object
+// it will also place the section text in that object.
+// Inputs: 
+//      readme: A string with the users dataset description
+//      sectionName: The name of the section the user wants to strip from the readme
+//      parsedReadme: Optional object that gets the stripped section text if provided
 const stripRequiredSectionFromReadme = (
   readme,
   sectionName,
   parsedReadme = undefined
 ) => {
   let mutableReadme = readme.trim();
-  // search for the **Study Purpose:** and basic variations of spacing
-  let section_idx;
 
-  section_idx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
 
-  if (section_idx === -1) {
+  // serch for the start of the given section
+  let sectionIdx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
+
+  // if the section is not found return the readme unchanged
+  if (sectionIdx === -1) {
     return mutableReadme;
   }
 
-  // If found place the following text into the studyPurpose property without the Study Purpose section title and markdown
-  let endOfSectionIdx;
+  // remove the section title text
   mutableReadme = mutableReadme.replace(`**${sectionName}:**`, "");
+
+  // search for the end of the removed section's text
+  let endOfSectionIdx;
   for (
-    endOfSectionIdx = section_idx;
+    endOfSectionIdx = sectionIdx;
     endOfSectionIdx < mutableReadme.length;
     endOfSectionIdx++
   ) {
@@ -1057,34 +1089,38 @@ const stripRequiredSectionFromReadme = (
     }
   }
 
-  // store the value of the Study Purpose in the parsed readme if one was provided
+  // store the value of the given section in the parsed readme if one was provided
   if (parsedReadme) {
     parsedReadme[`${sectionName}`] = mutableReadme.slice(
-      section_idx,
+      sectionIdx,
       endOfSectionIdx >= mutableReadme.length ? undefined : endOfSectionIdx
     );
   }
 
-  // Set description to a new string that does not have the Study Purpose section ( desc = str.slice(0, idx) + str.slice(endSectionIdx))
+  // strip the section text from the readme
   mutableReadme =
-    mutableReadme.slice(0, section_idx) + mutableReadme.slice(endOfSectionIdx);
+    mutableReadme.slice(0, sectionIdx) + mutableReadme.slice(endOfSectionIdx);
 
   return mutableReadme;
 };
 
-// find invalid text
+// find invalid text and strip it from a copy of the given readme string. returns the mutated readme.
 // Text is invalid in these scenarios:
 //   1. any text that occurs before an auxillary section is invalid text because we cannot assume it belongs to one of the auxillary sections below
 //   2. any text in a string where there are no sections
 const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
-  // find if there is an auxillary section
+  // ensure the required sections have been taken out 
+  if(readme.search("[*][*]Data Collection:[*][*]") !== -1 || readme.search("[*][*]Study Purpose:[*][*]") !== -1  || readme.search("[*][*]Primary Conclusion:[*][*]") !== -1) {
+    throw new Error("There was a problem with reading your description file.")
+  }
+
+  // search for any auxillary sections
   let auxillarySectionIdx = readme.search("[*][*].*[*][*]");
 
-  // there is an auxillary section so remove check if there is any invalid text before it
-  let invalidTextIdx = -1;
+  // there is an auxillary section to remove check if there is any invalid text before it
   if (auxillarySectionIdx !== -1) {
     // search for invalid text that occurs before the auxillary section
-    invalidTextIdx = readme.search(".*[*][*]");
+    let invalidTextIdx = readme.search(".*[*][*]");
     // if there is no invalid text then parsing is done
     if (invalidTextIdx === -1) return readme;
 
@@ -1100,8 +1136,8 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     // return the readme file
     return readme;
   } else {
+    // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
     if (parsedReadme) {
-      // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
       parsedReadme["Invalid Text"] = readme;
     }
 

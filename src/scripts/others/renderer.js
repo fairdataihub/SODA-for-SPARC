@@ -6996,7 +6996,7 @@ Manage Datasets Add/Edit Description Section With Nodejs
 // returns the readme of a dataset.
 // I: dataset_name_or_id : string
 // O: a dataset description as a string
-const get_dataset_readme = async (dataset_name_or_id) => {
+const getDatasetReadme = async (dataset_name_or_id) => {
   // check that a dataset name or id is provided
   if (!dataset_name_or_id) {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
@@ -7028,7 +7028,7 @@ const get_dataset_readme = async (dataset_name_or_id) => {
   return readme;
 };
 
-const update_dataset_readme = async (dataset_name_or_id, updated_readme) => {
+const updateDatasetReadme = async (dataset_name_or_id, updated_readme) => {
   // get access token for the current user
   let jwt = await get_access_token();
 
