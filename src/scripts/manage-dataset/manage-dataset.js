@@ -688,30 +688,19 @@ const showCurrentSubtitle = () => {
   }
 };
 
-const validateDescription = (description) => {
-  description = description.trim();
+const validateDescription = () => {
+  let studyPurpose = $("#ds-description-study-purpose").val().trim();
+  let dataCollection = $("#ds-description-data-collection").val().trim();
+  let primaryConclusion = $("#ds-description-primary-conclusion").val().trim();
 
   if (
-    description.search("[*][*]Study Purpose[*][*]") == -1 &&
-    description.search("[*][*]Study Purpose:[*][*]") == -1 &&
-    description.search("[*][*]Study Purpose :[*][*]") == -1
+    !studyPurpose.length ||
+    !dataCollection.length ||
+    !primaryConclusion.length
   ) {
     return false;
   }
-  if (
-    description.search("[*][*]Data Collection[*][*]") == -1 &&
-    description.search("[*][*]Data Collection:[*][*]") == -1 &&
-    description.search("[*][*]Data Collection :[*][*]") == -1
-  ) {
-    return false;
-  }
-  if (
-    description.search("[*][*]Primary Conclusion[*][*]") == -1 &&
-    description.search("[*][*]Primary Conclusion:[*][*]") == -1 &&
-    description.search("[*][*]Primary Conclusion :[*][*]") == -1
-  ) {
-    return false;
-  }
+
   return true;
 };
 
@@ -805,20 +794,20 @@ $("#button-add-description").click(() => {
     );
 
     // validate the new markdown description the user created
-    let response = validateDescription(requiredFields.join("\n"));
+    let response = validateDescription(requiredFields.join(""));
 
     if (!response) {
       Swal.fire({
         icon: "warning",
-        html: `This description does not seem to follow the SPARC guidelines.
-        Your descriptions should look like this:
-        <br> <br>
-        <p style="text-align:left">
-          <strong> Study Purpose: </strong> <br>
-          <strong> Data Collection: </strong> <br>
-          <strong> Primary Conclusion: </strong>
+        html: `<p>This description does not seem to follow the SPARC guidelines.
+        Your descriptions should have the following sections filled out: </p>
+        <br>
+        <p style="text-align:center"> 
+          <strong>Study Purpose</strong><br>
+          <strong> Data Collection</strong> <br>
+          <strong>Primary Conclusion</strong><br>
         </p>
-        <br> <br>
+        <br> 
         Are you sure you want to continue?`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -833,12 +822,19 @@ $("#button-add-description").click(() => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then(() => {
-        addDescription()(
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          // hide the spinner
+          $("#bf-add-description-dataset-spinner").hide();
+          return
+        }
+        addDescription(
           selectedBfAccount,
           selectedBfDataset,
           requiredFields.join("\n")
         );
+
+        return;
       });
     } else {
       addDescription(
@@ -903,8 +899,10 @@ const addDescription = async (
     return;
   }
 
+  // if successful stop the spinner
   $("#bf-add-description-dataset-spinner").hide();
 
+  // alert the user the data was uploaded successfully
   Swal.fire({
     title: "Successfully added description!",
     icon: "success",
@@ -916,6 +914,7 @@ const addDescription = async (
   // showDatasetDescription();
   // changeDatasetUnderDD();
 
+  // alert analytics
   ipcRenderer.send(
     "track-event",
     "Success",
