@@ -1066,15 +1066,15 @@ const stripRequiredSectionFromReadme = (
 const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   // ensure the required sections have been taken out
   if (
-    readme.search("[*][*]Data Collection:[*][*]") !== -1 ||
-    readme.search("[*][*]Study Purpose:[*][*]") !== -1 ||
-    readme.search("[*][*]Primary Conclusion:[*][*]") !== -1
+    readme.search("[*][*]Data Collection[ ]*:[*][*]") !== -1 ||
+    readme.search("[*][*]Study Purpose[ ]*:[*][*]") !== -1 ||
+    readme.search("[*][*]Primary Conclusion[ ]*:[*][*]") !== -1
   ) {
     throw new Error("There was a problem with reading your description file.");
   }
 
   // search for any auxillary sections
-  let auxillarySectionIdx = readme.search("[*][*].*:[*][*]");
+  let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]");
 
   // there is an auxillary section to remove check if there is any invalid text before it
   if (auxillarySectionIdx !== -1) {
