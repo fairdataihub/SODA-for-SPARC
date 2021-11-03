@@ -1753,25 +1753,25 @@ async function transitionFreeFormMode(
   if ($(ev).attr("data-current") === "Generate-submission") {
     var res = generateSubmissionFile();
     if (res === "empty") {
-      return
+      return;
     }
     $("#submission-accordion").removeClass("active");
     $("#submission-title-accordion").removeClass("active");
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-changes-1") {
-    await switchMetadataRCFirstQuestion("changes")
+    await switchMetadataRCFirstQuestion("changes");
   }
   if ($(ev).attr("data-current") === "Question-prepare-readme-1") {
-    await switchMetadataRCFirstQuestion("readme")
+    await switchMetadataRCFirstQuestion("readme");
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-readme-4") {
-    await switchMetadataRCFirstQuestion("readme")
+    await switchMetadataRCFirstQuestion("readme");
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-changes-4") {
-    await switchMetadataRCFirstQuestion("changes")
+    await switchMetadataRCFirstQuestion("changes");
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-submission-3") {

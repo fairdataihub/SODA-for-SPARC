@@ -236,7 +236,7 @@ function generateSubmissionFile() {
       text: "Please fill in all of the required fields.",
       title: "Incomplete information",
     });
-    return "empty"
+    return "empty";
   }
 }
 
