@@ -784,7 +784,7 @@ def import_bf_changes(bfaccount, bfdataset):
             return data
 
     raise Exception(
-        f"No {file_type} file was found at the root of the dataset provided."
+        f"No CHANGES.txt file was found at the root of the dataset provided."
     )
 
 

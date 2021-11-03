@@ -1751,23 +1751,27 @@ async function transitionFreeFormMode(
   }
 
   if ($(ev).attr("data-current") === "Generate-submission") {
+    var res = generateSubmissionFile();
+    if (res === "empty") {
+      return
+    }
     $("#submission-accordion").removeClass("active");
     $("#submission-title-accordion").removeClass("active");
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-changes-1") {
-    switchMetadataRCFirstQuestion("changes")
+    await switchMetadataRCFirstQuestion("changes")
   }
   if ($(ev).attr("data-current") === "Question-prepare-readme-1") {
-    switchMetadataRCFirstQuestion("readme")
+    await switchMetadataRCFirstQuestion("readme")
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-readme-4") {
-    switchMetadataRCFirstQuestion("readme")
+    await switchMetadataRCFirstQuestion("readme")
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-changes-4") {
-    switchMetadataRCFirstQuestion("changes")
+    await switchMetadataRCFirstQuestion("changes")
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-submission-3") {
@@ -1951,7 +1955,7 @@ const switchMetadataRCImportBFQuestions = async (metadataRCFileType) => {
 // handles it when users switch options in the first question (Metadata files)
 // 1. Readme and Changes (MetadataRC)
 async function switchMetadataRCFirstQuestion(metadataRCFileType) {
-  if ($(`#textarea-create-${metadataRCFileType}`).text().trim() !== "") {
+  if ($(`#textarea-create-${metadataRCFileType}`).val().trim() !== "") {
     var { value: continueProgress } = await Swal.fire({
       title:
       `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,

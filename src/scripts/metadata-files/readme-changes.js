@@ -296,46 +296,6 @@ function showExistingRCFile(type) {
   }
 }
 
-function importExistingRCFile(type) {
-  var filePath = $(`#existing-${type}-file-destination`).prop("placeholder");
-  if (type === "changes") {
-    var upperCaseLetter = "CHANGES";
-  } else {
-    var upperCaseLetter = "README";
-  }
-  if (filePath === "Browse here") {
-    Swal.fire(
-      "No file chosen",
-      `Please select a path to your ${upperCaseLetter}.txt file`,
-      "error"
-    );
-  } else {
-    if (path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
-      Swal.fire({
-        title: "Incorrect file name",
-        text: `Your file must be named '${upperCaseLetter}.txt' to be imported to SODA.`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-      });
-    } else {
-      Swal.fire({
-        title: `Loading an existing '${upperCaseLetter}.txt' file`,
-        html: "Please wait...",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      }).then((result) => {});
-      setTimeout(loadExistingRCFile(filePath, type), 1000);
-    }
-  }
-}
-
 // function to load existing README/CHANGES files
 function loadExistingRCFile(filepath, type) {
   // read file
@@ -508,7 +468,7 @@ const getReadme = async () => {
 const getChanges = async () => {
   // loading popup
   Swal.fire({
-    title: "Loading an existing README.txt file",
+    title: "Loading an existing CHANGES.txt file",
     html: "Please wait...",
     allowEscapeKey: false,
     allowOutsideClick: false,
@@ -564,3 +524,43 @@ const getChanges = async () => {
     }
   })
 };
+
+function importExistingRCFile(type) {
+  var filePath = $(`#existing-${type}-file-destination`).prop("placeholder");
+  if (type === "changes") {
+    var upperCaseLetter = "CHANGES";
+  } else {
+    var upperCaseLetter = "README";
+  }
+  if (filePath === "Browse here") {
+    Swal.fire(
+      "No file chosen",
+      `Please select a path to your ${upperCaseLetter}.txt file`,
+      "error"
+    );
+  } else {
+    if (path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
+      Swal.fire({
+        title: "Incorrect file name",
+        text: `Your file must be named '${upperCaseLetter}.txt' to be imported to SODA.`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
+    } else {
+      Swal.fire({
+        title: `Loading an existing '${upperCaseLetter}.txt' file`,
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {});
+      setTimeout(loadExistingRCFile(filePath, type), 1000);
+    }
+  }
+}

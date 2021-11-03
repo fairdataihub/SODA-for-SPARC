@@ -236,8 +236,7 @@ function generateSubmissionFile() {
       text: "Please fill in all of the required fields.",
       title: "Incomplete information",
     });
-  } else {
-    openFileBrowserDestination("submission");
+    return "empty"
   }
 }
 
