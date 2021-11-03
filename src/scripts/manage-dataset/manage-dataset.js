@@ -760,8 +760,8 @@ const showCurrentDescription = async () => {
   // create the parsed dataset read me object
   let parsedReadme;
   try {
-   parsedReadme =  createParsedReadme(readme);
-  } catch(error) {
+    parsedReadme = createParsedReadme(readme);
+  } catch (error) {
     // log the error and send it to analytics
     log.error(error);
     console.error(error);
@@ -912,10 +912,7 @@ $("#button-add-description").click(() => {
 
 // I: user_markdown_input: A string that holds the user's markdown text.
 // Merges user readme file changes with the original readme file.
-const addDescription = async (
-  selectedBfDataset,
-  userMarkdownInput
-) => {
+const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   // get the dataset readme
   let readme;
   try {
@@ -1051,10 +1048,9 @@ const createParsedReadme = (readme) => {
   return parsedReadme;
 };
 
-
 // strips the required section starting with the given section name from a copy of the given readme string. Returns the mutated string. If given a parsed readme object
 // it will also place the section text in that object.
-// Inputs: 
+// Inputs:
 //      readme: A string with the users dataset description
 //      sectionName: The name of the section the user wants to strip from the readme
 //      parsedReadme: Optional object that gets the stripped section text if provided
@@ -1064,7 +1060,6 @@ const stripRequiredSectionFromReadme = (
   parsedReadme = undefined
 ) => {
   let mutableReadme = readme.trim();
-
 
   // serch for the start of the given section
   let sectionIdx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
@@ -1109,9 +1104,13 @@ const stripRequiredSectionFromReadme = (
 //   1. any text that occurs before an auxillary section is invalid text because we cannot assume it belongs to one of the auxillary sections below
 //   2. any text in a string where there are no sections
 const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
-  // ensure the required sections have been taken out 
-  if(readme.search("[*][*]Data Collection:[*][*]") !== -1 || readme.search("[*][*]Study Purpose:[*][*]") !== -1  || readme.search("[*][*]Primary Conclusion:[*][*]") !== -1) {
-    throw new Error("There was a problem with reading your description file.")
+  // ensure the required sections have been taken out
+  if (
+    readme.search("[*][*]Data Collection:[*][*]") !== -1 ||
+    readme.search("[*][*]Study Purpose:[*][*]") !== -1 ||
+    readme.search("[*][*]Primary Conclusion:[*][*]") !== -1
+  ) {
+    throw new Error("There was a problem with reading your description file.");
   }
 
   // search for any auxillary sections
