@@ -481,48 +481,50 @@ const getChanges = async () => {
   }).then((result) => {});
 
   let datasetName = $(`#bf_dataset_load_changes`).text().trim();
-  client.invoke("api_import_bf_changes",
-  defaultBfAccount,
-  datasetName,
-  (error, res) => {
-    if (error) {
-      var emessage = userError(error);
-      log.error(error);
-      console.error(error);
-      Swal.fire({
-        title: "Failed to load existing CHANGES.txt file",
-        text: emessage,
-        icon: "warning",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-    } else {
-      if (res.trim() !== "") {
-        $("#textarea-create-changes").val(res.trim());
+  client.invoke(
+    "api_import_bf_changes",
+    defaultBfAccount,
+    datasetName,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
         Swal.fire({
-          title: "Loaded successfully!",
-          icon: "success",
-          showConfirmButton: true,
+          title: "Failed to load existing CHANGES.txt file",
+          text: emessage,
+          icon: "warning",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          didOpen: () => {
-            Swal.hideLoading();
-          },
         });
       } else {
-        Swal.fire({
-          icon: "warning",
-          text: "The current CHANGES file is empty. Please edit it in the following textarea.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-        });
+        if (res.trim() !== "") {
+          $("#textarea-create-changes").val(res.trim());
+          Swal.fire({
+            title: "Loaded successfully!",
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              Swal.hideLoading();
+            },
+          });
+        } else {
+          Swal.fire({
+            icon: "warning",
+            text: "The current CHANGES file is empty. Please edit it in the following textarea.",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0,0.4)",
+          });
+        }
+        $(
+          $("#button-fake-confirm-existing-bf-changes-file-load").siblings()[0]
+        ).hide();
+        $("#button-fake-confirm-existing-bf-changes-file-load").click();
       }
-      $(
-        $("#button-fake-confirm-existing-bf-changes-file-load").siblings()[0]
-      ).hide();
-      $("#button-fake-confirm-existing-bf-changes-file-load").click();
     }
-  })
+  );
 };
 
 function importExistingRCFile(type) {
