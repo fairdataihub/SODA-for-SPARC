@@ -1021,7 +1021,7 @@ const stripRequiredSectionFromReadme = (
   let mutableReadme = readme.trim();
 
   // serch for the start of the given section -- it can have one or more whitespace between the colon
-  let searchRegExp = new RegExp(`[*][*]${sectionName}[ ]*:[*][*]`)
+  let searchRegExp = new RegExp(`[*][*]${sectionName}[ ]*:[*][*]`);
   let sectionIdx = mutableReadme.search(searchRegExp);
 
   // if the section is not found return the readme unchanged
