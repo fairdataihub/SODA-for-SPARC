@@ -701,7 +701,24 @@ const validateDescription = () => {
     return false;
   }
 
-  return true;
+  function hasLineBreak(sectionText) {
+    if (
+      sectionText.indexOf("\n") !== -1 ||
+      sectionText.indexOf("\r") !== -1 ||
+      sectionText.indexOf("\r\n") !== -1
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // if one of the sections has a line break it is invalid by SPARC Guidelines
+  return (
+    !hasLineBreak(studyPurpose) &&
+    !hasLineBreak(dataCollection) &&
+    !hasLineBreak(primaryConclusion)
+  );
 };
 
 // Add description //
@@ -710,6 +727,10 @@ const validateDescription = () => {
 const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
+
+  if (selectedBfDataset === "Select dataset") {
+    return;
+  }
 
   // get the dataset readme
   let readme;
@@ -759,27 +780,28 @@ const showCurrentDescription = async () => {
   $("#ds-description-data-collection").val("");
   $("#ds-description-primary-conclusion").val("");
 
-  //  check if there is any study purpose text || Data Collection || Primary Conclusion
-  if (parsedReadme["Study Purpose"]) {
-    // if so place the text into the text area for that field
-    $("#ds-description-study-purpose").val(parsedReadme["Study Purpose"]);
-  }
+  // if so place the text into the text area for that field
+  $("#ds-description-study-purpose").val(parsedReadme["Study Purpose"]);
 
-  if (parsedReadme["Data Collection"]) {
-    // if so place the text into the text area for that field
-    $("#ds-description-data-collection").val(parsedReadme["Data Collection"]);
-  }
+  // if so place the text into the text area for that field
+  $("#ds-description-data-collection").val(parsedReadme["Data Collection"]);
 
-  if (parsedReadme["Primary Conclusion"]) {
-    // if so place the text into the text area for that field
-    $("#ds-description-primary-conclusion").val(
-      parsedReadme["Primary Conclusion"]
-    );
-  }
+  // if so place the text into the text area for that field
+  $("#ds-description-primary-conclusion").val(
+    parsedReadme["Primary Conclusion"]
+  );
 
   // check if there is any invalid text remaining
   if (parsedReadme["Invalid Text"]) {
     // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
+    Swal.fire({
+      title: "We noticed some invalid text in your description",
+      text: "Part of your description does not meet SPARC Guidelines. It has been placed in the Study Purpose section for you to organize as you see fit.",
+      icon: "warning",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
@@ -821,13 +843,14 @@ $("#button-add-description").click(() => {
         icon: "warning",
         html: `<p>This description does not seem to follow the SPARC guidelines.
         Your descriptions should have the following sections filled out: </p>
-        <br>
         <p style="text-align:center"> 
           <strong>Study Purpose</strong><br>
           <strong> Data Collection</strong> <br>
           <strong>Primary Conclusion</strong><br>
         </p>
+        Additioanlly, all sections should be filled out in a single paragraph.
         <br> 
+        <br>
         Are you sure you want to continue?`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -872,7 +895,33 @@ const addDescription = async (
   userMarkdownInput
 ) => {
   // get the dataset readme
-  let readme = await get_dataset_readme(selectedBfDataset);
+  let readme;
+  try {
+    readme = await get_dataset_readme(selectedBfDataset);
+  } catch (err) {
+    log.error(error);
+    console.error(error);
+    let emessage = userError(error);
+
+    $("#bf-add-description-dataset-spinner").hide();
+
+    Swal.fire({
+      title: "Failed to get description!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
+    );
+    return;
+  }
 
   // strip out the required sections
   readme = stripRequiredSectionFromReadme(readme, "Study Purpose");
@@ -929,9 +978,6 @@ const addDescription = async (
     backdrop: "rgba(0,0,0, 0.4)",
   });
 
-  // showDatasetDescription();
-  // changeDatasetUnderDD();
-
   // alert analytics
   ipcRenderer.send(
     "track-event",
@@ -985,15 +1031,14 @@ const create_parsed_readme = (readme) => {
 
 const stripRequiredSectionFromReadme = (
   readme,
-  sectionName = undefined,
+  sectionName,
   parsedReadme = undefined
 ) => {
   let mutableReadme = readme.trim();
   // search for the **Study Purpose:** and basic variations of spacing
   let section_idx;
-  if (sectionName) {
-    section_idx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
-  }
+
+  section_idx = mutableReadme.search(`[*][*]${sectionName}:[*][*]`);
 
   if (section_idx === -1) {
     return mutableReadme;

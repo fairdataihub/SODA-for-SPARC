@@ -7002,41 +7002,25 @@ const get_dataset_readme = async (dataset_name_or_id) => {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
   }
   // get the user's access token
-  let jwt;
-  try {
-    jwt = await get_access_token();
-  } catch (e) {
-    throw e;
-  }
+  let jwt = await get_access_token();
 
   // get the dataset
-  let dataset;
-  try {
-    dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
-  } catch (e) {
-    throw e;
-  }
+  let dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
 
   // pull out the id from the result
   const id = dataset["content"]["id"];
 
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let readmeResponse;
-  try {
-    readmeResponse = await fetch(
-      `https://api.pennsieve.io/datasets/${id}/readme`,
-      {
-        headers: {
-          Accept: "*/*",
-          Authorization: `Bearer ${jwt}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  } catch (e) {
-    // network error
-    throw e;
-  }
+  let readmeResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/readme`,
+    {
+      headers: {
+        Accept: "*/*",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   // grab the readme out of the response
   let { readme } = await readmeResponse.json();
