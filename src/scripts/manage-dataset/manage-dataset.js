@@ -809,21 +809,21 @@ $("#button-add-description").click(() => {
 
     // get the text from the three boxes and store them in their own variables
     let requiredFields = [];
-    requiredFields.push(
-      "**Study Purpose:**" +
-        $("#ds-description-study-purpose").val().trim() +
-        "\n"
-    );
-    requiredFields.push(
-      "**Data Collection:**" +
-        $("#ds-description-data-collection").val().trim() +
-        "\n"
-    );
-    requiredFields.push(
-      "**Primary Conclusion:**" +
-        $("#ds-description-primary-conclusion").val().trim() +
-        "\n"
-    );
+
+    // read and sanatize the inputt for spaces and reintroduced bolded keywords
+    let studyPurpose = $("#ds-description-study-purpose").val().trim();
+    studyPurpose.replace("**Study Purpose:**", "");
+    requiredFields.push(studyPurpose);
+
+    let dataCollection = $("#ds-description-data-collection").val().trim();
+    dataCollection.replace("**Data Collection:**", "");
+    requiredFields.push("**Data Collection:**" + dataCollection + "\n");
+
+    let primaryConclusion = $("#ds-description-primary-conclusion")
+      .val()
+      .trim();
+    primaryConclusion.replace("**Primary Conclusion**", "");
+    requiredFields.push("**Primary Conclusion:**" + primaryConclusion + "\n");
 
     // validate the new markdown description the user created
     let response = validateDescription(requiredFields.join(""));
@@ -838,7 +838,7 @@ $("#button-add-description").click(() => {
           <strong> Data Collection</strong> <br>
           <strong>Primary Conclusion</strong><br>
         </p>
-        Additioanlly, all sections should be filled out in a single paragraph.
+        Also, all sections should be filled out in a single paragraph.
         <br> 
         <br>
         Are you sure you want to continue?`,
@@ -861,18 +861,10 @@ $("#button-add-description").click(() => {
           $("#bf-add-description-dataset-spinner").hide();
           return;
         }
-        addDescription(
-          selectedBfAccount,
-          selectedBfDataset,
-          requiredFields.join("\n")
-        );
+        addDescription(selectedBfDataset, requiredFields.join("\n"));
       });
     } else {
-      addDescription(
-        selectedBfAccount,
-        selectedBfDataset,
-        requiredFields.join("\n")
-      );
+      addDescription(selectedBfDataset, requiredFields.join("\n"));
     }
   }, delayAnimation);
 });
@@ -885,9 +877,9 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   try {
     readme = await getDatasetReadme(selectedBfDataset);
   } catch (err) {
-    log.error(error);
-    console.error(error);
-    let emessage = userError(error);
+    log.error(err);
+    console.error(err);
+    let emessage = userError(err);
 
     $("#bf-add-description-dataset-spinner").hide();
 
@@ -1081,7 +1073,7 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   }
 
   // search for any auxillary sections
-  let auxillarySectionIdx = readme.search("[*][*].*[*][*]");
+  let auxillarySectionIdx = readme.search("[*][*].*:[*][*]");
 
   // there is an auxillary section to remove check if there is any invalid text before it
   if (auxillarySectionIdx !== -1) {
