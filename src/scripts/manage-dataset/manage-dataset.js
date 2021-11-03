@@ -714,10 +714,33 @@ const showCurrentDescription = async () => {
   // check if the user is selecting a dataset
   if (selectedBfDataset == "Select dataset") {
     // remove the text from the boxes? Probably not
+    
   } else {
     // get the dataset readme
-    let readme = await get_dataset_readme(selectedBfDataset);
+    let readme;
+    try {
+      readme = await get_dataset_readme(selectedBfDataset);
+    } catch (error) {
+      log.error(error);
+      console.error(error);
+      let emessage = userError(error);
+      Swal.fire({
+        title: "Failed to get your description!",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
 
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Manage Dataset - Add/Edit Description",
+        selectedBfDataset
+      );
+      return
+    }
     // create the parsed dataset read me object
     let parsedReadme = create_parsed_readme(readme);
 
