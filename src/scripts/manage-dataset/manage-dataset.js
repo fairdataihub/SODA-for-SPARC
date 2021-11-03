@@ -713,8 +713,9 @@ const showCurrentDescription = async () => {
 
   // check if the user is selecting a dataset
   if (selectedBfDataset == "Select dataset") {
-    // remove the text from the boxes? Probably not
+    // close the boxes if one of them is open
     
+
   } else {
     // get the dataset readme
     let readme;
