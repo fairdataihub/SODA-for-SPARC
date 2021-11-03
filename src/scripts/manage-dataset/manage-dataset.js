@@ -688,38 +688,7 @@ const showCurrentSubtitle = () => {
   }
 };
 
-const validateDescription = () => {
-  let studyPurpose = $("#ds-description-study-purpose").val().trim();
-  let dataCollection = $("#ds-description-data-collection").val().trim();
-  let primaryConclusion = $("#ds-description-primary-conclusion").val().trim();
 
-  if (
-    !studyPurpose.length ||
-    !dataCollection.length ||
-    !primaryConclusion.length
-  ) {
-    return false;
-  }
-
-  function hasLineBreak(sectionText) {
-    if (
-      sectionText.indexOf("\n") !== -1 ||
-      sectionText.indexOf("\r") !== -1 ||
-      sectionText.indexOf("\r\n") !== -1
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // if one of the sections has a line break it is invalid by SPARC Guidelines
-  return (
-    !hasLineBreak(studyPurpose) &&
-    !hasLineBreak(dataCollection) &&
-    !hasLineBreak(primaryConclusion)
-  );
-};
 
 // Add description //
 
@@ -1144,6 +1113,39 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     // remove the text from the readme === return an empty string
     return "";
   }
+};
+
+const validateDescription = () => {
+  let studyPurpose = $("#ds-description-study-purpose").val().trim();
+  let dataCollection = $("#ds-description-data-collection").val().trim();
+  let primaryConclusion = $("#ds-description-primary-conclusion").val().trim();
+
+  if (
+    !studyPurpose.length ||
+    !dataCollection.length ||
+    !primaryConclusion.length
+  ) {
+    return false;
+  }
+
+  function hasLineBreak(sectionText) {
+    if (
+      sectionText.indexOf("\n") !== -1 ||
+      sectionText.indexOf("\r") !== -1 ||
+      sectionText.indexOf("\r\n") !== -1
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // if one of the sections has a line break it is invalid by SPARC Guidelines
+  return (
+    !hasLineBreak(studyPurpose) &&
+    !hasLineBreak(dataCollection) &&
+    !hasLineBreak(primaryConclusion)
+  );
 };
 
 const changeDatasetUnderDD = () => {
