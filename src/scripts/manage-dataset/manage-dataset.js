@@ -711,87 +711,80 @@ const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  // check if the user is selecting a dataset
-  if (selectedBfDataset == "Select dataset") {
+  // get the dataset readme
+  let readme;
+  try {
+    readme = await get_dataset_readme(selectedBfDataset);
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    let emessage = userError(error);
+    Swal.fire({
+      title: "Failed to get your description!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
+    );
+    return;
+  }
+  // create the parsed dataset read me object
+  let parsedReadme = create_parsed_readme(readme);
+
+  // check if any of the fields have data
+  if (
+    parsedReadme["Study Purpose"] ||
+    parsedReadme["Data Collection"] ||
+    parsedReadme["Primary Conclusion"]
+  ) {
+    //if so make the button say edit description
+    $("#button-add-description > .btn_animated-inside").html(
+      "Edit description"
+    );
   } else {
-    // get the dataset readme
-    let readme;
-    try {
-      readme = await get_dataset_readme(selectedBfDataset);
-    } catch (error) {
-      log.error(error);
-      console.error(error);
-      let emessage = userError(error);
-      Swal.fire({
-        title: "Failed to get your description!",
-        text: emessage,
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
+    //make the button say add description
+    $("#button-add-description > .btn_animated-inside").html("Add description");
+  }
 
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Manage Dataset - Add/Edit Description",
-        selectedBfDataset
-      );
-      return;
-    }
-    // create the parsed dataset read me object
-    let parsedReadme = create_parsed_readme(readme);
+  // remove any text that was already in the section
+  $("#ds-description-study-purpose").val("");
+  $("#ds-description-data-collection").val("");
+  $("#ds-description-primary-conclusion").val("");
 
-    // check if any of the fields have data
-    if (
-      parsedReadme["Study Purpose"] ||
-      parsedReadme["Data Collection"] ||
+  //  check if there is any study purpose text || Data Collection || Primary Conclusion
+  if (parsedReadme["Study Purpose"]) {
+    // if so place the text into the text area for that field
+    $("#ds-description-study-purpose").val(parsedReadme["Study Purpose"]);
+  }
+
+  if (parsedReadme["Data Collection"]) {
+    // if so place the text into the text area for that field
+    $("#ds-description-data-collection").val(parsedReadme["Data Collection"]);
+  }
+
+  if (parsedReadme["Primary Conclusion"]) {
+    // if so place the text into the text area for that field
+    $("#ds-description-primary-conclusion").val(
       parsedReadme["Primary Conclusion"]
-    ) {
-      //if so make the button say edit description
-      $("#button-add-description > .btn_animated-inside").html(
-        "Edit description"
-      );
-    } else {
-      //make the button say add description
-      $("#button-add-description > .btn_animated-inside").html(
-        "Add description"
-      );
-    }
+    );
+  }
 
+  // check if there is any invalid text remaining
+  if (parsedReadme["Invalid Text"]) {
+    // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
 
-    // remove any text that was already in the section
-    $("#ds-description-study-purpose").val("");
-    $("#ds-description-data-collection").val("");
-    $("#ds-description-primary-conclusion").val("");
-
-    //  check if there is any study purpose text || Data Collection || Primary Conclusion
-    if (parsedReadme["Study Purpose"]) {
-      // if so place the text into the text area for that field
-      $("#ds-description-study-purpose").val(parsedReadme["Study Purpose"]);
-    }
-
-    if (parsedReadme["Data Collection"]) {
-      // if so place the text into the text area for that field
-      $("#ds-description-data-collection").val(parsedReadme["Data Collection"]);
-    }
-
-    if (parsedReadme["Primary Conclusion"]) {
-      // if so place the text into the text area for that field
-      $("#ds-description-primary-conclusion").val(
-        parsedReadme["Primary Conclusion"]
-      );
-    }
-
-    // check if there is any invalid text remaining
-    if (parsedReadme["Invalid Text"]) {
-      // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
-
-      // if so add it to the first section
-      $("#ds-description-study-purpose").val(
-        parsedReadme["Study Purpose"] + parsedReadme["Invalid Text"]
-      );
-    }
+    // if so add it to the first section
+    $("#ds-description-study-purpose").val(
+      parsedReadme["Study Purpose"] + parsedReadme["Invalid Text"]
+    );
   }
 };
 
@@ -860,8 +853,6 @@ $("#button-add-description").click(() => {
           selectedBfDataset,
           requiredFields.join("\n")
         );
-
-        return;
       });
     } else {
       addDescription(
