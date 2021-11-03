@@ -688,8 +688,6 @@ const showCurrentSubtitle = () => {
   }
 };
 
-
-
 // Add description //
 
 // fires when a user selects a dataset in the add/edit description page
