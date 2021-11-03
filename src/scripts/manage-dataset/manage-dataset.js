@@ -813,7 +813,7 @@ $("#button-add-description").click(() => {
     // read and sanatize the inputt for spaces and reintroduced bolded keywords
     let studyPurpose = $("#ds-description-study-purpose").val().trim();
     studyPurpose.replace("**Study Purpose:**", "");
-    requiredFields.push("**Study Purpose:**" + dataCollection + "\n");
+    requiredFields.push("**Study Purpose:**" + studyPurpose + "\n");
 
     let dataCollection = $("#ds-description-data-collection").val().trim();
     dataCollection.replace("**Data Collection:**", "");
