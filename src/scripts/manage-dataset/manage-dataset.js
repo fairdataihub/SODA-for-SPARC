@@ -702,13 +702,13 @@ const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  // drill down and check if the currently selected location is for adding a description 
-  let h2 = document.querySelector(".is-shown.js-section #add_edit_description_parent-tabc h2")
-  
-
+  // drill down and check if the currently selected location is for adding a description
+  let h2 = document.querySelector(
+    ".is-shown.js-section #add_edit_description_parent-tabc h2"
+  );
 
   if (selectedBfDataset === "Select dataset") {
-    console.log("In here")
+    console.log("In here");
     return;
   }
 
