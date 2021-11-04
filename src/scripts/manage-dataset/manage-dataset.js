@@ -702,7 +702,13 @@ const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+  // drill down and check if the currently selected location is for adding a description 
+  let h2 = document.querySelector(".is-shown.js-section #add_edit_description_parent-tabc h2")
+  
+
+
   if (selectedBfDataset === "Select dataset") {
+    console.log("In here")
     return;
   }
 
@@ -742,7 +748,7 @@ const showCurrentDescription = async () => {
     console.error(error);
     let emessage = userError(error);
     Swal.fire({
-      title: "Failed to get read description!",
+      title: "Failed to read description!",
       text: emessage,
       icon: "error",
       showConfirmButton: true,
