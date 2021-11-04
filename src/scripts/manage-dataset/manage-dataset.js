@@ -787,7 +787,8 @@ const showCurrentDescription = async () => {
     Swal.fire({
       title: "There is invalid text in your description.",
       text: "This happens when there is text in your description that is not part of a section, or when invalid markdown is detected. The invalid text has been placed in the Study Purpose section. Please reorganize the text by placing it into the appropriate section(s).",
-      footer: "Note: Invalid markdown is likely the problem if you see asterisk symbols in your text.",
+      footer:
+        "Note: Invalid markdown is likely the problem if you see asterisk symbols in your text.",
       icon: "warning",
       showConfirmButton: true,
       heightAuto: false,
