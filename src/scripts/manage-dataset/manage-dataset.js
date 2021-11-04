@@ -823,21 +823,27 @@ $("#button-add-description").click(() => {
     // get the text from the three boxes and store them in their own variables
     let requiredFields = [];
 
-    // read and sanatize the inputt for spaces and reintroduced bolded keywords
+    // read and sanatize the input for spaces and reintroduced bolded keywords
     let studyPurpose = $("#ds-description-study-purpose").val().trim();
     studyPurpose.replace("**Study Purpose:**", "");
-    requiredFields.push("**Study Purpose:** " + studyPurpose + "\n");
+    if (studyPurpose.length) {
+      requiredFields.push("**Study Purpose:** " + studyPurpose + "\n");
+    }
 
     let dataCollection = $("#ds-description-data-collection").val().trim();
     dataCollection.replace("**Data Collection:**", "");
-    requiredFields.push("**Data Collection:** " + dataCollection + "\n");
-
+    if (dataCollection.length) {
+      requiredFields.push("**Data Collection:** " + dataCollection + "\n");
+    }
     let primaryConclusion = $("#ds-description-primary-conclusion")
       .val()
       .trim();
     primaryConclusion.replace("**Primary Conclusion:**", "");
-    requiredFields.push("**Primary Conclusion:** " + primaryConclusion + "\n");
-
+    if (primaryConclusion.length) {
+      requiredFields.push(
+        "**Primary Conclusion:** " + primaryConclusion + "\n"
+      );
+    }
     // validate the new markdown description the user created
     let response = validateDescription(requiredFields.join(""));
 
@@ -909,21 +915,33 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     return;
   }
 
-  console.log("The readme file on add description before stripping sections: ", readme)
+  console.log(
+    "The readme file on add description before stripping sections: ",
+    readme
+  );
 
   // strip out the required sections (don't check for errors here because we check for them in showCurrentDescription for the same functions and the same readme)
-  readme = stripRequiredSectionFromReadme(readme, "study purpose");
+  readme = stripRequiredSectionFromReadme(
+    readme,
+    requiredSections.studyPurpose
+  );
 
   // remove the "Data Collection" section from the readme file and place its value in the parsed readme
-  readme = stripRequiredSectionFromReadme(readme, "data collection");
+  readme = stripRequiredSectionFromReadme(
+    readme,
+    requiredSections.dataCollection
+  );
 
   // search for the "Primary Conclusion" and basic variations of spacing
-  readme = stripRequiredSectionFromReadme(readme, "primary conclusion");
+  readme = stripRequiredSectionFromReadme(
+    readme,
+    requiredSections.primaryConclusion
+  );
 
   // remove any invalid text
   readme = stripInvalidTextFromReadme(readme);
 
-  console.log("Readme file after stripping old sections from it", readme)
+  console.log("Readme file after stripping old sections from it", readme);
 
   // join the user_markdown_input with untouched sections of the original readme
   let completeReadme = userMarkdownInput + readme;
@@ -1030,7 +1048,7 @@ const stripRequiredSectionFromReadme = (
   sectionName,
   parsedReadme = undefined
 ) => {
-  // lowercase the readme file text to avoid casing issues with pattern matching 
+  // lowercase the readme file text to avoid casing issues with pattern matching
   let mutableReadme = readme.trim().toLowerCase();
 
   // serch for the start of the given section -- it can have one or more whitespace between the colon
@@ -1102,7 +1120,10 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     // check if the user wants to store the invalid text in a parsed readme
     if (parsedReadme) {
       // place the invalid text into the parsed readme
-      parsedReadme[requiredSections.invalidText] = readme.slice(0, auxillarySectionIdx);
+      parsedReadme[requiredSections.invalidText] = readme.slice(
+        0,
+        auxillarySectionIdx
+      );
     }
 
     // remove the text from the readme
