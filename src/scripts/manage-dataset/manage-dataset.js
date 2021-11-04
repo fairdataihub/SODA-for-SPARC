@@ -785,8 +785,9 @@ const showCurrentDescription = async () => {
   if (parsedReadme["Invalid Text"]) {
     // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
     Swal.fire({
-      title: "We noticed some invalid text in your description",
-      text: "Part of your description does not meet SPARC Guidelines. This happens when you have text that is not part of a section and/or when you have invalid markdown. It has been placed in the Study Purpose section for you to organize as you see fit.",
+      title: "There is invalid text in your description.",
+      text: "This happens when there is text in your description that is not part of a section, or when invalid markdown is detected. The invalid text has been placed in the Study Purpose section. Please reorganize the text by placing it into the appropriate section(s).",
+      footer: "Note: Invalid markdown is likely the problem if you see asterisk symbols in your text.",
       icon: "warning",
       showConfirmButton: true,
       heightAuto: false,
@@ -831,14 +832,9 @@ $("#button-add-description").click(() => {
     if (!response) {
       Swal.fire({
         icon: "warning",
-        html: `<p>This description does not seem to follow the SPARC guidelines.
-        Your descriptions should have the following sections filled out: </p>
-        <p style="text-align:center"> 
-          <strong>Study Purpose</strong><br>
-          <strong> Data Collection</strong> <br>
-          <strong>Primary Conclusion</strong><br>
-        </p>
-        Also, all sections should be filled out in a single paragraph.
+        title: "This description does not follow SPARC guidelines.",
+        html: `
+        Your description should include all of the mandatory sections. Additionally, each section should be no longer than one paragraph.
         <br> 
         <br>
         Are you sure you want to continue?`,
