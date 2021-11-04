@@ -909,7 +909,10 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     return;
   }
 
-  console.log("The readme file on add description before stripping sections: ", readme)
+  console.log(
+    "The readme file on add description before stripping sections: ",
+    readme
+  );
 
   // strip out the required sections (don't check for errors here because we check for them in showCurrentDescription for the same functions and the same readme)
   readme = stripRequiredSectionFromReadme(readme, "study purpose");
@@ -923,7 +926,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   // remove any invalid text
   readme = stripInvalidTextFromReadme(readme);
 
-  console.log("Readme file after stripping old sections from it", readme)
+  console.log("Readme file after stripping old sections from it", readme);
 
   // join the user_markdown_input with untouched sections of the original readme
   let completeReadme = userMarkdownInput + readme;
@@ -1030,7 +1033,7 @@ const stripRequiredSectionFromReadme = (
   sectionName,
   parsedReadme = undefined
 ) => {
-  // lowercase the readme file text to avoid casing issues with pattern matching 
+  // lowercase the readme file text to avoid casing issues with pattern matching
   let mutableReadme = readme.trim().toLowerCase();
 
   // serch for the start of the given section -- it can have one or more whitespace between the colon
@@ -1102,7 +1105,10 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     // check if the user wants to store the invalid text in a parsed readme
     if (parsedReadme) {
       // place the invalid text into the parsed readme
-      parsedReadme[requiredSections.invalidText] = readme.slice(0, auxillarySectionIdx);
+      parsedReadme[requiredSections.invalidText] = readme.slice(
+        0,
+        auxillarySectionIdx
+      );
     }
 
     // remove the text from the readme
