@@ -1758,20 +1758,20 @@ async function transitionFreeFormMode(
     $("#submission-accordion").removeClass("active");
     $("#submission-title-accordion").removeClass("active");
   }
-  let continueProgress;
+  let continueProgress = true;
   const dataCurrent = $(ev).attr("data-current");
   switch (dataCurrent) {
     case "Question-prepare-changes-1":
-      continueProgress = await switchMetadataRCFirstQuestion("changes");
+      continueProgress = await switchMetadataRCQuestion("changes");
       break;
     case "Question-prepare-readme-1":
-      continueProgress = await switchMetadataRCFirstQuestion("readme");
+      continueProgress = await switchMetadataRCQuestion("readme");
       break;
     case "Question-prepare-readme-4":
-      continueProgress = await switchMetadataRCFirstQuestion("readme");
+      continueProgress = await switchMetadataRCQuestion("readme");
       break;
     case "Question-prepare-changes-4":
-      continueProgress = await switchMetadataRCFirstQuestion("changes");
+      continueProgress = await switchMetadataRCQuestion("changes");
       break;
   }
   if (!continueProgress) {
@@ -1953,7 +1953,7 @@ const switchMetadataRCImportBFQuestions = async (metadataRCFileType) => {
 
 // handles it when users switch options in the first question (Metadata files)
 // 1. Readme and Changes (MetadataRC)
-async function switchMetadataRCFirstQuestion(metadataRCFileType) {
+async function switchMetadataRCQuestion(metadataRCFileType) {
   if ($(`#textarea-create-${metadataRCFileType}`).val().trim() !== "") {
     var { value: continueProgress } = await Swal.fire({
       title: `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,
@@ -1970,6 +1970,7 @@ async function switchMetadataRCFirstQuestion(metadataRCFileType) {
         "Browse here"
       );
       $(`#textarea-create-${metadataRCFileType}`).val("");
+      $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show()
     }
     return continueProgress;
   } else {
