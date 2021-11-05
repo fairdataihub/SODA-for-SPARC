@@ -697,7 +697,7 @@ const requiredSections = {
   invalidText: "invalid text",
 };
 
-$("#dd-accordion").accordion('open', 0);
+$("#dd-accordion").accordion("open", 0);
 $("#ds-description-study-purpose").addClass("pulse-yellow");
 
 // fires when a user selects a dataset in the add/edit description page
