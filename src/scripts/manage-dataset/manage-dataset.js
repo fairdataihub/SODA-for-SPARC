@@ -780,10 +780,10 @@ const showCurrentDescription = async () => {
 
   // check if there is any invalid text remaining
   if (parsedReadme[requiredSections.invalidText]) {
-    // show the UI warning message 
-    // that informs the user their invalid data has been added to 
+    // show the UI warning message
+    // that informs the user their invalid data has been added to
     // the first section so they can place it in the correct section
-    $('#ds-isa-warning').css("display", "flex")
+    $("#ds-isa-warning").css("display", "flex");
 
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
@@ -865,8 +865,8 @@ $("#button-add-description").click(() => {
 
 // closes the warning message that appears when a user has invalid text
 $("#ds-close-btn").click(() => {
-  $('#ds-isa-warning').css("display", "none")
-})
+  $("#ds-isa-warning").css("display", "none");
+});
 
 // I: user_markdown_input: A string that holds the user's markdown text.
 // Merges user readme file changes with the original readme file.
