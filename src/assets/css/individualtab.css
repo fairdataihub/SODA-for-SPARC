@@ -1549,7 +1549,7 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .close-btn {
   cursor: pointer;
-  color: rgba(204, 204, 204, 0.774); 
+  color: rgba(204, 204, 204, 0.774);
   margin-left: 90%;
   background-color: transparent;
   border-color: transparent;
