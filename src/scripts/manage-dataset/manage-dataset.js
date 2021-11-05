@@ -697,8 +697,8 @@ const requiredSections = {
   invalidText: "invalid text",
 };
 
+// open the first box of the accordion
 $("#dd-accordion").accordion("open", 0);
-$("#ds-description-study-purpose").addClass("pulse-yellow");
 
 // fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
@@ -780,20 +780,10 @@ const showCurrentDescription = async () => {
 
   // check if there is any invalid text remaining
   if (parsedReadme[requiredSections.invalidText]) {
-    // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
+    // show the UI warning message 
+    // that informs the user their invalid data has been added to 
+    // the first section so they can place it in the correct section
     $('#ds-isa-warning').css("display", "flex")
-    // $("#ds-study-purpose-container").prepend(
-    //   "<textarea row='4' style='background-color:yellow'>Some error message here <textarea>"
-    // );
-
-    // Swal.fire({
-    //   title: "There is invalid text in your description.",
-    //   text: "This happens when there is text in your description that is not part of a section, or when invalid markdown is detected. The invalid text has been placed in the Study Purpose section. Please reorganize the text by placing it into the appropriate section(s).",
-    //   icon: "warning",
-    //   showConfirmButton: true,
-    //   heightAuto: false,
-    //   backdrop: "rgba(0,0,0, 0.4)",
-    // });
 
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
@@ -872,6 +862,11 @@ $("#button-add-description").click(() => {
     }
   }, delayAnimation);
 });
+
+// closes the warning message that appears when a user has invalid text
+$("#ds-close-btn").click(() => {
+  $('#ds-isa-warning').css("display", "none")
+})
 
 // I: user_markdown_input: A string that holds the user's markdown text.
 // Merges user readme file changes with the original readme file.
