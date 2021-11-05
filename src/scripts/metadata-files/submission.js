@@ -60,22 +60,17 @@ function resetSubmission() {
         "checked",
         false
       );
-      resetSubmissionFields()
+      resetSubmissionFields();
     }
   });
 }
 
 function resetSubmissionFields() {
-  $("#existing-submission-file-destination").attr(
-    "placeholder",
-    "Browse here"
-  );
+  $("#existing-submission-file-destination").attr("placeholder", "Browse here");
 
   $("#div-confirm-existing-submission-import").hide();
 
-  var inputFields = $("#Question-prepare-submission-1")
-    .nextAll()
-    .find("input");
+  var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
   var textAreaFields = $("#Question-prepare-submission-1")
     .nextAll()
     .find("textarea");
@@ -94,10 +89,9 @@ function resetSubmissionFields() {
   for (var field of selectFields) {
     $(field).val("Select");
   }
-  $('#submission-completion-date')
-      .empty()
-      .append('<option value="Select">Select an option</option>')
-  ;
+  $("#submission-completion-date")
+    .empty()
+    .append('<option value="Select">Select an option</option>');
   checkAirtableStatus("");
 }
 
@@ -391,14 +385,14 @@ $(document).ready(function () {
 
   $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
     if ($("#Question-prepare-submission-2").hasClass("show")) {
-      $("#Question-prepare-submission-2").removeClass("show")
+      $("#Question-prepare-submission-2").removeClass("show");
     }
     if ($("#bf_dataset_load_submission").text().trim() !== "None") {
       $("#div-check-bf-import-submission").css("display", "flex");
       $($("#div-check-bf-import-submission").children()[0]).show();
     } else {
-        $("#div-check-bf-import-submission").css("display", "none");
-      }
+      $("#div-check-bf-import-submission").css("display", "none");
+    }
   });
 
   $("#bf_dataset_generate_submission").on("DOMSubtreeModified", function () {

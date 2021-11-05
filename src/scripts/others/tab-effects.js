@@ -1739,7 +1739,6 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
-
   if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
     onboardingSubmission();
   }
@@ -1971,7 +1970,7 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
         "Browse here"
       );
       $(`#textarea-create-${metadataRCFileType}`).val("");
-      $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show()
+      $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show();
     }
     return continueProgress;
   } else {
@@ -1997,7 +1996,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
     });
     if (continueProgress) {
       $(`#existing-${metadataSubSamFile}-file-destination`).val("");
-      tableData = []
+      tableData = [];
       if (metadataSubSamFile === "samples") {
         samplesTableData = tableData;
       } else {
@@ -2024,10 +2023,10 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
         }
       }
     }
-    return continueProgress
+    return continueProgress;
   } else {
     $(`#existing-${metadataSubSamFile}-file-destination`).val("");
-    return true
+    return true;
   }
 }
 
@@ -2047,7 +2046,7 @@ async function switchMetadataDDQuestion() {
       $("#existing-dd-file-destination").val("");
       resetDDFields();
     }
-    return continueProgressDD
+    return continueProgressDD;
   } else {
     return true;
   }
@@ -2069,7 +2068,7 @@ async function switchMetadataSubmissionQuestion() {
       $("#existing-submission-file-destination").val("");
       resetSubmissionFields();
     }
-    return continueProgressSubmission
+    return continueProgressSubmission;
   } else {
     return true;
   }
