@@ -697,18 +697,21 @@ const requiredSections = {
   invalidText: "invalid text",
 };
 
+$("#dd-accordion").accordion('open', 0);
+$("#ds-description-study-purpose").addClass("pulse-yellow");
+
 // fires when a user selects a dataset in the add/edit description page
 const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  // drill down and check if the currently selected location is for adding a description 
-  let h2 = document.querySelector(".is-shown.js-section #add_edit_description_parent-tabc h2")
-  
-
+  // drill down and check if the currently selected location is for adding a description
+  let h2 = document.querySelector(
+    ".is-shown.js-section #add_edit_description_parent-tabc h2"
+  );
 
   if (selectedBfDataset === "Select dataset") {
-    console.log("In here")
+    console.log("In here");
     return;
   }
 
@@ -802,6 +805,10 @@ const showCurrentDescription = async () => {
   // check if there is any invalid text remaining
   if (parsedReadme[requiredSections.invalidText]) {
     // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
+    $("#ds-study-purpose-container").prepend(
+      "<textarea row='4' style='background-color:yellow'>Some error message here <textarea>"
+    );
+
     Swal.fire({
       title: "There is invalid text in your description.",
       text: "This happens when there is text in your description that is not part of a section, or when invalid markdown is detected. The invalid text has been placed in the Study Purpose section. Please reorganize the text by placing it into the appropriate section(s).",
