@@ -85,20 +85,41 @@ class SodaApi(object):
         return extract_milestone_info(datalist)
 
     ### Save Submission file
-    def api_save_submission_file(self, filepath, val_arr):
-        return save_submission_file(filepath, val_arr)
+    def api_save_submission_file(
+        self, upload_boolean, bfaccount, bfdataset, filepath, val_arr
+    ):
+        return save_submission_file(upload_boolean, filepath, val_arr)
 
     ### Save Description file
     def api_save_ds_description_file(
-        self, bfaccount, filepath, val_arr1, val_arr_study, val_arr2, val_arr3
+        self,
+        upload_boolean,
+        bfaccount,
+        bfdataset,
+        filepath,
+        val_arr1,
+        val_arr_study,
+        val_arr2,
+        val_arr3,
     ):
         return save_ds_description_file(
-            bfaccount, filepath, val_arr1, val_arr_study, val_arr2, val_arr3
+            upload_boolean,
+            bfaccount,
+            bfdataset,
+            filepath,
+            val_arr1,
+            val_arr_study,
+            val_arr2,
+            val_arr3,
         )
 
     ### Save subjects file
-    def api_save_subjects_file(self, filepath, datastructure):
-        return save_subjects_file(filepath, datastructure)
+    def api_save_subjects_file(
+        self, upload_boolean, bfaccount, bfdataset, filepath, datastructure
+    ):
+        return save_subjects_file(
+            upload_boolean, bfaccount, bfdataset, filepath, datastructure
+        )
 
     def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
         return convert_subjects_samples_file_to_df(type, filepath, fields)
@@ -120,8 +141,12 @@ class SodaApi(object):
         return import_bf_changes(selected_bfaccount, selected_bfdataset)
 
     ### Save samples file
-    def api_save_samples_file(self, filepath, datastructure):
-        return save_samples_file(filepath, datastructure)
+    def api_save_samples_file(
+        self, upload_boolean, bfaccount, bfdataset, filepath, datastructure
+    ):
+        return save_samples_file(
+            upload_boolean, bfaccount, bfdataset, filepath, datastructure
+        )
 
     ### Load Taxonomy species info
     def api_load_taxonomy_species(self, animalArr):

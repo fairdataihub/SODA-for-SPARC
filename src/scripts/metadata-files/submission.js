@@ -66,6 +66,8 @@ function resetSubmission() {
         "Browse here"
       );
 
+      $("#div-confirm-existing-submission-import").hide();
+
       var inputFields = $("#Question-prepare-submission-1")
         .nextAll()
         .find("input");
@@ -386,7 +388,17 @@ $(document).ready(function () {
       $("#div-check-bf-import-submission").css("display", "none");
     }
   });
+
+  $("#bf_dataset_generate_submission").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_submission").text().trim() !== "None") {
+      $("#div-check-bf-generate-submission").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-submission").css("display", "none");
+    }
+  });
 });
+
+function generateBFMetadata(fileType) {}
 
 function generateSubmissionHelper() {
   Swal.fire({
@@ -428,6 +440,9 @@ function generateSubmissionHelper() {
   json_str = JSON.stringify(json_arr);
   client.invoke(
     "api_save_submission_file",
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_submission").val().trim(),
     submissionDestinationPath,
     json_str,
     (error, res) => {

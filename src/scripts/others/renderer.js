@@ -1116,6 +1116,9 @@ ipcRenderer.on(
 function generateSubjectsFileHelper(mypath) {
   client.invoke(
     "api_save_subjects_file",
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_subjects").val().trim(),
     mypath,
     subjectsTableData,
     (error, res) => {
@@ -1223,6 +1226,9 @@ function generateSamplesFileHelper(mypath) {
   clientLongTimeout.connect("tcp://127.0.0.1:4242");
   clientLongTimeout.invoke(
     "api_save_samples_file",
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_samples").val().trim(),
     mypath,
     samplesTableData,
     (error, res) => {

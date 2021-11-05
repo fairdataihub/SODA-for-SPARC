@@ -71,6 +71,8 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 # it becomes nested into the pysodadist/api directory
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
+## this is the path to
+METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "metadata_files")
 
 
 class InvalidDeliverablesDocument(Exception):
@@ -124,12 +126,18 @@ def extract_milestone_info(datalist):
 
 
 ### Prepare submission file
-def save_submission_file(filepath, json_str):
+def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str):
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
     source = join(TEMPLATE_PATH, "submission.xlsx")
-    destination = filepath
+
+    if upload_boolean:
+        destination = path.join(METADATA_UPLOAD_BF_PATH, "submission.xlsx")
+
+    else:
+        destination = filepath
+
     shutil.copyfile(source, destination)
 
     # json array to python list
@@ -151,6 +159,10 @@ def save_submission_file(filepath, json_str):
     rename_headers(ws1, len(val_arr), 2)
 
     wb.save(destination)
+
+    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    if upload_boolean:
+        upload_metadata_file("submission", bfaccount, bfdataset, file_path)
 
 
 def excel_columns(start_index=0):
@@ -310,7 +322,14 @@ def populate_related_info(workbook, val_array):
 
 
 def save_ds_description_file(
-    bfaccountname, filepath, dataset_str, study_str, con_str, related_info_str
+    upload_boolean,
+    bfaccount,
+    bfdataset,
+    filepath,
+    dataset_str,
+    study_str,
+    con_str,
+    related_info_str,
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
     destination = filepath
@@ -416,7 +435,7 @@ samplesTemplateHeaderList = [
 ]
 
 
-def save_subjects_file(filepath, datastructure):
+def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
 
     source = join(TEMPLATE_PATH, "subjects.xlsx")
     destination = filepath
@@ -478,7 +497,7 @@ def save_subjects_file(filepath, datastructure):
     wb.save(destination)
 
 
-def save_samples_file(filepath, datastructure):
+def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
     source = join(TEMPLATE_PATH, "samples.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)

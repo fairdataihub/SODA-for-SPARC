@@ -1701,6 +1701,13 @@ function resetSubjects() {
       subjectsFileData = [];
       subjectsTableData = [];
 
+      $("#existing-subjects-file-destination").attr(
+        "placeholder",
+        "Browse here"
+      );
+
+      $("#div-confirm-existing-subjects-import").hide();
+
       // hide Strains and Species
       $("#bootbox-subject-species").css("display", "none");
       $("#bootbox-subject-strain").css("display", "none");
@@ -1759,6 +1766,12 @@ function resetSamples() {
         .prop("placeholder", "Browse here");
       samplesFileData = [];
       samplesTableData = [];
+
+      $("#existing-samples-file-destination").attr(
+        "placeholder",
+        "Browse here"
+      );
+      $("#div-confirm-existing-samples-import").hide();
 
       // hide Strains and Species
       $("#bootbox-sample-species").css("display", "none");
