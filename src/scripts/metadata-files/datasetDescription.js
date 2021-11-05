@@ -598,7 +598,7 @@ function resetDDFields() {
 
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
-generateDSBtn.addEventListener("click", (event) => {
+function generateDatasetDescriptionHelper() {
   var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];

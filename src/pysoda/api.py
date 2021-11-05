@@ -67,6 +67,7 @@ from prepare_metadata import (
     load_existing_submission_file,
     import_bf_metadata_file,
     import_bf_changes,
+    generate_metadata_file_Pennsieve,
 )
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
@@ -88,7 +89,7 @@ class SodaApi(object):
     def api_save_submission_file(
         self, upload_boolean, bfaccount, bfdataset, filepath, val_arr
     ):
-        return save_submission_file(upload_boolean, filepath, val_arr)
+        return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr)
 
     ### Save Description file
     def api_save_ds_description_file(
@@ -147,6 +148,8 @@ class SodaApi(object):
         return save_samples_file(
             upload_boolean, bfaccount, bfdataset, filepath, datastructure
         )
+    def api_generate_metadata_file_Pennsieve(upload_boolean, bfaccount, bfdataset, filepath, json_str):
+        return generate_metadata_file_Pennsieve(upload_boolean, bfaccount, bfdataset, filepath, json_str)
 
     ### Load Taxonomy species info
     def api_load_taxonomy_species(self, animalArr):

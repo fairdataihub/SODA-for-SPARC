@@ -403,10 +403,12 @@ $(document).ready(function () {
     }
   });
 });
+//
+// function generateBFMetadata(fileType) {
+//
+// }
 
-function generateBFMetadata(fileType) {}
-
-function generateSubmissionHelper() {
+function generateSubmissionHelper(uploadBFBoolean) {
   Swal.fire({
     title: "Generating the submission.xlsx file",
     html: "Please wait...",

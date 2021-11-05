@@ -64,16 +64,17 @@ from datetime import datetime, timezone
 
 from Bio import Entrez
 
+from pysoda import (
+    bf_get_current_user_permission,
+)
+
 userpath = expanduser("~")
-metadatapath = join(userpath, "SODA", "SODA_metadata")
+METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 # once pysoda has been packaged with pyinstaller
 # it becomes nested into the pysodadist/api directory
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
-## this is the path to
-METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "metadata_files")
-
 
 class InvalidDeliverablesDocument(Exception):
     pass
@@ -124,6 +125,14 @@ def extract_milestone_info(datalist):
 
     return milestone
 
+def generate_metadata_file_Pennsieve(upload_boolean, bfaccount, bfdataset, filepath, json_str):
+
+    if file_type == "submission.xlsx":
+        save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
+
+    elif file_type == "dataset_description.xlsx":
+        save_ds_description_file(upload_boolean, bfaccount, bfdataset, filepath, dataset_str, study_str, con_str, related_info_str)
+
 
 ### Prepare submission file
 def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str):
@@ -133,7 +142,7 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
     source = join(TEMPLATE_PATH, "submission.xlsx")
 
     if upload_boolean:
-        destination = path.join(METADATA_UPLOAD_BF_PATH, "submission.xlsx")
+        destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx")
 
     else:
         destination = filepath
@@ -162,8 +171,36 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
-        upload_metadata_file("submission", bfaccount, bfdataset, file_path)
+        upload_metadata_file("submission", bfaccount, bfdataset, destination)
 
+def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
+
+    bf = Pennsieve(bfaccount)
+
+    # check that the Pennsieve dataset is valid
+    try:
+        myds = bf.get_dataset(bfdataset)
+
+    except Exception as e:
+        main_curate_status = "Done"
+        error = "Error: Please select a valid Pennsieve dataset"
+        raise Exception(error)
+
+    else:
+
+        # check that the user has permissions for uploading and modifying the dataset
+        role = bf_get_current_user_permission(bf, myds)
+        if role not in ["owner", "manager", "editor"]:
+            main_curate_status = "Done"
+            error = "Error: You don't have permissions for uploading to this Pennsieve dataset"
+            raise Exception(error)
+
+
+        ## check if agent is running in the background
+        agent_running()
+
+        myds.upload(file_path)
+        os.remove(file_path)
 
 def excel_columns(start_index=0):
     """
