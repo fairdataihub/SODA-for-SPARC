@@ -554,6 +554,7 @@ function resetDDFields() {
   // 3. delete all rows from table Links
   var inputFields = $("#Question-prepare-dd-2").find("input");
   var textAreaFields = $("#Question-prepare-dd-2").find("textarea");
+
   // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
 
   for (var field of inputFields) {
@@ -562,6 +563,13 @@ function resetDDFields() {
   for (var field of textAreaFields) {
     $(field).val("");
   }
+
+  $("#existing-dd-file-destination").attr(
+    "placeholder",
+    "Browse here"
+  );
+
+  $("#div-confirm-existing-dd-import").hide()
 
   keywordTagify.removeAllTags();
   otherFundingTagify.removeAllTags();
@@ -684,7 +692,9 @@ function generateDDFile(dirpath, destinationPath) {
   if (dirpath !== null) {
     client.invoke(
       "api_save_ds_description_file",
-      bfaccountname,
+      uploadBFBoolean,
+      defaultBfAccount,
+      $("#bf_dataset_load_dd").val().trim(),
       destinationPath,
       json_str_ds,
       json_str_study,
