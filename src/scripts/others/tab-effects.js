@@ -1762,20 +1762,20 @@ async function transitionFreeFormMode(
   const dataCurrent = $(ev).attr("data-current");
   switch (dataCurrent) {
     case "Question-prepare-changes-1":
-    continueProgress = await switchMetadataRCFirstQuestion("changes");
-    break;
+      continueProgress = await switchMetadataRCFirstQuestion("changes");
+      break;
     case "Question-prepare-readme-1":
-    continueProgress = await switchMetadataRCFirstQuestion("readme");
-    break
+      continueProgress = await switchMetadataRCFirstQuestion("readme");
+      break;
     case "Question-prepare-readme-4":
-    continueProgress = await switchMetadataRCFirstQuestion("readme");
-    break
+      continueProgress = await switchMetadataRCFirstQuestion("readme");
+      break;
     case "Question-prepare-changes-4":
-    continueProgress = await switchMetadataRCFirstQuestion("changes");
-    break
+      continueProgress = await switchMetadataRCFirstQuestion("changes");
+      break;
   }
   if (!continueProgress) {
-    return
+    return;
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-submission-3") {
@@ -1973,7 +1973,7 @@ async function switchMetadataRCFirstQuestion(metadataRCFileType) {
     }
     return continueProgress;
   } else {
-    return true
+    return true;
   }
 }
 // 2. Subjects and Samples (MetadataSubSam)
