@@ -193,28 +193,28 @@ $(document).ready(function () {
 
   $("#bf_dataset_load_changes").on("DOMSubtreeModified", function () {
     if ($("#Question-prepare-changes-2").hasClass("show")) {
-      $("#Question-prepare-changes-2").removeClass("show")
+      $("#Question-prepare-changes-2").removeClass("show");
     }
     if ($("#bf_dataset_load_changes").text().trim() !== "None") {
       $("#textarea-create-changes").val("");
       $("#div-check-bf-import-changes").css("display", "flex");
       $($("#div-check-bf-import-changes").children()[0]).show();
     } else {
-        $("#div-check-bf-import-changes").css("display", "none");
-      }
+      $("#div-check-bf-import-changes").css("display", "none");
+    }
   });
 
   $("#bf_dataset_load_readme").on("DOMSubtreeModified", function () {
     if ($("#Question-prepare-readme-2").hasClass("show")) {
-      $("#Question-prepare-readme-2").removeClass("show")
+      $("#Question-prepare-readme-2").removeClass("show");
     }
     if ($("#bf_dataset_load_readme").text().trim() !== "None") {
       $("#textarea-create-readme").val("");
       $("#div-check-bf-import-readme").css("display", "flex");
       $($("#div-check-bf-import-readme").children()[0]).show();
     } else {
-        $("#div-check-bf-import-readme").css("display", "none");
-      }
+      $("#div-check-bf-import-readme").css("display", "none");
+    }
   });
 });
 
