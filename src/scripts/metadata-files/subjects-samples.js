@@ -2265,7 +2265,8 @@ function checkBFImportSubjects() {
           html: emessage,
         });
       } else {
-        loadDDFileToUI(res);
+        subjectsTableData = res
+        loadDataFrametoUI()
       }
     }
   );
@@ -2310,7 +2311,8 @@ function checkBFImportSamples() {
           html: emessage,
         });
       } else {
-        loadDDFileToUI(res);
+        samplesTableData = res
+        loadDataFrametoUISamples()
       }
     }
   );

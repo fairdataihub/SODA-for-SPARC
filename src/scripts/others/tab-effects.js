@@ -1739,12 +1739,6 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
-  if ($(ev).attr("data-current") === "Question-prepare-subjects-1") {
-    switchMetadataSubSamFirstQuestion("subjects");
-  }
-  if ($(ev).attr("data-current") === "Question-prepare-samples-1") {
-    switchMetadataSubSamFirstQuestion("samples");
-  }
 
   if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
     onboardingSubmission();
@@ -1758,23 +1752,43 @@ async function transitionFreeFormMode(
     $("#submission-accordion").removeClass("active");
     $("#submission-title-accordion").removeClass("active");
   }
-  let continueProgress = true;
+
+  let continueProgressRC = true;
+  let continueProgressSubSam = true;
+
   const dataCurrent = $(ev).attr("data-current");
+
   switch (dataCurrent) {
     case "Question-prepare-changes-1":
-      continueProgress = await switchMetadataRCQuestion("changes");
+      continueProgressRC = await switchMetadataRCQuestion("changes");
       break;
     case "Question-prepare-readme-1":
-      continueProgress = await switchMetadataRCQuestion("readme");
+      continueProgressRC = await switchMetadataRCQuestion("readme");
       break;
     case "Question-prepare-readme-4":
-      continueProgress = await switchMetadataRCQuestion("readme");
+      continueProgressRC = await switchMetadataRCQuestion("readme");
       break;
     case "Question-prepare-changes-4":
-      continueProgress = await switchMetadataRCQuestion("changes");
+      continueProgressRC = await switchMetadataRCQuestion("changes");
+      break;
+    case "Question-prepare-subjects-1":
+      continueProgressSubSam = await switchMetadataSubSamFirstQuestion("subjects");
+      break;
+    case "Question-prepare-samples-1":
+      continueProgressSubSam = await switchMetadataSubSamFirstQuestion("samples");
+      break;
+    case "Question-prepare-subjects-2":
+      continueProgressSubSam = await switchMetadataSubSamFirstQuestion("subjects");
+      break;
+    case "Question-prepare-samples-2":
+      continueProgressSubSam = await switchMetadataSubSamFirstQuestion("samples");
       break;
   }
-  if (!continueProgress) {
+  if (!continueProgressRC) {
+    return;
+  }
+
+  if (!continueProgressSubSam) {
     return;
   }
 
@@ -1782,14 +1796,6 @@ async function transitionFreeFormMode(
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-dd-4") {
-  }
-
-  if ($(ev).attr("data-current") === "Question-prepare-subjects-2") {
-    switchMetadataSubSamFirstQuestion();
-  }
-
-  if ($(ev).attr("data-current") === "Question-prepare-samples-2") {
-    switchMetadataSubSamFirstQuestion();
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
@@ -1994,11 +2000,14 @@ async function switchMetadataSubSamFirstQuestion(metadataSubSamFile) {
       cancelButtonText: "No",
       reverseButtons: reverseSwalButtons,
     });
-    if (!continueProgress) {
-      return;
-    } else {
+    if (continueProgress) {
       $(`#existing-${metadataSubSamFile}-file-destination`).val("");
-      tableData = [];
+      tableData = []
+      if (metadataSubSamFile === "samples") {
+        samplesTableData = tableData;
+      } else {
+        subjectsTableData = tableData;
+      }
       // delete table rows except headers
       $(`#table-${metadataSubSamFile} tr:gt(0)0`).remove();
       $(`#table-${metadataSubSamFile}`).css("display", "none");
@@ -2020,8 +2029,10 @@ async function switchMetadataSubSamFirstQuestion(metadataSubSamFile) {
         }
       }
     }
+    return continueProgress
   } else {
     $(`#existing-${metadataSubSamFile}-file-destination`).val("");
+    return true
   }
 }
 
