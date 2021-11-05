@@ -564,12 +564,9 @@ function resetDDFields() {
     $(field).val("");
   }
 
-  $("#existing-dd-file-destination").attr(
-    "placeholder",
-    "Browse here"
-  );
+  $("#existing-dd-file-destination").attr("placeholder", "Browse here");
 
-  $("#div-confirm-existing-dd-import").hide()
+  $("#div-confirm-existing-dd-import").hide();
 
   keywordTagify.removeAllTags();
   otherFundingTagify.removeAllTags();

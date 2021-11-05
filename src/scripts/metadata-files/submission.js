@@ -66,7 +66,7 @@ function resetSubmission() {
         "Browse here"
       );
 
-      $("#div-confirm-existing-submission-import").hide()
+      $("#div-confirm-existing-submission-import").hide();
 
       var inputFields = $("#Question-prepare-submission-1")
         .nextAll()
@@ -396,12 +396,9 @@ $(document).ready(function () {
       $("#div-check-bf-generate-submission").css("display", "none");
     }
   });
-
 });
 
-function generateBFMetadata(fileType) {
-
-}
+function generateBFMetadata(fileType) {}
 
 function generateSubmissionHelper() {
   Swal.fire({

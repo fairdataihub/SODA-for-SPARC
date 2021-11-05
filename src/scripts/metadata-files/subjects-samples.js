@@ -1706,7 +1706,7 @@ function resetSubjects() {
         "Browse here"
       );
 
-      $("#div-confirm-existing-subjects-import").hide()
+      $("#div-confirm-existing-subjects-import").hide();
 
       // hide Strains and Species
       $("#bootbox-subject-species").css("display", "none");
@@ -1771,7 +1771,7 @@ function resetSamples() {
         "placeholder",
         "Browse here"
       );
-      $("#div-confirm-existing-samples-import").hide()
+      $("#div-confirm-existing-samples-import").hide();
 
       // hide Strains and Species
       $("#bootbox-sample-species").css("display", "none");
