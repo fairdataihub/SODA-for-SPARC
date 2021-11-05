@@ -785,6 +785,11 @@ const showCurrentDescription = async () => {
     // the first section so they can place it in the correct section
     $("#ds-isa-warning").css("display", "flex");
 
+    // make the study purpose section visible instead of whatever section the user has open
+    // this ensures when they come back to the description after loading a dataset in a different card
+    // that the warning is visible
+    $("#dd-accordion").accordion("open", 0);
+
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
       parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "") +
