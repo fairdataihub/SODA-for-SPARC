@@ -1523,25 +1523,6 @@ body.swal2-shown > [aria-hidden="true"] {
   }
 }
 
-.pulse-yellow {
-  box-shadow: 0 0 0 0 rgba(254, 239, 179, 1);
-  animation: pulse-yellow-animation 2s infinite;
-}
-
-@keyframes pulse-yellow-animation {
-  0% {
-    box-shadow: 0 0 0 0 rgba(254, 239, 179, 1);
-  }
-
-  50% {
-    box-shadow: 0 0 0 10px rgba(52, 172, 224, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(52, 172, 224, 0);
-  }
-}
-
 .isa_warning {
   color: #9f6000;
   background-color: #feefb3;

@@ -700,18 +700,12 @@ const requiredSections = {
 $("#dd-accordion").accordion("open", 0);
 $("#ds-description-study-purpose").addClass("pulse-yellow");
 
-// fires when a user selects a dataset in the add/edit description page
+// fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  // drill down and check if the currently selected location is for adding a description
-  let h2 = document.querySelector(
-    ".is-shown.js-section #add_edit_description_parent-tabc h2"
-  );
-
   if (selectedBfDataset === "Select dataset") {
-    console.log("In here");
     return;
   }
 
@@ -722,15 +716,6 @@ const showCurrentDescription = async () => {
   } catch (error) {
     log.error(error);
     console.error(error);
-    let emessage = userError(error);
-    Swal.fire({
-      title: "Failed to get your description!",
-      text: emessage,
-      icon: "error",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
 
     ipcRenderer.send(
       "track-event",
@@ -749,15 +734,6 @@ const showCurrentDescription = async () => {
     // log the error and send it to analytics
     log.error(error);
     console.error(error);
-    let emessage = userError(error);
-    Swal.fire({
-      title: "Failed to read description!",
-      text: emessage,
-      icon: "error",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
 
     ipcRenderer.send(
       "track-event",
@@ -787,17 +763,17 @@ const showCurrentDescription = async () => {
   $("#ds-description-data-collection").val("");
   $("#ds-description-primary-conclusion").val("");
 
-  // if so place the text into the text area for that field
+  // place the text into the text area for that field
   $("#ds-description-study-purpose").val(
     parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "")
   );
 
-  // if so place the text into the text area for that field
+  // place the text into the text area for that field
   $("#ds-description-data-collection").val(
     parsedReadme[requiredSections.dataCollection].replace(/\r?\n|\r/g, "")
   );
 
-  // if so place the text into the text area for that field
+  // place the text into the text area for that field
   $("#ds-description-primary-conclusion").val(
     parsedReadme[requiredSections.primaryConclusion].replace(/\r?\n|\r/g, "")
   );
@@ -805,18 +781,19 @@ const showCurrentDescription = async () => {
   // check if there is any invalid text remaining
   if (parsedReadme[requiredSections.invalidText]) {
     // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
-    $("#ds-study-purpose-container").prepend(
-      "<textarea row='4' style='background-color:yellow'>Some error message here <textarea>"
-    );
+    $('#ds-isa-warning').css("display", "flex")
+    // $("#ds-study-purpose-container").prepend(
+    //   "<textarea row='4' style='background-color:yellow'>Some error message here <textarea>"
+    // );
 
-    Swal.fire({
-      title: "There is invalid text in your description.",
-      text: "This happens when there is text in your description that is not part of a section, or when invalid markdown is detected. The invalid text has been placed in the Study Purpose section. Please reorganize the text by placing it into the appropriate section(s).",
-      icon: "warning",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
+    // Swal.fire({
+    //   title: "There is invalid text in your description.",
+    //   text: "This happens when there is text in your description that is not part of a section, or when invalid markdown is detected. The invalid text has been placed in the Study Purpose section. Please reorganize the text by placing it into the appropriate section(s).",
+    //   icon: "warning",
+    //   showConfirmButton: true,
+    //   heightAuto: false,
+    //   backdrop: "rgba(0,0,0, 0.4)",
+    // });
 
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
