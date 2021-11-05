@@ -74,8 +74,10 @@ TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLAT
 ## this is the path to
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "metadata_files")
 
+
 class InvalidDeliverablesDocument(Exception):
     pass
+
 
 ### Import Milestone document
 def import_milestone(filepath):
@@ -320,7 +322,14 @@ def populate_related_info(workbook, val_array):
 
 
 def save_ds_description_file(
-    upload_boolean, bfaccount, bfdataset, filepath, dataset_str, study_str, con_str, related_info_str
+    upload_boolean,
+    bfaccount,
+    bfdataset,
+    filepath,
+    dataset_str,
+    study_str,
+    con_str,
+    related_info_str,
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
     destination = filepath
@@ -486,6 +495,7 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
             ws1[cell].font = Font(bold=False, size=11, name="Arial")
 
     wb.save(destination)
+
 
 def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
     source = join(TEMPLATE_PATH, "samples.xlsx")
