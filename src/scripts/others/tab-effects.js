@@ -1735,7 +1735,6 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
-
   let continueProgressRC = true;
   let continueProgressDD = true;
   let continueProgressSubSam = true;
@@ -1920,8 +1919,6 @@ async function transitionFreeFormMode(
   if (ev.getAttribute("data-next") === "Question-prepare-samples-2") {
     $("#Question-prepare-samples-2 button").show();
   }
-
-
 }
 
 // handles it when users switch options between Locally and on Pennsieve (Question 2 for each metadata file)
@@ -2020,7 +2017,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
           $($(field).parents()[2]).remove();
         }
       }
-      $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show()
+      $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show();
     }
     return continueProgress;
   } else {
@@ -2043,7 +2040,7 @@ async function switchMetadataDDQuestion() {
     });
     if (continueProgressDD) {
       $("#existing-dd-file-destination").val("");
-      $($("#div-check-bf-import-dd").children()[0]).show()
+      $($("#div-check-bf-import-dd").children()[0]).show();
       resetDDFields();
     }
     return continueProgressDD;
@@ -2066,7 +2063,7 @@ async function switchMetadataSubmissionQuestion() {
     });
     if (continueProgressSubmission) {
       $("#existing-submission-file-destination").val("");
-      $($("#div-check-bf-import-submission").children()[0]).show()
+      $($("#div-check-bf-import-submission").children()[0]).show();
       resetSubmissionFields();
     }
     return continueProgressSubmission;
