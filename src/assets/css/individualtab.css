@@ -1547,29 +1547,16 @@ body.swal2-shown > [aria-hidden="true"] {
   background-color: #FEEFB3;
 }
 
-/* The close button */
-.closebtn {
-  margin: auto;
- 
-  color: white;
-  background-color: transparent;
-  font-weight: bold;
-  font-size: 22px;
-  line-height: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-  
-}
-
 .close-btn {
+  margin-left: 90%;
   cursor: pointer;
-  color: #ccc;
-  margin: auto; 
+  color: rgba(204, 204, 204, 0.774); 
   background-color: transparent;
   border-color: transparent;
   transition: 0.1s ease-out;
   font-weight: bold; 
   line-height: 20px;
+  font-size: larger;
 }
 
 /* When moving the mouse over the close button */
