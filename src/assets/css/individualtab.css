@@ -1547,31 +1547,10 @@ body.swal2-shown > [aria-hidden="true"] {
   background-color: #feefb3;
 }
 
-<<<<<<< HEAD
-=======
-/* The close button */
-.closebtn {
-  margin: auto;
-
-  color: white;
-  background-color: transparent;
-  font-weight: bold;
-  font-size: 22px;
-  line-height: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
->>>>>>> 4626d15f38d77ddc3448ccf6c5f2b00b587a1175
 .close-btn {
-  margin-left: 90%;
   cursor: pointer;
-<<<<<<< HEAD
   color: rgba(204, 204, 204, 0.774); 
-=======
-  color: #ccc;
-  margin: auto;
->>>>>>> 4626d15f38d77ddc3448ccf6c5f2b00b587a1175
+  margin-left: 90%;
   background-color: transparent;
   border-color: transparent;
   transition: 0.1s ease-out;
