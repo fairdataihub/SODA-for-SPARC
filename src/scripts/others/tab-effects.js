@@ -1758,20 +1758,24 @@ async function transitionFreeFormMode(
     $("#submission-accordion").removeClass("active");
     $("#submission-title-accordion").removeClass("active");
   }
-
-  if ($(ev).attr("data-current") === "Question-prepare-changes-1") {
-    await switchMetadataRCFirstQuestion("changes");
+  let continueProgress;
+  const dataCurrent = $(ev).attr("data-current");
+  switch (dataCurrent) {
+    case "Question-prepare-changes-1":
+    continueProgress = await switchMetadataRCFirstQuestion("changes");
+    break;
+    case "Question-prepare-readme-1":
+    continueProgress = await switchMetadataRCFirstQuestion("readme");
+    break
+    case "Question-prepare-readme-4":
+    continueProgress = await switchMetadataRCFirstQuestion("readme");
+    break
+    case "Question-prepare-changes-4":
+    continueProgress = await switchMetadataRCFirstQuestion("changes");
+    break
   }
-  if ($(ev).attr("data-current") === "Question-prepare-readme-1") {
-    await switchMetadataRCFirstQuestion("readme");
-  }
-
-  if ($(ev).attr("data-current") === "Question-prepare-readme-4") {
-    await switchMetadataRCFirstQuestion("readme");
-  }
-
-  if ($(ev).attr("data-current") === "Question-prepare-changes-4") {
-    await switchMetadataRCFirstQuestion("changes");
+  if (!continueProgress) {
+    return
   }
 
   if ($(ev).attr("data-current") === "Question-prepare-submission-3") {
@@ -1960,15 +1964,16 @@ async function switchMetadataRCFirstQuestion(metadataRCFileType) {
       cancelButtonText: "No",
       reverseButtons: reverseSwalButtons,
     });
-    if (!continueProgress) {
-      return;
-    } else {
+    if (continueProgress) {
       $(`#existing-${metadataRCFileType}-file-destination`).attr(
         "placeholder",
         "Browse here"
       );
       $(`#textarea-create-${metadataRCFileType}`).val("");
     }
+    return continueProgress;
+  } else {
+    return true
   }
 }
 // 2. Subjects and Samples (MetadataSubSam)
