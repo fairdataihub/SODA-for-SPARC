@@ -702,6 +702,9 @@ function loadSubmissionFileToUI(data) {
   $("#div-confirm-existing-submission-import").hide();
   $($("#div-confirm-existing-submission-import button")[0]).hide();
   $("#button-fake-confirm-existing-submission-file-load").click();
+  $(
+    $("#button-fake-confirm-existing-bf-submission-file-load").siblings()[0]
+  ).hide();
 }
 
 // function to check for existing submission file on Penn
