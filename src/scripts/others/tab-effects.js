@@ -1123,9 +1123,6 @@ async function transitionSubQuestions(
       }
     }
   }
-  // else {
-  //   $("#nextBtn").prop("disabled", true);
-  // }
 
   if (
     ev.getAttribute("data-next") ===
@@ -1160,7 +1157,6 @@ async function transitionSubQuestions(
   } else {
     $("#para-continue-replace-local-generate").hide();
     $("#para-continue-replace-local-generate").text("");
-    // $("#nextBtn").prop("disabled", true);
   }
 
   if (
@@ -1739,9 +1735,6 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
-  if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
-    onboardingSubmission();
-  }
 
   let continueProgressRC = true;
   let continueProgressDD = true;
@@ -1915,6 +1908,9 @@ async function transitionFreeFormMode(
   if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
     document.getElementById(parentDiv).scrollTop =
       document.getElementById(parentDiv).scrollHeight;
+    if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
+      onboardingSubmission();
+    }
   }
 
   if (ev.getAttribute("data-next") === "Question-prepare-subjects-2") {
@@ -1924,6 +1920,8 @@ async function transitionFreeFormMode(
   if (ev.getAttribute("data-next") === "Question-prepare-samples-2") {
     $("#Question-prepare-samples-2 button").show();
   }
+
+
 }
 
 // handles it when users switch options between Locally and on Pennsieve (Question 2 for each metadata file)
