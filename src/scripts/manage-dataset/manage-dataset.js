@@ -781,7 +781,7 @@ const showCurrentDescription = async () => {
   // check if there is any invalid text remaining
   if (parsedReadme[requiredSections.invalidText]) {
     // fire an alert that informs the user their invalid data has been added to the first section so they can place it in the correct boxes
-    $('#ds-isa-warning').css("display", "flex")
+    $("#ds-isa-warning").css("display", "flex");
     // $("#ds-study-purpose-container").prepend(
     //   "<textarea row='4' style='background-color:yellow'>Some error message here <textarea>"
     // );
