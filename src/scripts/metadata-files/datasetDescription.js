@@ -98,12 +98,17 @@ $(document).ready(function () {
     $("#" + target).toggleClass("show");
     document.getElementById("prevBtn").style.display = "none";
   });
+
   $("#bf_dataset_load_dd").on("DOMSubtreeModified", function () {
+    if ($("#Question-prepare-dd-2").hasClass("show")) {
+      $("#Question-prepare-dd-2").removeClass("show")
+    }
     if ($("#bf_dataset_load_dd").text().trim() !== "None") {
       $("#div-check-bf-import-dd").css("display", "flex");
+      $($("#div-check-bf-import-dd").children()[0]).show();
     } else {
-      $("#div-check-bf-import-dd").css("display", "none");
-    }
+        $("#div-check-bf-import-dd").css("display", "none");
+      }
   });
 });
 
@@ -2273,6 +2278,9 @@ function loadDDFileToUI(object) {
   $("#div-confirm-existing-dd-import").hide();
   $($("#div-confirm-existing-dd-import button")[0]).hide();
   $("#button-fake-confirm-existing-dd-file-load").click();
+  $(
+    $("#button-fake-confirm-existing-bf-dd-file-load").siblings()[0]
+  ).hide();
 }
 
 function populateTagifyDD(tagify, values) {

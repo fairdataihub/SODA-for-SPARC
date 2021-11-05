@@ -1744,17 +1744,10 @@ async function transitionFreeFormMode(
     onboardingSubmission();
   }
 
-  if ($(ev).attr("data-current") === "Generate-submission") {
-    var res = generateSubmissionFile();
-    if (res === "empty") {
-      return;
-    }
-    $("#submission-accordion").removeClass("active");
-    $("#submission-title-accordion").removeClass("active");
-  }
-
   let continueProgressRC = true;
+  let continueProgressDD = true;
   let continueProgressSubSam = true;
+  let continueProgressSubmission = true;
 
   const dataCurrent = $(ev).attr("data-current");
 
@@ -1772,18 +1765,39 @@ async function transitionFreeFormMode(
       continueProgressRC = await switchMetadataRCQuestion("changes");
       break;
     case "Question-prepare-subjects-1":
-      continueProgressSubSam = await switchMetadataSubSamFirstQuestion("subjects");
+      continueProgressSubSam = await switchMetadataSubSamQuestions("subjects");
       break;
     case "Question-prepare-samples-1":
-      continueProgressSubSam = await switchMetadataSubSamFirstQuestion("samples");
+      continueProgressSubSam = await switchMetadataSubSamQuestions("samples");
       break;
     case "Question-prepare-subjects-2":
-      continueProgressSubSam = await switchMetadataSubSamFirstQuestion("subjects");
+      continueProgressSubSam = await switchMetadataSubSamQuestions("subjects");
       break;
     case "Question-prepare-samples-2":
-      continueProgressSubSam = await switchMetadataSubSamFirstQuestion("samples");
+      continueProgressSubSam = await switchMetadataSubSamQuestions("samples");
+      break;
+    case "Question-prepare-dd-4":
+      continueProgressDD = await switchMetadataDDQuestion();
+      break;
+    case "Question-prepare-dd-1":
+      continueProgressDD = await switchMetadataDDQuestion();
+      break;
+    case "Question-prepare-submission-1":
+      continueProgressSubmission = await switchMetadataSubmissionQuestion();
+      break;
+    case "Question-prepare-submission-3":
+      continueProgressSubmission = await switchMetadataSubmissionQuestion();
+      break;
+    case "Generate-submission":
+      var res = generateSubmissionFile();
+      if (res === "empty") {
+        return;
+      }
+      $("#submission-accordion").removeClass("active");
+      $("#submission-title-accordion").removeClass("active");
       break;
   }
+
   if (!continueProgressRC) {
     return;
   }
@@ -1792,31 +1806,12 @@ async function transitionFreeFormMode(
     return;
   }
 
-  if ($(ev).attr("data-current") === "Question-prepare-submission-3") {
+  if (!continueProgressDD) {
+    return;
   }
 
-  if ($(ev).attr("data-current") === "Question-prepare-dd-4") {
-  }
-
-  if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
-    if ($("#Question-prepare-dd-2").hasClass("show")) {
-      var { value: continueProgressDD } = await Swal.fire({
-        title:
-          "This will reset your progress so far with the dataset_description.xlsx file. Are you sure you want to continue?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-        reverseButtons: reverseSwalButtons,
-      });
-      if (!continueProgressDD) {
-        return;
-      } else {
-        $("#existing-dd-file-destination").val("");
-        resetDDFields();
-      }
-    }
+  if (!continueProgressSubmission) {
+    return;
   }
 
   $(ev).removeClass("non-selected");
@@ -1984,7 +1979,7 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
   }
 }
 // 2. Subjects and Samples (MetadataSubSam)
-async function switchMetadataSubSamFirstQuestion(metadataSubSamFile) {
+async function switchMetadataSubSamQuestions(metadataSubSamFile) {
   var tableData = subjectsTableData;
   if (metadataSubSamFile === "samples") {
     tableData = samplesTableData;
@@ -2033,6 +2028,50 @@ async function switchMetadataSubSamFirstQuestion(metadataSubSamFile) {
   } else {
     $(`#existing-${metadataSubSamFile}-file-destination`).val("");
     return true
+  }
+}
+
+async function switchMetadataDDQuestion() {
+  if ($("#Question-prepare-dd-2").hasClass("show")) {
+    var { value: continueProgressDD } = await Swal.fire({
+      title:
+        "This will reset your progress so far with the dataset_description.xlsx file. Are you sure you want to continue?",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: reverseSwalButtons,
+    });
+    if (continueProgressDD) {
+      $("#existing-dd-file-destination").val("");
+      resetDDFields();
+    }
+    return continueProgressDD
+  } else {
+    return true;
+  }
+}
+
+async function switchMetadataSubmissionQuestion() {
+  if ($("#Question-prepare-submission-2").hasClass("show")) {
+    var { value: continueProgressSubmission } = await Swal.fire({
+      title:
+        "This will reset your progress so far with the submission.xlsx file. Are you sure you want to continue?",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: reverseSwalButtons,
+    });
+    if (continueProgressSubmission) {
+      $("#existing-submission-file-destination").val("");
+      resetSubmissionFields();
+    }
+    return continueProgressSubmission
+  } else {
+    return true;
   }
 }
 

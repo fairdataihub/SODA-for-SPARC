@@ -1006,6 +1006,7 @@
                 <div
                   class="option-card radio-button"
                   id="Question-prepare-submission-1-new"
+                  data-current="Question-prepare-submission-1"
                   data-next="Question-prepare-submission-2"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
                   style="
@@ -1105,6 +1106,7 @@
                 <div
                   class="option-card radio-button"
                   id="Question-prepare-submission-3-new"
+                  data-current="Question-prepare-submission-3"
                   data-next="Question-prepare-submission-4"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', '', 'individual-question prepare-submission')"
                   style="
@@ -1359,256 +1361,6 @@
                   Fake Confirm
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question prepare-submission"
-        id="Question-prepare-submission-2"
-        style="margin-top: 20px"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="field">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                margin-bottom: 20px;
-                text-align: center;
-              "
-              >Fill out the sections below and generate your submission file
-            </label>
-            <div class="ui styled accordion" style="width: 100% !important">
-              <div
-                id="submission-title-accordion"
-                class="title active"
-                style="background: var(--color-bg-light-green-button)"
-              >
-                <i class="dropdown icon"></i>
-                Award and milestone information
-              </div>
-              <div class="content active" id="submission-accordion">
-                <div
-                  style="
-                    display: block;
-                    width: 90%;
-                    margin: 0 auto;
-                    font-size: 13px;
-                  "
-                >
-                  <div>
-                    <div
-                      class="div-dd-info"
-                      style="
-                        margin-top: 10px;
-                        margin-bottom: 15px;
-                        flex-direction: column;
-                      "
-                    >
-                      <div
-                        class="demo-controls-head"
-                        style="text-align: left; width: 90%; margin-bottom: 5px"
-                      >
-                        <div style="width: 100%">
-                          <font style="font-weight: 600; color: #090909">
-                            SPARC Award number:
-                          </font>
-                          <i
-                            class="fas fa-info-circle popover-tooltip"
-                            data-content="SPARC award associated with the dataset."
-                            rel="popover"
-                            data-placement="right"
-                            data-html="true"
-                            data-trigger="hover"
-                            style="margin-left: 5px; color: black"
-                          ></i>
-                        </div>
-                      </div>
-
-                      <div class="demo-controls-body" style="width: 90%">
-                        <div class="ui input modified">
-                          <input
-                            type="text"
-                            id="submission-sparc-award"
-                            name="dataset name"
-                            placeholder="Type here..."
-                            style="font-size: 14px"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        style="
-                          display: flex;
-                          justify-content: center;
-                          margin: 0 auto;
-                          text-decoration: none;
-                          text-align: center;
-                          font-size: 14px;
-                          margin-top: 10px;
-                          padding-bottom: 20px;
-                        "
-                      >
-                        <a
-                          onclick="helpSPARCAward('submission')"
-                          target="_blank"
-                          id="a-help-submission-Airtable"
-                        >
-                          Click here to import my SPARC award from Airtable
-                        </a>
-                        <div
-                          id="select-sparc-award-submission-spinner"
-                          class="
-                            ui
-                            active
-                            green
-                            inline
-                            loader
-                            sparc-award
-                            small
-                          "
-                          style="display: none; margin-left: 10px"
-                        ></div>
-                      </div>
-                    </div>
-
-                    <div
-                      class="div-dd-info"
-                      style="
-                        margin-top: 10px;
-                        margin-bottom: 15px;
-                        flex-direction: column;
-                      "
-                    >
-                      <div
-                        class="demo-controls-head"
-                        style="text-align: left; width: 90%; margin-bottom: 5px"
-                      >
-                        <div style="width: 100%">
-                          <font style="font-weight: 600; color: #090909">
-                            Enter the milestone(s):
-                          </font>
-                          <i
-                            class="fas fa-info-circle popover-tooltip"
-                            data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
-                                  <br/><br/>
-                                  Hit 'Enter' to register it."
-                            rel="popover"
-                            data-placement="right"
-                            data-html="true"
-                            data-trigger="hover"
-                            style="margin-left: 5px; color: black"
-                          ></i>
-                        </div>
-                      </div>
-                      <div class="demo-controls-body" style="width: 90%">
-                        <div class="ui input modified">
-                          <textarea
-                            id="selected-milestone-1"
-                            class="form-container-input-bf"
-                            placeholder="Type here and hit 'Enter' after each keyword."
-                          ></textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="div-dd-info"
-                    style="
-                      margin-top: 10px;
-                      margin-bottom: 15px;
-                      flex-direction: column;
-                    "
-                  >
-                    <div
-                      class="demo-controls-head"
-                      style="text-align: left; width: 90%; margin-bottom: 5px"
-                    >
-                      <div style="width: 100%">
-                        <font style="font-weight: 600; color: #090909"
-                          >Completion date:
-                        </font>
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Enter the completion date for your milestone(s) specified above."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body" style="width: 90%">
-                      <div class="ui input modified">
-                        <!-- <input
-                              type="date"
-                              id="submission-completion-date"
-                            /> -->
-                        <select id="submission-completion-date">
-                          <option value="Select" selected>
-                            Select an option
-                          </option>
-                          <option value="Enter my own date">
-                            Enter my own date
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: center;
-                      margin: 0 auto;
-                      text-decoration: underline;
-                      text-align: center;
-                      font-size: 14px;
-                      margin-top: 25px;
-                      padding-bottom: 20px;
-                    "
-                  >
-                    <a
-                      onclick="helpMilestoneSubmission()"
-                      id="a-help-submission-milestones"
-                    >
-                      Click here to import milestones from my Data Deliverables
-                      document
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              style="
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-              "
-            >
-              <button
-                type="button"
-                class="btn_animated popover-tooltip"
-                data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
-                rel="popover"
-                data-placement="top"
-                data-trigger="hover"
-                data-next="Question-prepare-submission-6"
-                data-current="Generate-submission"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                style="
-                  margin: 10px;
-                  width: 140px;
-                  border: none !important;
-                  overflow: visible !important;
-                "
-                data-original-title=""
-                title=""
-              >
-                Generate
-              </button>
             </div>
           </div>
         </div>
@@ -2002,6 +1754,257 @@
           </div>
         </div>
       </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-2"
+        style="margin-top: 20px"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="field">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                margin-bottom: 20px;
+                text-align: center;
+              "
+              >Fill out the sections below and generate your submission file
+            </label>
+            <div class="ui styled accordion" style="width: 100% !important">
+              <div
+                id="submission-title-accordion"
+                class="title active"
+                style="background: var(--color-bg-light-green-button)"
+              >
+                <i class="dropdown icon"></i>
+                Award and milestone information
+              </div>
+              <div class="content active" id="submission-accordion">
+                <div
+                  style="
+                    display: block;
+                    width: 90%;
+                    margin: 0 auto;
+                    font-size: 13px;
+                  "
+                >
+                  <div>
+                    <div
+                      class="div-dd-info"
+                      style="
+                        margin-top: 10px;
+                        margin-bottom: 15px;
+                        flex-direction: column;
+                      "
+                    >
+                      <div
+                        class="demo-controls-head"
+                        style="text-align: left; width: 90%; margin-bottom: 5px"
+                      >
+                        <div style="width: 100%">
+                          <font style="font-weight: 600; color: #090909">
+                            SPARC Award number:
+                          </font>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="SPARC award associated with the dataset."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                            style="margin-left: 5px; color: black"
+                          ></i>
+                        </div>
+                      </div>
+
+                      <div class="demo-controls-body" style="width: 90%">
+                        <div class="ui input modified">
+                          <input
+                            type="text"
+                            id="submission-sparc-award"
+                            name="dataset name"
+                            placeholder="Type here..."
+                            style="font-size: 14px"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        style="
+                          display: flex;
+                          justify-content: center;
+                          margin: 0 auto;
+                          text-decoration: none;
+                          text-align: center;
+                          font-size: 14px;
+                          margin-top: 10px;
+                          padding-bottom: 20px;
+                        "
+                      >
+                        <a
+                          onclick="helpSPARCAward('submission')"
+                          target="_blank"
+                          id="a-help-submission-Airtable"
+                        >
+                          Click here to import my SPARC award from Airtable
+                        </a>
+                        <div
+                          id="select-sparc-award-submission-spinner"
+                          class="
+                            ui
+                            active
+                            green
+                            inline
+                            loader
+                            sparc-award
+                            small
+                          "
+                          style="display: none; margin-left: 10px"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="div-dd-info"
+                      style="
+                        margin-top: 10px;
+                        margin-bottom: 15px;
+                        flex-direction: column;
+                      "
+                    >
+                      <div
+                        class="demo-controls-head"
+                        style="text-align: left; width: 90%; margin-bottom: 5px"
+                      >
+                        <div style="width: 100%">
+                          <font style="font-weight: 600; color: #090909">
+                            Enter the milestone(s):
+                          </font>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+                                  <br/><br/>
+                                  Hit 'Enter' to register it."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                            style="margin-left: 5px; color: black"
+                          ></i>
+                        </div>
+                      </div>
+                      <div class="demo-controls-body" style="width: 90%">
+                        <div class="ui input modified">
+                          <textarea
+                            id="selected-milestone-1"
+                            class="form-container-input-bf"
+                            placeholder="Type here and hit 'Enter' after each keyword."
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="div-dd-info"
+                    style="
+                      margin-top: 10px;
+                      margin-bottom: 15px;
+                      flex-direction: column;
+                    "
+                  >
+                    <div
+                      class="demo-controls-head"
+                      style="text-align: left; width: 90%; margin-bottom: 5px"
+                    >
+                      <div style="width: 100%">
+                        <font style="font-weight: 600; color: #090909"
+                          >Completion date:
+                        </font>
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Enter the completion date for your milestone(s) specified above."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                          style="margin-left: 5px; color: black"
+                        ></i>
+                      </div>
+                    </div>
+                    <div class="demo-controls-body" style="width: 90%">
+                      <div class="ui input modified">
+                        <!-- <input
+                              type="date"
+                              id="submission-completion-date"
+                            /> -->
+                        <select id="submission-completion-date">
+                          <option value="Select" selected>
+                            Select an option
+                          </option>
+                          <option value="Enter my own date">
+                            Enter my own date
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: center;
+                      margin: 0 auto;
+                      text-decoration: underline;
+                      text-align: center;
+                      font-size: 14px;
+                      margin-top: 25px;
+                      padding-bottom: 20px;
+                    "
+                  >
+                    <a
+                      onclick="helpMilestoneSubmission()"
+                      id="a-help-submission-milestones"
+                    >
+                      Click here to import milestones from my Data Deliverables
+                      document
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+            >
+              <button
+                type="button"
+                class="btn_animated popover-tooltip"
+                data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                rel="popover"
+                data-placement="top"
+                data-trigger="hover"
+                data-next="Question-prepare-submission-6"
+                data-current="Generate-submission"
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                style="
+                  margin: 10px;
+                  width: 140px;
+                  border: none !important;
+                  overflow: visible !important;
+                "
+                data-original-title=""
+                title=""
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <div class="footer-div">
@@ -2207,6 +2210,7 @@
                 <div
                   class="option-card radio-button"
                   id="Question-prepare-dd-4-new"
+                  data-current="Question-prepare-dd-4"
                   data-next="Question-prepare-dd-3"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-dd-4', 'create_dataset_description-tab', '', 'individual-question prepare-dd')"
                   style="
@@ -2459,6 +2463,87 @@
                   Fake Confirm
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 4: Ask for existing dataset_description.xlsx file -->
+      <div
+        class="individual-question prepare-dd"
+        id="Question-prepare-dd-3"
+        style="width: 85%"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Browse for your <i>dataset_description.xlsx</i> file below:
+            </label>
+            <div
+              class="field"
+              style="margin: 15px auto; display: flex; justify-content: center"
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="showExistingDDFile()"
+                id="existing-dd-file-destination"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-existing-dd-import"
+            >
+              <button
+                onclick="importExistingDDFile()"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-dd-3', 'create_dataset_description-tab', '', 'individual-question prepare-dd')"
+                data-next="Question-prepare-dd-2"
+                id="button-fake-confirm-existing-dd-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display: none;
+                "
+              >
+                Fake Confirm
+              </button>
             </div>
           </div>
         </div>
@@ -3556,87 +3641,6 @@
           >
             Generate
           </button>
-        </div>
-      </div>
-
-      <!-- Question 4: Ask for existing dataset_description.xlsx file -->
-      <div
-        class="individual-question prepare-dd"
-        id="Question-prepare-dd-3"
-        style="width: 85%"
-      >
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                text-align: center;
-              "
-              >Browse for your <i>dataset_description.xlsx</i> file below:
-            </label>
-            <div
-              class="field"
-              style="margin: 15px auto; display: flex; justify-content: center"
-            >
-              <input
-                class="form-control"
-                style="width: 450px !important"
-                onclick="showExistingDDFile()"
-                id="existing-dd-file-destination"
-                type="text"
-                readonly
-                placeholder="Browse here"
-              />
-            </div>
-            <div
-              style="
-                display: none;
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-              "
-              id="div-confirm-existing-dd-import"
-            >
-              <button
-                onclick="importExistingDDFile()"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
-              >
-                Confirm
-              </button>
-              <button
-                onclick="transitionFreeFormMode(this, 'Question-prepare-dd-3', 'create_dataset_description-tab', '', 'individual-question prepare-dd')"
-                data-next="Question-prepare-dd-2"
-                id="button-fake-confirm-existing-dd-file-load"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                  display: none;
-                "
-              >
-                Fake Confirm
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 

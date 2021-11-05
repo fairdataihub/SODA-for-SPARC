@@ -2074,18 +2074,26 @@ $(document).ready(function () {
     }
   });
   $("#bf_dataset_load_subjects").on("DOMSubtreeModified", function () {
+    if ($("#Question-prepare-subjects-3").hasClass("show")) {
+      $("#Question-prepare-subjects-3").removeClass("show")
+    }
     if ($("#bf_dataset_load_subjects").text().trim() !== "None") {
       $("#div-check-bf-import-subjects").css("display", "flex");
+      $($("#div-check-bf-import-subjects").children()[0]).show();
     } else {
-      $("#div-check-bf-import-subjects").css("display", "none");
-    }
+        $("#div-check-bf-import-subjects").css("display", "none");
+      }
   });
   $("#bf_dataset_load_samples").on("DOMSubtreeModified", function () {
+    if ($("#Question-prepare-samples-3").hasClass("show")) {
+      $("#Question-prepare-samples-3").removeClass("show")
+    }
     if ($("#bf_dataset_load_samples").text().trim() !== "None") {
       $("#div-check-bf-import-samples").css("display", "flex");
+      $($("#div-check-bf-import-samples").children()[0]).show();
     } else {
-      $("#div-check-bf-import-samples").css("display", "none");
-    }
+        $("#div-check-bf-import-samples").css("display", "none");
+      }
   });
 });
 
@@ -2343,6 +2351,9 @@ function loadDataFrametoUI() {
   loadSubjectsDataToTable();
   $("#table-subjects").show();
   $("#button-fake-confirm-existing-subjects-file-load").click();
+  $(
+    $("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]
+  ).hide();
 }
 
 function loadDataFrametoUISamples() {
@@ -2370,6 +2381,9 @@ function loadDataFrametoUISamples() {
   loadSamplesDataToTable();
   $("#table-samples").show();
   $("#button-fake-confirm-existing-samples-file-load").click();
+  $(
+    $("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]
+  ).hide();
 }
 
 function preliminaryProtocolStep(type) {
