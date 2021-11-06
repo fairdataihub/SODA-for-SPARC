@@ -697,8 +697,11 @@ const requiredSections = {
   invalidText: "invalid text",
 };
 
-// open the first box of the accordion
-$("#dd-accordion").accordion("open", 0);
+// open the first section of the accordion for first time user navigation to the section
+let dsAccordion = $("#dd-accordion").accordion()
+dsAccordion.accordion("open", 0)
+
+
 
 // fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
@@ -725,6 +728,8 @@ const showCurrentDescription = async () => {
     );
     return;
   }
+
+  console.log(readme)
 
   // create the parsed dataset read me object
   let parsedReadme;
@@ -789,6 +794,7 @@ const showCurrentDescription = async () => {
     // this ensures when they come back to the description after loading a dataset in a different card
     // that the warning is visible
     $("#dd-accordion").accordion("open", 0);
+
 
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
@@ -905,11 +911,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     return;
   }
 
-  console.log(
-    "The readme file on add description before stripping sections: ",
-    readme
-  );
-
   // strip out the required sections (don't check for errors here because we check for them in showCurrentDescription for the same functions and the same readme)
   readme = stripRequiredSectionFromReadme(
     readme,
@@ -931,10 +932,9 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   // remove any invalid text
   readme = stripInvalidTextFromReadme(readme);
 
-  console.log("Readme file after stripping old sections from it", readme);
-
   // join the user_markdown_input with untouched sections of the original readme
-  let completeReadme = userMarkdownInput + readme;
+  // because markdown on the Pennsieve side is strange add two spaces so the curator's notes section does not bold the section directly above it
+  let completeReadme = userMarkdownInput + "\n" + "\n" + readme;
 
   // update the readme file
   try {
@@ -1058,12 +1058,20 @@ const stripRequiredSectionFromReadme = (
   mutableReadme = mutableReadme.replace(altSearchRegExp, "");
   // search for the end of the removed section's text
   let endOfSectionIdx;
+  // curator's section is designated by three hyphens in a row 
+  let curatorsSectionIdx = mutableReadme.search("---")
+  console.log("Verifying ", mutableReadme[curatorsSectionIdx], mutableReadme[curatorsSectionIdx + 1], mutableReadme[curatorsSectionIdx + 2])
+  console.log("Curators notes found at :", curatorsSectionIdx)
+
   for (
     endOfSectionIdx = sectionIdx;
     endOfSectionIdx < mutableReadme.length;
     endOfSectionIdx++
   ) {
-    if (mutableReadme[endOfSectionIdx] === "*") {
+
+    // check if we found the start of a new section
+    if (mutableReadme[endOfSectionIdx] === "*" || endOfSectionIdx === curatorsSectionIdx) {
+      // if so stop
       break;
     }
   }
@@ -1080,6 +1088,8 @@ const stripRequiredSectionFromReadme = (
   mutableReadme =
     mutableReadme.slice(0, sectionIdx) + mutableReadme.slice(endOfSectionIdx);
 
+  console.log("Mutable readme after section stripping", mutableReadme)
+
   return mutableReadme;
 };
 
@@ -1090,15 +1100,22 @@ const stripRequiredSectionFromReadme = (
 const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   // ensure the required sections have been taken out
   if (
-    readme.search("[*][*]Data Collection[ ]*:[*][*]") !== -1 ||
-    readme.search("[*][*]Study Purpose[ ]*:[*][*]") !== -1 ||
-    readme.search("[*][*]Primary Conclusion[ ]*:[*][*]") !== -1
+    readme.search("[*][*]data collection[ ]*:[*][*]") !== -1 ||
+    readme.search("[*][*]study purpose[ ]*:[*][*]") !== -1 ||
+    readme.search("[*][*]primary conclusion[ ]*:[*][*]") !== -1
   ) {
     throw new Error("There was a problem with reading your description file.");
   }
 
-  // search for any auxillary sections
-  let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]");
+  // search for the first occurring auxillary section -- this can be either user defined (in special cases where a user defines a non-mandatory section) or curator's notes
+  let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]")  
+  let altAuxillarySectionIdx =  readme.search("[*][*].*[ ]*[*][*][ ]*:") 
+
+  // check which section formatting comes first 
+  // TODO: What happens when not -1??/
+  if(altAuxillarySectionIdx !== -1 &&  altAuxillarySectionIdx < auxillarySectionIdx) auxillarySectionIdx = altAuxillarySectionIdx
+
+  readme.search("(---)"))
 
   // there is an auxillary section to remove check if there is any invalid text before it
   if (auxillarySectionIdx !== -1) {
