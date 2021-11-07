@@ -1057,13 +1057,6 @@ const stripRequiredSectionFromReadme = (
   let endOfSectionIdx;
   // curator's section is designated by three hyphens in a row
   let curatorsSectionIdx = mutableReadme.search("---");
-  console.log(
-    "Verifying ",
-    mutableReadme[curatorsSectionIdx],
-    mutableReadme[curatorsSectionIdx + 1],
-    mutableReadme[curatorsSectionIdx + 2]
-  );
-  console.log("Curators notes found at :", curatorsSectionIdx);
 
   for (
     endOfSectionIdx = sectionIdx;
@@ -1092,8 +1085,6 @@ const stripRequiredSectionFromReadme = (
   mutableReadme =
     mutableReadme.slice(0, sectionIdx) + mutableReadme.slice(endOfSectionIdx);
 
-  console.log("Mutable readme after section stripping", mutableReadme);
-
   return mutableReadme;
 };
 
@@ -1104,17 +1095,22 @@ const stripRequiredSectionFromReadme = (
 const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   // ensure the required sections have been taken out
   if (
-    readme.search("[*][*]data collection[ ]*:[*][*]") !== -1 ||
-    readme.search("[*][*]study purpose[ ]*:[*][*]") !== -1 ||
-    readme.search("[*][*]primary conclusion[ ]*:[*][*]") !== -1
+    readme.search(`[*][*]${requiredSections.studyPurpose}[ ]*:[*][*]`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.studyPurpose}[*][*][ ]*:`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.dataCollection}[ ]*:[*][*]`) !==
+      -1 ||
+    readme.search(`[*][*]${requiredSections.dataCollection}[*][*][ ]*:`) !==
+      -1 ||
+    readme.search(`[*][*]${requiredSections.primaryConclusion}[ ]*:[*][*]`) !==
+      -1 ||
+    readme.search(`[*][*]${requiredSections.primaryConclusion}[*][*][ ]*:`) !==
+      -1
   ) {
     throw new Error("There was a problem with reading your description file.");
   }
 
   // search for the first occurring auxillary section -- this is a user defined section
   let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]");
-
-  console.log("Found an auxillary section: ", auxillarySectionIdx);
 
   // check if there was an auxillary section found that has a colon before the markdown ends
   if (auxillarySectionIdx !== -1) {
@@ -1140,11 +1136,6 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     // set the auxillary section idx to the start of the curator's section idx
     auxillarySectionIdx = readme.search("(---)");
   }
-
-  console.log(
-    "Auxillary section idx after comparing against curators section: ",
-    auxillarySectionIdx
-  );
 
   // check if there is an auxillary section
   if (auxillarySectionIdx !== -1) {
