@@ -1114,11 +1114,17 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   // search for the first occurring auxillary section -- this is a user defined section
   let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]");
 
+  console.log("Found an auxillary section: ", auxillarySectionIdx);
+
   // check if there was an auxillary section found that has a colon before the markdown ends
   if (auxillarySectionIdx !== -1) {
+    let auxillarySectionIdxAltFormat = readme.search("[*][*].*[ ]*[*][*][ ]*:");
     // check if there is an auxillary section that comes before the current section that uses alternative common syntax
-    if (auxillarySectionIdx > readme.search("[*][*].*[ ]*[*][*][ ]*:"))
-      auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
+    if (
+      auxillarySectionIdxAltFormat !== -1 &&
+      auxillarySectionIdx > auxillarySectionIdxAltFormat
+    )
+      auxillarySectionIdx = auxillarySectionIdxAltFormat;
   } else {
     // no auxillary section could be found using the colon before the closing markdown sytnatx so try the alternative common syntax
     auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
@@ -1126,13 +1132,19 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
 
   // check if there is an auxillary section
   if (auxillarySectionIdx !== -1) {
+    let curatorsSectionIdx = readme.search("(---)");
     // check if the curator's section appears before the auxillary section that was found
-    if (auxillarySectionIdx > readme.search("(---)"))
-      auxillarySectionIdx = readme.search("(---)");
+    if (curatorsSectionIdx !== -1 && auxillarySectionIdx > curatorsSectionIdx)
+      auxillarySectionIdx = curatorsSectionIdx;
   } else {
     // set the auxillary section idx to the start of the curator's section idx
     auxillarySectionIdx = readme.search("(---)");
   }
+
+  console.log(
+    "Auxillary section idx after comparing against curators section: ",
+    auxillarySectionIdx
+  );
 
   // check if there is an auxillary section
   if (auxillarySectionIdx !== -1) {
