@@ -698,10 +698,8 @@ const requiredSections = {
 };
 
 // open the first section of the accordion for first time user navigation to the section
-let dsAccordion = $("#dd-accordion").accordion()
-dsAccordion.accordion("open", 0)
-
-
+let dsAccordion = $("#dd-accordion").accordion();
+dsAccordion.accordion("open", 0);
 
 // fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
@@ -729,7 +727,7 @@ const showCurrentDescription = async () => {
     return;
   }
 
-  console.log(readme)
+  console.log(readme);
 
   // create the parsed dataset read me object
   let parsedReadme;
@@ -794,7 +792,6 @@ const showCurrentDescription = async () => {
     // this ensures when they come back to the description after loading a dataset in a different card
     // that the warning is visible
     $("#dd-accordion").accordion("open", 0);
-
 
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
@@ -1058,19 +1055,26 @@ const stripRequiredSectionFromReadme = (
   mutableReadme = mutableReadme.replace(altSearchRegExp, "");
   // search for the end of the removed section's text
   let endOfSectionIdx;
-  // curator's section is designated by three hyphens in a row 
-  let curatorsSectionIdx = mutableReadme.search("---")
-  console.log("Verifying ", mutableReadme[curatorsSectionIdx], mutableReadme[curatorsSectionIdx + 1], mutableReadme[curatorsSectionIdx + 2])
-  console.log("Curators notes found at :", curatorsSectionIdx)
+  // curator's section is designated by three hyphens in a row
+  let curatorsSectionIdx = mutableReadme.search("---");
+  console.log(
+    "Verifying ",
+    mutableReadme[curatorsSectionIdx],
+    mutableReadme[curatorsSectionIdx + 1],
+    mutableReadme[curatorsSectionIdx + 2]
+  );
+  console.log("Curators notes found at :", curatorsSectionIdx);
 
   for (
     endOfSectionIdx = sectionIdx;
     endOfSectionIdx < mutableReadme.length;
     endOfSectionIdx++
   ) {
-
     // check if we found the start of a new section
-    if (mutableReadme[endOfSectionIdx] === "*" || endOfSectionIdx === curatorsSectionIdx) {
+    if (
+      mutableReadme[endOfSectionIdx] === "*" ||
+      endOfSectionIdx === curatorsSectionIdx
+    ) {
       // if so stop
       break;
     }
@@ -1088,7 +1092,7 @@ const stripRequiredSectionFromReadme = (
   mutableReadme =
     mutableReadme.slice(0, sectionIdx) + mutableReadme.slice(endOfSectionIdx);
 
-  console.log("Mutable readme after section stripping", mutableReadme)
+  console.log("Mutable readme after section stripping", mutableReadme);
 
   return mutableReadme;
 };
@@ -1107,30 +1111,41 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     throw new Error("There was a problem with reading your description file.");
   }
 
-  // search for the first occurring auxillary section -- this can be either user defined (in special cases where a user defines a non-mandatory section) or curator's notes
-  let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]")  
-  let altAuxillarySectionIdx =  readme.search("[*][*].*[ ]*[*][*][ ]*:") 
+  // search for the first occurring auxillary section -- this is a user defined section
+  let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]");
 
-  // check which section formatting comes first 
-  // TODO: What happens when not -1??/
-  if(altAuxillarySectionIdx !== -1 &&  altAuxillarySectionIdx < auxillarySectionIdx) auxillarySectionIdx = altAuxillarySectionIdx
-
-  readme.search("(---)"))
-
-  // there is an auxillary section to remove check if there is any invalid text before it
+  // check if there was an auxillary section found that has a colon before the markdown ends
   if (auxillarySectionIdx !== -1) {
-    // search for invalid text that occurs before the auxillary section
-    let invalidTextIdx = readme.search(".*[*][*]");
+    // check if there is an auxillary section that comes before the current section that uses alternative common syntax
+    if (auxillarySectionIdx > readme.search("[*][*].*[ ]*[*][*][ ]*:"))
+      auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
+  } else {
+    // no auxillary section could be found using the colon before the closing markdown sytnatx so try the alternative common syntax
+    auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
+  }
+
+  // check if there is an auxillary section
+  if (auxillarySectionIdx !== -1) {
+    // check if the curator's section appears before the auxillary section that was found
+    if (auxillarySectionIdx > readme.search("(---)"))
+      auxillarySectionIdx = readme.search("(---)");
+  } else {
+    // set the auxillary section idx to the start of the curator's section idx
+    auxillarySectionIdx = readme.search("(---)");
+  }
+
+  // check if there is an auxillary section
+  if (auxillarySectionIdx !== -1) {
+    // get the text that comes before the auxillary seciton idx
+    let invalidText = readme.slice(0, auxillarySectionIdx);
+
     // if there is no invalid text then parsing is done
-    if (invalidTextIdx === -1) return readme;
+    if (!invalidText.length) return readme;
 
     // check if the user wants to store the invalid text in a parsed readme
     if (parsedReadme) {
       // place the invalid text into the parsed readme
-      parsedReadme[requiredSections.invalidText] = readme.slice(
-        0,
-        auxillarySectionIdx
-      );
+      parsedReadme[requiredSections.invalidText] = invalidText;
     }
 
     // remove the text from the readme
