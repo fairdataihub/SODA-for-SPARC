@@ -727,8 +727,6 @@ const showCurrentDescription = async () => {
     return;
   }
 
-  console.log(readme);
-
   // create the parsed dataset read me object
   let parsedReadme;
   try {
