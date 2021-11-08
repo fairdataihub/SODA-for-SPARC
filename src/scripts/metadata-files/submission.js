@@ -412,7 +412,6 @@ function generateSubmissionHelper(uploadBFBoolean) {
   Swal.fire({
     title: "Generating the submission.xlsx file",
     html: "Please wait...",
-    timer: 15000,
     allowEscapeKey: false,
     allowOutsideClick: false,
     showConfirmButton: false,
@@ -450,7 +449,7 @@ function generateSubmissionHelper(uploadBFBoolean) {
     "api_save_submission_file",
     uploadBFBoolean,
     defaultBfAccount,
-    $("#bf_dataset_load_submission").val().trim(),
+    $("#bf_dataset_load_submission").text().trim(),
     submissionDestinationPath,
     json_str,
     (error, res) => {

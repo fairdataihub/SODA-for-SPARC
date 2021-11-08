@@ -66,6 +66,7 @@ from Bio import Entrez
 
 from pysoda import (
     bf_get_current_user_permission,
+    agent_running,
 )
 
 userpath = expanduser("~")
@@ -171,9 +172,11 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
-        upload_metadata_file("submission", bfaccount, bfdataset, destination)
+        upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
+    ## check if agent is running in the background
+    agent_running()
 
     bf = Pennsieve(bfaccount)
 
@@ -182,22 +185,25 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
         myds = bf.get_dataset(bfdataset)
 
     except Exception as e:
-        main_curate_status = "Done"
         error = "Error: Please select a valid Pennsieve dataset"
         raise Exception(error)
 
     else:
-
         # check that the user has permissions for uploading and modifying the dataset
         role = bf_get_current_user_permission(bf, myds)
         if role not in ["owner", "manager", "editor"]:
-            main_curate_status = "Done"
-            error = "Error: You don't have permissions for uploading to this Pennsieve dataset"
+            error = "Error: You don't have permissions for uploading to this Pennsieve dataset."
             raise Exception(error)
 
+        # handle duplicates on Pennsieve: first, obtain the existing file ID
+        for i in range(len(myds.items)):
 
-        ## check if agent is running in the background
-        agent_running()
+            if myds.items[i].name == file_type:
+
+                item_id = myds.items[i].id
+
+                # then, delete it using Pennsieve method delete(id)
+                bf.delete(item_id)
 
         myds.upload(file_path)
         os.remove(file_path)
@@ -209,7 +215,6 @@ def excel_columns(start_index=0):
     single_letter = list(ascii_uppercase[start_index:])
     two_letter = [a + b for a, b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
-
 
 def rename_headers(workbook, max_len, start_index):
     """

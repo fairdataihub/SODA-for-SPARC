@@ -640,7 +640,7 @@ function generateDatasetDescriptionHelper() {
       "dataset_description.xlsx"
     );
   }
-});
+};
 
 function generateDDFile(dirpath, destinationPath) {
   var datasetInfoValueObj = grabDSInfoEntries();
