@@ -710,6 +710,13 @@ const showCurrentDescription = async () => {
     return;
   }
 
+  // check if the warning message for invalid text is showing on the page
+  let warningDisplayProperty = $("#ds-isa-warning").css("display");
+  if (warningDisplayProperty === "flex") {
+    // hide the warning message to prevent the user from seeing the warning for a new dataset
+    $("#ds-isa-warning").css("display", "none");
+  }
+
   // get the dataset readme
   let readme;
   try {
@@ -861,9 +868,14 @@ $("#button-add-description").click(() => {
           $("#bf-add-description-dataset-spinner").hide();
           return;
         }
+        // hide the warning message if it exists
+        $("#ds-isa-warning").css("display", "none");
         addDescription(selectedBfDataset, requiredFields.join("\n"));
       });
     } else {
+      // hide the warning message if it exists
+      $("#ds-isa-warning").css("display", "none");
+      // add the user's description to Pennsieve
       addDescription(selectedBfDataset, requiredFields.join("\n"));
     }
   }, delayAnimation);
