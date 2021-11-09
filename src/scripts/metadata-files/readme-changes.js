@@ -19,12 +19,12 @@ function generateRCFilesHelper(type) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-    return "empty"
+    return "empty";
   }
 }
 
 function generateRCFiles(uploadBoolean, fileType) {
-  var upperCaseLetters = fileType.toUpperCase() + ".txt"
+  var upperCaseLetters = fileType.toUpperCase() + ".txt";
   Swal.fire({
     title: `Generating the ${upperCaseLetters} file`,
     html: "Please wait...",
@@ -65,8 +65,7 @@ function generateRCFiles(uploadBoolean, fileType) {
           );
         } else {
           Swal.fire({
-            title:
-              `The ${upperCaseLetters} file has been successfully generated at the specified location.`,
+            title: `The ${upperCaseLetters} file has been successfully generated at the specified location.`,
             icon: "success",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
@@ -129,7 +128,7 @@ $(document).ready(function () {
                 "display",
                 "none"
               );
-              changesDestinationPath = ""
+              changesDestinationPath = "";
               document.getElementById(
                 "input-destination-generate-changes-locally"
               ).placeholder = "Browse here";
@@ -139,10 +138,7 @@ $(document).ready(function () {
           document.getElementById(
             "input-destination-generate-changes-locally"
           ).placeholder = dirpath[0];
-          $("#div-confirm-destination-changes-locally").css(
-            "display",
-            "flex"
-          );
+          $("#div-confirm-destination-changes-locally").css("display", "flex");
           changesDestinationPath = destinationPath;
         }
       }
@@ -154,9 +150,9 @@ $(document).ready(function () {
       filename = "README.txt";
       let data = $("#textarea-create-readme").val().trim();
       if (dirpath.length > 0) {
-          var destinationPath = path.join(dirpath[0], filename);
-          if (fs.existsSync(destinationPath)) {
-            var emessage =
+        var destinationPath = path.join(dirpath[0], filename);
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
             "File '" +
             filename +
             "' already exists in " +
@@ -187,17 +183,14 @@ $(document).ready(function () {
                 "display",
                 "none"
               );
-              readmeDestinationPath = ""
+              readmeDestinationPath = "";
               document.getElementById(
                 "input-destination-generate-readme-locally"
               ).placeholder = "Browse here";
             }
           });
         } else {
-          $("#div-confirm-destination-readme-locally").css(
-            "display",
-            "flex"
-          );
+          $("#div-confirm-destination-readme-locally").css("display", "flex");
           readmeDestinationPath = destinationPath;
           document.getElementById(
             "input-destination-generate-readme-locally"
@@ -329,9 +322,9 @@ function saveRCFile(type) {
   let data = $(`#textarea-create-${type}`).val().trim();
   let destinationPath;
   if (type === "changes") {
-    destinationPath = changesDestinationPath
+    destinationPath = changesDestinationPath;
   } else {
-     destinationPath = readmeDestinationPath
+    destinationPath = readmeDestinationPath;
   }
   fs.writeFile(destinationPath, data, (err) => {
     if (err) {
