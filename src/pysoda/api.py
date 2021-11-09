@@ -90,7 +90,9 @@ class SodaApi(object):
     def api_save_submission_file(
         self, upload_boolean, bfaccount, bfdataset, filepath, val_arr
     ):
-        return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr)
+        return save_submission_file(
+            upload_boolean, bfaccount, bfdataset, filepath, val_arr
+        )
 
     ### Save Description file
     def api_save_ds_description_file(
