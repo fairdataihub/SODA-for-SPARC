@@ -2973,7 +2973,7 @@ function submitReviewDatasetCheck(res) {
       }
     });
   } else {
-    // status is NOT_PUBLISHED 
+    // status is NOT_PUBLISHED
     // ipcRenderer.send("warning-publish-dataset");
     Swal.fire({
       icon: "warning",
@@ -3038,7 +3038,7 @@ function submitReviewDataset() {
         // $("#para-submit_prepublishing_review-status").css("color", "red");
         // $("#para-submit_prepublishing_review-status").text(emessage);
 
-        // alert the user of an error 
+        // alert the user of an error
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -3053,7 +3053,7 @@ function submitReviewDataset() {
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-        })
+        });
       } else {
         ipcRenderer.send(
           "track-event",
