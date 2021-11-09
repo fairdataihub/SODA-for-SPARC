@@ -27,6 +27,8 @@ const parentDSDropdown = document.getElementById("input-parent-ds");
 var sparcAwards = [];
 var airtableRes = [];
 
+var ddDestinationPath = ""
+
 $(document).ready(function () {
   $("#add-other-contributors").on("click", function () {
     if ($(this).text() == "Add contributors not listed above") {
@@ -61,7 +63,7 @@ $(document).ready(function () {
             confirmButtonText: "Yes",
           }).then((result) => {
             if (result.isConfirmed) {
-              generateDDFile(dirpath, destinationPath);
+              generateDDFile(false, dirpath, destinationPath);
             }
           });
         } else {
@@ -77,7 +79,7 @@ $(document).ready(function () {
               Swal.showLoading();
             },
           }).then((result) => {});
-          generateDDFile(dirpath, destinationPath);
+          generateDDFile(false, dirpath, destinationPath);
         }
       }
     }
@@ -92,6 +94,50 @@ $(document).ready(function () {
     }
   });
 
+  // generate samples file
+  ipcRenderer.on(
+    "selected-destination-generate-dd-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById(
+          "input-destination-generate-dd-locally"
+        ).placeholder = dirpath[0];
+        var destinationPath = path.join(dirpath[0], "dataset_description.xlsx");
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File dataset_description.xlsx already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              ddDestinationPath = destinationPath;
+              $("#div-confirm-destination-dd-locally").css(
+                "display",
+                "flex"
+              );
+            }
+          });
+        } else {
+          $("#div-confirm-destination-dd-locally").css(
+            "display",
+            "flex"
+          );
+          ddDestinationPath = destinationPath;
+        }
+      }
+    }
+  );
+
   $(".prepare-dd-cards").click(function () {
     $("create_dataset_description-tab").removeClass("show");
     var target = $(this).attr("data-next");
@@ -100,7 +146,7 @@ $(document).ready(function () {
   });
 
   $("#bf_dataset_load_dd").on("DOMSubtreeModified", function () {
-    if ($("#Question-prepare-dd-2").hasClass("show")) {
+    if ($("#Question-prepare-dd-2").hasClass("show") && !$("#Question-prepare-dd-6").hasClass("show")) {
       $("#Question-prepare-dd-2").removeClass("show");
     }
     if ($("#bf_dataset_load_dd").text().trim() !== "None") {
@@ -108,6 +154,14 @@ $(document).ready(function () {
       $($("#div-check-bf-import-dd").children()[0]).show();
     } else {
       $("#div-check-bf-import-dd").css("display", "none");
+    }
+  });
+
+  $("#bf_dataset_generate_dd").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_dd").text().trim() !== "None") {
+      $("#div-check-bf-generate-dd").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-dd").css("display", "none");
     }
   });
 });
@@ -598,7 +652,7 @@ function resetDDFields() {
 
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
-function generateDatasetDescriptionHelper() {
+async function generateDatasetDescription(uploadBFBoolean) {
   var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
@@ -610,7 +664,7 @@ function generateDatasetDescriptionHelper() {
       textErrorMessage += errorMessage[i] + "<br>";
     }
     var messageMissingFields = `<div>The following mandatory item(s) is/are missing:<br> ${textErrorMessage} <br>Would you still like to generate the dataset description file?</div>`;
-    Swal.fire({
+    var { value: continueProgressGenerateDD } = await Swal.fire({
       icon: "warning",
       html: messageMissingFields,
       heightAuto: false,
@@ -626,23 +680,26 @@ function generateDatasetDescriptionHelper() {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        ipcRenderer.send(
-          "open-folder-dialog-save-ds-description",
-          "dataset_description.xlsx"
-        );
-      }
     });
-  } else {
-    ipcRenderer.send(
-      "open-folder-dialog-save-ds-description",
-      "dataset_description.xlsx"
-    );
+    if (continueProgressGenerateDD) {
+      if (!uploadBFBoolean) {
+        ipcRenderer.send(
+            "open-folder-dialog-save-ds-description",
+            "dataset_description.xlsx"
+          );
+      } else {
+        $("#dd-accordion").removeClass("active");
+        $("#dd-accordion").find(".title").removeClass("active");
+        $("#dd-accordion").find(".content").removeClass("active");
+        return true
+      }
+    } else {
+      return false
+    }
   }
 };
 
-function generateDDFile(dirpath, destinationPath) {
+function generateDDFile(uploadBFBoolean, dirpath, destinationPath) {
   var datasetInfoValueObj = grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -696,8 +753,8 @@ function generateDDFile(dirpath, destinationPath) {
       "api_save_ds_description_file",
       uploadBFBoolean,
       defaultBfAccount,
-      $("#bf_dataset_load_dd").val().trim(),
-      destinationPath,
+      $("#bf_dataset_load_dd").text().trim(),
+      ddDestinationPath,
       json_str_ds,
       json_str_study,
       json_str_con,

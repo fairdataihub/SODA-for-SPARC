@@ -1091,7 +1091,7 @@ ipcRenderer.on(
                 Swal.showLoading();
               },
             }).then((result) => {});
-            generateSubjectsFileHelper(destinationPath);
+            generateSubjectsFileHelper(false);
           }
         });
       } else {
@@ -1107,19 +1107,19 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateSubjectsFileHelper(destinationPath);
+        generateSubjectsFileHelper(false);
       }
     }
   }
 );
 
-function generateSubjectsFileHelper(mypath) {
+function generateSubjectsFileHelper(uploadBFBoolean) {
   client.invoke(
     "api_save_subjects_file",
     uploadBFBoolean,
     defaultBfAccount,
-    $("#bf_dataset_load_subjects").val().trim(),
-    mypath,
+    $("#bf_dataset_load_subjects").text().trim(),
+    subjectsDestinationPath,
     subjectsTableData,
     (error, res) => {
       if (error) {
@@ -1195,7 +1195,7 @@ ipcRenderer.on(
                 Swal.showLoading();
               },
             }).then((result) => {});
-            generateSamplesFileHelper(destinationPath);
+            generateSamplesFileHelper(uploadBFBoolean);
           }
         });
       } else {
@@ -1211,13 +1211,13 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateSamplesFileHelper(destinationPath);
+        generateSamplesFileHelper(uploadBFBoolean);
       }
     }
   }
 );
 
-function generateSamplesFileHelper(mypath) {
+function generateSamplesFileHelper(uploadBFBoolean) {
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
     timeout: 300000,
@@ -1228,8 +1228,8 @@ function generateSamplesFileHelper(mypath) {
     "api_save_samples_file",
     uploadBFBoolean,
     defaultBfAccount,
-    $("#bf_dataset_load_samples").val().trim(),
-    mypath,
+    $("#bf_dataset_load_samples").text().trim(),
+    samplesDestinationPath,
     samplesTableData,
     (error, res) => {
       if (error) {

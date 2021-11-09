@@ -2,7 +2,7 @@
 var pennsieveHostname = "https://api.pennsieve.io";
 
 // function to generate changes or readme
-function generateRCFiles(type) {
+function generateRCFiles(uploadBFBoolean, type) {
   var textValue = $(`#textarea-create-${type}`).val().trim();
   if (textValue !== "") {
     // write to a text file
@@ -193,10 +193,12 @@ $(document).ready(function () {
 
   $("#bf_dataset_load_changes").on("DOMSubtreeModified", function () {
     if ($("#Question-prepare-changes-2").hasClass("show")) {
-      $("#Question-prepare-changes-2").removeClass("show");
+      if (!$("#Question-prepare-changes-6").hasClass("show")) {
+        $("#Question-prepare-changes-2").removeClass("show");
+        $("#textarea-create-changes").val("");
+      }
     }
     if ($("#bf_dataset_load_changes").text().trim() !== "None") {
-      $("#textarea-create-changes").val("");
       $("#div-check-bf-import-changes").css("display", "flex");
       $($("#div-check-bf-import-changes").children()[0]).show();
     } else {
@@ -206,14 +208,32 @@ $(document).ready(function () {
 
   $("#bf_dataset_load_readme").on("DOMSubtreeModified", function () {
     if ($("#Question-prepare-readme-2").hasClass("show")) {
-      $("#Question-prepare-readme-2").removeClass("show");
+      if (!$("#Question-prepare-readme-6").hasClass("show")) {
+        $("#Question-prepare-readme-2").removeClass("show");
+        $("#textarea-create-readme").val("");
+      }
     }
     if ($("#bf_dataset_load_readme").text().trim() !== "None") {
-      $("#textarea-create-readme").val("");
       $("#div-check-bf-import-readme").css("display", "flex");
       $($("#div-check-bf-import-readme").children()[0]).show();
     } else {
       $("#div-check-bf-import-readme").css("display", "none");
+    }
+  });
+
+  $("#bf_dataset_generate_readme").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_readme").text().trim() !== "None") {
+      $("#div-check-bf-generate-readme").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-readme").css("display", "none");
+    }
+  });
+
+  $("#bf_dataset_generate_changes").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_changes").text().trim() !== "None") {
+      $("#div-check-bf-generate-changes").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-changes").css("display", "none");
     }
   });
 });

@@ -1739,6 +1739,7 @@ async function transitionFreeFormMode(
   let continueProgressDD = true;
   let continueProgressSubSam = true;
   let continueProgressSubmission = true;
+  let continueProgressGenerateDD = true;
 
   const dataCurrent = $(ev).attr("data-current");
 
@@ -1787,6 +1788,12 @@ async function transitionFreeFormMode(
       $("#submission-accordion").removeClass("active");
       $("#submission-title-accordion").removeClass("active");
       break;
+    case "Generate-dd":
+      continueProgressGenerateDD = await generateDatasetDescription(true);
+      break;
+    // case "Generate-subjects":
+    //   continueProgressGenerateSu = await generateDatasetDescription(true);
+    //   break;
   }
 
   if (!continueProgressRC) {
@@ -1802,6 +1809,10 @@ async function transitionFreeFormMode(
   }
 
   if (!continueProgressSubmission) {
+    return;
+  }
+
+  if (!continueProgressGenerateDD) {
     return;
   }
 

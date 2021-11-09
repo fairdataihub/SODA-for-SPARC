@@ -339,7 +339,7 @@ $(document).ready(function () {
       $("#div-confirm-existing-submission-import").hide();
     }
   });
-  // generate samples file
+  // generate submission file
   ipcRenderer.on(
     "selected-destination-generate-submission-locally",
     (event, dirpath) => {
@@ -384,7 +384,7 @@ $(document).ready(function () {
   );
 
   $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
-    if ($("#Question-prepare-submission-2").hasClass("show")) {
+    if ($("#Question-prepare-submission-2").hasClass("show") && !$("#Question-prepare-submission-6").hasClass("show")) {
       $("#Question-prepare-submission-2").removeClass("show");
     }
     if ($("#bf_dataset_load_submission").text().trim() !== "None") {
@@ -403,10 +403,6 @@ $(document).ready(function () {
     }
   });
 });
-//
-// function generateBFMetadata(fileType) {
-//
-// }
 
 function generateSubmissionHelper(uploadBFBoolean) {
   Swal.fire({

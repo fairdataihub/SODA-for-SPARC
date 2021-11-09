@@ -374,7 +374,13 @@ def save_ds_description_file(
     related_info_str,
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
-    destination = filepath
+
+    if upload_boolean:
+        destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx")
+
+    else:
+        destination = filepath
+
     shutil.copyfile(source, destination)
 
     # json array to python list
@@ -423,6 +429,10 @@ def save_ds_description_file(
     grayout_single_value_rows(ws1, max_len, 3)
 
     wb.save(destination)
+
+    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    if upload_boolean:
+        upload_metadata_file("dataset_description.xlsx", bfaccount, bfdataset, destination)
 
 
 subjectsTemplateHeaderList = [
@@ -480,9 +490,14 @@ samplesTemplateHeaderList = [
 def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
 
     source = join(TEMPLATE_PATH, "subjects.xlsx")
-    destination = filepath
-    shutil.copyfile(source, destination)
 
+    if upload_boolean:
+        destination = join(METADATA_UPLOAD_BF_PATH, "subjects.xlsx")
+
+    else:
+        destination = filepath
+
+    shutil.copyfile(source, destination)
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
 
@@ -538,10 +553,21 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
 
     wb.save(destination)
 
+    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    if upload_boolean:
+        upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination)
+
+
 
 def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
     source = join(TEMPLATE_PATH, "samples.xlsx")
-    destination = filepath
+
+    if upload_boolean:
+        destination = join(METADATA_UPLOAD_BF_PATH, "subjects.xlsx")
+
+    else:
+        destination = filepath
+
     shutil.copyfile(source, destination)
 
     wb = load_workbook(destination)
@@ -594,6 +620,10 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
             ws1[cell].font = Font(bold=False, size=11, name="Arial")
 
     wb.save(destination)
+
+    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    if upload_boolean:
+        upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination)
 
 
 def column_check(x):

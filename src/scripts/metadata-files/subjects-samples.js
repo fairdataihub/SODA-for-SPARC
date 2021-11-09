@@ -1392,14 +1392,14 @@ function updateOrderContributorTable(table, json) {
   }
   contributorArray = orderedTableData;
 }
-
-function generateSubjects() {
-  ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
-}
-
-function generateSamples() {
-  ipcRenderer.send("open-folder-dialog-save-samples", "samples.xlsx");
-}
+//
+// function generateSubjects() {
+//   ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
+// }
+//
+// function generateSamples() {
+//   ipcRenderer.send("open-folder-dialog-save-samples", "samples.xlsx");
+// }
 
 function showPrimaryBrowseFolder() {
   ipcRenderer.send("open-file-dialog-local-primary-folder");
@@ -1943,6 +1943,9 @@ function addExistingCustomHeaderSamples(customName) {
   headersArrSamples.push(customName);
 }
 
+var subjectsDestinationPath = "";
+var samplesDestinationPath = "";
+
 $(document).ready(function () {
   loadExistingProtocolInfo();
   for (var field of $("#form-add-a-subject")
@@ -2073,8 +2076,97 @@ $(document).ready(function () {
       $("#div-confirm-existing-dd-import").hide();
     }
   });
+
+  // generate subjects file
+  ipcRenderer.on(
+    "selected-destination-generate-subjects-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById(
+          "input-destination-generate-subjects-locally"
+        ).placeholder = dirpath[0];
+        var destinationPath = path.join(dirpath[0], "subjects.xlsx");
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File subjects.xlsx already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              subjectsDestinationPath = destinationPath;
+              $("#div-confirm-destination-subjects-locally").css(
+                "display",
+                "flex"
+              );
+            }
+          });
+        } else {
+          $("#div-confirm-destination-subjects-locally").css(
+            "display",
+            "flex"
+          );
+          subjectsDestinationPath = destinationPath;
+        }
+      }
+    }
+  );
+
+  // generate samples file
+  ipcRenderer.on(
+    "selected-destination-generate-samples-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById(
+          "input-destination-generate-samples-locally"
+        ).placeholder = dirpath[0];
+        var destinationPath = path.join(dirpath[0], "samples.xlsx");
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File samples.xlsx already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              samplesDestinationPath = destinationPath;
+              $("#div-confirm-destination-samples-locally").css(
+                "display",
+                "flex"
+              );
+            }
+          });
+        } else {
+          $("#div-confirm-destination-samples-locally").css(
+            "display",
+            "flex"
+          );
+          samplesDestinationPath = destinationPath;
+        }
+      }
+    }
+  );
+
   $("#bf_dataset_load_subjects").on("DOMSubtreeModified", function () {
-    if ($("#Question-prepare-subjects-3").hasClass("show")) {
+    if ($("#Question-prepare-subjects-3").hasClass("show") && !$("#Question-prepare-subjects-6").hasClass("show")) {
       $("#Question-prepare-subjects-3").removeClass("show");
     }
     if ($("#bf_dataset_load_subjects").text().trim() !== "None") {
@@ -2084,8 +2176,17 @@ $(document).ready(function () {
       $("#div-check-bf-import-subjects").css("display", "none");
     }
   });
+
+  $("#bf_dataset_generate_subjects").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_subjects").text().trim() !== "None") {
+      $("#div-check-bf-generate-subjects").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-subjects").css("display", "none");
+    }
+  });
+
   $("#bf_dataset_load_samples").on("DOMSubtreeModified", function () {
-    if ($("#Question-prepare-samples-3").hasClass("show")) {
+    if ($("#Question-prepare-samples-3").hasClass("show") && !$("#Question-prepare-samples-6").hasClass("show")) {
       $("#Question-prepare-samples-3").removeClass("show");
     }
     if ($("#bf_dataset_load_samples").text().trim() !== "None") {
@@ -2093,6 +2194,13 @@ $(document).ready(function () {
       $($("#div-check-bf-import-samples").children()[0]).show();
     } else {
       $("#div-check-bf-import-samples").css("display", "none");
+    }
+  });
+  $("#bf_dataset_generate_samples").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_samples").text().trim() !== "None") {
+      $("#div-check-bf-generate-samples").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-samples").css("display", "none");
     }
   });
 });
