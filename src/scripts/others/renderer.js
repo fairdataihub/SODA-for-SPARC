@@ -34,7 +34,7 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 
-const DatePicker = require('tui-date-picker'); /* CommonJS */
+const DatePicker = require("tui-date-picker"); /* CommonJS */
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -2482,19 +2482,16 @@ const tuiInstance = new Editor({
 
 var displaySize = 1000;
 
-const container = document.getElementById('tui-date-picker-container');
-const target = document.getElementById('tui-date-picker-target');
+const container = document.getElementById("tui-date-picker-container");
+const target = document.getElementById("tui-date-picker-target");
 
 const instance = new DatePicker(container, {
-    input: {
-        element: target
-    },
-  
+  input: {
+    element: target,
+  },
 });
 
 instance.getDate();
-
-
 
 //////////////////////////////////
 // Prepare Dataset
