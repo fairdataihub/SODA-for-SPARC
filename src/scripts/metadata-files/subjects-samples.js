@@ -2111,10 +2111,7 @@ $(document).ready(function () {
             }
           });
         } else {
-          $("#div-confirm-destination-subjects-locally").css(
-            "display",
-            "flex"
-          );
+          $("#div-confirm-destination-subjects-locally").css("display", "flex");
           subjectsDestinationPath = destinationPath;
         }
       }
@@ -2155,10 +2152,7 @@ $(document).ready(function () {
             }
           });
         } else {
-          $("#div-confirm-destination-samples-locally").css(
-            "display",
-            "flex"
-          );
+          $("#div-confirm-destination-samples-locally").css("display", "flex");
           samplesDestinationPath = destinationPath;
         }
       }
@@ -2166,7 +2160,10 @@ $(document).ready(function () {
   );
 
   $("#bf_dataset_load_subjects").on("DOMSubtreeModified", function () {
-    if ($("#Question-prepare-subjects-3").hasClass("show") && !$("#Question-prepare-subjects-6").hasClass("show")) {
+    if (
+      $("#Question-prepare-subjects-3").hasClass("show") &&
+      !$("#Question-prepare-subjects-6").hasClass("show")
+    ) {
       $("#Question-prepare-subjects-3").removeClass("show");
     }
     if ($("#bf_dataset_load_subjects").text().trim() !== "None") {
@@ -2186,7 +2183,10 @@ $(document).ready(function () {
   });
 
   $("#bf_dataset_load_samples").on("DOMSubtreeModified", function () {
-    if ($("#Question-prepare-samples-3").hasClass("show") && !$("#Question-prepare-samples-6").hasClass("show")) {
+    if (
+      $("#Question-prepare-samples-3").hasClass("show") &&
+      !$("#Question-prepare-samples-6").hasClass("show")
+    ) {
       $("#Question-prepare-samples-3").removeClass("show");
     }
     if ($("#bf_dataset_load_samples").text().trim() !== "None") {

@@ -384,7 +384,10 @@ $(document).ready(function () {
   );
 
   $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
-    if ($("#Question-prepare-submission-2").hasClass("show") && !$("#Question-prepare-submission-6").hasClass("show")) {
+    if (
+      $("#Question-prepare-submission-2").hasClass("show") &&
+      !$("#Question-prepare-submission-6").hasClass("show")
+    ) {
       $("#Question-prepare-submission-2").removeClass("show");
     }
     if ($("#bf_dataset_load_submission").text().trim() !== "None") {

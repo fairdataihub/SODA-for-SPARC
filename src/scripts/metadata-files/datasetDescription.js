@@ -27,7 +27,7 @@ const parentDSDropdown = document.getElementById("input-parent-ds");
 var sparcAwards = [];
 var airtableRes = [];
 
-var ddDestinationPath = ""
+var ddDestinationPath = "";
 
 $(document).ready(function () {
   $("#add-other-contributors").on("click", function () {
@@ -121,17 +121,11 @@ $(document).ready(function () {
           }).then((result) => {
             if (result.isConfirmed) {
               ddDestinationPath = destinationPath;
-              $("#div-confirm-destination-dd-locally").css(
-                "display",
-                "flex"
-              );
+              $("#div-confirm-destination-dd-locally").css("display", "flex");
             }
           });
         } else {
-          $("#div-confirm-destination-dd-locally").css(
-            "display",
-            "flex"
-          );
+          $("#div-confirm-destination-dd-locally").css("display", "flex");
           ddDestinationPath = destinationPath;
         }
       }
@@ -146,7 +140,10 @@ $(document).ready(function () {
   });
 
   $("#bf_dataset_load_dd").on("DOMSubtreeModified", function () {
-    if ($("#Question-prepare-dd-2").hasClass("show") && !$("#Question-prepare-dd-6").hasClass("show")) {
+    if (
+      $("#Question-prepare-dd-2").hasClass("show") &&
+      !$("#Question-prepare-dd-6").hasClass("show")
+    ) {
       $("#Question-prepare-dd-2").removeClass("show");
     }
     if ($("#bf_dataset_load_dd").text().trim() !== "None") {
@@ -684,20 +681,20 @@ async function generateDatasetDescription(uploadBFBoolean) {
     if (continueProgressGenerateDD) {
       if (!uploadBFBoolean) {
         ipcRenderer.send(
-            "open-folder-dialog-save-ds-description",
-            "dataset_description.xlsx"
-          );
+          "open-folder-dialog-save-ds-description",
+          "dataset_description.xlsx"
+        );
       } else {
         $("#dd-accordion").removeClass("active");
         $("#dd-accordion").find(".title").removeClass("active");
         $("#dd-accordion").find(".content").removeClass("active");
-        return true
+        return true;
       }
     } else {
-      return false
+      return false;
     }
   }
-};
+}
 
 function generateDDFile(uploadBFBoolean, dirpath, destinationPath) {
   var datasetInfoValueObj = grabDSInfoEntries();
