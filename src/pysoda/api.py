@@ -89,7 +89,9 @@ class SodaApi(object):
     def api_save_submission_file(
         self, upload_boolean, bfaccount, bfdataset, filepath, val_arr
     ):
-        return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr)
+        return save_submission_file(
+            upload_boolean, bfaccount, bfdataset, filepath, val_arr
+        )
 
     ### Save Description file
     def api_save_ds_description_file(
@@ -148,8 +150,13 @@ class SodaApi(object):
         return save_samples_file(
             upload_boolean, bfaccount, bfdataset, filepath, datastructure
         )
-    def api_generate_metadata_file_Pennsieve(upload_boolean, bfaccount, bfdataset, filepath, json_str):
-        return generate_metadata_file_Pennsieve(upload_boolean, bfaccount, bfdataset, filepath, json_str)
+
+    def api_generate_metadata_file_Pennsieve(
+        upload_boolean, bfaccount, bfdataset, filepath, json_str
+    ):
+        return generate_metadata_file_Pennsieve(
+            upload_boolean, bfaccount, bfdataset, filepath, json_str
+        )
 
     ### Load Taxonomy species info
     def api_load_taxonomy_species(self, animalArr):

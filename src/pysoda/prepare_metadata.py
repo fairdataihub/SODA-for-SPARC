@@ -77,6 +77,7 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
+
 class InvalidDeliverablesDocument(Exception):
     pass
 
@@ -126,13 +127,25 @@ def extract_milestone_info(datalist):
 
     return milestone
 
-def generate_metadata_file_Pennsieve(upload_boolean, bfaccount, bfdataset, filepath, json_str):
+
+def generate_metadata_file_Pennsieve(
+    upload_boolean, bfaccount, bfdataset, filepath, json_str
+):
 
     if file_type == "submission.xlsx":
         save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
 
     elif file_type == "dataset_description.xlsx":
-        save_ds_description_file(upload_boolean, bfaccount, bfdataset, filepath, dataset_str, study_str, con_str, related_info_str)
+        save_ds_description_file(
+            upload_boolean,
+            bfaccount,
+            bfdataset,
+            filepath,
+            dataset_str,
+            study_str,
+            con_str,
+            related_info_str,
+        )
 
 
 ### Prepare submission file
@@ -174,6 +187,7 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
     if upload_boolean:
         upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
 
+
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
     ## check if agent is running in the background
     agent_running()
@@ -208,6 +222,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
         myds.upload(file_path)
         os.remove(file_path)
 
+
 def excel_columns(start_index=0):
     """
     NOTE: does not support more than 699 contributors/links
@@ -215,6 +230,7 @@ def excel_columns(start_index=0):
     single_letter = list(ascii_uppercase[start_index:])
     two_letter = [a + b for a, b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
+
 
 def rename_headers(workbook, max_len, start_index):
     """
@@ -432,7 +448,9 @@ def save_ds_description_file(
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
-        upload_metadata_file("dataset_description.xlsx", bfaccount, bfdataset, destination)
+        upload_metadata_file(
+            "dataset_description.xlsx", bfaccount, bfdataset, destination
+        )
 
 
 subjectsTemplateHeaderList = [
@@ -556,7 +574,6 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
         upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination)
-
 
 
 def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
