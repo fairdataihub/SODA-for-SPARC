@@ -68,7 +68,7 @@ from prepare_metadata import (
     import_bf_metadata_file,
     import_bf_changes,
     generate_metadata_file_Pennsieve,
-    upload_RC_file
+    upload_RC_file,
 )
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
@@ -155,8 +155,12 @@ class SodaApi(object):
     def api_upload_RC_file(self, text_string, file_type, bfaccount, bfdataset):
         return upload_RC_file(text_string, file_type, bfaccount, bfdataset)
 
-    def api_generate_metadata_file_Pennsieve(upload_boolean, bfaccount, bfdataset, filepath, json_str):
-        return generate_metadata_file_Pennsieve(upload_boolean, bfaccount, bfdataset, filepath, json_str)
+    def api_generate_metadata_file_Pennsieve(
+        upload_boolean, bfaccount, bfdataset, filepath, json_str
+    ):
+        return generate_metadata_file_Pennsieve(
+            upload_boolean, bfaccount, bfdataset, filepath, json_str
+        )
 
     ### Load Taxonomy species info
     def api_load_taxonomy_species(self, animalArr):

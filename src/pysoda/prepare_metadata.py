@@ -194,10 +194,11 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 
     file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
 
-    with open(file_path, 'w') as f:
+    with open(file_path, "w") as f:
         f.write(text_string)
 
     upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
+
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
     ## check if agent is running in the background
@@ -388,6 +389,7 @@ def populate_related_info(workbook, val_array):
 
 
 ### generate the dataset_description file
+
 
 def save_ds_description_file(
     upload_boolean,
