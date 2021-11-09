@@ -8487,6 +8487,7 @@
                   <button
                     type="button"
                     class="btn_animated popover-tooltip"
+                    id="button-generate-changes"
                     data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
                     rel="popover"
                     data-placement="top"
@@ -8661,7 +8662,7 @@
             <button
               id="btn-confirm-local-changes-destination"
               class="btn_animated"
-              onclick="generateRCFiles(false, 'changes')"
+              onclick="saveRCFile('changes')"
               style="margin: 0 10px; width: 100px; border: none !important"
             >
               Generate
@@ -8797,7 +8798,7 @@
                 id="div-check-bf-generate-changes"
               >
                 <button
-                  onclick="generateChangesHelper(true)"
+                  onclick="generateRCFiles(true, 'changes')"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -9420,6 +9421,7 @@
                   <button
                     type="button"
                     class="btn_animated popover-tooltip"
+                    id="button-generate-readme"
                     data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
                     rel="popover"
                     data-placement="top"
@@ -9594,7 +9596,7 @@
             <button
               id="btn-confirm-local-readme-destination"
               class="btn_animated"
-              onclick="generateRCFiles(false, 'readme')"
+              onclick="saveRCFile('readme')"
               style="margin: 0 10px; width: 100px; border: none !important"
             >
               Generate
@@ -9730,7 +9732,7 @@
                 id="div-check-bf-generate-readme"
               >
                 <button
-                  onclick="generateREADMEHelper(true)"
+                  onclick="generateRCFiles(true, 'readme')"
                   style="
                     cursor: pointer;
                     border-radius: 8px;

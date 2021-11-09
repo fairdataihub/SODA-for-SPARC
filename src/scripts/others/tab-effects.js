@@ -1791,9 +1791,18 @@ async function transitionFreeFormMode(
     case "Generate-dd":
       continueProgressGenerateDD = await generateDatasetDescription(true);
       break;
-    // case "Generate-subjects":
-    //   continueProgressGenerateSu = await generateDatasetDescription(true);
-    //   break;
+    case "Generate-changes":
+      var res = generateRCFilesHelper("changes");
+      if (res === "empty") {
+        return;
+      }
+      break;
+    case "Generate-readme":
+      var res = generateRCFilesHelper("readme");
+      if (res === "empty") {
+        return;
+      }
+      break;
   }
 
   if (!continueProgressRC) {
@@ -1977,6 +1986,7 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
       );
       $(`#textarea-create-${metadataRCFileType}`).val("");
       $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show();
+      $(`#button-generate-${metadataRCFileType}`).css("display", "flex");
     }
     return continueProgress;
   } else {

@@ -174,6 +174,18 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
     if upload_boolean:
         upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
 
+
+# this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
+## (not used for generating locally)
+def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
+
+    file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
+
+    with open(file_path, 'w') as f:
+        f.write(text_string)
+
+    upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
+
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
     ## check if agent is running in the background
     agent_running()
@@ -361,7 +373,6 @@ def populate_related_info(workbook, val_array):
 
 
 ### generate the dataset_description file
-
 
 def save_ds_description_file(
     upload_boolean,
@@ -558,12 +569,11 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
         upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination)
 
 
-
 def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
     source = join(TEMPLATE_PATH, "samples.xlsx")
 
     if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, "subjects.xlsx")
+        destination = join(METADATA_UPLOAD_BF_PATH, "samples.xlsx")
 
     else:
         destination = filepath
@@ -623,7 +633,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
-        upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination)
+        upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
 
 
 def column_check(x):

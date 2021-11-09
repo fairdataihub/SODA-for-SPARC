@@ -94,7 +94,7 @@ $(document).ready(function () {
     }
   });
 
-  // generate samples file
+  // generate dd file
   ipcRenderer.on(
     "selected-destination-generate-dd-locally",
     (event, dirpath) => {

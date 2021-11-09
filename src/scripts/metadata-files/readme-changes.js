@@ -2,12 +2,9 @@
 var pennsieveHostname = "https://api.pennsieve.io";
 
 // function to generate changes or readme
-function generateRCFiles(uploadBFBoolean, type) {
+function generateRCFilesHelper(type) {
   var textValue = $(`#textarea-create-${type}`).val().trim();
-  if (textValue !== "") {
-    // write to a text file
-    ipcRenderer.send(`open-folder-dialog-save-${type}`, `${type}.txt`);
-  } else {
+  if (textValue === "") {
     Swal.fire({
       title: "Incomplete information",
       text: "Plase fill in the textarea.",
@@ -22,17 +19,83 @@ function generateRCFiles(uploadBFBoolean, type) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
+    return "empty"
   }
 }
 
+function generateRCFiles(uploadBoolean, fileType) {
+  var upperCaseLetters = fileType.toUpperCase() + ".txt"
+  Swal.fire({
+    title: `Generating the ${upperCaseLetters} file`,
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+  var textValue = $(`#textarea-create-${fileType}`).val().trim();
+  if (uploadBoolean) {
+    client.invoke(
+      "api_upload_RC_file",
+      textValue,
+      upperCaseLetters,
+      defaultBfAccount,
+      $(`#bf_dataset_load_${fileType}`).text().trim(),
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            title: `Failed to generate the ${upperCaseLetters} file`,
+            text: emessage,
+            icon: "warning",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            `Prepare Metadata - Create ${upperCaseLetters}`,
+            defaultBfDataset
+          );
+        } else {
+          Swal.fire({
+            title:
+              `The ${upperCaseLetters} file has been successfully generated at the specified location.`,
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            `Prepare Metadata - Create ${upperCaseLetters}`,
+            defaultBfDataset
+          );
+        }
+      }
+    );
+  } else {
+    ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
+  }
+}
+
+var changesDestinationPath = "";
+var readmeDestinationPath = "";
+
 $(document).ready(function () {
   ipcRenderer.on(
-    "selected-generate-metadata-changes",
+    "selected-destination-generate-changes-locally",
     (event, dirpath, filename) => {
       filename = "CHANGES.txt";
-      let data = $(`#textarea-create-changes`).val().trim();
       if (dirpath.length > 0) {
         var destinationPath = path.join(dirpath[0], filename);
+
         if (fs.existsSync(destinationPath)) {
           var emessage =
             "File '" +
@@ -52,36 +115,48 @@ $(document).ready(function () {
             confirmButtonText: "Yes",
           }).then((result) => {
             if (result.isConfirmed) {
-              saveRCFile(data, "changes", destinationPath);
+              changesDestinationPath = destinationPath;
+              $("#div-confirm-destination-changes-locally").css(
+                "display",
+                "flex"
+              );
+              document.getElementById(
+                "input-destination-generate-changes-locally"
+              ).placeholder = dirpath[0];
+              // saveRCFile(data, "changes", destinationPath);
+            } else {
+              $("#div-confirm-destination-changes-locally").css(
+                "display",
+                "none"
+              );
+              changesDestinationPath = ""
+              document.getElementById(
+                "input-destination-generate-changes-locally"
+              ).placeholder = "Browse here";
             }
           });
         } else {
-          Swal.fire({
-            title: "Generating the CHANGES.txt file",
-            html: "Please wait...",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            timerProgressBar: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {});
-          saveRCFile(data, "changes", destinationPath);
+          document.getElementById(
+            "input-destination-generate-changes-locally"
+          ).placeholder = dirpath[0];
+          $("#div-confirm-destination-changes-locally").css(
+            "display",
+            "flex"
+          );
+          changesDestinationPath = destinationPath;
         }
       }
     }
   );
   ipcRenderer.on(
-    "selected-generate-metadata-readme",
+    "selected-destination-generate-readme-locally",
     (event, dirpath, filename) => {
       filename = "README.txt";
       let data = $("#textarea-create-readme").val().trim();
       if (dirpath.length > 0) {
-        var destinationPath = path.join(dirpath[0], filename);
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
+          var destinationPath = path.join(dirpath[0], filename);
+          if (fs.existsSync(destinationPath)) {
+            var emessage =
             "File '" +
             filename +
             "' already exists in " +
@@ -99,23 +174,34 @@ $(document).ready(function () {
             confirmButtonText: "Yes",
           }).then((result) => {
             if (result.isConfirmed) {
-              saveRCFile(data, "readme", destinationPath);
+              readmeDestinationPath = destinationPath;
+              $("#div-confirm-destination-readme-locally").css(
+                "display",
+                "flex"
+              );
+              document.getElementById(
+                "input-destination-generate-readme-locally"
+              ).placeholder = dirpath[0];
+            } else {
+              $("#div-confirm-destination-readme-locally").css(
+                "display",
+                "none"
+              );
+              readmeDestinationPath = ""
+              document.getElementById(
+                "input-destination-generate-readme-locally"
+              ).placeholder = "Browse here";
             }
           });
         } else {
-          Swal.fire({
-            title: "Generating the README.txt file",
-            html: "Please wait...",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            timerProgressBar: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {});
-          saveRCFile(data, "readme", destinationPath);
+          $("#div-confirm-destination-readme-locally").css(
+            "display",
+            "flex"
+          );
+          readmeDestinationPath = destinationPath;
+          document.getElementById(
+            "input-destination-generate-readme-locally"
+          ).placeholder = dirpath[0];
         }
       }
     }
@@ -239,7 +325,14 @@ $(document).ready(function () {
 });
 
 // write Readme or Changes files
-function saveRCFile(data, type, destinationPath) {
+function saveRCFile(type) {
+  let data = $(`#textarea-create-${type}`).val().trim();
+  let destinationPath;
+  if (type === "changes") {
+    destinationPath = changesDestinationPath
+  } else {
+     destinationPath = readmeDestinationPath
+  }
   fs.writeFile(destinationPath, data, (err) => {
     if (err) {
       console.log(err);
@@ -276,7 +369,7 @@ function saveRCFile(data, type, destinationPath) {
           });
         } else {
           Swal.fire({
-            title: "Generated successfully!",
+            title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
             icon: "success",
             showConfirmButton: true,
             heightAuto: false,
