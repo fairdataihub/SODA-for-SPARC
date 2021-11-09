@@ -34,7 +34,7 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 
-const DatePicker = require('tui-date-picker'); /* CommonJS */
+const DatePicker = require("tui-date-picker"); /* CommonJS */
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -2482,19 +2482,16 @@ const tuiInstance = new Editor({
 
 var displaySize = 1000;
 
-const container = document.getElementById('tui-date-picker-container');
-const target = document.getElementById('tui-date-picker-target');
+const container = document.getElementById("tui-date-picker-container");
+const target = document.getElementById("tui-date-picker-target");
 
 const instance = new DatePicker(container, {
-    input: {
-        element: target
-    },
-  
+  input: {
+    element: target,
+  },
 });
 
 instance.getDate();
-
-
 
 //////////////////////////////////
 // Prepare Dataset
@@ -3039,7 +3036,7 @@ function submitReviewDataset() {
     "api_bf_submit_review_dataset",
     selectedBfAccount,
     selectedBfDataset,
-    (error, res) => {
+    async (error, res) => {
       if (error) {
         ipcRenderer.send(
           "track-event",
@@ -3083,6 +3080,67 @@ function submitReviewDataset() {
         $("#para-submit_prepublishing_review-status").text(
           "Success: Dataset has been submitted for review to the Publishers within your organization"
         );
+
+        let wantsToSetEmbargo = await Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          confirmButtonText: "Yes",
+          showDenyButton: true,
+          denyButtonText: "No",
+          title: `Pre-Publishing Checks Passed!`,
+          icon: "success",
+          reverseButtons: reverseSwalButtons,
+          text: "Would you like to place the dataset under embargo so that it is not made public immediately?",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+          willOpen: (elem) => {
+            console.log(elem);
+          },
+        });
+
+        // user does want to set an embargo release date
+        if (wantsToSetEmbargo) {
+          //create a popup message that includes a calendar with a date range of today to one year from now
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            confirmButtonText: "Yes",
+            showDenyButton: true,
+            denyButtonText: "No",
+            title: `Pick a embargo releaase date!`,
+            html: `
+                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                        <input
+                        type="text"
+                        id="tui-date-picker-target"
+                        aria-label="Date-Time"
+                        />
+                        <span class="tui-ico-date"></span>
+                    </div>
+                    <div
+                      id="tui-date-picker-container"
+                      style="margin-top: -1px"
+                    ></div>`,
+            icon: "success",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+            willOpen: (elem) => {
+              // setup the calendar that is in the popup
+            },
+          });
+          //before the user closes the popup populate the embargo release date variable
+        }
+        // publish the dataset with the embargo release date if it exists otherwise just publish
+
         showPublishingStatus("noClear");
       }
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
