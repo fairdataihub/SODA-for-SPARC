@@ -687,10 +687,10 @@ async function generateDatasetDescription() {
       },
     });
     if (continueProgressGenerateDD) {
-        $("#dd-accordion").removeClass("active");
-        $("#dd-accordion").find(".title").removeClass("active");
-        $("#dd-accordion").find(".content").removeClass("active");
-        return true;
+      $("#dd-accordion").removeClass("active");
+      $("#dd-accordion").find(".title").removeClass("active");
+      $("#dd-accordion").find(".content").removeClass("active");
+      return true;
     } else {
       return false;
     }
