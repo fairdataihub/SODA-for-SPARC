@@ -3036,8 +3036,6 @@ function submitReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        // $("#para-submit_prepublishing_review-status").css("color", "red");
-        // $("#para-submit_prepublishing_review-status").text(emessage);
 
         // alert the user of an error
         Swal.fire({
@@ -3070,93 +3068,90 @@ function submitReviewDataset() {
           "Success: Dataset has been submitted for review to the Publishers within your organization"
         );
 
-        let wantsToSetEmbargo = await Swal.fire({
+        // set default embargo release date to today
+        let embargoReleaseDate = new Date();
+
+        // confirm with the user that they will submit a dataset and check if they want to set an embargo date
+        await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
-          confirmButtonText: "Yes",
-          showDenyButton: true,
-          denyButtonText: "No",
+          confirmButtonText: "Submit",
           title: `Pre-Publishing Checks Passed!`,
           icon: "success",
           reverseButtons: reverseSwalButtons,
-          text: "Would you like to place the dataset under embargo so that it is not made public immediately?",
+          text: "",
+          html: `
+          
+                    <input type="checkbox" id="embargo-date-check"> Would you like to place the dataset under embargo so that it is not made public immediately?
+                    <div style="visibility:hidden; flex-direction: column; margin-left: 23.5%;" id="calendar-wrapper">
+                        <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                          <input
+                          type="text"
+                          id="tui-date-picker-target"
+                          aria-label="Date-Time"
+                          />
+                          <span class="tui-ico-date"></span>
+                        </div>
+                        <div
+                        id="tui-date-picker-container"
+                        style="margin-top: -1px"
+                        ></div>
+                    </div>
+                    
+                `,
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-          willOpen: (elem) => {
-            console.log(elem);
+          willOpen: () => {
+            // setup the calendar that is in the popup
+            const container = document.getElementById(
+              "tui-date-picker-container"
+            );
+            const target = document.getElementById("tui-date-picker-target");
+
+            // calculate one year from now
+            var oneYearFromNow = new Date();
+            oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+            // initialize the calendar
+            const instance = new DatePicker(container, {
+              input: {
+                element: target,
+              },
+              date: new Date(),
+              // a user can lift an embargo today or a year from now
+              selectableRanges: [[new Date(), oneYearFromNow]],
+            });
+
+            // display/hide calendar on toggle
+            const selectEmbargoDateCheck =
+              document.getElementById("embargo-date-check");
+            selectEmbargoDateCheck.addEventListener("change", () => {
+              let tuiCalendarWrapper =
+                document.getElementById("calendar-wrapper");
+              if (selectEmbargoDateCheck.checked) {
+                tuiCalendarWrapper.style.visibility = "visible";
+              } else {
+                tuiCalendarWrapper.style.visibility = "hidden";
+              }
+            });
+          },
+          willClose: () => {
+            // check if the embargo checkbox is selected
+            const selectEmbargoDateCheck =
+              document.getElementById("embargo-date-check");
+            if (selectEmbargoDateCheck.checked) {
+              // set the embargoDate variable if so
+              embargoReleaseDate = $("#tui-date-picker-target").val();
+            }
           },
         });
-
-        // set default embargo release date to today
-        let embargoReleaseDate = new Date();
-
-        // user does want to set an embargo release date
-        if (wantsToSetEmbargo) {
-          //create a popup message that includes a calendar with a date range of today to one year from now
-          await Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            confirmButtonText: "Yes",
-            showDenyButton: true,
-            denyButtonText: "No",
-            title: `Select which date this dataset will become public`,
-            html: `
-                  <div style="display:flex; flex-direction: column; margin-left: 23.5%;">
-                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
-                        <input
-                        type="text"
-                        id="tui-date-picker-target"
-                        aria-label="Date-Time"
-                        />
-                        <span class="tui-ico-date"></span>
-                    </div>
-                    <div
-                      id="tui-date-picker-container"
-                      style="margin-top: -1px"
-                    ></div>
-                  </div>`,
-            icon: "success",
-            reverseButtons: reverseSwalButtons,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-            willOpen: (elem) => {
-              // setup the calendar that is in the popup
-              const container = document.getElementById(
-                "tui-date-picker-container"
-              );
-              const target = document.getElementById("tui-date-picker-target");
-
-              const instance = new DatePicker(container, {
-                input: {
-                  element: target,
-                },
-                date: new Date(),
-                selectableRanges: [[new Date()]],
-              });
-
-              instance.getDate();
-            },
-            willClose: () => {
-              // before the user closes the popup populate the embargo release date variable
-              embargoReleaseDate = $("#tui-date-picker-target").val();
-            },
-          });
-        }
-
-        console.log(embargoReleaseDate);
-
         // publish the dataset with the embargo release date if it exists otherwise just publish
-
-        showPublishingStatus("noClear");
       }
+      showPublishingStatus("noClear");
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
       $("#submit_prepublishing_review-spinner").hide();
