@@ -2482,16 +2482,6 @@ const tuiInstance = new Editor({
 
 var displaySize = 1000;
 
-const container = document.getElementById("tui-date-picker-container");
-const target = document.getElementById("tui-date-picker-target");
-
-const instance = new DatePicker(container, {
-  input: {
-    element: target,
-  },
-});
-
-instance.getDate();
 
 //////////////////////////////////
 // Prepare Dataset
@@ -3099,13 +3089,17 @@ function submitReviewDataset() {
           },
           willOpen: (elem) => {
             console.log(elem);
+
           },
         });
+
+        // set default embargo release date to today
+        let embargoReleaseDate = new Date()
 
         // user does want to set an embargo release date
         if (wantsToSetEmbargo) {
           //create a popup message that includes a calendar with a date range of today to one year from now
-          Swal.fire({
+          await Swal.fire({
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             confirmButtonText: "Yes",
@@ -3135,10 +3129,28 @@ function submitReviewDataset() {
             },
             willOpen: (elem) => {
               // setup the calendar that is in the popup
+              console.log("The popup elements", elem)
+              const container = document.getElementById("tui-date-picker-container");
+              const target = document.getElementById("tui-date-picker-target");
+
+              const instance = new DatePicker(container, {
+                    input: {
+                      element: target,
+                    },
+              });
+
+              instance.getDate();
             },
+            willClose: () => {
+              // before the user closes the popup populate the embargo release date variable
+              embargoReleaseDate = $("#tui-date-picker-target").val()
+            }
           });
-          //before the user closes the popup populate the embargo release date variable
         }
+
+        console.log(embargoReleaseDate)
+
+
         // publish the dataset with the embargo release date if it exists otherwise just publish
 
         showPublishingStatus("noClear");
