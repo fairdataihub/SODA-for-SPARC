@@ -6904,7 +6904,7 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
- get_access_token().then(res => console.log(res))
+get_access_token().then((res) => console.log(res));
 
 /*
 ******************************************************
@@ -7127,14 +7127,14 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   statuses.tags = tags.length ? true : false;
 
   // set the banner image's url status
-  statuses.bannerImageURL = bannerPresignedUrl.length ? true : false
+  statuses.bannerImageURL = bannerPresignedUrl.length ? true : false;
 
   // set the license's status
-  statuses.license = license.length ? true : false
+  statuses.license = license.length ? true : false;
 
   // check if the current user has an ORCID Account linked to Pennsieve
   // TODO: Skip for now
-  statuses.ORCID = true
+  statuses.ORCID = true;
 };
 
 /*
