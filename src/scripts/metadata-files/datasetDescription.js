@@ -63,23 +63,11 @@ $(document).ready(function () {
             confirmButtonText: "Yes",
           }).then((result) => {
             if (result.isConfirmed) {
-              generateDDFile(false, dirpath, destinationPath);
+              generateDDFile(false);
             }
           });
         } else {
-          Swal.fire({
-            title: "Generating the dataset_description.xlsx file",
-            html: "Please wait...",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            timerProgressBar: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {});
-          generateDDFile(false, dirpath, destinationPath);
+          generateDDFile(false);
         }
       }
     }
@@ -697,7 +685,36 @@ async function generateDatasetDescription() {
   }
 }
 
-function generateDDFile(uploadBFBoolean, dirpath, destinationPath) {
+async function generateDDFile(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title: "SODA will replace any existing dataset_description.xlsx file on Pennsieve.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    })
+    if (!continueProgress) {
+      return
+    }
+  }
+  Swal.fire({
+    title: "Generating the dataset_description.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   var datasetInfoValueObj = grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -746,53 +763,51 @@ function generateDDFile(uploadBFBoolean, dirpath, destinationPath) {
   var bfaccountname = $("#current-bf-account").text();
 
   /// call python function to save file
-  if (dirpath !== null) {
-    client.invoke(
-      "api_save_ds_description_file",
-      uploadBFBoolean,
-      defaultBfAccount,
-      $("#bf_dataset_load_dd").text().trim(),
-      ddDestinationPath,
-      json_str_ds,
-      json_str_study,
-      json_str_con,
-      json_str_related_info,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            title: "Failed to generate the dataset_description file",
-            text: emessage,
-            icon: "warning",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Prepare Metadata - Create dataset_description",
-            defaultBfDataset
-          );
-        } else {
-          Swal.fire({
-            title:
-              "The dataset_description.xlsx file has been successfully generated at the specified location.",
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Metadata - Create dataset_description",
-            defaultBfDataset
-          );
-        }
+  client.invoke(
+    "api_save_ds_description_file",
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_dd").text().trim(),
+    ddDestinationPath,
+    json_str_ds,
+    json_str_study,
+    json_str_con,
+    json_str_related_info,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          title: "Failed to generate the dataset_description file",
+          html: emessage,
+          icon: "warning",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create dataset_description",
+          defaultBfDataset
+        );
+      } else {
+        Swal.fire({
+          title:
+            "The dataset_description.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create dataset_description",
+          defaultBfDataset
+        );
       }
-    );
-  }
+    }
+  );
 }
 
 ///// Functions to grab each piece of info to generate the dd file
@@ -2265,7 +2280,7 @@ function loadDDFileToUI(object) {
   ///// populating Basic info UI
   for (var arr of basicInfoObj) {
     if (arr[0] === "Type") {
-      $("#ds-type").val(arr[1]);
+      $("#ds-type").val(arr[1].toLowerCase());
     } else if (arr[0] === "Title") {
       $("#ds-name").val(arr[1]);
     } else if (arr[0] === "Subtitle") {
@@ -2330,6 +2345,7 @@ function loadDDFileToUI(object) {
       Swal.hideLoading();
     },
   });
+  $("#button-generate-dd").show()
   $("#div-confirm-existing-dd-import").hide();
   $($("#div-confirm-existing-dd-import button")[0]).hide();
   $("#button-fake-confirm-existing-dd-file-load").click();

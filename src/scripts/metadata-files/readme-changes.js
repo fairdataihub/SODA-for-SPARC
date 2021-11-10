@@ -23,8 +23,25 @@ function generateRCFilesHelper(type) {
   }
 }
 
-function generateRCFiles(uploadBoolean, fileType) {
+async function generateRCFiles(uploadBFBoolean, fileType) {
   var upperCaseLetters = fileType.toUpperCase() + ".txt";
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title: `SODA will replace any existing ${upperCaseLetters} file on Pennsieve.`,
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    })
+    if (!continueProgress) {
+      return
+    }
+  }
   Swal.fire({
     title: `Generating the ${upperCaseLetters} file`,
     html: "Please wait...",
@@ -38,49 +55,102 @@ function generateRCFiles(uploadBoolean, fileType) {
     },
   }).then((result) => {});
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
-  if (uploadBoolean) {
-    client.invoke(
-      "api_upload_RC_file",
-      textValue,
-      upperCaseLetters,
-      defaultBfAccount,
-      $(`#bf_dataset_load_${fileType}`).text().trim(),
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            title: `Failed to generate the ${upperCaseLetters} file`,
-            text: emessage,
-            icon: "warning",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            `Prepare Metadata - Create ${upperCaseLetters}`,
-            defaultBfDataset
-          );
-        } else {
-          Swal.fire({
-            title: `The ${upperCaseLetters} file has been successfully generated at the specified location.`,
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            `Prepare Metadata - Create ${upperCaseLetters}`,
-            defaultBfDataset
-          );
+  if (uploadBFBoolean) {
+    // this actually separates Changes and Readme file generation
+    // since we need to update the README on Pennsieve and not upload a whole README file onto Penn
+    if (upperCaseLetters === "CHANGES") {
+      client.invoke(
+        "api_upload_RC_file",
+        textValue,
+        upperCaseLetters,
+        defaultBfAccount,
+        $(`#bf_dataset_load_${fileType}`).text().trim(),
+        (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            Swal.fire({
+              title: `Failed to generate the ${upperCaseLetters} file`,
+              html: emessage,
+              icon: "warning",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              `Prepare Metadata - Create ${upperCaseLetters}`,
+              defaultBfDataset
+            );
+          } else {
+            Swal.fire({
+              title: `The ${upperCaseLetters} file has been successfully generated at the specified location.`,
+              icon: "success",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              `Prepare Metadata - Create ${upperCaseLetters}`,
+              defaultBfDataset
+            );
+          }
         }
-      }
-    );
+      );
+    } else {
+      updateReadme($(`#bf_dataset_load_${fileType}`).text().trim(), textValue)
+    }
   } else {
     ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
+  }
+}
+
+async function updateReadme(datasetName, data) {
+  // authenticate the user
+  let jwt;
+  jwt = await get_access_token();
+
+  let datasetID = await getDatasetID(datasetName, jwt);
+
+  // setup the request options
+  let options = {
+    method: "PUT",
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ readme: data }),
+  };
+
+  // update README
+  let updateResponse;
+  updateResponse = await fetch(
+    `${pennsieveHostname}/datasets/${datasetID}/readme`,
+    options
+  )
+
+  .catch((err) => {
+    var errorMessage =
+      "Failed to update the README from selected dataset due to: " + err;
+    console.error(errorMessage);
+    Swal.fire({
+      icon: "error",
+      html: errorMessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+    });
+  });
+
+  if (updateResponse.status=== 200) {
+    Swal.fire({
+      icon: "success",
+      title: "Successfully updated README!",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+    });
   }
 }
 
@@ -380,6 +450,7 @@ function saveRCFile(type) {
           log.error(err);
           Swal.fire({
             title: `Failed to generate the ${type}.txt file`,
+            html: err,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             icon: "error",
@@ -565,7 +636,7 @@ const getReadme = async () => {
   };
 
   readmeDescription = await fetch(
-    `https://api.pennsieve.io/datasets/${datasetID}/readme`,
+    `${pennsieveHostname}/datasets/${datasetID}/readme`,
     options
   )
     .then((res) => res.json())

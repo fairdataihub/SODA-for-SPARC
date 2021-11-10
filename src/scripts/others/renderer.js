@@ -1113,7 +1113,37 @@ ipcRenderer.on(
   }
 );
 
-function generateSubjectsFileHelper(uploadBFBoolean) {
+async function generateSubjectsFileHelper(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title: "SODA will replace any existing subjects.xlsx file on Pennsieve.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    })
+    if (!continueProgress) {
+      return
+    }
+  }
+  Swal.fire({
+    title: "Generating the subjects.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+
   client.invoke(
     "api_save_subjects_file",
     uploadBFBoolean,
@@ -1128,7 +1158,7 @@ function generateSubjectsFileHelper(uploadBFBoolean) {
         console.error(error);
         Swal.fire({
           title: "Failed to generate the subjects.xlsx file.",
-          text: emessage,
+          html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
@@ -1217,7 +1247,37 @@ ipcRenderer.on(
   }
 );
 
-function generateSamplesFileHelper(uploadBFBoolean) {
+async function generateSamplesFileHelper(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title: "SODA will replace any existing samples.xlsx file on Pennsieve.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    })
+    if (!continueProgress) {
+      return
+    }
+  }
+  Swal.fire({
+    title: "Generating the samples.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
     timeout: 300000,
@@ -1244,7 +1304,7 @@ function generateSamplesFileHelper(uploadBFBoolean) {
         );
         Swal.fire({
           title: "Failed to generate the samples.xlsx file.",
-          text: emessage,
+          html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
@@ -2340,14 +2400,16 @@ const emptyDSInfoEntries = () => {
         fieldSatisfied = false;
       }
     } else {
-      if (
-        inforObj[element].length === 0 ||
-        inforObj[element] === "Select dataset"
-      ) {
-        fieldSatisfied = false;
-        emptyFieldArray.push(element);
+        if (inforObj[element]) {
+          if (
+            inforObj[element].length === 0 ||
+            inforObj[element] === "Select dataset"
+          ) {
+            fieldSatisfied = false;
+            emptyFieldArray.push(element);
+          }
+        }
       }
-    }
   }
   return [fieldSatisfied, emptyFieldArray];
 };

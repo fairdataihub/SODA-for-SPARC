@@ -414,7 +414,24 @@ $(document).ready(function () {
   });
 });
 
-function generateSubmissionHelper(uploadBFBoolean) {
+async function generateSubmissionHelper(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title: "SODA will replace any existing submission.xlsx file on Pennsieve.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    })
+    if (!continueProgress) {
+      return
+    }
+  }
   Swal.fire({
     title: "Generating the submission.xlsx file",
     html: "Please wait...",
@@ -467,7 +484,7 @@ function generateSubmissionHelper(uploadBFBoolean) {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "error",
-          text: emessage,
+          html: emessage,
           title: "Failed to generate the submission file",
         });
         ipcRenderer.send(

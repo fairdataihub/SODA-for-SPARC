@@ -1847,8 +1847,8 @@
           >
             <button
               id="btn-confirm-local-submission-destination"
+              onclick="generateSubmissionHelper(false)"
               class="btn_animated"
-              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-7', 'create_submission-tab', 'delete', 'prepare-submission')"
               style="margin: 0 10px; width: 100px; border: none !important"
             >
               Generate
@@ -1997,7 +1997,7 @@
                     font-size: 13px;
                   "
                 >
-                  Confirm
+                  Generate
                 </button>
               </div>
             </div>
@@ -2723,7 +2723,7 @@
                             class="ui selection dropdown"
                             placeholder="Type here"
                           >
-                            <option value="experiment">Experiment</option>
+                            <option value="experimental">Experiment</option>
                             <option value="computational">Computational</option>
                           </select>
                         </div>
@@ -3632,6 +3632,7 @@
             data-trigger="hover"
             data-next="Question-prepare-dd-6"
             data-current="Generate-dd"
+            id="button-generate-dd"
             onclick="transitionFreeFormMode(this, 'Question-prepare-dd-2', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')"
             style="
               margin: 10px;
@@ -3792,7 +3793,7 @@
             <button
               id="btn-confirm-local-dd-destination"
               class="btn_animated"
-              onclick="transitionFreeFormMode(this, 'Question-prepare-dd-7', 'create_dataset_description-tab', 'delete', 'prepare-dd')"
+              onclick="generateDDFile(false)"
               style="margin: 0 10px; width: 100px; border: none !important"
             >
               Generate
@@ -4769,7 +4770,7 @@
             <button
               id="btn-confirm-local-subjects-destination"
               class="btn_animated"
-              onclick="generateSubjects()"
+              onclick="generateSubjectsFileHelper(false)"
               style="margin: 0 10px; width: 100px; border: none !important"
             >
               Generate
@@ -4904,7 +4905,7 @@
                 id="div-check-bf-generate-subjects"
               >
                 <button
-                  onclick="generateSamplesFileHelper(true)"
+                  onclick="generateSubjectsFileHelper(true)"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -6886,7 +6887,7 @@
             <button
               id="btn-confirm-local-samples-destination"
               class="btn_animated"
-              onclick="generateSamples()"
+              onclick="generateSamplesFileHelper(false)"
               style="margin: 0 10px; width: 100px; border: none !important"
             >
               Generate
@@ -7021,7 +7022,7 @@
                 id="div-check-bf-generate-samples"
               >
                 <button
-                  onclick="generateSubjectsFileHelper(true)"
+                  onclick="generateSamplesFileHelper(true)"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -8795,7 +8796,7 @@
                     font-size: 13px;
                   "
                 >
-                  Confirm
+                  Generate
                 </button>
               </div>
             </div>
@@ -9726,7 +9727,7 @@
                     font-size: 13px;
                   "
                 >
-                  Confirm
+                  Generate
                 </button>
               </div>
             </div>
