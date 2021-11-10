@@ -3139,6 +3139,9 @@ function submitReviewDataset() {
                       element: target,
                     },
                     date: new Date(),
+                    selectableRanges: [
+                      [new Date(), ]
+                    ]
 
               });
 
