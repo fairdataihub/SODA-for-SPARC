@@ -2482,7 +2482,6 @@ const tuiInstance = new Editor({
 
 var displaySize = 1000;
 
-
 //////////////////////////////////
 // Prepare Dataset
 //////////////////////////////////
@@ -3089,12 +3088,11 @@ function submitReviewDataset() {
           },
           willOpen: (elem) => {
             console.log(elem);
-
           },
         });
 
         // set default embargo release date to today
-        let embargoReleaseDate = new Date()
+        let embargoReleaseDate = new Date();
 
         // user does want to set an embargo release date
         if (wantsToSetEmbargo) {
@@ -3129,27 +3127,28 @@ function submitReviewDataset() {
             },
             willOpen: (elem) => {
               // setup the calendar that is in the popup
-              console.log("The popup elements", elem)
-              const container = document.getElementById("tui-date-picker-container");
+              console.log("The popup elements", elem);
+              const container = document.getElementById(
+                "tui-date-picker-container"
+              );
               const target = document.getElementById("tui-date-picker-target");
 
               const instance = new DatePicker(container, {
-                    input: {
-                      element: target,
-                    },
+                input: {
+                  element: target,
+                },
               });
 
               instance.getDate();
             },
             willClose: () => {
               // before the user closes the popup populate the embargo release date variable
-              embargoReleaseDate = $("#tui-date-picker-target").val()
-            }
+              embargoReleaseDate = $("#tui-date-picker-target").val();
+            },
           });
         }
 
-        console.log(embargoReleaseDate)
-
+        console.log(embargoReleaseDate);
 
         // publish the dataset with the embargo release date if it exists otherwise just publish
 
