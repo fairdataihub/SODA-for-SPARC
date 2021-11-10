@@ -688,7 +688,8 @@ async function generateDatasetDescription() {
 async function generateDDFile(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
-      title: "SODA will replace any existing dataset_description.xlsx file on Pennsieve.",
+      title:
+        "SODA will replace any existing dataset_description.xlsx file on Pennsieve.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -698,9 +699,9 @@ async function generateDDFile(uploadBFBoolean) {
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
-    })
+    });
     if (!continueProgress) {
-      return
+      return;
     }
   }
   Swal.fire({
@@ -2345,7 +2346,7 @@ function loadDDFileToUI(object) {
       Swal.hideLoading();
     },
   });
-  $("#button-generate-dd").show()
+  $("#button-generate-dd").show();
   $("#div-confirm-existing-dd-import").hide();
   $($("#div-confirm-existing-dd-import button")[0]).hide();
   $("#button-fake-confirm-existing-dd-file-load").click();
