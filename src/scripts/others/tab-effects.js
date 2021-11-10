@@ -1789,7 +1789,7 @@ async function transitionFreeFormMode(
       $("#submission-title-accordion").removeClass("active");
       break;
     case "Generate-dd":
-      continueProgressGenerateDD = await generateDatasetDescription(true);
+      continueProgressGenerateDD = await generateDatasetDescription();
       break;
     case "Generate-changes":
       var res = generateRCFilesHelper("changes");
@@ -1870,6 +1870,8 @@ async function transitionFreeFormMode(
       }
     }, delay);
   }
+
+  document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {

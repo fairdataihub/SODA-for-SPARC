@@ -1449,57 +1449,6 @@
 
       <div
         class="individual-question prepare-submission"
-        id="Question-prepare-submission-7"
-      >
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                text-align: center;
-              "
-              >At which location should we generate the submission.xlsx
-              file?</label
-            >
-            <div
-              class="field"
-              style="margin: 15px auto; display: flex; justify-content: center"
-            >
-              <input
-                class="form-control"
-                style="width: 450px !important"
-                onclick="openFileBrowserDestination('submission')"
-                id="input-destination-generate-submission-locally"
-                type="text"
-                readonly
-                placeholder="Browse here"
-              />
-            </div>
-          </div>
-          <div
-            id="div-confirm-destination-submission-locally"
-            style="
-              display: none;
-              flex-direction: row;
-              justify-content: center;
-              margin: 0 auto;
-            "
-          >
-            <button
-              id="btn-confirm-local-submission-destination"
-              class="btn_animated"
-              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-7', 'create_submission-tab', 'delete', 'prepare-submission')"
-              style="margin: 0 10px; width: 100px; border: none !important"
-            >
-              Generate
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question prepare-submission"
         id="Question-prepare-submission-2"
         style="margin-top: 20px"
       >
@@ -1853,6 +1802,57 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-submission"
+        id="Question-prepare-submission-7"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >At which location should we generate the submission.xlsx
+              file?</label
+            >
+            <div
+              class="field"
+              style="margin: 15px auto; display: flex; justify-content: center"
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="openFileBrowserDestination('submission')"
+                id="input-destination-generate-submission-locally"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+          </div>
+          <div
+            id="div-confirm-destination-submission-locally"
+            style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 0 auto;
+            "
+          >
+            <button
+              id="btn-confirm-local-submission-destination"
+              class="btn_animated"
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-7', 'create_submission-tab', 'delete', 'prepare-submission')"
+              style="margin: 0 10px; width: 100px; border: none !important"
+            >
+              Generate
+            </button>
           </div>
         </div>
       </div>

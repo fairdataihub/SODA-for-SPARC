@@ -370,10 +370,18 @@ $(document).ready(function () {
                 "display",
                 "flex"
               );
+              $($("#div-confirm-destination-submission-locally").children()[0]).css(
+                "display",
+                "flex"
+              );
             }
           });
         } else {
           $("#div-confirm-destination-submission-locally").css(
+            "display",
+            "flex"
+          );
+          $($("#div-confirm-destination-submission-locally").children()[0]).css(
             "display",
             "flex"
           );

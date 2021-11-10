@@ -120,6 +120,10 @@ $(document).ready(function () {
                 "display",
                 "flex"
               );
+              $($("#div-confirm-destination-changes-locally").children()[0]).css(
+                "display",
+                "flex"
+              );
               document.getElementById(
                 "input-destination-generate-changes-locally"
               ).placeholder = dirpath[0];
@@ -143,8 +147,21 @@ $(document).ready(function () {
             "display",
             "flex"
           );
+          $($("#div-confirm-destination-changes-locally").children()[0]).css(
+            "display",
+            "flex"
+          );
           changesDestinationPath = destinationPath;
         }
+      } else {
+          $("#div-confirm-destination-changes-locally").css(
+            "display",
+            "none"
+          );
+          changesDestinationPath = ""
+          document.getElementById(
+            "input-destination-generate-changes-locally"
+          ).placeholder = "Browse here";
       }
     }
   );
@@ -179,6 +196,10 @@ $(document).ready(function () {
                 "display",
                 "flex"
               );
+              $($("#div-confirm-destination-readme-locally").children()[0]).css(
+                "display",
+                "flex"
+              );
               document.getElementById(
                 "input-destination-generate-readme-locally"
               ).placeholder = dirpath[0];
@@ -198,11 +219,24 @@ $(document).ready(function () {
             "display",
             "flex"
           );
+          $($("#div-confirm-destination-readme-locally").children()[0]).css(
+            "display",
+            "flex"
+          );
           readmeDestinationPath = destinationPath;
           document.getElementById(
             "input-destination-generate-readme-locally"
           ).placeholder = dirpath[0];
         }
+      } else {
+          $("#div-confirm-destination-readme-locally").css(
+            "display",
+            "none"
+          );
+          readmeDestinationPath = ""
+          document.getElementById(
+            "input-destination-generate-readme-locally"
+          ).placeholder = "Browse here";
       }
     }
   );

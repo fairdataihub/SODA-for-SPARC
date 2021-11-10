@@ -122,10 +122,18 @@ $(document).ready(function () {
             if (result.isConfirmed) {
               ddDestinationPath = destinationPath;
               $("#div-confirm-destination-dd-locally").css("display", "flex");
+              $($("#div-confirm-destination-dd-locally").children()[0]).css(
+                "display",
+                "flex"
+              );
             }
           });
         } else {
           $("#div-confirm-destination-dd-locally").css("display", "flex");
+          $($("#div-confirm-destination-dd-locally").children()[0]).css(
+            "display",
+            "flex"
+          );
           ddDestinationPath = destinationPath;
         }
       }
@@ -649,7 +657,7 @@ function resetDDFields() {
 
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
-async function generateDatasetDescription(uploadBFBoolean) {
+async function generateDatasetDescription() {
   var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
@@ -679,17 +687,10 @@ async function generateDatasetDescription(uploadBFBoolean) {
       },
     });
     if (continueProgressGenerateDD) {
-      if (!uploadBFBoolean) {
-        ipcRenderer.send(
-          "open-folder-dialog-save-ds-description",
-          "dataset_description.xlsx"
-        );
-      } else {
         $("#dd-accordion").removeClass("active");
         $("#dd-accordion").find(".title").removeClass("active");
         $("#dd-accordion").find(".content").removeClass("active");
         return true;
-      }
     } else {
       return false;
     }
