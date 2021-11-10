@@ -855,12 +855,10 @@
                   width: 100%;
                   text-align: center;
                 "
-                >Select an embargo release date:
+                >Pre-publishing checklist:
                 <i
                   class="fas fa-info-circle popover-tooltip"
-                  data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
-          <br/>
-          This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction. Banner image must not display animals or graphic/bloody tissues"
+                  data-content="All items must be completed before the PI/Owner can publish the dataset."
                   rel="popover"
                   data-html="true"
                   data-placement="right"
@@ -875,6 +873,51 @@
                   justify-content: center;
                 "
               >
+
+              <table class="ui fixed table" id="pre-publishing-checklist" style="max-height: 250px">
+                <thead>
+                  <tr>
+                    <th style="width: 190px">Item</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody style="height: 250px;">
+                  <tr style="height: 15px;">
+                    <td><i class="check icon" style="color:green; margin-right: 5px;"></i><a href="#">Add a subtitle</a></td>
+                    <td>Give others a brief description of your dataset</td>
+                  </tr>
+                  <tr>
+                    <td><i class="check icon" style="color:green; margin-right: 5px;"></i><a href="#">Add tag</a></td>
+                    <td>Make it easier for people to find your dataset in Discover.</td>
+                  </tr>
+                  <tr>
+                    <td><i class="check icon" style="color:green; margin-right: 5px;"></i><a href="#">Add a description</a></td>
+                    <td>provide a detailed overview of your dataset and outline your findings and analysis for others.</td>
+                  </tr>
+                  <tr>
+                    <td><i class="check icon" style="color:green; margin-right: 5px;"></i><a href="#">Add a banner image</a></td>
+                    <td>Add a banner image to help your dataset stand out in listings.</td>
+                  </tr>
+                  <tr>
+                    
+                    <td><i class="check icon" style="color:green; margin-right: 5px;"></i><a href="#">Add contributors</a></td>
+                    <td>List all of the people who have contributed to this dataset.</td>
+                  </tr>
+                  <tr>
+                    <td><i class="check icon" style="color:green; margin-right: 5px;"></i><a href="#">Reserve a DOI</a></td>
+                    <td>Reserve a DataCite DOI for published research.</td>
+                  </tr>
+                  <tr>
+                    <td><i class="check icon" style="color:green; margin-right: 5px;"></i><a href="#">Add a license</a></td>
+                    <td>Let others know how they can use this data in their own research.</td>
+                  </tr>
+                  <tr>
+                    <td><i class="check icon" style="color:green; margin-right: 5px;"></i><a href="#">Link ORCID account</a></td>
+                    <td>Link your ORCID iD to distinguish yourself from other researchers.</td>
+                  </tr>
+                </tbody>
+              </table>
+
                 <div
                   id="div-confirm-submit-review"
                   style="
