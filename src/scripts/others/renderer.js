@@ -3105,8 +3105,9 @@ function submitReviewDataset() {
             confirmButtonText: "Yes",
             showDenyButton: true,
             denyButtonText: "No",
-            title: `Pick a embargo releaase date!`,
+            title: `Select which date this dataset will become public`,
             html: `
+                  <div style="display:flex; flex-direction: column; margin-left: 23.5%;">
                     <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
                         <input
                         type="text"
@@ -3118,7 +3119,8 @@ function submitReviewDataset() {
                     <div
                       id="tui-date-picker-container"
                       style="margin-top: -1px"
-                    ></div>`,
+                    ></div>
+                  </div>`,
             icon: "success",
             reverseButtons: reverseSwalButtons,
             showClass: {
@@ -3129,7 +3131,6 @@ function submitReviewDataset() {
             },
             willOpen: (elem) => {
               // setup the calendar that is in the popup
-              console.log("The popup elements", elem)
               const container = document.getElementById("tui-date-picker-container");
               const target = document.getElementById("tui-date-picker-target");
 
@@ -3137,6 +3138,8 @@ function submitReviewDataset() {
                     input: {
                       element: target,
                     },
+                    date: new Date(),
+
               });
 
               instance.getDate();
