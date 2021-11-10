@@ -6904,7 +6904,7 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-// get_access_token().then(res => console.log(res))
+ get_access_token().then(res => console.log(res))
 
 /*
 ******************************************************
@@ -6989,6 +6989,8 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
 // get the tags from the Pennsieve API for a particular dataset
 // Inputs:
 //    dataset_id_or_name: string
+// Outputs:
+//     tags: string[]
 const get_dataset_tags = async (dataset_id_or_name) => {
   if (dataset_id_or_name === "" || dataset_id_or_name === undefined) {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
@@ -7085,4 +7087,159 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
     let statusText = await updateResponse.json().statusText;
     throw new Error(`${statusCode} - ${statusText}`);
   }
+};
+
+/*
+******************************************************
+******************************************************
+Dissemniate Datasets Pre-Publishing Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+// get a list of the user's statuses for each pre-publishing validation item
+// I: The currently selected dataset - name or by id
+// O: A status object that details the state of each pre-publishing checklist item for the given dataset and user
+//   {subtitle: boolean, description: boolean, tags: boolean, bannerImageURL: boolean, contributors: boolean, DOI: boolean, license: boolean, ORCID: boolean}
+// TODO: If a property is undefined it needs to set the corresponding status to false
+const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+
+  // get the current user's access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // construct the statuses object
+  const statuses = {};
+
+  // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
+  const { description, tags, bannerPresignedUrl, license } = dataset;
+
+  // set the subtitle's status
+  statuses.subtitle = description.length ? true : false;
+
+  // set tags's status
+  statuses.tags = tags.length ? true : false;
+
+  // set the banner image's url status
+  statuses.bannerImageURL = bannerPresignedUrl.length ? true : false
+
+  // set the license's status
+  statuses.license = license.length ? true : false
+
+  // check if the current user has an ORCID Account linked to Pennsieve
+  // TODO: Skip for now
+  statuses.ORCID = true
+};
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Subtitle Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+const getDatasetSubtitle = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+
+  // get the current user's access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the dataset subtitle from the dataset content
+  let subtitle = dataset["content"]["description"];
+
+  return subtitle;
+};
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Description Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+// returns the readme of a dataset.
+// I: dataset_name_or_id : string
+// O: a dataset description as a string
+const getDatasetReadme = async (dataset_name_or_id) => {
+  // check that a dataset name or id is provided
+  if (!dataset_name_or_id) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+  // get the user's access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
+
+  // pull out the id from the result
+  const id = dataset["content"]["id"];
+
+  // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
+  let readmeResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/readme`,
+    {
+      headers: {
+        Accept: "*/*",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  // grab the readme out of the response
+  let { readme } = await readmeResponse.json();
+
+  return readme;
+};
+
+const updateDatasetReadme = async (dataset_name_or_id, updated_readme) => {
+  // get access token for the current user
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
+
+  // get the id out of the dataset
+  let id = dataset.content.id;
+
+  // get the user's permissions
+  let roleResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/role`,
+    { headers: { Authorization: `Bearer ${jwt}` } }
+  );
+  const { role } = await roleResponse.json();
+
+  // check if the user permissions do not include "owner" or "manager"
+  if (!["owner", "manager"].includes(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    throw new Error(
+      "You don't have permissions for editing metadata on this Pennsieve dataset"
+    );
+  }
+
+  // put the new readme data in the readme on Pennsieve
+  options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ readme: updated_readme.trim() }),
+  };
+
+  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
 };
