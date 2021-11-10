@@ -2459,25 +2459,25 @@ function detectEmptyRequiredFields(funding) {
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
 // New instance for description editor
-const tuiInstance = new Editor({
-  el: document.querySelector("#editorSection"),
-  initialEditType: "wysiwyg",
-  previewStyle: "vertical",
-  height: "400px",
-  hideModeSwitch: true,
-  placeholder: "Add a description here: ",
-  toolbarItems: [
-    "heading",
-    "bold",
-    "italic",
-    "strike",
-    "link",
-    "hr",
-    "divider",
-    "ul",
-    "ol",
-  ],
-});
+// const tuiInstance = new Editor({
+//   el: document.querySelector("#editorSection"),
+//   initialEditType: "wysiwyg",
+//   previewStyle: "vertical",
+//   height: "400px",
+//   hideModeSwitch: true,
+//   placeholder: "Add a description here: ",
+//   toolbarItems: [
+//     "heading",
+//     "bold",
+//     "italic",
+//     "strike",
+//     "link",
+//     "hr",
+//     "divider",
+//     "ul",
+//     "ol",
+//   ],
+// });
 
 var displaySize = 1000;
 
@@ -6983,4 +6983,85 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
     let statusText = await updateResponse.json().statusText;
     throw new Error(`${statusCode} - ${statusText}`);
   }
+};
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Description Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+// returns the readme of a dataset.
+// I: dataset_name_or_id : string
+// O: a dataset description as a string
+const getDatasetReadme = async (dataset_name_or_id) => {
+  // check that a dataset name or id is provided
+  if (!dataset_name_or_id) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+  // get the user's access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
+
+  // pull out the id from the result
+  const id = dataset["content"]["id"];
+
+  // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
+  let readmeResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/readme`,
+    {
+      headers: {
+        Accept: "*/*",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  // grab the readme out of the response
+  let { readme } = await readmeResponse.json();
+
+  return readme;
+};
+
+const updateDatasetReadme = async (dataset_name_or_id, updated_readme) => {
+  // get access token for the current user
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
+
+  // get the id out of the dataset
+  let id = dataset.content.id;
+
+  // get the user's permissions
+  let roleResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/role`,
+    { headers: { Authorization: `Bearer ${jwt}` } }
+  );
+  const { role } = await roleResponse.json();
+
+  // check if the user permissions do not include "owner" or "manager"
+  if (!["owner", "manager"].includes(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    throw new Error(
+      "You don't have permissions for editing metadata on this Pennsieve dataset"
+    );
+  }
+
+  // put the new readme data in the readme on Pennsieve
+  options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ readme: updated_readme.trim() }),
+  };
+
+  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
 };

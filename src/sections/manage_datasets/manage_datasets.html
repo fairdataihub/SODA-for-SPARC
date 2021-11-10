@@ -2367,17 +2367,18 @@
           id="div_add_edit_description"
           style="height: auto"
         >
-          <div class="ui form" style="width: 500px">
-            <div class="grouped fields">
+          <!--Adding the test section out-->
+          <div class="ui form" style="width: 100%">
+            <div class="field" style="margin: auto; width: 500px">
               <label
                 style="
                   font-size: 17px;
                   color: var(--color-bg-plum);
-                  width: 100%;
+                  margin-bottom: 20px;
                   text-align: center;
                 "
-                id="description_header_label"
-                >Enter description below:
+                >Enter your description in the sections below
+
                 <i
                   class="fas fa-info-circle popover-tooltip"
                   data-content="Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published."
@@ -2385,50 +2386,255 @@
                   data-html="true"
                   data-placement="right"
                   data-trigger="hover"
+                  data-original-title=""
+                  title=""
                 ></i>
-                <br />
-                <span style="color: #696969; font-size: 13px"
-                  >Any existing description will be displayed
-                </span>
               </label>
+
               <div
-                class="field"
-                style="display: flex; justify-content: center; width: 100%"
+                class="ui styled accordion"
+                id="dd-accordion"
+                style="width: 100% !important"
               >
                 <div
-                  style="margin-top: 10px; width: 500px"
-                  id="editorSection"
-                ></div>
-              </div>
-              <div
-                id="div-button-add-description"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: center;
-                  align-items: center;
-                  margin: 0 auto;
-                  padding-top: 20px;
-                "
-              >
-                <button
-                  id="button-add-description"
-                  class="btn_animated md"
-                  style="width: 200px; height: 40px; font-size: 15px"
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
                 >
-                  Add description
-                </button>
-                <div
-                  id="bf-add-description-dataset-spinner"
-                  class="spinner"
-                  style="display: none"
-                >
-                  <div class="rect1"></div>
-                  <div class="rect2"></div>
-                  <div class="rect3"></div>
-                  <div class="rect4"></div>
-                  <div class="rect5"></div>
+                  <i class="dropdown icon"></i>
+                  Study Purpose
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the purpose of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
                 </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div
+                            class="ui input modified"
+                            id="ds-study-purpose-container"
+                            style="display: flex; flex-direction: column"
+                          >
+                            <textarea
+                              type="text"
+                              id="ds-description-study-purpose"
+                              placeholder="Enter your study purpose here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 10px 0px;
+                                overflow-wrap: break-word;
+                              "
+                              rows="4"
+                            >
+                            </textarea>
+
+                            <div
+                              class="isa_warning"
+                              id="ds-isa-warning"
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 10px 0px;
+                                flex-direction: column;
+                                display: none;
+                              "
+                            >
+                              <button
+                                class="close-btn"
+                                title="close"
+                                id="ds-close-btn"
+                              >
+                                <span>X</span>
+                              </button>
+                              <span
+                                style="margin-bottom: 10px; padding-left: 10px"
+                              >
+                                <strong>
+                                  Warning: It seems there is text in your
+                                  description that does not follow SPARC
+                                  Guidelines. Barring special circumstances, all
+                                  text should be in Study Purpose, Data
+                                  Collection, or Primary conclusion sections.
+                                  The non-conforming text has been placed in the
+                                  above section. Please reorganize the text by
+                                  placing it into the appropriate section(s).
+                                  <br />
+                                  <a
+                                    href="https://fairdataihub.org/sodaforsparc/docs/Add-edit-description"
+                                    >Learn more.</a
+                                  >
+                                </strong>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
+                >
+                  <i class="dropdown icon"></i>
+                  Data Collection
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the method you used for data collection below. We will enter the title for this section to your readme for you. Refrain from using markdown."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
+                </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div class="ui input modified">
+                            <textarea
+                              type="text"
+                              id="ds-description-data-collection"
+                              placeholder="Enter you data collection methods here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 15px 15px;
+                                overflow-wrap: break-word;
+                              "
+                              rows="4"
+                            >
+                            </textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
+                >
+                  <i class="dropdown icon"></i>
+                  Primary Conclusion
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the primary conclusion of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
+                </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div class="ui input modified">
+                            <textarea
+                              type="text"
+                              id="ds-description-primary-conclusion"
+                              placeholder="Enter your primary conclusion here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 15px 15px;
+                                overflow-wrap: break-word;
+                              "
+                              rows="4"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              id="div-button-add-description"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+                padding-top: 20px;
+              "
+            >
+              <button
+                id="button-add-description"
+                class="btn_animated md"
+                style="width: 200px; height: 40px; font-size: 15px"
+              >
+                Add description
+              </button>
+              <div
+                id="bf-add-description-dataset-spinner"
+                class="spinner"
+                style="display: none"
+              >
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
               </div>
             </div>
           </div>

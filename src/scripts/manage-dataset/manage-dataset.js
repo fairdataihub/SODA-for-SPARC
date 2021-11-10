@@ -688,57 +688,167 @@ const showCurrentSubtitle = () => {
   }
 };
 
-const validateDescription = (description) => {
-  description = description.trim();
+// Add description //
 
-  if (
-    description.search("[*][*]Study Purpose[*][*]") == -1 &&
-    description.search("[*][*]Study Purpose:[*][*]") == -1 &&
-    description.search("[*][*]Study Purpose :[*][*]") == -1
-  ) {
-    return false;
-  }
-  if (
-    description.search("[*][*]Data Collection[*][*]") == -1 &&
-    description.search("[*][*]Data Collection:[*][*]") == -1 &&
-    description.search("[*][*]Data Collection :[*][*]") == -1
-  ) {
-    return false;
-  }
-  if (
-    description.search("[*][*]Primary Conclusion[*][*]") == -1 &&
-    description.search("[*][*]Primary Conclusion:[*][*]") == -1 &&
-    description.search("[*][*]Primary Conclusion :[*][*]") == -1
-  ) {
-    return false;
-  }
-  return true;
+const requiredSections = {
+  studyPurpose: "study purpose",
+  dataCollection: "data collection",
+  primaryConclusion: "primary conclusion",
+  invalidText: "invalid text",
 };
 
-// Add description //
+// open the first section of the accordion for first time user navigation to the section
+let dsAccordion = $("#dd-accordion").accordion();
+dsAccordion.accordion("open", 0);
+
+// fires whenever a user selects a dataset, from any card
+const showCurrentDescription = async () => {
+  var selectedBfAccount = defaultBfAccount;
+  var selectedBfDataset = defaultBfDataset;
+
+  if (selectedBfDataset === "Select dataset") {
+    return;
+  }
+
+  // check if the warning message for invalid text is showing on the page
+  let warningDisplayProperty = $("#ds-isa-warning").css("display");
+  if (warningDisplayProperty === "flex") {
+    // hide the warning message to prevent the user from seeing the warning for a new dataset
+    $("#ds-isa-warning").css("display", "none");
+  }
+
+  // get the dataset readme
+  let readme;
+  try {
+    readme = await getDatasetReadme(selectedBfDataset);
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
+    );
+    return;
+  }
+
+  // create the parsed dataset read me object
+  let parsedReadme;
+  try {
+    parsedReadme = createParsedReadme(readme);
+  } catch (error) {
+    // log the error and send it to analytics
+    log.error(error);
+    console.error(error);
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
+    );
+    return;
+  }
+  // check if any of the fields have data
+  if (
+    parsedReadme[requiredSections.studyPurpose] ||
+    parsedReadme[requiredSections.dataCollection] ||
+    parsedReadme[requiredSections.primaryConclusion]
+  ) {
+    //if so make the button say edit description
+    $("#button-add-description > .btn_animated-inside").html(
+      "Edit description"
+    );
+  } else {
+    //make the button say add description
+    $("#button-add-description > .btn_animated-inside").html("Add description");
+  }
+
+  // remove any text that was already in the section
+  $("#ds-description-study-purpose").val("");
+  $("#ds-description-data-collection").val("");
+  $("#ds-description-primary-conclusion").val("");
+
+  // place the text into the text area for that field
+  $("#ds-description-study-purpose").val(
+    parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "")
+  );
+
+  // place the text into the text area for that field
+  $("#ds-description-data-collection").val(
+    parsedReadme[requiredSections.dataCollection].replace(/\r?\n|\r/g, "")
+  );
+
+  // place the text into the text area for that field
+  $("#ds-description-primary-conclusion").val(
+    parsedReadme[requiredSections.primaryConclusion].replace(/\r?\n|\r/g, "")
+  );
+
+  // check if there is any invalid text remaining
+  if (parsedReadme[requiredSections.invalidText]) {
+    // show the UI warning message
+    // that informs the user their invalid data has been added to
+    // the first section so they can place it in the correct section
+    $("#ds-isa-warning").css("display", "flex");
+
+    // make the study purpose section visible instead of whatever section the user has open
+    // this ensures when they come back to the description after loading a dataset in a different card
+    // that the warning is visible
+    $("#dd-accordion").accordion("open", 0);
+
+    // if so add it to the first section
+    $("#ds-description-study-purpose").val(
+      parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "") +
+        parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
+    );
+  }
+};
+
 $("#button-add-description").click(() => {
   setTimeout(() => {
     $("#bf-add-description-dataset-spinner").show();
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
-    let markdownDescription = tuiInstance.getMarkdown();
 
-    let response = validateDescription(markdownDescription);
+    // get the text from the three boxes and store them in their own variables
+    let requiredFields = [];
+
+    // read and sanatize the input for spaces and reintroduced bolded keywords
+    let studyPurpose = $("#ds-description-study-purpose").val().trim();
+    studyPurpose.replace("**Study Purpose:**", "");
+    if (studyPurpose.length) {
+      requiredFields.push("**Study Purpose:** " + studyPurpose + "\n");
+    }
+
+    let dataCollection = $("#ds-description-data-collection").val().trim();
+    dataCollection.replace("**Data Collection:**", "");
+    if (dataCollection.length) {
+      requiredFields.push("**Data Collection:** " + dataCollection + "\n");
+    }
+    let primaryConclusion = $("#ds-description-primary-conclusion")
+      .val()
+      .trim();
+    primaryConclusion.replace("**Primary Conclusion:**", "");
+    if (primaryConclusion.length) {
+      requiredFields.push(
+        "**Primary Conclusion:** " + primaryConclusion + "\n"
+      );
+    }
+    // validate the new markdown description the user created
+    let response = validateDescription(requiredFields.join(""));
 
     if (!response) {
       Swal.fire({
         icon: "warning",
-        html: `This description does not seem to follow the SPARC guidelines.
-            Your descriptions should looke like this:
-            <br> <br>
-            <p style="text-align:left">
-              <strong> Study Purpose: </strong> <br>
-              <strong> Data Collection: </strong> <br>
-              <strong> Primary Conclusion: </strong>
-            </p>
-            <br> <br>
-            Are you sure you want to continue?`,
+        title: "This description does not follow SPARC guidelines.",
+        html: `
+        Your description should include all of the mandatory sections. Additionally, each section should be no longer than one paragraph.
+        <br> 
+        <br>
+        Are you sure you want to continue?`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
@@ -752,109 +862,351 @@ $("#button-add-description").click(() => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then(() => {
-        addDescription(
-          selectedBfAccount,
-          selectedBfDataset,
-          markdownDescription
-        );
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          // hide the spinner
+          $("#bf-add-description-dataset-spinner").hide();
+          return;
+        }
+        // hide the warning message if it exists
+        $("#ds-isa-warning").css("display", "none");
+        addDescription(selectedBfDataset, requiredFields.join("\n"));
       });
     } else {
-      addDescription(selectedBfAccount, selectedBfDataset, markdownDescription);
+      // hide the warning message if it exists
+      $("#ds-isa-warning").css("display", "none");
+      // add the user's description to Pennsieve
+      addDescription(selectedBfDataset, requiredFields.join("\n"));
     }
   }, delayAnimation);
 });
 
-const showCurrentDescription = () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+// closes the warning message that appears when a user has invalid text
+$("#ds-close-btn").click(() => {
+  $("#ds-isa-warning").css("display", "none");
+});
 
-  if (selectedBfDataset === "Select dataset") {
-    tuiInstance.setMarkdown("");
-  } else {
-    client.invoke(
-      "api_bf_get_description",
-      selectedBfAccount,
-      selectedBfDataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-        } else {
-          if (res == "") {
-            res = `**Study Purpose:** &nbsp; \n \n **Data Collection:** &nbsp; \n \n **Primary Conclusion:** &nbsp; `;
-            tuiInstance.setMarkdown(res);
+// I: user_markdown_input: A string that holds the user's markdown text.
+// Merges user readme file changes with the original readme file.
+const addDescription = async (selectedBfDataset, userMarkdownInput) => {
+  // get the dataset readme
+  let readme;
+  try {
+    readme = await getDatasetReadme(selectedBfDataset);
+  } catch (err) {
+    log.error(err);
+    console.error(err);
+    let emessage = userError(err);
 
-            $("#button-add-description > .btn_animated-inside").html(
-              "Add description"
-            );
-          } else {
-            tuiInstance.setMarkdown(res);
-            $("#button-add-description > .btn_animated-inside").html(
-              "Edit description"
-            );
-          }
-        }
-      }
+    $("#bf-add-description-dataset-spinner").hide();
+
+    Swal.fire({
+      title: "Failed to get description!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
     );
+    return;
+  }
+
+  // strip out the required sections (don't check for errors here because we check for them in showCurrentDescription for the same functions and the same readme)
+  readme = stripRequiredSectionFromReadme(
+    readme,
+    requiredSections.studyPurpose
+  );
+
+  // remove the "Data Collection" section from the readme file and place its value in the parsed readme
+  readme = stripRequiredSectionFromReadme(
+    readme,
+    requiredSections.dataCollection
+  );
+
+  // search for the "Primary Conclusion" and basic variations of spacing
+  readme = stripRequiredSectionFromReadme(
+    readme,
+    requiredSections.primaryConclusion
+  );
+
+  // remove any invalid text
+  readme = stripInvalidTextFromReadme(readme);
+
+  // join the user_markdown_input with untouched sections of the original readme
+  // because markdown on the Pennsieve side is strange add two spaces so the curator's notes section does not bold the section directly above it
+  let completeReadme = userMarkdownInput + "\n" + "\n" + readme;
+
+  // update the readme file
+  try {
+    await updateDatasetReadme(selectedBfDataset, completeReadme);
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    let emessage = userError(error);
+
+    $("#bf-add-description-dataset-spinner").hide();
+
+    Swal.fire({
+      title: "Failed to add description!",
+      text: emessage,
+      icon: "error",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
+    );
+    return;
+  }
+
+  // if successful stop the spinner
+  $("#bf-add-description-dataset-spinner").hide();
+
+  // alert the user the data was uploaded successfully
+  Swal.fire({
+    title: "Successfully added description!",
+    icon: "success",
+    showConfirmButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  });
+
+  // alert analytics
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Manage Dataset - Add/Edit Description",
+    selectedBfDataset
+  );
+};
+
+// searches the markdown for key sections and returns them as an easily digestible object
+// returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}
+const createParsedReadme = (readme) => {
+  // read in the readme file and store it in a variable ( it is in markdown )
+  let mutableReadme = readme;
+
+  // create the return object
+  const parsedReadme = {
+    "study purpose": "",
+    "data collection": "",
+    "primary conclusion": "",
+    "invalid text": "",
+  };
+
+  // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
+  mutableReadme = stripRequiredSectionFromReadme(
+    mutableReadme,
+    "study purpose",
+    parsedReadme
+  );
+
+  // remove the "Data Collection" section from the readme file and place its value in the parsed readme
+  mutableReadme = stripRequiredSectionFromReadme(
+    mutableReadme,
+    "data collection",
+    parsedReadme
+  );
+
+  // search for the "Primary Conclusion" and basic variations of spacing
+  mutableReadme = stripRequiredSectionFromReadme(
+    mutableReadme,
+    "primary conclusion",
+    parsedReadme
+  );
+
+  // remove the invalid text from the readme contents
+  mutableReadme = stripInvalidTextFromReadme(mutableReadme, parsedReadme);
+
+  // return the parsed readme
+  return parsedReadme;
+};
+
+// strips the required section starting with the given section name from a copy of the given readme string. Returns the mutated string. If given a parsed readme object
+// it will also place the section text in that object.
+// Inputs:
+//      readme: A string with the users dataset description
+//      sectionName: The name of the section the user wants to strip from the readme
+//      parsedReadme: Optional object that gets the stripped section text if provided
+const stripRequiredSectionFromReadme = (
+  readme,
+  sectionName,
+  parsedReadme = undefined
+) => {
+  // lowercase the readme file text to avoid casing issues with pattern matching
+  let mutableReadme = readme.trim().toLowerCase();
+
+  // serch for the start of the given section -- it can have one or more whitespace between the colon
+  let searchRegExp = new RegExp(`[*][*]${sectionName}[ ]*:[*][*]`);
+  let altSearchRegExp = new RegExp(`[*][*]${sectionName}[*][*][ ]*:`);
+  let sectionIdx = mutableReadme.search(searchRegExp);
+  if (sectionIdx === -1) {
+    sectionIdx = mutableReadme.search(altSearchRegExp);
+  }
+  // if the section is not found return the readme unchanged
+  if (sectionIdx === -1) {
+    return mutableReadme;
+  }
+
+  // remove the section title text
+  mutableReadme = mutableReadme.replace(searchRegExp, "");
+  mutableReadme = mutableReadme.replace(altSearchRegExp, "");
+  // search for the end of the removed section's text
+  let endOfSectionIdx;
+  // curator's section is designated by three hyphens in a row
+  let curatorsSectionIdx = mutableReadme.search("---");
+
+  for (
+    endOfSectionIdx = sectionIdx;
+    endOfSectionIdx < mutableReadme.length;
+    endOfSectionIdx++
+  ) {
+    // check if we found the start of a new section
+    if (
+      mutableReadme[endOfSectionIdx] === "*" ||
+      endOfSectionIdx === curatorsSectionIdx
+    ) {
+      // if so stop
+      break;
+    }
+  }
+
+  // store the value of the given section in the parsed readme if one was provided
+  if (parsedReadme) {
+    parsedReadme[`${sectionName}`] = mutableReadme.slice(
+      sectionIdx,
+      endOfSectionIdx >= mutableReadme.length ? undefined : endOfSectionIdx
+    );
+  }
+
+  // strip the section text from the readme
+  mutableReadme =
+    mutableReadme.slice(0, sectionIdx) + mutableReadme.slice(endOfSectionIdx);
+
+  return mutableReadme;
+};
+
+// find invalid text and strip it from a copy of the given readme string. returns the mutated readme.
+// Text is invalid in these scenarios:
+//   1. any text that occurs before an auxillary section is invalid text because we cannot assume it belongs to one of the auxillary sections below
+//   2. any text in a string where there are no sections
+const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
+  // ensure the required sections have been taken out
+  if (
+    readme.search(`[*][*]${requiredSections.studyPurpose}[ ]*:[*][*]`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.studyPurpose}[*][*][ ]*:`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.dataCollection}[ ]*:[*][*]`) !==
+      -1 ||
+    readme.search(`[*][*]${requiredSections.dataCollection}[*][*][ ]*:`) !==
+      -1 ||
+    readme.search(`[*][*]${requiredSections.primaryConclusion}[ ]*:[*][*]`) !==
+      -1 ||
+    readme.search(`[*][*]${requiredSections.primaryConclusion}[*][*][ ]*:`) !==
+      -1
+  ) {
+    throw new Error("There was a problem with reading your description file.");
+  }
+
+  // search for the first occurring auxillary section -- this is a user defined section
+  let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]");
+
+  // check if there was an auxillary section found that has a colon before the markdown ends
+  if (auxillarySectionIdx !== -1) {
+    let auxillarySectionIdxAltFormat = readme.search("[*][*].*[ ]*[*][*][ ]*:");
+    // check if there is an auxillary section that comes before the current section that uses alternative common syntax
+    if (
+      auxillarySectionIdxAltFormat !== -1 &&
+      auxillarySectionIdx > auxillarySectionIdxAltFormat
+    )
+      auxillarySectionIdx = auxillarySectionIdxAltFormat;
+  } else {
+    // no auxillary section could be found using the colon before the closing markdown sytnatx so try the alternative common syntax
+    auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
+  }
+
+  // check if there is an auxillary section
+  if (auxillarySectionIdx !== -1) {
+    let curatorsSectionIdx = readme.search("(---)");
+    // check if the curator's section appears before the auxillary section that was found
+    if (curatorsSectionIdx !== -1 && auxillarySectionIdx > curatorsSectionIdx)
+      auxillarySectionIdx = curatorsSectionIdx;
+  } else {
+    // set the auxillary section idx to the start of the curator's section idx
+    auxillarySectionIdx = readme.search("(---)");
+  }
+
+  // check if there is an auxillary section
+  if (auxillarySectionIdx !== -1) {
+    // get the text that comes before the auxillary seciton idx
+    let invalidText = readme.slice(0, auxillarySectionIdx);
+
+    // if there is no invalid text then parsing is done
+    if (!invalidText.length) return readme;
+
+    // check if the user wants to store the invalid text in a parsed readme
+    if (parsedReadme) {
+      // place the invalid text into the parsed readme
+      parsedReadme[requiredSections.invalidText] = invalidText;
+    }
+
+    // remove the text from the readme
+    readme = readme.slice(auxillarySectionIdx);
+
+    // return the readme file
+    return readme;
+  } else {
+    // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
+    if (parsedReadme) {
+      parsedReadme[requiredSections.invalidText] = readme;
+    }
+
+    // remove the text from the readme === return an empty string
+    return "";
   }
 };
 
-const addDescription = (
-  selectedBfAccount,
-  selectedBfDataset,
-  markdownDescription
-) => {
-  client.invoke(
-    "api_bf_add_description",
-    selectedBfAccount,
-    selectedBfDataset,
-    markdownDescription,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        let emessage = userError(error);
+const validateDescription = () => {
+  let studyPurpose = $("#ds-description-study-purpose").val().trim();
+  let dataCollection = $("#ds-description-data-collection").val().trim();
+  let primaryConclusion = $("#ds-description-primary-conclusion").val().trim();
 
-        $("#bf-add-description-dataset-spinner").hide();
+  if (
+    !studyPurpose.length ||
+    !dataCollection.length ||
+    !primaryConclusion.length
+  ) {
+    return false;
+  }
 
-        Swal.fire({
-          title: "Failed to add description!",
-          text: emessage,
-          icon: "error",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Manage Dataset - Add/Edit Description",
-          selectedBfDataset
-        );
-      } else {
-        $("#bf-add-description-dataset-spinner").hide();
-
-        Swal.fire({
-          title: "Successfully added description!",
-          icon: "success",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        showDatasetDescription();
-        changeDatasetUnderDD();
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Manage Dataset - Add/Edit Description",
-          selectedBfDataset
-        );
-      }
+  function hasLineBreak(sectionText) {
+    if (
+      sectionText.indexOf("\n") !== -1 ||
+      sectionText.indexOf("\r") !== -1 ||
+      sectionText.indexOf("\r\n") !== -1
+    ) {
+      return true;
     }
+
+    return false;
+  }
+
+  // if one of the sections has a line break it is invalid by SPARC Guidelines
+  return (
+    !hasLineBreak(studyPurpose) &&
+    !hasLineBreak(dataCollection) &&
+    !hasLineBreak(primaryConclusion)
   );
 };
 

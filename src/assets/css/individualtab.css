@@ -1523,6 +1523,28 @@ body.swal2-shown > [aria-hidden="true"] {
   }
 }
 
+.isa_warning {
+  color: #9f6000;
+  background-color: #feefb3;
+}
+
+.close-btn {
+  cursor: pointer;
+  color: rgba(204, 204, 204, 0.774);
+  margin-left: 90%;
+  background-color: transparent;
+  border-color: transparent;
+  transition: 0.1s ease-out;
+  font-weight: bold;
+  line-height: 20px;
+  font-size: larger;
+}
+
+/* When moving the mouse over the close button */
+.close-btn:hover {
+  color: black;
+}
+
 .need-help-div {
   width: 100%;
   border-bottom: 5px solid #b80d49;
