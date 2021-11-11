@@ -2979,8 +2979,9 @@ async function submitReviewDatasetCheck(res) {
     // status is NOT_PUBLISHED
     // ipcRenderer.send("warning-publish-dataset");
 
-    // set default embargo release date to today
-    let embargoReleaseDate = new Date();
+    // embargo release date represents the time a dataset that has been reviewed for publication becomes public
+    // user sets this value in the UI or it stays an empty string
+    let embargoReleaseDate = "";
 
     // confirm with the user that they will submit a dataset and check if they want to set an embargo date
     let userResponse = await Swal.fire({
@@ -3065,8 +3066,10 @@ async function submitReviewDatasetCheck(res) {
       return;
     }
 
-    // submit the dataset for review
-    submitReviewDataset();
+    console.log("The embargo release date it: ", embargoReleaseDate)
+
+    // submit the dataset for review with the given embargoReleaseDate
+    submitReviewDataset(embargoReleaseDate);
   }
 }
 
@@ -3084,14 +3087,14 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-async function submitReviewDataset() {
+async function submitReviewDataset(embargoReleaseDate) {
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
   try { 
-  await submitDatasetForReview(selectedBfAccount, selectedBfDataset, undefined)
+  await submitDatasetForReview(selectedBfAccount, selectedBfDataset, embargoReleaseDate)
   } catch(e) {
     console.error(e)
   }
@@ -7173,8 +7176,8 @@ const submitDatasetForReview = async (
       "You don't have permissions for submitting this dataset for publication. Please have the dataset owner start the submission process."
     );
 
-  // set the publication type to "publication"
-  const publicationType = "publication";
+  // set the publication type to "publication" or "embargo" based on the value of embargoReleaseDate
+  const publicationType = embargoReleaseDate === "" ? "publication" : "embargo"
 
   // get the dataset id
   const { id } = dataset.content;
@@ -7189,9 +7192,20 @@ const submitDatasetForReview = async (
     },
   };
 
+  // construct the appropriate query string
+  let queryString = "" 
+
+  // if an embargo release date was selected add it to the query string
+  if(embargoReleaseDate !== "") { 
+    queryString = `?embargoReleaseDate=${embargoReleaseDate}&publicationType=${publicationType}`
+  } else {
+
+  // add the required publication type
+  queryString = `?publicationType=${publicationType}`
+  }
   // request that the dataset be sent in for publication/publication review
   let publicationResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/publication/request?publicationType=${publicationType}&embargoReleaseDate=${embargoReleaseDate}`,
+    `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
     options
   );
 
