@@ -2889,6 +2889,8 @@ function datasetStatusListChange() {
 
 function postCurationListChange() {
   showPublishingStatus();
+  // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
+  showPrePublishingStatus();
 }
 
 // upload banner image //
@@ -6904,7 +6906,7 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
- get_access_token().then(res => console.log(res))
+get_access_token().then((res) => console.log(res));
 
 /*
 ******************************************************
@@ -7114,11 +7116,13 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // get the dataset
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
+  console.log(dataset);
+
   // construct the statuses object
   const statuses = {};
 
   // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
-  const { description, tags, bannerPresignedUrl, license } = dataset;
+  const { description, tags, license } = dataset["content"];
 
   // set the subtitle's status
   statuses.subtitle = description.length ? true : false;
@@ -7126,15 +7130,20 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set tags's status
   statuses.tags = tags.length ? true : false;
 
+  // get the banner url
+  const bannerPresignedUrl = await getDatasetBannerImageURL(datasetIdOrName)
+
   // set the banner image's url status
   statuses.bannerImageURL = bannerPresignedUrl.length ? true : false
 
   // set the license's status
-  statuses.license = license.length ? true : false
+  statuses.license = license.length ? true : false;
 
   // check if the current user has an ORCID Account linked to Pennsieve
   // TODO: Skip for now
-  statuses.ORCID = true
+  statuses.ORCID = true;
+
+  return statuses;
 };
 
 /*
@@ -7242,4 +7251,47 @@ const updateDatasetReadme = async (dataset_name_or_id, updated_readme) => {
   };
 
   await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
+};
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Banner Image With Nodejs
+******************************************************
+******************************************************
+*/
+
+// I: Dataset name or id
+// O: Presigned URL for the banner image or an empty string
+const getDatasetBannerImageURL = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+
+  // get an access token
+  let jwt = await get_access_token();
+
+  // get the dataset to get the id
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  let { id } = dataset["content"];
+
+  // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
+  let bannerResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/banner`,
+    {
+      headers: {
+        Accept: "*/*",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  let {banner} = await bannerResponse.json()
+
+
+  return banner
+
 };
