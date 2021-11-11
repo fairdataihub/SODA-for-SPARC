@@ -7136,11 +7136,15 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
 // Submits the selected dataset for review by the publishers within a given user's organization.
 // Note: To be run after the pre-publishing validation checks have all passed.
 // I:
-//  pennsieveAccount: string - the SODA user's pennsieve account 
+//  pennsieveAccount: string - the SODA user's pennsieve account
 //  datasetIdOrName: string - the id/name of the dataset being submitted for publication
 //  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
 // O: void
-const submitDatasetForReview = async (pennsieveAccount, datasetIdOrName, embargoReleaseDate) => {
+const submitDatasetForReview = async (
+  pennsieveAccount,
+  datasetIdOrName,
+  embargoReleaseDate
+) => {
   // check that a dataset was provided
   if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error(
@@ -7158,16 +7162,16 @@ const submitDatasetForReview = async (pennsieveAccount, datasetIdOrName, embargo
   let userRole = await getCurrentUserPermissions(datasetIdOrName);
 
   // check that the current SODA user is the owner of the given dataset
-  if (!userIsOwnerOrManager(userRole)) 
+  if (!userIsOwnerOrManager(userRole))
     throw new Error(
       "You don't have permissions for submitting this dataset for publication. Please have the dataset owner start the submission process."
     );
-  
+
   // set the publication type to "publication"
-  const publicationType = "publication"
+  const publicationType = "publication";
 
   // get the dataset id
-  const {id} = dataset.content
+  const { id } = dataset.content;
 
   // create the publication request options
   const options = {
@@ -7176,12 +7180,14 @@ const submitDatasetForReview = async (pennsieveAccount, datasetIdOrName, embargo
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ publicationType, embargoReleaseDate}),
+    body: JSON.stringify({ publicationType, embargoReleaseDate }),
   };
 
   // request that the dataset be sent in for publication/publication review
-  let publicationResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/publication/request`, options)
-
+  let publicationResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/publication/request`,
+    options
+  );
 
   // get the status code out of the response
   let statusCode = publicationResponse.status;
