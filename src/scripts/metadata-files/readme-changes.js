@@ -37,9 +37,9 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
-    })
+    });
     if (!continueProgress) {
-      return
+      return;
     }
   }
   Swal.fire({
@@ -100,7 +100,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
         }
       );
     } else {
-      updateReadme($(`#bf_dataset_load_${fileType}`).text().trim(), textValue)
+      updateReadme($(`#bf_dataset_load_${fileType}`).text().trim(), textValue);
     }
   } else {
     ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
@@ -130,9 +130,7 @@ async function updateReadme(datasetName, data) {
   updateResponse = await fetch(
     `${pennsieveHostname}/datasets/${datasetID}/readme`,
     options
-  )
-
-  .catch((err) => {
+  ).catch((err) => {
     var errorMessage =
       "Failed to update the README from selected dataset due to: " + err;
     console.error(errorMessage);
@@ -144,7 +142,7 @@ async function updateReadme(datasetName, data) {
     });
   });
 
-  if (updateResponse.status=== 200) {
+  if (updateResponse.status === 200) {
     Swal.fire({
       icon: "success",
       title: "Successfully updated README!",

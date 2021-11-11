@@ -1126,9 +1126,9 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
-    })
+    });
     if (!continueProgress) {
-      return
+      return;
     }
   }
   Swal.fire({
@@ -1260,9 +1260,9 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
-    })
+    });
     if (!continueProgress) {
-      return
+      return;
     }
   }
   Swal.fire({
@@ -2400,16 +2400,16 @@ const emptyDSInfoEntries = () => {
         fieldSatisfied = false;
       }
     } else {
-        if (inforObj[element]) {
-          if (
-            inforObj[element].length === 0 ||
-            inforObj[element] === "Select dataset"
-          ) {
-            fieldSatisfied = false;
-            emptyFieldArray.push(element);
-          }
+      if (inforObj[element]) {
+        if (
+          inforObj[element].length === 0 ||
+          inforObj[element] === "Select dataset"
+        ) {
+          fieldSatisfied = false;
+          emptyFieldArray.push(element);
         }
       }
+    }
   }
   return [fieldSatisfied, emptyFieldArray];
 };

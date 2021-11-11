@@ -424,7 +424,8 @@ $(document).ready(function () {
 async function generateSubmissionHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
-      title: "SODA will replace any existing submission.xlsx file on Pennsieve.",
+      title:
+        "SODA will replace any existing submission.xlsx file on Pennsieve.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -434,9 +435,9 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
-    })
+    });
     if (!continueProgress) {
-      return
+      return;
     }
   }
   Swal.fire({
