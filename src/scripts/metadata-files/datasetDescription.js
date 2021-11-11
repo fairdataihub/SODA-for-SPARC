@@ -468,6 +468,9 @@ function resetDDUI(table) {
   $("#add-other-contributors").text("Add contributors not listed above");
   $("#table-current-contributors").find("tr").slice(1).remove();
 
+  // show generate button again
+  $("#button-generate-dd").show()
+
   rowIndex = 1;
   newRowIndex = 1;
   var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
@@ -620,6 +623,9 @@ function resetDDFields() {
 
   $("#div-confirm-existing-dd-import").hide();
 
+  // show generate button again
+  $("#button-generate-dd").show()
+
   keywordTagify.removeAllTags();
   otherFundingTagify.removeAllTags();
   studyTechniquesTagify.removeAllTags();
@@ -639,8 +645,12 @@ function resetDDFields() {
   document.getElementById("div-protocol-link-table-dd").style.display = "none";
   document.getElementById("div-other-link-table-dd").style.display = "none";
   document.getElementById("other-link-table-dd").style.display = "none";
+
   $("#dd-accordion").find(".title").removeClass("active");
   $("#dd-accordion").find(".content").removeClass("active");
+
+  $("#input-destination-generate-dd-locally").attr("placeholder", "Browse here");
+  $("#div-confirm-destination-dd-locally").css("display", "none")
 }
 
 /////////////// Generate ds description file ///////////////////

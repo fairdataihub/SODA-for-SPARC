@@ -86,6 +86,13 @@ function resetSubmissionFields() {
   }
   milestoneTagify1.removeAllTags();
 
+  // make accordion active again
+  $("#submission-title-accordion").addClass("active");
+  $("#submission-accordion").addClass("active");
+
+  // show generate button again
+  $("#button-generate-submission").show()
+
   for (var field of selectFields) {
     $(field).val("Select");
   }
