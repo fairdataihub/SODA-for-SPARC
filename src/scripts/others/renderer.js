@@ -3084,64 +3084,70 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-function submitReviewDataset() {
+async function submitReviewDataset() {
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  client.invoke(
-    "api_bf_submit_review_dataset",
-    selectedBfAccount,
-    selectedBfDataset,
-    async (error, res) => {
-      if (error) {
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Disseminate Dataset - Pre-publishing Review",
-          selectedBfDataset
-        );
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
 
-        // alert the user of an error
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          confirmButtonText: "Yes",
-          title: `400`,
-          icon: "error",
-          reverseButtons: reverseSwalButtons,
-          text: `${emessage}`,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        });
-      } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Disseminate Dataset - Pre-publishing Review",
-          selectedBfDataset
-        );
-        $("#para-submit_prepublishing_review-status").css(
-          "color",
-          "var(--color-light-green)"
-        );
-        $("#para-submit_prepublishing_review-status").text(
-          "Success: Dataset has been submitted for review to the Publishers within your organization"
-        );
-      }
-      showPublishingStatus("noClear");
-      bfRefreshPublishingDatasetStatusBtn.disabled = false;
-      bfWithdrawReviewDatasetBtn.disabled = false;
-      $("#submit_prepublishing_review-spinner").hide();
-    }
-  );
+  try { 
+  await submitDatasetForReview(selectedBfAccount, selectedBfDataset, undefined)
+  } catch(e) {
+    console.error(e)
+  }
+  // client.invoke(
+  //   "api_bf_submit_review_dataset",
+  //   selectedBfAccount,
+  //   selectedBfDataset,
+  //   async (error, res) => {
+  //     if (error) {
+  //       ipcRenderer.send(
+  //         "track-event",
+  //         "Error",
+  //         "Disseminate Dataset - Pre-publishing Review",
+  //         selectedBfDataset
+  //       );
+  //       log.error(error);
+  //       console.error(error);
+  //       var emessage = userError(error);
+
+  //       // alert the user of an error
+  //       Swal.fire({
+  //         backdrop: "rgba(0,0,0, 0.4)",
+  //         heightAuto: false,
+  //         confirmButtonText: "Yes",
+  //         title: `400`,
+  //         icon: "error",
+  //         reverseButtons: reverseSwalButtons,
+  //         text: `${emessage}`,
+  //         showClass: {
+  //           popup: "animate__animated animate__zoomIn animate__faster",
+  //         },
+  //         hideClass: {
+  //           popup: "animate__animated animate__zoomOut animate__faster",
+  //         },
+  //       });
+  //     } else {
+  //       ipcRenderer.send(
+  //         "track-event",
+  //         "Success",
+  //         "Disseminate Dataset - Pre-publishing Review",
+  //         selectedBfDataset
+  //       );
+  //       $("#para-submit_prepublishing_review-status").css(
+  //         "color",
+  //         "var(--color-light-green)"
+  //       );
+  //       $("#para-submit_prepublishing_review-status").text(
+  //         "Success: Dataset has been submitted for review to the Publishers within your organization"
+  //       );
+  //     }
+  //     showPublishingStatus("noClear");
+  //     bfRefreshPublishingDatasetStatusBtn.disabled = false;
+  //     bfWithdrawReviewDatasetBtn.disabled = false;
+  //     $("#submit_prepublishing_review-spinner").hide();
+  //   }
+  // );
 }
 
 // //Withdraw dataset from review
@@ -7177,15 +7183,15 @@ const submitDatasetForReview = async (
   const options = {
     method: "POST",
     headers: {
+      Accept: "*/*",
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ publicationType, embargoReleaseDate }),
   };
 
   // request that the dataset be sent in for publication/publication review
   let publicationResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/publication/request`,
+    `https://api.pennsieve.io/datasets/${id}/publication/request?publicationType=${publicationType}&embargoReleaseDate=${embargoReleaseDate}`,
     options
   );
 
@@ -7194,7 +7200,7 @@ const submitDatasetForReview = async (
 
   // check the status code of the response
   switch (statusCode) {
-    case 200:
+    case 201:
       // success do nothing
       break;
     case 404:
@@ -7212,7 +7218,7 @@ const submitDatasetForReview = async (
 
     default:
       // something unexpected happened
-      let statusText = await updateResponse.json().statusText;
+      let statusText = await publicationResponse.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
@@ -7445,12 +7451,12 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
     default:
       // something unexpected happened
-      let statusText = await updateResponse.json().statusText;
+      let statusText = await permissionsResponse.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 
   // get the permissions object
-  const { role } = await roleResponse.json();
+  const { role } = await permissionsResponse.json();
 
   // return the permissions
   return role;
