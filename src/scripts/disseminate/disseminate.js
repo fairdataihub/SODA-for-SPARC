@@ -465,7 +465,8 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   }
 });
 
-//
+// runs after a user selects a dataset
+// changes Pre-Publishing checklist elements to green if a user completed that item and red if they did not
 const showPrePublishingStatus = async () => {
   if (defaultBfDataset === "Select dataset") {
     return;
@@ -474,5 +475,39 @@ const showPrePublishingStatus = async () => {
   let statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
 
   // mark each pre-publishing item red or green to indicate if the item was completed
-  console.log(statuses);
+  if (statuses.subtitle) {
+    $("#prepublishing-checklist-icon-subtitle").attr("class", "check icon");
+  } else {
+    $("#prepublishing-checklist-icon-subtitle").attr("class", "close icon");
+  }
+
+  if (statuses.description) {
+    $("#prepublishing-checklist-icon-description").attr("class", "check icon");
+  } else {
+    $("#prepublishing-checklist-icon-description").attr("class", "close icon");
+  }
+
+  if (statuses.tags) {
+    $("#prepublishing-checklist-icon-tags").attr("class", "check icon");
+  } else {
+    $("#prepublishing-checklist-icon-tags").attr("class", "close icon");
+  }
+
+  if (statuses.bannerImageURL) {
+    $("#prepublishing-checklist-icon-banner").attr("class", "check icon");
+  } else {
+    $("#prepublishing-checklist-icon-banner").attr("class", "close icon");
+  }
+
+  if (statuses.license) {
+    $("#prepublishing-checklist-icon-license").attr("class", "check icon");
+  } else {
+    $("#prepublishing-checklist-icon-license").attr("class", "close icon");
+  }
+
+  if (statuses.ORCID) {
+    $("#prepublishing-checklist-icon-ORCID").attr("class", "check icon");
+  } else {
+    $("#prepublishing-checklist-icon-ORCID").attr("class", "close icon");
+  }
 };

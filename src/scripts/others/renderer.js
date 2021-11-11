@@ -7116,8 +7116,6 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // get the dataset
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
-  console.log(dataset);
-
   // construct the statuses object
   const statuses = {};
 
@@ -7126,6 +7124,12 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
 
   // set the subtitle's status
   statuses.subtitle = description.length ? true : false;
+
+  // get the readme
+  const readme = await getDatasetReadme(datasetIdOrName);
+
+  // set the readme's status
+  statuses.readme = readme.length ? true : false;
 
   // set tags's status
   statuses.tags = tags.length ? true : false;
