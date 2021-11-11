@@ -3090,10 +3090,14 @@ async function submitReviewDataset() {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  try { 
-  await submitDatasetForReview(selectedBfAccount, selectedBfDataset, undefined)
-  } catch(e) {
-    console.error(e)
+  try {
+    await submitDatasetForReview(
+      selectedBfAccount,
+      selectedBfDataset,
+      undefined
+    );
+  } catch (e) {
+    console.error(e);
   }
   // client.invoke(
   //   "api_bf_submit_review_dataset",
