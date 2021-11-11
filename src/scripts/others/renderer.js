@@ -3065,9 +3065,6 @@ async function submitReviewDatasetCheck(res) {
       // do not submit the dataset
       return;
     }
-
-    console.log("The embargo release date it: ", embargoReleaseDate)
-
     // submit the dataset for review with the given embargoReleaseDate
     submitReviewDataset(embargoReleaseDate);
   }
@@ -3093,10 +3090,14 @@ async function submitReviewDataset(embargoReleaseDate) {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  try { 
-  await submitDatasetForReview(selectedBfAccount, selectedBfDataset, embargoReleaseDate)
-  } catch(e) {
-    console.error(e)
+  try {
+    await submitDatasetForReview(
+      selectedBfAccount,
+      selectedBfDataset,
+      embargoReleaseDate
+    );
+  } catch (e) {
+    console.error(e);
   }
   // client.invoke(
   //   "api_bf_submit_review_dataset",
@@ -7177,7 +7178,7 @@ const submitDatasetForReview = async (
     );
 
   // set the publication type to "publication" or "embargo" based on the value of embargoReleaseDate
-  const publicationType = embargoReleaseDate === "" ? "publication" : "embargo"
+  const publicationType = embargoReleaseDate === "" ? "publication" : "embargo";
 
   // get the dataset id
   const { id } = dataset.content;
@@ -7193,15 +7194,14 @@ const submitDatasetForReview = async (
   };
 
   // construct the appropriate query string
-  let queryString = "" 
+  let queryString = "";
 
   // if an embargo release date was selected add it to the query string
-  if(embargoReleaseDate !== "") { 
-    queryString = `?embargoReleaseDate=${embargoReleaseDate}&publicationType=${publicationType}`
+  if (embargoReleaseDate !== "") {
+    queryString = `?embargoReleaseDate=${embargoReleaseDate}&publicationType=${publicationType}`;
   } else {
-
-  // add the required publication type
-  queryString = `?publicationType=${publicationType}`
+    // add the required publication type
+    queryString = `?publicationType=${publicationType}`;
   }
   // request that the dataset be sent in for publication/publication review
   let publicationResponse = await fetch(
