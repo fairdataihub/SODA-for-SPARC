@@ -1730,6 +1730,11 @@ function resetSubjects() {
 
       // Hide Generate button
       $("#button-generate-subjects").css("display", "none");
+
+      $("#button-add-a-subject").show();
+
+      $("#input-destination-generate-subjects-locally").attr("placeholder", "Browse here");
+      $("#div-confirm-destination-subjects-locally").css("display", "none")
     }
   });
 }
@@ -1790,6 +1795,11 @@ function resetSamples() {
       $("#table-samples").css("display", "none");
       // Hide Generate button
       $("#button-generate-samples").css("display", "none");
+
+      $("#button-add-a-sample").show();
+
+      $("#input-destination-generate-samples-locally").attr("placeholder", "Browse here");
+      $("#div-confirm-destination-samples-locally").css("display", "none")
     }
   });
 }
