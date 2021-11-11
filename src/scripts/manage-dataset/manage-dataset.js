@@ -643,7 +643,7 @@ $("#button-add-subtitle").click(() => {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           }).then(
-            //check if subtitle textarea is empty and set Add/Edit button appropriately
+            //check if subtitle text is empty and set Add/Edit button appropriately
             !$("#bf-dataset-subtitle").val()
               ? $("#button-add-subtitle").html("Add subtitle")
               : $("#button-add-subtitle").html("Edit subtitle")
@@ -822,8 +822,6 @@ const showCurrentDescription = async () => {
 
 $("#button-add-description").click(() => {
   setTimeout(() => {
-    $("#bf-add-description-dataset-spinner").show();
-
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
 
@@ -878,8 +876,6 @@ $("#button-add-description").click(() => {
         },
       }).then((result) => {
         if (!result.isConfirmed) {
-          // hide the spinner
-          $("#bf-add-description-dataset-spinner").hide();
           return;
         }
         // hide the warning message if it exists
@@ -906,13 +902,24 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   // get the dataset readme
   let readme;
   try {
+    Swal.fire({
+      title: "Adding description",
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
     readme = await getDatasetReadme(selectedBfDataset);
   } catch (err) {
     log.error(err);
     console.error(err);
     let emessage = userError(err);
-
-    $("#bf-add-description-dataset-spinner").hide();
 
     Swal.fire({
       title: "Failed to get description!",
@@ -965,8 +972,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     console.error(error);
     let emessage = userError(error);
 
-    $("#bf-add-description-dataset-spinner").hide();
-
     Swal.fire({
       title: "Failed to add description!",
       text: emessage,
@@ -985,9 +990,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     return;
   }
 
-  // if successful stop the spinner
-  $("#bf-add-description-dataset-spinner").hide();
-
   // alert the user the data was uploaded successfully
   Swal.fire({
     title: "Successfully added description!",
@@ -995,7 +997,14 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  });
+  }).then(
+    //check if subtitle text is empty and set Add/Edit button appropriately
+    !$("#ds-description-study-purpose").val() &&
+      !$("#ds-description-data-collection").val() &&
+      !$("#ds-description-primary-conclusion").val()
+      ? $("#button-add-description").html("Add description")
+      : $("#button-add-description").html("Edit description")
+  );
 
   // alert analytics
   ipcRenderer.send(
