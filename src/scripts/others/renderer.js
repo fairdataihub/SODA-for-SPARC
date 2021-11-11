@@ -3079,13 +3079,12 @@ function submitReviewDataset() {
           heightAuto: false,
           confirmButtonText: "Submit",
           title: `Pre-Publishing Checks Passed!`,
-          icon: "success",
           reverseButtons: reverseSwalButtons,
           text: "",
           html: `
-          
+                    <p>Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
                     <input type="checkbox" id="embargo-date-check"> Would you like to place the dataset under embargo so that it is not made public immediately?
-                    <div style="visibility:hidden; flex-direction: column; margin-left: 23.5%;" id="calendar-wrapper">
+                    <div style="visibility:hidden; flex-direction: column; margin-left: 21.5%;" id="calendar-wrapper">
                         <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
                           <input
                           type="text"
