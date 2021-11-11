@@ -7360,6 +7360,33 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
     }
   );
 
+    // get the status code out of the response
+    let statusCode = bannerResponse.status;
+
+    // check the status code of the response
+    switch (statusCode) {
+      case 200:
+        // success do nothing
+        break;
+      case 404:
+        throw new Error(
+          `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to look at the banner image.`
+        );
+      case 401:
+        throw new Error(
+          `${statusCode} - You cannot get the dataset banner image without being authenticated. Please reauthenticate and try again.`
+        );
+      case 403:
+        throw new Error(
+          `${statusCode} - You do not have access to this dataset. `
+        );
+  
+      default:
+        // something unexpected happened
+        let statusText = await updateResponse.json().statusText;
+        throw new Error(`${statusCode} - ${statusText}`);
+    }
+
   let { banner } = await bannerResponse.json();
 
   return banner;
@@ -7409,7 +7436,7 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
       );
     case 401:
       throw new Error(
-        `${statusCode} - You cannot check your dataset permissions while unauthenticated. Please reauthenticate.`
+        `${statusCode} - You cannot check your dataset permissions while unauthenticated. Please reauthenticate and try again.`
       );
     case 403:
       throw new Error(
