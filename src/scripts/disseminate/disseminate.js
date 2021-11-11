@@ -471,43 +471,59 @@ const showPrePublishingStatus = async () => {
   if (defaultBfDataset === "Select dataset") {
     return;
   }
+
+  // spinners that fit into the checklist icon slots until statuses have been verified for the items
+  $(".icon-wrapper").attr("class", "ui mini active inline loader icon-wrapper");
+  $(".icon-wrapper").children().css("visibility", "hidden");
+
   // run the validation checks on each pre-publishing checklist item
   let statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
 
   // mark each pre-publishing item red or green to indicate if the item was completed
-  if (statuses.subtitle) {
-    $("#prepublishing-checklist-icon-subtitle").attr("class", "check icon");
-  } else {
-    $("#prepublishing-checklist-icon-subtitle").attr("class", "close icon");
-  }
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-subtitle",
+    statuses.subtitle
+  );
 
-  if (statuses.description) {
-    $("#prepublishing-checklist-icon-description").attr("class", "check icon");
-  } else {
-    $("#prepublishing-checklist-icon-description").attr("class", "close icon");
-  }
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-description",
+    statuses.description
+  );
 
-  if (statuses.tags) {
-    $("#prepublishing-checklist-icon-tags").attr("class", "check icon");
-  } else {
-    $("#prepublishing-checklist-icon-tags").attr("class", "close icon");
-  }
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-tags",
+    statuses.tags
+  );
 
-  if (statuses.bannerImageURL) {
-    $("#prepublishing-checklist-icon-banner").attr("class", "check icon");
-  } else {
-    $("#prepublishing-checklist-icon-banner").attr("class", "close icon");
-  }
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-banner",
+    statuses.bannerImageURL
+  );
 
-  if (statuses.license) {
-    $("#prepublishing-checklist-icon-license").attr("class", "check icon");
-  } else {
-    $("#prepublishing-checklist-icon-license").attr("class", "close icon");
-  }
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-license",
+    statuses.license
+  );
 
-  if (statuses.ORCID) {
-    $("#prepublishing-checklist-icon-ORCID").attr("class", "check icon");
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-ORCID",
+    statuses.ORCID
+  );
+
+  // hide the spinner and show the checklist item icons
+  $(".icon-wrapper").attr("class", "icon-wrapper");
+  $(".icon-wrapper").children().css("visibility", "visible");
+};
+
+// Inputs:
+//  iconElementId : string - corresponds with the icons in the pre-publishing checklist
+//  status: a boolean corresponding to the checklist item
+const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
+  if (status) {
+    $(`#${iconElementId}`).attr("class", "check icon");
+    $(`#${iconElementId}`).css("color", "green");
   } else {
-    $("#prepublishing-checklist-icon-ORCID").attr("class", "close icon");
+    $(`#${iconElementId}`).attr("class", "close icon");
+    $(`#${iconElementId}`).css("color", "red");
   }
 };

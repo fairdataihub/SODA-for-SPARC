@@ -7123,25 +7123,26 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   const { description, tags, license } = dataset["content"];
 
   // set the subtitle's status
-  statuses.subtitle = description.length ? true : false;
+  statuses.subtitle = description && description.length ? true : false;
 
   // get the readme
   const readme = await getDatasetReadme(datasetIdOrName);
 
   // set the readme's status
-  statuses.readme = readme.length ? true : false;
+  statuses.readme = readme && readme.length ? true : false;
 
   // set tags's status
-  statuses.tags = tags.length ? true : false;
+  statuses.tags = tags && tags.length ? true : false;
 
   // get the banner url
   const bannerPresignedUrl = await getDatasetBannerImageURL(datasetIdOrName);
 
   // set the banner image's url status
-  statuses.bannerImageURL = bannerPresignedUrl.length ? true : false;
+  statuses.bannerImageURL =
+    bannerPresignedUrl && bannerPresignedUrl.length ? true : false;
 
   // set the license's status
-  statuses.license = license.length ? true : false;
+  statuses.license = license && license.length ? true : false;
 
   // check if the current user has an ORCID Account linked to Pennsieve
   // TODO: Skip for now
