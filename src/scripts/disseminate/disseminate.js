@@ -465,16 +465,14 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   }
 });
 
-
-// 
+//
 const showPrePublishingStatus = async () => {
-  if(defaultBfDataset === 'Select dataset') {
-    return 
+  if (defaultBfDataset === "Select dataset") {
+    return;
   }
-  // run the validation checks on each pre-publishing checklist item 
-  let statuses = await getPrepublishingChecklistStatuses(defaultBfDataset)
+  // run the validation checks on each pre-publishing checklist item
+  let statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
 
   // mark each pre-publishing item red or green to indicate if the item was completed
-  console.log(statuses)
-  
-}
+  console.log(statuses);
+};
