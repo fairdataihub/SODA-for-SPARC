@@ -2939,7 +2939,7 @@ var cropOptions = {
 var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
 
-function submitReviewDatasetCheck(res) {
+async function submitReviewDatasetCheck(res) {
   $("#submit_prepublishing_review-spinner").show();
   var reviewstatus = res[0];
   var publishingStatus = res[1];
@@ -2978,29 +2978,95 @@ function submitReviewDatasetCheck(res) {
   } else {
     // status is NOT_PUBLISHED
     // ipcRenderer.send("warning-publish-dataset");
-    Swal.fire({
-      icon: "warning",
-      text: "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
-      heightAuto: false,
+
+    // set default embargo release date to today
+    let embargoReleaseDate = new Date();
+
+    // confirm with the user that they will submit a dataset and check if they want to set an embargo date
+    let userResponse = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      focusCancel: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
+      heightAuto: false,
+      confirmButtonText: "Submit",
+      title: `Submit your dataset for publishing review!`,
       reverseButtons: reverseSwalButtons,
+      text: "",
+      html: `
+                <p>Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
+                <input type="checkbox" id="embargo-date-check"> Would you like to place the dataset under embargo so that it is not made public immediately?
+                <div style="visibility:hidden; flex-direction: column; margin-left: 20%;" id="calendar-wrapper">
+                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                      <input
+                      type="text"
+                      id="tui-date-picker-target"
+                      aria-label="Date-Time"
+                      />
+                      <span class="tui-ico-date"></span>
+                    </div>
+                    <div
+                    id="tui-date-picker-container"
+                    style="margin-top: -1px"
+                    ></div>
+                </div>
+                
+            `,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        submitReviewDataset();
-      } else {
-        $("#submit_prepublishing_review-spinner").hide();
-      }
+      willOpen: () => {
+        // setup the calendar that is in the popup
+        const container = document.getElementById("tui-date-picker-container");
+        const target = document.getElementById("tui-date-picker-target");
+
+        // calculate one year from now
+        var oneYearFromNow = new Date();
+        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+        // initialize the calendar
+        const instance = new DatePicker(container, {
+          input: {
+            element: target,
+          },
+          date: new Date(),
+          // a user can lift an embargo today or a year from now
+          selectableRanges: [[new Date(), oneYearFromNow]],
+        });
+
+        // display/hide calendar on toggle
+        const selectEmbargoDateCheck =
+          document.getElementById("embargo-date-check");
+        selectEmbargoDateCheck.addEventListener("change", () => {
+          let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
+          if (selectEmbargoDateCheck.checked) {
+            tuiCalendarWrapper.style.visibility = "visible";
+          } else {
+            tuiCalendarWrapper.style.visibility = "hidden";
+          }
+        });
+      },
+      willClose: () => {
+        // check if the embargo checkbox is selected
+        const selectEmbargoDateCheck =
+          document.getElementById("embargo-date-check");
+        if (selectEmbargoDateCheck.checked) {
+          // set the embargoDate variable if so
+          embargoReleaseDate = $("#tui-date-picker-target").val();
+        }
+      },
     });
+
+    // check if the user cancelled
+    if (!userResponse.isConfirmed) {
+      // stop showing the loading animation
+      $("#submit_prepublishing_review-spinner").hide();
+      // do not submit the dataset
+      return;
+    }
+
+    // submit the dataset for review
+    submitReviewDataset();
   }
 }
 
@@ -3069,88 +3135,6 @@ function submitReviewDataset() {
         $("#para-submit_prepublishing_review-status").text(
           "Success: Dataset has been submitted for review to the Publishers within your organization"
         );
-
-        // set default embargo release date to today
-        let embargoReleaseDate = new Date();
-
-        // confirm with the user that they will submit a dataset and check if they want to set an embargo date
-        await Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          confirmButtonText: "Submit",
-          title: `Pre-Publishing Checks Passed!`,
-          reverseButtons: reverseSwalButtons,
-          text: "",
-          html: `
-                    <p>Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
-                    <input type="checkbox" id="embargo-date-check"> Would you like to place the dataset under embargo so that it is not made public immediately?
-                    <div style="visibility:hidden; flex-direction: column; margin-left: 21.5%;" id="calendar-wrapper">
-                        <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
-                          <input
-                          type="text"
-                          id="tui-date-picker-target"
-                          aria-label="Date-Time"
-                          />
-                          <span class="tui-ico-date"></span>
-                        </div>
-                        <div
-                        id="tui-date-picker-container"
-                        style="margin-top: -1px"
-                        ></div>
-                    </div>
-                    
-                `,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-          willOpen: () => {
-            // setup the calendar that is in the popup
-            const container = document.getElementById(
-              "tui-date-picker-container"
-            );
-            const target = document.getElementById("tui-date-picker-target");
-
-            // calculate one year from now
-            var oneYearFromNow = new Date();
-            oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-
-            // initialize the calendar
-            const instance = new DatePicker(container, {
-              input: {
-                element: target,
-              },
-              date: new Date(),
-              // a user can lift an embargo today or a year from now
-              selectableRanges: [[new Date(), oneYearFromNow]],
-            });
-
-            // display/hide calendar on toggle
-            const selectEmbargoDateCheck =
-              document.getElementById("embargo-date-check");
-            selectEmbargoDateCheck.addEventListener("change", () => {
-              let tuiCalendarWrapper =
-                document.getElementById("calendar-wrapper");
-              if (selectEmbargoDateCheck.checked) {
-                tuiCalendarWrapper.style.visibility = "visible";
-              } else {
-                tuiCalendarWrapper.style.visibility = "hidden";
-              }
-            });
-          },
-          willClose: () => {
-            // check if the embargo checkbox is selected
-            const selectEmbargoDateCheck =
-              document.getElementById("embargo-date-check");
-            if (selectEmbargoDateCheck.checked) {
-              // set the embargoDate variable if so
-              embargoReleaseDate = $("#tui-date-picker-target").val();
-            }
-          },
-        });
-        // publish the dataset with the embargo release date if it exists otherwise just publish
       }
       showPublishingStatus("noClear");
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
@@ -7079,7 +7063,7 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
     );
   } else if (statusCode === 401) {
     throw new Error(
-      `${statusCode} - You do not have access this dataset at the moment.`
+      `${statusCode} - You cannot access tags while unauthenticated.`
     );
   } else if (statusCode === 403) {
     throw new Error(`${statusCode} - You do not have access to this dataset. `);
@@ -7101,8 +7085,7 @@ Dissemniate Datasets Pre-Publishing Section With Nodejs
 // get a list of the user's statuses for each pre-publishing validation item
 // I: The currently selected dataset - name or by id
 // O: A status object that details the state of each pre-publishing checklist item for the given dataset and user
-//   {subtitle: boolean, description: boolean, tags: boolean, bannerImageURL: boolean, contributors: boolean, DOI: boolean, license: boolean, ORCID: boolean}
-// TODO: If a property is undefined it needs to set the corresponding status to false
+//   {subtitle: boolean, description: boolean, tags: boolean, bannerImageURL: boolean, license: boolean, ORCID: boolean}
 const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
   if (!datasetIdOrName) {
@@ -7148,6 +7131,84 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   statuses.ORCID = true;
 
   return statuses;
+};
+
+// Submits the selected dataset for review by the publishers within a given user's organization.
+// Note: To be run after the pre-publishing validation checks have all passed.
+// I:
+//  pennsieveAccount: string - the SODA user's pennsieve account 
+//  datasetIdOrName: string - the id/name of the dataset being submitted for publication
+//  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
+// O: void
+const submitDatasetForReview = async (pennsieveAccount, datasetIdOrName, embargoReleaseDate) => {
+  // check that a dataset was provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "A valid dataset must be provided to the dataset review process."
+    );
+  }
+
+  // get an access token for the user
+  let jwt = await get_access_token();
+
+  // get the dataset by name or id
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the current SODA user's permissions (permissions are indicated by the user's assigned role for a given dataset)
+  let userRole = await getCurrentUserPermissions(datasetIdOrName);
+
+  // check that the current SODA user is the owner of the given dataset
+  if (!userIsOwnerOrManager(userRole)) 
+    throw new Error(
+      "You don't have permissions for submitting this dataset for publication. Please have the dataset owner start the submission process."
+    );
+  
+  // set the publication type to "publication"
+  const publicationType = "publication"
+
+  // get the dataset id
+  const {id} = dataset.content
+
+  // create the publication request options
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ publicationType, embargoReleaseDate}),
+  };
+
+  // request that the dataset be sent in for publication/publication review
+  let publicationResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/publication/request`, options)
+
+
+  // get the status code out of the response
+  let statusCode = publicationResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add submit for publication.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot submit a dataset for publication while unauthenticated.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await updateResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
 };
 
 /*
@@ -7269,7 +7330,7 @@ Manage Datasets Add/Edit Banner Image With Nodejs
 // O: Presigned URL for the banner image or an empty string
 const getDatasetBannerImageURL = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
-  if (!datasetIdOrName) {
+  if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
   }
 
@@ -7296,4 +7357,80 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let { banner } = await bannerResponse.json();
 
   return banner;
+};
+
+/*
+******************************************************
+******************************************************
+Get User Dataset Permissions With Nodejs
+******************************************************
+******************************************************
+*/
+
+// returns the user's permissions/role for the given dataset. Options are : owner, manager, editor, viewer
+const getCurrentUserPermissions = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+
+  // get access token for the current user
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the id out of the dataset
+  let id = dataset.content.id;
+
+  // get the user's permissions
+  let permissionsResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/role`,
+    { headers: { Authorization: `Bearer ${jwt}` } }
+  );
+
+  // get the status code out of the response
+  let statusCode = permissionsResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to check your permissions.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot check your dataset permissions while unauthenticated. Please reauthenticate.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await updateResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+
+  // get the permissions object
+  const { role } = await roleResponse.json();
+
+  // return the permissions
+  return role;
+};
+
+// I: role: string - A user's permissions indicated by their role. Can be: owner, manager, editor, viewer.
+// O: boolean - true if role is owner or manager, false otherwise
+const userIsOwnerOrManager = (role) => {
+  // check if the user permissions do not include "owner" or "manager"
+  if (!["owner", "manager"].includes(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    return false;
+  }
+
+  return true;
 };
