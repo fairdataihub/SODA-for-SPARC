@@ -469,7 +469,7 @@ function resetDDUI(table) {
   $("#table-current-contributors").find("tr").slice(1).remove();
 
   // show generate button again
-  $("#button-generate-dd").show()
+  $("#button-generate-dd").show();
 
   rowIndex = 1;
   newRowIndex = 1;
@@ -624,7 +624,7 @@ function resetDDFields() {
   $("#div-confirm-existing-dd-import").hide();
 
   // show generate button again
-  $("#button-generate-dd").show()
+  $("#button-generate-dd").show();
 
   keywordTagify.removeAllTags();
   otherFundingTagify.removeAllTags();
@@ -649,8 +649,11 @@ function resetDDFields() {
   $("#dd-accordion").find(".title").removeClass("active");
   $("#dd-accordion").find(".content").removeClass("active");
 
-  $("#input-destination-generate-dd-locally").attr("placeholder", "Browse here");
-  $("#div-confirm-destination-dd-locally").css("display", "none")
+  $("#input-destination-generate-dd-locally").attr(
+    "placeholder",
+    "Browse here"
+  );
+  $("#div-confirm-destination-dd-locally").css("display", "none");
 }
 
 /////////////// Generate ds description file ///////////////////
