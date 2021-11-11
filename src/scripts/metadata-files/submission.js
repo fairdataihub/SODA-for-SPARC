@@ -91,7 +91,7 @@ function resetSubmissionFields() {
   $("#submission-accordion").addClass("active");
 
   // show generate button again
-  $("#button-generate-submission").show()
+  $("#button-generate-submission").show();
 
   for (var field of selectFields) {
     $(field).val("Select");
