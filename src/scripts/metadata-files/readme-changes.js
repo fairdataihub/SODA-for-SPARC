@@ -585,10 +585,13 @@ function resetRCFile(type) {
       );
       $(`#textarea-create-${type}`).val("");
 
-      $(`#input-destination-generate-${type}-locally`).attr("placeholder", "Browse here");
+      $(`#input-destination-generate-${type}-locally`).attr(
+        "placeholder",
+        "Browse here"
+      );
       $(`#div-confirm-destination-${type}-locally`).css("display", "none");
 
-      $(`#button-generate-${type}`).show()
+      $(`#button-generate-${type}`).show();
     }
   });
 }

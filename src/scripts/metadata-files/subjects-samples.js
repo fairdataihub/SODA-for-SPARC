@@ -1733,8 +1733,11 @@ function resetSubjects() {
 
       $("#button-add-a-subject").show();
 
-      $("#input-destination-generate-subjects-locally").attr("placeholder", "Browse here");
-      $("#div-confirm-destination-subjects-locally").css("display", "none")
+      $("#input-destination-generate-subjects-locally").attr(
+        "placeholder",
+        "Browse here"
+      );
+      $("#div-confirm-destination-subjects-locally").css("display", "none");
     }
   });
 }
@@ -1798,8 +1801,11 @@ function resetSamples() {
 
       $("#button-add-a-sample").show();
 
-      $("#input-destination-generate-samples-locally").attr("placeholder", "Browse here");
-      $("#div-confirm-destination-samples-locally").css("display", "none")
+      $("#input-destination-generate-samples-locally").attr(
+        "placeholder",
+        "Browse here"
+      );
+      $("#div-confirm-destination-samples-locally").css("display", "none");
     }
   });
 }
