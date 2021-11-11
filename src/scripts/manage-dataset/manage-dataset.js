@@ -582,7 +582,19 @@ $(document).ready(() => {
 // Add subtitle //
 $("#button-add-subtitle").click(() => {
   setTimeout(function () {
-    $("#bf-add-subtitle-dataset-spinner").show();
+    Swal.fire({
+      title: "Adding subtitle to dataset",
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
@@ -601,8 +613,6 @@ $("#button-add-subtitle").click(() => {
           log.error(error);
           console.error(error);
           let emessage = userError(error);
-
-          $("#bf-add-subtitle-dataset-spinner").hide();
 
           Swal.fire({
             title: "Failed to add subtitle!",
@@ -624,7 +634,6 @@ $("#button-add-subtitle").click(() => {
         } else {
           log.info("Added subtitle to dataset");
 
-          $("#bf-add-subtitle-dataset-spinner").hide();
           $("#ds-description").val(inputSubtitle);
 
           Swal.fire({
@@ -633,7 +642,12 @@ $("#button-add-subtitle").click(() => {
             showConfirmButton: true,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
-          });
+          }).then(
+            //check if subtitle textarea is empty and set Add/Edit button appropriately
+            !$("#bf-dataset-subtitle").val()
+              ? $("#button-add-subtitle").html("Add subtitle")
+              : $("#button-add-subtitle").html("Edit subtitle")
+          );
 
           ipcRenderer.send(
             "track-event",
