@@ -7134,7 +7134,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   const bannerPresignedUrl = await getDatasetBannerImageURL(datasetIdOrName)
 
   // set the banner image's url status
-  statuses.bannerImageURL = bannerPresignedUrl.length ? true : false
+  statuses.bannerImageURL = bannerPresignedUrl.length ? true : false;
 
   // set the license's status
   statuses.license = license.length ? true : false;
