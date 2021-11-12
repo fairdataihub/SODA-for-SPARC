@@ -6,7 +6,7 @@ async function disseminatePublish() {
     // get the user's dataset permissions
     role = await getCurrentUserPermissions(defaultBfDataset);
   } catch (error) {
-    let emessage = userError(error);
+   
     // could not get permissions
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -59,6 +59,32 @@ async function disseminatePublish() {
     // stop execution
     return;
   }
+
+  // check that the user completed all pre-publishing checklist items for the given dataset
+  if(!allPrepublishingChecklistItemsCompleted()) {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot submit dataset for publication!",
+      text: "You need to complete all pre-publishing checklist items before you can submit your dataset for publication!",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // hide the spinner
+    $("#submit_prepublishing_review-spinner").hide();
+
+    // halt execution
+    return
+  }
+
+  // begin the dataset publishing flow
   showPublishingStatus(submitReviewDatasetCheck);
 }
 
@@ -525,7 +551,8 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
 });
 
 // runs after a user selects a dataset
-// changes Pre-Publishing checklist elements to green if a user completed that item and red if they did not
+// changes Pre-Publishing checklist elements found in the UI on the "Disseminate Datasets - Submit for pre-publishing review" section 
+// to green if a user completed that item and red if they did not
 const showPrePublishingStatus = async () => {
   if (defaultBfDataset === "Select dataset") {
     return;
@@ -579,6 +606,7 @@ const showPrePublishingStatus = async () => {
 // Inputs:
 //  iconElementId : string - corresponds with the icons in the pre-publishing checklist
 //  status: a boolean corresponding to the checklist item
+// gets the pre-publishing checklist item element by id and gives it a check or an 'x' based off the value of the pre-publishing item's status
 const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   if (status) {
     $(`#${iconElementId}`).attr("class", "check icon");
@@ -588,3 +616,19 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
     $(`#${iconElementId}`).css("color", "red");
   }
 };
+
+
+// reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
+const allPrepublishingChecklistItemsCompleted = () => {
+  // get the icons for the checklist elements
+  let prePublishingChecklistItems = $(".icon-wrapper i")
+  console.log(prePublishingChecklistItems)
+
+  // filter out the completed items - by classname
+  let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter(checklistItem => {
+    return checklistItem.className === 'close icon'
+  })
+
+  // if there are any incomplete checklist items then not all items are complete
+  return incompleteChecklistItems.length ? false : true
+}
