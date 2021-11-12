@@ -619,7 +619,7 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
 // reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
 const allPrepublishingChecklistItemsCompleted = () => {
   // get the icons for the checklist elements
-  let prePublishingChecklistItems = $(".icon-wrapper i")
+  let prePublishingChecklistItems = $(".icon-wrapper i");
 
   // filter out the completed items - by classname
   let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter(
