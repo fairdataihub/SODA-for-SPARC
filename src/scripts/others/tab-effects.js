@@ -3192,3 +3192,14 @@ for (var i = 0; i < buttons.length; i++) {
   button = buttons[i];
   initRipple(button);
 }
+
+// Input:
+//  elementId:  string - id selector of the section the user will transition to from the Submit for pre-publishing tab
+// transition from the pre-publishing review tab to the given prepare metadata tabs
+const transitionFromPrePublishingChecklist = (elementId) => {
+  // change is shown to the subtitle section
+  $(".section.is-shown").removeClass("is-shown");
+
+  // show the subtitle section instead
+  $(`#${elementId}`).addClass("is-shown");
+};
