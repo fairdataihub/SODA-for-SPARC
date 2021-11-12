@@ -6,7 +6,6 @@ async function disseminatePublish() {
     // get the user's dataset permissions
     role = await getCurrentUserPermissions(defaultBfDataset);
   } catch (error) {
-   
     // could not get permissions
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -61,7 +60,7 @@ async function disseminatePublish() {
   }
 
   // check that the user completed all pre-publishing checklist items for the given dataset
-  if(!allPrepublishingChecklistItemsCompleted()) {
+  if (!allPrepublishingChecklistItemsCompleted()) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -81,7 +80,7 @@ async function disseminatePublish() {
     $("#submit_prepublishing_review-spinner").hide();
 
     // halt execution
-    return
+    return;
   }
 
   // begin the dataset publishing flow
@@ -551,7 +550,7 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
 });
 
 // runs after a user selects a dataset
-// changes Pre-Publishing checklist elements found in the UI on the "Disseminate Datasets - Submit for pre-publishing review" section 
+// changes Pre-Publishing checklist elements found in the UI on the "Disseminate Datasets - Submit for pre-publishing review" section
 // to green if a user completed that item and red if they did not
 const showPrePublishingStatus = async () => {
   if (defaultBfDataset === "Select dataset") {
@@ -617,18 +616,19 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   }
 };
 
-
 // reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
 const allPrepublishingChecklistItemsCompleted = () => {
   // get the icons for the checklist elements
-  let prePublishingChecklistItems = $(".icon-wrapper i")
-  console.log(prePublishingChecklistItems)
+  let prePublishingChecklistItems = $(".icon-wrapper i");
+  console.log(prePublishingChecklistItems);
 
   // filter out the completed items - by classname
-  let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter(checklistItem => {
-    return checklistItem.className === 'close icon'
-  })
+  let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter(
+    (checklistItem) => {
+      return checklistItem.className === "close icon";
+    }
+  );
 
   // if there are any incomplete checklist items then not all items are complete
-  return incompleteChecklistItems.length ? false : true
-}
+  return incompleteChecklistItems.length ? false : true;
+};
