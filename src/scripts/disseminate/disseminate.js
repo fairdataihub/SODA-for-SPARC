@@ -1,5 +1,64 @@
 // Main functions
-function disseminatePublish() {
+async function disseminatePublish() {
+  // run preassumption checks
+  let role;
+  try {
+    // get the user's dataset permissions
+    role = await getCurrentUserPermissions(defaultBfDataset);
+  } catch (error) {
+    let emessage = userError(error)
+    // could not get permissions 
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "We had trouble checking if you are the dataset owner",
+      text: "Please try to submit your dataset for publication again. If that does not work please contact Bhavesh Patel at bpatel@calmi2.org",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    })
+
+    // hide the spinner 
+     $("#submit_prepublishing_review-spinner").hide();
+
+     // alert Google analytics
+     ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Submit for pre-publishing review",
+      defaultBfDataset
+    );
+
+     // halt execution
+     return 
+  }
+  // check if they are not the dataset owner
+  if (!userIsOwner(role)) {
+    // tell the user only the owner of a dataset can publish it
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Only the owner of the dataset can publish!",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // stop the loader
+    $("#submit_prepublishing_review-spinner").hide();
+    // stop execution
+    return;
+  }
   showPublishingStatus(submitReviewDatasetCheck);
 }
 
