@@ -1065,7 +1065,6 @@
                   </tbody>
                 </table>
 
-              
                 <div
                   id="div-confirm-submit-review"
                   style="
@@ -1076,47 +1075,53 @@
                     margin: 0 auto;
                   "
                 >
-                <div style="width: 100%;" id="prepublishing-publish-btn-container"> 
-                  <button
-                    id="button-withdraw-review-dataset"
-                    onclick="withdrawDatasetSubmission()"
-                    class="btn_animated md skip"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 20px 30px;
-                      width: 200px;
-                      height: 40px;
-                      background: #fff;
-                      color: red;
-                      font-weight: 600;
-                      border: 1px solid red;
-                      font-size: 15px;
-                    "
+                  <div
+                    style="width: 100%"
+                    id="prepublishing-publish-btn-container"
                   >
-                    <i class="fas fa-ban" style="padding-right: 5px"></i>
-                    Withdraw from review
-                  </button>
-                </div>
-                <div style="width: 100%; margin-left: -100%;" id="prepublishing-withdraw-btn-container"> 
-                  <button
-                    onclick="disseminateDataset('submit-pre-publishing')"
-                    class="btn_animated md"
-                    style="
-                      margin: 20px 30px;
-                      width: 200px;
-                      height: 40px;
-                      font-size: 15px;
-                      border: none !important; ;
-                    "
+                    <button
+                      id="button-withdraw-review-dataset"
+                      onclick="withdrawDatasetSubmission()"
+                      class="btn_animated md skip"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 20px 30px;
+                        width: 200px;
+                        height: 40px;
+                        background: #fff;
+                        color: red;
+                        font-weight: 600;
+                        border: 1px solid red;
+                        font-size: 15px;
+                      "
+                    >
+                      <i class="fas fa-ban" style="padding-right: 5px"></i>
+                      Withdraw from review
+                    </button>
+                  </div>
+                  <div
+                    style="width: 100%; margin-left: -100%"
+                    id="prepublishing-withdraw-btn-container"
                   >
-                    <i
-                      class="fas fa-sign-in-alt"
-                      style="padding-right: 5px"
-                    ></i>
-                    Submit
-                  </button>
-                </div>
+                    <button
+                      onclick="disseminateDataset('submit-pre-publishing')"
+                      class="btn_animated md"
+                      style="
+                        margin: 20px 30px;
+                        width: 200px;
+                        height: 40px;
+                        font-size: 15px;
+                        border: none !important; ;
+                      "
+                    >
+                      <i
+                        class="fas fa-sign-in-alt"
+                        style="padding-right: 5px"
+                      ></i>
+                      Submit
+                    </button>
+                  </div>
                 </div>
                 <div
                   id="submit_prepublishing_review-spinner"
