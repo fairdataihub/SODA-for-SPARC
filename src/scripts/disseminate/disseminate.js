@@ -6,8 +6,8 @@ async function disseminatePublish() {
     // get the user's dataset permissions
     role = await getCurrentUserPermissions(defaultBfDataset);
   } catch (error) {
-    let emessage = userError(error)
-    // could not get permissions 
+    let emessage = userError(error);
+    // could not get permissions
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -21,21 +21,21 @@ async function disseminatePublish() {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    })
+    });
 
-    // hide the spinner 
-     $("#submit_prepublishing_review-spinner").hide();
+    // hide the spinner
+    $("#submit_prepublishing_review-spinner").hide();
 
-     // alert Google analytics
-     ipcRenderer.send(
+    // alert Google analytics
+    ipcRenderer.send(
       "track-event",
       "Error",
       "Disseminate Datasets - Submit for pre-publishing review",
       defaultBfDataset
     );
 
-     // halt execution
-     return 
+    // halt execution
+    return;
   }
   // check if they are not the dataset owner
   if (!userIsOwner(role)) {

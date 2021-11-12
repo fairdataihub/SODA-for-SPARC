@@ -2879,7 +2879,6 @@ const metadataDatasetlistChange = () => {
 // Manage dataset permission
 const permissionDatasetlistChange = () => {
   showCurrentPermission();
-
 };
 
 function datasetStatusListChange() {
@@ -7577,7 +7576,9 @@ Get User Dataset Permissions With Nodejs
 const getCurrentUserPermissions = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
   if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error("Error: Must provide a valid dataset to check permissions for.");
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
   }
 
   // get access token for the current user
@@ -7643,10 +7644,10 @@ const userIsOwnerOrManager = (role) => {
 
 const userIsOwner = (role) => {
   // check if the user permissions do not include "owner"
-  if (role !== 'owner') {
+  if (role !== "owner") {
     // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
     return false;
   }
 
   return true;
-}
+};
