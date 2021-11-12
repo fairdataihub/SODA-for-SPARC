@@ -3030,6 +3030,7 @@ const description_text = {
 
 $("input:radio[name=main_tabs]").click(function () {
   let option = $(this).val();
+  console.log(option);
   $("#tab_info_text").text(description_text[option]);
   $(".main-tabs-section").removeClass("show");
   $(".main-tabs-section").addClass("hide");
@@ -3202,4 +3203,14 @@ const transitionFromPrePublishingChecklist = (elementId) => {
 
   // show the subtitle section instead
   $(`#${elementId}`).addClass("is-shown");
+
+  $(".main-tabs-section").removeClass("show");
+  $(".main-tabs-section").addClass("hide");
+
+  // when a user clicks return change the tab they see
+  document
+    .getElementById("disseminate_dataset_section")
+    .classList.remove("show");
+  document.getElementById("disseminate_dataset_section").classList.add("hide");
+  document.getElementById("manage_dataset_section").classList.add("show");
 };

@@ -1430,6 +1430,9 @@ $("#button-add-tags").click(async () => {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   });
+
+  // now that we have added tags, run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
+  showPrePublishingStatus();
 });
 
 // fetch a user's metadata tags
