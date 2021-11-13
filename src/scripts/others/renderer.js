@@ -3279,7 +3279,7 @@ function withdrawDatasetCheck(res) {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    })
+    });
 
     $("#submit_prepublishing_review-spinner").hide();
   } else {
@@ -3335,7 +3335,7 @@ function withdrawReviewDataset() {
           title: "Could not withdraw dataset from publication!",
           text: `${emessage}`,
           heightAuto: false,
-          icon: 'error',
+          icon: "error",
           confirmButtonText: "Ok",
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Ok",
@@ -3344,13 +3344,13 @@ function withdrawReviewDataset() {
           },
           hideClass: {
             popup: "animate__animated animate__fadeOutUp animate__faster",
-          }
-        })
+          },
+        });
       } else {
         Swal.fire({
           title: "Dataset has been withdrawn from review!",
           heightAuto: false,
-          icon: 'success',
+          icon: "success",
           confirmButtonText: "Ok",
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Ok",
@@ -3359,8 +3359,8 @@ function withdrawReviewDataset() {
           },
           hideClass: {
             popup: "animate__animated animate__fadeOutUp animate__faster",
-          }
-        })
+          },
+        });
         showPublishingStatus("noClear");
       }
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
@@ -3612,19 +3612,19 @@ function showPublishingStatus(callback) {
           console.error(error);
           var emessage = userError(error);
           Swal.fire({
-              title: "Could not get your publishing status!",
-              text: `${emessage}`,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              confirmButtonText: "Ok",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__fadeInDown animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__fadeOutUp animate__faster",
-              }
-          })
+            title: "Could not get your publishing status!",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Ok",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__fadeInDown animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__fadeOutUp animate__faster",
+            },
+          });
         } else {
           // update the dataset's publication status and display it onscreen for the user under their dataset name
           $("#para-review-dataset-info-disseminate").text(
