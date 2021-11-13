@@ -2946,9 +2946,10 @@ async function submitReviewDatasetCheck(res) {
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
     Swal.fire({
       icon: "error",
-      title: "Your dataset is currently being published. Please wait until it is completed.",
+      title:
+        "Your dataset is currently being published. Please wait until it is completed.",
       text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
-      confirmButtonText: 'Ok',
+      confirmButtonText: "Ok",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       showClass: {
@@ -2957,7 +2958,7 @@ async function submitReviewDatasetCheck(res) {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    })
+    });
 
     $("#submit_prepublishing_review-spinner").hide();
   } else if (reviewstatus === "requested") {
@@ -2965,7 +2966,7 @@ async function submitReviewDatasetCheck(res) {
       icon: "error",
       title: "Cannot submit the dataset for review at this time!",
       text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
-      confirmButtonText: 'Ok',
+      confirmButtonText: "Ok",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       showClass: {
@@ -2974,7 +2975,7 @@ async function submitReviewDatasetCheck(res) {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    })
+    });
 
     $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
@@ -3224,7 +3225,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     $("#submit_prepublishing_review-spinner").hide();
 
     // stop execution
-    return
+    return;
   }
 
   ipcRenderer.send(
@@ -7376,8 +7377,10 @@ const submitDatasetForReview = async (
       throw new Error(
         `${statusCode} - You do not have access to this dataset. `
       );
-    case 400: 
-        throw new Error(`${statusCode} - You did not complete an item in the pre-publishing checklist before submitting your dataset for publication.`)
+    case 400:
+      throw new Error(
+        `${statusCode} - You did not complete an item in the pre-publishing checklist before submitting your dataset for publication.`
+      );
 
     default:
       // something unexpected happened
