@@ -641,6 +641,9 @@ $("#button-add-subtitle").click(() => {
             "Manage Dataset - Add/Edit Subtitle",
             defaultBfDataset
           );
+
+        // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+        showPrePublishingStatus()
         }
       }
     );
@@ -757,10 +760,15 @@ $("#button-add-description").click(() => {
           selectedBfAccount,
           selectedBfDataset,
           markdownDescription
-        );
+        )
+
+        // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+        showPrePublishingStatus()
       });
     } else {
       addDescription(selectedBfAccount, selectedBfDataset, markdownDescription);
+      // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+      showPrePublishingStatus()
     }
   }, delayAnimation);
 });
@@ -853,6 +861,8 @@ const addDescription = (
           "Manage Dataset - Add/Edit Description",
           selectedBfDataset
         );
+
+
       }
     }
   );
@@ -1085,6 +1095,9 @@ const uploadBannerImage = () => {
               selectedBfDataset,
               image_file_size
             );
+
+            // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+            showPrePublishingStatus()
           }
         }
       );
@@ -1543,6 +1556,9 @@ $("#button-add-license").click(() => {
             "Manage Dataset - Assign License",
             selectedBfDataset
           );
+
+        // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+        showPrePublishingStatus()
         }
       }
     );
