@@ -3656,8 +3656,6 @@ function showPublishingStatus(callback) {
           ) {
             callback(res);
           }
-
-
         }
       }
     );
