@@ -3215,6 +3215,6 @@ const transitionFromPrePublishingChecklist = (elementId) => {
   document.getElementById("manage_dataset_section").classList.add("show");
 
   // mark the tab as checked to get the appropriate tab styling
-  $('#disseminate_dataset_tab').prop('checked', false)
-  $('#manage_dataset_tab').prop('checked', true)
+  $("#disseminate_dataset_tab").prop("checked", false);
+  $("#manage_dataset_tab").prop("checked", true);
 };
