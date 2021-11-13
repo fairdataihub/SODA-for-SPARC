@@ -3630,12 +3630,22 @@ function showPublishingStatus(callback) {
           $("#para-review-dataset-info-disseminate").text(
             publishStatusOutputConversion(res)
           );
+
+          // based off the publishing status of the given dataset show the withdraw or submit dataset buttons in 'DIsseminate Datasets - Submit for pre-publishing review'
+          if(res[1] === 'PUBLISH_IN_PROGRESS' || res[0] === 'requested' || res[1] === 'PUBLISH_SUCCEEDED' || res[1] === 'NOT_PUBLISHED') {
+            $('#prepublishing-publish-btn-container').css("visibility", "hidden")
+          } else {
+
+          }
+
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
           ) {
             callback(res);
           }
+
+
         }
       }
     );
