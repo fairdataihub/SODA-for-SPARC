@@ -1802,8 +1802,19 @@ const showCurrentBannerImage = () => {
 
 // add or edit metadata tags for a user's selected dataset in the "add/edit tags" section of the manage-dataset menu
 $("#button-add-tags").click(async () => {
-  // show a loading spinner to the user
-  $("#bf-add-tags-dataset-spinner").show();
+  Swal.fire({
+    title: "Adding tags to your dataset",
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
   const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
@@ -1817,9 +1828,6 @@ $("#button-add-tags").click(async () => {
   try {
     await update_dataset_tags(selectedBfDataset, tags);
   } catch (e) {
-    // hide the loading spinner
-    $("#bf-add-tags-dataset-spinner").hide();
-
     // log the error
     log.error(e);
     console.error(e);
@@ -1836,10 +1844,6 @@ $("#button-add-tags").click(async () => {
     // halt execution
     return;
   }
-
-  // once the result has been retrieved hide the spinner
-  $("#bf-add-tags-dataset-spinner").hide();
-
   // show success or failure to the user in a popup message
   Swal.fire({
     title: "Successfully edited tags!",
@@ -1904,7 +1908,19 @@ const showCurrentTags = async () => {
 // Add license //
 $("#button-add-license").click(() => {
   setTimeout(function () {
-    $("#bf-add-license-dataset-spinner").show();
+    Swal.fire({
+      title: "Adding selected license to your dataset",
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
@@ -1922,8 +1938,6 @@ $("#button-add-license").click(() => {
 
           let emessage = userError(error);
 
-          $("#bf-add-license-dataset-spinner").hide();
-
           Swal.fire({
             title: "Failed to add the license to your dataset!",
             text: emessage,
@@ -1940,8 +1954,6 @@ $("#button-add-license").click(() => {
             selectedBfDataset
           );
         } else {
-          $("#bf-add-license-dataset-spinner").hide();
-
           Swal.fire({
             title: "Successfully added license to your dataset!",
             icon: "success",
