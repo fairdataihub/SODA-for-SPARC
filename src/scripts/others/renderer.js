@@ -3632,10 +3632,22 @@ function showPublishingStatus(callback) {
           );
 
           // based off the publishing status of the given dataset show the withdraw or submit dataset buttons in 'DIsseminate Datasets - Submit for pre-publishing review'
-          if(res[1] === 'PUBLISH_IN_PROGRESS' || res[0] === 'requested' || res[1] === 'PUBLISH_SUCCEEDED' || res[1] === 'NOT_PUBLISHED') {
-            $('#prepublishing-publish-btn-container').css("visibility", "hidden")
-          } else {
+          // if(res[1] === 'PUBLISH_IN_PROGRESS' || res[0] === 'requested' || res[1] === 'PUBLISH_SUCCEEDED' || res[1] === 'NOT_PUBLISHED') {
+          //   $('#prepublishing-publish-btn-container').css("visibility", "hidden")
+          // } else {
 
+          // }
+
+          // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
+          if(res[0] !== 'requested') {
+            console.log("In here")
+            // cannot withdraw from submission if there is no review request in progress or if it is already accepted
+            $('#prepublishing-withdraw-btn-container').css("visibility", "hidden")
+            $('#prepublishing-publish-btn-container').css("visibility", "visible")
+          } else {
+            // show the withdraw button 
+            $('#prepublishing-withdraw-btn-container').css("visibility", "visible")
+            $('#prepublishing-publish-btn-container').css("visibility", "hidden")
           }
 
           if (
