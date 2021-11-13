@@ -2944,43 +2944,136 @@ async function submitReviewDatasetCheck(res) {
   var reviewstatus = res[0];
   var publishingStatus = res[1];
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
-    emessage =
-      "Your dataset is currently being published. Please wait until it is completed.";
-    $("#submit_prepublishing_review-spinner").hide();
-  } else if (reviewstatus === "requested") {
-    emessage =
-      "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
-    $("#submit_prepublishing_review-spinner").hide();
-  } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     Swal.fire({
-      icon: "warning",
-      text: "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
-      heightAuto: false,
+      icon: "error",
+      title: "Your dataset is currently being published. Please wait until it is completed.",
+      text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
+      confirmButtonText: 'Ok',
       backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      focusCancel: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
+      heightAuto: false,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        submitReviewDataset();
-      } else {
-        $("#submit_prepublishing_review-spinner").hide();
-      }
+    })
+
+    $("#submit_prepublishing_review-spinner").hide();
+  } else if (reviewstatus === "requested") {
+    Swal.fire({
+      icon: "error",
+      title: "Cannot submit the dataset for review at this time!",
+      text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
+      confirmButtonText: 'Ok',
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    })
+
+    $("#submit_prepublishing_review-spinner").hide();
+  } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
+    // embargo release date represents the time a dataset that has been reviewed for publication becomes public
+    // user sets this value in the UI otherwise it stays an empty string
+    let embargoReleaseDate = "";
+
+    // confirm with the user that they will submit a dataset and check if they want to set an embargo date
+    let userResponse = await Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "warning",
+      confirmButtonText: "Submit",
+      denyButtonText: "Cancel",
+      showDenyButton: true,
+      title: `Submit your dataset for publishing review!`,
+      reverseButtons: reverseSwalButtons,
+      text: "",
+      html: `
+                <p>This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue? </p>
+                <input type="checkbox" id="embargo-date-check"> Would you like to place the dataset under embargo so that it is not made public immediately?
+                <div style="visibility:hidden; flex-direction: column; margin-left: 20%;" id="calendar-wrapper">
+                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                      <input
+                      type="text"
+                      id="tui-date-picker-target"
+                      aria-label="Date-Time"
+                      />
+                      <span class="tui-ico-date"></span>
+                    </div>
+                    <div
+                    id="tui-date-picker-container"
+                    style="margin-top: -1px"
+                    ></div>
+                </div>
+                
+            `,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      willOpen: () => {
+        // setup the calendar that is in the popup
+        const container = document.getElementById("tui-date-picker-container");
+        const target = document.getElementById("tui-date-picker-target");
+
+        // calculate one year from now
+        var oneYearFromNow = new Date();
+        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+        // initialize the calendar
+        const instance = new DatePicker(container, {
+          input: {
+            element: target,
+          },
+          date: new Date(),
+          // a user can lift an embargo today or a year from now
+          selectableRanges: [[new Date(), oneYearFromNow]],
+        });
+
+        // display/hide calendar on toggle
+        const selectEmbargoDateCheck =
+          document.getElementById("embargo-date-check");
+        selectEmbargoDateCheck.addEventListener("change", () => {
+          let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
+          if (selectEmbargoDateCheck.checked) {
+            tuiCalendarWrapper.style.visibility = "visible";
+          } else {
+            tuiCalendarWrapper.style.visibility = "hidden";
+          }
+        });
+      },
+      willClose: () => {
+        // check if the embargo checkbox is selected
+        const selectEmbargoDateCheck =
+          document.getElementById("embargo-date-check");
+        if (selectEmbargoDateCheck.checked) {
+          // set the embargoDate variable if so
+          embargoReleaseDate = $("#tui-date-picker-target").val();
+        }
+      },
     });
+
+    // check if the user cancelled
+    if (!userResponse.isConfirmed) {
+      // stop showing the loading animation
+      $("#submit_prepublishing_review-spinner").hide();
+      // do not submit the dataset
+      return;
+    }
+    // submit the dataset for review with the given embargoReleaseDate
+    submitReviewDataset(embargoReleaseDate);
   } else {
     // status is NOT_PUBLISHED
-    // ipcRenderer.send("warning-publish-dataset");
 
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
-    // user sets this value in the UI or it stays an empty string
+    // user sets this value in the UI otherwise it stays an empty string
     let embargoReleaseDate = "";
 
     // confirm with the user that they will submit a dataset and check if they want to set an embargo date
@@ -2988,6 +3081,8 @@ async function submitReviewDatasetCheck(res) {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       confirmButtonText: "Submit",
+      denyButtonText: "Cancel",
+      showDenyButton: true,
       title: `Submit your dataset for publishing review!`,
       reverseButtons: reverseSwalButtons,
       text: "",
@@ -3096,62 +3191,69 @@ async function submitReviewDataset(embargoReleaseDate) {
       selectedBfDataset,
       embargoReleaseDate
     );
-  } catch (e) {
-    console.error(e);
-  }
-  // client.invoke(
-  //   "api_bf_submit_review_dataset",
-  //   selectedBfAccount,
-  //   selectedBfDataset,
-  //   async (error, res) => {
-  //     if (error) {
-  //       ipcRenderer.send(
-  //         "track-event",
-  //         "Error",
-  //         "Disseminate Dataset - Pre-publishing Review",
-  //         selectedBfDataset
-  //       );
-  //       log.error(error);
-  //       console.error(error);
-  //       var emessage = userError(error);
+  } catch (error) {
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Dataset - Pre-publishing Review",
+      selectedBfDataset
+    );
+    log.error(error);
+    console.error(error);
 
-  //       // alert the user of an error
-  //       Swal.fire({
-  //         backdrop: "rgba(0,0,0, 0.4)",
-  //         heightAuto: false,
-  //         confirmButtonText: "Yes",
-  //         title: `400`,
-  //         icon: "error",
-  //         reverseButtons: reverseSwalButtons,
-  //         text: `${emessage}`,
-  //         showClass: {
-  //           popup: "animate__animated animate__zoomIn animate__faster",
-  //         },
-  //         hideClass: {
-  //           popup: "animate__animated animate__zoomOut animate__faster",
-  //         },
-  //       });
-  //     } else {
-  //       ipcRenderer.send(
-  //         "track-event",
-  //         "Success",
-  //         "Disseminate Dataset - Pre-publishing Review",
-  //         selectedBfDataset
-  //       );
-  //       $("#para-submit_prepublishing_review-status").css(
-  //         "color",
-  //         "var(--color-light-green)"
-  //       );
-  //       $("#para-submit_prepublishing_review-status").text(
-  //         "Success: Dataset has been submitted for review to the Publishers within your organization"
-  //       );
-  //     }
-  //     showPublishingStatus("noClear");
-  //     bfRefreshPublishingDatasetStatusBtn.disabled = false;
-  //     bfWithdrawReviewDatasetBtn.disabled = false;
-  //     $("#submit_prepublishing_review-spinner").hide();
-  //   }
-  // );
+    var emessage = userError(error);
+
+    // alert the user of an error
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: `Could not submit your dataset for publishing!`,
+      icon: "error",
+      reverseButtons: reverseSwalButtons,
+      text: `${emessage}`,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // stop tje spinner
+    $("#submit_prepublishing_review-spinner").hide();
+
+    // stop execution
+    return
+  }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Disseminate Dataset - Pre-publishing Review",
+    selectedBfDataset
+  );
+
+  // alert the user the submission was successful
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    confirmButtonText: "Ok",
+    title: `Dataset has been submitted for review to the Publishers within your organization!`,
+    icon: "success",
+    reverseButtons: reverseSwalButtons,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  });
+
+  showPublishingStatus("noClear");
+  bfRefreshPublishingDatasetStatusBtn.disabled = false;
+  bfWithdrawReviewDatasetBtn.disabled = false;
+  $("#submit_prepublishing_review-spinner").hide();
 }
 
 // //Withdraw dataset from review
@@ -7229,6 +7331,8 @@ const submitDatasetForReview = async (
       throw new Error(
         `${statusCode} - You do not have access to this dataset. `
       );
+    case 400: 
+        throw new Error(`${statusCode} - You did not complete an item in the pre-publishing checklist before submitting your dataset for publication.`)
 
     default:
       // something unexpected happened
