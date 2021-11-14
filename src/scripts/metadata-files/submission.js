@@ -210,28 +210,33 @@ function openDDDimport() {
 // onboarding for submission file
 function onboardingSubmission() {
   setTimeout(function () {
-    introJs()
-      .setOptions({
-        steps: [
-          {
-            // title: "1. Help with your SPARC Award number",
-            element: document.querySelector("#a-help-submission-Airtable"),
-            intro:
-              "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
-          },
-          {
-            // title: "2. Help with your milestone information",
-            element: document.querySelector("#a-help-submission-milestones"),
-            intro:
-              "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
-          },
-        ],
-        exitOnEsc: false,
-        exitOnOverlayClick: false,
-        disableInteraction: false,
-      })
-      .start();
-  }, 1000);
+    if (!introStatus.submission) {
+      introJs()
+        .setOptions({
+          steps: [
+            {
+              // title: "1. Help with your SPARC Award number",
+              element: document.querySelector("#a-help-submission-Airtable"),
+              intro:
+                "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
+            },
+            {
+              // title: "2. Help with your milestone information",
+              element: document.querySelector("#a-help-submission-milestones"),
+              intro:
+                "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
+            },
+          ],
+          exitOnEsc: false,
+          exitOnOverlayClick: false,
+          disableInteraction: false,
+        })
+        .onbeforeexit(function () {
+          introStatus.submission = true;
+        })
+        .start();
+      }
+  }, 1300);
 }
 
 // generateSubmissionFile function takes all the values from the preview card's spans

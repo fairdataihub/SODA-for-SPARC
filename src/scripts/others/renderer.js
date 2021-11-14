@@ -53,6 +53,7 @@ var datasetStructureJSONObj = {
 
 let introStatus = {
   organizeStep3: true,
+  submission: false
 };
 
 //////////////////////////////////

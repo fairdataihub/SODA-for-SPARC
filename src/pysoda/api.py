@@ -67,7 +67,6 @@ from prepare_metadata import (
     load_existing_submission_file,
     import_bf_metadata_file,
     import_bf_RC,
-    generate_metadata_file_Pennsieve,
     upload_RC_file,
 )
 
