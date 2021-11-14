@@ -24,10 +24,14 @@ function generateRCFilesHelper(type) {
 }
 
 async function generateRCFiles(uploadBFBoolean, fileType) {
+  var result = generateRCFilesHelper(fileType);
+  if (result === "empty") {
+    return;
+  }
   var upperCaseLetters = fileType.toUpperCase() + ".txt";
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
-      title: `SODA will replace any existing ${upperCaseLetters} file on Pennsieve.`,
+      title: `Any existing ${upperCaseLetters} file in the high-level folder of the selected dataset will be replaced.`,
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -58,7 +62,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
   if (uploadBFBoolean) {
     // this actually separates Changes and Readme file generation
     // since we need to update the README on Pennsieve and not upload a whole README file onto Penn
-    if (upperCaseLetters === "CHANGES") {
+    if (upperCaseLetters === "CHANGES.txt") {
       client.invoke(
         "api_upload_RC_file",
         textValue,
@@ -85,7 +89,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             );
           } else {
             Swal.fire({
-              title: `The ${upperCaseLetters} file has been successfully generated at the specified location.`,
+              title: `Successfully generated the ${upperCaseLetters} file on your Pennsieve dataset.`,
               icon: "success",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
@@ -145,7 +149,7 @@ async function updateReadme(datasetName, data) {
   if (updateResponse.status === 200) {
     Swal.fire({
       icon: "success",
-      title: "Successfully updated README!",
+      title: "Successfully generated the README.txt file on your Pennsieve dataset.",
       heightAuto: false,
       backdrop: "rgba(0,0,0,0.4)",
     });
@@ -414,6 +418,10 @@ $(document).ready(function () {
 
 // write Readme or Changes files
 function saveRCFile(type) {
+  var result = generateRCFilesHelper(type);
+  if (result === "empty") {
+    return;
+  }
   let data = $(`#textarea-create-${type}`).val().trim();
   let destinationPath;
   if (type === "changes") {

@@ -1401,432 +1401,467 @@
                 <br />
               </h3>
               <div class="div-organize-generate-dataset metadata">
-                <h3 class="question-title">
-                  Specify metadata files<br />
+                <h3 class="question-title" style="padding-bottom: 10px">
+                  Specify metadata files
                   to be included in your dataset<br />
                   <span style="color: #696969; font-size: 13px"
                     >Click below to add desired files.</span
                   >
                 </h3>
                 <div style="margin-bottom: 15px">
-                  <button
-                    class="metadata-button button-generate-dataset"
-                    data-next="submissionUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      submission
-                    </p>
-                  </button>
+              <div class="flex-main-container">
+                <div class="flex-row-container">
+                  <div class="flex-content-container" style="flex-direction: column">
+                    <div class="header-container">
+                      <p class="content-header metadata-step4">
+                        Mandatory high-level metadata files
+                      </p>
+                    </div>
+                    <div class="button-container" style="flex-direction: row">
+                      <button
+                        class="metadata-button button-generate-dataset"
+                        data-next="submissionUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          submission
+                        </p>
+                      </button>
 
-                  <button
-                    class="metadata-button button-generate-dataset"
-                    data-next="datasetDescriptionUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      dataset_description
-                    </p>
-                  </button>
-
-                  <button
-                    class="metadata-button button-generate-dataset"
-                    data-next="subjectsUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      subjects
-                    </p>
-                  </button>
+                      <button
+                        class="metadata-button button-generate-dataset"
+                        data-next="datasetDescriptionUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          dataset_description
+                        </p>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div style="margin-bottom: 15px">
-                  <button
-                    class="metadata-button button-generate-dataset"
-                    data-next="samplesUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      samples
+                <div class="flex-row-container">
+                <div class="flex-content-container">
+                  <div class="header-container">
+                    <p class="content-header metadata-step4">
+                      Dataset-specific high-level metadata files
                     </p>
-                  </button>
-                  <button
-                    class="metadata-button button-generate-dataset"
-                    data-next="readmeUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      README
-                    </p>
-                  </button>
+                  </div>
+                  <div class="button-container">
+                      <button
+                        class="metadata-button button-generate-dataset"
+                        data-next="subjectsUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          subjects
+                        </p>
+                      </button>
+                    <!-- </div> -->
+                    <!-- <div style="margin-bottom: 15px"> -->
+                      <button
+                        class="metadata-button button-generate-dataset"
+                        data-next="samplesUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          samples
+                        </p>
+                      </button>
 
-                  <button
-                    class="metadata-button button-generate-dataset"
-                    data-next="changesUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      CHANGES
-                    </p>
-                  </button>
+                      <button
+                        class="metadata-button button-generate-dataset"
+                        data-next="readmeUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          README
+                        </p>
+                      </button>
+
+                      <button
+                        class="metadata-button button-generate-dataset"
+                        data-next="changesUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          CHANGES
+                        </p>
+                      </button>
+
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <button
-                    class="
-                      metadata-button
-                      button-generate-dataset
-                      code-metadata
-                    "
-                    data-next="codeDescriptionUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      code_description
-                    </p>
-                  </button>
-                  <button
-                    class="
-                      metadata-button
-                      button-generate-dataset
-                      code-metadata
-                    "
-                    data-next="inputsMetadataUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      inputs_metadata
-                    </p>
-                  </button>
+                    <!-- </div> -->
+                    <!-- <div> -->
 
-                  <button
-                    class="
-                      metadata-button
-                      button-generate-dataset
-                      code-metadata
-                    "
-                    data-next="outputsMetadataUpload"
-                  >
-                    <svg
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-file-earmark-plus"
-                      fill="#13716D"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
-                      />
-                      <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
-                      />
-                    </svg>
-                    <svg
-                      style="display: none"
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-check2"
-                      fill="var(--color-light-green)"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-                      />
-                    </svg>
-                    <p
-                      style="
-                        margin-top: 30px;
-                        font-family: 'Raleway', sans-serif;
-                      "
-                    >
-                      outputs_metadata
-                    </p>
-                  </button>
+              <div class="flex-row-container code-metadata">
+                <div class="flex-content-container">
+                  <div class="header-container">
+                    <p class="content-header metadata-step4">Code-related metadata file</p>
+                  </div>
+                  <div class="button-container">
+                      <button
+                        class="
+                          metadata-button
+                          button-generate-dataset
+                          code-metadata
+                        "
+                        data-next="codeDescriptionUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          code_description
+                        </p>
+                      </button>
+                      <button
+                        class="
+                          metadata-button
+                          button-generate-dataset
+                          code-metadata
+                        "
+                        data-next="inputsMetadataUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          inputs_metadata
+                        </p>
+                      </button>
+
+                      <button
+                        class="
+                          metadata-button
+                          button-generate-dataset
+                          code-metadata
+                        "
+                        data-next="outputsMetadataUpload"
+                      >
+                        <svg
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-file-earmark-plus"
+                          fill="#13716D"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
+                          />
+                          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                          />
+                        </svg>
+                        <svg
+                          style="display: none"
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 16 16"
+                          class="bi bi-check2"
+                          fill="var(--color-light-green)"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                          />
+                        </svg>
+                        <p
+                          style="
+                            margin-top: 30px;
+                            font-family: 'Raleway', sans-serif;
+                          "
+                        >
+                          outputs_metadata
+                        </p>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
+              </div>
+            </div>
 
               <!-- submission -->
               <div id="submissionUpload" class="div-individual-metadata">
@@ -1895,9 +1930,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-submission-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>
@@ -2063,9 +2097,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-ds-description-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>
@@ -2226,9 +2259,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-subjects-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>
@@ -2389,9 +2421,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-samples-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>
@@ -2552,9 +2583,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-CHANGES-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>
@@ -2716,9 +2746,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-README-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>
@@ -2895,9 +2924,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-codeDescription-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>
@@ -3073,9 +3101,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-inputsMetadata-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>
@@ -3251,9 +3278,8 @@
                     </button>
                   </div>
                   <div
-                    class="div-file-import"
+                    class="div-file-import pennsieve"
                     id="metadata-outputsMetadata-pennsieve"
-                    style="display: none"
                   >
                     <p style="font-weight: bold">Import Pennsieve file</p>
                     <div>

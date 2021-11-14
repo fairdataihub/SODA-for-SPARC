@@ -1116,7 +1116,7 @@ ipcRenderer.on(
 async function generateSubjectsFileHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
-      title: "SODA will replace any existing subjects.xlsx file on Pennsieve.",
+      title: "Any existing subjects.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -1250,7 +1250,7 @@ ipcRenderer.on(
 async function generateSamplesFileHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
-      title: "SODA will replace any existing samples.xlsx file on Pennsieve.",
+      title: "Any existing samples.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,

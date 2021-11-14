@@ -702,7 +702,7 @@ async function generateDDFile(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
       title:
-        "SODA will replace any existing dataset_description.xlsx file on Pennsieve.",
+        "Any existing dataset_description.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -806,9 +806,14 @@ async function generateDDFile(uploadBFBoolean) {
           defaultBfDataset
         );
       } else {
+        if (uploadBFBoolean) {
+          var successMessage = "Successfully generated the dataset_description.xlsx file on your Pennsieve dataset."
+        } else {
+          var successMessage = "Successfully generated the dataset_description.xlsx file at the specified location."
+        }
         Swal.fire({
           title:
-            "The dataset_description.xlsx file has been successfully generated at the specified location.",
+            successMessage,
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",

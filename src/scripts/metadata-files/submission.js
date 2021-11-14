@@ -99,6 +99,10 @@ function resetSubmissionFields() {
   $("#submission-completion-date")
     .empty()
     .append('<option value="Select">Select an option</option>');
+  // actionEnterNewDate("none");
+  $("#submission-completion-date").append($('<option>', {
+    text: 'Enter my own date'
+  }));
   checkAirtableStatus("");
 }
 
@@ -425,7 +429,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
       title:
-        "SODA will replace any existing submission.xlsx file on Pennsieve.",
+        "Any existing submission.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -502,9 +506,14 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           defaultBfDataset
         );
       } else {
+        if (uploadBFBoolean) {
+          var successMessage = "Successfully generated the submission.xlsx file on your Pennsieve dataset."
+        } else {
+          var successMessage = "Successfully generated the submission.xlsx file at the specified location."
+        }
         Swal.fire({
           title:
-            "The submission.xlsx file has been successfully generated at the specified location.",
+            successMessage,
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
