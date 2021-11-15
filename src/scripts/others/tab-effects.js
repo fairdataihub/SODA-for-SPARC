@@ -3043,14 +3043,14 @@ const wipeOutCurateProgress = () => {
     "metadata-files": {},
   };
   // uncheck all radio buttons and checkboxes
-  $(".option-card").removeClass("checked");
-  $(".option-card.radio-button").removeClass("non-selected");
-  $(".option-card.high-level-folders").removeClass("disabled");
-  $(".option-card .folder-input-check").prop("checked", false);
-  $(".parent-tabs.option-card").removeClass("checked");
-  $(".parent-tabs.option-card.radio-button").removeClass("non-selected");
-  $(".parent-tabs.option-card.high-level-folders").removeClass("disabled");
-  $(".parent-tabs.option-card.folder-input-check").prop("checked", false);
+  $("#organize-section").find(".option-card").removeClass("checked");
+  $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
+  $("#organize-section").find(".option-card.high-level-folders").removeClass("disabled");
+  $("#organize-section").find(".option-card .folder-input-check").prop("checked", false);
+  $("#organize-section").find(".parent-tabs.option-card").removeClass("checked");
+  $("#organize-section").find(".parent-tabs.option-card.radio-button").removeClass("non-selected");
+  $("#organize-section").find(".parent-tabs.option-card.high-level-folders").removeClass("disabled");
+  $("#organize-section").find(".parent-tabs.option-card.folder-input-check").prop("checked", false);
   $(".metadata-button.button-generate-dataset").removeClass("done");
   $("#organize-section input:checkbox").prop("checked", false);
   $("#organize-section input:radio").prop("checked", false);
