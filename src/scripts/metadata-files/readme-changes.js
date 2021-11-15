@@ -61,46 +61,46 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
   }).then((result) => {});
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
   if (uploadBFBoolean) {
-      client.invoke(
-        "api_upload_RC_file",
-        textValue,
-        upperCaseLetters,
-        defaultBfAccount,
-        $(`#bf_dataset_load_${fileType}`).text().trim(),
-        (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              title: `Failed to generate the ${upperCaseLetters} file`,
-              html: emessage,
-              icon: "warning",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              `Prepare Metadata - Create ${upperCaseLetters}`,
-              defaultBfDataset
-            );
-          } else {
-            Swal.fire({
-              title: `Successfully generated the ${upperCaseLetters} file on your Pennsieve dataset.`,
-              icon: "success",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              `Prepare Metadata - Create ${upperCaseLetters}`,
-              defaultBfDataset
-            );
-          }
+    client.invoke(
+      "api_upload_RC_file",
+      textValue,
+      upperCaseLetters,
+      defaultBfAccount,
+      $(`#bf_dataset_load_${fileType}`).text().trim(),
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            title: `Failed to generate the ${upperCaseLetters} file`,
+            html: emessage,
+            icon: "warning",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            `Prepare Metadata - Create ${upperCaseLetters}`,
+            defaultBfDataset
+          );
+        } else {
+          Swal.fire({
+            title: `Successfully generated the ${upperCaseLetters} file on your Pennsieve dataset.`,
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            `Prepare Metadata - Create ${upperCaseLetters}`,
+            defaultBfDataset
+          );
         }
-      );
+      }
+    );
   } else {
     ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
   }
@@ -579,7 +579,9 @@ const getRC = async (type) => {
           });
         }
         $(
-          $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).siblings()[0]
+          $(
+            `#button-fake-confirm-existing-bf-${shortName}-file-load`
+          ).siblings()[0]
         ).hide();
         $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).click();
       }
@@ -627,7 +629,6 @@ function importExistingRCFile(type) {
     }
   }
 }
-
 
 // main function to load existing README/CHANGES files
 function loadExistingRCFile(filepath, type) {

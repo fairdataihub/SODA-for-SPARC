@@ -100,9 +100,11 @@ function resetSubmissionFields() {
     .empty()
     .append('<option value="Select">Select an option</option>');
   // actionEnterNewDate("none");
-  $("#submission-completion-date").append($('<option>', {
-    text: 'Enter my own date'
-  }));
+  $("#submission-completion-date").append(
+    $("<option>", {
+      text: "Enter my own date",
+    })
+  );
   checkAirtableStatus("");
 }
 
@@ -235,7 +237,7 @@ function onboardingSubmission() {
           introStatus.submission = true;
         })
         .start();
-      }
+    }
   }, 1300);
 }
 
@@ -512,13 +514,14 @@ async function generateSubmissionHelper(uploadBFBoolean) {
         );
       } else {
         if (uploadBFBoolean) {
-          var successMessage = "Successfully generated the submission.xlsx file on your Pennsieve dataset."
+          var successMessage =
+            "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
         } else {
-          var successMessage = "Successfully generated the submission.xlsx file at the specified location."
+          var successMessage =
+            "Successfully generated the submission.xlsx file at the specified location.";
         }
         Swal.fire({
-          title:
-            successMessage,
+          title: successMessage,
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
