@@ -1,4 +1,3 @@
-
 // Main functions
 async function disseminatePublish() {
   // run preassumption checks
@@ -550,13 +549,16 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   }
 });
 
-// Prepublishing Section 
+// Prepublishing Section
 
 // take the user to the Pennsieve account to sign up for an ORCID Id
-$('#ORCID-btn').on("click", () => {
-  console.log("Clicked")
-  ipcRenderer.send('orcid', "https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/profile/" )
-})
+$("#ORCID-btn").on("click", () => {
+  console.log("Clicked");
+  ipcRenderer.send(
+    "orcid",
+    "https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/profile/"
+  );
+});
 
 // runs after a user selects a dataset
 // changes Pre-Publishing checklist elements found in the UI on the "Disseminate Datasets - Submit for pre-publishing review" section

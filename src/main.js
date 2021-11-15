@@ -345,19 +345,19 @@ ipcMain.on("orcid", () => {
     parent: mainWindow,
   };
 
-  let pennsieveModal = new BrowserWindow(windowOptions)
-	pennsieveModal.on('close', function () { pennsieveModal = null })
-	pennsieveModal.loadURL("https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/profile/")
-	pennsieveModal.once('ready-to-show', () => {
-    pennsieveModal.show()
-	})
+  let pennsieveModal = new BrowserWindow(windowOptions);
+  pennsieveModal.on("close", function () {
+    pennsieveModal = null;
+  });
+  pennsieveModal.loadURL(
+    "https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/profile/"
+  );
+  pennsieveModal.once("ready-to-show", () => {
+    pennsieveModal.show();
+  });
 
   pennsieveModal.on("close", () => {
-    // send event back to the renderer to re-run the prepublishing checks 
+    // send event back to the renderer to re-run the prepublishing checks
     // this will detect if the user added their ORCID iD
-
-  })
-
-
-
-})
+  });
+});
