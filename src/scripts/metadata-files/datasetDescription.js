@@ -807,13 +807,14 @@ async function generateDDFile(uploadBFBoolean) {
         );
       } else {
         if (uploadBFBoolean) {
-          var successMessage = "Successfully generated the dataset_description.xlsx file on your Pennsieve dataset."
+          var successMessage =
+            "Successfully generated the dataset_description.xlsx file on your Pennsieve dataset.";
         } else {
-          var successMessage = "Successfully generated the dataset_description.xlsx file at the specified location."
+          var successMessage =
+            "Successfully generated the dataset_description.xlsx file at the specified location.";
         }
         Swal.fire({
-          title:
-            successMessage,
+          title: successMessage,
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",

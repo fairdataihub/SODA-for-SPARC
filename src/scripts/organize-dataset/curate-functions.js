@@ -380,7 +380,10 @@ function populateMetadataProgress(
     CHANGES: ["para-changes-file-path", metadataButtonsArray[5]],
     code_description: ["para-readme-file-path", metadataButtonsArray[6]],
     inputs_metadata: ["para-inputsMetadata-file-path", metadataButtonsArray[7]],
-    outputs_metadata: ["para-outputs_metadata-file-path", metadataButtonsArray[8]],
+    outputs_metadata: [
+      "para-outputs_metadata-file-path",
+      metadataButtonsArray[8],
+    ],
   };
   if (populateBoolean) {
     if (metadataFileName in correspondingMetadataParaElement) {
