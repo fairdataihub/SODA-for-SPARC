@@ -3639,15 +3639,27 @@ function showPublishingStatus(callback) {
           // }
 
           // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
-          if(res[0] !== 'requested') {
-            console.log("In here")
+          if (res[0] !== "requested") {
+            console.log("In here");
             // cannot withdraw from submission if there is no review request in progress or if it is already accepted
-            $('#prepublishing-withdraw-btn-container').css("visibility", "hidden")
-            $('#prepublishing-publish-btn-container').css("visibility", "visible")
+            $("#prepublishing-withdraw-btn-container").css(
+              "visibility",
+              "hidden"
+            );
+            $("#prepublishing-publish-btn-container").css(
+              "visibility",
+              "visible"
+            );
           } else {
-            // show the withdraw button 
-            $('#prepublishing-withdraw-btn-container').css("visibility", "visible")
-            $('#prepublishing-publish-btn-container').css("visibility", "hidden")
+            // show the withdraw button
+            $("#prepublishing-withdraw-btn-container").css(
+              "visibility",
+              "visible"
+            );
+            $("#prepublishing-publish-btn-container").css(
+              "visibility",
+              "hidden"
+            );
           }
 
           if (
