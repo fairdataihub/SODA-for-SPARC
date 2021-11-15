@@ -3145,9 +3145,7 @@ async function submitReviewDatasetCheck(res) {
 
         // add a scroll effect
         const input = document.getElementById("tui-date-picker-target");
-        let calendar = document.querySelector(
-          ".tui-calendar-body-inner"
-        );
+        let calendar = document.querySelector(".tui-calendar-body-inner");
 
         input.addEventListener("click", () => {
           setTimeout(() => {
