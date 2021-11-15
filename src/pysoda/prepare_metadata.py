@@ -127,6 +127,7 @@ def extract_milestone_info(datalist):
 
     return milestone
 
+
 ### Create submission file
 def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str):
 
@@ -634,11 +635,13 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
     if upload_boolean:
         upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
 
+
 # check for non-empty fields (cells)
 def column_check(x):
     if "unnamed" in x.lower():
         return False
     return True
+
 
 # import an existing subjects/samples files from an excel file
 def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
@@ -716,6 +719,7 @@ def checkEmptyColumn(column):
         return True
     return False
 
+
 # needed to sort subjects and samples table data to match the UI fields
 def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []
@@ -737,9 +741,11 @@ def sortedSubjectsTableData(matrix, fields):
         npArray = sortedMatrix
     return npArray
 
+
 # transpose a matrix (array of arrays)
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
+
 
 # helper function to process custom fields (users add and name them) for subjects and samples files
 def processMetadataCustomFields(matrix):
@@ -749,6 +755,7 @@ def processMetadataCustomFields(matrix):
             refined_matrix.append(column)
 
     return refined_matrix
+
 
 # use Entrez library to load the scientific name for a species
 def load_taxonomy_species(animalList):
@@ -775,6 +782,7 @@ def checkEmptyColumn(column):
             break
         return True
     return False
+
 
 ## load/import an existing local or Pennsieve submission.xlsx file
 def load_existing_submission_file(filepath):
@@ -838,6 +846,7 @@ def load_existing_submission_file(filepath):
         "Milestone completion date": date,
     }
 
+
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
@@ -887,6 +896,7 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
     raise Exception(
         f"No {file_type} file was found at the root of the dataset provided."
     )
+
 
 # obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(bf_object, item_id):
