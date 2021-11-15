@@ -2996,7 +2996,7 @@ async function submitReviewDatasetCheck(res) {
       text: "",
       html: `
                 <p>This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue? </p>
-                <input type="checkbox" id="embargo-date-check"> Would you like to place the dataset under embargo so that it is not made public immediately?
+                <input type="checkbox" id="embargo-date-check"> Place this dataset under embargo so that it is not made public immediately?
                 <div style="visibility:hidden; flex-direction: column; margin-left: 20%;" id="calendar-wrapper">
                     <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
                       <input
@@ -3089,8 +3089,8 @@ async function submitReviewDatasetCheck(res) {
       text: "",
       html: `
                 <p>Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
-                <input type="checkbox" id="embargo-date-check"> Would you like to place the dataset under embargo so that it is not made public immediately?
-                <div style="visibility:hidden; flex-direction: column; margin-left: 20%;" id="calendar-wrapper">
+                <input type="checkbox" id="embargo-date-check"> Place this dataset under embargo so that it is not made public immediately?
+                <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
                     <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
                       <input
                       type="text"
@@ -3101,7 +3101,7 @@ async function submitReviewDatasetCheck(res) {
                     </div>
                     <div
                     id="tui-date-picker-container"
-                    style="margin-top: -1px"
+                    style="margin-top: -1px; margin-left: 60px;"
                     ></div>
                 </div>
                 
@@ -3141,6 +3141,21 @@ async function submitReviewDatasetCheck(res) {
           } else {
             tuiCalendarWrapper.style.visibility = "hidden";
           }
+        });
+
+        // add a scroll effect
+        const input = document.getElementById("tui-date-picker-target");
+        let calendar = document.querySelector(
+          ".tui-calendar-body-inner"
+        );
+
+        input.addEventListener("click", () => {
+          setTimeout(() => {
+            calendar.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }, 200);
         });
       },
       willClose: () => {
@@ -3640,7 +3655,6 @@ function showPublishingStatus(callback) {
 
           // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
           if (res[0] !== "requested") {
-            console.log("In here");
             // cannot withdraw from submission if there is no review request in progress or if it is already accepted
             $("#prepublishing-withdraw-btn-container").css(
               "visibility",

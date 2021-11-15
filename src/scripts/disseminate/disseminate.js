@@ -557,8 +557,6 @@ const showPrePublishingStatus = async () => {
     return;
   }
 
-  console.log("Running pre-publishing status items");
-
   // spinners that fit into the checklist icon slots until statuses have been verified for the items
   $(".icon-wrapper").attr("class", "ui mini active inline loader icon-wrapper");
   $(".icon-wrapper").children().css("visibility", "hidden");
