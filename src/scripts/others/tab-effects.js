@@ -2052,6 +2052,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
         }
       }
       $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show();
+      $(`#div-check-bf-import-${metadataSubSamFile}`).css("display", "flex");
     }
     return continueProgress;
   } else {
@@ -2074,6 +2075,7 @@ async function switchMetadataDDQuestion() {
     });
     if (continueProgressDD) {
       $("#existing-dd-file-destination").val("");
+      $("#div-check-bf-import-dd").css("display", "flex");
       $($("#div-check-bf-import-dd").children()[0]).show();
       resetDDFields();
     }
@@ -2098,6 +2100,7 @@ async function switchMetadataSubmissionQuestion() {
     if (continueProgressSubmission) {
       $("#existing-submission-file-destination").val("");
       $($("#div-check-bf-import-submission").children()[0]).show();
+      $("#div-check-bf-import-submission").css("display", "flex");
       resetSubmissionFields();
     }
     return continueProgressSubmission;

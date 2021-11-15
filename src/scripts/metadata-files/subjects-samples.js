@@ -2398,7 +2398,7 @@ function checkBFImportSubjects() {
         });
       } else {
         subjectsTableData = res;
-        loadDataFrametoUI();
+        loadDataFrametoUI("bf");
       }
     }
   );
@@ -2444,13 +2444,13 @@ function checkBFImportSamples() {
         });
       } else {
         samplesTableData = res;
-        loadDataFrametoUISamples();
+        loadDataFrametoUISamples("bf");
       }
     }
   );
 }
 
-function loadDataFrametoUI() {
+function loadDataFrametoUI(type) {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2474,13 +2474,21 @@ function loadDataFrametoUI() {
   // load sub-ids to table
   loadSubjectsDataToTable();
   $("#table-subjects").show();
-  $("#button-fake-confirm-existing-subjects-file-load").click();
-  $(
-    $("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]
-  ).hide();
+  if (type === "local") {
+    $("#div-confirm-existing-subjects-import").hide();
+    $($("#div-confirm-existing-subjects-import button")[0]).hide();
+    $("#button-fake-confirm-existing-subjects-file-load").click();
+  } else {
+    $("#div-check-bf-import-subjects").hide();
+    $($("#div-check-bf-import-subjects button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-subjects-file-load").click();
+    $(
+      $("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]
+    ).hide();
+  }
 }
 
-function loadDataFrametoUISamples() {
+function loadDataFrametoUISamples(type) {
   // separate regular headers and custom headers
   const lowercasedHeaders = samplesTableData[0].map((header) =>
     header.toLowerCase()
@@ -2504,10 +2512,18 @@ function loadDataFrametoUISamples() {
   // load sub-ids to table
   loadSamplesDataToTable();
   $("#table-samples").show();
-  $("#button-fake-confirm-existing-samples-file-load").click();
-  $(
-    $("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]
-  ).hide();
+  if (type === "local") {
+    $("#div-confirm-existing-samples-import").hide();
+    $($("#div-confirm-existing-samples-import button")[0]).hide();
+    $("#button-fake-confirm-existing-samples-file-load").click();
+  } else {
+    $("#div-check-bf-import-samples").hide();
+    $($("#div-check-bf-import-samples button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-samples-file-load").click();
+    $(
+      $("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]
+    ).hide();
+  }
 }
 
 function preliminaryProtocolStep(type) {

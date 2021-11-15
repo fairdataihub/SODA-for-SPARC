@@ -681,7 +681,7 @@ function importExistingSubmissionFile(type) {
   }
 }
 
-// function to load existing README/CHANGES files
+// function to load existing submission files
 function loadExistingSubmissionFile(filepath) {
   client.invoke("api_load_existing_submission_file", filepath, (error, res) => {
     if (error) {
@@ -695,12 +695,12 @@ function loadExistingSubmissionFile(filepath) {
         icon: "error",
       });
     } else {
-      loadSubmissionFileToUI(res);
+      loadSubmissionFileToUI(res, "local");
     }
   });
 }
 
-function loadSubmissionFileToUI(data) {
+function loadSubmissionFileToUI(data, type) {
   milestoneTagify1.removeAllTags();
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
@@ -739,12 +739,15 @@ function loadSubmissionFileToUI(data) {
       Swal.hideLoading();
     },
   });
-  $("#div-confirm-existing-submission-import").hide();
-  $($("#div-confirm-existing-submission-import button")[0]).hide();
-  $("#button-fake-confirm-existing-submission-file-load").click();
-  $(
-    $("#button-fake-confirm-existing-bf-submission-file-load").siblings()[0]
-  ).hide();
+  if (type === "local") {
+    $("#div-confirm-existing-submission-import").hide();
+    $($("#div-confirm-existing-submission-import button")[0]).hide();
+    $("#button-fake-confirm-existing-submission-file-load").click();
+  } else {
+    $("#div-check-bf-import-submission").hide();
+    $($("#div-check-bf-import-submission button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-submission-file-load").click();
+  }
 }
 
 // function to check for existing submission file on Penn
@@ -781,7 +784,7 @@ function checkBFImportSubmission() {
           html: emessage,
         });
       } else {
-        loadSubmissionFileToUI(res);
+        loadSubmissionFileToUI(res, "bf");
       }
     }
   );

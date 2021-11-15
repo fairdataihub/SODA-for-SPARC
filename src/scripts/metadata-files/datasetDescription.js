@@ -2254,7 +2254,7 @@ function checkBFImportDD() {
           html: emessage,
         });
       } else {
-        loadDDFileToUI(res);
+        loadDDFileToUI(res, "bf");
       }
     }
   );
@@ -2283,13 +2283,13 @@ function loadDDfileDataframe(filePath) {
           icon: "error",
         });
       } else {
-        loadDDFileToUI(res);
+        loadDDFileToUI(res, "local");
       }
     }
   );
 }
 
-function loadDDFileToUI(object) {
+function loadDDFileToUI(object, file_type) {
   var basicInfoObj = object["Basic information"];
   var studyInfoObj = object["Study information"];
   var conInfo = object["Contributor information"];
@@ -2365,10 +2365,16 @@ function loadDDFileToUI(object) {
     },
   });
   $("#button-generate-dd").show();
-  $("#div-confirm-existing-dd-import").hide();
-  $($("#div-confirm-existing-dd-import button")[0]).hide();
-  $("#button-fake-confirm-existing-dd-file-load").click();
-  $($("#button-fake-confirm-existing-bf-dd-file-load").siblings()[0]).hide();
+  if (file_type === "local") {
+    $("#div-confirm-existing-dd-import").hide();
+    $($("#div-confirm-existing-dd-import button")[0]).hide();
+    $("#button-fake-confirm-existing-dd-file-load").click();
+  } else {
+    $("#div-check-bf-import-dd").hide();
+    $($("#div-check-bf-import-dd button")[0]).hide();
+    // $($("#button-fake-confirm-existing-bf-dd-file-load").siblings()[0]).hide();
+    $("#button-fake-confirm-existing-bf-dd-file-load").click();
+  }
 }
 
 function populateTagifyDD(tagify, values) {
