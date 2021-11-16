@@ -7359,7 +7359,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
     } else {
       orcidId = undefined;
     }
-  } 
+  }
 
   // the user has an ORCID iD if the property is defined and non-empty
   statuses.ORCID = orcidId && orcidId.length ? true : false;
