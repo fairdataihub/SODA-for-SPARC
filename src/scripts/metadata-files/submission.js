@@ -374,13 +374,11 @@ $(document).ready(function () {
         ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "submission.xlsx");
         submissionDestinationPath = destinationPath;
-        $("#div-confirm-destination-submission-locally").css(
+        $("#div-confirm-destination-submission-locally").css("display", "flex");
+        $($("#div-confirm-destination-submission-locally").children()[0]).css(
           "display",
           "flex"
         );
-        $(
-          $("#div-confirm-destination-submission-locally").children()[0]
-        ).css("display", "flex");
       } else {
         document.getElementById(
           "input-destination-generate-submission-locally"

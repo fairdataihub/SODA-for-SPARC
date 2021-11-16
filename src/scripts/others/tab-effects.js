@@ -1992,7 +1992,9 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
         "Browse here"
       );
       $(`#textarea-create-${metadataRCFileType}`).val("");
-      if ($(`#bf_dataset_load_${metadataRCFileType}`).text().trim() !== "None") {
+      if (
+        $(`#bf_dataset_load_${metadataRCFileType}`).text().trim() !== "None"
+      ) {
         $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show();
         $(`#div-check-bf-import-${metadataRCFileType}`).css("display", "flex");
       } else {
@@ -2050,7 +2052,9 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
           $($(field).parents()[2]).remove();
         }
       }
-      if ($(`#bf_dataset_load_${metadataSubSamFile}`).text().trim() !== "None") {
+      if (
+        $(`#bf_dataset_load_${metadataSubSamFile}`).text().trim() !== "None"
+      ) {
         $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show();
         $(`#div-check-bf-import-${metadataSubSamFile}`).css("display", "flex");
       } else {
