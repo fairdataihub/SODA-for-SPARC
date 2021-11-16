@@ -328,12 +328,12 @@ ipcMain.on("restart_app", () => {
   autoUpdater.quitAndInstall();
 });
 
-ipcMain.on("orcid", () => {
+ipcMain.on("orcid", (event, url) => {
   const windowOptions = {
     minWidth: 500,
     minHeight: 300,
-    width: 640,
-    height: 480,
+    width: 900,
+    height: 800,
     center: true,
     show: true,
     icon: __dirname + "/assets/menu-icon/soda_icon.png",
@@ -347,7 +347,7 @@ ipcMain.on("orcid", () => {
 
   let pennsieveModal = new BrowserWindow(windowOptions)
 	pennsieveModal.on('close', function () { pennsieveModal = null })
-	pennsieveModal.loadURL("https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/profile/")
+	pennsieveModal.loadURL(url)
 	pennsieveModal.once('ready-to-show', () => {
     pennsieveModal.show()
 	})
@@ -355,7 +355,7 @@ ipcMain.on("orcid", () => {
   pennsieveModal.on("close", () => {
     // send event back to the renderer to re-run the prepublishing checks 
     // this will detect if the user added their ORCID iD
-
+    event.reply('orcid-reply')
   })
 
 
