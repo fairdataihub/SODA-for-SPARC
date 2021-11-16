@@ -70,6 +70,13 @@ function resetSubmissionFields() {
 
   $("#div-confirm-existing-submission-import").hide();
 
+  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
+    $($("#div-check-bf-import-submission").children()[0]).show();
+    $("#div-check-bf-import-submission").css("display", "flex");
+  } else {
+    $("#div-check-bf-import-submission").hide();
+  }
+
   var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
   var textAreaFields = $("#Question-prepare-submission-1")
     .nextAll()

@@ -623,6 +623,13 @@ function resetDDFields() {
 
   $("#div-confirm-existing-dd-import").hide();
 
+  if ($("#bf_dataset_load_dd").text().trim() !== "None") {
+    $($("#div-check-bf-import-dd").children()[0]).show();
+    $("#div-check-bf-import-dd").css("display", "flex");
+  } else {
+    $("#div-check-bf-import-dd").hide();
+  }
+
   // show generate button again
   $("#button-generate-dd").show();
 

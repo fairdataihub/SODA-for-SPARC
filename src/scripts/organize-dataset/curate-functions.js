@@ -668,7 +668,8 @@ const get_api_key = async (login, password, key_name) => {
   });
 };
 
-async function openDropdownPrompt(dropdown, show_timer = true) {
+var dropdownEventID = "";
+async function openDropdownPrompt(ev, dropdown, show_timer = true) {
   // if users edit current account
   if (dropdown === "bf") {
     var resolveMessage = "";
@@ -909,15 +910,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             }
           );
         }
-        // if (result.isDismissed) {
-        //   if (result.dismiss === Swal.DismissReason.cancel) {
-        //     // else, if users click Add account
-        //     showBFAddAccountBootbox();
-        //   }
-        // }
       });
     }
   } else if (dropdown === "dataset") {
+    dropdownEventID = ev.id;
     $(".svg-change-current-account.dataset").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
@@ -1050,14 +1046,20 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           });
         }
 
+        if (dropdownEventID === "dd-select-pennsieve-dataset") {
+          $("#ds-name").val(bfDataset);
+          $("body").removeClass("waiting");
+          $(".svg-change-current-account.dataset").css("display", "block");
+          dropdownEventID = "";
+          return;
+        }
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
-        $("#ds-name").val(bfDataset);
         confirm_click_function();
 
         defaultBfDataset = bfDataset;
-        document.getElementById("ds-description").innerHTML = "";
+        // document.getElementById("ds-description").innerHTML = "";
         refreshDatasetList();
         $("#dataset-loaded-message").hide();
 

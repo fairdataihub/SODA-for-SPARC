@@ -1992,7 +1992,12 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
         "Browse here"
       );
       $(`#textarea-create-${metadataRCFileType}`).val("");
-      $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show();
+      if ($(`#bf_dataset_load_${metadataRCFileType}`).text().trim() !== "None") {
+        $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show();
+        $(`#div-check-bf-import-${metadataRCFileType}`).css("display", "flex");
+      } else {
+        $(`#div-check-bf-import-${metadataRCFileType}`).hide();
+      }
       $(`#button-generate-${metadataRCFileType}`).css("display", "flex");
     }
     return continueProgress;
@@ -2045,8 +2050,12 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
           $($(field).parents()[2]).remove();
         }
       }
-      $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show();
-      $(`#div-check-bf-import-${metadataSubSamFile}`).css("display", "flex");
+      if ($(`#bf_dataset_load_${metadataSubSamFile}`).text().trim() !== "None") {
+        $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show();
+        $(`#div-check-bf-import-${metadataSubSamFile}`).css("display", "flex");
+      } else {
+        $(`#div-check-bf-import-${metadataSubSamFile}`).hide();
+      }
     }
     return continueProgress;
   } else {
