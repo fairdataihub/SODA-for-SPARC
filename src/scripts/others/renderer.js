@@ -7339,38 +7339,30 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the license's status
   statuses.license = license && license.length ? true : false;
 
-  // get the individual users collaborating on the dataset
-  let contributors = await getDatasetIndividualContributors(datasetIdOrName);
+  // check if the user is the owner of the dataset
+  let owner = await userIsDatasetOwner(datasetIdOrName);
 
-  // return the owner from the list of contributors
-  let [owner] = contributors.filter((contributor) => {
-    return userIsOwner(contributor.role);
-  });
+  // declare the orcidId
+  let orcidId;
 
-  // get the current SODA user
-  let user = await getUserInformation();
+  // check if the user is the owner
+  if (owner) {
+    // get the user's information
+    let user = await getUserInformation();
 
-  // check if their id matches the owner's id
-  if (user.id === owner.id) {
     // get the orcid object out of the user information
     let orcidObject = user.orcid;
 
-    let orcidId;
     // check if the owner has an orcid id
     if (orcidObject) {
       orcidId = orcidObject.orcid;
     } else {
       orcidId = undefined;
     }
+  } 
 
-    // the user has an ORCID iD if the property is defined and non-empty
-    statuses.ORCID = orcidId && orcidId.length ? true : false;
-  } else {
-    // the user does not own the current dataset
-    // create a warning message that alerts them their ORCID iD checklist item will not turn green for the current dataset
-    // even if they connect their ORCID iD to Pennsieve
-    statuses.ORCID = false;
-  }
+  // the user has an ORCID iD if the property is defined and non-empty
+  statuses.ORCID = orcidId && orcidId.length ? true : false;
 
   return statuses;
 };
@@ -7471,40 +7463,6 @@ const submitDatasetForReview = async (
       let statusText = await publicationResponse.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
-};
-
-const getDatasetIndividualContributors = async (datasetIdOrName) => {
-  // check that a dataset name or id is provided
-  if (!datasetIdOrName) {
-    throw new Error(
-      "Error: Must provide a valid dataset to get the individual contributors from."
-    );
-  }
-
-  // get the current user's access token
-  let jwt = await get_access_token();
-
-  // get the dataset
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-  // get the id of the dataset
-  let { id } = dataset.content;
-
-  // get the collaborators
-  let contributorsResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/collaborators/users`,
-    {
-      headers: {
-        Accept: "*/*",
-        Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  let contributors = await contributorsResponse.json();
-
-  return contributors;
 };
 
 /*
