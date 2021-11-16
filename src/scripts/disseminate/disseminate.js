@@ -656,7 +656,6 @@ const allPrepublishingChecklistItemsCompleted = () => {
 
 // close the pre-publishing checklist item warning message(s) when user clicks on the close button 
 $('#publishing-isa-warning .close-btn').click(() => {
-  console.log("Clicked")
   // hide the warning message 
   $('#publishing-isa-warning').css('display', 'none')
 })
