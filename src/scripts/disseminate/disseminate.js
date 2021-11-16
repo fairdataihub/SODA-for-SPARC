@@ -552,25 +552,26 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
 // Prepublishing Section
 
 // take the user to the Pennsieve account to sign up for an ORCID Id
-$('#ORCID-btn').on("click", async () => {
-  // get the user's organization 
-  let user = await getUserInformation()
+$("#ORCID-btn").on("click", async () => {
+  // get the user's organization
+  let user = await getUserInformation();
 
-  // get the user's preferred organization 
-  let {preferredOrganization} = user
+  // get the user's preferred organization
+  let { preferredOrganization } = user;
 
   // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
-  ipcRenderer.send('orcid', `https://app.pennsieve.io/${preferredOrganization}/profile/#orcid-id`)
+  ipcRenderer.send(
+    "orcid",
+    `https://app.pennsieve.io/${preferredOrganization}/profile/#orcid-id`
+  );
 
-  // handle the reply from the asynhronous message to sign the user into Pennsieve 
-  ipcRenderer.on('orcid-reply', (event, arg) => {
-  console.log("The reply we wanted")
-  // run the pre-publishing checklist items
-  showPrePublishingStatus()
-})
-})
-
-
+  // handle the reply from the asynhronous message to sign the user into Pennsieve
+  ipcRenderer.on("orcid-reply", (event, arg) => {
+    console.log("The reply we wanted");
+    // run the pre-publishing checklist items
+    showPrePublishingStatus();
+  });
+});
 
 // runs after a user selects a dataset
 // changes Pre-Publishing checklist elements found in the UI on the "Disseminate Datasets - Submit for pre-publishing review" section

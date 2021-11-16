@@ -345,19 +345,18 @@ ipcMain.on("orcid", (event, url) => {
     parent: mainWindow,
   };
 
-  let pennsieveModal = new BrowserWindow(windowOptions)
-	pennsieveModal.on('close', function () { pennsieveModal = null })
-	pennsieveModal.loadURL(url)
-	pennsieveModal.once('ready-to-show', () => {
-    pennsieveModal.show()
-	})
+  let pennsieveModal = new BrowserWindow(windowOptions);
+  pennsieveModal.on("close", function () {
+    pennsieveModal = null;
+  });
+  pennsieveModal.loadURL(url);
+  pennsieveModal.once("ready-to-show", () => {
+    pennsieveModal.show();
+  });
 
   pennsieveModal.on("close", () => {
     // send event back to the renderer to re-run the prepublishing checks
     // this will detect if the user added their ORCID iD
-    event.reply('orcid-reply')
-  })
-
-
-
-})
+    event.reply("orcid-reply");
+  });
+});

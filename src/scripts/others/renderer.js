@@ -7291,7 +7291,9 @@ Dissemniate Datasets Pre-Publishing Section With Nodejs
 const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
   if (!datasetIdOrName) {
-    throw new Error("Error: Must provide a valid dataset to log status of pre-publishing checklist items from.");
+    throw new Error(
+      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
+    );
   }
 
   // get the current user's access token
@@ -7329,28 +7331,28 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   statuses.license = license && license.length ? true : false;
 
   // get the individual users collaborating on the dataset
-  let contributors = await getDatasetIndividualContributors(datasetIdOrName)
+  let contributors = await getDatasetIndividualContributors(datasetIdOrName);
 
   // return the owner from the list of contributors
-  let owner = contributors.filter(contributor => {
-    return userIsOwner(contributor.role)
-  })
+  let owner = contributors.filter((contributor) => {
+    return userIsOwner(contributor.role);
+  });
 
   // get the current SODA user
-  let user = await getUserInformation()
+  let user = await getUserInformation();
 
-  // check if their id matches the owner's id 
-  if(user.id === owner.id) {
+  // check if their id matches the owner's id
+  if (user.id === owner.id) {
     // check if the owner has an orcid id
-    let {orcid} = user.orcid
+    let { orcid } = user.orcid;
 
     // the user has an ORCID iD if the property is defined and non-empty
     statuses.orcid = orcid && orcid.length ? true : false;
   } else {
-    // the user does not own the current dataset 
+    // the user does not own the current dataset
     // create a warning message that alerts them their ORCID iD checklist item will not turn green for the current dataset
     // even if they connect their ORCID iD to Pennsieve
-    statuses.orcid = false 
+    statuses.orcid = false;
   }
 
   return statuses;
@@ -7457,7 +7459,9 @@ const submitDatasetForReview = async (
 const getDatasetIndividualContributors = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
   if (!datasetIdOrName) {
-    throw new Error("Error: Must provide a valid dataset to get the individual contributors from.");
+    throw new Error(
+      "Error: Must provide a valid dataset to get the individual contributors from."
+    );
   }
 
   // get the current user's access token
@@ -7466,22 +7470,25 @@ const getDatasetIndividualContributors = async (datasetIdOrName) => {
   // get the dataset
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
-  // get the id of the dataset 
-  let {id} = dataset.content
+  // get the id of the dataset
+  let { id } = dataset.content;
 
-  // get the collaborators 
-  let contributorsResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/collaborators/users`, {
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
-    },
-  })
+  // get the collaborators
+  let contributorsResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/collaborators/users`,
+    {
+      headers: {
+        Accept: "*/*",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
-  let contributors = await contributorsResponse.json()
+  let contributors = await contributorsResponse.json();
 
-  return contributors
-}
+  return contributors;
+};
 
 /*
 ******************************************************
@@ -7746,7 +7753,6 @@ const userIsOwner = (role) => {
   return true;
 };
 
-
 /*
 ******************************************************
 ******************************************************
@@ -7757,12 +7763,14 @@ Get User Information With Nodejs
 
 const getUserInformation = async () => {
   // get the access token
-  let jwt = await get_access_token()
+  let jwt = await get_access_token();
 
-  // get the user information 
-  let userResponse = await fetch('https://api.pennsieve.io/user/', { headers: { Authorization: `Bearer ${jwt}` } })
+  // get the user information
+  let userResponse = await fetch("https://api.pennsieve.io/user/", {
+    headers: { Authorization: `Bearer ${jwt}` },
+  });
 
-  let user = await userResponse.json()
+  let user = await userResponse.json();
 
-  return user
-}
+  return user;
+};
