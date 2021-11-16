@@ -1,4 +1,3 @@
-
 // Main functions
 async function disseminatePublish() {
   // run preassumption checks
@@ -550,7 +549,7 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   }
 });
 
-// Prepublishing Section 
+// Prepublishing Section
 
 // take the user to the Pennsieve account to sign up for an ORCID Id
 $('#ORCID-btn').on("click", async () => {

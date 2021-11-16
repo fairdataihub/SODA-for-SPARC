@@ -353,7 +353,7 @@ ipcMain.on("orcid", (event, url) => {
 	})
 
   pennsieveModal.on("close", () => {
-    // send event back to the renderer to re-run the prepublishing checks 
+    // send event back to the renderer to re-run the prepublishing checks
     // this will detect if the user added their ORCID iD
     event.reply('orcid-reply')
   })
