@@ -373,44 +373,19 @@ $(document).ready(function () {
           "input-destination-generate-submission-locally"
         ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "submission.xlsx");
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File submission.xlsx already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              submissionDestinationPath = destinationPath;
-              $("#div-confirm-destination-submission-locally").css(
-                "display",
-                "flex"
-              );
-              $(
-                $("#div-confirm-destination-submission-locally").children()[0]
-              ).css("display", "flex");
-            }
-          });
-        } else {
-          $("#div-confirm-destination-submission-locally").css(
-            "display",
-            "flex"
-          );
-          $($("#div-confirm-destination-submission-locally").children()[0]).css(
-            "display",
-            "flex"
-          );
-          submissionDestinationPath = destinationPath;
-        }
+        submissionDestinationPath = destinationPath;
+        $("#div-confirm-destination-submission-locally").css(
+          "display",
+          "flex"
+        );
+        $(
+          $("#div-confirm-destination-submission-locally").children()[0]
+        ).css("display", "flex");
+      } else {
+        document.getElementById(
+          "input-destination-generate-submission-locally"
+        ).placeholder = "Browse here";
+        $("#div-confirm-destination-submission-locally").css("display", "none");
       }
     }
   );
@@ -444,6 +419,23 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
       title:
         "Any existing submission.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing submission.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,

@@ -54,6 +54,8 @@ var datasetStructureJSONObj = {
 let introStatus = {
   organizeStep3: true,
   submission: false,
+  subjects: false,
+  samples: false,
 };
 
 //////////////////////////////////
@@ -1132,6 +1134,23 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     if (!continueProgress) {
       return;
     }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing subjects.xlsx file in the specified location will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
   }
   Swal.fire({
     title: "Generating the subjects.xlsx file",
@@ -1254,6 +1273,23 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
       title:
         "Any existing samples.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing samples.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -1423,7 +1459,7 @@ function loadSubjectsFileToDataframe(filePath) {
             });
             return;
           }
-          loadDataFrametoUI();
+          loadDataFrametoUI("local");
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -1491,7 +1527,7 @@ function loadSamplesFileToDataframe(filePath) {
             });
             return;
           }
-          loadDataFrametoUISamples();
+          loadDataFrametoUISamples("local");
           ipcRenderer.send(
             "track-event",
             "Success",

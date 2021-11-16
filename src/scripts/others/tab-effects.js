@@ -2031,7 +2031,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
         subjectsTableData = tableData;
       }
       // delete table rows except headers
-      $(`#table-${metadataSubSamFile} tr:gt(0)0`).remove();
+      $(`#table-${metadataSubSamFile} tr:gt(0)`).remove();
       $(`#table-${metadataSubSamFile}`).css("display", "none");
       // Hide Generate button
       $(`#button-generate-${metadataSubSamFile}`).css("display", "none");

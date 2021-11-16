@@ -116,60 +116,17 @@ $(document).ready(function () {
       filename = "CHANGES.txt";
       if (dirpath.length > 0) {
         var destinationPath = path.join(dirpath[0], filename);
-
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File '" +
-            filename +
-            "' already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              changesDestinationPath = destinationPath;
-              $("#div-confirm-destination-changes-locally").css(
-                "display",
-                "flex"
-              );
-              $(
-                $("#div-confirm-destination-changes-locally").children()[0]
-              ).css("display", "flex");
-              document.getElementById(
-                "input-destination-generate-changes-locally"
-              ).placeholder = dirpath[0];
-              // saveRCFile(data, "changes", destinationPath);
-            } else {
-              $("#div-confirm-destination-changes-locally").css(
-                "display",
-                "none"
-              );
-              changesDestinationPath = "";
-              document.getElementById(
-                "input-destination-generate-changes-locally"
-              ).placeholder = "Browse here";
-            }
-          });
-        } else {
-          document.getElementById(
-            "input-destination-generate-changes-locally"
-          ).placeholder = dirpath[0];
-          $("#div-confirm-destination-changes-locally").css("display", "flex");
-          $($("#div-confirm-destination-changes-locally").children()[0]).css(
-            "display",
-            "flex"
-          );
-          changesDestinationPath = destinationPath;
-        }
+        changesDestinationPath = destinationPath;
+        $("#div-confirm-destination-changes-locally").css(
+          "display",
+          "flex"
+        );
+        $(
+          $("#div-confirm-destination-changes-locally").children()[0]
+        ).css("display", "flex");
+        document.getElementById(
+          "input-destination-generate-changes-locally"
+        ).placeholder = dirpath[0];
       } else {
         $("#div-confirm-destination-changes-locally").css("display", "none");
         changesDestinationPath = "";
@@ -186,59 +143,18 @@ $(document).ready(function () {
       let data = $("#textarea-create-readme").val().trim();
       if (dirpath.length > 0) {
         var destinationPath = path.join(dirpath[0], filename);
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File '" +
-            filename +
-            "' already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              readmeDestinationPath = destinationPath;
-              $("#div-confirm-destination-readme-locally").css(
-                "display",
-                "flex"
-              );
-              $($("#div-confirm-destination-readme-locally").children()[0]).css(
-                "display",
-                "flex"
-              );
-              document.getElementById(
-                "input-destination-generate-readme-locally"
-              ).placeholder = dirpath[0];
-            } else {
-              $("#div-confirm-destination-readme-locally").css(
-                "display",
-                "none"
-              );
-              readmeDestinationPath = "";
-              document.getElementById(
-                "input-destination-generate-readme-locally"
-              ).placeholder = "Browse here";
-            }
-          });
-        } else {
-          $("#div-confirm-destination-readme-locally").css("display", "flex");
-          $($("#div-confirm-destination-readme-locally").children()[0]).css(
-            "display",
-            "flex"
-          );
-          readmeDestinationPath = destinationPath;
-          document.getElementById(
-            "input-destination-generate-readme-locally"
-          ).placeholder = dirpath[0];
-        }
+        readmeDestinationPath = destinationPath;
+        $("#div-confirm-destination-readme-locally").css(
+          "display",
+          "flex"
+        );
+        $($("#div-confirm-destination-readme-locally").children()[0]).css(
+          "display",
+          "flex"
+        );
+        document.getElementById(
+          "input-destination-generate-readme-locally"
+        ).placeholder = dirpath[0];
       } else {
         $("#div-confirm-destination-readme-locally").css("display", "none");
         readmeDestinationPath = "";
@@ -367,9 +283,25 @@ $(document).ready(function () {
 });
 
 // write Readme or Changes files (save locally)
-function saveRCFile(type) {
+async function saveRCFile(type) {
   var result = generateRCFilesHelper(type);
   if (result === "empty") {
+    return;
+  }
+  var { value: continueProgress } = await Swal.fire({
+    title:
+      `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
+    text: "Are you sure you want to continue?",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Yes",
+  });
+  if (!continueProgress) {
     return;
   }
   let data = $(`#textarea-create-${type}`).val().trim();
