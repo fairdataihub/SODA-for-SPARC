@@ -1808,7 +1808,12 @@ $("#button-add-tags").click(async () => {
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  });
+  }).then(
+    //check if tags array is empty and set Add/Edit tags appropriately
+    tags === undefined || tags.length == 0
+      ? $("#button-add-tags").html("Add tags")
+      : $("#button-add-tags").html("Edit tags")
+  );
 });
 
 // fetch a user's metadata tags
@@ -1833,6 +1838,13 @@ const showCurrentTags = async () => {
     let tags;
     try {
       tags = await get_dataset_tags(selectedBfDataset);
+      if (tags === undefined || tags.length == 0) {
+        //if so make the button say add tags
+        $("#button-add-tags").html("Add tags");
+      } else {
+        //make the button say edit tags
+        $("#button-add-tags").html("Edit tags");
+      }
     } catch (e) {
       // log the error
       log.error(e);
