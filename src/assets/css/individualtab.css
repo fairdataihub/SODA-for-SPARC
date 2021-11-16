@@ -1719,10 +1719,10 @@ body.swal2-shown > [aria-hidden="true"] {
   border: none;
   color: #4183c4;
   display: inline-block;
-  position: relative;    
-  z-index: 1;     
+  position: relative;
+  z-index: 1;
   padding: 2em;
-  padding-right: 3em;     
+  padding-right: 3em;
   margin: -2em;
 }
 
