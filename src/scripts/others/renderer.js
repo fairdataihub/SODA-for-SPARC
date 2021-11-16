@@ -3644,13 +3644,6 @@ function showPublishingStatus(callback) {
             publishStatusOutputConversion(res)
           );
 
-          // based off the publishing status of the given dataset show the withdraw or submit dataset buttons in 'DIsseminate Datasets - Submit for pre-publishing review'
-          // if(res[1] === 'PUBLISH_IN_PROGRESS' || res[0] === 'requested' || res[1] === 'PUBLISH_SUCCEEDED' || res[1] === 'NOT_PUBLISHED') {
-          //   $('#prepublishing-publish-btn-container').css("visibility", "hidden")
-          // } else {
-
-          // }
-
           // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
           if (res[0] !== "requested") {
             // cannot withdraw from submission if there is no review request in progress or if it is already accepted
@@ -3673,6 +3666,20 @@ function showPublishingStatus(callback) {
               "hidden"
             );
           }
+
+          // display a warnng message if the user is not the owner of the given dataset
+          userIsDatasetOwner(selectedBfDataset).then(owner => {
+            if(!owner) {
+              // show the warning message
+              $('#publishing-isa-warning').css('display', 'flex')
+            } else {
+              // hide the warning message 
+              $('#publishing-isa-warning').css('display', 'none')
+            }
+          }).catch(error => {
+            log.error(error)
+            console.error(error)
+          })
 
           if (
             callback === submitReviewDatasetCheck ||
@@ -7759,6 +7766,21 @@ const userIsOwner = (role) => {
   }
 
   return true;
+};
+
+const userIsDatasetOwner = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the dataset the user wants to edit
+  let role = await getCurrentUserPermissions(datasetIdOrName)
+
+  return userIsOwner(role)
+
 };
 
 /*
