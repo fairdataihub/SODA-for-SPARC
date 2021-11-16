@@ -7334,7 +7334,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   let contributors = await getDatasetIndividualContributors(datasetIdOrName);
 
   // return the owner from the list of contributors
-  let owner = contributors.filter((contributor) => {
+  let [owner] = contributors.filter((contributor) => {
     return userIsOwner(contributor.role);
   });
 
@@ -7343,16 +7343,24 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
 
   // check if their id matches the owner's id
   if (user.id === owner.id) {
+    // get the orcid object out of the user information
+    let orcidObject = user.orcid;
+
+    let orcidId;
     // check if the owner has an orcid id
-    let { orcid } = user.orcid;
+    if (orcidObject) {
+      orcidId = orcidObject.orcid;
+    } else {
+      orcidId = undefined;
+    }
 
     // the user has an ORCID iD if the property is defined and non-empty
-    statuses.orcid = orcid && orcid.length ? true : false;
+    statuses.ORCID = orcidId && orcidId.length ? true : false;
   } else {
     // the user does not own the current dataset
     // create a warning message that alerts them their ORCID iD checklist item will not turn green for the current dataset
     // even if they connect their ORCID iD to Pennsieve
-    statuses.orcid = false;
+    statuses.ORCID = false;
   }
 
   return statuses;

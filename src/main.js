@@ -341,22 +341,20 @@ ipcMain.on("orcid", (event, url) => {
       nodeIntegration: true,
       enableRemoteModule: true,
     },
-    modal: true,
+    // modal: true,
     parent: mainWindow,
+    closable: true,
   };
 
   let pennsieveModal = new BrowserWindow(windowOptions);
   pennsieveModal.on("close", function () {
     pennsieveModal = null;
+    // send event back to the renderer to re-run the prepublishing checks
+    // this will detect if the user added their ORCID iD
+    event.reply("orcid-reply");
   });
   pennsieveModal.loadURL(url);
   pennsieveModal.once("ready-to-show", () => {
     pennsieveModal.show();
-  });
-
-  pennsieveModal.on("close", () => {
-    // send event back to the renderer to re-run the prepublishing checks
-    // this will detect if the user added their ORCID iD
-    event.reply("orcid-reply");
   });
 });
