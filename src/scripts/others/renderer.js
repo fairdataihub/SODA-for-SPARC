@@ -3668,18 +3668,20 @@ function showPublishingStatus(callback) {
           }
 
           // display a warnng message if the user is not the owner of the given dataset
-          userIsDatasetOwner(selectedBfDataset).then(owner => {
-            if(!owner) {
-              // show the warning message
-              $('#publishing-isa-warning').css('display', 'flex')
-            } else {
-              // hide the warning message 
-              $('#publishing-isa-warning').css('display', 'none')
-            }
-          }).catch(error => {
-            log.error(error)
-            console.error(error)
-          })
+          userIsDatasetOwner(selectedBfDataset)
+            .then((owner) => {
+              if (!owner) {
+                // show the warning message
+                $("#publishing-isa-warning").css("display", "flex");
+              } else {
+                // hide the warning message
+                $("#publishing-isa-warning").css("display", "none");
+              }
+            })
+            .catch((error) => {
+              log.error(error);
+              console.error(error);
+            });
 
           if (
             callback === submitReviewDatasetCheck ||
@@ -7777,10 +7779,9 @@ const userIsDatasetOwner = async (datasetIdOrName) => {
   }
 
   // get the dataset the user wants to edit
-  let role = await getCurrentUserPermissions(datasetIdOrName)
+  let role = await getCurrentUserPermissions(datasetIdOrName);
 
-  return userIsOwner(role)
-
+  return userIsOwner(role);
 };
 
 /*
