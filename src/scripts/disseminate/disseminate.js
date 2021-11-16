@@ -654,8 +654,8 @@ const allPrepublishingChecklistItemsCompleted = () => {
   return incompleteChecklistItems.length ? false : true;
 };
 
-// close the pre-publishing checklist item warning message(s) when user clicks on the close button 
-$('#publishing-isa-warning .close-btn').click(() => {
-  // hide the warning message 
-  $('#publishing-isa-warning').css('display', 'none')
-})
+// close the pre-publishing checklist item warning message(s) when user clicks on the close button
+$("#publishing-isa-warning .close-btn").click(() => {
+  // hide the warning message
+  $("#publishing-isa-warning").css("display", "none");
+});
