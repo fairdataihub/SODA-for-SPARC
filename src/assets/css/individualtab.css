@@ -1731,10 +1731,10 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 #begin-prepublishing-button {
- margin: 0 auto; 
+  margin: 0 auto;
 }
 
 #begin-prepublishing-button-container {
-  display: flex; 
+  display: flex;
   justify-content: center;
 }
