@@ -32,8 +32,9 @@ const introJs = require("intro.js");
 const selectpicker = require("bootstrap-select");
 const ini = require("ini");
 const { homedir } = require("os");
-
 const cognitoClient = require("amazon-cognito-identity-js");
+
+const DatePicker = require("tui-date-picker"); /* CommonJS */
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -2888,6 +2889,8 @@ function datasetStatusListChange() {
 
 function postCurationListChange() {
   showPublishingStatus();
+  // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
+  showPrePublishingStatus();
 }
 
 // upload banner image //
@@ -2936,67 +2939,243 @@ var cropOptions = {
 var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
 
-function submitReviewDatasetCheck(res) {
+async function submitReviewDatasetCheck(res) {
   $("#submit_prepublishing_review-spinner").show();
   var reviewstatus = res[0];
   var publishingStatus = res[1];
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
-    emessage =
-      "Your dataset is currently being published. Please wait until it is completed.";
+    Swal.fire({
+      icon: "error",
+      title:
+        "Your dataset is currently being published. Please wait until it is completed.",
+      text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
+      confirmButtonText: "Ok",
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
     $("#submit_prepublishing_review-spinner").hide();
   } else if (reviewstatus === "requested") {
-    emessage =
-      "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
+    Swal.fire({
+      icon: "error",
+      title: "Cannot submit the dataset for review at this time!",
+      text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
+      confirmButtonText: "Ok",
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
     $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
-    Swal.fire({
-      icon: "warning",
-      text: "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
-      heightAuto: false,
+    // embargo release date represents the time a dataset that has been reviewed for publication becomes public
+    // user sets this value in the UI otherwise it stays an empty string
+    let embargoReleaseDate = "";
+
+    // confirm with the user that they will submit a dataset and check if they want to set an embargo date
+    let userResponse = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      focusCancel: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
+      heightAuto: false,
+      icon: "warning",
+      confirmButtonText: "Submit",
+      denyButtonText: "Cancel",
+      showDenyButton: true,
+      title: `Submit your dataset for publishing review!`,
       reverseButtons: reverseSwalButtons,
+      text: "",
+      html: `
+                <p>This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue? </p>
+                <input type="checkbox" id="embargo-date-check"> Place this dataset under embargo so that it is not made public immediately?
+                <div style="visibility:hidden; flex-direction: column; margin-left: 20%;" id="calendar-wrapper">
+                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                      <input
+                      type="text"
+                      id="tui-date-picker-target"
+                      aria-label="Date-Time"
+                      />
+                      <span class="tui-ico-date"></span>
+                    </div>
+                    <div
+                    id="tui-date-picker-container"
+                    style="margin-top: -1px"
+                    ></div>
+                </div>
+                
+            `,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        submitReviewDataset();
-      } else {
-        $("#submit_prepublishing_review-spinner").hide();
-      }
+      willOpen: () => {
+        // setup the calendar that is in the popup
+        const container = document.getElementById("tui-date-picker-container");
+        const target = document.getElementById("tui-date-picker-target");
+
+        // calculate one year from now
+        var oneYearFromNow = new Date();
+        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+        // initialize the calendar
+        const instance = new DatePicker(container, {
+          input: {
+            element: target,
+          },
+          date: new Date(),
+          // a user can lift an embargo today or a year from now
+          selectableRanges: [[new Date(), oneYearFromNow]],
+        });
+
+        // display/hide calendar on toggle
+        const selectEmbargoDateCheck =
+          document.getElementById("embargo-date-check");
+        selectEmbargoDateCheck.addEventListener("change", () => {
+          let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
+          if (selectEmbargoDateCheck.checked) {
+            tuiCalendarWrapper.style.visibility = "visible";
+          } else {
+            tuiCalendarWrapper.style.visibility = "hidden";
+          }
+        });
+      },
+      willClose: () => {
+        // check if the embargo checkbox is selected
+        const selectEmbargoDateCheck =
+          document.getElementById("embargo-date-check");
+        if (selectEmbargoDateCheck.checked) {
+          // set the embargoDate variable if so
+          embargoReleaseDate = $("#tui-date-picker-target").val();
+        }
+      },
     });
+
+    // check if the user cancelled
+    if (!userResponse.isConfirmed) {
+      // stop showing the loading animation
+      $("#submit_prepublishing_review-spinner").hide();
+      // do not submit the dataset
+      return;
+    }
+    // submit the dataset for review with the given embargoReleaseDate
+    submitReviewDataset(embargoReleaseDate);
   } else {
-    // ipcRenderer.send("warning-publish-dataset");
-    Swal.fire({
-      icon: "warning",
-      text: "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
-      heightAuto: false,
+    // status is NOT_PUBLISHED
+
+    // embargo release date represents the time a dataset that has been reviewed for publication becomes public
+    // user sets this value in the UI otherwise it stays an empty string
+    let embargoReleaseDate = "";
+
+    // confirm with the user that they will submit a dataset and check if they want to set an embargo date
+    let userResponse = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      focusCancel: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
+      heightAuto: false,
+      confirmButtonText: "Submit",
+      denyButtonText: "Cancel",
+      showDenyButton: true,
+      title: `Submit your dataset for publishing review!`,
       reverseButtons: reverseSwalButtons,
+      text: "",
+      html: `
+                <p>Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
+                <input type="checkbox" id="embargo-date-check"> Place this dataset under embargo so that it is not made public immediately?
+                <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
+                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                      <input
+                      type="text"
+                      id="tui-date-picker-target"
+                      aria-label="Date-Time"
+                      />
+                      <span class="tui-ico-date"></span>
+                    </div>
+                    <div
+                    id="tui-date-picker-container"
+                    style="margin-top: -1px; margin-left: 60px;"
+                    ></div>
+                </div>
+                
+            `,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        submitReviewDataset();
-      } else {
-        $("#submit_prepublishing_review-spinner").hide();
-      }
+      willOpen: () => {
+        // setup the calendar that is in the popup
+        const container = document.getElementById("tui-date-picker-container");
+        const target = document.getElementById("tui-date-picker-target");
+
+        // calculate one year from now
+        var oneYearFromNow = new Date();
+        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+        // initialize the calendar
+        const instance = new DatePicker(container, {
+          input: {
+            element: target,
+          },
+          date: new Date(),
+          // a user can lift an embargo today or a year from now
+          selectableRanges: [[new Date(), oneYearFromNow]],
+        });
+
+        // display/hide calendar on toggle
+        const selectEmbargoDateCheck =
+          document.getElementById("embargo-date-check");
+        selectEmbargoDateCheck.addEventListener("change", () => {
+          let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
+          if (selectEmbargoDateCheck.checked) {
+            tuiCalendarWrapper.style.visibility = "visible";
+          } else {
+            tuiCalendarWrapper.style.visibility = "hidden";
+          }
+        });
+
+        // add a scroll effect
+        const input = document.getElementById("tui-date-picker-target");
+        let calendar = document.querySelector(".tui-calendar-body-inner");
+
+        input.addEventListener("click", () => {
+          setTimeout(() => {
+            calendar.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }, 200);
+        });
+      },
+      willClose: () => {
+        // check if the embargo checkbox is selected
+        const selectEmbargoDateCheck =
+          document.getElementById("embargo-date-check");
+        if (selectEmbargoDateCheck.checked) {
+          // set the embargoDate variable if so
+          embargoReleaseDate = $("#tui-date-picker-target").val();
+        }
+      },
     });
+
+    // check if the user cancelled
+    if (!userResponse.isConfirmed) {
+      // stop showing the loading animation
+      $("#submit_prepublishing_review-spinner").hide();
+      // do not submit the dataset
+      return;
+    }
+    // submit the dataset for review with the given embargoReleaseDate
+    submitReviewDataset(embargoReleaseDate);
   }
 }
 
@@ -3014,49 +3193,81 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-function submitReviewDataset() {
+async function submitReviewDataset(embargoReleaseDate) {
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  client.invoke(
-    "api_bf_submit_review_dataset",
-    selectedBfAccount,
-    selectedBfDataset,
-    (error, res) => {
-      if (error) {
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Disseminate Dataset - Pre-publishing Review",
-          selectedBfDataset
-        );
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
-        $("#para-submit_prepublishing_review-status").css("color", "red");
-        $("#para-submit_prepublishing_review-status").text(emessage);
-      } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Disseminate Dataset - Pre-publishing Review",
-          selectedBfDataset
-        );
-        $("#para-submit_prepublishing_review-status").css(
-          "color",
-          "var(--color-light-green)"
-        );
-        $("#para-submit_prepublishing_review-status").text(
-          "Success: Dataset has been submitted for review to the Publishers within your organization"
-        );
-        showPublishingStatus("noClear");
-      }
-      bfRefreshPublishingDatasetStatusBtn.disabled = false;
-      bfWithdrawReviewDatasetBtn.disabled = false;
-      $("#submit_prepublishing_review-spinner").hide();
-    }
+
+  try {
+    await submitDatasetForReview(
+      selectedBfAccount,
+      selectedBfDataset,
+      embargoReleaseDate
+    );
+  } catch (error) {
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Dataset - Pre-publishing Review",
+      selectedBfDataset
+    );
+    log.error(error);
+    console.error(error);
+
+    var emessage = userError(error);
+
+    // alert the user of an error
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: `Could not submit your dataset for publishing!`,
+      icon: "error",
+      reverseButtons: reverseSwalButtons,
+      text: `${emessage}`,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // stop tje spinner
+    $("#submit_prepublishing_review-spinner").hide();
+
+    // stop execution
+    return;
+  }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Disseminate Dataset - Pre-publishing Review",
+    selectedBfDataset
   );
+
+  // alert the user the submission was successful
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    confirmButtonText: "Ok",
+    title: `Dataset has been submitted for review to the Publishers within your organization!`,
+    icon: "success",
+    reverseButtons: reverseSwalButtons,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  });
+
+  showPublishingStatus("noClear");
+  bfRefreshPublishingDatasetStatusBtn.disabled = false;
+  bfWithdrawReviewDatasetBtn.disabled = false;
+  $("#submit_prepublishing_review-spinner").hide();
 }
 
 // //Withdraw dataset from review
@@ -3068,9 +3279,21 @@ function withdrawDatasetSubmission() {
 function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
-    emessage = "Your dataset is not currently under review";
-    $("#para-submit_prepublishing_review-status").css("color", "red");
-    $("#para-submit_prepublishing_review-status").text(emessage);
+    Swal.fire({
+      icon: "error",
+      title: "Your dataset is not currently under review!",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
     $("#submit_prepublishing_review-spinner").hide();
   } else {
     Swal.fire({
@@ -3121,16 +3344,36 @@ function withdrawReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#para-submit_prepublishing_review-status").css("color", "red");
-        $("#para-submit_prepublishing_review-status").text(emessage);
+        Swal.fire({
+          title: "Could not withdraw dataset from publication!",
+          text: `${emessage}`,
+          heightAuto: false,
+          icon: "error",
+          confirmButtonText: "Ok",
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Ok",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp animate__faster",
+          },
+        });
       } else {
-        $("#para-submit_prepublishing_review-status").css(
-          "color",
-          "var(--color-light-green)"
-        );
-        $("#para-submit_prepublishing_review-status").text(
-          "Success: Dataset has been withdrawn from review"
-        );
+        Swal.fire({
+          title: "Dataset has been withdrawn from review!",
+          heightAuto: false,
+          icon: "success",
+          confirmButtonText: "Ok",
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Ok",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp animate__faster",
+          },
+        });
         showPublishingStatus("noClear");
       }
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
@@ -3381,12 +3624,65 @@ function showPublishingStatus(callback) {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
-          $("#para-submit_prepublishing_review-status").css("color", "red");
-          $("#para-submit_prepublishing_review-status").text(emessage);
+          Swal.fire({
+            title: "Could not get your publishing status!",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Ok",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__fadeInDown animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__fadeOutUp animate__faster",
+            },
+          });
         } else {
+          // update the dataset's publication status and display it onscreen for the user under their dataset name
           $("#para-review-dataset-info-disseminate").text(
             publishStatusOutputConversion(res)
           );
+
+          // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
+          if (res[0] !== "requested") {
+            // cannot withdraw from submission if there is no review request in progress or if it is already accepted
+            $("#prepublishing-withdraw-btn-container").css(
+              "visibility",
+              "hidden"
+            );
+            $("#prepublishing-publish-btn-container").css(
+              "visibility",
+              "visible"
+            );
+          } else {
+            // show the withdraw button
+            $("#prepublishing-withdraw-btn-container").css(
+              "visibility",
+              "visible"
+            );
+            $("#prepublishing-publish-btn-container").css(
+              "visibility",
+              "hidden"
+            );
+          }
+
+          // display a warnng message if the user is not the owner of the given dataset
+          userIsDatasetOwner(selectedBfDataset)
+            .then((owner) => {
+              if (!owner) {
+                // show the warning message
+                $("#publishing-isa-warning").css("display", "flex");
+              } else {
+                // hide the warning message
+                $("#publishing-isa-warning").css("display", "none");
+              }
+            })
+            .catch((error) => {
+              log.error(error);
+              console.error(error);
+            });
+
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
@@ -6804,6 +7100,8 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
+get_access_token().then((res) => console.log(res));
+
 /*
 ******************************************************
 ******************************************************
@@ -6884,9 +7182,21 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
   return matches[0];
 };
 
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Tags Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+
 // get the tags from the Pennsieve API for a particular dataset
 // Inputs:
 //    dataset_id_or_name: string
+// Outputs:
+//     tags: string[]
 const get_dataset_tags = async (dataset_id_or_name) => {
   if (dataset_id_or_name === "" || dataset_id_or_name === undefined) {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
@@ -6976,6 +7286,7 @@ Manage Datasets Add/Edit Description Section With Nodejs
 ******************************************************
 */
 
+
 // returns the readme of a dataset.
 // I: dataset_name_or_id : string
 // O: a dataset description as a string
@@ -7037,6 +7348,8 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   return readme;
 };
+
+
 
 const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   if (datasetIdOrName === "" || datasetIdOrName === undefined) {
@@ -7108,6 +7421,288 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   }
 };
 
+
+
+/*
+******************************************************
+******************************************************
+Dissemniate Datasets Submit dataset for pre-publishing
+******************************************************
+******************************************************
+*/
+
+
+
+// I: The currently selected dataset - name or by id
+// O: A status object that details the state of each pre-publishing checklist item for the given dataset and user
+//   {subtitle: boolean, description: boolean, tags: boolean, bannerImageURL: boolean, license: boolean, ORCID: boolean}
+const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName) {
+    throw new Error(
+      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
+    );
+  }
+
+  // construct the statuses object
+  const statuses = {};
+
+  // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
+  const { description, tags, license } = dataset["content"];
+
+  // set the subtitle's status
+  statuses.subtitle = description && description.length ? true : false;
+
+  // get the readme
+  const readme = await getDatasetReadme(datasetIdOrName);
+
+  // set the readme's status
+  statuses.readme = readme && readme.length ? true : false;
+
+  // set tags's status
+  statuses.tags = tags && tags.length ? true : false;
+
+  // get the banner url
+  const bannerPresignedUrl = await getDatasetBannerImageURL(datasetIdOrName);
+
+  // set the banner image's url status
+  statuses.bannerImageURL =
+    bannerPresignedUrl && bannerPresignedUrl.length ? true : false;
+
+  // set the license's status
+  statuses.license = license && license.length ? true : false;
+
+  // check if the user is the owner of the dataset
+  let owner = await userIsDatasetOwner(datasetIdOrName);
+
+  // declare the orcidId
+  let orcidId;
+
+  // check if the user is the owner
+  if (owner) {
+    // get the user's information
+    let user = await getUserInformation();
+
+    // get the orcid object out of the user information
+    let orcidObject = user.orcid;
+
+    // check if the owner has an orcid id
+    if (orcidObject) {
+      orcidId = orcidObject.orcid;
+    } else {
+      orcidId = undefined;
+    }
+  }
+
+  // the user has an ORCID iD if the property is defined and non-empty
+  statuses.ORCID = orcidId && orcidId.length ? true : false;
+
+  return statuses;
+};
+
+// Submits the selected dataset for review by the publishers within a given user's organization.
+// Note: To be run after the pre-publishing validation checks have all passed.
+// I:
+//  pennsieveAccount: string - the SODA user's pennsieve account
+//  datasetIdOrName: string - the id/name of the dataset being submitted for publication
+//  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
+// O: void
+const submitDatasetForReview = async (
+  pennsieveAccount,
+  datasetIdOrName,
+  embargoReleaseDate
+) => {
+  // check that a dataset was provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "A valid dataset must be provided to the dataset review process."
+    );
+  }
+
+  // get an access token for the user
+  let jwt = await get_access_token();
+
+  // get the dataset by name or id
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the current SODA user's permissions (permissions are indicated by the user's assigned role for a given dataset)
+  let userRole = await getCurrentUserPermissions(datasetIdOrName);
+
+  // check that the current SODA user is the owner of the given dataset
+  if (!userIsOwnerOrManager(userRole))
+    throw new Error(
+      "You don't have permissions for submitting this dataset for publication. Please have the dataset owner start the submission process."
+    );
+
+  // set the publication type to "publication" or "embargo" based on the value of embargoReleaseDate
+  const publicationType = embargoReleaseDate === "" ? "publication" : "embargo";
+
+  // get the dataset id
+  const { id } = dataset.content;
+
+  // create the publication request options
+  const options = {
+    method: "POST",
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  };
+
+  // construct the appropriate query string
+  let queryString = "";
+
+  // if an embargo release date was selected add it to the query string
+  if (embargoReleaseDate !== "") {
+    queryString = `?embargoReleaseDate=${embargoReleaseDate}&publicationType=${publicationType}`;
+  } else {
+    // add the required publication type
+    queryString = `?publicationType=${publicationType}`;
+  }
+  // request that the dataset be sent in for publication/publication review
+  let publicationResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
+    options
+  );
+
+  // get the status code out of the response
+  let statusCode = publicationResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 201:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add submit for publication.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot submit a dataset for publication while unauthenticated.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+    case 400:
+      throw new Error(
+        `${statusCode} - You did not complete an item in the pre-publishing checklist before submitting your dataset for publication.`
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await publicationResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+};
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Subtitle Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+const getDatasetSubtitle = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+
+  // get the current user's access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the dataset subtitle from the dataset content
+  let subtitle = dataset["content"]["description"];
+
+  return subtitle;
+};
+
+
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Banner Image With Nodejs
+******************************************************
+******************************************************
+*/
+
+// I: Dataset name or id
+// O: Presigned URL for the banner image or an empty string
+const getDatasetBannerImageURL = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+
+  // get an access token
+  let jwt = await get_access_token();
+
+  // get the dataset to get the id
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  let { id } = dataset["content"];
+
+  // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
+  let bannerResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/banner`,
+    {
+      headers: {
+        Accept: "*/*",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  // get the status code out of the response
+  let statusCode = bannerResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to look at the banner image.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot get the dataset banner image without being authenticated. Please reauthenticate and try again.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await bannerResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+
+  let { banner } = await bannerResponse.json();
+
+  return banner;
+};
+
+/*
+******************************************************
+******************************************************
+Get User Dataset Permissions With Nodejs
+******************************************************
+******************************************************
+*/
+
+// returns the user's permissions/role for the given dataset. Options are : owner, manager, editor, viewer
 const getCurrentUserPermissions = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
   if (!datasetIdOrName || datasetIdOrName === "") {
@@ -7175,4 +7770,50 @@ const userIsOwnerOrManager = (role) => {
   }
 
   return true;
+};
+
+const userIsOwner = (role) => {
+  // check if the user permissions do not include "owner"
+  if (role !== "owner") {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    return false;
+  }
+
+  return true;
+};
+
+const userIsDatasetOwner = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the dataset the user wants to edit
+  let role = await getCurrentUserPermissions(datasetIdOrName);
+
+  return userIsOwner(role);
+};
+
+/*
+******************************************************
+******************************************************
+Get User Information With Nodejs
+******************************************************
+******************************************************
+*/
+
+const getUserInformation = async () => {
+  // get the access token
+  let jwt = await get_access_token();
+
+  // get the user information
+  let userResponse = await fetch("https://api.pennsieve.io/user/", {
+    headers: { Authorization: `Bearer ${jwt}` },
+  });
+
+  let user = await userResponse.json();
+
+  return user;
 };

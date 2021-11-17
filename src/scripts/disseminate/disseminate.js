@@ -1,5 +1,89 @@
 // Main functions
-function disseminatePublish() {
+async function disseminatePublish() {
+  // run preassumption checks
+  let role;
+  try {
+    // get the user's dataset permissions
+    role = await getCurrentUserPermissions(defaultBfDataset);
+  } catch (error) {
+    // could not get permissions
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "We had trouble checking if you are the dataset owner",
+      text: "Please try to submit your dataset for publication again. If that does not work please contact Bhavesh Patel at bpatel@calmi2.org",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // hide the spinner
+    $("#submit_prepublishing_review-spinner").hide();
+
+    // alert Google analytics
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Submit for pre-publishing review",
+      defaultBfDataset
+    );
+
+    // halt execution
+    return;
+  }
+  // check if they are not the dataset owner
+  if (!userIsOwner(role)) {
+    // tell the user only the owner of a dataset can publish it
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Only the owner of the dataset can publish!",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // stop the loader
+    $("#submit_prepublishing_review-spinner").hide();
+    // stop execution
+    return;
+  }
+
+  // check that the user completed all pre-publishing checklist items for the given dataset
+  if (!allPrepublishingChecklistItemsCompleted()) {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot submit dataset for publication!",
+      text: "You need to complete all pre-publishing checklist items before you can submit your dataset for publication!",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // hide the spinner
+    $("#submit_prepublishing_review-spinner").hide();
+
+    // halt execution
+    return;
+  }
+
+  // begin the dataset publishing flow
   showPublishingStatus(submitReviewDatasetCheck);
 }
 
@@ -463,4 +547,115 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
     $("#div-confirm-submit-review").hide();
     $("#div-confirm-submit-review button").hide();
   }
+});
+
+// Prepublishing Section
+
+// take the user to the Pennsieve account to sign up for an ORCID Id
+$("#ORCID-btn").on("click", async () => {
+  // get the user's organization
+  let user = await getUserInformation();
+
+  // get the user's preferred organization
+  let { preferredOrganization } = user;
+
+  // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
+  ipcRenderer.send(
+    "orcid",
+    `https://app.pennsieve.io/${preferredOrganization}/profile/#orcid-id`
+  );
+
+  // handle the reply from the asynhronous message to sign the user into Pennsieve
+  ipcRenderer.on("orcid-reply", (event, arg) => {
+    console.log("The reply we wanted");
+    // run the pre-publishing checklist items
+    showPrePublishingStatus();
+  });
+});
+
+// runs after a user selects a dataset
+// changes Pre-Publishing checklist elements found in the UI on the "Disseminate Datasets - Submit for pre-publishing review" section
+// to green if a user completed that item and red if they did not
+const showPrePublishingStatus = async () => {
+  if (defaultBfDataset === "Select dataset") {
+    return;
+  }
+
+  // spinners that fit into the checklist icon slots until statuses have been verified for the items
+  $(".icon-wrapper").attr("class", "ui mini active inline loader icon-wrapper");
+  $(".icon-wrapper").children().css("visibility", "hidden");
+
+  // run the validation checks on each pre-publishing checklist item
+  let statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
+
+  // mark each pre-publishing item red or green to indicate if the item was completed
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-subtitle",
+    statuses.subtitle
+  );
+
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-description",
+    statuses.description
+  );
+
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-tags",
+    statuses.tags
+  );
+
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-banner",
+    statuses.bannerImageURL
+  );
+
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-license",
+    statuses.license
+  );
+
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-ORCID",
+    statuses.ORCID
+  );
+
+  // hide the spinner and show the checklist item icons
+  $(".icon-wrapper").attr("class", "icon-wrapper");
+  $(".icon-wrapper").children().css("visibility", "visible");
+};
+
+// Inputs:
+//  iconElementId : string - corresponds with the icons in the pre-publishing checklist
+//  status: a boolean corresponding to the checklist item
+// gets the pre-publishing checklist item element by id and gives it a check or an 'x' based off the value of the pre-publishing item's status
+const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
+  if (status) {
+    $(`#${iconElementId}`).attr("class", "check icon");
+    $(`#${iconElementId}`).css("color", "green");
+  } else {
+    $(`#${iconElementId}`).attr("class", "close icon");
+    $(`#${iconElementId}`).css("color", "red");
+  }
+};
+
+// reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
+const allPrepublishingChecklistItemsCompleted = () => {
+  // get the icons for the checklist elements
+  let prePublishingChecklistItems = $(".icon-wrapper i");
+
+  // filter out the completed items - by classname
+  let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter(
+    (checklistItem) => {
+      return checklistItem.className === "close icon";
+    }
+  );
+
+  // if there are any incomplete checklist items then not all items are complete
+  return incompleteChecklistItems.length ? false : true;
+};
+
+// close the pre-publishing checklist item warning message(s) when user clicks on the close button
+$("#publishing-isa-warning .close-btn").click(() => {
+  // hide the warning message
+  $("#publishing-isa-warning").css("display", "none");
 });

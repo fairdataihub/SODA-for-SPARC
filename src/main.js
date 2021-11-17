@@ -327,3 +327,34 @@ ipcMain.on("restart_app", () => {
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
+
+ipcMain.on("orcid", (event, url) => {
+  const windowOptions = {
+    minWidth: 500,
+    minHeight: 300,
+    width: 900,
+    height: 800,
+    center: true,
+    show: true,
+    icon: __dirname + "/assets/menu-icon/soda_icon.png",
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+    },
+    // modal: true,
+    parent: mainWindow,
+    closable: true,
+  };
+
+  let pennsieveModal = new BrowserWindow(windowOptions);
+  pennsieveModal.on("close", function () {
+    pennsieveModal = null;
+    // send event back to the renderer to re-run the prepublishing checks
+    // this will detect if the user added their ORCID iD
+    event.reply("orcid-reply");
+  });
+  pennsieveModal.loadURL(url);
+  pennsieveModal.once("ready-to-show", () => {
+    pennsieveModal.show();
+  });
+});
