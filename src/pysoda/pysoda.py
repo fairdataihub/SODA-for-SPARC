@@ -812,9 +812,6 @@ def agent_running():
     listen_port = 11235
 
     try:
-        # x = "ws://127.0.0.1:11235"
-        # create_connection(x).close()
-        # CHANGE BACK
         create_connection(socket_address(listen_port)).close()
 
     except socket.error as e:

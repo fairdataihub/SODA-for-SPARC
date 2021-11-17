@@ -65,6 +65,9 @@ from prepare_metadata import (
     load_taxonomy_species,
     load_existing_DD_file,
     load_existing_submission_file,
+    import_bf_metadata_file,
+    import_bf_RC,
+    upload_RC_file,
 )
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
@@ -76,39 +79,80 @@ MIN_SODA_VERSION = "5.0.1"
 
 
 class SodaApi(object):
+
     ### import milestone document
     def api_extract_milestone_info(self, filepath):
         datalist = import_milestone(filepath)
         return extract_milestone_info(datalist)
 
     ### Save Submission file
-    def api_save_submission_file(self, filepath, val_arr):
-        return save_submission_file(filepath, val_arr)
+    def api_save_submission_file(
+        self, upload_boolean, bfaccount, bfdataset, filepath, val_arr
+    ):
+        return save_submission_file(
+            upload_boolean, bfaccount, bfdataset, filepath, val_arr
+        )
 
     ### Save Description file
     def api_save_ds_description_file(
-        self, bfaccount, filepath, val_arr1, val_arr_study, val_arr2, val_arr3
+        self,
+        upload_boolean,
+        bfaccount,
+        bfdataset,
+        filepath,
+        val_arr1,
+        val_arr_study,
+        val_arr2,
+        val_arr3,
     ):
         return save_ds_description_file(
-            bfaccount, filepath, val_arr1, val_arr_study, val_arr2, val_arr3
+            upload_boolean,
+            bfaccount,
+            bfdataset,
+            filepath,
+            val_arr1,
+            val_arr_study,
+            val_arr2,
+            val_arr3,
         )
 
     ### Save subjects file
-    def api_save_subjects_file(self, filepath, datastructure):
-        return save_subjects_file(filepath, datastructure)
+    def api_save_subjects_file(
+        self, upload_boolean, bfaccount, bfdataset, filepath, datastructure
+    ):
+        return save_subjects_file(
+            upload_boolean, bfaccount, bfdataset, filepath, datastructure
+        )
 
     def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
         return convert_subjects_samples_file_to_df(type, filepath, fields)
 
-    def api_load_existing_DD_file(self, filepath):
-        return load_existing_DD_file(filepath)
+    def api_load_existing_DD_file(self, import_type, filepath):
+        return load_existing_DD_file(import_type, filepath)
 
     def api_load_existing_submission_file(self, filepath):
         return load_existing_submission_file(filepath)
 
+    def api_import_bf_metadata_file(
+        self, filetype, ui_field, selected_bfaccount, selected_bfdataset
+    ):
+        return import_bf_metadata_file(
+            filetype, ui_field, selected_bfaccount, selected_bfdataset
+        )
+
+    def api_import_bf_RC(self, selected_bfaccount, selected_bfdataset, file_type):
+        return import_bf_RC(selected_bfaccount, selected_bfdataset, file_type)
+
     ### Save samples file
-    def api_save_samples_file(self, filepath, datastructure):
-        return save_samples_file(filepath, datastructure)
+    def api_save_samples_file(
+        self, upload_boolean, bfaccount, bfdataset, filepath, datastructure
+    ):
+        return save_samples_file(
+            upload_boolean, bfaccount, bfdataset, filepath, datastructure
+        )
+
+    def api_upload_RC_file(self, text_string, file_type, bfaccount, bfdataset):
+        return upload_RC_file(text_string, file_type, bfaccount, bfdataset)
 
     ### Load Taxonomy species info
     def api_load_taxonomy_species(self, animalArr):

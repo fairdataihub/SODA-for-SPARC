@@ -24,6 +24,8 @@ from os.path import (
     abspath,
 )
 import pandas as pd
+import csv
+import io
 import time
 from time import strftime, localtime
 import shutil
@@ -46,9 +48,11 @@ import json
 import collections
 from threading import Thread
 import pathlib
+import requests
 
 from string import ascii_uppercase
 import itertools
+import tempfile
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
@@ -60,20 +64,25 @@ from datetime import datetime, timezone
 
 from Bio import Entrez
 
+from pysoda import (
+    bf_get_current_user_permission,
+    agent_running,
+)
+
 userpath = expanduser("~")
-metadatapath = join(userpath, "SODA", "SODA_metadata")
+METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 # once pysoda has been packaged with pyinstaller
 # it becomes nested into the pysodadist/api directory
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
-
+# custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
     pass
 
 
-### Import Milestone document
+### Import Data Deliverables document
 def import_milestone(filepath):
     doc = Document(filepath)
     try:
@@ -119,13 +128,19 @@ def extract_milestone_info(datalist):
     return milestone
 
 
-### Prepare submission file
-def save_submission_file(filepath, json_str):
+### Create submission file
+def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str):
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
     source = join(TEMPLATE_PATH, "submission.xlsx")
-    destination = filepath
+
+    if upload_boolean:
+        destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx")
+
+    else:
+        destination = filepath
+
     shutil.copyfile(source, destination)
 
     # json array to python list
@@ -147,6 +162,58 @@ def save_submission_file(filepath, json_str):
     rename_headers(ws1, len(val_arr), 2)
 
     wb.save(destination)
+
+    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    if upload_boolean:
+        upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
+
+
+# this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
+## (not used for generating locally)
+def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
+
+    file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
+
+    with open(file_path, "w") as f:
+        f.write(text_string)
+
+    upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
+
+
+def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
+    ## check if agent is running in the background
+    agent_running()
+
+    bf = Pennsieve(bfaccount)
+
+    # check that the Pennsieve dataset is valid
+    try:
+        myds = bf.get_dataset(bfdataset)
+
+    except Exception as e:
+        error = "Error: Please select a valid Pennsieve dataset"
+        raise Exception(error)
+
+    else:
+        # check that the user has permissions for uploading and modifying the dataset
+        role = bf_get_current_user_permission(bf, myds)
+        if role not in ["owner", "manager", "editor"]:
+            error = "Error: You don't have permissions for uploading to this Pennsieve dataset."
+            raise Exception(error)
+
+        # handle duplicates on Pennsieve: first, obtain the existing file ID
+        for i in range(len(myds.items)):
+
+            if myds.items[i].name == file_type:
+
+                item_id = myds.items[i].id
+
+                # then, delete it using Pennsieve method delete(id)
+                bf.delete(item_id)
+
+        myds.upload(file_path)
+        # delete the local file that was created for the purpose of uploading to Pennsieve
+        os.remove(file_path)
 
 
 def excel_columns(start_index=0):
@@ -306,10 +373,23 @@ def populate_related_info(workbook, val_array):
 
 
 def save_ds_description_file(
-    bfaccountname, filepath, dataset_str, study_str, con_str, related_info_str
+    upload_boolean,
+    bfaccount,
+    bfdataset,
+    filepath,
+    dataset_str,
+    study_str,
+    con_str,
+    related_info_str,
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
-    destination = filepath
+
+    if upload_boolean:
+        destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx")
+
+    else:
+        destination = filepath
+
     shutil.copyfile(source, destination)
 
     # json array to python list
@@ -358,6 +438,12 @@ def save_ds_description_file(
     grayout_single_value_rows(ws1, max_len, 3)
 
     wb.save(destination)
+
+    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    if upload_boolean:
+        upload_metadata_file(
+            "dataset_description.xlsx", bfaccount, bfdataset, destination
+        )
 
 
 subjectsTemplateHeaderList = [
@@ -412,12 +498,17 @@ samplesTemplateHeaderList = [
 ]
 
 
-def save_subjects_file(filepath, datastructure):
+def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
 
     source = join(TEMPLATE_PATH, "subjects.xlsx")
-    destination = filepath
-    shutil.copyfile(source, destination)
 
+    if upload_boolean:
+        destination = join(METADATA_UPLOAD_BF_PATH, "subjects.xlsx")
+
+    else:
+        destination = filepath
+
+    shutil.copyfile(source, destination)
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
 
@@ -473,10 +564,20 @@ def save_subjects_file(filepath, datastructure):
 
     wb.save(destination)
 
+    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    if upload_boolean:
+        upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination)
 
-def save_samples_file(filepath, datastructure):
+
+def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
     source = join(TEMPLATE_PATH, "samples.xlsx")
-    destination = filepath
+
+    if upload_boolean:
+        destination = join(METADATA_UPLOAD_BF_PATH, "samples.xlsx")
+
+    else:
+        destination = filepath
+
     shutil.copyfile(source, destination)
 
     wb = load_workbook(destination)
@@ -530,13 +631,19 @@ def save_samples_file(filepath, datastructure):
 
     wb.save(destination)
 
+    ## if generating directly on Pennsieve, call upload function
+    if upload_boolean:
+        upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
 
+
+# check for non-empty fields (cells)
 def column_check(x):
     if "unnamed" in x.lower():
         return False
     return True
 
 
+# import an existing subjects/samples files from an excel file
 def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     subjects_df = pd.read_excel(
@@ -613,6 +720,7 @@ def checkEmptyColumn(column):
     return False
 
 
+# needed to sort subjects and samples table data to match the UI fields
 def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []
     customHeaderMatrix = []
@@ -634,10 +742,12 @@ def sortedSubjectsTableData(matrix, fields):
     return npArray
 
 
+# transpose a matrix (array of arrays)
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
 
 
+# helper function to process custom fields (users add and name them) for subjects and samples files
 def processMetadataCustomFields(matrix):
     refined_matrix = []
     for column in matrix:
@@ -647,6 +757,7 @@ def processMetadataCustomFields(matrix):
     return refined_matrix
 
 
+# use Entrez library to load the scientific name for a species
 def load_taxonomy_species(animalList):
     animalDict = {}
     for animal in animalList:
@@ -664,7 +775,7 @@ def load_taxonomy_species(animalList):
     return animalDict
 
 
-## check if any whole column is empty
+## check if any whole column from Excel sheet is empty
 def checkEmptyColumn(column):
     for element in column:
         if element:
@@ -673,8 +784,20 @@ def checkEmptyColumn(column):
     return False
 
 
+## load/import an existing local or Pennsieve submission.xlsx file
 def load_existing_submission_file(filepath):
-    DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
+
+    ## TODO: check and read csv
+    try:
+        DD_df = pd.read_excel(
+            filepath, engine="openpyxl", usecols=column_check, header=0
+        )
+
+    except:
+        raise Exception(
+            "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
+        )
+
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)
@@ -686,26 +809,30 @@ def load_existing_submission_file(filepath):
         "Milestone achieved",
         "Milestone completion date",
     ]
+    ## normalize the entries to lowercase just for Version Exception check
+    basicColumns = [x.lower() for x in basicColumns]
+    basicHeaders = [x.lower() for x in basicHeaders]
+    DD_df_lower = [x.lower() for x in DD_df]
 
     for key in basicColumns:
-        if key not in DD_df:
+        if key not in DD_df_lower:
             raise Exception(
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
     for header_name in basicHeaders:
-        if header_name not in set(DD_df["Submission Item"]):
+        submissionItems = [x.lower() for x in DD_df["Submission Item"]]
+        if header_name not in set(submissionItems):
             raise Exception(
                 "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
     awardNo = DD_df["Value"][0]
+    milestones = [DD_df["Value"][1]]
 
-    if "," in DD_df["Value"][1]:
-        milestones = DD_df["Value"][1].split(",")
-
-    else:
-        milestones = DD_df["Value"][1]
+    for i in range(3, len(DD_df.columns)):
+        value = DD_df["Value " + str(i - 1)]
+        milestones.append(value[1])
 
     if DD_df["Value"][2]:
         date = DD_df["Value"][2]
@@ -720,8 +847,108 @@ def load_existing_submission_file(filepath):
     }
 
 
-## import existing dataset_description.xlsx file
-def load_existing_DD_file(filepath):
+# import existing metadata files except Readme and Changes from Pennsieve
+def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
+    bf = Pennsieve(bfaccount)
+    myds = bf.get_dataset(bfdataset)
+
+    for i in range(len(myds.items)):
+
+        if myds.items[i].name == file_type:
+
+            item_id = myds.items[i].id
+            url = returnFileURL(bf, item_id)
+
+            if file_type == "submission.xlsx":
+                return load_existing_submission_file(url)
+
+            elif file_type == "dataset_description.xlsx":
+                return load_existing_DD_file("bf", url)
+
+            elif file_type == "subjects.xlsx":
+                return convert_subjects_samples_file_to_df("subjects", url, ui_fields)
+
+            elif file_type == "samples.xlsx":
+                return convert_subjects_samples_file_to_df("samples", url, ui_fields)
+
+    raise Exception(
+        f"No {file_type} file was found at the root of the dataset provided."
+    )
+
+
+# import readme or changes file from Pennsieve
+def import_bf_RC(bfaccount, bfdataset, file_type):
+    bf = Pennsieve(bfaccount)
+    myds = bf.get_dataset(bfdataset)
+
+    for i in range(len(myds.items)):
+
+        if myds.items[i].name == file_type:
+
+            item_id = myds.items[i].id
+            url = returnFileURL(bf, item_id)
+
+            response = requests.get(url)
+            data = response.text
+
+            return data
+
+    raise Exception(
+        f"No {file_type} file was found at the root of the dataset provided."
+    )
+
+
+# obtain Pennsieve S3 URL for an existing metadata file
+def returnFileURL(bf_object, item_id):
+
+    file_details = bf_object._api._get("/packages/" + str(item_id) + "/view")
+    file_id = file_details[0]["content"]["id"]
+    file_url_info = bf_object._api._get(
+        "/packages/" + str(item_id) + "/files/" + str(file_id)
+    )
+
+    return file_url_info["url"]
+
+
+## import an existing local or Pennsieve dataset_description.xlsx file
+def load_existing_DD_file(import_type, filepath):
+
+    ### the following block of code converts .xlsx file into .csv for better performance from Pandas.
+    ### Currently pandas' read_excel is super slow - could take minutes.
+    # open given workbook
+    # and store in excel object
+
+    if import_type == "bf":
+        try:
+
+            DD_df = pd.read_excel(
+                filepath, engine="openpyxl", usecols=column_check, header=0
+            )
+
+        except:
+            raise Exception(
+                "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
+            )
+
+    else:
+        excel = load_workbook(filepath)
+        sheet = excel.active
+        # writer object is created
+        with tempfile.NamedTemporaryFile(mode="w", newline="", delete=False) as tf:
+            col = csv.writer(tf)
+            # writing the data in csv file
+            for r in sheet.rows:
+                col.writerow([cell.value for cell in r])
+
+        DD_df = pd.DataFrame(
+            pd.read_csv(tf.name, encoding="ISO-8859-1", usecols=column_check, header=0)
+        )
+
+    DD_df = DD_df.dropna(axis=0, how="all")
+    DD_df = DD_df.replace(np.nan, "", regex=True)
+    DD_df = DD_df.applymap(str)
+    DD_df = DD_df.applymap(str.strip)
+
     basicInfoHeaders = [
         "Type",
         "Title",
@@ -752,12 +979,6 @@ def load_existing_DD_file(filepath):
         "Identifier",
         "Identifier type",
     ]
-
-    DD_df = pd.read_excel(filepath, engine="openpyxl", usecols=column_check, header=0)
-    DD_df = DD_df.dropna(axis=0, how="all")
-    DD_df = DD_df.replace(np.nan, "", regex=True)
-    DD_df = DD_df.applymap(str)
-    DD_df = DD_df.applymap(str.strip)
 
     header_list = list(
         itertools.chain(
@@ -827,4 +1048,5 @@ def load_existing_DD_file(filepath):
         "Award information": awardInfoSection,
         "Related information": transposeMatrix(relatedInfoSection),
     }
+
     return transformedObj
