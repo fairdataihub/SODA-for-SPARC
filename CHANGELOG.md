@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Feature additions:
 
 - Users can upload and edit descriptive digital metadata tags to their dataset. By SPARC guidelines tags are now required before a researcher can publish a dataset.
+- Updated the add/edit description digital metadata feature to be more intuitive for users. 
 
 ## v5.0.2 - 2021-11-02
 
