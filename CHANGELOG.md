@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## v.5.0.3 - 2021-11-17
+
+### Bug fixes:
+
+### Feature additions:
+
+-Users can upload and edit descriptive digital metadata tags to their dataset. By SPARC guidelines tags are now required before a researcher can publish a dataset.
+
 ## v5.0.2 - 2021-11-02
 
 ### Bug fixes:
