@@ -13,7 +13,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Feature additions:
 
 - Users can upload and edit descriptive digital metadata tags to their dataset. By SPARC guidelines tags are now required before a researcher can publish a dataset.
-- Updated the add/edit description digital metadata feature to be more intuitive for users. 
+- Updated the add/edit description digital metadata feature to be more intuitive for users.
+- Added interfaces for creating the (optional) CHANGES.txt and README.txt files in SODA.
+- Added the functionality to generate metadata files directly on Pennsieve.
+- Added the functionality to edit metadata files imported directly from Pennsieve.
+- Added interface to import code-related metadata files in SODA.
+
+### Known issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 
 ## v5.0.2 - 2021-11-02
 
