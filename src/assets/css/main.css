@@ -543,10 +543,17 @@ button[data-id="bf_list_users_pi"] {
   margin-top: 20px !important;
 }
 
-.div-organize-generate-dataset.metadata div {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
+.content-header.metadata-step4 {
+  font-weight: 600;
+  color: #000;
+}
+
+.div-file-import.pennsieve {
+  display: none;
+}
+
+.flex-row-container.code-metadata {
+  display: none;
 }
 
 .div-individual-metadata {
@@ -659,6 +666,10 @@ button[data-id="bf_list_users_pi"] {
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
+}
+
+.metadata-button.button-generate-dataset.code-metadata {
+  display: none;
 }
 
 .metadata-button.button-generate-dataset.done {

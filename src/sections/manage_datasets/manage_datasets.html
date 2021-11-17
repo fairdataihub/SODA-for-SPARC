@@ -100,7 +100,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -371,7 +371,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -431,7 +431,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -684,7 +684,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -747,7 +747,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -1051,7 +1051,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -1114,7 +1114,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -1639,7 +1639,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -1694,7 +1694,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -1870,6 +1870,309 @@
   </section>
 
   <section
+    id="add_tags-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div
+      class="main-tabs show"
+      id="add_tags_parent-tabc"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
+      <header class="section-header">
+        <div
+          style="
+            display: inline-flex;
+            align-items: center;
+            flex-direction: row;
+            width: 94.5%;
+            padding-right: 20px;
+            margin-bottom: 50px;
+          "
+        >
+          <div
+            style="
+              width: 100%;
+              border-bottom: 3px solid #b80d49;
+              margin-bottom: -5px;
+            "
+          >
+            <div class="need-help-div">
+              <h2>Manage Datasets - Add/edit tags</h2>
+              <a
+                target="_blank"
+                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-tags"
+                >Need help?</a
+              >
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div
+        id="add_tags_parent-tab"
+        style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
+      >
+        <div
+          class="individual-question manage-dataset show"
+          id="add_tags_tab"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Pennsieve dataset would you like to work on?
+              </label>
+              <div class="field" style="margin: auto; width: 500px">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current account:
+                        </h5>
+                        <h5 class="card-right bf-account-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="svg-change-current-account bi bi-pencil-fill"
+                      onclick="openDropdownPrompt(this, 'bf')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Account details:
+                        </h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div style="width: 100%">
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current dataset:
+                        </h5>
+                        <h5 class="card-right bf-dataset-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
+                      onclick="openDropdownPrompt(this, 'dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                    <div
+                      class="ui active green inline loader small"
+                      style="display: none"
+                    ></div>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    id="button_add_tags_confirm"
+                    onclick="transitionFreeFormMode(this, 'add_tags_tab', 'add_tags_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div_add_tags"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question manage-dataset"
+          id="div_add_tags"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 500px">
+            <div class="grouped fields" style="width: 500px; margin: auto">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Enter tags below:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="Add, edit, or remive metadata tags that describe key elements of your research. This will make your datasets more easily searchable once published. Click the x to delete a tag. Double click an existing tag to edit its contents."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
+                <br />
+                <span style="color: #696969; font-size: 13px"
+                  >Any existing tags will be displayed
+                </span>
+              </label>
+              <div
+                class="field"
+                style="
+                  display: flex;
+                  justify-content: center;
+                  width: 100%;
+                  flex-direction: column;
+                "
+              >
+                <div style="width: 100%; position: relative">
+                  <input
+                    id="tagify-dataset-tags"
+                    name="tags"
+                    value=""
+                    autofocus
+                  />
+                </div>
+
+                <div style="display: flex; flex-direction: column">
+                  <div
+                    id="div-button-add-tags"
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                      align-items: center;
+                      margin: 0 auto;
+                      padding-top: 20px;
+                    "
+                  >
+                    <button
+                      id="button-add-tags"
+                      class="btn_animated md"
+                      style="width: 190px; height: 40px; font-size: 15px"
+                    >
+                      Add Tags
+                    </button>
+                    <div
+                      id="bf-add-tags-dataset-spinner"
+                      class="spinner"
+                      style="display: none"
+                    >
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-div">
+        <div style="display: flex; flex-direction: row; width: 120px">
+          <button
+            type="button"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+          </button>
+        </div>
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="create_submission"
+          style="width: auto"
+        >
+          Prepare submission<i
+            class="fas fa-arrow-right"
+            style="margin-left: 10px"
+          ></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section
     id="add_edit_description-section"
     class="section js-section u-category-windows"
     style="padding-left: 15px"
@@ -1956,7 +2259,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -2011,7 +2314,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -2068,17 +2371,18 @@
           id="div_add_edit_description"
           style="height: auto"
         >
-          <div class="ui form" style="width: 500px">
-            <div class="grouped fields">
+          <!--Adding the test section out-->
+          <div class="ui form" style="width: 100%">
+            <div class="field" style="margin: auto; width: 500px">
               <label
                 style="
                   font-size: 17px;
                   color: var(--color-bg-plum);
-                  width: 100%;
+                  margin-bottom: 20px;
                   text-align: center;
                 "
-                id="description_header_label"
-                >Enter description below:
+                >Enter your description in the sections below
+
                 <i
                   class="fas fa-info-circle popover-tooltip"
                   data-content="Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published."
@@ -2086,50 +2390,255 @@
                   data-html="true"
                   data-placement="right"
                   data-trigger="hover"
+                  data-original-title=""
+                  title=""
                 ></i>
-                <br />
-                <span style="color: #696969; font-size: 13px"
-                  >Any existing description will be displayed
-                </span>
               </label>
+
               <div
-                class="field"
-                style="display: flex; justify-content: center; width: 100%"
+                class="ui styled accordion"
+                id="dd-accordion"
+                style="width: 100% !important"
               >
                 <div
-                  style="margin-top: 10px; width: 500px"
-                  id="editorSection"
-                ></div>
-              </div>
-              <div
-                id="div-button-add-description"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: center;
-                  align-items: center;
-                  margin: 0 auto;
-                  padding-top: 20px;
-                "
-              >
-                <button
-                  id="button-add-description"
-                  class="btn_animated md"
-                  style="width: 200px; height: 40px; font-size: 15px"
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
                 >
-                  Add description
-                </button>
-                <div
-                  id="bf-add-description-dataset-spinner"
-                  class="spinner"
-                  style="display: none"
-                >
-                  <div class="rect1"></div>
-                  <div class="rect2"></div>
-                  <div class="rect3"></div>
-                  <div class="rect4"></div>
-                  <div class="rect5"></div>
+                  <i class="dropdown icon"></i>
+                  Study Purpose
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the purpose of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
                 </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div
+                            class="ui input modified"
+                            id="ds-study-purpose-container"
+                            style="display: flex; flex-direction: column"
+                          >
+                            <textarea
+                              type="text"
+                              id="ds-description-study-purpose"
+                              placeholder="Enter your study purpose here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 10px 0px;
+                                overflow-wrap: break-word;
+                              "
+                              rows="4"
+                            >
+                            </textarea>
+
+                            <div
+                              class="isa_warning"
+                              id="ds-isa-warning"
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 10px 0px;
+                                flex-direction: column;
+                                display: none;
+                              "
+                            >
+                              <button
+                                class="close-btn"
+                                title="close"
+                                id="ds-close-btn"
+                              >
+                                <span>X</span>
+                              </button>
+                              <span
+                                style="margin-bottom: 10px; padding-left: 10px"
+                              >
+                                <strong>
+                                  Warning: It seems there is text in your
+                                  description that does not follow SPARC
+                                  Guidelines. Barring special circumstances, all
+                                  text should be in Study Purpose, Data
+                                  Collection, or Primary conclusion sections.
+                                  The non-conforming text has been placed in the
+                                  above section. Please reorganize the text by
+                                  placing it into the appropriate section(s).
+                                  <br />
+                                  <a
+                                    href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-description"
+                                    >Learn more.</a
+                                  >
+                                </strong>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
+                >
+                  <i class="dropdown icon"></i>
+                  Data Collection
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the method you used for data collection below. We will enter the title for this section to your readme for you. Refrain from using markdown."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
+                </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div class="ui input modified">
+                            <textarea
+                              type="text"
+                              id="ds-description-data-collection"
+                              placeholder="Enter you data collection methods here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 15px 15px;
+                                overflow-wrap: break-word;
+                              "
+                              rows="4"
+                            >
+                            </textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="title"
+                  style="background: var(--color-bg-light-green-button)"
+                >
+                  <i class="dropdown icon"></i>
+                  Primary Conclusion
+                  <span style="font-style: italic; opacity: 0.8"
+                    >(Mandatory)</span
+                  >
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Enter a paragraph that explains the primary conclusion of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
+                </div>
+                <div class="content">
+                  <div
+                    style="
+                      display: block;
+                      width: 90%;
+                      margin: 0px auto;
+                      font-size: 13px;
+                      opacity: 0;
+                    "
+                  >
+                    <div>
+                      <div
+                        class="div-dd-info subjects"
+                        style="flex-direction: column"
+                      >
+                        <div class="demo-controls-body" style="width: 100%">
+                          <div class="ui input modified">
+                            <textarea
+                              type="text"
+                              id="ds-description-primary-conclusion"
+                              placeholder="Enter your primary conclusion here..."
+                              style="
+                                font-size: 14px;
+                                width: 100%;
+                                margin: 15px 15px;
+                                overflow-wrap: break-word;
+                              "
+                              rows="4"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              id="div-button-add-description"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+                padding-top: 20px;
+              "
+            >
+              <button
+                id="button-add-description"
+                class="btn_animated md"
+                style="width: 200px; height: 40px; font-size: 15px"
+              >
+                Add description
+              </button>
+              <div
+                id="bf-add-description-dataset-spinner"
+                class="spinner"
+                style="display: none"
+              >
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
               </div>
             </div>
           </div>
@@ -2273,7 +2782,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -2328,7 +2837,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -2378,88 +2887,88 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <div
-            class="individual-question manage-dataset"
-            id="div_add_edit_banner"
-            style="height: auto"
-          >
-            <div class="ui form" style="min-width: 450px">
-              <div
-                class="grouped fields"
-                style="display: flex; justify-content: center"
-              >
-                <label
-                  id="add_edit_banner_label"
-                  style="
-                    font-size: 17px;
-                    color: var(--color-bg-plum);
-                    width: 100%;
-                    text-align: center;
-                  "
-                  >Current banner image of selected dataset:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+        <div
+          class="individual-question manage-dataset"
+          id="div_add_edit_banner"
+          style="height: auto"
+        >
+          <div class="ui form" style="min-width: 450px">
+            <div
+              class="grouped fields"
+              style="display: flex; justify-content: center"
+            >
+              <label
+                id="add_edit_banner_label"
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Current banner image of selected dataset:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
               <br/>
               This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction. Banner image must not display animals or graphic/bloody tissues"
-                    rel="popover"
-                    data-html="true"
-                    data-placement="right"
-                    data-trigger="hover"
-                  ></i>
-                </label>
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
+              </label>
+              <div
+                class="field"
+                style="display: flex; justify-content: center; margin: auto"
+              >
                 <div
-                  class="field"
-                  style="display: flex; justify-content: center; margin: auto"
-                >
-                  <div
-                    style="
-                      margin-top: 15px;
-                      height: auto;
-                      box-shadow: 0px 0px 10px #d5d5d5;
-                      padding: 15px 25px;
-                      border-radius: 5px;
-                      min-width: 450px;
-                    "
-                  >
-                    <div id="div-current-banner-img" style="color: black">
-                      <p
-                        style="text-align: center; height: 2em; margin: auto"
-                        id="para-current-banner-img"
-                      >
-                        None
-                      </p>
-                      <div
-                        id="banner_image_loader"
-                        class="ui active green inline loader medium"
-                        style="display: none; margin-left: 46%"
-                      ></div>
-                      <img id="current-banner-img" />
-                    </div>
-                  </div>
-                </div>
-                <div
-                  id="div-button-edit-banner-image"
                   style="
-                    flex-direction: row;
-                    justify-content: center;
-                    margin: 0 auto;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                    min-width: 450px;
                   "
                 >
-                  <button
-                    id="edit_banner_image_button"
-                    class="btn_animated md"
-                    style="
-                      margin: 20px 10px 30px 0;
-                      width: 150px;
-                      height: 40px;
-                      font-size: 15px;
-                    "
-                  >
-                    Edit banner image
-                  </button>
+                  <div id="div-current-banner-img" style="color: black">
+                    <p
+                      style="text-align: center; height: 2em; margin: auto"
+                      id="para-current-banner-img"
+                    >
+                      None
+                    </p>
+                    <div
+                      id="banner_image_loader"
+                      class="ui active green inline loader medium"
+                      style="display: none; margin-left: 46%"
+                    ></div>
+                    <img id="current-banner-img" />
+                  </div>
                 </div>
+              </div>
+              <div
+                id="div-button-edit-banner-image"
+                style="
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 0 auto;
+                "
+              >
+                <button
+                  id="edit_banner_image_button"
+                  class="btn_animated md"
+                  style="
+                    margin: 20px 10px 30px 0;
+                    width: 150px;
+                    height: 40px;
+                    font-size: 15px;
+                  "
+                >
+                  Edit banner image
+                </button>
               </div>
             </div>
           </div>
@@ -2716,7 +3225,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -2771,7 +3280,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -2941,11 +3450,9 @@
           class="transition-btn prev"
           id="shortcut-navigate-to-create_submission"
           style="width: auto"
+          data-section="add_tags"
         >
-          Prepare submission file<i
-            class="fas fa-arrow-right"
-            style="margin-left: 10px"
-          ></i>
+          Add tags<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
         </button>
       </div>
     </div>
@@ -3059,7 +3566,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -3114,7 +3621,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -3433,7 +3940,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt('bf')"
+                      onclick="openDropdownPrompt(this, 'bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -3478,7 +3985,7 @@
                         dataset
                         bi bi-pencil-fill
                       "
-                      onclick="openDropdownPrompt('dataset')"
+                      onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"

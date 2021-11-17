@@ -3,20 +3,25 @@
     background: none;
     color: black !important;
     font-size: 70%;
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
   }
 
   h1 {
     font-size: 22px;
   }
 
-  .nav, button, .demo-box:before,
+  .nav,
+  button,
+  .demo-box:before,
   header p {
     display: none;
   }
 
-  .demo-box, h2,
-  pre, code {
+  .demo-box,
+  h2,
+  pre,
+  code {
     padding: 0 !important;
     margin: 0 !important;
   }
@@ -25,7 +30,8 @@
     padding: 0 0 10px 0;
   }
 
-  code, .support {
+  code,
+  .support {
     font-size: 10px;
   }
 }

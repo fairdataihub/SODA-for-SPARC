@@ -30,6 +30,10 @@ const { JSONStorage } = require("node-localstorage");
 const tippy = require("tippy.js").default;
 const introJs = require("intro.js");
 const selectpicker = require("bootstrap-select");
+const ini = require("ini");
+const { homedir } = require("os");
+
+const cognitoClient = require("amazon-cognito-identity-js");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -49,6 +53,9 @@ var datasetStructureJSONObj = {
 
 let introStatus = {
   organizeStep3: true,
+  submission: false,
+  subjects: false,
+  samples: false,
 };
 
 //////////////////////////////////
@@ -85,7 +92,6 @@ client.invoke("echo", "server ready", (error, res) => {
       "Establishing Python Connection",
       error
     );
-
     Swal.fire({
       icon: "error",
       html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
@@ -931,6 +937,11 @@ var studyApproachesInput = document.getElementById("ds-study-approach"),
     duplicates: false,
   });
 
+// tagify the input inside of the "Add/edit tags" manage dataset section
+var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
+  // initialize Tagify on the above input node reference
+  datasetTagsTagify = new Tagify(datasetTagsInput);
+
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1083,7 +1094,7 @@ ipcRenderer.on(
                 Swal.showLoading();
               },
             }).then((result) => {});
-            generateSubjectsFileHelper(destinationPath);
+            generateSubjectsFileHelper(false);
           }
         });
       } else {
@@ -1099,16 +1110,67 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateSubjectsFileHelper(destinationPath);
+        generateSubjectsFileHelper(false);
       }
     }
   }
 );
 
-function generateSubjectsFileHelper(mypath) {
+async function generateSubjectsFileHelper(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing subjects.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing subjects.xlsx file in the specified location will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  }
+  Swal.fire({
+    title: "Generating the subjects.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+
   client.invoke(
     "api_save_subjects_file",
-    mypath,
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_subjects").text().trim(),
+    subjectsDestinationPath,
     subjectsTableData,
     (error, res) => {
       if (error) {
@@ -1117,7 +1179,7 @@ function generateSubjectsFileHelper(mypath) {
         console.error(error);
         Swal.fire({
           title: "Failed to generate the subjects.xlsx file.",
-          text: emessage,
+          html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
@@ -1184,7 +1246,7 @@ ipcRenderer.on(
                 Swal.showLoading();
               },
             }).then((result) => {});
-            generateSamplesFileHelper(destinationPath);
+            generateSamplesFileHelper(uploadBFBoolean);
           }
         });
       } else {
@@ -1200,13 +1262,61 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateSamplesFileHelper(destinationPath);
+        generateSamplesFileHelper(uploadBFBoolean);
       }
     }
   }
 );
 
-function generateSamplesFileHelper(mypath) {
+async function generateSamplesFileHelper(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing samples.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing samples.xlsx file in the specified location will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  }
+  Swal.fire({
+    title: "Generating the samples.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
     timeout: 300000,
@@ -1215,7 +1325,10 @@ function generateSamplesFileHelper(mypath) {
   clientLongTimeout.connect("tcp://127.0.0.1:4242");
   clientLongTimeout.invoke(
     "api_save_samples_file",
-    mypath,
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_samples").text().trim(),
+    samplesDestinationPath,
     samplesTableData,
     (error, res) => {
       if (error) {
@@ -1230,7 +1343,7 @@ function generateSamplesFileHelper(mypath) {
         );
         Swal.fire({
           title: "Failed to generate the samples.xlsx file.",
-          text: emessage,
+          html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
@@ -1346,7 +1459,7 @@ function loadSubjectsFileToDataframe(filePath) {
             });
             return;
           }
-          loadDataFrametoUI();
+          loadDataFrametoUI("local");
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -1414,7 +1527,7 @@ function loadSamplesFileToDataframe(filePath) {
             });
             return;
           }
-          loadDataFrametoUISamples();
+          loadDataFrametoUISamples("local");
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -2326,12 +2439,14 @@ const emptyDSInfoEntries = () => {
         fieldSatisfied = false;
       }
     } else {
-      if (
-        inforObj[element].length === 0 ||
-        inforObj[element] === "Select dataset"
-      ) {
-        fieldSatisfied = false;
-        emptyFieldArray.push(element);
+      if (inforObj[element]) {
+        if (
+          inforObj[element].length === 0 ||
+          inforObj[element] === "Select dataset"
+        ) {
+          fieldSatisfied = false;
+          emptyFieldArray.push(element);
+        }
       }
     }
   }
@@ -2409,25 +2524,25 @@ function detectEmptyRequiredFields(funding) {
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
 // New instance for description editor
-const tuiInstance = new Editor({
-  el: document.querySelector("#editorSection"),
-  initialEditType: "wysiwyg",
-  previewStyle: "vertical",
-  height: "400px",
-  hideModeSwitch: true,
-  placeholder: "Add a description here: ",
-  toolbarItems: [
-    "heading",
-    "bold",
-    "italic",
-    "strike",
-    "link",
-    "hr",
-    "divider",
-    "ul",
-    "ol",
-  ],
-});
+// const tuiInstance = new Editor({
+//   el: document.querySelector("#editorSection"),
+//   initialEditType: "wysiwyg",
+//   previewStyle: "vertical",
+//   height: "400px",
+//   hideModeSwitch: true,
+//   placeholder: "Add a description here: ",
+//   toolbarItems: [
+//     "heading",
+//     "bold",
+//     "italic",
+//     "strike",
+//     "link",
+//     "hr",
+//     "divider",
+//     "ul",
+//     "ol",
+//   ],
+// });
 
 var displaySize = 1000;
 
@@ -2821,6 +2936,8 @@ const metadataDatasetlistChange = () => {
   showCurrentDescription();
   showCurrentLicense();
   showCurrentBannerImage();
+  // TODO-NEW: Check flow
+  showCurrentTags();
 };
 
 // Manage dataset permission
@@ -4735,14 +4852,14 @@ function fileContextMenu(event) {
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   tippy("[data-tippy-content]", {
     allowHTML: true,
     interactive: true,
     placement: "top",
     theme: "light",
   });
-})
+});
 
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
@@ -6571,7 +6688,6 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
             updateBfAccountList();
           }
         });
-        // myBootboxDialog.modal("hide");
         Swal.fire({
           icon: "success",
           title: "Successfully added! <br/>Loading your account details...",
@@ -6586,3 +6702,538 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
     }
   );
 }
+
+/*
+******************************************************
+******************************************************
+Pennsieve Authentication Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+// Purpose: Functions that take a user through the authentication flow for the Pennsieve APIs.
+
+// retrieve the aws cognito configuration data for authenticating a user with their API key and secret using a Password Auth flow.
+const get_cognito_config = async () => {
+  const PENNSIEVE_URL = "https://api.pennsieve.io";
+  let cognitoConfigResponse;
+  try {
+    cognitoConfigResponse = await fetch(
+      `${PENNSIEVE_URL}/authentication/cognito-config`
+    );
+  } catch (e) {
+    // network error
+    throw e;
+  }
+
+  // check that there weren't any unexpected errors
+  let statusCode = cognitoConfigResponse.status;
+  if (statusCode === 404) {
+    throw new Error(
+      `${cognitoConfigResponse.status} - Resource for authenticating not found.`
+    );
+  } else if (statusCode !== 200) {
+    // something unexpected happened with the request
+    let statusText = await cognitoConfigResponse.json().statusText;
+    throw new Error(`${cognitoConfigResponse.status} - ${statusText}`);
+  }
+
+  let cognitoConfigData = await cognitoConfigResponse.json();
+  return cognitoConfigData;
+};
+
+// read the .ini file for the current user's api key and secret
+// the .ini file is where the current user's information is stored - such as their API key and secret
+const get_api_key_and_secret_from_ini = () => {
+  // get the path to the configuration file
+  const config_path = path.join(
+    app.getPath("home"),
+    ".pennsieve",
+    "config.ini"
+  );
+  let config;
+
+  // check that the user's configuration file exists
+  if (!fs.existsSync(config_path)) {
+    throw new Error(
+      "Error: Could not read information. No configuration file."
+    );
+  }
+
+  try {
+    // initialize the ini reader
+    config = ini.parse(fs.readFileSync(`${config_path}`, "utf-8"));
+  } catch (e) {
+    throw e;
+  }
+
+  // check that an api key and secret does ot exist
+  if (
+    !config["SODA-Pennsieve"]["api_secret"] ||
+    !config["SODA-Pennsieve"]["api_token"]
+  ) {
+    // throw an error
+    throw new Error(
+      "Error: User must connect their Pennsieve account to SODA in order to access this feature."
+    );
+  }
+
+  // return the user's api key and secret
+  const { api_token, api_secret } = config["SODA-Pennsieve"];
+  return { api_token, api_secret };
+};
+
+// authenticate a user with api key and api secret
+// this step is to validate that a user is who they say they are
+const authenticate_with_cognito = async (
+  cognitoConfigurationData,
+  usernameOrApiKey,
+  passwordOrSecret
+) => {
+  let cognito_app_client_id =
+    cognitoConfigurationData["tokenPool"]["appClientId"];
+  let cognito_pool_id = cognitoConfigurationData["tokenPool"]["id"];
+
+  var authParams = {
+    Username: `${usernameOrApiKey}`,
+    Password: `${passwordOrSecret}`,
+  };
+
+  var authenticationDetails = new cognitoClient.AuthenticationDetails(
+    authParams
+  );
+
+  var poolData = {
+    UserPoolId: cognito_pool_id,
+    ClientId: cognito_app_client_id, // Your client id here
+  };
+
+  var userPool = new cognitoClient.CognitoUserPool(poolData);
+
+  var userData = {
+    Username: `${usernameOrApiKey}`,
+    Pool: userPool,
+  };
+
+  var cognitoUser = new cognitoClient.CognitoUser(userData);
+
+  // tell the cognito user object to login using a user password flow
+  cognitoUser.setAuthenticationFlowType("USER_PASSWORD_AUTH");
+
+  return new Promise((resolve, reject) => {
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: resolve,
+      onFailure: reject,
+    });
+  });
+};
+
+// get the currnet Pennsieve user's access token -- this is used before every request to Pennsieve APIs as a bearer token
+const get_access_token = async () => {
+  // read the current user's ini file and get back their api key and secret
+  let userInformation;
+  try {
+    userInformation = get_api_key_and_secret_from_ini();
+  } catch (e) {
+    throw e;
+  }
+
+  // get the cognito configuration data for the given user
+  let configData;
+  try {
+    configData = await get_cognito_config();
+  } catch (e) {
+    throw e;
+  }
+
+  // get the access token from the cognito service for this user using the api key and secret for the current user
+  let cognitoResponse;
+  let { api_token, api_secret } = userInformation;
+  try {
+    cognitoResponse = await authenticate_with_cognito(
+      configData,
+      api_token,
+      api_secret
+    );
+  } catch (e) {
+    throw e;
+  }
+
+  if (!cognitoResponse["accessToken"]["jwtToken"])
+    throw new Error("Error: No access token available for this user.");
+
+  return cognitoResponse["accessToken"]["jwtToken"];
+};
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Tag Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+// to be used with an authenticated user that has a valid access token
+// Inputs:
+//    dataset_id_or_name: string
+//    jwt: string  (a valid JWT acquired from get_access_token)
+const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
+  // a name on the Pennsieve side is not made unqiue by " ","-", or "_" so remove them
+  function name_key(n) {
+    return n
+      .toLowerCase()
+      .trim()
+      .replace(" ", "")
+      .replace("_", "")
+      .replace("-", "");
+  }
+
+  let search_key = name_key(dataset_id_or_Name);
+
+  // a way to check if the given dataset's name or id matches one on the Pennsieve side
+  function is_match(ds) {
+    return name_key(ds.name) == search_key || ds.id == dataset_id_or_Name;
+  }
+
+  // get the all of datasets from Pennsieve that the user has access to in their organization
+  let datasets_response;
+
+  try {
+    datasets_response = await fetch("https://api.pennsieve.io/datasets", {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+  } catch (e) {
+    // network error
+    throw e;
+  }
+
+  // check the status codes
+  let statusCode = datasets_response.status;
+  if (statusCode == 401) {
+    throw new Error(
+      `${statusCode} - Please authenticate before accessing this resource by connecting your Pennsieve account to SODA.`
+    );
+  } else if (statusCode === 403) {
+    throw new Error(`${statusCode} - You do not have access to this dataset.`);
+  } else if (statusCode !== 200) {
+    // something unexpected
+    let statusText = await datasets_response.json().statusText;
+    throw new Error(`${statusCode} - ${statusText}`);
+  }
+
+  // valid datasets result
+  let datasets = await datasets_response.json();
+
+  // search through the datasets for a match
+  let matches = [];
+  for (const dataset of datasets) {
+    if (is_match(dataset["content"])) matches.push(dataset);
+  }
+
+  // check if there is no matching dataset
+  if (!matches.length) {
+    // could not find the dataset that matches the user's requested id/name
+    throw new Error(
+      `The dataset identified as ${dataset_id_or_Name} does not exist.`
+    );
+  }
+
+  // return the first match
+  return matches[0];
+};
+
+// get the tags from the Pennsieve API for a particular dataset
+// Inputs:
+//    dataset_id_or_name: string
+const get_dataset_tags = async (dataset_id_or_name) => {
+  if (dataset_id_or_name === "" || dataset_id_or_name === undefined) {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+
+  // get the access token so the user can access the Pennsieve api
+  let jwt = await get_access_token();
+
+  // fetch the tags for their dataset using the Pennsieve API
+  let dataset = await get_dataset_by_name_id(dataset_id_or_name, jwt);
+
+  // get the tags out of the dataset
+  const { tags } = dataset["content"];
+
+  // return the tags
+  return tags;
+};
+
+// update the tags for a given dataset using the Pennsieve API
+// Inputs:
+//    dataset_id_or_name: string
+//    tags: string[]
+//    jwt: string (gathered from get_access_token)
+const update_dataset_tags = async (datasetIdOrName, tags) => {
+  if (datasetIdOrName === "" || datasetIdOrName === undefined) {
+    throw new Error("Must provide a valid dataset to pull tags from.");
+  }
+  // authenticate the user
+  let jwt = await get_access_token();
+
+  // fetch the tags for their dataset using the Pennsieve API
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // check if the user has permission to edit this dataset
+  let role = await getCurrentUserPermissions(datasetIdOrName);
+
+  if (!userIsOwnerOrManager(role)) {
+    throw new Error(
+      "You don't have permissions for editing metadata on this Pennsieve dataset"
+    );
+  }
+
+  // grab the dataset's id
+  const id = dataset["content"]["id"];
+
+  // setup the request options
+  let options = {
+    method: "PUT",
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ tags: tags }),
+  };
+
+  // update the the user's tags
+  let updateResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}`,
+    options
+  );
+
+  // Check status codes and respond accordingly
+  let statusCode = updateResponse.status;
+  if (statusCode === 404) {
+    throw new Error(
+      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
+    );
+  } else if (statusCode === 401) {
+    throw new Error(
+      `${statusCode} - You cannot update dataset tags while unauthenticated. Please reauthenticate then try again.`
+    );
+  } else if (statusCode === 403) {
+    throw new Error(`${statusCode} - You do not have access to this dataset.`);
+  } else if (statusCode !== 200) {
+    // something unexpected happened
+    let statusText = await updateResponse.json().statusText;
+    throw new Error(`${statusCode} - ${statusText}`);
+  }
+};
+
+/*
+******************************************************
+******************************************************
+Manage Datasets Add/Edit Description Section With Nodejs
+******************************************************
+******************************************************
+*/
+
+// returns the readme of a dataset.
+// I: dataset_name_or_id : string
+// O: a dataset description as a string
+const getDatasetReadme = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+  }
+  // get the user's access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // pull out the id from the result
+  const id = dataset["content"]["id"];
+
+  // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
+  let readmeResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/readme`,
+    {
+      headers: {
+        Accept: "*/*",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  // get the status code out of the response
+  let statusCode = readmeResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot get the dataset readme while unauthenticated. Please reauthenticate and try again.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await readmeResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+
+  // grab the readme out of the response
+  let { readme } = await readmeResponse.json();
+
+  return readme;
+};
+
+const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
+  if (datasetIdOrName === "" || datasetIdOrName === undefined) {
+    throw new Error(
+      "Must provide a valid dataset to get the metadata description."
+    );
+  }
+
+  // get the user's permissions
+  let role = await getCurrentUserPermissions(datasetIdOrName);
+
+  // check if the user permissions do not include "owner" or "manager"
+  if (!userIsOwnerOrManager(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    throw new Error(
+      "You don't have permissions for editing metadata on this Pennsieve dataset"
+    );
+  }
+
+  // get access token for the current user
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the id out of the dataset
+  let id = dataset.content.id;
+
+  // put the new readme data in the readme on Pennsieve
+  options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify({ readme: updatedReadme.trim() }),
+  };
+
+  let readmeResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/readme`,
+    options
+  );
+
+  // get the status code out of the response
+  let statusCode = readmeResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The selected dataset cannot be found. Please select a valid dataset.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await readmeResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+};
+
+const getCurrentUserPermissions = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get access token for the current user
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the id out of the dataset
+  let id = dataset.content.id;
+
+  // get the user's permissions
+  let permissionsResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/role`,
+    { headers: { Authorization: `Bearer ${jwt}` } }
+  );
+
+  // get the status code out of the response
+  let statusCode = permissionsResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to check your permissions.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot check your dataset permissions while unauthenticated. Please reauthenticate and try again.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await permissionsResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+
+  // get the permissions object
+  const { role } = await permissionsResponse.json();
+
+  // return the permissions
+  return role;
+};
+
+// I: role: string - A user's permissions indicated by their role. Can be: owner, manager, editor, viewer.
+// O: boolean - true if role is owner or manager, false otherwise
+const userIsOwnerOrManager = (role) => {
+  // check if the user permissions do not include "owner" or "manager"
+  if (!["owner", "manager"].includes(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    return false;
+  }
+
+  return true;
+};
