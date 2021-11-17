@@ -1971,7 +1971,7 @@ const showCurrentTags = async () => {
 $("#button-add-license").click(() => {
   setTimeout(function () {
     Swal.fire({
-      title: "Adding license to your dataset",
+      title: "Adding license to dataset",
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -2017,7 +2017,7 @@ $("#button-add-license").click(() => {
           );
         } else {
           Swal.fire({
-            title: "Successfully added license to your dataset!",
+            title: "Successfully added license to dataset!",
             icon: "success",
             showConfirmButton: true,
             heightAuto: false,
