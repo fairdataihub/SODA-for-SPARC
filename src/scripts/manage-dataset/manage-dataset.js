@@ -1759,8 +1759,19 @@ const showCurrentBannerImage = () => {
 
 // add or edit metadata tags for a user's selected dataset in the "add/edit tags" section of the manage-dataset menu
 $("#button-add-tags").click(async () => {
-  // show a loading spinner to the user
-  $("#bf-add-tags-dataset-spinner").show();
+  Swal.fire({
+    title: "Adding tags to your dataset",
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
   const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
@@ -1774,9 +1785,6 @@ $("#button-add-tags").click(async () => {
   try {
     await update_dataset_tags(selectedBfDataset, tags);
   } catch (e) {
-    // hide the loading spinner
-    $("#bf-add-tags-dataset-spinner").hide();
-
     // log the error
     log.error(e);
     console.error(e);
@@ -1793,10 +1801,6 @@ $("#button-add-tags").click(async () => {
     // halt execution
     return;
   }
-
-  // once the result has been retrieved hide the spinner
-  $("#bf-add-tags-dataset-spinner").hide();
-
   // show success or failure to the user in a popup message
   Swal.fire({
     title: "Successfully edited tags!",
@@ -1804,7 +1808,12 @@ $("#button-add-tags").click(async () => {
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  });
+  }).then(
+    //check if tags array is empty and set Add/Edit tags appropriately
+    tags === undefined || tags.length == 0
+      ? $("#button-add-tags").html("Add tags")
+      : $("#button-add-tags").html("Edit tags")
+  );
 });
 
 // fetch a user's metadata tags
@@ -1829,6 +1838,13 @@ const showCurrentTags = async () => {
     let tags;
     try {
       tags = await get_dataset_tags(selectedBfDataset);
+      if (tags === undefined || tags.length == 0) {
+        //if so make the button say add tags
+        $("#button-add-tags").html("Add tags");
+      } else {
+        //make the button say edit tags
+        $("#button-add-tags").html("Edit tags");
+      }
     } catch (e) {
       // log the error
       log.error(e);
