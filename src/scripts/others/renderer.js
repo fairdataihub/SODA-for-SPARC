@@ -6945,10 +6945,9 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
 
   // update the the user's tags
   let updateResponse = await fetch(
-      `https://api.pennsieve.io/datasets/${id}`,
-      options
-    );
-
+    `https://api.pennsieve.io/datasets/${id}`,
+    options
+  );
 
   // Check status codes and respond accordingly
   let statusCode = updateResponse.status;
@@ -7006,32 +7005,32 @@ const getDatasetReadme = async (datasetIdOrName) => {
     }
   );
 
-   // get the status code out of the response
-   let statusCode = readmeResponse.status;
+  // get the status code out of the response
+  let statusCode = readmeResponse.status;
 
-   // check the status code of the response
-   switch (statusCode) {
-     case 200:
-       // success do nothing
-       break;
-     case 404:
-       throw new Error(
-         `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
-       );
-     case 401:
-       throw new Error(
-         `${statusCode} - You cannot get the dataset readme while unauthenticated. Please reauthenticate and try again.`
-       );
-     case 403:
-       throw new Error(
-         `${statusCode} - You do not have access to this dataset. `
-       );
- 
-     default:
-       // something unexpected happened
-       let statusText = await readmeResponse.json().statusText;
-       throw new Error(`${statusCode} - ${statusText}`);
-   }
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot get the dataset readme while unauthenticated. Please reauthenticate and try again.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await readmeResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
 
   // grab the readme out of the response
   let { readme } = await readmeResponse.json();
@@ -7041,7 +7040,9 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
 const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   if (datasetIdOrName === "" || datasetIdOrName === undefined) {
-    throw new Error("Must provide a valid dataset to get the metadata description.");
+    throw new Error(
+      "Must provide a valid dataset to get the metadata description."
+    );
   }
 
   // get the user's permissions
@@ -7074,7 +7075,10 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
     body: JSON.stringify({ readme: updatedReadme.trim() }),
   };
 
-  let readmeResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
+  let readmeResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/readme`,
+    options
+  );
 
   // get the status code out of the response
   let statusCode = readmeResponse.status;
