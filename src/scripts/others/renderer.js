@@ -3615,6 +3615,10 @@ function showPublishingStatus(callback) {
     .replace(/^\s+|\s+$/g, "");
   if (selectedBfDataset === "None") {
   } else {
+    // show the "Begin Publishing" button and hide the checklist and submission section
+    $("#begin-publishing-btn").show();
+    $("#pre-publishing-checklist-submission-section").hide();
+
     client.invoke(
       "api_bf_get_publishing_status",
       selectedBfAccount,
@@ -3673,9 +3677,19 @@ function showPublishingStatus(callback) {
               if (!owner) {
                 // show the warning message
                 $("#publishing-isa-warning").css("display", "flex");
+
+                // grey out the "Begin Publishing" and add a tippy hover that says only owners can publish
+                tippy("#begin-prepublishing-button-container", {
+                  content: "Only the dataset owner can publish a dataset.",
+                });
+
+                /* By default don't allow the button to be clicked. Once the SODA user is identified as the dataset Owner make the button clickable*/
+                $("#begin-prepublishing-btn").css("pointer-events", "none");
               } else {
                 // hide the warning message
                 $("#publishing-isa-warning").css("display", "none");
+
+                // make the button active
               }
             })
             .catch((error) => {
@@ -7182,7 +7196,6 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
   return matches[0];
 };
 
-
 /*
 ******************************************************
 ******************************************************
@@ -7190,7 +7203,6 @@ Manage Datasets Add/Edit Tags Section With Nodejs
 ******************************************************
 ******************************************************
 */
-
 
 // get the tags from the Pennsieve API for a particular dataset
 // Inputs:
@@ -7286,7 +7298,6 @@ Manage Datasets Add/Edit Description Section With Nodejs
 ******************************************************
 */
 
-
 // returns the readme of a dataset.
 // I: dataset_name_or_id : string
 // O: a dataset description as a string
@@ -7348,8 +7359,6 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   return readme;
 };
-
-
 
 const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   if (datasetIdOrName === "" || datasetIdOrName === undefined) {
@@ -7421,8 +7430,6 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   }
 };
 
-
-
 /*
 ******************************************************
 ******************************************************
@@ -7431,18 +7438,21 @@ Dissemniate Datasets Submit dataset for pre-publishing
 ******************************************************
 */
 
-
-
 // I: The currently selected dataset - name or by id
 // O: A status object that details the state of each pre-publishing checklist item for the given dataset and user
 //   {subtitle: boolean, description: boolean, tags: boolean, bannerImageURL: boolean, license: boolean, ORCID: boolean}
 const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
-  if (!datasetIdOrName) {
+  if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error(
       "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
     );
   }
+
+  // get the dataset
+  let jwt = await get_access_token();
+
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   // construct the statuses object
   const statuses = {};
@@ -7623,8 +7633,6 @@ const getDatasetSubtitle = async (datasetIdOrName) => {
 
   return subtitle;
 };
-
-
 
 /*
 ******************************************************

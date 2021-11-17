@@ -1729,3 +1729,12 @@ body.swal2-shown > [aria-hidden="true"] {
 #pre-publishing-checklist button:hover {
   text-decoration: underline;
 }
+
+#begin-prepublishing-button {
+ margin: 0 auto; 
+}
+
+#begin-prepublishing-button-container {
+  display: flex; 
+  justify-content: center;
+}

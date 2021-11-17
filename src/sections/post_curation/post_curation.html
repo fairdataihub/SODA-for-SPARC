@@ -845,287 +845,302 @@
           id="submit_prepublishing_review-question-2"
           style="height: auto"
         >
-          <div class="ui form" style="width: 450px">
-            <div class="grouped fields">
-              <label
-                id="add_edit_banner_label"
-                style="
-                  font-size: 17px;
-                  color: var(--color-bg-plum);
-                  width: 100%;
-                  text-align: center;
-                  margin-bottom: 15px;
-                "
-                >Pre-publishing checklist:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
+        <div id="begin-prepublishing-button-container"> 
+          <button
+            id="begin-prepublishing-btn"
+            class="btn_animated"
+          >
+            Begin Publishing
+          </button>
+        </div>
+
+          <div id="pre-publishing-checklist-submission-section">
+            <div class="ui form" style="width: 450px">
+              <div class="grouped fields">
+                <label
+                  id="pre_publishing_label"
+                  style="
+                    font-size: 17px;
+                    color: var(--color-bg-plum);
+                    width: 100%;
+                    text-align: center;
+                    margin-bottom: 15px;
+                  "
+                  >Pre-publishing checklist:
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
                                 Click on any missing checklist items and you will be navigated to where you may add that item. Once requirements are met, 
                                 the dataset owner may submit their dataset for pre-publication review. "
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  justify-content: center;
-                "
-              >
-                <table
-                  class="ui fixed table"
-                  id="pre-publishing-checklist"
-                  style="max-height: 250px; width: 780px"
-                >
-                  <thead>
-                    <tr>
-                      <th style="width: 190px">Item</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody style="height: 250px">
-                    <tr style="height: 15px">
-                      <td>
-                        <div
-                          class="icon-wrapper"
-                          style="display: inline-block; padding-right: 5px"
-                        >
-                          <i
-                            class="check icon"
-                            style="color: green"
-                            id="prepublishing-checklist-icon-subtitle"
-                          ></i>
-                        </div>
-                        <button
-                          onClick="transitionFromPrePublishingChecklist('add_edit_subtitle-section')"
-                        >
-                          Add a subtitle
-                        </button>
-                      </td>
-                      <td>Give others a brief description of your dataset.</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div
-                          class="icon-wrapper"
-                          style="display: inline-block; padding-right: 5px"
-                        >
-                          <i
-                            class="check icon"
-                            style="color: green; margin-right: 5px"
-                            id="prepublishing-checklist-icon-tags"
-                          ></i>
-                        </div>
-                        <button
-                          onClick="transitionFromPrePublishingChecklist('add_tags-section')"
-                        >
-                          Add tags
-                        </button>
-                      </td>
-                      <td>
-                        Make it easier for people to find your dataset in
-                        Discover.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div
-                          class="icon-wrapper"
-                          style="display: inline-block; padding-right: 5px"
-                        >
-                          <i
-                            class="check icon"
-                            style="color: green; margin-right: 5px"
-                            id="prepublishing-checklist-icon-readme"
-                          ></i>
-                        </div>
-                        <button
-                          onClick="transitionFromPrePublishingChecklist('add_edit_description-section')"
-                        >
-                          Add a description
-                        </button>
-                      </td>
-                      <td>
-                        Give others a detailed overview of your dataset and
-                        outline your findings and analysis.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div
-                          class="icon-wrapper"
-                          style="display: inline-block; padding-right: 5px"
-                        >
-                          <i
-                            class="check icon"
-                            style="color: green; margin-right: 5px"
-                            id="prepublishing-checklist-icon-banner"
-                          ></i>
-                        </div>
-                        <button
-                          onClick="transitionFromPrePublishingChecklist('add_edit_banner-section')"
-                        >
-                          Add a banner image
-                        </button>
-                      </td>
-                      <td>
-                        Add a banner image to help your dataset stand out in
-                        listings.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div
-                          class="icon-wrapper"
-                          style="display: inline-block; padding-right: 5px"
-                        >
-                          <i
-                            class="check icon"
-                            style="color: green; margin-right: 5px"
-                            id="prepublishing-checklist-icon-license"
-                          ></i>
-                        </div>
-                        <button
-                          onClick="transitionFromPrePublishingChecklist('add_license-section')"
-                        >
-                          Add a license
-                        </button>
-                      </td>
-                      <td>
-                        Let others know how they can use this data in their own
-                        research.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div
-                          class="icon-wrapper"
-                          style="display: inline-block; padding-right: 5px"
-                        >
-                          <i
-                            class="check icon"
-                            style="color: green; margin-right: 5px"
-                            id="prepublishing-checklist-icon-ORCID"
-                          ></i>
-                        </div>
-                        <button id="ORCID-btn">Link ORCID iD</button>
-                      </td>
-                      <td>
-                        Link your ORCID iD to Pennsieve in order to distinguish
-                        yourself from other researchers.
-                        <div
-                          class="isa_warning"
-                          id="publishing-isa-warning"
-                          style="
-                            font-size: 14px;
-                            width: 100%;
-                            margin: 10px 0px;
-                            flex-direction: column;
-                            display: none;
-                          "
-                        >
-                          <button
-                            class="close-btn"
-                            title="close"
-                            id="publishing-close-btn"
-                          >
-                            <span>X</span>
-                          </button>
-                          <span style="margin-bottom: 10px; padding-left: 10px">
-                            <strong>
-                              Warning: The ORCID iD is associated with the owner
-                              of the selected dataset. Please note that while
-                              using SODA only the dataset owner can see if their
-                              ORCID iD is linked to Pennsieve.
-                              <br />
-                              <a
-                                href="https://fairdataihub.org/sodaforsparc/docs/"
-                                >Learn more.</a
-                              >
-                            </strong>
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-
+                    rel="popover"
+                    data-html="true"
+                    data-placement="right"
+                    data-trigger="hover"
+                  ></i>
+                </label>
                 <div
-                  id="div-confirm-submit-review"
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
+                    align-items: center;
                     justify-content: center;
                   "
                 >
-                  <div
-                    style="width: 100%"
-                    id="prepublishing-withdraw-btn-container"
-                    style="margin: 0 auto"
+                  <table
+                    class="ui fixed table"
+                    id="pre-publishing-checklist"
+                    style="max-height: 250px; width: 780px"
                   >
-                    <button
-                      id="button-withdraw-review-dataset"
-                      onclick="withdrawDatasetSubmission()"
-                      class="btn_animated md skip"
-                      style="
-                        cursor: pointer;
-                        border-radius: 8px;
-                        margin: 20px 23%;
-                        width: 200px;
-                        height: 40px;
-                        background: #fff;
-                        color: red;
-                        font-weight: 600;
-                        border: 1px solid red;
-                        font-size: 15px;
-                      "
+                    <thead>
+                      <tr>
+                        <th style="width: 190px">Item</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody style="height: 250px">
+                      <tr style="height: 15px">
+                        <td>
+                          <div
+                            class="icon-wrapper"
+                            style="display: inline-block; padding-right: 5px"
+                          >
+                            <i
+                              class="check icon"
+                              style="color: green"
+                              id="prepublishing-checklist-icon-subtitle"
+                            ></i>
+                          </div>
+                          <button
+                            onClick="transitionFromPrePublishingChecklist('add_edit_subtitle-section')"
+                          >
+                            Add a subtitle
+                          </button>
+                        </td>
+                        <td>
+                          Give others a brief description of your dataset.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div
+                            class="icon-wrapper"
+                            style="display: inline-block; padding-right: 5px"
+                          >
+                            <i
+                              class="check icon"
+                              style="color: green; margin-right: 5px"
+                              id="prepublishing-checklist-icon-tags"
+                            ></i>
+                          </div>
+                          <button
+                            onClick="transitionFromPrePublishingChecklist('add_tags-section')"
+                          >
+                            Add tags
+                          </button>
+                        </td>
+                        <td>
+                          Make it easier for people to find your dataset in
+                          Discover.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div
+                            class="icon-wrapper"
+                            style="display: inline-block; padding-right: 5px"
+                          >
+                            <i
+                              class="check icon"
+                              style="color: green; margin-right: 5px"
+                              id="prepublishing-checklist-icon-readme"
+                            ></i>
+                          </div>
+                          <button
+                            onClick="transitionFromPrePublishingChecklist('add_edit_description-section')"
+                          >
+                            Add a description
+                          </button>
+                        </td>
+                        <td>
+                          Give others a detailed overview of your dataset and
+                          outline your findings and analysis.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div
+                            class="icon-wrapper"
+                            style="display: inline-block; padding-right: 5px"
+                          >
+                            <i
+                              class="check icon"
+                              style="color: green; margin-right: 5px"
+                              id="prepublishing-checklist-icon-banner"
+                            ></i>
+                          </div>
+                          <button
+                            onClick="transitionFromPrePublishingChecklist('add_edit_banner-section')"
+                          >
+                            Add a banner image
+                          </button>
+                        </td>
+                        <td>
+                          Add a banner image to help your dataset stand out in
+                          listings.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div
+                            class="icon-wrapper"
+                            style="display: inline-block; padding-right: 5px"
+                          >
+                            <i
+                              class="check icon"
+                              style="color: green; margin-right: 5px"
+                              id="prepublishing-checklist-icon-license"
+                            ></i>
+                          </div>
+                          <button
+                            onClick="transitionFromPrePublishingChecklist('add_license-section')"
+                          >
+                            Add a license
+                          </button>
+                        </td>
+                        <td>
+                          Let others know how they can use this data in their
+                          own research.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div
+                            class="icon-wrapper"
+                            style="display: inline-block; padding-right: 5px"
+                          >
+                            <i
+                              class="check icon"
+                              style="color: green; margin-right: 5px"
+                              id="prepublishing-checklist-icon-ORCID"
+                            ></i>
+                          </div>
+                          <button id="ORCID-btn">Link ORCID iD</button>
+                        </td>
+                        <td>
+                          Link your ORCID iD to Pennsieve in order to
+                          distinguish yourself from other researchers.
+                          <div
+                            class="isa_warning"
+                            id="publishing-isa-warning"
+                            style="
+                              font-size: 14px;
+                              width: 100%;
+                              margin: 10px 0px;
+                              flex-direction: column;
+                              display: none;
+                            "
+                          >
+                            <button
+                              class="close-btn"
+                              title="close"
+                              id="publishing-close-btn"
+                            >
+                              <span>X</span>
+                            </button>
+                            <span
+                              style="margin-bottom: 10px; padding-left: 10px"
+                            >
+                              <strong>
+                                Warning: The ORCID iD is associated with the
+                                owner of the selected dataset. Please note that
+                                while using SODA only the dataset owner can see
+                                if their ORCID iD is linked to Pennsieve.
+                                <br />
+                                <a
+                                  href="https://fairdataihub.org/sodaforsparc/docs/"
+                                  >Learn more.</a
+                                >
+                              </strong>
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div
+                    id="div-confirm-submit-review"
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: center;
+                    "
+                  >
+                    <div
+                      style="width: 100%"
+                      id="prepublishing-withdraw-btn-container"
+                      style="margin: 0 auto"
                     >
-                      <i class="fas fa-ban" style="padding-right: 5px"></i>
-                      Withdraw from review
-                    </button>
+                      <button
+                        id="button-withdraw-review-dataset"
+                        onclick="withdrawDatasetSubmission()"
+                        class="btn_animated md skip"
+                        style="
+                          cursor: pointer;
+                          border-radius: 8px;
+                          margin: 20px 23%;
+                          width: 200px;
+                          height: 40px;
+                          background: #fff;
+                          color: red;
+                          font-weight: 600;
+                          border: 1px solid red;
+                          font-size: 15px;
+                        "
+                      >
+                        <i class="fas fa-ban" style="padding-right: 5px"></i>
+                        Withdraw from review
+                      </button>
+                    </div>
+                    <div
+                      style="width: 100%; margin-left: -100%"
+                      id="prepublishing-publish-btn-container"
+                    >
+                      <button
+                        onclick="disseminateDataset('submit-pre-publishing')"
+                        class="btn_animated md"
+                        style="
+                          margin: 20px 23%;
+                          width: 200px;
+                          height: 40px;
+                          font-size: 15px;
+                          border: none !important; ;
+                        "
+                      >
+                        <i
+                          class="fas fa-sign-in-alt"
+                          style="padding-right: 5px"
+                        ></i>
+                        Submit
+                      </button>
+                    </div>
                   </div>
                   <div
-                    style="width: 100%; margin-left: -100%"
-                    id="prepublishing-publish-btn-container"
+                    id="submit_prepublishing_review-spinner"
+                    class="spinner"
+                    style="display: none"
                   >
-                    <button
-                      onclick="disseminateDataset('submit-pre-publishing')"
-                      class="btn_animated md"
-                      style="
-                        margin: 20px 23%;
-                        width: 200px;
-                        height: 40px;
-                        font-size: 15px;
-                        border: none !important; ;
-                      "
-                    >
-                      <i
-                        class="fas fa-sign-in-alt"
-                        style="padding-right: 5px"
-                      ></i>
-                      Submit
-                    </button>
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
                   </div>
+                  <p
+                    id="para-submit_prepublishing_review-status"
+                    style="color: red; margin-top: 10px; text-align: center"
+                  ></p>
                 </div>
-                <div
-                  id="submit_prepublishing_review-spinner"
-                  class="spinner"
-                  style="display: none"
-                >
-                  <div class="rect1"></div>
-                  <div class="rect2"></div>
-                  <div class="rect3"></div>
-                  <div class="rect4"></div>
-                  <div class="rect5"></div>
-                </div>
-                <p
-                  id="para-submit_prepublishing_review-status"
-                  style="color: red; margin-top: 10px; text-align: center"
-                ></p>
               </div>
             </div>
           </div>
