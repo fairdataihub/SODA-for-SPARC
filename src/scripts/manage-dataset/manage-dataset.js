@@ -17,6 +17,56 @@ const check_forbidden_characters_bf = (my_string) => {
   return check;
 };
 
+const determineSwalLoadingMessage = (addEditButton) => {
+  let loadingMessage = "";
+  switch (addEditButton.text()) {
+    case "Add subtitle":
+      loadingMessage = "Adding subtitle to dataset";
+      break;
+    case "Edit subtitle":
+      loadingMessage = "Editing your dataset's subtitle";
+      break;
+    case "Add description":
+      loadingMessage = "Adding description to dataset";
+      break;
+    case "Edit description":
+      loadingMessage = "Editing your dataset's description";
+      break;
+    case "Add tags":
+      loadingMessage = "Adding tags to dataset";
+      break;
+    case "Edit tags":
+      loadingMessage = "Editing your dataset's tags";
+      break;
+  }
+  return loadingMessage;
+};
+
+const determineSwalSuccessMessage = (addEditButton) => {
+  let successMessage = "";
+  switch (addEditButton.text()) {
+    case "Add subtitle":
+      successMessage = "Successfully added subtitle to dataset";
+      break;
+    case "Edit subtitle":
+      successMessage = "Successfully edited dataset's subtitle";
+      break;
+    case "Add description":
+      successMessage = "Successfully added description to dataset";
+      break;
+    case "Edit description":
+      successMessage = "Successfully edited dataset's description";
+      break;
+    case "Add tags":
+      successMessage = "Successfully added tags to dataset";
+      break;
+    case "Edit tags":
+      successMessage = "Successfully edited dataset's tags";
+      break;
+  }
+  return successMessage;
+};
+
 // illegal character name warning for new dataset names
 $("#bf-new-dataset-name").on("keyup", () => {
   let newName = $("#bf-new-dataset-name").val().trim();
@@ -626,7 +676,7 @@ $(document).ready(() => {
 $("#button-add-subtitle").click(() => {
   setTimeout(function () {
     Swal.fire({
-      title: "Adding subtitle to dataset",
+      title: determineSwalLoadingMessage($("#button-add-subtitle")),
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -680,7 +730,7 @@ $("#button-add-subtitle").click(() => {
           $("#ds-description").val(inputSubtitle);
 
           Swal.fire({
-            title: "Successfully added!",
+            title: determineSwalSuccessMessage($("#button-add-subtitle")),
             icon: "success",
             showConfirmButton: true,
             heightAuto: false,
@@ -946,7 +996,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   let readme;
   try {
     Swal.fire({
-      title: "Adding description",
+      title: determineSwalLoadingMessage($("#button-add-description")),
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -1035,7 +1085,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
 
   // alert the user the data was uploaded successfully
   Swal.fire({
-    title: "Successfully added description!",
+    title: determineSwalSuccessMessage($("#button-add-description")),
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
@@ -1803,7 +1853,7 @@ const showCurrentBannerImage = () => {
 // add or edit metadata tags for a user's selected dataset in the "add/edit tags" section of the manage-dataset menu
 $("#button-add-tags").click(async () => {
   Swal.fire({
-    title: "Adding tags to your dataset",
+    title: determineSwalLoadingMessage($("#button-add-tags")),
     html: "Please wait...",
     // timer: 5000,
     allowEscapeKey: false,
@@ -1846,12 +1896,17 @@ $("#button-add-tags").click(async () => {
   }
   // show success or failure to the user in a popup message
   Swal.fire({
-    title: "Successfully edited tags!",
+    title: determineSwalSuccessMessage($("#button-add-tags")),
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  });
+  }).then(
+    //check if tags array is empty and set Add/Edit tags appropriately
+    tags === undefined || tags.length == 0
+      ? $("#button-add-tags").html("Add tags")
+      : $("#button-add-tags").html("Edit tags")
+  );
 });
 
 // fetch a user's metadata tags
@@ -1876,6 +1931,13 @@ const showCurrentTags = async () => {
     let tags;
     try {
       tags = await get_dataset_tags(selectedBfDataset);
+      if (tags === undefined || tags.length == 0) {
+        //if so make the button say add tags
+        $("#button-add-tags").html("Add tags");
+      } else {
+        //make the button say edit tags
+        $("#button-add-tags").html("Edit tags");
+      }
     } catch (e) {
       // log the error
       log.error(e);
@@ -1909,7 +1971,7 @@ const showCurrentTags = async () => {
 $("#button-add-license").click(() => {
   setTimeout(function () {
     Swal.fire({
-      title: "Adding selected license to your dataset",
+      title: "Adding license to your dataset",
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
