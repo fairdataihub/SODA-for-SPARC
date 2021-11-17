@@ -132,7 +132,7 @@ function onboardingMetadata(type) {
         introStatus[type] = true;
       })
       .start();
-    }
+  }
 }
 
 function promptImportPrevInfoSubject(arr1) {
@@ -2109,10 +2109,7 @@ $(document).ready(function () {
         ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "subjects.xlsx");
         subjectsDestinationPath = destinationPath;
-        $("#div-confirm-destination-subjects-locally").css(
-          "display",
-          "flex"
-        );
+        $("#div-confirm-destination-subjects-locally").css("display", "flex");
       }
     }
   );
@@ -2127,10 +2124,7 @@ $(document).ready(function () {
         ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "samples.xlsx");
         samplesDestinationPath = destinationPath;
-        $("#div-confirm-destination-samples-locally").css(
-          "display",
-          "flex"
-        );
+        $("#div-confirm-destination-samples-locally").css("display", "flex");
       }
     }
   );

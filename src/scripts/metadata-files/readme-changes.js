@@ -117,13 +117,11 @@ $(document).ready(function () {
       if (dirpath.length > 0) {
         var destinationPath = path.join(dirpath[0], filename);
         changesDestinationPath = destinationPath;
-        $("#div-confirm-destination-changes-locally").css(
+        $("#div-confirm-destination-changes-locally").css("display", "flex");
+        $($("#div-confirm-destination-changes-locally").children()[0]).css(
           "display",
           "flex"
         );
-        $(
-          $("#div-confirm-destination-changes-locally").children()[0]
-        ).css("display", "flex");
         document.getElementById(
           "input-destination-generate-changes-locally"
         ).placeholder = dirpath[0];
@@ -144,10 +142,7 @@ $(document).ready(function () {
       if (dirpath.length > 0) {
         var destinationPath = path.join(dirpath[0], filename);
         readmeDestinationPath = destinationPath;
-        $("#div-confirm-destination-readme-locally").css(
-          "display",
-          "flex"
-        );
+        $("#div-confirm-destination-readme-locally").css("display", "flex");
         $($("#div-confirm-destination-readme-locally").children()[0]).css(
           "display",
           "flex"
@@ -289,8 +284,7 @@ async function saveRCFile(type) {
     return;
   }
   var { value: continueProgress } = await Swal.fire({
-    title:
-      `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
+    title: `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
     text: "Are you sure you want to continue?",
     allowEscapeKey: false,
     allowOutsideClick: false,
