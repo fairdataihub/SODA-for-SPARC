@@ -17,6 +17,56 @@ const check_forbidden_characters_bf = (my_string) => {
   return check;
 };
 
+const determineSwalLoadingMessage = (addEditButton) => {
+  let loadingMessage = "";
+  switch (addEditButton.text()) {
+    case "Add subtitle":
+      loadingMessage = "Adding subtitle to dataset";
+      break;
+    case "Edit subtitle":
+      loadingMessage = "Editing your dataset's subtitle";
+      break;
+    case "Add description":
+      loadingMessage = "Adding description to dataset";
+      break;
+    case "Edit description":
+      loadingMessage = "Editing your dataset's description";
+      break;
+    case "Add tags":
+      loadingMessage = "Adding tags to dataset";
+      break;
+    case "Edit tags":
+      loadingMessage = "Editing your dataset's tags";
+      break;
+  }
+  return loadingMessage;
+};
+
+const determineSwalSuccessMessage = (addEditButton) => {
+  let successMessage = "";
+  switch (addEditButton.text()) {
+    case "Add subtitle":
+      successMessage = "Successfully added subtitle to dataset";
+      break;
+    case "Edit subtitle":
+      successMessage = "Successfully edited dataset's subtitle";
+      break;
+    case "Add description":
+      successMessage = "Successfully added description to dataset";
+      break;
+    case "Edit description":
+      successMessage = "Successfully edited dataset's description";
+      break;
+    case "Add tags":
+      successMessage = "Successfully added tags to dataset";
+      break;
+    case "Edit tags":
+      successMessage = "Successfully edited dataset's tags";
+      break;
+  }
+  return successMessage;
+};
+
 // illegal character name warning for new dataset names
 $("#bf-new-dataset-name").on("keyup", () => {
   let newName = $("#bf-new-dataset-name").val().trim();
@@ -71,7 +121,20 @@ $("#button-create-bf-new-dataset").click(() => {
     log.info(`Creating a new dataset with the name: ${bfNewDatasetName}`);
 
     $("#button-create-bf-new-dataset").prop("disabled", true);
-    $("#bf-create-new-dataset-spinner").css("visibility", "visible");
+
+    Swal.fire({
+      title: `Creating a new dataset named: ${bfNewDatasetName}`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
     client.invoke(
       "api_bf_new_dataset_folder",
@@ -92,7 +155,6 @@ $("#button-create-bf-new-dataset").click(() => {
             icon: "error",
           });
 
-          $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
           $("#button-create-bf-new-dataset").prop("disabled", false);
 
           ipcRenderer.send(
@@ -103,16 +165,18 @@ $("#button-create-bf-new-dataset").click(() => {
           );
         } else {
           Swal.fire({
-            title: "Created successfully!",
+            title: `Dataset ${bfNewDatasetName} was created successfully`,
             icon: "success",
             showConfirmButton: true,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              Swal.hideLoading();
+            },
           });
 
           log.info(`Created dataset successfully`);
 
-          $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
           $("#button-create-bf-new-dataset").hide();
 
           defaultBfDataset = bfNewDatasetName;
@@ -170,6 +234,20 @@ $("#button-rename-dataset").click(() => {
     var currentDatasetName = defaultBfDataset;
     var renamedDatasetName = $("#bf-rename-dataset-name").val();
 
+    Swal.fire({
+      title: `Renaming dataset ${currentDatasetName} to ${renamedDatasetName}`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     log.info(
       `Requesting dataset name change from '${currentDatasetName}' to '${renamedDatasetName}'`
     );
@@ -185,7 +263,6 @@ $("#button-rename-dataset").click(() => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
     } else {
-      $("#bf-rename-dataset-spinner").css("visibility", "visible");
       $("#button-rename-dataset").prop("disabled", true);
 
       client.invoke(
@@ -198,7 +275,6 @@ $("#button-rename-dataset").click(() => {
             log.error(error);
             console.error(error);
             var emessage = userError(error);
-            $("#bf-rename-dataset-spinner").css("visibility", "hidden");
             Swal.fire({
               title: "Failed to rename dataset",
               text: emessage,
@@ -222,20 +298,14 @@ $("#button-rename-dataset").click(() => {
             refreshDatasetList();
             $("#bf-rename-dataset-name").val(renamedDatasetName);
             Swal.fire({
-              title: "Renamed successfully!",
-              text:
-                "Renamed dataset" +
-                " '" +
-                currentDatasetName +
-                "'" +
-                " to" +
-                " '" +
-                renamedDatasetName +
-                "'. ",
+              title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
               icon: "success",
               showConfirmButton: true,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
+              didOpen: () => {
+                Swal.hideLoading();
+              },
             });
             $("#button-rename-dataset").prop("disabled", false);
 
@@ -245,7 +315,6 @@ $("#button-rename-dataset").click(() => {
               "Manage Dataset - Rename Existing Dataset",
               currentDatasetName + " to " + renamedDatasetName
             );
-            $("#bf-rename-dataset-spinner").css("visibility", "hidden");
             log.info("Requesting list of datasets");
             client.invoke(
               "api_bf_dataset_account",
@@ -291,7 +360,19 @@ $("#button-add-permission-pi").click(() => {
     if (result.isConfirmed) {
       log.info("Changing PI Owner of datset");
 
-      $("#bf-add-permission-pi-spinner").css("visibility", "visible");
+      Swal.fire({
+        title: "Changing PI Owner of dataset",
+        html: "Please wait...",
+        // timer: 5000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
 
       let selectedBfAccount = defaultBfAccount;
       let selectedBfDataset = defaultBfDataset;
@@ -312,8 +393,6 @@ $("#button-add-permission-pi").click(() => {
               "Manage Dataset - Change PI Owner",
               selectedBfDataset
             );
-
-            $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
 
             log.error(error);
             console.error(error);
@@ -339,13 +418,12 @@ $("#button-add-permission-pi").click(() => {
 
             let nodeStorage = new JSONStorage(app.getPath("userData"));
             nodeStorage.setItem("previously_selected_PI", selectedUser);
-            $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
 
             showCurrentPermission();
             changeDatasetRolePI(selectedBfDataset);
 
             Swal.fire({
-              title: "Loaded successfully!",
+              title: "Successfully changed PI Owner of dataset",
               text: res,
               icon: "success",
               showConfirmButton: true,
@@ -429,8 +507,6 @@ const addPermissionUser = (
     selectedRole,
     (error, res) => {
       if (error) {
-        $("#bf-add-permission-user-spinner").hide();
-
         log.error(error);
         console.error(error);
         let emessage = userError(error);
@@ -460,7 +536,6 @@ const addPermissionUser = (
         // refresh dataset lists with filter
         client.invoke("api_get_username", selectedBfAccount, (error, res1) => {
           if (error) {
-            $("#bf-add-permission-user-spinner").hide();
             log.error(error);
             console.error(error);
           } else {
@@ -480,8 +555,6 @@ const addPermissionUser = (
                 }
               }
             }
-
-            $("#bf-add-permission-user-spinner").hide();
           }
         });
       }
@@ -494,7 +567,19 @@ $("#button-add-permission-user").click(() => {
   setTimeout(() => {
     log.info("Adding a permission for a user on a dataset");
 
-    $("#bf-add-permission-user-spinner").show();
+    Swal.fire({
+      title: `Adding a permission for your selected user`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
@@ -515,7 +600,19 @@ $("#button-add-permission-team").click(() => {
   setTimeout(() => {
     log.info("Adding a permission for a team on a dataset");
 
-    $("#bf-add-permission-team-spinner").show();
+    Swal.fire({
+      title: `Adding a permission for your selected team`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
@@ -534,10 +631,8 @@ $("#button-add-permission-team").click(() => {
           console.error(error);
           let emessage = userError(error);
 
-          $("#bf-add-permission-team-spinner").hide();
-
           Swal.fire({
-            title: "Failed to change permission!",
+            title: "Failed to change permission",
             text: emessage,
             icon: "error",
             showConfirmButton: true,
@@ -547,10 +642,8 @@ $("#button-add-permission-team").click(() => {
         } else {
           log.info("Added permission for the team");
 
-          $("#bf-add-permission-team-spinner").hide();
-
           Swal.fire({
-            title: "Successfully changed permission!",
+            title: "Successfully changed permission",
             text: res,
             icon: "success",
             showConfirmButton: true,
@@ -583,7 +676,7 @@ $(document).ready(() => {
 $("#button-add-subtitle").click(() => {
   setTimeout(function () {
     Swal.fire({
-      title: "Adding subtitle to dataset",
+      title: determineSwalLoadingMessage($("#button-add-subtitle")),
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -637,7 +730,7 @@ $("#button-add-subtitle").click(() => {
           $("#ds-description").val(inputSubtitle);
 
           Swal.fire({
-            title: "Successfully added!",
+            title: determineSwalSuccessMessage($("#button-add-subtitle")),
             icon: "success",
             showConfirmButton: true,
             heightAuto: false,
@@ -903,7 +996,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   let readme;
   try {
     Swal.fire({
-      title: "Adding description",
+      title: determineSwalLoadingMessage($("#button-add-description")),
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -992,7 +1085,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
 
   // alert the user the data was uploaded successfully
   Swal.fire({
-    title: "Successfully added description!",
+    title: determineSwalSuccessMessage($("#button-add-description")),
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
@@ -1760,7 +1853,7 @@ const showCurrentBannerImage = () => {
 // add or edit metadata tags for a user's selected dataset in the "add/edit tags" section of the manage-dataset menu
 $("#button-add-tags").click(async () => {
   Swal.fire({
-    title: "Adding tags to your dataset",
+    title: determineSwalLoadingMessage($("#button-add-tags")),
     html: "Please wait...",
     // timer: 5000,
     allowEscapeKey: false,
@@ -1771,7 +1864,7 @@ $("#button-add-tags").click(async () => {
     didOpen: () => {
       Swal.showLoading();
     },
-  });
+  }).then((result) => {});
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
   const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
@@ -1803,7 +1896,7 @@ $("#button-add-tags").click(async () => {
   }
   // show success or failure to the user in a popup message
   Swal.fire({
-    title: "Successfully edited tags!",
+    title: determineSwalSuccessMessage($("#button-add-tags")),
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
@@ -1877,7 +1970,19 @@ const showCurrentTags = async () => {
 // Add license //
 $("#button-add-license").click(() => {
   setTimeout(function () {
-    $("#bf-add-license-dataset-spinner").show();
+    Swal.fire({
+      title: "Adding license to dataset",
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
@@ -1895,8 +2000,6 @@ $("#button-add-license").click(() => {
 
           let emessage = userError(error);
 
-          $("#bf-add-license-dataset-spinner").hide();
-
           Swal.fire({
             title: "Failed to add the license to your dataset!",
             text: emessage,
@@ -1913,10 +2016,8 @@ $("#button-add-license").click(() => {
             selectedBfDataset
           );
         } else {
-          $("#bf-add-license-dataset-spinner").hide();
-
           Swal.fire({
-            title: "Successfully added license to your dataset!",
+            title: "Successfully added license to dataset!",
             icon: "success",
             showConfirmButton: true,
             heightAuto: false,
