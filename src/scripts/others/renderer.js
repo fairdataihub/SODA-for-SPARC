@@ -6893,20 +6893,10 @@ const get_dataset_tags = async (dataset_id_or_name) => {
   }
 
   // get the access token so the user can access the Pennsieve api
-  let jwt;
-  try {
-    jwt = await get_access_token();
-  } catch (e) {
-    throw e;
-  }
+  let jwt = await get_access_token();
 
   // fetch the tags for their dataset using the Pennsieve API
-  let dataset;
-  try {
-    dataset = await get_dataset_by_name_id(dataset_id_or_name, jwt);
-  } catch (e) {
-    throw e;
-  }
+  let dataset = await get_dataset_by_name_id(dataset_id_or_name, jwt);
 
   // get the tags out of the dataset
   const { tags } = dataset["content"];
@@ -6920,24 +6910,23 @@ const get_dataset_tags = async (dataset_id_or_name) => {
 //    dataset_id_or_name: string
 //    tags: string[]
 //    jwt: string (gathered from get_access_token)
-const update_dataset_tags = async (dataset_id_or_name, tags) => {
-  if (dataset_id_or_name === "" || dataset_id_or_name === undefined) {
-    throw new Error("Error: Must provide a valid dataset to pull tags from.");
+const update_dataset_tags = async (datasetIdOrName, tags) => {
+  if (datasetIdOrName === "" || datasetIdOrName === undefined) {
+    throw new Error("Must provide a valid dataset to pull tags from.");
   }
   // authenticate the user
-  let jwt;
-  try {
-    jwt = await get_access_token();
-  } catch (e) {
-    throw e;
-  }
+  let jwt = await get_access_token();
 
   // fetch the tags for their dataset using the Pennsieve API
-  let dataset;
-  try {
-    dataset = await get_dataset_by_name_id(dataset_id_or_name, jwt);
-  } catch (e) {
-    throw e;
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // check if the user has permission to edit this dataset
+  let role = await getCurrentUserPermissions(datasetIdOrName);
+
+  if (!userIsOwnerOrManager(role)) {
+    throw new Error(
+      "You don't have permissions for editing metadata on this Pennsieve dataset"
+    );
   }
 
   // grab the dataset's id
@@ -6955,29 +6944,24 @@ const update_dataset_tags = async (dataset_id_or_name, tags) => {
   };
 
   // update the the user's tags
-  let updateResponse;
-  try {
-    updateResponse = await fetch(
+  let updateResponse = await fetch(
       `https://api.pennsieve.io/datasets/${id}`,
       options
     );
-  } catch (e) {
-    // network error
-    throw e;
-  }
+
 
   // Check status codes and respond accordingly
   let statusCode = updateResponse.status;
   if (statusCode === 404) {
     throw new Error(
-      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to add tags.`
+      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
     );
   } else if (statusCode === 401) {
     throw new Error(
-      `${statusCode} - You do not have access this dataset at the moment.`
+      `${statusCode} - You cannot update dataset tags while unauthenticated. Please reauthenticate then try again.`
     );
   } else if (statusCode === 403) {
-    throw new Error(`${statusCode} - You do not have access to this dataset. `);
+    throw new Error(`${statusCode} - You do not have access to this dataset.`);
   } else if (statusCode !== 200) {
     // something unexpected happened
     let statusText = await updateResponse.json().statusText;
@@ -6996,16 +6980,16 @@ Manage Datasets Add/Edit Description Section With Nodejs
 // returns the readme of a dataset.
 // I: dataset_name_or_id : string
 // O: a dataset description as a string
-const getDatasetReadme = async (dataset_name_or_id) => {
+const getDatasetReadme = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
-  if (!dataset_name_or_id) {
+  if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error("Error: Must provide a valid dataset to pull tags from.");
   }
   // get the user's access token
   let jwt = await get_access_token();
 
   // get the dataset
-  let dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   // pull out the id from the result
   const id = dataset["content"]["id"];
@@ -7022,36 +7006,63 @@ const getDatasetReadme = async (dataset_name_or_id) => {
     }
   );
 
+   // get the status code out of the response
+   let statusCode = readmeResponse.status;
+
+   // check the status code of the response
+   switch (statusCode) {
+     case 200:
+       // success do nothing
+       break;
+     case 404:
+       throw new Error(
+         `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
+       );
+     case 401:
+       throw new Error(
+         `${statusCode} - You cannot get the dataset readme while unauthenticated. Please reauthenticate and try again.`
+       );
+     case 403:
+       throw new Error(
+         `${statusCode} - You do not have access to this dataset. `
+       );
+ 
+     default:
+       // something unexpected happened
+       let statusText = await readmeResponse.json().statusText;
+       throw new Error(`${statusCode} - ${statusText}`);
+   }
+
   // grab the readme out of the response
   let { readme } = await readmeResponse.json();
 
   return readme;
 };
 
-const updateDatasetReadme = async (dataset_name_or_id, updated_readme) => {
-  // get access token for the current user
-  let jwt = await get_access_token();
-
-  // get the dataset the user wants to edit
-  let dataset = await get_dataset_by_name_id(dataset_name_or_id, jwt);
-
-  // get the id out of the dataset
-  let id = dataset.content.id;
+const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
+  if (datasetIdOrName === "" || datasetIdOrName === undefined) {
+    throw new Error("Must provide a valid dataset to get the metadata description.");
+  }
 
   // get the user's permissions
-  let roleResponse = await fetch(
-    `https://api.pennsieve.io/datasets/${id}/role`,
-    { headers: { Authorization: `Bearer ${jwt}` } }
-  );
-  const { role } = await roleResponse.json();
+  let role = await getCurrentUserPermissions(datasetIdOrName);
 
   // check if the user permissions do not include "owner" or "manager"
-  if (!["owner", "manager"].includes(role)) {
+  if (!userIsOwnerOrManager(role)) {
     // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
     throw new Error(
       "You don't have permissions for editing metadata on this Pennsieve dataset"
     );
   }
+
+  // get access token for the current user
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the id out of the dataset
+  let id = dataset.content.id;
 
   // put the new readme data in the readme on Pennsieve
   options = {
@@ -7060,8 +7071,104 @@ const updateDatasetReadme = async (dataset_name_or_id, updated_readme) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ readme: updated_readme.trim() }),
+    body: JSON.stringify({ readme: updatedReadme.trim() }),
   };
 
-  await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
+  let readmeResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/readme`, options);
+
+  // get the status code out of the response
+  let statusCode = readmeResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The selected dataset cannot be found. Please select a valid dataset.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await readmeResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+};
+
+const getCurrentUserPermissions = async (datasetIdOrName) => {
+  // check that a dataset name or id is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get access token for the current user
+  let jwt = await get_access_token();
+
+  // get the dataset the user wants to edit
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the id out of the dataset
+  let id = dataset.content.id;
+
+  // get the user's permissions
+  let permissionsResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/role`,
+    { headers: { Authorization: `Bearer ${jwt}` } }
+  );
+
+  // get the status code out of the response
+  let statusCode = permissionsResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to check your permissions.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot check your dataset permissions while unauthenticated. Please reauthenticate and try again.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await permissionsResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+
+  // get the permissions object
+  const { role } = await permissionsResponse.json();
+
+  // return the permissions
+  return role;
+};
+
+// I: role: string - A user's permissions indicated by their role. Can be: owner, manager, editor, viewer.
+// O: boolean - true if role is owner or manager, false otherwise
+const userIsOwnerOrManager = (role) => {
+  // check if the user permissions do not include "owner" or "manager"
+  if (!["owner", "manager"].includes(role)) {
+    // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
+    return false;
+  }
+
+  return true;
 };
