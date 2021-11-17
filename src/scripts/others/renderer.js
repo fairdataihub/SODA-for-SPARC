@@ -7182,7 +7182,6 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
   return matches[0];
 };
 
-
 /*
 ******************************************************
 ******************************************************
@@ -7190,7 +7189,6 @@ Manage Datasets Add/Edit Tags Section With Nodejs
 ******************************************************
 ******************************************************
 */
-
 
 // get the tags from the Pennsieve API for a particular dataset
 // Inputs:
@@ -7286,7 +7284,6 @@ Manage Datasets Add/Edit Description Section With Nodejs
 ******************************************************
 */
 
-
 // returns the readme of a dataset.
 // I: dataset_name_or_id : string
 // O: a dataset description as a string
@@ -7348,8 +7345,6 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   return readme;
 };
-
-
 
 const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   if (datasetIdOrName === "" || datasetIdOrName === undefined) {
@@ -7421,8 +7416,6 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
   }
 };
 
-
-
 /*
 ******************************************************
 ******************************************************
@@ -7430,8 +7423,6 @@ Dissemniate Datasets Submit dataset for pre-publishing
 ******************************************************
 ******************************************************
 */
-
-
 
 // I: The currently selected dataset - name or by id
 // O: A status object that details the state of each pre-publishing checklist item for the given dataset and user
@@ -7623,8 +7614,6 @@ const getDatasetSubtitle = async (datasetIdOrName) => {
 
   return subtitle;
 };
-
-
 
 /*
 ******************************************************
