@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Users can upload and edit descriptive digital metadata tags to their dataset. By SPARC guidelines tags are now required before a researcher can publish a dataset.
 - Updated the add/edit description digital metadata feature to be more intuitive for users.
+- Updated the add/edit digital metadata buttons to distinguish between metadata addition and editing.
+- Updated the loading and confirmation Sweet Alert messages to give the user a better idea of the background processes taking place.
 - Added interfaces for creating the (optional) CHANGES.txt and README.txt files in SODA.
 - Added the functionality to generate metadata files directly on Pennsieve.
 - Added the functionality to edit metadata files imported directly from Pennsieve.
