@@ -3618,6 +3618,34 @@ function showCurrentDOI() {
 }
 */
 
+
+const prePublishingChecksItemsShow = () => {
+
+  // hide the begin publishing button
+  $("#begin-prepublishing-btn").hide();
+  
+  // show the pre-publishing checklist and the generate/withdraw button
+  $("#pre-publishing-checklist-submission-section").show();
+  
+  let submitContainer = document.querySelector(
+      "#prepublishing-publish-btn-container"
+  );
+  // scroll until the submit button is in view
+  submitContainer.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+}
+
+
+const showClosure = (ownerStatus) => {
+  const isOwner = ownerStatus 
+
+  prePublishingChecksItemsShow()
+}
+
+
+
 function showPublishingStatus(callback) {
   if (callback == "noClear") {
     var nothing;
@@ -3636,17 +3664,9 @@ function showPublishingStatus(callback) {
     userIsDatasetOwner(selectedBfDataset)
       .then((owner) => {
         if (!owner) {
-          // show the warning message
-          $("#publishing-isa-warning").css("display", "flex");
 
-          /* By default don't allow the button to be clicked. Once the SODA user is identified as the dataset Owner make the button clickable*/
-          $("#begin-prepublishing-btn").css("pointer-events", "none");
         } else {
-          // hide the warning message
-          $("#publishing-isa-warning").css("display", "none");
 
-          // make the button active
-          $("#begin-prepublishing-btn").css("pointer-events", "auto");
         }
       })
       .catch((error) => {

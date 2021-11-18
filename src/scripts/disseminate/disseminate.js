@@ -1,3 +1,4 @@
+
 // Main functions
 async function disseminatePublish() {
   // run preassumption checks
@@ -655,13 +656,25 @@ const allPrepublishingChecklistItemsCompleted = () => {
 };
 
 // close the pre-publishing checklist item warning message(s) when user clicks on the close button
-$("#publishing-isa-warning .close-btn").click(() => {
+$("#publishing-isa-warning .close-btn").click( () => {
   // hide the warning message
   $("#publishing-isa-warning").css("display", "none");
 });
 
 // user clicks on the begin pre-publishing button
-$("#begin-prepublishing-btn").click(() => {
+$("#begin-prepublishing-btn").click(async() => {
+
+  // check if the user is the dataset owner
+  if(!userIsDatasetOwner(defaultBfDataset)) {
+    await Swal.fire({
+      title: "Only the dataset owner can publish.",
+      icon: "error",
+      confirmButtonText: "Ok",
+    })
+
+    return 
+  }
+
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
 
