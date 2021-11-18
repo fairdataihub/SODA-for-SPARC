@@ -3618,33 +3618,28 @@ function showCurrentDOI() {
 }
 */
 
-
 const prePublishingChecksItemsShow = () => {
-
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
-  
+
   // show the pre-publishing checklist and the generate/withdraw button
   $("#pre-publishing-checklist-submission-section").show();
-  
+
   let submitContainer = document.querySelector(
-      "#prepublishing-publish-btn-container"
+    "#prepublishing-publish-btn-container"
   );
   // scroll until the submit button is in view
   submitContainer.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-}
-
+    behavior: "smooth",
+    block: "center",
+  });
+};
 
 const showClosure = (ownerStatus) => {
-  const isOwner = ownerStatus 
+  const isOwner = ownerStatus;
 
-  prePublishingChecksItemsShow()
-}
-
-
+  prePublishingChecksItemsShow();
+};
 
 function showPublishingStatus(callback) {
   if (callback == "noClear") {
@@ -3664,9 +3659,7 @@ function showPublishingStatus(callback) {
     userIsDatasetOwner(selectedBfDataset)
       .then((owner) => {
         if (!owner) {
-
         } else {
-
         }
       })
       .catch((error) => {
