@@ -3618,7 +3618,6 @@ function showCurrentDOI() {
 }
 */
 
-
 function showPublishingStatus(callback) {
   if (callback == "noClear") {
     var nothing;
@@ -3648,7 +3647,6 @@ function showPublishingStatus(callback) {
 
           // make the button active
           $("#begin-prepublishing-btn").css("pointer-events", "auto");
-
         }
       })
       .catch((error) => {

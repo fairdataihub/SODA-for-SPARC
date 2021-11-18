@@ -668,8 +668,9 @@ $("#begin-prepublishing-btn").click(() => {
   // show the pre-publishing checklist and the generate/withdraw button
   $("#pre-publishing-checklist-submission-section").show();
 
-
-  let submitContainer = document.querySelector("#prepublishing-publish-btn-container")
+  let submitContainer = document.querySelector(
+    "#prepublishing-publish-btn-container"
+  );
   // scroll until the submit button is in view
   submitContainer.scrollIntoView({
     behavior: "smooth",
