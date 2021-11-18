@@ -659,3 +659,20 @@ $("#publishing-isa-warning .close-btn").click(() => {
   // hide the warning message
   $("#publishing-isa-warning").css("display", "none");
 });
+
+// user clicks on the begin pre-publishing button
+$("#begin-prepublishing-btn").click(() => {
+  // hide the begin publishing button
+  $("#begin-prepublishing-btn").hide();
+
+  // show the pre-publishing checklist and the generate/withdraw button
+  $("#pre-publishing-checklist-submission-section").show();
+
+
+  let submitContainer = document.querySelector("#prepublishing-publish-btn-container")
+  // scroll until the submit button is in view
+  submitContainer.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+});

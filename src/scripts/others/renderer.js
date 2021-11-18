@@ -3049,6 +3049,19 @@ async function submitReviewDatasetCheck(res) {
             tuiCalendarWrapper.style.visibility = "hidden";
           }
         });
+
+        // add a scroll effect
+        const input = document.getElementById("tui-date-picker-target");
+        let calendar = document.querySelector(".tui-calendar-body-inner");
+
+        input.addEventListener("click", () => {
+          setTimeout(() => {
+            calendar.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }, 200);
+        });
       },
       willClose: () => {
         // check if the embargo checkbox is selected
@@ -3605,6 +3618,7 @@ function showCurrentDOI() {
 }
 */
 
+
 function showPublishingStatus(callback) {
   if (callback == "noClear") {
     var nothing;
@@ -3618,6 +3632,29 @@ function showPublishingStatus(callback) {
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-publishing-btn").show();
     $("#pre-publishing-checklist-submission-section").hide();
+
+    // do not allow the user to begin publishing if they are not the owner of the given dataset
+    userIsDatasetOwner(selectedBfDataset)
+      .then((owner) => {
+        if (!owner) {
+          // show the warning message
+          $("#publishing-isa-warning").css("display", "flex");
+
+          /* By default don't allow the button to be clicked. Once the SODA user is identified as the dataset Owner make the button clickable*/
+          $("#begin-prepublishing-btn").css("pointer-events", "none");
+        } else {
+          // hide the warning message
+          $("#publishing-isa-warning").css("display", "none");
+
+          // make the button active
+          $("#begin-prepublishing-btn").css("pointer-events", "auto");
+
+        }
+      })
+      .catch((error) => {
+        log.error(error);
+        console.error(error);
+      });
 
     client.invoke(
       "api_bf_get_publishing_status",
@@ -3670,32 +3707,6 @@ function showPublishingStatus(callback) {
               "hidden"
             );
           }
-
-          // display a warnng message if the user is not the owner of the given dataset
-          userIsDatasetOwner(selectedBfDataset)
-            .then((owner) => {
-              if (!owner) {
-                // show the warning message
-                $("#publishing-isa-warning").css("display", "flex");
-
-                // grey out the "Begin Publishing" and add a tippy hover that says only owners can publish
-                tippy("#begin-prepublishing-button-container", {
-                  content: "Only the dataset owner can publish a dataset.",
-                });
-
-                /* By default don't allow the button to be clicked. Once the SODA user is identified as the dataset Owner make the button clickable*/
-                $("#begin-prepublishing-btn").css("pointer-events", "none");
-              } else {
-                // hide the warning message
-                $("#publishing-isa-warning").css("display", "none");
-
-                // make the button active
-              }
-            })
-            .catch((error) => {
-              log.error(error);
-              console.error(error);
-            });
 
           if (
             callback === submitReviewDatasetCheck ||
