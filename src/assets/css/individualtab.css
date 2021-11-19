@@ -1193,6 +1193,7 @@
 }
 
 .card-right.bf-account-span,
+.card-test,
 .card-right.bf-dataset-span {
   width: auto;
   margin-top: 0px;
@@ -1204,8 +1205,10 @@
   
   .card-right.bf-account-span:hover,
   .card-right.bf-dataset-span:hover {
-    background-color: #d5d5d5;
-    box-shadow: 0 0 2px 2px white;
+    background-color: #f5f2f2;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-shadow: 0 0 2px 2px rgb(246, 245, 245);
   }
 
 .card-right.bf-account-details-span,
