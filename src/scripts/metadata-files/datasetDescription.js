@@ -39,39 +39,39 @@ $(document).ready(function () {
       $(this).text("Add contributors not listed above");
     }
   });
-  ipcRenderer.on(
-    "selected-metadata-ds-description",
-    (event, dirpath, filename) => {
-      if (dirpath.length > 0) {
-        var destinationPath = path.join(dirpath[0], filename);
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File '" +
-            filename +
-            "' already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              generateDDFile(false);
-            }
-          });
-        } else {
-          generateDDFile(false);
-        }
-      }
-    }
-  );
+  // ipcRenderer.on(
+  //   "selected-metadata-ds-description",
+  //   (event, dirpath, filename) => {
+  //     if (dirpath.length > 0) {
+  //       var destinationPath = path.join(dirpath[0], filename);
+  //       if (fs.existsSync(destinationPath)) {
+  //         var emessage =
+  //           "File '" +
+  //           filename +
+  //           "' already exists in " +
+  //           dirpath[0] +
+  //           ". Do you want to replace it?";
+  //         Swal.fire({
+  //           icon: "warning",
+  //           title: "Metadata file already exists",
+  //           text: `${emessage}`,
+  //           heightAuto: false,
+  //           backdrop: "rgba(0,0,0, 0.4)",
+  //           showConfirmButton: true,
+  //           showCancelButton: true,
+  //           cancelButtonText: "No",
+  //           confirmButtonText: "Yes",
+  //         }).then((result) => {
+  //           if (result.isConfirmed) {
+  //             generateDDFile(false);
+  //           }
+  //         });
+  //       } else {
+  //         generateDDFile(false);
+  //       }
+  //     }
+  //   }
+  // );
   checkAirtableStatus("");
   ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
     if (index === 0) {
@@ -91,39 +91,17 @@ $(document).ready(function () {
           "input-destination-generate-dd-locally"
         ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "dataset_description.xlsx");
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File dataset_description.xlsx already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              ddDestinationPath = destinationPath;
-              $("#div-confirm-destination-dd-locally").css("display", "flex");
-              $($("#div-confirm-destination-dd-locally").children()[0]).css(
-                "display",
-                "flex"
-              );
-            }
-          });
-        } else {
-          $("#div-confirm-destination-dd-locally").css("display", "flex");
-          $($("#div-confirm-destination-dd-locally").children()[0]).css(
-            "display",
-            "flex"
-          );
-          ddDestinationPath = destinationPath;
-        }
+        ddDestinationPath = destinationPath;
+        $("#div-confirm-destination-dd-locally").css("display", "flex");
+        $($("#div-confirm-destination-dd-locally").children()[0]).css(
+          "display",
+          "flex"
+        );
+      } else {
+        document.getElementById(
+          "input-destination-generate-dd-locally"
+        ).placeholder = "Browse here";
+        $("#div-confirm-destination-dd-locally").css("display", "none");
       }
     }
   );
@@ -623,6 +601,13 @@ function resetDDFields() {
 
   $("#div-confirm-existing-dd-import").hide();
 
+  if ($("#bf_dataset_load_dd").text().trim() !== "None") {
+    $($("#div-check-bf-import-dd").children()[0]).show();
+    $("#div-check-bf-import-dd").css("display", "flex");
+  } else {
+    $("#div-check-bf-import-dd").hide();
+  }
+
   // show generate button again
   $("#button-generate-dd").show();
 
@@ -702,7 +687,24 @@ async function generateDDFile(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
       title:
-        "SODA will replace any existing dataset_description.xlsx file on Pennsieve.",
+        "Any existing dataset_description.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing dataset_description.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -806,9 +808,15 @@ async function generateDDFile(uploadBFBoolean) {
           defaultBfDataset
         );
       } else {
+        if (uploadBFBoolean) {
+          var successMessage =
+            "Successfully generated the dataset_description.xlsx file on your Pennsieve dataset.";
+        } else {
+          var successMessage =
+            "Successfully generated the dataset_description.xlsx file at the specified location.";
+        }
         Swal.fire({
-          title:
-            "The dataset_description.xlsx file has been successfully generated at the specified location.",
+          title: successMessage,
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -2249,7 +2257,7 @@ function checkBFImportDD() {
           html: emessage,
         });
       } else {
-        loadDDFileToUI(res);
+        loadDDFileToUI(res, "bf");
       }
     }
   );
@@ -2278,13 +2286,13 @@ function loadDDfileDataframe(filePath) {
           icon: "error",
         });
       } else {
-        loadDDFileToUI(res);
+        loadDDFileToUI(res, "local");
       }
     }
   );
 }
 
-function loadDDFileToUI(object) {
+function loadDDFileToUI(object, file_type) {
   var basicInfoObj = object["Basic information"];
   var studyInfoObj = object["Study information"];
   var conInfo = object["Contributor information"];
@@ -2360,10 +2368,16 @@ function loadDDFileToUI(object) {
     },
   });
   $("#button-generate-dd").show();
-  $("#div-confirm-existing-dd-import").hide();
-  $($("#div-confirm-existing-dd-import button")[0]).hide();
-  $("#button-fake-confirm-existing-dd-file-load").click();
-  $($("#button-fake-confirm-existing-bf-dd-file-load").siblings()[0]).hide();
+  if (file_type === "local") {
+    $("#div-confirm-existing-dd-import").hide();
+    $($("#div-confirm-existing-dd-import button")[0]).hide();
+    $("#button-fake-confirm-existing-dd-file-load").click();
+  } else {
+    $("#div-check-bf-import-dd").hide();
+    $($("#div-check-bf-import-dd button")[0]).hide();
+    // $($("#button-fake-confirm-existing-bf-dd-file-load").siblings()[0]).hide();
+    $("#button-fake-confirm-existing-bf-dd-file-load").click();
+  }
 }
 
 function populateTagifyDD(tagify, values) {

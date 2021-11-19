@@ -32,7 +32,7 @@
               <h2>Prepare Metadata - Download templates</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/Download-templates"
+                href="https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Download-templates"
                 >Need help?</a
               >
             </div>
@@ -967,7 +967,7 @@
             <h2>Prepare Metadata - Create submission.xlsx</h2>
             <a
               target="_blank"
-              href="https://fairdataihub.org/sodaforsparc/docs/Create-submission-xlsx"
+              href="https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Create-submission-xlsx"
               >Need help?</a
             >
           </div>
@@ -1143,7 +1143,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Locally on my computer</h2>
+                    <h2>On my computer</h2>
                   </div>
                 </div>
               </div>
@@ -1172,22 +1172,19 @@
                   </div>
                   <div class="card-body metadata">
                     <svg
-                      width="40px"
-                      height="40px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-folder-check"
-                      fill="var(--tagify-dd-color-primary)"
                       xmlns="http://www.w3.org/2000/svg"
+                      width="50px"
+                      height="50px"
+                      fill="var(--tagify-dd-color-primary)"
+                      class="bi bi-cloud-check"
+                      viewBox="0 0 16 16"
                     >
                       <path
                         fill-rule="evenodd"
-                        d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B"
+                        d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
                       />
                       <path
-                        fill-rule="evenodd"
-                        d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                        fill="#13716D"
+                        d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
                       />
                     </svg>
                     <h2>On Pennsieve</h2>
@@ -1208,7 +1205,10 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset is the submission.xlsx located at?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -1241,7 +1241,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -1297,7 +1297,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -1342,7 +1342,7 @@
                 </button>
                 <button
                   onclick="transitionFreeFormMode(this, 'Question-prepare-submission-5', 'create_submission-tab', '', 'individual-question prepare-submission')"
-                  data-next="Question-prepare-submission-5"
+                  data-next="Question-prepare-submission-2"
                   id="button-fake-confirm-existing-bf-submission-file-load"
                   style="
                     cursor: pointer;
@@ -1757,7 +1757,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Generate locally on my computer</h2>
+                    <h2>Generate on my computer</h2>
                   </div>
                 </div>
               </div>
@@ -1798,7 +1798,7 @@
                         fill="#B80D49"
                       />
                     </svg>
-                    <h2>Generate and upload to Pennsieve</h2>
+                    <h2>Generate directly on Pennsieve</h2>
                   </div>
                 </div>
               </div>
@@ -1843,14 +1843,24 @@
               display: none;
               flex-direction: row;
               justify-content: center;
-              margin: 0 auto;
+              margin: 10px auto;
             "
           >
             <button
               id="btn-confirm-local-submission-destination"
               onclick="generateSubmissionHelper(false)"
-              class="btn_animated"
-              style="margin: 0 10px; width: 100px; border: none !important"
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              style="
+                margin: 10px;
+                width: 140px;
+                border: none !important;
+                overflow: visible !important;
+              "
             >
               Generate
             </button>
@@ -1868,7 +1878,10 @@
               >Is this the Pennsieve dataset you want to upload the
               submission.xlsx to?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -1901,7 +1914,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -1957,7 +1970,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -1985,17 +1998,17 @@
               >
                 <button
                   onclick="generateSubmissionHelper(true)"
+                  type="button"
+                  class="btn_animated popover-tooltip"
+                  data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                  rel="popover"
+                  data-placement="top"
+                  data-trigger="hover"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    margin: 10px;
+                    width: 140px;
+                    border: none !important;
+                    overflow: visible !important;
                   "
                 >
                   Generate
@@ -2072,7 +2085,7 @@
             <h2>Prepare Metadata - Create dataset_description.xlsx</h2>
             <a
               target="_blank"
-              href="https://fairdataihub.org/sodaforsparc/docs/Create-dataset_description-xlsx"
+              href="https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Create-dataset_description-xlsx"
               >Need help?</a
             >
           </div>
@@ -2247,7 +2260,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Locally on my computer</h2>
+                    <h2>On my computer</h2>
                   </div>
                 </div>
               </div>
@@ -2276,22 +2289,19 @@
                   </div>
                   <div class="card-body metadata">
                     <svg
-                      width="40px"
-                      height="40px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-folder-check"
-                      fill="var(--tagify-dd-color-primary)"
                       xmlns="http://www.w3.org/2000/svg"
+                      width="50px"
+                      height="50px"
+                      fill="var(--tagify-dd-color-primary)"
+                      class="bi bi-cloud-check"
+                      viewBox="0 0 16 16"
                     >
                       <path
                         fill-rule="evenodd"
-                        d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B"
+                        d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
                       />
                       <path
-                        fill-rule="evenodd"
-                        d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                        fill="#13716D"
+                        d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
                       />
                     </svg>
                     <h2>On Pennsieve</h2>
@@ -2310,7 +2320,10 @@
               >Which Pennsieve dataset is the dataset_description.xlsx located
               at?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -2343,7 +2356,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -2399,7 +2412,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -2650,7 +2663,7 @@
                       "
                     >
                       <a
-                        onclick="openDropdownPrompt('dataset')"
+                        onclick="openDropdownPrompt(this, 'dataset')"
                         id="dd-select-pennsieve-dataset"
                       >
                         Click here to select my dataset from Pennsieve
@@ -3705,7 +3718,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Generate locally on my computer</h2>
+                    <h2>Generate on my computer</h2>
                   </div>
                 </div>
               </div>
@@ -3746,7 +3759,7 @@
                         fill="#B80D49"
                       />
                     </svg>
-                    <h2>Generate and upload to Pennsieve</h2>
+                    <h2>Generate directly on Pennsieve</h2>
                   </div>
                 </div>
               </div>
@@ -3788,14 +3801,24 @@
               display: none;
               flex-direction: row;
               justify-content: center;
-              margin: 0 auto;
+              margin: 10px auto;
             "
           >
             <button
               id="btn-confirm-local-dd-destination"
-              class="btn_animated"
               onclick="generateDDFile(false)"
-              style="margin: 0 10px; width: 100px; border: none !important"
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              style="
+                margin: 10px;
+                width: 140px;
+                border: none !important;
+                overflow: visible !important;
+              "
             >
               Generate
             </button>
@@ -3810,7 +3833,10 @@
               >Is this the Pennsieve dataset you want to upload the
               dataset_description.xlsx to?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -3843,7 +3869,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -3899,7 +3925,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -3927,17 +3953,17 @@
               >
                 <button
                   onclick="generateDDFile(true, '', '')"
+                  type="button"
+                  class="btn_animated popover-tooltip"
+                  data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                  rel="popover"
+                  data-placement="top"
+                  data-trigger="hover"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    margin: 10px;
+                    width: 140px;
+                    border: none !important;
+                    overflow: visible !important;
                   "
                 >
                   Generate
@@ -4028,7 +4054,7 @@
               <h2>Prepare Metadata - Create subjects.xlsx</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/Create-subjects-xlsx"
+                href="https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Create-subjects-xlsx"
                 >Need help?</a
               >
             </div>
@@ -4059,6 +4085,12 @@
                   data-next="Question-prepare-subjects-3"
                   data-current="Question-prepare-subjects-1"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-1', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                  style="
+                    max-height: 160px;
+                    max-width: 180px;
+                    height: 160px !important;
+                    width: 180px !important;
+                  "
                 >
                   <div class="card-head">
                     <div class="folder-checkbox">
@@ -4097,6 +4129,12 @@
                   data-next="Question-prepare-subjects-2"
                   data-current="Question-prepare-subjects-1"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-1', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                  style="
+                    max-height: 160px;
+                    max-width: 180px;
+                    height: 160px !important;
+                    width: 180px !important;
+                  "
                 >
                   <div class="card-head">
                     <div class="folder-checkbox">
@@ -4183,7 +4221,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Locally on my computer</h2>
+                    <h2>On my computer</h2>
                   </div>
                 </div>
               </div>
@@ -4212,22 +4250,19 @@
                   </div>
                   <div class="card-body metadata">
                     <svg
-                      width="40px"
-                      height="40px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-folder-check"
-                      fill="var(--tagify-dd-color-primary)"
                       xmlns="http://www.w3.org/2000/svg"
+                      width="50px"
+                      height="50px"
+                      fill="var(--tagify-dd-color-primary)"
+                      class="bi bi-cloud-check"
+                      viewBox="0 0 16 16"
                     >
                       <path
                         fill-rule="evenodd"
-                        d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B"
+                        d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
                       />
                       <path
-                        fill-rule="evenodd"
-                        d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                        fill="#13716D"
+                        d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
                       />
                     </svg>
                     <h2>On Pennsieve</h2>
@@ -4329,7 +4364,10 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset is the subjects.xlsx located at?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -4362,7 +4400,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -4418,7 +4456,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -4463,7 +4501,7 @@
                 </button>
                 <button
                   onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-4', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
-                  data-next="Question-prepare-submission-5"
+                  data-next="Question-prepare-subjects-3"
                   id="button-fake-confirm-existing-bf-subjects-file-load"
                   style="
                     cursor: pointer;
@@ -4680,7 +4718,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Generate locally on my computer</h2>
+                    <h2>Generate on my computer</h2>
                   </div>
                 </div>
               </div>
@@ -4721,7 +4759,7 @@
                         fill="#B80D49"
                       />
                     </svg>
-                    <h2>Generate and upload to Pennsieve</h2>
+                    <h2>Generate directly on Pennsieve</h2>
                   </div>
                 </div>
               </div>
@@ -4766,14 +4804,24 @@
               display: none;
               flex-direction: row;
               justify-content: center;
-              margin: 0 auto;
+              margin: 10px auto;
             "
           >
             <button
               id="btn-confirm-local-subjects-destination"
-              class="btn_animated"
               onclick="generateSubjectsFileHelper(false)"
-              style="margin: 0 10px; width: 100px; border: none !important"
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              style="
+                margin: 10px;
+                width: 140px;
+                border: none !important;
+                overflow: visible !important;
+              "
             >
               Generate
             </button>
@@ -4791,7 +4839,10 @@
               >Is this the Pennsieve dataset you want to upload the
               subjects.xlsx to?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -4824,7 +4875,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -4880,7 +4931,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -4908,17 +4959,17 @@
               >
                 <button
                   onclick="generateSubjectsFileHelper(true)"
+                  type="button"
+                  class="btn_animated popover-tooltip"
+                  data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                  rel="popover"
+                  data-placement="top"
+                  data-trigger="hover"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    margin: 10px;
+                    width: 140px;
+                    border: none !important;
+                    overflow: visible !important;
                   "
                 >
                   Generate
@@ -6135,7 +6186,7 @@
               <h2>Prepare Metadata - Create samples.xlsx</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/Create-samples.xlsx"
+                href="https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Create-samples.xlsx"
                 >Need help?</a
               >
             </div>
@@ -6166,6 +6217,12 @@
                   data-next="Question-prepare-samples-3"
                   data-current="Question-prepare-samples-1"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-samples-1', 'create_samples-tab', '', 'individual-question prepare-samples')"
+                  style="
+                    max-height: 160px;
+                    max-width: 180px;
+                    height: 160px !important;
+                    width: 180px !important;
+                  "
                 >
                   <div class="card-head">
                     <div class="folder-checkbox">
@@ -6204,6 +6261,12 @@
                   data-next="Question-prepare-samples-2"
                   data-current="Question-prepare-samples-1"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-samples-1', 'create_samples-tab', '', 'individual-question prepare-samples')"
+                  style="
+                    max-height: 160px;
+                    max-width: 180px;
+                    height: 160px !important;
+                    width: 180px !important;
+                  "
                 >
                   <div class="card-head">
                     <div class="folder-checkbox">
@@ -6290,7 +6353,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Locally on my computer</h2>
+                    <h2>On my computer</h2>
                   </div>
                 </div>
               </div>
@@ -6319,22 +6382,19 @@
                   </div>
                   <div class="card-body metadata">
                     <svg
-                      width="40px"
-                      height="40px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-folder-check"
-                      fill="var(--tagify-dd-color-primary)"
                       xmlns="http://www.w3.org/2000/svg"
+                      width="50px"
+                      height="50px"
+                      fill="var(--tagify-dd-color-primary)"
+                      class="bi bi-cloud-check"
+                      viewBox="0 0 16 16"
                     >
                       <path
                         fill-rule="evenodd"
-                        d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B"
+                        d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
                       />
                       <path
-                        fill-rule="evenodd"
-                        d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                        fill="#13716D"
+                        d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
                       />
                     </svg>
                     <h2>On Pennsieve</h2>
@@ -6436,7 +6496,10 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset is the samples.xlsx located at?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -6469,7 +6532,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -6525,7 +6588,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -6570,7 +6633,7 @@
                 </button>
                 <button
                   onclick="transitionFreeFormMode(this, 'Question-prepare-samples-4', 'create_samples-tab', '', 'individual-question prepare-samples')"
-                  data-next="Question-prepare-samples-5"
+                  data-next="Question-prepare-samples-3"
                   id="button-fake-confirm-existing-bf-samples-file-load"
                   style="
                     cursor: pointer;
@@ -6798,7 +6861,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Generate locally on my computer</h2>
+                    <h2>Generate on my computer</h2>
                   </div>
                 </div>
               </div>
@@ -6839,7 +6902,7 @@
                         fill="#B80D49"
                       />
                     </svg>
-                    <h2>Generate and upload to Pennsieve</h2>
+                    <h2>Generate directly on Pennsieve</h2>
                   </div>
                 </div>
               </div>
@@ -6884,14 +6947,24 @@
               display: none;
               flex-direction: row;
               justify-content: center;
-              margin: 0 auto;
+              margin: 10px auto;
             "
           >
             <button
               id="btn-confirm-local-samples-destination"
-              class="btn_animated"
               onclick="generateSamplesFileHelper(false)"
-              style="margin: 0 10px; width: 100px; border: none !important"
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              style="
+                margin: 10px;
+                width: 140px;
+                border: none !important;
+                overflow: visible !important;
+              "
             >
               Generate
             </button>
@@ -6909,7 +6982,10 @@
               >Is this the Pennsieve dataset you want to upload the samples.xlsx
               to?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -6942,7 +7018,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -6998,7 +7074,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -7026,17 +7102,17 @@
               >
                 <button
                   onclick="generateSamplesFileHelper(true)"
+                  type="button"
+                  class="btn_animated popover-tooltip"
+                  data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                  rel="popover"
+                  data-placement="top"
+                  data-trigger="hover"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    margin: 10px;
+                    width: 140px;
+                    border: none !important;
+                    overflow: visible !important;
                   "
                 >
                   Generate
@@ -7941,7 +8017,7 @@
             <h2>Prepare Metadata - Create CHANGES.txt</h2>
             <a
               target="_blank"
-              href="https://fairdataihub.org/sodaforsparc/docs/Create-submission-xlsx"
+              href="https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Create-changes-txt"
               >Need help?</a
             >
           </div>
@@ -8115,7 +8191,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Locally on my computer</h2>
+                    <h2>On my computer</h2>
                   </div>
                 </div>
               </div>
@@ -8144,22 +8220,19 @@
                   </div>
                   <div class="card-body metadata">
                     <svg
-                      width="40px"
-                      height="40px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-folder-check"
-                      fill="var(--tagify-dd-color-primary)"
                       xmlns="http://www.w3.org/2000/svg"
+                      width="50px"
+                      height="50px"
+                      fill="var(--tagify-dd-color-primary)"
+                      class="bi bi-cloud-check"
+                      viewBox="0 0 16 16"
                     >
                       <path
                         fill-rule="evenodd"
-                        d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B"
+                        d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
                       />
                       <path
-                        fill-rule="evenodd"
-                        d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                        fill="#13716D"
+                        d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
                       />
                     </svg>
                     <h2>On Pennsieve</h2>
@@ -8180,7 +8253,10 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset is the CHANGES.txt located at?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -8213,7 +8289,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -8269,7 +8345,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -8296,7 +8372,7 @@
                 id="div-check-bf-import-changes"
               >
                 <button
-                  onclick="getChanges()"
+                  onclick="getRC('CHANGES.txt')"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -8459,42 +8535,41 @@
                   value=""
                   rows="15"
                   placeholder="Start typing here..."
-                >
-                </textarea>
+                ></textarea>
               </div>
-              <div style="display: flex; flex-direction: column">
-                <div
+              <!-- <div style="display: flex; flex-direction: column"> -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0 auto;
+                  padding-top: 20px;
+                "
+              >
+                <button
+                  type="button"
+                  class="btn_animated popover-tooltip"
+                  id="button-generate-changes"
+                  data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                  rel="popover"
+                  data-placement="top"
+                  data-trigger="hover"
+                  data-next="Question-prepare-changes-6"
+                  data-current="Generate-changes"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-changes-2', 'create_CHANGES-tab', 'delete', 'individual-question prepare-changes')"
                   style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    margin: 0 auto;
-                    padding-top: 20px;
+                    margin: 10px;
+                    width: 140px;
+                    border: none !important;
+                    overflow: visible !important;
                   "
                 >
-                  <button
-                    type="button"
-                    class="btn_animated popover-tooltip"
-                    id="button-generate-changes"
-                    data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
-                    rel="popover"
-                    data-placement="top"
-                    data-trigger="hover"
-                    data-next="Question-prepare-changes-6"
-                    data-current="Generate-changes"
-                    onclick="transitionFreeFormMode(this, 'Question-prepare-changes-2', 'create_CHANGES-tab', 'delete', 'individual-question prepare-changes')"
-                    style="
-                      margin: 10px;
-                      width: 140px;
-                      border: none !important;
-                      overflow: visible !important;
-                    "
-                  >
-                    Generate
-                  </button>
-                </div>
+                  Generate
+                </button>
               </div>
+              <!-- </div> -->
             </div>
           </div>
         </div>
@@ -8559,7 +8634,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Generate locally on my computer</h2>
+                    <h2>Generate on my computer</h2>
                   </div>
                 </div>
               </div>
@@ -8600,7 +8675,7 @@
                         fill="#B80D49"
                       />
                     </svg>
-                    <h2>Generate and upload to Pennsieve</h2>
+                    <h2>Generate directly on Pennsieve</h2>
                   </div>
                 </div>
               </div>
@@ -8644,14 +8719,24 @@
               display: none;
               flex-direction: row;
               justify-content: center;
-              margin: 0 auto;
+              margin: 10px auto;
             "
           >
             <button
               id="btn-confirm-local-changes-destination"
-              class="btn_animated"
               onclick="saveRCFile('changes')"
-              style="margin: 0 10px; width: 100px; border: none !important"
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              style="
+                margin: 10px;
+                width: 140px;
+                border: none !important;
+                overflow: visible !important;
+              "
             >
               Generate
             </button>
@@ -8669,7 +8754,10 @@
               >Is this the Pennsieve dataset you want to upload the CHANGES.txt
               to?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -8702,7 +8790,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -8758,7 +8846,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -8786,17 +8874,17 @@
               >
                 <button
                   onclick="generateRCFiles(true, 'changes')"
+                  type="button"
+                  class="btn_animated popover-tooltip"
+                  data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                  rel="popover"
+                  data-placement="top"
+                  data-trigger="hover"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    margin: 10px;
+                    width: 140px;
+                    border: none !important;
+                    overflow: visible !important;
                   "
                 >
                   Generate
@@ -8872,7 +8960,7 @@
             <h2>Prepare Metadata - Create README.txt</h2>
             <a
               target="_blank"
-              href="https://fairdataihub.org/sodaforsparc/docs/Create-submission-xlsx"
+              href="https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Create-readme-txt"
               >Need help?</a
             >
           </div>
@@ -9046,7 +9134,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Locally on my computer</h2>
+                    <h2>On my computer</h2>
                   </div>
                 </div>
               </div>
@@ -9075,22 +9163,19 @@
                   </div>
                   <div class="card-body metadata">
                     <svg
-                      width="40px"
-                      height="40px"
-                      viewBox="0 0 16 16"
-                      class="bi bi-folder-check"
-                      fill="var(--tagify-dd-color-primary)"
                       xmlns="http://www.w3.org/2000/svg"
+                      width="50px"
+                      height="50px"
+                      fill="var(--tagify-dd-color-primary)"
+                      class="bi bi-cloud-check"
+                      viewBox="0 0 16 16"
                     >
                       <path
                         fill-rule="evenodd"
-                        d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B"
+                        d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"
                       />
                       <path
-                        fill-rule="evenodd"
-                        d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                        fill="#13716D"
+                        d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
                       />
                     </svg>
                     <h2>On Pennsieve</h2>
@@ -9192,7 +9277,10 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset is the README.txt located at?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -9225,7 +9313,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -9281,7 +9369,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -9308,7 +9396,7 @@
                 id="div-check-bf-import-readme"
               >
                 <button
-                  onclick="getReadme()"
+                  onclick="getRC('README.txt')"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -9390,42 +9478,41 @@
                   value=""
                   rows="15"
                   placeholder="Start typing here..."
-                >
-                </textarea>
+                ></textarea>
               </div>
-              <div style="display: flex; flex-direction: column">
-                <div
+              <!-- <div style="display: flex; flex-direction: column"> -->
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0 auto;
+                  padding-top: 20px;
+                "
+              >
+                <button
+                  type="button"
+                  class="btn_animated popover-tooltip"
+                  id="button-generate-readme"
+                  data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                  rel="popover"
+                  data-placement="top"
+                  data-trigger="hover"
+                  data-next="Question-prepare-readme-6"
+                  data-current="Generate-readme"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-readme-2', 'create_README-tab', 'delete', 'individual-question prepare-readme')"
                   style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    margin: 0 auto;
-                    padding-top: 20px;
+                    margin: 10px;
+                    width: 140px;
+                    border: none !important;
+                    overflow: visible !important;
                   "
                 >
-                  <button
-                    type="button"
-                    class="btn_animated popover-tooltip"
-                    id="button-generate-readme"
-                    data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
-                    rel="popover"
-                    data-placement="top"
-                    data-trigger="hover"
-                    data-next="Question-prepare-readme-6"
-                    data-current="Generate-readme"
-                    onclick="transitionFreeFormMode(this, 'Question-prepare-readme-2', 'create_README-tab', 'delete', 'individual-question prepare-readme')"
-                    style="
-                      margin: 10px;
-                      width: 140px;
-                      border: none !important;
-                      overflow: visible !important;
-                    "
-                  >
-                    Generate
-                  </button>
-                </div>
+                  Generate
+                </button>
               </div>
+              <!-- </div> -->
             </div>
           </div>
         </div>
@@ -9490,7 +9577,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Generate locally on my computer</h2>
+                    <h2>Generate on my computer</h2>
                   </div>
                 </div>
               </div>
@@ -9531,7 +9618,7 @@
                         fill="#B80D49"
                       />
                     </svg>
-                    <h2>Generate and upload to Pennsieve</h2>
+                    <h2>Generate directly on Pennsieve</h2>
                   </div>
                 </div>
               </div>
@@ -9575,14 +9662,24 @@
               display: none;
               flex-direction: row;
               justify-content: center;
-              margin: 0 auto;
+              margin: 10px auto;
             "
           >
             <button
               id="btn-confirm-local-readme-destination"
-              class="btn_animated"
+              type="button"
+              class="btn_animated popover-tooltip"
+              data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              style="
+                margin: 10px;
+                width: 140px;
+                border: none !important;
+                overflow: visible !important;
+              "
               onclick="saveRCFile('readme')"
-              style="margin: 0 10px; width: 100px; border: none !important"
             >
               Generate
             </button>
@@ -9600,7 +9697,10 @@
               >Is this the Pennsieve dataset you want to upload the README.txt
               to?
             </label>
-            <div class="field" style="margin: auto; width: 500px">
+            <div
+              class="field"
+              style="margin: 0 auto !important; width: 500px !important"
+            >
               <div
                 style="
                   display: flex;
@@ -9633,7 +9733,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('bf')"
+                    onclick="openDropdownPrompt(this, 'bf')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -9689,7 +9789,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account dataset bi bi-pencil-fill"
-                    onclick="openDropdownPrompt('dataset')"
+                    onclick="openDropdownPrompt(this, 'dataset')"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -9717,17 +9817,17 @@
               >
                 <button
                   onclick="generateRCFiles(true, 'readme')"
+                  type="button"
+                  class="btn_animated popover-tooltip"
+                  data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
+                  rel="popover"
+                  data-placement="top"
+                  data-trigger="hover"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    margin: 10px;
+                    width: 140px;
+                    border: none !important;
+                    overflow: visible !important;
                   "
                 >
                   Generate

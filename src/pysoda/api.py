@@ -66,8 +66,7 @@ from prepare_metadata import (
     load_existing_DD_file,
     load_existing_submission_file,
     import_bf_metadata_file,
-    import_bf_changes,
-    generate_metadata_file_Pennsieve,
+    import_bf_RC,
     upload_RC_file,
 )
 
@@ -141,8 +140,8 @@ class SodaApi(object):
             filetype, ui_field, selected_bfaccount, selected_bfdataset
         )
 
-    def api_import_bf_changes(self, selected_bfaccount, selected_bfdataset):
-        return import_bf_changes(selected_bfaccount, selected_bfdataset)
+    def api_import_bf_RC(self, selected_bfaccount, selected_bfdataset, file_type):
+        return import_bf_RC(selected_bfaccount, selected_bfdataset, file_type)
 
     ### Save samples file
     def api_save_samples_file(
@@ -154,13 +153,6 @@ class SodaApi(object):
 
     def api_upload_RC_file(self, text_string, file_type, bfaccount, bfdataset):
         return upload_RC_file(text_string, file_type, bfaccount, bfdataset)
-
-    def api_generate_metadata_file_Pennsieve(
-        upload_boolean, bfaccount, bfdataset, filepath, json_str
-    ):
-        return generate_metadata_file_Pennsieve(
-            upload_boolean, bfaccount, bfdataset, filepath, json_str
-        )
 
     ### Load Taxonomy species info
     def api_load_taxonomy_species(self, animalArr):

@@ -70,6 +70,13 @@ function resetSubmissionFields() {
 
   $("#div-confirm-existing-submission-import").hide();
 
+  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
+    $($("#div-check-bf-import-submission").children()[0]).show();
+    $("#div-check-bf-import-submission").css("display", "flex");
+  } else {
+    $("#div-check-bf-import-submission").hide();
+  }
+
   var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
   var textAreaFields = $("#Question-prepare-submission-1")
     .nextAll()
@@ -99,6 +106,12 @@ function resetSubmissionFields() {
   $("#submission-completion-date")
     .empty()
     .append('<option value="Select">Select an option</option>');
+  // actionEnterNewDate("none");
+  $("#submission-completion-date").append(
+    $("<option>", {
+      text: "Enter my own date",
+    })
+  );
   checkAirtableStatus("");
 }
 
@@ -206,28 +219,33 @@ function openDDDimport() {
 // onboarding for submission file
 function onboardingSubmission() {
   setTimeout(function () {
-    introJs()
-      .setOptions({
-        steps: [
-          {
-            // title: "1. Help with your SPARC Award number",
-            element: document.querySelector("#a-help-submission-Airtable"),
-            intro:
-              "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
-          },
-          {
-            // title: "2. Help with your milestone information",
-            element: document.querySelector("#a-help-submission-milestones"),
-            intro:
-              "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
-          },
-        ],
-        exitOnEsc: false,
-        exitOnOverlayClick: false,
-        disableInteraction: false,
-      })
-      .start();
-  }, 1000);
+    if (!introStatus.submission) {
+      introJs()
+        .setOptions({
+          steps: [
+            {
+              // title: "1. Help with your SPARC Award number",
+              element: document.querySelector("#a-help-submission-Airtable"),
+              intro:
+                "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
+            },
+            {
+              // title: "2. Help with your milestone information",
+              element: document.querySelector("#a-help-submission-milestones"),
+              intro:
+                "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
+            },
+          ],
+          exitOnEsc: false,
+          exitOnOverlayClick: false,
+          disableInteraction: false,
+        })
+        .onbeforeexit(function () {
+          introStatus.submission = true;
+        })
+        .start();
+    }
+  }, 1300);
 }
 
 // generateSubmissionFile function takes all the values from the preview card's spans
@@ -355,44 +373,17 @@ $(document).ready(function () {
           "input-destination-generate-submission-locally"
         ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "submission.xlsx");
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File submission.xlsx already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              submissionDestinationPath = destinationPath;
-              $("#div-confirm-destination-submission-locally").css(
-                "display",
-                "flex"
-              );
-              $(
-                $("#div-confirm-destination-submission-locally").children()[0]
-              ).css("display", "flex");
-            }
-          });
-        } else {
-          $("#div-confirm-destination-submission-locally").css(
-            "display",
-            "flex"
-          );
-          $($("#div-confirm-destination-submission-locally").children()[0]).css(
-            "display",
-            "flex"
-          );
-          submissionDestinationPath = destinationPath;
-        }
+        submissionDestinationPath = destinationPath;
+        $("#div-confirm-destination-submission-locally").css("display", "flex");
+        $($("#div-confirm-destination-submission-locally").children()[0]).css(
+          "display",
+          "flex"
+        );
+      } else {
+        document.getElementById(
+          "input-destination-generate-submission-locally"
+        ).placeholder = "Browse here";
+        $("#div-confirm-destination-submission-locally").css("display", "none");
       }
     }
   );
@@ -425,7 +416,24 @@ async function generateSubmissionHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
       title:
-        "SODA will replace any existing submission.xlsx file on Pennsieve.",
+        "Any existing submission.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing submission.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -502,9 +510,15 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           defaultBfDataset
         );
       } else {
+        if (uploadBFBoolean) {
+          var successMessage =
+            "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+        } else {
+          var successMessage =
+            "Successfully generated the submission.xlsx file at the specified location.";
+        }
         Swal.fire({
-          title:
-            "The submission.xlsx file has been successfully generated at the specified location.",
+          title: successMessage,
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -667,7 +681,7 @@ function importExistingSubmissionFile(type) {
   }
 }
 
-// function to load existing README/CHANGES files
+// function to load existing submission files
 function loadExistingSubmissionFile(filepath) {
   client.invoke("api_load_existing_submission_file", filepath, (error, res) => {
     if (error) {
@@ -681,12 +695,12 @@ function loadExistingSubmissionFile(filepath) {
         icon: "error",
       });
     } else {
-      loadSubmissionFileToUI(res);
+      loadSubmissionFileToUI(res, "local");
     }
   });
 }
 
-function loadSubmissionFileToUI(data) {
+function loadSubmissionFileToUI(data, type) {
   milestoneTagify1.removeAllTags();
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
@@ -725,12 +739,15 @@ function loadSubmissionFileToUI(data) {
       Swal.hideLoading();
     },
   });
-  $("#div-confirm-existing-submission-import").hide();
-  $($("#div-confirm-existing-submission-import button")[0]).hide();
-  $("#button-fake-confirm-existing-submission-file-load").click();
-  $(
-    $("#button-fake-confirm-existing-bf-submission-file-load").siblings()[0]
-  ).hide();
+  if (type === "local") {
+    $("#div-confirm-existing-submission-import").hide();
+    $($("#div-confirm-existing-submission-import button")[0]).hide();
+    $("#button-fake-confirm-existing-submission-file-load").click();
+  } else {
+    $("#div-check-bf-import-submission").hide();
+    $($("#div-check-bf-import-submission button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-submission-file-load").click();
+  }
 }
 
 // function to check for existing submission file on Penn
@@ -767,7 +784,7 @@ function checkBFImportSubmission() {
           html: emessage,
         });
       } else {
-        loadSubmissionFileToUI(res);
+        loadSubmissionFileToUI(res, "bf");
       }
     }
   );

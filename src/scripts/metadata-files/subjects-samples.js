@@ -83,50 +83,56 @@ function onboardingMetadata(type) {
   var helperButtons = $(
     $($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]
   ).find(".contributor-helper-buttons")[0];
-  introJs()
-    .setOptions({
-      steps: [
-        {
-          title: "Buttons",
-          element: helperButtons,
-          intro: "Click on these buttons to manipulate a " + type + ".",
-        },
-        {
-          title: `1. Edit a ${type}`,
-          element: $(helperButtons).children()[0],
-          intro:
-            "Click here to edit the information about a corresponding " +
-            type +
-            ".",
-        },
-        {
-          title: `2. Copy a ${type}`,
-          element: $(helperButtons).children()[1],
-          intro:
-            "Click here to copy information from the corresponding " +
-            type +
-            " onto a new " +
-            type +
-            ". Note: You have to enter an ID for the new " +
-            type +
-            " after clicking on this.",
-        },
-        {
-          title: `3. Delete a ${type}`,
-          element: $(helperButtons).children()[2],
-          intro:
-            "Click here to delete a corresponding " +
-            type +
-            " from the table. This will permanently delete the " +
-            type +
-            " from SODA and cannot be reverted.",
-        },
-      ],
-      exitOnEsc: false,
-      exitOnOverlayClick: false,
-      disableInteraction: false,
-    })
-    .start();
+
+  if (!introStatus[type]) {
+    introJs()
+      .setOptions({
+        steps: [
+          {
+            title: "Buttons",
+            element: helperButtons,
+            intro: "Click on these buttons to manipulate a " + type + ".",
+          },
+          {
+            title: `1. Edit a ${type}`,
+            element: $(helperButtons).children()[0],
+            intro:
+              "Click here to edit the information about a corresponding " +
+              type +
+              ".",
+          },
+          {
+            title: `2. Copy a ${type}`,
+            element: $(helperButtons).children()[1],
+            intro:
+              "Click here to copy information from the corresponding " +
+              type +
+              " onto a new " +
+              type +
+              ". Note: You have to enter an ID for the new " +
+              type +
+              " after clicking on this.",
+          },
+          {
+            title: `3. Delete a ${type}`,
+            element: $(helperButtons).children()[2],
+            intro:
+              "Click here to delete a corresponding " +
+              type +
+              " from the table. This will permanently delete the " +
+              type +
+              " from SODA and cannot be reverted.",
+          },
+        ],
+        exitOnEsc: false,
+        exitOnOverlayClick: false,
+        disableInteraction: false,
+      })
+      .onbeforeexit(function () {
+        introStatus[type] = true;
+      })
+      .start();
+  }
 }
 
 function promptImportPrevInfoSubject(arr1) {
@@ -2102,34 +2108,8 @@ $(document).ready(function () {
           "input-destination-generate-subjects-locally"
         ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "subjects.xlsx");
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File subjects.xlsx already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              subjectsDestinationPath = destinationPath;
-              $("#div-confirm-destination-subjects-locally").css(
-                "display",
-                "flex"
-              );
-            }
-          });
-        } else {
-          $("#div-confirm-destination-subjects-locally").css("display", "flex");
-          subjectsDestinationPath = destinationPath;
-        }
+        subjectsDestinationPath = destinationPath;
+        $("#div-confirm-destination-subjects-locally").css("display", "flex");
       }
     }
   );
@@ -2143,34 +2123,8 @@ $(document).ready(function () {
           "input-destination-generate-samples-locally"
         ).placeholder = dirpath[0];
         var destinationPath = path.join(dirpath[0], "samples.xlsx");
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File samples.xlsx already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              samplesDestinationPath = destinationPath;
-              $("#div-confirm-destination-samples-locally").css(
-                "display",
-                "flex"
-              );
-            }
-          });
-        } else {
-          $("#div-confirm-destination-samples-locally").css("display", "flex");
-          samplesDestinationPath = destinationPath;
-        }
+        samplesDestinationPath = destinationPath;
+        $("#div-confirm-destination-samples-locally").css("display", "flex");
       }
     }
   );
@@ -2398,7 +2352,7 @@ function checkBFImportSubjects() {
         });
       } else {
         subjectsTableData = res;
-        loadDataFrametoUI();
+        loadDataFrametoUI("bf");
       }
     }
   );
@@ -2444,13 +2398,13 @@ function checkBFImportSamples() {
         });
       } else {
         samplesTableData = res;
-        loadDataFrametoUISamples();
+        loadDataFrametoUISamples("bf");
       }
     }
   );
 }
 
-function loadDataFrametoUI() {
+function loadDataFrametoUI(type) {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2474,13 +2428,21 @@ function loadDataFrametoUI() {
   // load sub-ids to table
   loadSubjectsDataToTable();
   $("#table-subjects").show();
-  $("#button-fake-confirm-existing-subjects-file-load").click();
-  $(
-    $("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]
-  ).hide();
+  if (type === "local") {
+    $("#div-confirm-existing-subjects-import").hide();
+    $($("#div-confirm-existing-subjects-import button")[0]).hide();
+    $("#button-fake-confirm-existing-subjects-file-load").click();
+  } else {
+    $("#div-check-bf-import-subjects").hide();
+    $($("#div-check-bf-import-subjects button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-subjects-file-load").click();
+    $(
+      $("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]
+    ).hide();
+  }
 }
 
-function loadDataFrametoUISamples() {
+function loadDataFrametoUISamples(type) {
   // separate regular headers and custom headers
   const lowercasedHeaders = samplesTableData[0].map((header) =>
     header.toLowerCase()
@@ -2504,10 +2466,18 @@ function loadDataFrametoUISamples() {
   // load sub-ids to table
   loadSamplesDataToTable();
   $("#table-samples").show();
-  $("#button-fake-confirm-existing-samples-file-load").click();
-  $(
-    $("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]
-  ).hide();
+  if (type === "local") {
+    $("#div-confirm-existing-samples-import").hide();
+    $($("#div-confirm-existing-samples-import button")[0]).hide();
+    $("#button-fake-confirm-existing-samples-file-load").click();
+  } else {
+    $("#div-check-bf-import-samples").hide();
+    $($("#div-check-bf-import-samples button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-samples-file-load").click();
+    $(
+      $("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]
+    ).hide();
+  }
 }
 
 function preliminaryProtocolStep(type) {

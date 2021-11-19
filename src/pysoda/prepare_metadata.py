@@ -77,12 +77,12 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
-
+# custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
     pass
 
 
-### Import Milestone document
+### Import Data Deliverables document
 def import_milestone(filepath):
     doc = Document(filepath)
     try:
@@ -128,27 +128,7 @@ def extract_milestone_info(datalist):
     return milestone
 
 
-def generate_metadata_file_Pennsieve(
-    upload_boolean, bfaccount, bfdataset, filepath, json_str
-):
-
-    if file_type == "submission.xlsx":
-        save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
-
-    elif file_type == "dataset_description.xlsx":
-        save_ds_description_file(
-            upload_boolean,
-            bfaccount,
-            bfdataset,
-            filepath,
-            dataset_str,
-            study_str,
-            con_str,
-            related_info_str,
-        )
-
-
-### Prepare submission file
+### Create submission file
 def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str):
 
     font_submission = Font(name="Calibri", size=14, bold=False)
@@ -232,6 +212,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
                 bf.delete(item_id)
 
         myds.upload(file_path)
+        # delete the local file that was created for the purpose of uploading to Pennsieve
         os.remove(file_path)
 
 
@@ -650,17 +631,19 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
     wb.save(destination)
 
-    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    ## if generating directly on Pennsieve, call upload function
     if upload_boolean:
         upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
 
 
+# check for non-empty fields (cells)
 def column_check(x):
     if "unnamed" in x.lower():
         return False
     return True
 
 
+# import an existing subjects/samples files from an excel file
 def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     subjects_df = pd.read_excel(
@@ -737,6 +720,7 @@ def checkEmptyColumn(column):
     return False
 
 
+# needed to sort subjects and samples table data to match the UI fields
 def sortedSubjectsTableData(matrix, fields):
     sortedMatrix = []
     customHeaderMatrix = []
@@ -758,10 +742,12 @@ def sortedSubjectsTableData(matrix, fields):
     return npArray
 
 
+# transpose a matrix (array of arrays)
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
 
 
+# helper function to process custom fields (users add and name them) for subjects and samples files
 def processMetadataCustomFields(matrix):
     refined_matrix = []
     for column in matrix:
@@ -771,6 +757,7 @@ def processMetadataCustomFields(matrix):
     return refined_matrix
 
 
+# use Entrez library to load the scientific name for a species
 def load_taxonomy_species(animalList):
     animalDict = {}
     for animal in animalList:
@@ -788,7 +775,7 @@ def load_taxonomy_species(animalList):
     return animalDict
 
 
-## check if any whole column is empty
+## check if any whole column from Excel sheet is empty
 def checkEmptyColumn(column):
     for element in column:
         if element:
@@ -797,6 +784,7 @@ def checkEmptyColumn(column):
     return False
 
 
+## load/import an existing local or Pennsieve submission.xlsx file
 def load_existing_submission_file(filepath):
 
     ## TODO: check and read csv
@@ -859,6 +847,7 @@ def load_existing_submission_file(filepath):
     }
 
 
+# import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
@@ -887,13 +876,14 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     )
 
 
-def import_bf_changes(bfaccount, bfdataset):
+# import readme or changes file from Pennsieve
+def import_bf_RC(bfaccount, bfdataset, file_type):
     bf = Pennsieve(bfaccount)
     myds = bf.get_dataset(bfdataset)
 
     for i in range(len(myds.items)):
 
-        if myds.items[i].name.lower() == "changes.txt":
+        if myds.items[i].name == file_type:
 
             item_id = myds.items[i].id
             url = returnFileURL(bf, item_id)
@@ -904,10 +894,11 @@ def import_bf_changes(bfaccount, bfdataset):
             return data
 
     raise Exception(
-        f"No CHANGES.txt file was found at the root of the dataset provided."
+        f"No {file_type} file was found at the root of the dataset provided."
     )
 
 
+# obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(bf_object, item_id):
 
     file_details = bf_object._api._get("/packages/" + str(item_id) + "/view")
@@ -919,7 +910,7 @@ def returnFileURL(bf_object, item_id):
     return file_url_info["url"]
 
 
-## import existing dataset_description.xlsx file
+## import an existing local or Pennsieve dataset_description.xlsx file
 def load_existing_DD_file(import_type, filepath):
 
     ### the following block of code converts .xlsx file into .csv for better performance from Pandas.

@@ -84,11 +84,13 @@ const showParentTab = (tabNow, nextOrPrev) => {
           "display",
           "block"
         );
+        $(".flex-row-container.code-metadata").css("display", "flex");
       } else {
         $(".metadata-button.button-generate-dataset.code-metadata").css(
           "display",
           "none"
         );
+        $(".flex-row-container.code-metadata").css("display", "none");
       }
     }
     $("#nextBtn").prop("disabled", false);
@@ -1203,6 +1205,9 @@ const create_json_object = (action, sodaJSONObj) => {
     "samples.json",
     "README.txt",
     "CHANGES.txt",
+    "code_description.xlsx",
+    "inputs_metadata.xlsx",
+    "outputs_metadata.xlsx",
   ];
   let root_folder_path = $("#input-destination-getting-started-locally").attr(
     "placeholder"
@@ -1987,7 +1992,14 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
         "Browse here"
       );
       $(`#textarea-create-${metadataRCFileType}`).val("");
-      $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show();
+      if (
+        $(`#bf_dataset_load_${metadataRCFileType}`).text().trim() !== "None"
+      ) {
+        $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show();
+        $(`#div-check-bf-import-${metadataRCFileType}`).css("display", "flex");
+      } else {
+        $(`#div-check-bf-import-${metadataRCFileType}`).hide();
+      }
       $(`#button-generate-${metadataRCFileType}`).css("display", "flex");
     }
     return continueProgress;
@@ -2021,7 +2033,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
         subjectsTableData = tableData;
       }
       // delete table rows except headers
-      $(`#table-${metadataSubSamFile} tr:gt(0)0`).remove();
+      $(`#table-${metadataSubSamFile} tr:gt(0)`).remove();
       $(`#table-${metadataSubSamFile}`).css("display", "none");
       // Hide Generate button
       $(`#button-generate-${metadataSubSamFile}`).css("display", "none");
@@ -2040,7 +2052,14 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
           $($(field).parents()[2]).remove();
         }
       }
-      $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show();
+      if (
+        $(`#bf_dataset_load_${metadataSubSamFile}`).text().trim() !== "None"
+      ) {
+        $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show();
+        $(`#div-check-bf-import-${metadataSubSamFile}`).css("display", "flex");
+      } else {
+        $(`#div-check-bf-import-${metadataSubSamFile}`).hide();
+      }
     }
     return continueProgress;
   } else {
@@ -2063,6 +2082,7 @@ async function switchMetadataDDQuestion() {
     });
     if (continueProgressDD) {
       $("#existing-dd-file-destination").val("");
+      $("#div-check-bf-import-dd").css("display", "flex");
       $($("#div-check-bf-import-dd").children()[0]).show();
       resetDDFields();
     }
@@ -2087,6 +2107,7 @@ async function switchMetadataSubmissionQuestion() {
     if (continueProgressSubmission) {
       $("#existing-submission-file-destination").val("");
       $($("#div-check-bf-import-submission").children()[0]).show();
+      $("#div-check-bf-import-submission").css("display", "flex");
       resetSubmissionFields();
     }
     return continueProgressSubmission;
@@ -2106,13 +2127,7 @@ const reset_ui = () => {
   $(".button-individual-metadata.remove").each(function (i, obj) {
     $(obj).click();
   });
-
-  $("#metadata-submission-pennsieve").css("display", "none");
-  $("#metadata-ds-description-pennsieve").css("display", "none");
-  $("#metadata-CHANGES-pennsieve").css("display", "none");
-  $("#metadata-samples-pennsieve").css("display", "none");
-  $("#metadata-README-pennsieve").css("display", "none");
-  $("#metadata-subjects-pennsieve").css("display", "none");
+  $(".div-file-import.pennsieve").css("display", "none");
 
   $("#Question-getting-started-existing-BF-account").hide();
   $("#Question-getting-started-existing-BF-account").children().hide();
@@ -2276,6 +2291,85 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           metadataobject[key]["action"].includes("existing")
         ) {
           $("#para-changes-file-path").text(metadataobject[key]["path"]);
+        }
+        break;
+      case "code_description":
+        $(".metadata-button[data-next='codeDescriptionUpload']").addClass(
+          "done"
+        );
+        $($("#para-codeDescription-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-codeDescription-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-codeDescription-file-path").html(
+            "Using file present on Pennsieve. <br> File name: " + key
+          );
+          $("#metadata-codeDescription-pennsieve").css(
+            "display",
+            "inline-block"
+          );
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-codeDescription-file-path").text(
+            metadataobject[key]["path"]
+          );
+        }
+        break;
+      case "inputs_metadata":
+        $(".metadata-button[data-next='inputsMetadataUpload']").addClass(
+          "done"
+        );
+        $($("#para-inputsMetadata-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-inputsMetadata-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-inputsMetadata-file-path").html(
+            "Using file present on Pennsieve. <br> File name: " + key
+          );
+          $("#metadata-inputsMetadata-pennsieve").css(
+            "display",
+            "inline-block"
+          );
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-inputsMetadata-file-path").text(metadataobject[key]["path"]);
+        }
+        break;
+      case "outputs_metadata":
+        $(".metadata-button[data-next='outputsMetadataUpload']").addClass(
+          "done"
+        );
+        $($("#para-outputsMetadata-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-outputsMetadata-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-outputsMetadata-file-path").html(
+            "Using file present on Pennsieve. <br> File name: " + key
+          );
+          $("#metadata-outputsMetadata-pennsieve").css(
+            "display",
+            "inline-block"
+          );
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-outputsMetadata-file-path").text(
+            metadataobject[key]["path"]
+          );
         }
         break;
       default:
@@ -2978,14 +3072,28 @@ const wipeOutCurateProgress = () => {
     "metadata-files": {},
   };
   // uncheck all radio buttons and checkboxes
-  $(".option-card").removeClass("checked");
-  $(".option-card.radio-button").removeClass("non-selected");
-  $(".option-card.high-level-folders").removeClass("disabled");
-  $(".option-card .folder-input-check").prop("checked", false);
-  $(".parent-tabs.option-card").removeClass("checked");
-  $(".parent-tabs.option-card.radio-button").removeClass("non-selected");
-  $(".parent-tabs.option-card.high-level-folders").removeClass("disabled");
-  $(".parent-tabs.option-card.folder-input-check").prop("checked", false);
+  $("#organize-section").find(".option-card").removeClass("checked");
+  $("#organize-section")
+    .find(".option-card.radio-button")
+    .removeClass("non-selected");
+  $("#organize-section")
+    .find(".option-card.high-level-folders")
+    .removeClass("disabled");
+  $("#organize-section")
+    .find(".option-card .folder-input-check")
+    .prop("checked", false);
+  $("#organize-section")
+    .find(".parent-tabs.option-card")
+    .removeClass("checked");
+  $("#organize-section")
+    .find(".parent-tabs.option-card.radio-button")
+    .removeClass("non-selected");
+  $("#organize-section")
+    .find(".parent-tabs.option-card.high-level-folders")
+    .removeClass("disabled");
+  $("#organize-section")
+    .find(".parent-tabs.option-card.folder-input-check")
+    .prop("checked", false);
   $(".metadata-button.button-generate-dataset").removeClass("done");
   $("#organize-section input:checkbox").prop("checked", false);
   $("#organize-section input:radio").prop("checked", false);

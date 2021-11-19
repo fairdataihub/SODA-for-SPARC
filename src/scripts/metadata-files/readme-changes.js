@@ -1,7 +1,7 @@
 /////// Load SPARC airtable data
 var pennsieveHostname = "https://api.pennsieve.io";
 
-// function to generate changes or readme
+// function to raise a warning for empty fields before generating changes or readme
 function generateRCFilesHelper(type) {
   var textValue = $(`#textarea-create-${type}`).val().trim();
   if (textValue === "") {
@@ -23,11 +23,16 @@ function generateRCFilesHelper(type) {
   }
 }
 
+// generate changes or readme either locally (uploadBFBoolean=false) or onto Pennsieve (uploadBFBoolean=true)
 async function generateRCFiles(uploadBFBoolean, fileType) {
+  var result = generateRCFilesHelper(fileType);
+  if (result === "empty") {
+    return;
+  }
   var upperCaseLetters = fileType.toUpperCase() + ".txt";
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
-      title: `SODA will replace any existing ${upperCaseLetters} file on Pennsieve.`,
+      title: `Any existing ${upperCaseLetters} file in the high-level folder of the selected dataset will be replaced.`,
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -56,99 +61,48 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
   }).then((result) => {});
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
   if (uploadBFBoolean) {
-    // this actually separates Changes and Readme file generation
-    // since we need to update the README on Pennsieve and not upload a whole README file onto Penn
-    if (upperCaseLetters === "CHANGES") {
-      client.invoke(
-        "api_upload_RC_file",
-        textValue,
-        upperCaseLetters,
-        defaultBfAccount,
-        $(`#bf_dataset_load_${fileType}`).text().trim(),
-        (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              title: `Failed to generate the ${upperCaseLetters} file`,
-              html: emessage,
-              icon: "warning",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              `Prepare Metadata - Create ${upperCaseLetters}`,
-              defaultBfDataset
-            );
-          } else {
-            Swal.fire({
-              title: `The ${upperCaseLetters} file has been successfully generated at the specified location.`,
-              icon: "success",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              `Prepare Metadata - Create ${upperCaseLetters}`,
-              defaultBfDataset
-            );
-          }
+    client.invoke(
+      "api_upload_RC_file",
+      textValue,
+      upperCaseLetters,
+      defaultBfAccount,
+      $(`#bf_dataset_load_${fileType}`).text().trim(),
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            title: `Failed to generate the ${upperCaseLetters} file`,
+            html: emessage,
+            icon: "warning",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            `Prepare Metadata - Create ${upperCaseLetters}`,
+            defaultBfDataset
+          );
+        } else {
+          Swal.fire({
+            title: `Successfully generated the ${upperCaseLetters} file on your Pennsieve dataset.`,
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            `Prepare Metadata - Create ${upperCaseLetters}`,
+            defaultBfDataset
+          );
         }
-      );
-    } else {
-      updateReadme($(`#bf_dataset_load_${fileType}`).text().trim(), textValue);
-    }
+      }
+    );
   } else {
     ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
-  }
-}
-
-async function updateReadme(datasetName, data) {
-  // authenticate the user
-  let jwt;
-  jwt = await get_access_token();
-
-  let datasetID = await getDatasetID(datasetName, jwt);
-
-  // setup the request options
-  let options = {
-    method: "PUT",
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ readme: data }),
-  };
-
-  // update README
-  let updateResponse;
-  updateResponse = await fetch(
-    `${pennsieveHostname}/datasets/${datasetID}/readme`,
-    options
-  ).catch((err) => {
-    var errorMessage =
-      "Failed to update the README from selected dataset due to: " + err;
-    console.error(errorMessage);
-    Swal.fire({
-      icon: "error",
-      html: errorMessage,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    });
-  });
-
-  if (updateResponse.status === 200) {
-    Swal.fire({
-      icon: "success",
-      title: "Successfully updated README!",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    });
   }
 }
 
@@ -162,60 +116,15 @@ $(document).ready(function () {
       filename = "CHANGES.txt";
       if (dirpath.length > 0) {
         var destinationPath = path.join(dirpath[0], filename);
-
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File '" +
-            filename +
-            "' already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              changesDestinationPath = destinationPath;
-              $("#div-confirm-destination-changes-locally").css(
-                "display",
-                "flex"
-              );
-              $(
-                $("#div-confirm-destination-changes-locally").children()[0]
-              ).css("display", "flex");
-              document.getElementById(
-                "input-destination-generate-changes-locally"
-              ).placeholder = dirpath[0];
-              // saveRCFile(data, "changes", destinationPath);
-            } else {
-              $("#div-confirm-destination-changes-locally").css(
-                "display",
-                "none"
-              );
-              changesDestinationPath = "";
-              document.getElementById(
-                "input-destination-generate-changes-locally"
-              ).placeholder = "Browse here";
-            }
-          });
-        } else {
-          document.getElementById(
-            "input-destination-generate-changes-locally"
-          ).placeholder = dirpath[0];
-          $("#div-confirm-destination-changes-locally").css("display", "flex");
-          $($("#div-confirm-destination-changes-locally").children()[0]).css(
-            "display",
-            "flex"
-          );
-          changesDestinationPath = destinationPath;
-        }
+        changesDestinationPath = destinationPath;
+        $("#div-confirm-destination-changes-locally").css("display", "flex");
+        $($("#div-confirm-destination-changes-locally").children()[0]).css(
+          "display",
+          "flex"
+        );
+        document.getElementById(
+          "input-destination-generate-changes-locally"
+        ).placeholder = dirpath[0];
       } else {
         $("#div-confirm-destination-changes-locally").css("display", "none");
         changesDestinationPath = "";
@@ -232,59 +141,15 @@ $(document).ready(function () {
       let data = $("#textarea-create-readme").val().trim();
       if (dirpath.length > 0) {
         var destinationPath = path.join(dirpath[0], filename);
-        if (fs.existsSync(destinationPath)) {
-          var emessage =
-            "File '" +
-            filename +
-            "' already exists in " +
-            dirpath[0] +
-            ". Do you want to replace it?";
-          Swal.fire({
-            icon: "warning",
-            title: "Metadata file already exists",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showConfirmButton: true,
-            showCancelButton: true,
-            cancelButtonText: "No",
-            confirmButtonText: "Yes",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              readmeDestinationPath = destinationPath;
-              $("#div-confirm-destination-readme-locally").css(
-                "display",
-                "flex"
-              );
-              $($("#div-confirm-destination-readme-locally").children()[0]).css(
-                "display",
-                "flex"
-              );
-              document.getElementById(
-                "input-destination-generate-readme-locally"
-              ).placeholder = dirpath[0];
-            } else {
-              $("#div-confirm-destination-readme-locally").css(
-                "display",
-                "none"
-              );
-              readmeDestinationPath = "";
-              document.getElementById(
-                "input-destination-generate-readme-locally"
-              ).placeholder = "Browse here";
-            }
-          });
-        } else {
-          $("#div-confirm-destination-readme-locally").css("display", "flex");
-          $($("#div-confirm-destination-readme-locally").children()[0]).css(
-            "display",
-            "flex"
-          );
-          readmeDestinationPath = destinationPath;
-          document.getElementById(
-            "input-destination-generate-readme-locally"
-          ).placeholder = dirpath[0];
-        }
+        readmeDestinationPath = destinationPath;
+        $("#div-confirm-destination-readme-locally").css("display", "flex");
+        $($("#div-confirm-destination-readme-locally").children()[0]).css(
+          "display",
+          "flex"
+        );
+        document.getElementById(
+          "input-destination-generate-readme-locally"
+        ).placeholder = dirpath[0];
       } else {
         $("#div-confirm-destination-readme-locally").css("display", "none");
         readmeDestinationPath = "";
@@ -412,8 +277,27 @@ $(document).ready(function () {
   });
 });
 
-// write Readme or Changes files
-function saveRCFile(type) {
+// write Readme or Changes files (save locally)
+async function saveRCFile(type) {
+  var result = generateRCFilesHelper(type);
+  if (result === "empty") {
+    return;
+  }
+  var { value: continueProgress } = await Swal.fire({
+    title: `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
+    text: "Are you sure you want to continue?",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Yes",
+  });
+  if (!continueProgress) {
+    return;
+  }
   let data = $(`#textarea-create-${type}`).val().trim();
   let destinationPath;
   if (type === "changes") {
@@ -473,7 +357,7 @@ function saveRCFile(type) {
   });
 }
 
-// import existing Changes/README file
+// show filebrowser for existing local Changes/README file
 function showExistingRCFile(type) {
   if (
     $(`#existing-${type}-file-destination`).prop("placeholder") !==
@@ -508,42 +392,7 @@ function showExistingRCFile(type) {
   }
 }
 
-// function to load existing README/CHANGES files
-function loadExistingRCFile(filepath, type) {
-  // read file
-  fs.readFile(filepath, "utf8", function (err, data) {
-    if (err) {
-      var emessage = userError(error);
-      console.log(err);
-      log.error(err);
-      Swal.fire({
-        title: "Failed to import existing file",
-        html: emessage,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-      });
-    } else {
-      // populate textarea
-      $(`#textarea-create-${type}`).val(data);
-
-      Swal.fire({
-        title: "Loaded successfully!",
-        icon: "success",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      });
-      $(`#div-confirm-existing-${type}-import`).hide();
-      $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
-      $(`#button-fake-confirm-existing-${type}-file-load`).click();
-    }
-  });
-}
-
+// start over for Readme and Changes
 function resetRCFile(type) {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -596,22 +445,12 @@ function resetRCFile(type) {
   });
 }
 
-async function getDatasetID(datasetName, jwt) {
-  // fetch the tags for their dataset using the Pennsieve API
-  let dataset;
-  dataset = await get_dataset_by_name_id(datasetName, jwt);
-  // grab the dataset's id
-  const id = dataset["content"]["id"];
-
-  return id;
-}
-
-const getReadme = async () => {
+// import a Pennsieve Readme or Changes file
+const getRC = async (type) => {
   // loading popup
   Swal.fire({
-    title: "Loading an existing README.txt file",
+    title: `Loading an existing ${type} file`,
     html: "Please wait...",
-    // timer: 5000,
     allowEscapeKey: false,
     allowOutsideClick: false,
     heightAuto: false,
@@ -621,97 +460,24 @@ const getReadme = async () => {
       Swal.showLoading();
     },
   }).then((result) => {});
-
-  let datasetName = $(`#bf_dataset_load_readme`).text().trim();
-
-  // authenticate the user
-  let jwt;
-  jwt = await get_access_token();
-
-  let datasetID = await getDatasetID(datasetName, jwt);
-
-  // obtain readme description
-  let readmeDescription;
-  let options = {
-    method: "GET",
-    headers: {
-      Accept: "*/*",
-      Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json",
-    },
-  };
-
-  readmeDescription = await fetch(
-    `${pennsieveHostname}/datasets/${datasetID}/readme`,
-    options
-  )
-    .then((res) => res.json())
-    .then((json) => json)
-    .catch((err) => {
-      var errorMessage =
-        "Failed to load README file from selected dataset: " + err;
-      console.error(errorMessage);
-      Swal.fire({
-        icon: "error",
-        html: errorMessage,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0,0.4)",
-      });
-    });
-
-  if (readmeDescription.readme.trim() !== "") {
-    $("#textarea-create-readme").val(readmeDescription.readme.trim());
-    Swal.fire({
-      title: "Loaded successfully!",
-      icon: "success",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      didOpen: () => {
-        Swal.hideLoading();
-      },
-    });
+  if (type === "CHANGES.txt") {
+    var shortName = "changes";
   } else {
-    Swal.fire({
-      icon: "warning",
-      text: "The current README file is empty. Please edit it in the following textarea.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    });
+    var shortName = "readme";
   }
-  $(
-    $("#button-fake-confirm-existing-bf-readme-file-load").siblings()[0]
-  ).hide();
-  $("#button-fake-confirm-existing-bf-readme-file-load").click();
-};
-
-const getChanges = async () => {
-  // loading popup
-  Swal.fire({
-    title: "Loading an existing CHANGES.txt file",
-    html: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {});
-
-  let datasetName = $(`#bf_dataset_load_changes`).text().trim();
+  let datasetName = $(`#bf_dataset_load_${shortName}`).text().trim();
   client.invoke(
-    "api_import_bf_changes",
+    "api_import_bf_RC",
     defaultBfAccount,
     datasetName,
+    type,
     (error, res) => {
       if (error) {
         var emessage = userError(error);
         log.error(error);
         console.error(error);
         Swal.fire({
-          title: "Failed to load existing CHANGES.txt file",
+          title: `Failed to load existing ${type} file`,
           text: emessage,
           icon: "warning",
           heightAuto: false,
@@ -719,7 +485,7 @@ const getChanges = async () => {
         });
       } else {
         if (res.trim() !== "") {
-          $("#textarea-create-changes").val(res.trim());
+          $(`#textarea-create-${shortName}`).val(res.trim());
           Swal.fire({
             title: "Loaded successfully!",
             icon: "success",
@@ -733,20 +499,23 @@ const getChanges = async () => {
         } else {
           Swal.fire({
             icon: "warning",
-            text: "The current CHANGES file is empty. Please edit it in the following textarea.",
+            text: `The current ${type} file is empty. Please edit it in the following textarea.`,
             heightAuto: false,
             backdrop: "rgba(0,0,0,0.4)",
           });
         }
         $(
-          $("#button-fake-confirm-existing-bf-changes-file-load").siblings()[0]
+          $(
+            `#button-fake-confirm-existing-bf-${shortName}-file-load`
+          ).siblings()[0]
         ).hide();
-        $("#button-fake-confirm-existing-bf-changes-file-load").click();
+        $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).click();
       }
     }
   );
 };
 
+// helper function to import a local readme/changes file
 function importExistingRCFile(type) {
   var filePath = $(`#existing-${type}-file-destination`).prop("placeholder");
   if (type === "changes") {
@@ -785,4 +554,40 @@ function importExistingRCFile(type) {
       setTimeout(loadExistingRCFile(filePath, type), 1000);
     }
   }
+}
+
+// main function to load existing README/CHANGES files
+function loadExistingRCFile(filepath, type) {
+  // read file
+  fs.readFile(filepath, "utf8", function (err, data) {
+    if (err) {
+      var emessage = userError(error);
+      console.log(err);
+      log.error(err);
+      Swal.fire({
+        title: "Failed to import existing file",
+        html: emessage,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+      });
+    } else {
+      // populate textarea
+      $(`#textarea-create-${type}`).val(data);
+
+      Swal.fire({
+        title: "Loaded successfully!",
+        icon: "success",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      });
+      $(`#div-confirm-existing-${type}-import`).hide();
+      $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
+      $(`#button-fake-confirm-existing-${type}-file-load`).click();
+    }
+  });
 }
