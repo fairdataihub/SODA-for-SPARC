@@ -642,7 +642,6 @@ def column_check(x):
         return False
     return True
 
-
 # import an existing subjects/samples files from an excel file
 def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
