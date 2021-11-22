@@ -3024,8 +3024,6 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-
-
   } else if (reviewstatus === "requested") {
     Swal.fire({
       icon: "error",
@@ -3041,8 +3039,6 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-
-
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
     // user sets this value in the UI otherwise it stays an empty string
@@ -3341,10 +3337,9 @@ async function submitReviewDataset(embargoReleaseDate) {
     },
   });
 
-  // hide the pre-publishing checklist and show the withdraw button 
+  // hide the pre-publishing checklist and show the withdraw button
   //$("#pre-publishing-checklist-submission-section").hide()
   //$("#confirm-submit-review").show()
-
 
   showPublishingStatus("noClear");
   bfRefreshPublishingDatasetStatusBtn.disabled = false;
