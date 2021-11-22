@@ -3343,7 +3343,6 @@ async function submitReviewDataset(embargoReleaseDate) {
   $("#pre-publishing-checklist-submission-section").hide();
   $("#confirm-submit-review").show();
 
-
   bfRefreshPublishingDatasetStatusBtn.disabled = false;
   bfWithdrawReviewDatasetBtn.disabled = false;
 
@@ -3708,82 +3707,82 @@ const showPrePublishingPageElements = () => {
 
 function showPublishingStatus(callback) {
   return new Promise((resolve) => {
-  if (callback == "noClear") {
-    var nothing;
-  }
-  var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span")
-    .html()
-    .replace(/^\s+|\s+$/g, "");
-  if (selectedBfDataset === "None") {
-  } else {
-    client.invoke(
-      "api_bf_get_publishing_status",
-      selectedBfAccount,
-      selectedBfDataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-          Swal.fire({
-            title: "Could not get your publishing status!",
-            text: `${emessage}`,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: "Ok",
-            reverseButtons: reverseSwalButtons,
-            showClass: {
-              popup: "animate__animated animate__fadeInDown animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__fadeOutUp animate__faster",
-            },
-          });
+    if (callback == "noClear") {
+      var nothing;
+    }
+    var selectedBfAccount = $("#current-bf-account").text();
+    var selectedBfDataset = $(".bf-dataset-span")
+      .html()
+      .replace(/^\s+|\s+$/g, "");
+    if (selectedBfDataset === "None") {
+    } else {
+      client.invoke(
+        "api_bf_get_publishing_status",
+        selectedBfAccount,
+        selectedBfDataset,
+        (error, res) => {
+          if (error) {
+            log.error(error);
+            console.error(error);
+            var emessage = userError(error);
+            Swal.fire({
+              title: "Could not get your publishing status!",
+              text: `${emessage}`,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: "Ok",
+              reverseButtons: reverseSwalButtons,
+              showClass: {
+                popup: "animate__animated animate__fadeInDown animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__fadeOutUp animate__faster",
+              },
+            });
 
-          resolve()
-        } else {
-          // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
-          if (res[0] !== "requested") {
-            // cannot withdraw from submission if there is no review request in progress or if it is already accepted
-            $("#prepublishing-withdraw-btn-container").css(
-              "visibility",
-              "hidden"
-            );
-            $("#prepublishing-publish-btn-container").css(
-              "visibility",
-              "visible"
-            );
+            resolve();
           } else {
-            // show the withdraw button
-            $("#prepublishing-withdraw-btn-container").css(
-              "visibility",
-              "visible"
+            // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
+            if (res[0] !== "requested") {
+              // cannot withdraw from submission if there is no review request in progress or if it is already accepted
+              $("#prepublishing-withdraw-btn-container").css(
+                "visibility",
+                "hidden"
+              );
+              $("#prepublishing-publish-btn-container").css(
+                "visibility",
+                "visible"
+              );
+            } else {
+              // show the withdraw button
+              $("#prepublishing-withdraw-btn-container").css(
+                "visibility",
+                "visible"
+              );
+              $("#prepublishing-publish-btn-container").css(
+                "visibility",
+                "hidden"
+              );
+            }
+
+            // update the dataset's publication status and display it onscreen for the user under their dataset name
+            $("#para-review-dataset-info-disseminate").text(
+              publishStatusOutputConversion(res)
             );
-            $("#prepublishing-publish-btn-container").css(
-              "visibility",
-              "hidden"
-            );
+
+            if (
+              callback === submitReviewDatasetCheck ||
+              callback === withdrawDatasetCheck
+            ) {
+              resolve(callback(res));
+            }
+
+            resolve();
           }
-
-          // update the dataset's publication status and display it onscreen for the user under their dataset name
-          $("#para-review-dataset-info-disseminate").text(
-            publishStatusOutputConversion(res)
-          );
-
-          if (
-            callback === submitReviewDatasetCheck ||
-            callback === withdrawDatasetCheck
-          ) {
-            resolve(callback(res))
-          }
-
-          resolve()
         }
-      }
-    );
-  }
-})
+      );
+    }
+  });
 }
 
 function publishStatusOutputConversion(res) {
