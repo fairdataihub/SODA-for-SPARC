@@ -667,9 +667,7 @@ $("#begin-prepublishing-btn").on("click", async () => {
 });
 
 const scrollToElement = (elementIdOrClassname) => {
-  let element = document.querySelector(
-    elementIdOrClassname
-  );
+  let element = document.querySelector(elementIdOrClassname);
 
   element.scrollIntoView(true)
 }
