@@ -24,20 +24,20 @@ async function disseminatePublish() {
     return;
   }
 
-    // show a SWAL loading message until the submit popup that asks the user for their approval appears
-    Swal.fire({
-      title: `Preparing submission for pre-publishing review`,
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+  // show a SWAL loading message until the submit popup that asks the user for their approval appears
+  Swal.fire({
+    title: `Preparing submission for pre-publishing review`,
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
   // begin the dataset publishing flow
   showPublishingStatus(submitReviewDatasetCheck);
