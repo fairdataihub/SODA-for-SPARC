@@ -3698,7 +3698,7 @@ const showPrePublishingPageElements = () => {
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
     $("#pre-publishing-checklist-submission-section").hide();
-    $("#div-confirm-submit-review").hide()
+    $("#div-confirm-submit-review").hide();
   }
 };
 
