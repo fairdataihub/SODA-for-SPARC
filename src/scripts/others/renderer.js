@@ -2953,8 +2953,8 @@ function datasetStatusListChange() {
 }
 
 function postCurationListChange() {
-  // display the pre-publishing page 
-  showPrePublishingPageElements()
+  // display the pre-publishing page
+  showPrePublishingPageElements();
   showPublishingStatus();
   // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
   showPrePublishingStatus();
@@ -3688,11 +3688,9 @@ const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  
-
   if (selectedBfDataset === "Select dataset") {
   } else {
-    console.log("Show page elements in prepublishing called")
+    console.log("Show page elements in prepublishing called");
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
     $("#pre-publishing-checklist-submission-section").hide();
