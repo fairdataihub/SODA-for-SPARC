@@ -1912,14 +1912,14 @@ $("#button-add-tags").click(async () => {
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  }).then( () => {
+  }).then(() => {
     // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
     showPrePublishingStatus();
 
     //check if tags array is empty and set Add/Edit tags appropriately
     tags === undefined || tags.length == 0
       ? $("#button-add-tags").html("Add tags")
-      : $("#button-add-tags").html("Edit tags")
+      : $("#button-add-tags").html("Edit tags");
   });
 });
 

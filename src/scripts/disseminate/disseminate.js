@@ -664,7 +664,7 @@ $("#publishing-isa-warning .close-btn").click(() => {
 $("#begin-prepublishing-btn").click(async () => {
   // show a loading popup
   Swal.fire({
-    title: 'Determining your dataset permissions',
+    title: "Determining your dataset permissions",
     html: "Please wait...",
     // timer: 5000,
     allowEscapeKey: false,
@@ -677,14 +677,14 @@ $("#begin-prepublishing-btn").click(async () => {
     },
   });
 
-
   // check if the user is the dataset owner
-  let owner = await userIsDatasetOwner(defaultBfDataset)
+  let owner = await userIsDatasetOwner(defaultBfDataset);
 
   // check if the user is the owner
   if (!owner) {
     await Swal.fire({
-      title: "Only the dataset owner can submit a dataset for pre-publishing review.",
+      title:
+        "Only the dataset owner can submit a dataset for pre-publishing review.",
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,
@@ -694,8 +694,8 @@ $("#begin-prepublishing-btn").click(async () => {
     return;
   }
 
-  // close the loading popup 
-  Swal.close()
+  // close the loading popup
+  Swal.close();
 
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
