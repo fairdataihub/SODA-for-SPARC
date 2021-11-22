@@ -662,13 +662,12 @@ $("#publishing-isa-warning .close-btn").click(() => {
 
 // user clicks on the begin pre-publishing button
 $("#begin-prepublishing-btn").click(async () => {
-  // show a loading popup 
-
+  // show a loading popup
 
   // check if the user is the dataset owner
-  let owner = userIsDatasetOwner(defaultBfDataset)
+  let owner = userIsDatasetOwner(defaultBfDataset);
 
-  // check if the user is the owner 
+  // check if the user is the owner
   if (!owner) {
     await Swal.fire({
       title: "Only the dataset owner can publish.",
