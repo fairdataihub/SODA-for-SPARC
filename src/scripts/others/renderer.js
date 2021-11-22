@@ -2953,7 +2953,7 @@ function datasetStatusListChange() {
 }
 
 function postCurationListChange() {
-  showPrePublishingPageElements()
+  showPrePublishingPageElements();
   showPublishingStatus();
   // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
   showPrePublishingStatus();
