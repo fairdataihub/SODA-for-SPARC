@@ -3695,10 +3695,10 @@ const showPrePublishingPageElements = () => {
 
   if (selectedBfDataset === "Select dataset") {
   } else {
-    console.log("Show page elements in prepublishing called");
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
     $("#pre-publishing-checklist-submission-section").hide();
+    $("#div-confirm-submit-review").hide()
   }
 };
 

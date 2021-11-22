@@ -657,11 +657,13 @@ $("#begin-prepublishing-btn").on("click", async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
 
+  $("#div-confirm-submit-review").show()
+
   // show the pre-publishing checklist and the generate/withdraw button
   $("#pre-publishing-checklist-submission-section").show();
 
   // make the pre-publishing submit button visible
-  scrollToElement("#prepublishing-publish-btn-container")
+  scrollToElement("#button-withdraw-review-dataset")
 });
 
 const scrollToElement = (elementIdOrClassname) => {
@@ -669,8 +671,5 @@ const scrollToElement = (elementIdOrClassname) => {
     elementIdOrClassname
   );
 
-  element.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-  })
+  element.scrollIntoView(true)
 }
