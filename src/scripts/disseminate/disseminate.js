@@ -661,16 +661,14 @@ $("#begin-prepublishing-btn").on("click", async () => {
   $("#pre-publishing-checklist-submission-section").show();
 
   // make the pre-publishing submit button visible
-  scrollToElement("#prepublishing-publish-btn-container")
+  scrollToElement("#prepublishing-publish-btn-container");
 });
 
 const scrollToElement = (elementIdOrClassname) => {
-  let element = document.querySelector(
-    elementIdOrClassname
-  );
+  let element = document.querySelector(elementIdOrClassname);
 
   element.scrollIntoView({
     behavior: "smooth",
     block: "center",
-  })
-}
+  });
+};
