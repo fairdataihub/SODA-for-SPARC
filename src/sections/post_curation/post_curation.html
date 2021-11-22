@@ -851,29 +851,9 @@
             </button>
           </div>
 
-          <div id="pre-publishing-checklist-submission-section">
-            <div class="ui form" style="width: 450px">
-              <div class="grouped fields">
-                <label
-                  id="pre_publishing_label"
-                  style="
-                    font-size: 17px;
-                    color: var(--color-bg-plum);
-                    width: 100%;
-                    text-align: center;
-                    margin-bottom: 15px;
-                  "
-                  >Pre-publishing checklist:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
-                                Click on any missing checklist items and you will be navigated to where you may add that item. "
-                    rel="popover"
-                    data-html="true"
-                    data-placement="right"
-                    data-trigger="hover"
-                  ></i>
-                </label>
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <div id="pre-publishing-checklist-submission-section">
                 <div
                   style="
                     display: flex;
@@ -882,10 +862,31 @@
                     justify-content: center;
                   "
                 >
+                  <label
+                    id="pre_publishing_label"
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      width: 100%;
+                      text-align: center;
+                      margin-bottom: 10px;
+                    "
+                    >Pre-publishing checklist:
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
+                                Click on any missing checklist items and you will be navigated to where you may add that item. "
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i>
+                  </label>
+
                   <table
                     class="ui fixed table"
                     id="pre-publishing-checklist"
-                    style="max-height: 250px; width: 780px"
+                    style="max-height: 250px; width: 780px; margin-top: 0px;"
                   >
                     <thead>
                       <tr>
@@ -1029,63 +1030,71 @@
                       </tr>
                     </tbody>
                   </table>
-
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <div
+                  id="div-confirm-submit-review"
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                  "
+                >
                   <div
-                    id="div-confirm-submit-review"
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: center;
-                    "
+                    style="width: 100%"
+                    id="prepublishing-withdraw-btn-container"
+                    style="margin: 0 auto"
                   >
-                    <div
-                      style="width: 100%"
-                      id="prepublishing-withdraw-btn-container"
-                      style="margin: 0 auto"
+                    <button
+                      id="button-withdraw-review-dataset"
+                      onclick="withdrawDatasetSubmission()"
+                      class="btn_animated md skip"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 20px 23%;
+                        width: 200px;
+                        height: 40px;
+                        background: #fff;
+                        color: red;
+                        font-weight: 600;
+                        border: 1px solid red;
+                        font-size: 15px;
+                      "
                     >
-                      <button
-                        id="button-withdraw-review-dataset"
-                        onclick="withdrawDatasetSubmission()"
-                        class="btn_animated md skip"
-                        style="
-                          cursor: pointer;
-                          border-radius: 8px;
-                          margin: 20px 23%;
-                          width: 200px;
-                          height: 40px;
-                          background: #fff;
-                          color: red;
-                          font-weight: 600;
-                          border: 1px solid red;
-                          font-size: 15px;
-                        "
-                      >
-                        <i class="fas fa-ban" style="padding-right: 5px"></i>
-                        Withdraw from review
-                      </button>
-                    </div>
-                    <div
-                      style="width: 100%; margin-left: -100%"
-                      id="prepublishing-publish-btn-container"
+                      <i class="fas fa-ban" style="padding-right: 5px"></i>
+                      Withdraw from review
+                    </button>
+                  </div>
+                  <div
+                    style="width: 100%; margin-left: -100%"
+                    id="prepublishing-publish-btn-container"
+                  >
+                    <button
+                      onclick="disseminateDataset('submit-pre-publishing')"
+                      class="btn_animated md"
+                      style="
+                        margin: 20px 23%;
+                        width: 200px;
+                        height: 40px;
+                        font-size: 15px;
+                        border: none !important; ;
+                      "
                     >
-                      <button
-                        onclick="disseminateDataset('submit-pre-publishing')"
-                        class="btn_animated md"
-                        style="
-                          margin: 20px 23%;
-                          width: 200px;
-                          height: 40px;
-                          font-size: 15px;
-                          border: none !important; ;
-                        "
-                      >
-                        <i
-                          class="fas fa-sign-in-alt"
-                          style="padding-right: 5px"
-                        ></i>
-                        Submit
-                      </button>
-                    </div>
+                      <i
+                        class="fas fa-sign-in-alt"
+                        style="padding-right: 5px"
+                      ></i>
+                      Submit
+                    </button>
                   </div>
                 </div>
               </div>
