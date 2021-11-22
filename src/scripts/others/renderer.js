@@ -3314,6 +3314,8 @@ async function submitReviewDataset(embargoReleaseDate) {
     return;
   }
 
+  await showPublishingStatus("noClear");
+
   ipcRenderer.send(
     "track-event",
     "Success",
@@ -3341,7 +3343,7 @@ async function submitReviewDataset(embargoReleaseDate) {
   $("#pre-publishing-checklist-submission-section").hide();
   $("#confirm-submit-review").show();
 
-  showPublishingStatus("noClear");
+
   bfRefreshPublishingDatasetStatusBtn.disabled = false;
   bfWithdrawReviewDatasetBtn.disabled = false;
 
@@ -3417,7 +3419,7 @@ function withdrawReviewDataset() {
     "api_bf_withdraw_review_dataset",
     selectedBfAccount,
     selectedBfDataset,
-    (error, res) => {
+    async (error, res) => {
       if (error) {
         log.error(error);
         console.error(error);
@@ -3438,6 +3440,9 @@ function withdrawReviewDataset() {
           },
         });
       } else {
+        // show the user their dataset's updated publishing status
+        await showPublishingStatus("noClear");
+
         Swal.fire({
           title: "Dataset has been withdrawn from review!",
           heightAuto: false,
@@ -3458,7 +3463,6 @@ function withdrawReviewDataset() {
           // scroll to the submit button
           scrollToElement("#prepublishing-publish-btn-container");
         });
-        showPublishingStatus("noClear");
       }
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
@@ -3698,11 +3702,12 @@ const showPrePublishingPageElements = () => {
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
     $("#pre-publishing-checklist-submission-section").hide();
-    $("#div-confirm-submit-review").hide()
+    $("#div-confirm-submit-review").hide();
   }
 };
 
 function showPublishingStatus(callback) {
+  return new Promise((resolve) => {
   if (callback == "noClear") {
     var nothing;
   }
@@ -3735,12 +3740,9 @@ function showPublishingStatus(callback) {
               popup: "animate__animated animate__fadeOutUp animate__faster",
             },
           });
-        } else {
-          // update the dataset's publication status and display it onscreen for the user under their dataset name
-          $("#para-review-dataset-info-disseminate").text(
-            publishStatusOutputConversion(res)
-          );
 
+          resolve()
+        } else {
           // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
           if (res[0] !== "requested") {
             // cannot withdraw from submission if there is no review request in progress or if it is already accepted
@@ -3764,16 +3766,24 @@ function showPublishingStatus(callback) {
             );
           }
 
+          // update the dataset's publication status and display it onscreen for the user under their dataset name
+          $("#para-review-dataset-info-disseminate").text(
+            publishStatusOutputConversion(res)
+          );
+
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
           ) {
-            callback(res);
+            resolve(callback(res))
           }
+
+          resolve()
         }
       }
     );
   }
+})
 }
 
 function publishStatusOutputConversion(res) {
