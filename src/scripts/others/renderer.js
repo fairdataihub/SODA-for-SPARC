@@ -3006,7 +3006,6 @@ var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
 
 async function submitReviewDatasetCheck(res) {
-  $("#submit_prepublishing_review-spinner").show();
   var reviewstatus = res[0];
   var publishingStatus = res[1];
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
@@ -3026,7 +3025,7 @@ async function submitReviewDatasetCheck(res) {
       },
     });
 
-    $("#submit_prepublishing_review-spinner").hide();
+
   } else if (reviewstatus === "requested") {
     Swal.fire({
       icon: "error",
@@ -3043,7 +3042,7 @@ async function submitReviewDatasetCheck(res) {
       },
     });
 
-    $("#submit_prepublishing_review-spinner").hide();
+
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
     // user sets this value in the UI otherwise it stays an empty string
@@ -3143,7 +3142,7 @@ async function submitReviewDatasetCheck(res) {
     // check if the user cancelled
     if (!userResponse.isConfirmed) {
       // stop showing the loading animation
-      $("#submit_prepublishing_review-spinner").hide();
+
       // do not submit the dataset
       return;
     }
@@ -3249,7 +3248,7 @@ async function submitReviewDatasetCheck(res) {
     // check if the user cancelled
     if (!userResponse.isConfirmed) {
       // stop showing the loading animation
-      $("#submit_prepublishing_review-spinner").hide();
+
       // do not submit the dataset
       return;
     }
@@ -3313,8 +3312,7 @@ async function submitReviewDataset(embargoReleaseDate) {
       },
     });
 
-    // stop tje spinner
-    $("#submit_prepublishing_review-spinner").hide();
+    // close the loading
 
     // stop execution
     return;
@@ -3343,10 +3341,16 @@ async function submitReviewDataset(embargoReleaseDate) {
     },
   });
 
+  // hide the pre-publishing checklist and show the withdraw button 
+  //$("#pre-publishing-checklist-submission-section").hide()
+  //$("#confirm-submit-review").show()
+
+
   showPublishingStatus("noClear");
   bfRefreshPublishingDatasetStatusBtn.disabled = false;
   bfWithdrawReviewDatasetBtn.disabled = false;
-  $("#submit_prepublishing_review-spinner").hide();
+
+  // hide the loading popup message
 }
 
 // //Withdraw dataset from review
