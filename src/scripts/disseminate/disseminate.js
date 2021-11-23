@@ -675,8 +675,19 @@ $("#begin-prepublishing-btn").on("click", async () => {
 
   $("#div-confirm-submit-review").show();
 
-  // show the pre-publishing checklist and the generate/withdraw button
-  $("#pre-publishing-checklist-submission-section").show();
+  // check which of the two buttons ( withdrawal or submit ) is showing
+  let withdrawBtn = $(
+    "#prepublishing-withdraw-btn-container button"
+  );
+
+  console.log(withdrawBtn)
+
+  if (withdrawBtn.css("visibility") === "hidden") {
+    // show the pre-publishing checklist and the generate/withdraw button
+    $("#pre-publishing-checklist-submission-section").show();
+  } else {
+    $("#pre-publishing-checklist-submission-section").hide();
+  }
 
   // make the pre-publishing submit button visible
   scrollToElement("#button-withdraw-review-dataset");
