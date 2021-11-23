@@ -808,7 +808,7 @@ const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
   "#button-refresh-publishing-status"
 );
 const bfWithdrawReviewDatasetBtn = document.querySelector(
-  "#button-withdraw-review-dataset"
+  "#btn-withdraw-review-dataset"
 );
 
 //////////////////////////////////
@@ -3366,7 +3366,7 @@ async function submitReviewDataset(embargoReleaseDate) {
   });
 
   // hide the pre-publishing checklist and show the withdraw button
-  $("#pre-publishing-checklist-submission-section").hide();
+  $("#prepublishing-checklist-container").hide();
   $("#confirm-submit-review").show();
 
   bfRefreshPublishingDatasetStatusBtn.disabled = false;
@@ -3487,9 +3487,9 @@ async function withdrawReviewDataset() {
 
     // show the checklist item and submit button
     $("#begin-prepublishing-btn").hide();
-    $("#pre-publishing-checklist-submission-section").show();
+    $("#prepublishing-checklist-container").show();
     // scroll to the submit button
-    scrollToElement("#prepublishing-publish-btn-container");
+    scrollToElement("#prepublishing-submit-btn-container");
 
     bfRefreshPublishingDatasetStatusBtn.disabled = false;
     bfWithdrawReviewDatasetBtn.disabled = false;
@@ -3745,8 +3745,8 @@ const showPrePublishingPageElements = () => {
   } else {
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
-    $("#pre-publishing-checklist-submission-section").hide();
-    $("#div-confirm-submit-review").hide();
+    $("#prepublishing-checklist-container").hide();
+    $("#submit-withdraw-prepublishing-btns-container").hide();
   }
 };
 
@@ -3794,7 +3794,7 @@ function showPublishingStatus(callback) {
                 "visibility",
                 "hidden"
               );
-              $("#prepublishing-publish-btn-container").css(
+              $("#prepublishing-submit-btn-container").css(
                 "visibility",
                 "visible"
               );
@@ -3804,7 +3804,7 @@ function showPublishingStatus(callback) {
                 "visibility",
                 "visible"
               );
-              $("#prepublishing-publish-btn-container").css(
+              $("#prepublishing-submit-btn-container").css(
                 "visibility",
                 "hidden"
               );

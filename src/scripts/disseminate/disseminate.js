@@ -498,11 +498,11 @@ function checkDatasetDisseminate() {
 
 $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   if ($(this).html() !== "None") {
-    $("#div-confirm-submit-review").show();
-    $("#div-confirm-submit-review button").show();
+    $("#submit-withdraw-prepublishing-btns-container").show();
+    $("#submit-withdraw-prepublishing-btns-container button").show();
   } else {
-    $("#div-confirm-submit-review").hide();
-    $("#div-confirm-submit-review button").hide();
+    $("#submit-withdraw-prepublishing-btns-container").hide();
+    $("#submit-withdraw-prepublishing-btns-container button").hide();
   }
 });
 
@@ -656,20 +656,20 @@ $("#begin-prepublishing-btn").on("click", async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
 
-  $("#div-confirm-submit-review").show();
+  $("#submit-withdraw-prepublishing-btns-container").show();
 
   // check which of the two buttons ( withdrawal or submit ) is showing
   let withdrawBtn = $("#prepublishing-withdraw-btn-container button");
 
   if (withdrawBtn.css("visibility") === "hidden") {
     // show the pre-publishing checklist and the generate/withdraw button
-    $("#pre-publishing-checklist-submission-section").show();
+    $("#prepublishing-checklist-container").show();
   } else {
-    $("#pre-publishing-checklist-submission-section").hide();
+    $("#prepublishing-checklist-container").hide();
   }
 
   // make the pre-publishing submit button visible
-  scrollToElement("#button-withdraw-review-dataset");
+  scrollToElement("#btn-withdraw-review-dataset");
 });
 
 const scrollToElement = (elementIdOrClassname) => {
