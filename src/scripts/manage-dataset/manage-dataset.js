@@ -450,7 +450,7 @@ const showCurrentPermission = () => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
-  console.log("Account is: ", selectedBfAccount)
+  console.log("Account is: ", selectedBfAccount);
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
 
