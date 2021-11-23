@@ -1123,12 +1123,19 @@
   display: none;
 }
 
+.click-me {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.07s ease-out;
+}
+
 .svg-change-current-account {
   cursor: pointer;
   transition: transform 0.07s ease-out;
 }
 
-.svg-change-current-account:hover {
+.click-me:hover {
   transform: translateY(-2px);
   fill: #000;
 }
@@ -1193,28 +1200,11 @@
 }
 
 .card-right.bf-account-span,
-.card-test,
-.card-right.bf-dataset-span {
-  width: auto;
-  margin-top: 0px;
-  margin-left: 0px;
-  margin-right: 10px;
-  padding-left: 5px;
-  transition: all .5s ease;
-  }
-  
-  .card-right.bf-account-span:hover,
-  .card-right.bf-dataset-span:hover {
-    background-color: #f5f2f2;
-    padding-left: 10px;
-    padding-right: 10px;
-    box-shadow: 0 0 2px 2px rgb(246, 245, 245);
-  }
-
 .card-right.bf-account-details-span,
+.card-right.bf-dataset-span,
 .card-right.current-permissions {
   width: auto;
-  margin-left: 0px;
+  margin-left: 5px;
   margin-top: 0px;
   padding-left: 5px;
 }
