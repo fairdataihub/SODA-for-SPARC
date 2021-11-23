@@ -676,11 +676,9 @@ $("#begin-prepublishing-btn").on("click", async () => {
   $("#div-confirm-submit-review").show();
 
   // check which of the two buttons ( withdrawal or submit ) is showing
-  let withdrawBtn = $(
-    "#prepublishing-withdraw-btn-container button"
-  );
+  let withdrawBtn = $("#prepublishing-withdraw-btn-container button");
 
-  console.log(withdrawBtn)
+  console.log(withdrawBtn);
 
   if (withdrawBtn.css("visibility") === "hidden") {
     // show the pre-publishing checklist and the generate/withdraw button
