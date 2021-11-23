@@ -2010,8 +2010,10 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
 // 2. Subjects and Samples (MetadataSubSam)
 async function switchMetadataSubSamQuestions(metadataSubSamFile) {
   var tableData = subjectsTableData;
+  var singularName = "subject";
   if (metadataSubSamFile === "samples") {
     tableData = samplesTableData;
+    singularName = "sample";
   }
 
   if (tableData.length !== 0) {
@@ -2035,6 +2037,8 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
       // delete table rows except headers
       $(`#table-${metadataSubSamFile} tr:gt(0)`).remove();
       $(`#table-${metadataSubSamFile}`).css("display", "none");
+      // show Add a subject button
+      $(`#button-add-a-${singularName}`).show();
       // Hide Generate button
       $(`#button-generate-${metadataSubSamFile}`).css("display", "none");
       $(`#div-import-primary-folder-${metadataSubSamFile}`).show();
