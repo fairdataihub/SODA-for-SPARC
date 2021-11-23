@@ -2953,6 +2953,7 @@ function datasetStatusListChange() {
 }
 
 function postCurationListChange() {
+  // display the pre-publishing page 
   showPrePublishingPageElements()
   showPublishingStatus();
   // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
@@ -3687,10 +3688,13 @@ const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+  
+
   if (selectedBfDataset === "Select dataset") {
   } else {
+    console.log("Show page elements in prepublishing called")
     // show the "Begin Publishing" button and hide the checklist and submission section
-    $("#begin-publishing-btn").show();
+    $("#begin-prepublishing-btn").show();
     $("#pre-publishing-checklist-submission-section").hide();
   }
 };
@@ -7166,7 +7170,7 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-get_access_token().then((res) => console.log(res));
+// get_access_token().then((res) => console.log(res));
 
 /*
 ******************************************************
