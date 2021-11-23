@@ -7734,7 +7734,7 @@ const submitDatasetForReview = async (
 //  hasEmbargo: boolean - True when the dataset was submotted for publishing under embargo, false otherwise
 //  O:
 //    void
-const withdrawDatasetReviewSubmission = async (datasetIdOrName, hasEmbargo) => {
+const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
   // ensure a valid dataset ir or name has been passed in
   if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error("A valid dataset must be provided");
@@ -7759,9 +7759,23 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName, hasEmbargo) => {
     },
   };
 
+  // construct the appropriate query string
+  let queryString = "";
+
+  // get the publication type
+  let publicationType = dataset.publication.type;
+
+  // if an embargo release date was selected add it to the query string
+  if (publicationType === "embargo") {
+    queryString = `?publicationType=embargo`;
+  } else {
+    // add the required publication type
+    queryString = `?publicationType=publication`;
+  }
+
   try {
     let withdrawResponse = await fetch(
-      `https://api.pennsieve.io/datasets/${id}/publication/cancel?publicationType=embargo`,
+      `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
       options
     );
   } catch (e) {
