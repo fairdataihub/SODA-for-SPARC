@@ -616,22 +616,22 @@ const allPrepublishingChecklistItemsCompleted = () => {
   return incompleteChecklistItems.length ? false : true;
 };
 
-const prePublishingChecksItemsShow = () => {
-  // hide the begin publishing button
-  $("#begin-prepublishing-btn").hide();
+// const prePublishingChecksItemsShow = () => {
+//   // hide the begin publishing button
+//   $("#begin-prepublishing-btn").hide();
 
-  // show the pre-publishing checklist and the generate/withdraw button
-  $("#pre-publishing-checklist-submission-section").show();
+//   // show the pre-publishing checklist and the generate/withdraw button
+//   $("#pre-publishing-checklist-submission-section").show();
 
-  let submitContainer = document.querySelector(
-    "#prepublishing-publish-btn-container"
-  );
-  // scroll until the submit button is in view
-  submitContainer.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-  });
-};
+//   let submitContainer = document.querySelector(
+//     "#prepublishing-publish-btn-container"
+//   );
+//   // scroll until the submit button is in view
+//   submitContainer.scrollIntoView({
+//     behavior: "smooth",
+//     block: "center",
+//   });
+// };
 
 // user clicks on the begin pre-publishing button
 $("#begin-prepublishing-btn").on("click", async () => {
@@ -679,8 +679,6 @@ $("#begin-prepublishing-btn").on("click", async () => {
   let withdrawBtn = $(
     "#prepublishing-withdraw-btn-container button"
   );
-
-  console.log(withdrawBtn)
 
   if (withdrawBtn.css("visibility") === "hidden") {
     // show the pre-publishing checklist and the generate/withdraw button

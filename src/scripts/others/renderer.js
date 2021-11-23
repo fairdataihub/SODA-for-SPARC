@@ -3457,69 +3457,62 @@ function withdrawDatasetCheck(res) {
 //   $("#submit_prepublishing_review-spinner").hide();
 // });
 
-function withdrawReviewDataset() {
+async function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
 
-  withdrawDatasetReviewSubmission(selectedBfDataset, true);
+  try {
+    await withdrawDatasetReviewSubmission(selectedBfDataset);
 
-  // client.invoke(
-  //   "api_bf_withdraw_review_dataset",
-  //   selectedBfAccount,
-  //   selectedBfDataset,
-  //   async (error, res) => {
-  //     if (error) {
-  //       log.error(error);
-  //       console.error(error);
-  //       var emessage = userError(error);
-  //       Swal.fire({
-  //         title: "Could not withdraw dataset from publication!",
-  //         text: `${emessage}`,
-  //         heightAuto: false,
-  //         icon: "error",
-  //         confirmButtonText: "Ok",
-  //         backdrop: "rgba(0,0,0, 0.4)",
-  //         confirmButtonText: "Ok",
-  //         showClass: {
-  //           popup: "animate__animated animate__fadeInDown animate__faster",
-  //         },
-  //         hideClass: {
-  //           popup: "animate__animated animate__fadeOutUp animate__faster",
-  //         },
-  //       });
-  //     } else {
-  //       // show the user their dataset's updated publishing status
-  //       await showPublishingStatus("noClear");
+    // show the user their dataset's updated publishing status
+    await showPublishingStatus("noClear");
 
-  //       Swal.fire({
-  //         title: "Dataset has been withdrawn from review!",
-  //         heightAuto: false,
-  //         icon: "success",
-  //         confirmButtonText: "Ok",
-  //         backdrop: "rgba(0,0,0, 0.4)",
-  //         confirmButtonText: "Ok",
-  //         showClass: {
-  //           popup: "animate__animated animate__fadeInDown animate__faster",
-  //         },
-  //         hideClass: {
-  //           popup: "animate__animated animate__fadeOutUp animate__faster",
-  //         },
-  //       }).then(() => {
-  //         // show the checklist item and submit button
-  //         $("#begin-prepublishing-btn").hide();
-  //         $("#pre-publishing-checklist-submission-section").show();
-  //         // scroll to the submit button
-  //         scrollToElement("#prepublishing-publish-btn-container");
-  //       });
-  //     }
-  //     bfRefreshPublishingDatasetStatusBtn.disabled = false;
-  //     bfWithdrawReviewDatasetBtn.disabled = false;
-  //     $("#submit_prepublishing_review-spinner").hide();
-  //   }
-  // );
+    await Swal.fire({
+      title: "Dataset has been withdrawn from review!",
+      heightAuto: false,
+      icon: "success",
+      confirmButtonText: "Ok",
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    });
+
+    // show the checklist item and submit button
+    $("#begin-prepublishing-btn").hide();
+    $("#pre-publishing-checklist-submission-section").show();
+    // scroll to the submit button
+    scrollToElement("#prepublishing-publish-btn-container");
+
+    bfRefreshPublishingDatasetStatusBtn.disabled = false;
+    bfWithdrawReviewDatasetBtn.disabled = false;
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    var emessage = userError(error);
+    Swal.fire({
+      title: "Could not withdraw dataset from publication!",
+      text: `${emessage}`,
+      heightAuto: false,
+      icon: "error",
+      confirmButtonText: "Ok",
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    });
+  }
 }
 
 //////////////////////////////////
@@ -3750,7 +3743,6 @@ const showPrePublishingPageElements = () => {
 
   if (selectedBfDataset === "Select dataset") {
   } else {
-
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
     $("#pre-publishing-checklist-submission-section").hide();
