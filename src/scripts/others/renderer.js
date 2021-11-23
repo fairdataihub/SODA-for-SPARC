@@ -3157,36 +3157,7 @@ async function submitReviewDatasetCheck(res) {
       },
     });
     // submit the dataset for review with the given embargoReleaseDate
-    try {
-      await submitReviewDataset(embargoReleaseDate);
-    } catch (error) {
-      log.error(error);
-      console.error(error);
-      var emessage = userError(error);
-      Swal.fire({
-        title: "Could not submit dataset for pre-publication review!",
-        text: `${emessage}`,
-        heightAuto: false,
-        icon: "error",
-        confirmButtonText: "Ok",
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Ok",
-        showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__fadeOutUp animate__faster",
-        },
-      });
-
-      // track the error for analysis
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Disseminate Datasets - Submit for pre-publishing review",
-        defaultBfDataset
-      );
-    }
+    await submitReviewDataset(embargoReleaseDate);
   } else {
     // status is NOT_PUBLISHED
 
@@ -3306,36 +3277,7 @@ async function submitReviewDatasetCheck(res) {
     });
 
     // submit the dataset for review with the given embargoReleaseDate
-    try {
-      await submitReviewDataset(embargoReleaseDate);
-    } catch (error) {
-      log.error(error);
-      console.error(error);
-      var emessage = userError(error);
-      Swal.fire({
-        title: "Could not submit dataset for pre-publication review!",
-        text: `${emessage}`,
-        heightAuto: false,
-        icon: "error",
-        confirmButtonText: "Ok",
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Ok",
-        showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__fadeOutUp animate__faster",
-        },
-      });
-
-      // track the error for analysis
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Disseminate Datasets - Submit for pre-publishing review",
-        defaultBfDataset
-      );
-    }
+    await submitReviewDataset(embargoReleaseDate);
   }
 }
 
@@ -3360,7 +3302,7 @@ async function submitReviewDataset(embargoReleaseDate) {
   var selectedBfDataset = defaultBfDataset;
 
   try {
-    await submitDatasetForReview(
+    await submitDatasetForPublication(
       selectedBfAccount,
       selectedBfDataset,
       embargoReleaseDate
@@ -7739,7 +7681,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
 //  datasetIdOrName: string - the id/name of the dataset being submitted for publication
 //  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
 // O: void
-const submitDatasetForReview = async (
+const submitDatasetForPublication = async (
   pennsieveAccount,
   datasetIdOrName,
   embargoReleaseDate
@@ -7751,12 +7693,6 @@ const submitDatasetForReview = async (
     );
   }
 
-  // get an access token for the user
-  let jwt = await get_access_token();
-
-  // get the dataset by name or id
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
   // get the current SODA user's permissions (permissions are indicated by the user's assigned role for a given dataset)
   let userRole = await getCurrentUserPermissions(datasetIdOrName);
 
@@ -7765,6 +7701,12 @@ const submitDatasetForReview = async (
     throw new Error(
       "You don't have permissions for submitting this dataset for publication. Please have the dataset owner start the submission process."
     );
+
+  // get an access token for the user
+  let jwt = await get_access_token();
+
+  // get the dataset by name or id
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   // set the publication type to "publication" or "embargo" based on the value of embargoReleaseDate
   const publicationType = embargoReleaseDate === "" ? "publication" : "embargo";
@@ -7842,7 +7784,14 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     throw new Error("A valid dataset must be provided");
   }
 
-  // check the permissions maye if it isn;t checked before this -- aka firewall
+  // get the current SODA user's permissions (permissions are indicated by the user's assigned role for a given dataset)
+  let userRole = await getCurrentUserPermissions(datasetIdOrName);
+
+  // check that the current SODA user is the owner of the given dataset
+  if (!userIsOwnerOrManager(userRole))
+    throw new Error(
+      "You don't have permissions for withdrawing this dataset from publication. Please have the dataset owner withdraw the dataset."
+    );
 
   // get the dataset id
   let jwt = await get_access_token();
@@ -7875,13 +7824,35 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     queryString = `?publicationType=publication`;
   }
 
-  try {
-    let withdrawResponse = await fetch(
-      `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
-      options
-    );
-  } catch (e) {
-    console.error(e);
+  let withdrawResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
+    options
+  );
+
+  // get the status code out of the response
+  let statusCode = withdrawResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to withdraw from publication.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot withdraw a dataset from publication while unauthenticated.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+    default:
+      // something unexpected happened
+      let statusText = await publicationResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
   }
 };
 
