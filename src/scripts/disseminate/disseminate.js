@@ -1,44 +1,44 @@
 // Main functions
 async function disseminatePublish() {
-    // check that the user completed all pre-publishing checklist items for the given dataset
-    if (!allPrepublishingChecklistItemsCompleted()) {
-      // alert the user they must complete all checklist items before beginning the prepublishing process
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        confirmButtonText: "Ok",
-        title: "Cannot submit dataset for pre-publication review!",
-        text: "You need to complete all pre-publishing checklist items before you can submit your dataset for pre-publication review!",
-        icon: "error",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-
-      // halt execution
-      return;
-    }
-
-    // show a SWAL loading message until the submit popup that asks the user for their approval appears
+  // check that the user completed all pre-publishing checklist items for the given dataset
+  if (!allPrepublishingChecklistItemsCompleted()) {
+    // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({
-      title: `Preparing submission for pre-publishing review`,
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot submit dataset for pre-publication review!",
+      text: "You need to complete all pre-publishing checklist items before you can submit your dataset for pre-publication review!",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
 
-    // begin the dataset publishing flow
-    await showPublishingStatus(submitReviewDatasetCheck)
+    // halt execution
+    return;
+  }
+
+  // show a SWAL loading message until the submit popup that asks the user for their approval appears
+  Swal.fire({
+    title: `Preparing submission for pre-publishing review`,
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  // begin the dataset publishing flow
+  await showPublishingStatus(submitReviewDatasetCheck);
 }
 
 function refreshDatasetStatus() {
@@ -62,7 +62,7 @@ function disseminateShowPublishingStatus(callback, account, dataset) {
 }
 
 // Helper functions
-const disseminateDataset =  (option) => {
+const disseminateDataset = (option) => {
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
     Swal.fire({
@@ -126,9 +126,9 @@ const disseminateDataset =  (option) => {
     $("#para-submit_prepublishing_review-status").text("");
 
     // check if the user can publish their dataset
-    // if so publish the dataset for them under embargo or under publication 
+    // if so publish the dataset for them under embargo or under publication
     // any exceptions will be caught here so the user can be alerted if something unexpected happens - and for logging
-    disseminatePublish().catch(error => {
+    disseminatePublish().catch((error) => {
       log.error(error);
       console.error(error);
       var emessage = userError(error);
@@ -147,15 +147,15 @@ const disseminateDataset =  (option) => {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
       });
-  
-      // track the error for analysis  
+
+      // track the error for analysis
       // ipcRenderer.send(
       //   "track-event",
       //   "Error",
       //   "Disseminate Datasets - Submit for pre-publishing review",
       //   defaultBfDataset
       // );
-    })
+    });
   }
 };
 
