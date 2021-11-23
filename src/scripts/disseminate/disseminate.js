@@ -149,12 +149,12 @@ const disseminateDataset = (option) => {
       });
 
       // track the error for analysis
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Error",
-      //   "Disseminate Datasets - Submit for pre-publishing review",
-      //   defaultBfDataset
-      // );
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Disseminate Datasets - Submit for pre-publishing review",
+        defaultBfDataset
+      );
     });
   }
 };

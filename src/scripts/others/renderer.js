@@ -3157,7 +3157,36 @@ async function submitReviewDatasetCheck(res) {
       },
     });
     // submit the dataset for review with the given embargoReleaseDate
-    submitReviewDataset(embargoReleaseDate);
+    try {
+      await submitReviewDataset(embargoReleaseDate);
+    } catch (error) {
+      log.error(error);
+      console.error(error);
+      var emessage = userError(error);
+      Swal.fire({
+        title: "Could not submit dataset for pre-publication review!",
+        text: `${emessage}`,
+        heightAuto: false,
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+      });
+
+      // track the error for analysis
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Disseminate Datasets - Submit for pre-publishing review",
+        defaultBfDataset
+      );
+    }
   } else {
     // status is NOT_PUBLISHED
 
@@ -3277,7 +3306,36 @@ async function submitReviewDatasetCheck(res) {
     });
 
     // submit the dataset for review with the given embargoReleaseDate
-    submitReviewDataset(embargoReleaseDate);
+    try {
+      await submitReviewDataset(embargoReleaseDate);
+    } catch (error) {
+      log.error(error);
+      console.error(error);
+      var emessage = userError(error);
+      Swal.fire({
+        title: "Could not submit dataset for pre-publication review!",
+        text: `${emessage}`,
+        heightAuto: false,
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+      });
+
+      // track the error for analysis
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Disseminate Datasets - Submit for pre-publishing review",
+        defaultBfDataset
+      );
+    }
   }
 }
 
@@ -3464,7 +3522,6 @@ async function withdrawDatasetCheck(res) {
       Swal.fire({
         title: `Withdrawing dataset submission`,
         html: "Please wait...",
-        // timer: 5000,
         allowEscapeKey: false,
         allowOutsideClick: false,
         heightAuto: false,
@@ -3541,6 +3598,14 @@ async function withdrawReviewDataset() {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
     });
+
+    // track the error for analysis
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Submit for pre-publishing review",
+      defaultBfDataset
+    );
   }
 }
 
@@ -3863,7 +3928,8 @@ function showPublishingStatus(callback) {
 
               resolve();
             } catch (error) {
-              // an exceptions will be caught and rejected
+              // an exception will be caught and rejected
+              // if the executor function is not ready before an exception is found it is uncaught without the try catch
               reject(error);
             }
           }
