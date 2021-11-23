@@ -3463,60 +3463,63 @@ function withdrawReviewDataset() {
   var selectedBfDataset = $(".bf-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
-  client.invoke(
-    "api_bf_withdraw_review_dataset",
-    selectedBfAccount,
-    selectedBfDataset,
-    async (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
-        Swal.fire({
-          title: "Could not withdraw dataset from publication!",
-          text: `${emessage}`,
-          heightAuto: false,
-          icon: "error",
-          confirmButtonText: "Ok",
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Ok",
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
-        });
-      } else {
-        // show the user their dataset's updated publishing status
-        await showPublishingStatus("noClear");
 
-        Swal.fire({
-          title: "Dataset has been withdrawn from review!",
-          heightAuto: false,
-          icon: "success",
-          confirmButtonText: "Ok",
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Ok",
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
-        }).then(() => {
-          // show the checklist item and submit button
-          $("#begin-prepublishing-btn").hide();
-          $("#pre-publishing-checklist-submission-section").show();
-          // scroll to the submit button
-          scrollToElement("#prepublishing-publish-btn-container");
-        });
-      }
-      bfRefreshPublishingDatasetStatusBtn.disabled = false;
-      bfWithdrawReviewDatasetBtn.disabled = false;
-      $("#submit_prepublishing_review-spinner").hide();
-    }
-  );
+  withdrawDatasetReviewSubmission(selectedBfDataset, true);
+
+  // client.invoke(
+  //   "api_bf_withdraw_review_dataset",
+  //   selectedBfAccount,
+  //   selectedBfDataset,
+  //   async (error, res) => {
+  //     if (error) {
+  //       log.error(error);
+  //       console.error(error);
+  //       var emessage = userError(error);
+  //       Swal.fire({
+  //         title: "Could not withdraw dataset from publication!",
+  //         text: `${emessage}`,
+  //         heightAuto: false,
+  //         icon: "error",
+  //         confirmButtonText: "Ok",
+  //         backdrop: "rgba(0,0,0, 0.4)",
+  //         confirmButtonText: "Ok",
+  //         showClass: {
+  //           popup: "animate__animated animate__fadeInDown animate__faster",
+  //         },
+  //         hideClass: {
+  //           popup: "animate__animated animate__fadeOutUp animate__faster",
+  //         },
+  //       });
+  //     } else {
+  //       // show the user their dataset's updated publishing status
+  //       await showPublishingStatus("noClear");
+
+  //       Swal.fire({
+  //         title: "Dataset has been withdrawn from review!",
+  //         heightAuto: false,
+  //         icon: "success",
+  //         confirmButtonText: "Ok",
+  //         backdrop: "rgba(0,0,0, 0.4)",
+  //         confirmButtonText: "Ok",
+  //         showClass: {
+  //           popup: "animate__animated animate__fadeInDown animate__faster",
+  //         },
+  //         hideClass: {
+  //           popup: "animate__animated animate__fadeOutUp animate__faster",
+  //         },
+  //       }).then(() => {
+  //         // show the checklist item and submit button
+  //         $("#begin-prepublishing-btn").hide();
+  //         $("#pre-publishing-checklist-submission-section").show();
+  //         // scroll to the submit button
+  //         scrollToElement("#prepublishing-publish-btn-container");
+  //       });
+  //     }
+  //     bfRefreshPublishingDatasetStatusBtn.disabled = false;
+  //     bfWithdrawReviewDatasetBtn.disabled = false;
+  //     $("#submit_prepublishing_review-spinner").hide();
+  //   }
+  // );
 }
 
 //////////////////////////////////
@@ -7231,7 +7234,7 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-// get_access_token().then((res) => console.log(res));
+get_access_token().then((res) => console.log(res));
 
 /*
 ******************************************************
@@ -7735,6 +7738,34 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName, hasEmbargo) => {
   // ensure a valid dataset ir or name has been passed in
   if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error("A valid dataset must be provided");
+  }
+
+  // check the permissions maye if it isn;t checked before this -- aka firewall
+
+  // get the dataset id
+  let jwt = await get_access_token();
+
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  let { id } = dataset.content;
+
+  // create the api call options
+  const options = {
+    method: "POST",
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  };
+
+  try {
+    let withdrawResponse = await fetch(
+      `https://api.pennsieve.io/datasets/${id}/publication/cancel?publicationType=embargo`,
+      options
+    );
+  } catch (e) {
+    console.error(e);
   }
 };
 
