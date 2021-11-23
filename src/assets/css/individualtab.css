@@ -1718,7 +1718,7 @@ body.swal2-shown > [aria-hidden="true"] {
   color: #e7f1ff;
 }
 
-#pre-publishing-checklist button {
+#prepublishing-checklist button {
   text-decoration: none;
   cursor: pointer;
   background: none;
@@ -1732,7 +1732,7 @@ body.swal2-shown > [aria-hidden="true"] {
   margin: -2em;
 }
 
-#pre-publishing-checklist button:hover {
+#prepublishing-checklist button:hover {
   text-decoration: underline;
 }
 
