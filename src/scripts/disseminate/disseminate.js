@@ -618,7 +618,7 @@ const prePublishingChecksItemsShow = () => {
 };
 
 // user clicks on the begin pre-publishing button
-$("#begin-prepublishing-btn").on('click', async () => {
+$("#begin-prepublishing-btn").on("click", async () => {
   // show a loading popup
   Swal.fire({
     title: "Determining your dataset permissions",
