@@ -7725,21 +7725,18 @@ const submitDatasetForReview = async (
   }
 };
 
-
 // Withdraw any dataset from a pre-publishing review submission
 // I:
 //  datasetIdOrName: string - the id/name of the dataset being submitted for publication
 //  hasEmbargo: boolean - True when the dataset was submotted for publishing under embargo, false otherwise
 //  O:
-//    void 
+//    void
 const withdrawDatasetReviewSubmission = async (datasetIdOrName, hasEmbargo) => {
-  // ensure a valid dataset ir or name has been passed in 
-  if(!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error("A valid dataset must be provided")
+  // ensure a valid dataset ir or name has been passed in
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error("A valid dataset must be provided");
   }
-
-  
-}
+};
 
 /*
 ******************************************************
