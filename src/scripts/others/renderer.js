@@ -3779,7 +3779,7 @@ const showPrePublishingPageElements = () => {
   }
 };
 
-async function showPublishingStatus(callback) {
+function showPublishingStatus(callback) {
   return new Promise(function (resolve, reject) {
     if (callback == "noClear") {
       var nothing;
