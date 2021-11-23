@@ -7834,7 +7834,7 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
 
   // check the status code of the response
   switch (statusCode) {
-    case 200:
+    case 201:
       // success do nothing
       break;
     case 404:
@@ -7851,7 +7851,7 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
       );
     default:
       // something unexpected happened
-      let statusText = await publicationResponse.json().statusText;
+      let statusText = await withdrawResponse.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
 };
