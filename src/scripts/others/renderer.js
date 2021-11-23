@@ -3389,10 +3389,41 @@ function withdrawDatasetSubmission() {
       Swal.showLoading();
     },
   });
-  showPublishingStatus(withdrawDatasetCheck);
+
+  // get the publishing status of the currently selected dataset
+  // then check if it can be withdrawn, then withdraw it
+  // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
+  showPublishingStatus(withdrawDatasetCheck).catch((error) => {
+    log.error(error);
+    console.error(error);
+    var emessage = userError(error);
+    Swal.fire({
+      title: "Could not withdraw dataset from publication!",
+      text: `${emessage}`,
+      heightAuto: false,
+      icon: "error",
+      confirmButtonText: "Ok",
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    });
+
+    // track the error for analysis
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Submit for pre-publishing review",
+      defaultBfDataset
+    );
+  });
 }
 
-function withdrawDatasetCheck(res) {
+async function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     Swal.fire({
@@ -3409,10 +3440,8 @@ function withdrawDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-
-    $("#submit_prepublishing_review-spinner").hide();
   } else {
-    Swal.fire({
+    let result = await Swal.fire({
       icon: "warning",
       text: "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
       heightAuto: false,
@@ -3428,25 +3457,25 @@ function withdrawDatasetCheck(res) {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-        Swal.fire({
-          title: `Withdrawing dataset submission`,
-          html: "Please wait...",
-          // timer: 5000,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-        withdrawReviewDataset();
-      }
     });
+
+    if (result.isConfirmed) {
+      // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+      Swal.fire({
+        title: `Withdrawing dataset submission`,
+        html: "Please wait...",
+        // timer: 5000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      await withdrawReviewDataset();
+    }
   }
 }
 
@@ -3750,8 +3779,8 @@ const showPrePublishingPageElements = () => {
   }
 };
 
-function showPublishingStatus(callback) {
-  return new Promise((resolve) => {
+async function showPublishingStatus(callback) {
+  return new Promise(function (resolve, reject) {
     if (callback == "noClear") {
       var nothing;
     }
@@ -3759,7 +3788,9 @@ function showPublishingStatus(callback) {
     var selectedBfDataset = $(".bf-dataset-span")
       .html()
       .replace(/^\s+|\s+$/g, "");
+
     if (selectedBfDataset === "None") {
+      resolve();
     } else {
       client.invoke(
         "api_bf_get_publishing_status",
@@ -3785,44 +3816,56 @@ function showPublishingStatus(callback) {
               },
             });
 
-            resolve();
-          } else {
-            // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
-            if (res[0] !== "requested") {
-              // cannot withdraw from submission if there is no review request in progress or if it is already accepted
-              $("#prepublishing-withdraw-btn-container").css(
-                "visibility",
-                "hidden"
-              );
-              $("#prepublishing-submit-btn-container").css(
-                "visibility",
-                "visible"
-              );
-            } else {
-              // show the withdraw button
-              $("#prepublishing-withdraw-btn-container").css(
-                "visibility",
-                "visible"
-              );
-              $("#prepublishing-submit-btn-container").css(
-                "visibility",
-                "hidden"
-              );
-            }
-
-            // update the dataset's publication status and display it onscreen for the user under their dataset name
-            $("#para-review-dataset-info-disseminate").text(
-              publishStatusOutputConversion(res)
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Disseminate Datasets - Submit for pre-publishing review",
+              defaultBfDataset
             );
 
-            if (
-              callback === submitReviewDatasetCheck ||
-              callback === withdrawDatasetCheck
-            ) {
-              resolve(callback(res));
-            }
-
             resolve();
+          } else {
+            try {
+              // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
+              if (res[0] !== "requested") {
+                // cannot withdraw from submission if there is no review request in progress or if it is already accepted
+                $("#prepublishing-withdraw-btn-container").css(
+                  "visibility",
+                  "hidden"
+                );
+                $("#prepublishing-submit-btn-container").css(
+                  "visibility",
+                  "visible"
+                );
+              } else {
+                // show the withdraw button
+                $("#prepublishing-withdraw-btn-container").css(
+                  "visibility",
+                  "visible"
+                );
+                $("#prepublishing-submit-btn-container").css(
+                  "visibility",
+                  "hidden"
+                );
+              }
+
+              // update the dataset's publication status and display it onscreen for the user under their dataset name
+              $("#para-review-dataset-info-disseminate").text(
+                publishStatusOutputConversion(res)
+              );
+
+              if (
+                callback === submitReviewDatasetCheck ||
+                callback === withdrawDatasetCheck
+              ) {
+                return resolve(callback(res));
+              }
+
+              resolve();
+            } catch (error) {
+              // an exceptions will be caught and rejected
+              reject(error);
+            }
           }
         }
       );
