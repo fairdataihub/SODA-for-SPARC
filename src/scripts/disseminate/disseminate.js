@@ -1,72 +1,13 @@
 // Main functions
 async function disseminatePublish() {
-  // run preassumption checks
-  let role;
-  try {
-    // get the user's dataset permissions
-    role = await getCurrentUserPermissions(defaultBfDataset);
-  } catch (error) {
-    // could not get permissions
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "We had trouble checking if you are the dataset owner",
-      text: "Please try to submit your dataset for publication again. If that does not work please contact Bhavesh Patel at bpatel@calmi2.org",
-      icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    // hide the spinner
-    $("#submit_prepublishing_review-spinner").hide();
-
-    // alert Google analytics
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Disseminate Datasets - Submit for pre-publishing review",
-      defaultBfDataset
-    );
-
-    // halt execution
-    return;
-  }
-  // check if they are not the dataset owner
-  if (!userIsOwner(role)) {
-    // tell the user only the owner of a dataset can publish it
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "Only the owner of the dataset can publish!",
-      icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    // stop the loader
-    $("#submit_prepublishing_review-spinner").hide();
-    // stop execution
-    return;
-  }
-
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted()) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       confirmButtonText: "Ok",
-      title: "Cannot submit dataset for publication!",
-      text: "You need to complete all pre-publishing checklist items before you can submit your dataset for publication!",
+      title: "Cannot submit dataset for pre-publication review!",
+      text: "You need to complete all pre-publishing checklist items before you can submit your dataset for pre-publication review!",
       icon: "error",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -549,7 +490,13 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   }
 });
 
-// Prepublishing Section
+/*
+******************************************************
+******************************************************
+Pre-publishing section 
+******************************************************
+******************************************************
+*/
 
 // take the user to the Pennsieve account to sign up for an ORCID Id
 $("#ORCID-btn").on("click", async () => {
@@ -567,7 +514,6 @@ $("#ORCID-btn").on("click", async () => {
 
   // handle the reply from the asynhronous message to sign the user into Pennsieve
   ipcRenderer.on("orcid-reply", (event, arg) => {
-    console.log("The reply we wanted");
     // run the pre-publishing checklist items
     showPrePublishingStatus();
   });
@@ -654,14 +600,25 @@ const allPrepublishingChecklistItemsCompleted = () => {
   return incompleteChecklistItems.length ? false : true;
 };
 
-// close the pre-publishing checklist item warning message(s) when user clicks on the close button
-$("#publishing-isa-warning .close-btn").click(() => {
-  // hide the warning message
-  $("#publishing-isa-warning").css("display", "none");
-});
+const prePublishingChecksItemsShow = () => {
+  // hide the begin publishing button
+  $("#begin-prepublishing-btn").hide();
+
+  // show the pre-publishing checklist and the generate/withdraw button
+  $("#pre-publishing-checklist-submission-section").show();
+
+  let submitContainer = document.querySelector(
+    "#prepublishing-publish-btn-container"
+  );
+  // scroll until the submit button is in view
+  submitContainer.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+};
 
 // user clicks on the begin pre-publishing button
-$("#begin-prepublishing-btn").click(async () => {
+$("#begin-prepublishing-btn").on('click', async () => {
   // show a loading popup
   Swal.fire({
     title: 'Determining your dataset permissions',

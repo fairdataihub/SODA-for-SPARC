@@ -2953,6 +2953,7 @@ function datasetStatusListChange() {
 }
 
 function postCurationListChange() {
+  showPrePublishingPageElements()
   showPublishingStatus();
   // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
   showPrePublishingStatus();
@@ -3682,27 +3683,16 @@ function showCurrentDOI() {
 }
 */
 
-const prePublishingChecksItemsShow = () => {
-  // hide the begin publishing button
-  $("#begin-prepublishing-btn").hide();
+const showPrePublishingPageElements = () => {
+  var selectedBfAccount = defaultBfAccount;
+  var selectedBfDataset = defaultBfDataset;
 
-  // show the pre-publishing checklist and the generate/withdraw button
-  $("#pre-publishing-checklist-submission-section").show();
-
-  let submitContainer = document.querySelector(
-    "#prepublishing-publish-btn-container"
-  );
-  // scroll until the submit button is in view
-  submitContainer.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-  });
-};
-
-const showClosure = (ownerStatus) => {
-  const isOwner = ownerStatus;
-
-  prePublishingChecksItemsShow();
+  if (selectedBfDataset === "Select dataset") {
+  } else {
+    // show the "Begin Publishing" button and hide the checklist and submission section
+    $("#begin-publishing-btn").show();
+    $("#pre-publishing-checklist-submission-section").hide();
+  }
 };
 
 function showPublishingStatus(callback) {
@@ -3715,22 +3705,6 @@ function showPublishingStatus(callback) {
     .replace(/^\s+|\s+$/g, "");
   if (selectedBfDataset === "None") {
   } else {
-    // show the "Begin Publishing" button and hide the checklist and submission section
-    $("#begin-publishing-btn").show();
-    $("#pre-publishing-checklist-submission-section").hide();
-
-    // do not allow the user to begin publishing if they are not the owner of the given dataset
-    userIsDatasetOwner(selectedBfDataset)
-      .then((owner) => {
-        if (!owner) {
-        } else {
-        }
-      })
-      .catch((error) => {
-        log.error(error);
-        console.error(error);
-      });
-
     client.invoke(
       "api_bf_get_publishing_status",
       selectedBfAccount,
