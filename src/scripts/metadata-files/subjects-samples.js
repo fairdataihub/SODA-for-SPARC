@@ -83,50 +83,56 @@ function onboardingMetadata(type) {
   var helperButtons = $(
     $($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]
   ).find(".contributor-helper-buttons")[0];
-  introJs()
-    .setOptions({
-      steps: [
-        {
-          title: "Buttons",
-          element: helperButtons,
-          intro: "Click on these buttons to manipulate a " + type + ".",
-        },
-        {
-          title: `1. Edit a ${type}`,
-          element: $(helperButtons).children()[0],
-          intro:
-            "Click here to edit the information about a corresponding " +
-            type +
-            ".",
-        },
-        {
-          title: `2. Copy a ${type}`,
-          element: $(helperButtons).children()[1],
-          intro:
-            "Click here to copy information from the corresponding " +
-            type +
-            " onto a new " +
-            type +
-            ". Note: You have to enter an ID for the new " +
-            type +
-            " after clicking on this.",
-        },
-        {
-          title: `3. Delete a ${type}`,
-          element: $(helperButtons).children()[2],
-          intro:
-            "Click here to delete a corresponding " +
-            type +
-            " from the table. This will permanently delete the " +
-            type +
-            " from SODA and cannot be reverted.",
-        },
-      ],
-      exitOnEsc: false,
-      exitOnOverlayClick: false,
-      disableInteraction: false,
-    })
-    .start();
+
+  if (!introStatus[type]) {
+    introJs()
+      .setOptions({
+        steps: [
+          {
+            title: "Buttons",
+            element: helperButtons,
+            intro: "Click on these buttons to manipulate a " + type + ".",
+          },
+          {
+            title: `1. Edit a ${type}`,
+            element: $(helperButtons).children()[0],
+            intro:
+              "Click here to edit the information about a corresponding " +
+              type +
+              ".",
+          },
+          {
+            title: `2. Copy a ${type}`,
+            element: $(helperButtons).children()[1],
+            intro:
+              "Click here to copy information from the corresponding " +
+              type +
+              " onto a new " +
+              type +
+              ". Note: You have to enter an ID for the new " +
+              type +
+              " after clicking on this.",
+          },
+          {
+            title: `3. Delete a ${type}`,
+            element: $(helperButtons).children()[2],
+            intro:
+              "Click here to delete a corresponding " +
+              type +
+              " from the table. This will permanently delete the " +
+              type +
+              " from SODA and cannot be reverted.",
+          },
+        ],
+        exitOnEsc: false,
+        exitOnOverlayClick: false,
+        disableInteraction: false,
+      })
+      .onbeforeexit(function () {
+        introStatus[type] = true;
+      })
+      .start();
+  }
 }
 
 function promptImportPrevInfoSubject(arr1) {
@@ -137,11 +143,7 @@ function promptImportPrevInfoSubject(arr1) {
     cancelButtonText: "Cancel",
     confirmButtonText: "Confirm",
     reverseButtons: reverseSwalButtons,
-    // customClass: {
-    //   confirmButton: "confirm-disabled",
-    // },
     onOpen: function () {
-      // $(".swal2-confirm").attr("id", "btn-confirm-previous-import-subject");
       removeOptions(document.getElementById("previous-subject-single"));
       $("#previous-subject-single").append(
         `<option value="Select">Select a subject</option>`
@@ -199,7 +201,7 @@ function addSubject() {
   var subjectID = $("#bootbox-subject-id").val();
   addSubjectIDtoDataBase(subjectID);
   if (subjectsTableData.length !== 0) {
-    $("#div-import-primary-folder-sub").hide();
+    $("#div-import-primary-folder-subjects").hide();
   }
   if (subjectsTableData.length === 2) {
     onboardingMetadata("subject");
@@ -212,7 +214,7 @@ function addSample() {
   var subjectID = $("#bootbox-subject-id-samples").val();
   addSampleIDtoDataBase(sampleID, subjectID);
   if (samplesTableData.length !== 0) {
-    $("#div-import-primary-folder-sam").hide();
+    $("#div-import-primary-folder-samples").hide();
   }
   if (samplesTableData.length === 2) {
     onboardingMetadata("sample");
@@ -1396,14 +1398,14 @@ function updateOrderContributorTable(table, json) {
   }
   contributorArray = orderedTableData;
 }
-
-function generateSubjects() {
-  ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
-}
-
-function generateSamples() {
-  ipcRenderer.send("open-folder-dialog-save-samples", "samples.xlsx");
-}
+//
+// function generateSubjects() {
+//   ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
+// }
+//
+// function generateSamples() {
+//   ipcRenderer.send("open-folder-dialog-save-samples", "samples.xlsx");
+// }
 
 function showPrimaryBrowseFolder() {
   ipcRenderer.send("open-file-dialog-local-primary-folder");
@@ -1483,7 +1485,7 @@ function importPrimaryFolderSubjects(folderPath) {
           if (subjectsTableData.length > 1) {
             loadSubjectsDataToTable();
             $("#table-subjects").show();
-            $("#div-import-primary-folder-sub").hide();
+            $("#div-import-primary-folder-subjects").hide();
           } else {
             Swal.fire(
               "Could not load subject IDs from the imported primary folder!",
@@ -1581,7 +1583,7 @@ function importPrimaryFolderSamples(folderPath) {
           if (samplesTableData.length > 1) {
             loadSamplesDataToTable();
             $("#table-samples").show();
-            $("#div-import-primary-folder-sam").hide();
+            $("#div-import-primary-folder-samples").hide();
             // $("#div-confirm-primary-folder-import-samples").hide();
             // $("#button-fake-confirm-primary-folder-load-samples").click();
           } else {
@@ -1636,7 +1638,7 @@ function loadSubjectsDataToTable() {
     backdrop: "rgba(0,0,0, 0.4)",
   });
   $("#button-generate-subjects").css("display", "block");
-  $("#div-import-primary-folder-sub").hide();
+  $("#div-import-primary-folder-subjects").hide();
 }
 
 function loadSamplesDataToTable() {
@@ -1669,7 +1671,7 @@ function loadSamplesDataToTable() {
     });
   }
   $("#button-generate-samples").css("display", "block");
-  $("#div-import-primary-folder-sam").hide();
+  $("#div-import-primary-folder-samples").hide();
 }
 
 function resetSubjects() {
@@ -1705,6 +1707,13 @@ function resetSubjects() {
       subjectsFileData = [];
       subjectsTableData = [];
 
+      $("#existing-subjects-file-destination").attr(
+        "placeholder",
+        "Browse here"
+      );
+
+      $("#div-confirm-existing-subjects-import").hide();
+
       // hide Strains and Species
       $("#bootbox-subject-species").css("display", "none");
       $("#bootbox-subject-strain").css("display", "none");
@@ -1717,16 +1726,24 @@ function resetSubjects() {
         }
       }
       // show Primary import hyperlink again
-      $("#div-import-primary-folder-sub").show();
+      $("#div-import-primary-folder-subjects").show();
 
       // delete table rows except headers
       $("#table-subjects tr:gt(0)").remove();
       $("#table-subjects").css("display", "none");
 
-      $("#div-import-primary-folder-sub").show();
+      $("#div-import-primary-folder-subjects").show();
 
       // Hide Generate button
       $("#button-generate-subjects").css("display", "none");
+
+      $("#button-add-a-subject").show();
+
+      $("#input-destination-generate-subjects-locally").attr(
+        "placeholder",
+        "Browse here"
+      );
+      $("#div-confirm-destination-subjects-locally").css("display", "none");
     }
   });
 }
@@ -1764,6 +1781,12 @@ function resetSamples() {
       samplesFileData = [];
       samplesTableData = [];
 
+      $("#existing-samples-file-destination").attr(
+        "placeholder",
+        "Browse here"
+      );
+      $("#div-confirm-existing-samples-import").hide();
+
       // hide Strains and Species
       $("#bootbox-sample-species").css("display", "none");
       $("#bootbox-sample-strain").css("display", "none");
@@ -1775,12 +1798,20 @@ function resetSamples() {
           $($(field).parents()[2]).remove();
         }
       }
-      $("#div-import-primary-folder-sam").show();
+      $("#div-import-primary-folder-samples").show();
       // delete table rows except headers
       $("#table-samples tr:gt(0)").remove();
       $("#table-samples").css("display", "none");
       // Hide Generate button
       $("#button-generate-samples").css("display", "none");
+
+      $("#button-add-a-sample").show();
+
+      $("#input-destination-generate-samples-locally").attr(
+        "placeholder",
+        "Browse here"
+      );
+      $("#div-confirm-destination-samples-locally").css("display", "none");
     }
   });
 }
@@ -1934,6 +1965,9 @@ function addExistingCustomHeaderSamples(customName) {
   headersArrSamples.push(customName);
 }
 
+var subjectsDestinationPath = "";
+var samplesDestinationPath = "";
+
 $(document).ready(function () {
   loadExistingProtocolInfo();
   for (var field of $("#form-add-a-subject")
@@ -2062,6 +2096,81 @@ $(document).ready(function () {
       document.getElementById("existing-dd-file-destination").placeholder =
         "Browse here";
       $("#div-confirm-existing-dd-import").hide();
+    }
+  });
+
+  // generate subjects file
+  ipcRenderer.on(
+    "selected-destination-generate-subjects-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById(
+          "input-destination-generate-subjects-locally"
+        ).placeholder = dirpath[0];
+        var destinationPath = path.join(dirpath[0], "subjects.xlsx");
+        subjectsDestinationPath = destinationPath;
+        $("#div-confirm-destination-subjects-locally").css("display", "flex");
+      }
+    }
+  );
+
+  // generate samples file
+  ipcRenderer.on(
+    "selected-destination-generate-samples-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById(
+          "input-destination-generate-samples-locally"
+        ).placeholder = dirpath[0];
+        var destinationPath = path.join(dirpath[0], "samples.xlsx");
+        samplesDestinationPath = destinationPath;
+        $("#div-confirm-destination-samples-locally").css("display", "flex");
+      }
+    }
+  );
+
+  $("#bf_dataset_load_subjects").on("DOMSubtreeModified", function () {
+    if (
+      $("#Question-prepare-subjects-3").hasClass("show") &&
+      !$("#Question-prepare-subjects-6").hasClass("show")
+    ) {
+      $("#Question-prepare-subjects-3").removeClass("show");
+    }
+    if ($("#bf_dataset_load_subjects").text().trim() !== "None") {
+      $("#div-check-bf-import-subjects").css("display", "flex");
+      $($("#div-check-bf-import-subjects").children()[0]).show();
+    } else {
+      $("#div-check-bf-import-subjects").css("display", "none");
+    }
+  });
+
+  $("#bf_dataset_generate_subjects").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_subjects").text().trim() !== "None") {
+      $("#div-check-bf-generate-subjects").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-subjects").css("display", "none");
+    }
+  });
+
+  $("#bf_dataset_load_samples").on("DOMSubtreeModified", function () {
+    if (
+      $("#Question-prepare-samples-3").hasClass("show") &&
+      !$("#Question-prepare-samples-6").hasClass("show")
+    ) {
+      $("#Question-prepare-samples-3").removeClass("show");
+    }
+    if ($("#bf_dataset_load_samples").text().trim() !== "None") {
+      $("#div-check-bf-import-samples").css("display", "flex");
+      $($("#div-check-bf-import-samples").children()[0]).show();
+    } else {
+      $("#div-check-bf-import-samples").css("display", "none");
+    }
+  });
+  $("#bf_dataset_generate_samples").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_samples").text().trim() !== "None") {
+      $("#div-check-bf-generate-samples").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-samples").css("display", "none");
     }
   });
 });
@@ -2203,7 +2312,99 @@ function importExistingSamplesFile() {
   }
 }
 
-function loadDataFrametoUI() {
+function checkBFImportSubjects() {
+  Swal.fire({
+    title: "Importing the subjects.xlsx file",
+    html: "Please wait...",
+    timer: 15000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+  var fieldEntries = [];
+  for (var field of $("#form-add-a-subject")
+    .children()
+    .find(".subjects-form-entry")) {
+    fieldEntries.push(field.name.toLowerCase());
+  }
+  client.invoke(
+    "api_import_bf_metadata_file",
+    "subjects.xlsx",
+    fieldEntries,
+    defaultBfAccount,
+    $("#bf_dataset_load_subjects").text().trim(),
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          html: emessage,
+        });
+      } else {
+        subjectsTableData = res;
+        loadDataFrametoUI("bf");
+      }
+    }
+  );
+}
+
+function checkBFImportSamples() {
+  Swal.fire({
+    title: "Importing the samples.xlsx file",
+    html: "Please wait...",
+    timer: 15000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+  var fieldEntries = [];
+  for (var field of $("#form-add-a-sample")
+    .children()
+    .find(".samples-form-entry")) {
+    fieldEntries.push(field.name.toLowerCase());
+  }
+  client.invoke(
+    "api_import_bf_metadata_file",
+    "samples.xlsx",
+    fieldEntries,
+    defaultBfAccount,
+    $("#bf_dataset_load_samples").text().trim(),
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          html: emessage,
+        });
+      } else {
+        samplesTableData = res;
+        loadDataFrametoUISamples("bf");
+      }
+    }
+  );
+}
+
+function loadDataFrametoUI(type) {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2227,10 +2428,21 @@ function loadDataFrametoUI() {
   // load sub-ids to table
   loadSubjectsDataToTable();
   $("#table-subjects").show();
-  $("#button-fake-confirm-existing-subjects-file-load").click();
+  if (type === "local") {
+    $("#div-confirm-existing-subjects-import").hide();
+    $($("#div-confirm-existing-subjects-import button")[0]).hide();
+    $("#button-fake-confirm-existing-subjects-file-load").click();
+  } else {
+    $("#div-check-bf-import-subjects").hide();
+    $($("#div-check-bf-import-subjects button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-subjects-file-load").click();
+    $(
+      $("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]
+    ).hide();
+  }
 }
 
-function loadDataFrametoUISamples() {
+function loadDataFrametoUISamples(type) {
   // separate regular headers and custom headers
   const lowercasedHeaders = samplesTableData[0].map((header) =>
     header.toLowerCase()
@@ -2254,7 +2466,18 @@ function loadDataFrametoUISamples() {
   // load sub-ids to table
   loadSamplesDataToTable();
   $("#table-samples").show();
-  $("#button-fake-confirm-existing-samples-file-load").click();
+  if (type === "local") {
+    $("#div-confirm-existing-samples-import").hide();
+    $($("#div-confirm-existing-samples-import button")[0]).hide();
+    $("#button-fake-confirm-existing-samples-file-load").click();
+  } else {
+    $("#div-check-bf-import-samples").hide();
+    $($("#div-check-bf-import-samples button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-samples-file-load").click();
+    $(
+      $("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]
+    ).hide();
+  }
 }
 
 function preliminaryProtocolStep(type) {

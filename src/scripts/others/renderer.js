@@ -54,6 +54,9 @@ var datasetStructureJSONObj = {
 
 let introStatus = {
   organizeStep3: true,
+  submission: false,
+  subjects: false,
+  samples: false,
 };
 
 //////////////////////////////////
@@ -78,100 +81,76 @@ console.log("Current SODA version:", appVersion);
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-// Outputs: An object with these properties: {connected: boolean, error: Error}
-//          connected is true when the server is healthy and the apiversion is current. false otherwise.
-//          error is an apiversion error, a python server connection error, or undefined if there was no error with the apiversion or the python server connection
-const check_server_connection_and_api_version = () => {
-  return new Promise(async (resolve) => {
-    // invoke a server method to check that a server connection can be created successfully
-    client.invoke("echo", "server ready", (error, res) => {
-      // there was an error establishing the Python connection
-      if (error || res !== "server ready") {
-        // log the error locally
+let client = new zerorpc.Client({ timeout: 300000 });
+client.connect("tcp://127.0.0.1:4242");
+client.invoke("echo", "server ready", (error, res) => {
+  if (error || res !== "server ready") {
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      error
+    );
+    Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        app.relaunch();
+        app.exit();
+      }
+    });
+  } else {
+    console.log("Connected to Python back-end successfully");
+    log.info("Connected to Python back-end successfully");
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Establishing Python Connection"
+    );
+
+    // verify backend api versions
+    client.invoke("api_version_check", (error, res) => {
+      if (error || res !== appVersion) {
         log.error(error);
         console.error(error);
-        // log the error to analytics
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Establishing Python Connection",
+          "Verifying App Version",
           error
         );
 
-        // create the popup message so the user can address the python server connection error
         Swal.fire({
           icon: "error",
-          html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Restart now",
+          confirmButtonText: "Close now",
           allowOutsideClick: false,
           allowEscapeKey: false,
-          closeOnConfirm: true,
         }).then(async (result) => {
           if (result.isConfirmed) {
-            app.relaunch();
             app.exit();
           }
         });
-
-        // no connection tell the caller
-        resolve({ connected: false, error: error });
       } else {
-        console.log("Connected to Python back-end successfully");
-        log.info("Connected to Python back-end successfully");
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Establishing Python Connection"
-        );
+        ipcRenderer.send("track-event", "Success", "Verifying App Version");
 
-        // verify backend api versions
-        client.invoke("api_version_check", (error, res) => {
-          if (error || res !== appVersion) {
-            // log the api version error locally
-            log.error(error);
-            console.error(error);
-            // log the apu version error to analytics
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Verifying App Version",
-              error
-            );
-
-            // alert the user of the api version error and force them to address it before being able to continue using Soda
-            Swal.fire({
-              icon: "error",
-              html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              confirmButtonText: "Close now",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-            }).then(async (result) => {
-              if (result.isConfirmed) {
-                app.exit();
-              }
-            });
-
-            resolve({ connected: false, error: error });
-          } else {
-            ipcRenderer.send("track-event", "Success", "Verifying App Version");
-
-            //Load Default/global Pennsieve account if available
-            updateBfAccountList();
-            checkNewAppVersion(); // Added so that version will be displayed for new users
-            resolve({ connected: true, error: undefined });
-          }
-        });
+        //Load Default/global Pennsieve account if available
+        updateBfAccountList();
+        checkNewAppVersion(); // Added so that version will be displayed for new users
       }
     });
-  });
-};
-
-let client = new zerorpc.Client({ timeout: 300000 });
-client.connect("tcp://127.0.0.1:4242");
+  }
+});
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -278,28 +257,19 @@ let update_downloaded_notification = "";
 
 // Check app version on current app and display in the side bar
 ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
-  try {
-    run_pre_flight_checks();
-  } catch (e) {
-    // do nothing for now -- errors are logged where they occur
-  }
+  run_pre_flight_checks();
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async (resolve) => {
     let connection_response = "";
     let agent_installed_response = "";
     let agent_version_response = "";
     let account_present = false;
 
     // Check the internet connection and if available check the rest.
-    try {
-      connection_response = await check_internet_connection();
-    } catch (e) {
-      // return the rejected promise to prevent the rest of the code from executing
-      return reject(e);
-    }
+    connection_response = await check_internet_connection();
     if (!connection_response) {
       Swal.fire({
         icon: "error",
@@ -406,9 +376,10 @@ const run_pre_flight_checks = async (check_update = true) => {
         if (check_update) {
           checkNewAppVersion();
         }
+        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
         Swal.fire({
           icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
@@ -440,16 +411,6 @@ const wait = async (delay) => {
 };
 
 const check_internet_connection = async (show_notification = true) => {
-  // the client being connected to the server and having an api version that is up to date
-  // is a prerequisite to checking the interet status
-  let { connected, error } = await check_server_connection_and_api_version();
-
-  // server is in a bad state
-  if (!connected) {
-    // assumption failed so throw an error
-    throw error;
-  }
-
   let notification = null;
   if (show_notification) {
     notification = notyf.open({
@@ -1134,7 +1095,7 @@ ipcRenderer.on(
                 Swal.showLoading();
               },
             }).then((result) => {});
-            generateSubjectsFileHelper(destinationPath);
+            generateSubjectsFileHelper(false);
           }
         });
       } else {
@@ -1150,16 +1111,67 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateSubjectsFileHelper(destinationPath);
+        generateSubjectsFileHelper(false);
       }
     }
   }
 );
 
-function generateSubjectsFileHelper(mypath) {
+async function generateSubjectsFileHelper(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing subjects.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing subjects.xlsx file in the specified location will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  }
+  Swal.fire({
+    title: "Generating the subjects.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+
   client.invoke(
     "api_save_subjects_file",
-    mypath,
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_subjects").text().trim(),
+    subjectsDestinationPath,
     subjectsTableData,
     (error, res) => {
       if (error) {
@@ -1168,7 +1180,7 @@ function generateSubjectsFileHelper(mypath) {
         console.error(error);
         Swal.fire({
           title: "Failed to generate the subjects.xlsx file.",
-          text: emessage,
+          html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
@@ -1235,7 +1247,7 @@ ipcRenderer.on(
                 Swal.showLoading();
               },
             }).then((result) => {});
-            generateSamplesFileHelper(destinationPath);
+            generateSamplesFileHelper(uploadBFBoolean);
           }
         });
       } else {
@@ -1251,13 +1263,61 @@ ipcRenderer.on(
             Swal.showLoading();
           },
         }).then((result) => {});
-        generateSamplesFileHelper(destinationPath);
+        generateSamplesFileHelper(uploadBFBoolean);
       }
     }
   }
 );
 
-function generateSamplesFileHelper(mypath) {
+async function generateSamplesFileHelper(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing samples.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing samples.xlsx file in the specified location will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  }
+  Swal.fire({
+    title: "Generating the samples.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
     timeout: 300000,
@@ -1266,7 +1326,10 @@ function generateSamplesFileHelper(mypath) {
   clientLongTimeout.connect("tcp://127.0.0.1:4242");
   clientLongTimeout.invoke(
     "api_save_samples_file",
-    mypath,
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_samples").text().trim(),
+    samplesDestinationPath,
     samplesTableData,
     (error, res) => {
       if (error) {
@@ -1281,7 +1344,7 @@ function generateSamplesFileHelper(mypath) {
         );
         Swal.fire({
           title: "Failed to generate the samples.xlsx file.",
-          text: emessage,
+          html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
@@ -1397,7 +1460,7 @@ function loadSubjectsFileToDataframe(filePath) {
             });
             return;
           }
-          loadDataFrametoUI();
+          loadDataFrametoUI("local");
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -1465,7 +1528,7 @@ function loadSamplesFileToDataframe(filePath) {
             });
             return;
           }
-          loadDataFrametoUISamples();
+          loadDataFrametoUISamples("local");
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -2377,12 +2440,14 @@ const emptyDSInfoEntries = () => {
         fieldSatisfied = false;
       }
     } else {
-      if (
-        inforObj[element].length === 0 ||
-        inforObj[element] === "Select dataset"
-      ) {
-        fieldSatisfied = false;
-        emptyFieldArray.push(element);
+      if (inforObj[element]) {
+        if (
+          inforObj[element].length === 0 ||
+          inforObj[element] === "Select dataset"
+        ) {
+          fieldSatisfied = false;
+          emptyFieldArray.push(element);
+        }
       }
     }
   }
@@ -2897,7 +2962,6 @@ function postCurationListChange() {
 const Cropper = require("cropperjs");
 const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
-const { assert, count } = require("console");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -5878,16 +5942,9 @@ document
       "Please wait while we verify a few things...";
 
     if (dataset_destination == "Pennsieve") {
-      console.log("Running checks in the other part");
-
-      try {
-        let supplementary_checks = await run_pre_flight_checks(false);
-        if (!supplementary_checks) {
-          $("#sidebarCollapse").prop("disabled", false);
-          return;
-        }
-      } catch (e) {
-        // do nothing
+      let supplementary_checks = await run_pre_flight_checks(false);
+      if (!supplementary_checks) {
+        $("#sidebarCollapse").prop("disabled", false);
         return;
       }
     }
@@ -6958,7 +7015,6 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
             updateBfAccountList();
           }
         });
-        // myBootboxDialog.modal("hide");
         Swal.fire({
           icon: "success",
           title: "Successfully added! <br/>Loading your account details...",

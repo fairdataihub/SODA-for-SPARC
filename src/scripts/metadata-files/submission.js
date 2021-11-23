@@ -48,49 +48,76 @@ function resetSubmission() {
       $("#Question-prepare-submission-1").removeClass("prev");
       $("#Question-prepare-submission-1").nextAll().removeClass("show");
       $("#Question-prepare-submission-1").nextAll().removeClass("prev");
-      $("#Question-prepare-submission-1-new")
+      $("#Question-prepare-submission-1")
         .removeClass("checked")
         .removeClass("disabled")
         .removeClass("non-selected");
-      $("#Question-prepare-submission-1-new .folder-input-check").prop(
+      $("#Question-prepare-submission-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-submission-1 .option-card .folder-input-check").prop(
         "checked",
         false
       );
-
-      var inputFields = $("#Question-prepare-submission-1")
-        .nextAll()
-        .find("input");
-      var textAreaFields = $("#Question-prepare-submission-1")
-        .nextAll()
-        .find("textarea");
-      var selectFields = $("#Question-prepare-submission-1")
-        .nextAll()
-        .find("select");
-
-      for (var field of inputFields) {
-        $(field).val("");
-      }
-      for (var field of textAreaFields) {
-        $(field).val("");
-      }
-      milestoneTagify1.removeAllTags();
-      for (var field of selectFields) {
-        $(field).val("Select");
-      }
-      checkAirtableStatus("");
+      resetSubmissionFields();
     }
   });
 }
 
+function resetSubmissionFields() {
+  $("#existing-submission-file-destination").attr("placeholder", "Browse here");
+
+  $("#div-confirm-existing-submission-import").hide();
+
+  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
+    $($("#div-check-bf-import-submission").children()[0]).show();
+    $("#div-check-bf-import-submission").css("display", "flex");
+  } else {
+    $("#div-check-bf-import-submission").hide();
+  }
+
+  var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
+  var textAreaFields = $("#Question-prepare-submission-1")
+    .nextAll()
+    .find("textarea");
+  var selectFields = $("#Question-prepare-submission-1")
+    .nextAll()
+    .find("select");
+
+  for (var field of inputFields) {
+    $(field).val("");
+  }
+  for (var field of textAreaFields) {
+    $(field).val("");
+  }
+  milestoneTagify1.removeAllTags();
+
+  // make accordion active again
+  $("#submission-title-accordion").addClass("active");
+  $("#submission-accordion").addClass("active");
+
+  // show generate button again
+  $("#button-generate-submission").show();
+
+  for (var field of selectFields) {
+    $(field).val("Select");
+  }
+  $("#submission-completion-date")
+    .empty()
+    .append('<option value="Select">Select an option</option>');
+  // actionEnterNewDate("none");
+  $("#submission-completion-date").append(
+    $("<option>", {
+      text: "Enter my own date",
+    })
+  );
+  checkAirtableStatus("");
+}
+
 function helpMilestoneSubmission() {
   var filepath = "";
-  // var award = $("#submission-sparc-award").val();
-  // read from milestonePath to see if associated milestones exist or not
   var informationJson = {};
-  // informationJson = parseJson(milestonePath);
-  // if (Object.keys(informationJson).includes(award)) {
-  //   informationJson[award] = milestoneObj;
-  // } else {
   Swal.fire({
     title: "Do you have the Data Deliverables document ready to import?",
     showCancelButton: true,
@@ -158,7 +185,6 @@ function helpMilestoneSubmission() {
       });
     }
   });
-  // }
 }
 
 function openDDDimport() {
@@ -193,28 +219,33 @@ function openDDDimport() {
 // onboarding for submission file
 function onboardingSubmission() {
   setTimeout(function () {
-    introJs()
-      .setOptions({
-        steps: [
-          {
-            // title: "1. Help with your SPARC Award number",
-            element: document.querySelector("#a-help-submission-Airtable"),
-            intro:
-              "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
-          },
-          {
-            // title: "2. Help with your milestone information",
-            element: document.querySelector("#a-help-submission-milestones"),
-            intro:
-              "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
-          },
-        ],
-        exitOnEsc: false,
-        exitOnOverlayClick: false,
-        disableInteraction: false,
-      })
-      .start();
-  }, 500);
+    if (!introStatus.submission) {
+      introJs()
+        .setOptions({
+          steps: [
+            {
+              // title: "1. Help with your SPARC Award number",
+              element: document.querySelector("#a-help-submission-Airtable"),
+              intro:
+                "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
+            },
+            {
+              // title: "2. Help with your milestone information",
+              element: document.querySelector("#a-help-submission-milestones"),
+              intro:
+                "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
+            },
+          ],
+          exitOnEsc: false,
+          exitOnOverlayClick: false,
+          disableInteraction: false,
+        })
+        .onbeforeexit(function () {
+          introStatus.submission = true;
+        })
+        .start();
+    }
+  }, 1300);
 }
 
 // generateSubmissionFile function takes all the values from the preview card's spans
@@ -234,8 +265,7 @@ function generateSubmissionFile() {
       text: "Please fill in all of the required fields.",
       title: "Incomplete information",
     });
-  } else {
-    ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
+    return "empty";
   }
 }
 
@@ -296,53 +326,9 @@ function actionEnterNewDate(action) {
 }
 
 const submissionDateInput = document.getElementById("input-milestone-date");
+var submissionDestinationPath = "";
 
 $(document).ready(function () {
-  ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
-    if (dirpath.length > 0) {
-      var destinationPath = path.join(dirpath[0], filename);
-      if (fs.existsSync(destinationPath)) {
-        var emessage =
-          "File '" +
-          filename +
-          "' already exists in " +
-          dirpath[0] +
-          ". Do you want to replace it?";
-        Swal.fire({
-          icon: "warning",
-          title: "Metadata file already exists",
-          text: `${emessage}`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: true,
-          showCancelButton: true,
-          cancelButtonText: "No",
-          confirmButtonText: "Yes",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            generateSubmissionHelper(dirpath, destinationPath);
-          }
-        });
-      } else {
-        Swal.fire({
-          title: "Generating the submission.xlsx file",
-          html: "Please wait...",
-          timer: 15000,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          showConfirmButton: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        }).then((result) => {});
-        generateSubmissionHelper(dirpath, destinationPath);
-      }
-    }
-  });
-
   ipcRenderer.on("selected-existing-submission", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
@@ -378,13 +364,107 @@ $(document).ready(function () {
       $("#div-confirm-existing-submission-import").hide();
     }
   });
+  // generate submission file
+  ipcRenderer.on(
+    "selected-destination-generate-submission-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById(
+          "input-destination-generate-submission-locally"
+        ).placeholder = dirpath[0];
+        var destinationPath = path.join(dirpath[0], "submission.xlsx");
+        submissionDestinationPath = destinationPath;
+        $("#div-confirm-destination-submission-locally").css("display", "flex");
+        $($("#div-confirm-destination-submission-locally").children()[0]).css(
+          "display",
+          "flex"
+        );
+      } else {
+        document.getElementById(
+          "input-destination-generate-submission-locally"
+        ).placeholder = "Browse here";
+        $("#div-confirm-destination-submission-locally").css("display", "none");
+      }
+    }
+  );
+
+  $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
+    if (
+      $("#Question-prepare-submission-2").hasClass("show") &&
+      !$("#Question-prepare-submission-6").hasClass("show")
+    ) {
+      $("#Question-prepare-submission-2").removeClass("show");
+    }
+    if ($("#bf_dataset_load_submission").text().trim() !== "None") {
+      $("#div-check-bf-import-submission").css("display", "flex");
+      $($("#div-check-bf-import-submission").children()[0]).show();
+    } else {
+      $("#div-check-bf-import-submission").css("display", "none");
+    }
+  });
+
+  $("#bf_dataset_generate_submission").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_generate_submission").text().trim() !== "None") {
+      $("#div-check-bf-generate-submission").css("display", "flex");
+    } else {
+      $("#div-check-bf-generate-submission").css("display", "none");
+    }
+  });
 });
 
-function generateSubmissionHelper(fullpath, destinationPath) {
+async function generateSubmissionHelper(uploadBFBoolean) {
+  if (uploadBFBoolean) {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing submission.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    var { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing submission.xlsx file in the specified location will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  }
+  Swal.fire({
+    title: "Generating the submission.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   var awardRes = $("#submission-sparc-award").val();
   var dateRes = $("#submission-completion-date").val();
   var milestonesRes = $("#selected-milestone-1").val();
-  let milestoneValue = [""];
+  let milestoneValue = [{ value: "" }];
   if (milestonesRes !== "") {
     milestoneValue = JSON.parse(milestonesRes);
   }
@@ -404,47 +484,54 @@ function generateSubmissionHelper(fullpath, destinationPath) {
     }
   }
   json_str = JSON.stringify(json_arr);
-  if (fullpath != null) {
-    client.invoke(
-      "api_save_submission_file",
-      destinationPath,
-      json_str,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            icon: "error",
-            text: emessage,
-            title: "Failed to generate the submission file",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Prepare Metadata - Create Submission",
-            defaultBfDataset
-          );
+  client.invoke(
+    "api_save_submission_file",
+    uploadBFBoolean,
+    defaultBfAccount,
+    $("#bf_dataset_load_submission").text().trim(),
+    submissionDestinationPath,
+    json_str,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          html: emessage,
+          title: "Failed to generate the submission file",
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create Submission",
+          defaultBfDataset
+        );
+      } else {
+        if (uploadBFBoolean) {
+          var successMessage =
+            "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
         } else {
-          Swal.fire({
-            title:
-              "The submission.xlsx file has been successfully generated at the specified location.",
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Metadata - Create Submission",
-            defaultBfDataset
-          );
+          var successMessage =
+            "Successfully generated the submission.xlsx file at the specified location.";
         }
+        Swal.fire({
+          title: successMessage,
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create Submission",
+          defaultBfDataset
+        );
       }
-    );
-  }
+    }
+  );
 }
 
 $("#submission-completion-date").change(function () {
@@ -555,6 +642,10 @@ function showExistingSubmissionFile(type) {
   }
 }
 
+function openFileBrowserDestination(metadataType) {
+  ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
+}
+
 function importExistingSubmissionFile(type) {
   var filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
@@ -590,7 +681,7 @@ function importExistingSubmissionFile(type) {
   }
 }
 
-// function to load existing README/CHANGES files
+// function to load existing submission files
 function loadExistingSubmissionFile(filepath) {
   client.invoke("api_load_existing_submission_file", filepath, (error, res) => {
     if (error) {
@@ -604,24 +695,97 @@ function loadExistingSubmissionFile(filepath) {
         icon: "error",
       });
     } else {
-      loadSubmissionFileToUI(res);
+      loadSubmissionFileToUI(res, "local");
     }
   });
 }
 
-function loadSubmissionFileToUI(data) {
+function loadSubmissionFileToUI(data, type) {
   milestoneTagify1.removeAllTags();
+  removeOptions(descriptionDateInput);
+  addOption(descriptionDateInput, "Select an option", "Select");
   $("#submission-completion-date").val("Select");
   $("#submission-sparc-award").val("");
   // 1. populate milestones
-  for (var milestone in data["Milestone achieved"]) {
-    milestoneTagify1.addTags(milestone);
+  if (typeof data["Milestone achieved"] === "string") {
+    milestoneTagify1.addTags(data["Milestone achieved"]);
+  } else {
+    for (var milestone of data["Milestone achieved"]) {
+      milestoneTagify1.addTags(milestone);
+    }
   }
+  // 2. populate SPARC award
   if (data["SPARC Award number"] !== "") {
     $("#submission-sparc-award").val(data["SPARC Award number"]);
   }
+  // 3. populate Completion date
   if (data["Milestone completion date"] !== "") {
+    addOption(
+      descriptionDateInput,
+      data["Milestone completion date"],
+      data["Milestone completion date"]
+    );
     $("#submission-completion-date").val(data["Milestone completion date"]);
   }
-  Swal.hideLoading();
+  Swal.fire({
+    title: "Loaded successfully!",
+    icon: "success",
+    showConfirmButton: false,
+    timer: 500,
+    timerProgressBar: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.hideLoading();
+    },
+  });
+  if (type === "local") {
+    $("#div-confirm-existing-submission-import").hide();
+    $($("#div-confirm-existing-submission-import button")[0]).hide();
+    $("#button-fake-confirm-existing-submission-file-load").click();
+  } else {
+    $("#div-check-bf-import-submission").hide();
+    $($("#div-check-bf-import-submission button")[0]).hide();
+    $("#button-fake-confirm-existing-bf-submission-file-load").click();
+  }
+}
+
+// function to check for existing submission file on Penn
+function checkBFImportSubmission() {
+  Swal.fire({
+    title: "Importing the submission.xlsx file",
+    html: "Please wait...",
+    timer: 15000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+  client.invoke(
+    "api_import_bf_metadata_file",
+    "submission.xlsx",
+    "",
+    defaultBfAccount,
+    $("#bf_dataset_load_submission").text().trim(),
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          html: emessage,
+        });
+      } else {
+        loadSubmissionFileToUI(res, "bf");
+      }
+    }
+  );
 }

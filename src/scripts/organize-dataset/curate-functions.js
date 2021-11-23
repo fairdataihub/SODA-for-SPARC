@@ -378,6 +378,12 @@ function populateMetadataProgress(
     samples: ["para-samples-file-path", metadataButtonsArray[3]],
     README: ["para-readme-file-path", metadataButtonsArray[4]],
     CHANGES: ["para-changes-file-path", metadataButtonsArray[5]],
+    code_description: ["para-readme-file-path", metadataButtonsArray[6]],
+    inputs_metadata: ["para-inputsMetadata-file-path", metadataButtonsArray[7]],
+    outputs_metadata: [
+      "para-outputs_metadata-file-path",
+      metadataButtonsArray[8],
+    ],
   };
   if (populateBoolean) {
     if (metadataFileName in correspondingMetadataParaElement) {
@@ -662,7 +668,8 @@ const get_api_key = async (login, password, key_name) => {
   });
 };
 
-async function openDropdownPrompt(dropdown, show_timer = true) {
+var dropdownEventID = "";
+async function openDropdownPrompt(ev, dropdown, show_timer = true) {
   // if users edit current account
   if (dropdown === "bf") {
     var resolveMessage = "";
@@ -670,7 +677,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       if (Object.keys(bfAccountOptions).length === 1) {
         footerMessage = "No existing accounts to load. Please add an account.";
       } else {
-        // footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Pennsieve-account'>Need help?</a>";
         footerMessage = "";
       }
     } else {
@@ -678,41 +684,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
     }
     var bfacct;
     let bfAccountSwal = false;
-    // const { value: bfAccountSwal } = await Swal.fire({
-    //   title: "Select your Pennsieve account",
-    //   input: "select",
-    //   showCloseButton: true,
-    //   inputOptions: bfAccountOptions,
-    //   confirmButtonText: "Confirm",
-    //   denyButtonText: "Add new account",
-    //   showDenyButton: true,
-    //   showCancelButton: false,
-    //   inputValue: defaultBfAccount,
-    //   reverseButtons: true,
-    //   footer: footerMessage,
-    //   didOpen: (ele) => {
-    //     $(ele).find(".swal2-select").attr("id", "bfaccountdropdown");
-    //     $("#bfaccountdropdown").removeClass("swal2-select");
-    //     $("#bfaccountdropdown").addClass("w-100");
-    //     $("#bfaccountdropdown").attr("data-live-search", "true");
-    //     $("#bfaccountdropdown").wrap("<div class='search-select-box'></div>");
-    //     $("#bfaccountdropdown").selectpicker();
-    //     $("#bfaccountdropdown").attr("disabled", false);
-    //     $(".swal2-deny.swal2-styled").click();
-    //   },
-    //   inputValidator: (value) => {
-    //     value = $("#bfaccountdropdown").val();
-    //     return new Promise((resolve) => {
-    //       if (value && value !== "Select") {
-    //         bfacct = $("#bfaccountdropdown").val();
-    //         resolve();
-    //       } else {
-    //         bfacct = undefined;
-    //         resolve("You need to select an account!");
-    //       }
-    //     });
-    //   },
-    // });
     if (bfAccountSwal === null) {
       if (bfacct !== "Select") {
         Swal.fire({
@@ -939,15 +910,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             }
           );
         }
-        // if (result.isDismissed) {
-        //   if (result.dismiss === Swal.DismissReason.cancel) {
-        //     // else, if users click Add account
-        //     showBFAddAccountBootbox();
-        //   }
-        // }
       });
     }
   } else if (dropdown === "dataset") {
+    dropdownEventID = ev.id;
     $(".svg-change-current-account.dataset").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
@@ -1080,14 +1046,20 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           });
         }
 
+        if (dropdownEventID === "dd-select-pennsieve-dataset") {
+          $("#ds-name").val(bfDataset);
+          $("body").removeClass("waiting");
+          $(".svg-change-current-account.dataset").css("display", "block");
+          dropdownEventID = "";
+          return;
+        }
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
-        $("#ds-name").val(bfDataset);
         confirm_click_function();
 
         defaultBfDataset = bfDataset;
-        document.getElementById("ds-description").innerHTML = "";
+        // document.getElementById("ds-description").innerHTML = "";
         refreshDatasetList();
         $("#dataset-loaded-message").hide();
 

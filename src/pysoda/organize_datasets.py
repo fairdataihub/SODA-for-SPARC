@@ -619,6 +619,9 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only=True)
         "samples.json",
         "README.txt",
         "CHANGES.txt",
+        "code_description.xlsx",
+        "inputs_metadata.xlsx",
+        "outputs_metadata.xlsx",
     ]
     manifest_error_message = []
     double_extensions = [

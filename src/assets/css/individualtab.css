@@ -236,6 +236,11 @@
   margin-top: 10px;
 }
 
+.card-body.metadata {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
 .card-end {
   padding: 5px;
   padding-bottom: 10px;
@@ -1198,15 +1203,16 @@
 }
 
 .card-container.prepare-submission .card-left {
-  text-align: right;
-  width: 50%;
+  /* text-align: right; */
+  float: left;
+  /* width: auto; */
 }
 
-.card-container.prepare-submission .card-right {
+/* .card-container.prepare-submission .card-right {
   text-align: left;
-  width: 50%;
+  width: 70%;
   margin-top: 0;
-}
+} */
 
 .card-right {
   width: 70%;
