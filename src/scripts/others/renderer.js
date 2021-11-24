@@ -3174,21 +3174,19 @@ async function submitReviewDatasetCheck(res) {
       showDenyButton: true,
       title: `Submit your dataset for pre-publishing review`,
       reverseButtons: reverseSwalButtons,
-      text: "",
       html: `
               <div style="display: flex; flex-direction: column;  font-size: 15px;"> 
-                <p style="text-align:left">Your dataset will be submitted for review to the PSPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
+                <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
                 <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" name="publishing-options" value="immediate"
-                  checked>
+                  <input type="radio" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;" checked>
                   <div style="margin-left: 5px;"><label for="immediate"> Make this dataset available to the public immediately after publishing</label></div>
                 </div>
                 <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                <input type="radio" id="embargo-date-check" name="publishing-options" value="embargo-date-check">
+                  <input type="radio" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
                   <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
                 </div>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-                <label style="margin-bottom: 5px;">When will this dataset become publicly available?<label> 
+                <label style="margin-bottom: 5px;">When would you like this dataset to become publicly available?<label> 
                 <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
                      
                     <input
@@ -3232,11 +3230,9 @@ async function submitReviewDatasetCheck(res) {
         });
 
         // display/hide calendar on toggle
-        const selectEmbargoDateCheck =
-          document.getElementById("embargo-date-check");
-        selectEmbargoDateCheck.addEventListener("change", () => {
+        $("input[name='publishing-options']").on("change", (e) => {
           let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
-          if (selectEmbargoDateCheck.checked) {
+          if (e.target.value === "embargo-date-check") {
             tuiCalendarWrapper.style.visibility = "visible";
           } else {
             tuiCalendarWrapper.style.visibility = "hidden";
@@ -3257,10 +3253,10 @@ async function submitReviewDatasetCheck(res) {
         });
       },
       willClose: () => {
-        // check if the embargo checkbox is selected
-        const selectEmbargoDateCheck =
-          document.getElementById("embargo-date-check");
-        if (selectEmbargoDateCheck.checked) {
+        // check if the embargo radio button is selected
+        const checkedRadioButton = $("input:radio[name ='publishing-options']:checked").val();
+
+        if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
         }
