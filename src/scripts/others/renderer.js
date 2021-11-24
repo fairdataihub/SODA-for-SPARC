@@ -8055,6 +8055,29 @@ const getUserInformation = async () => {
     headers: { Authorization: `Bearer ${jwt}` },
   });
 
+  let statusCode = userResponse.status 
+  
+  switch(statusCode) {
+    case 200:
+      break;
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this user information. `
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - Reauthenticate to access this user information. `
+      );
+    case 404:
+      throw new Error(
+        `${statusCode} - Resource could not be found. `
+      );
+    default:
+      // something unexpected happened
+      let statusText = await userResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+
   let user = await userResponse.json();
 
   return user;
