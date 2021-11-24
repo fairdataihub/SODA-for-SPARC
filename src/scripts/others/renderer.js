@@ -3178,7 +3178,7 @@ async function submitReviewDatasetCheck(res) {
       html: `
               <div style="display: flex; flex-direction: column; justify-content: flex-start; font-size: 15px;"> 
                 <p style="text-align:left">Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
-                <span><input type="checkbox" id="embargo-date-check" style="height: 15px; width: 15px; margin-left: -3.5px;"> Place this dataset under embargo so that it is not made public immediately </span>
+                <span style="text-align: left;"><input type="checkbox" id="embargo-date-check" style="height: 15px; width: 15px; margin-left: -3.5px;"> Place this dataset under embargo so that it is not made public immediately </span>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
                 <label style="margin-bottom: 5px;">When will this dataset become publicly available?<label> 
                 <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
