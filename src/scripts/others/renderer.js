@@ -3254,7 +3254,9 @@ async function submitReviewDatasetCheck(res) {
       },
       willClose: () => {
         // check if the embargo radio button is selected
-        const checkedRadioButton = $("input:radio[name ='publishing-options']:checked").val();
+        const checkedRadioButton = $(
+          "input:radio[name ='publishing-options']:checked"
+        ).val();
 
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
