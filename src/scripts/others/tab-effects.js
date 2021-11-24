@@ -945,10 +945,12 @@ async function transitionSubQuestions(
       return;
     }
   }
+
+  // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
   $(ev).addClass("checked");
-  //
+
   // uncheck the other radio buttons
   $($(ev).parents()[0])
     .siblings()
@@ -961,12 +963,13 @@ async function transitionSubQuestions(
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
+  // hide related previous divs
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
     setTimeout(function () {
       $(target).addClass("show");
-      // auto-scroll to bottom of div
+      // auto-scroll to bottom of div (except the dataset_description 4 sections)
       if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
         document.getElementById(parentDiv).scrollTop =
           document.getElementById(parentDiv).scrollHeight;
@@ -1055,9 +1058,11 @@ async function transitionSubQuestions(
     document.getElementById(parentDiv).appendChild(target);
     $("#para-continue-existing-files-generate").text("");
   } else {
+    // disable Next button if all questions are not fully answered by users
     $("#nextBtn").prop("disabled", false);
   }
 
+  // add "prev" to previous questions just so the text becomes gray -> take the attention away from those questions
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
@@ -1181,7 +1186,7 @@ async function transitionSubQuestions(
           "local-path": "",
         },
       };
-      // this should run after a folder is selected
+      // reset the UI back to fresh new
       reset_ui();
       $("#nextBtn").prop("disabled", true);
     }
@@ -1742,6 +1747,7 @@ async function transitionFreeFormMode(
 ) {
   let continueProgressRC = true;
   let continueProgressDD = true;
+
   let continueProgressSubSam = true;
   let continueProgressSubmission = true;
   let continueProgressGenerateDD = true;
@@ -1829,7 +1835,7 @@ async function transitionFreeFormMode(
   if (!continueProgressGenerateDD) {
     return;
   }
-
+  // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
   $(ev).addClass("checked");
@@ -1863,6 +1869,7 @@ async function transitionFreeFormMode(
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
+  // hide related previous divs
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
@@ -1908,11 +1915,11 @@ async function transitionFreeFormMode(
     }
   }
 
-  if (ev.getAttribute("data-next") == "Question-prepare-submission-DDD") {
+  if (ev.getAttribute("data-next") === "Question-prepare-submission-DDD") {
     $("#button-skip-DDD").show();
   }
 
-  if (ev.getAttribute("data-next") == "Post-curation-question-2") {
+  if (ev.getAttribute("data-next") === "Post-curation-question-2") {
     //checkDatasetDisseminate()
     setTimeout(function () {
       $(target).addClass("test2");

@@ -5543,10 +5543,6 @@ function forceActionSidebar(action) {
   if (action === "show") {
     $("#sidebarCollapse").removeClass("active");
     $("#main-nav").removeClass("active");
-    // if (!$("#main-nav").hasClass("active")) {
-    //   $("#sidebarCollapse").click();
-    // }
-    // $("#sidebarCollapse").prop("disabled", true);
   } else {
     $("#sidebarCollapse").addClass("active");
     $("#main-nav").addClass("active");
