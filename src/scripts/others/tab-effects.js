@@ -1194,7 +1194,7 @@ async function transitionSubQuestions(
 }
 
 // Create the dataset structure for sodaJSONObj
-const create_json_object = (action, sodaJSONObj) => {
+const create_json_object = (action, sodaJSONObj, root_folder_path) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -1214,9 +1214,6 @@ const create_json_object = (action, sodaJSONObj) => {
     "inputs_metadata.xlsx",
     "outputs_metadata.xlsx",
   ];
-  let root_folder_path = $("#input-destination-getting-started-locally").attr(
-    "placeholder"
-  );
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
   // Get high level folders and metadata files first
