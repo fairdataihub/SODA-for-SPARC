@@ -1123,6 +1123,7 @@
   display: none;
 }
 
+/* Combining h5 and svg*/
 .click-me {
   display: flex;
   justify-content: space-between;
