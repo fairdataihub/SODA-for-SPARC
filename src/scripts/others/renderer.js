@@ -3056,7 +3056,7 @@ async function submitReviewDatasetCheck(res) {
       reverseButtons: reverseSwalButtons,
       text: "",
       html: `
-                <p>This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue? </p>
+                <p style="text-align:left">This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue? </p>
                 <input type="checkbox" id="embargo-date-check"> Place this dataset under embargo so that it is not made public immediately?
                 <div style="visibility:hidden; flex-direction: column; margin-left: 20%;" id="calendar-wrapper">
                     <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
@@ -3176,8 +3176,9 @@ async function submitReviewDatasetCheck(res) {
       reverseButtons: reverseSwalButtons,
       text: "",
       html: `
-                <p>Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
-                <input type="checkbox" id="embargo-date-check"> Place this dataset under embargo so that it is not made public immediately?
+              <div style="display: flex; flex-direction: column; justify-content: flex-start;"> 
+                <p style="text-align:left">Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
+                <span><input type="checkbox" id="embargo-date-check" style="height: 15px; width: 15px; margin-left: -3.5px;"> Place this dataset under embargo so that it is not made public immediately? </span>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
                     <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
                       <input
@@ -3192,7 +3193,7 @@ async function submitReviewDatasetCheck(res) {
                     style="margin-top: -1px; margin-left: 60px;"
                     ></div>
                 </div>
-                
+              </div>  
             `,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
