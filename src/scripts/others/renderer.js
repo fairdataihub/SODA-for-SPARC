@@ -3172,13 +3172,21 @@ async function submitReviewDatasetCheck(res) {
       confirmButtonText: "Submit",
       denyButtonText: "Cancel",
       showDenyButton: true,
-      title: `Submit your dataset for pre-publishing review!`,
+      title: `Submit your dataset for pre-publishing review`,
       reverseButtons: reverseSwalButtons,
       text: "",
       html: `
-              <div style="display: flex; flex-direction: column; justify-content: flex-start; font-size: 15px;"> 
-                <p style="text-align:left">Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
-                <span style="text-align: left;"><input type="checkbox" id="embargo-date-check" style="height: 15px; width: 15px; margin-left: -3.5px;"> Place this dataset under embargo so that it is not made public immediately </span>
+              <div style="display: flex; flex-direction: column;  font-size: 15px;"> 
+                <p style="text-align:left">Your dataset will be submitted for review to the PSPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
+                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
+                  <input type="radio" name="publishing-options" value="immediate"
+                  checked>
+                  <div style="margin-left: 5px;"><label for="immediate"> Make this dataset available to the public immediately after publishing</label></div>
+                </div>
+                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
+                <input type="radio" id="embargo-date-check" name="publishing-options" value="embargo-date-check">
+                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
+                </div>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
                 <label style="margin-bottom: 5px;">When will this dataset become publicly available?<label> 
                 <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
