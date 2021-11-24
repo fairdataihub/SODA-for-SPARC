@@ -8055,9 +8055,9 @@ const getUserInformation = async () => {
     headers: { Authorization: `Bearer ${jwt}` },
   });
 
-  let statusCode = userResponse.status 
-  
-  switch(statusCode) {
+  let statusCode = userResponse.status;
+
+  switch (statusCode) {
     case 200:
       break;
     case 403:
@@ -8069,9 +8069,7 @@ const getUserInformation = async () => {
         `${statusCode} - Reauthenticate to access this user information. `
       );
     case 404:
-      throw new Error(
-        `${statusCode} - Resource could not be found. `
-      );
+      throw new Error(`${statusCode} - Resource could not be found. `);
     default:
       // something unexpected happened
       let statusText = await userResponse.json().statusText;
