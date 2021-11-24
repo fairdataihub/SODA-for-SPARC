@@ -3005,6 +3005,49 @@ var cropOptions = {
 var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
 
+const setupPublicationOptionsPopover = () => {
+  // setup the calendar that is in the popup
+  const container = document.getElementById("tui-date-picker-container");
+  const target = document.getElementById("tui-date-picker-target");
+
+  // calculate one year from now
+  var oneYearFromNow = new Date();
+  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+  // initialize the calendar
+  const instance = new DatePicker(container, {
+    input: {
+      element: target,
+    },
+    date: new Date(),
+    // a user can lift an embargo today or a year from now
+    selectableRanges: [[new Date(), oneYearFromNow]],
+  });
+
+  // display/hide calendar on toggle
+  $("input[name='publishing-options']").on("change", (e) => {
+    let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
+    if (e.target.value === "embargo-date-check") {
+      tuiCalendarWrapper.style.visibility = "visible";
+    } else {
+      tuiCalendarWrapper.style.visibility = "hidden";
+    }
+  });
+
+  // add a scroll effect
+  const input = document.getElementById("tui-date-picker-target");
+  let calendar = document.querySelector(".tui-calendar-body-inner");
+
+  input.addEventListener("click", () => {
+    setTimeout(() => {
+      calendar.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 200);
+  });
+};
+
 async function submitReviewDatasetCheck(res) {
   var reviewstatus = res[0];
   var publishingStatus = res[1];
@@ -3052,27 +3095,38 @@ async function submitReviewDatasetCheck(res) {
       confirmButtonText: "Submit",
       denyButtonText: "Cancel",
       showDenyButton: true,
-      title: `Submit your dataset for pre-publishing review!`,
+      title: `Submit your dataset for pre-publishing review`,
       reverseButtons: reverseSwalButtons,
       text: "",
       html: `
-                <p style="text-align:left">This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue? </p>
-                <input type="checkbox" id="embargo-date-check"> Place this dataset under embargo so that it is not made public immediately?
-                <div style="visibility:hidden; flex-direction: column; margin-left: 20%;" id="calendar-wrapper">
-                    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
-                      <input
+                <div style="display: flex; flex-direction: column;  font-size: 15px;"> 
+                <p style="text-align:left">This dataset has already been published. This action will submit the dataset again for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published.</p>
+                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
+                  <input type="radio" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;" checked>
+                  <div style="margin-left: 5px;"><label for="immediate"> Make this dataset available to the public immediately after publishing</label></div>
+                </div>
+                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
+                  <input type="radio" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
+                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
+                </div>
+                <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
+                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label> 
+                <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
+                     
+                    <input
                       type="text"
                       id="tui-date-picker-target"
                       aria-label="Date-Time"
                       />
+                      
                       <span class="tui-ico-date"></span>
                     </div>
                     <div
                     id="tui-date-picker-container"
-                    style="margin-top: -1px"
+                    style="margin-top: -1px; margin-left: 60px;"
                     ></div>
                 </div>
-                
+              </div>  
             `,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -3081,54 +3135,15 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
       willOpen: () => {
-        // setup the calendar that is in the popup
-        const container = document.getElementById("tui-date-picker-container");
-        const target = document.getElementById("tui-date-picker-target");
-
-        // calculate one year from now
-        var oneYearFromNow = new Date();
-        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-
-        // initialize the calendar
-        const instance = new DatePicker(container, {
-          input: {
-            element: target,
-          },
-          date: new Date(),
-          // a user can lift an embargo today or a year from now
-          selectableRanges: [[new Date(), oneYearFromNow]],
-        });
-
-        // display/hide calendar on toggle
-        const selectEmbargoDateCheck =
-          document.getElementById("embargo-date-check");
-        selectEmbargoDateCheck.addEventListener("change", () => {
-          let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
-          if (selectEmbargoDateCheck.checked) {
-            tuiCalendarWrapper.style.visibility = "visible";
-          } else {
-            tuiCalendarWrapper.style.visibility = "hidden";
-          }
-        });
-
-        // add a scroll effect
-        const input = document.getElementById("tui-date-picker-target");
-        let calendar = document.querySelector(".tui-calendar-body-inner");
-
-        input.addEventListener("click", () => {
-          setTimeout(() => {
-            calendar.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          }, 200);
-        });
+        setupPublicationOptionsPopover();
       },
       willClose: () => {
-        // check if the embargo checkbox is selected
-        const selectEmbargoDateCheck =
-          document.getElementById("embargo-date-check");
-        if (selectEmbargoDateCheck.checked) {
+        // check if the embargo radio button is selected
+        const checkedRadioButton = $(
+          "input:radio[name ='publishing-options']:checked"
+        ).val();
+
+        if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
         }
@@ -3186,7 +3201,7 @@ async function submitReviewDatasetCheck(res) {
                   <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
                 </div>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-                <label style="margin-bottom: 5px;">When would you like this dataset to become publicly available?<label> 
+                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label> 
                 <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
                      
                     <input
@@ -3211,50 +3226,13 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
       willOpen: () => {
-        // setup the calendar that is in the popup
-        const container = document.getElementById("tui-date-picker-container");
-        const target = document.getElementById("tui-date-picker-target");
-
-        // calculate one year from now
-        var oneYearFromNow = new Date();
-        oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-
-        // initialize the calendar
-        const instance = new DatePicker(container, {
-          input: {
-            element: target,
-          },
-          date: new Date(),
-          // a user can lift an embargo today or a year from now
-          selectableRanges: [[new Date(), oneYearFromNow]],
-        });
-
-        // display/hide calendar on toggle
-        $("input[name='publishing-options']").on("change", (e) => {
-          let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
-          if (e.target.value === "embargo-date-check") {
-            tuiCalendarWrapper.style.visibility = "visible";
-          } else {
-            tuiCalendarWrapper.style.visibility = "hidden";
-          }
-        });
-
-        // add a scroll effect
-        const input = document.getElementById("tui-date-picker-target");
-        let calendar = document.querySelector(".tui-calendar-body-inner");
-
-        input.addEventListener("click", () => {
-          setTimeout(() => {
-            calendar.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          }, 200);
-        });
+        setupPublicationOptionsPopover();
       },
       willClose: () => {
         // check if the embargo radio button is selected
-        const checkedRadioButton = $("input:radio[name ='publishing-options']:checked").val();
+        const checkedRadioButton = $(
+          "input:radio[name ='publishing-options']:checked"
+        ).val();
 
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
