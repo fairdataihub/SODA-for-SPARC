@@ -3,15 +3,27 @@ function showLocalDatasetManifest() {
 }
 
 $(document).ready(function () {
-  ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
-    if (folderPath.length > 0) {
-      if (folderPath != null) {
-        document.getElementById(
-          "input-manifest-local-folder-dataset"
-        ).placeholder = folderPath[0];
-        localDatasetFolderPath = folderPath[0];
-        $("#div-confirm-manifest-local-folder-dataset").css("display", "flex");
-        $("#div-confirm-manifest-local-folder-dataset button").show();
+  ipcRenderer.on(
+    "selected-local-dataset-manifest-purpose",
+    (event, folderPath) => {
+      if (folderPath.length > 0) {
+        if (folderPath != null) {
+          document.getElementById(
+            "input-manifest-local-folder-dataset"
+          ).placeholder = folderPath[0];
+          localDatasetFolderPath = folderPath[0];
+          $("#div-confirm-manifest-local-folder-dataset").css(
+            "display",
+            "flex"
+          );
+          $("#div-confirm-manifest-local-folder-dataset button").show();
+        } else {
+          document.getElementById(
+            "input-manifest-local-folder-dataset"
+          ).placeholder = "Browse here";
+          localDatasetFolderPath = "";
+          $("#div-confirm-manifest-local-folder-dataset").hide();
+        }
       } else {
         document.getElementById(
           "input-manifest-local-folder-dataset"
@@ -19,14 +31,8 @@ $(document).ready(function () {
         localDatasetFolderPath = "";
         $("#div-confirm-manifest-local-folder-dataset").hide();
       }
-    } else {
-      document.getElementById(
-        "input-manifest-local-folder-dataset"
-      ).placeholder = "Browse here";
-      localDatasetFolderPath = "";
-      $("#div-confirm-manifest-local-folder-dataset").hide();
     }
-  });
+  );
   $("#bf_dataset_create_manifest").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_create_manifest").text().trim() !== "None") {
       $("#div-check-bf-create-manifest").css("display", "flex");
@@ -35,7 +41,7 @@ $(document).ready(function () {
       $("#div-check-bf-create-manifest").css("display", "none");
     }
   });
-})
+});
 
 var localDatasetFolderPath = "";
 
@@ -48,16 +54,15 @@ async function generateManifestPrecheck(type) {
   let continueProgressValidateDataset = true;
   var titleTerm = "folder";
   if (type === "bf") {
-    titleTerm = "on Pennsieve"
+    titleTerm = "on Pennsieve";
   } else {
-    continueProgressValidateDataset = await validateSPARCdataset()
+    continueProgressValidateDataset = await validateSPARCdataset();
   }
   if (!continueProgressValidateDataset) {
-    return
+    return;
   }
   var { value: continueProgress } = await Swal.fire({
-    title:
-      `Any existing manifest.xlsx file(s) in the specified dataset ${titleTerm} will be replaced.`,
+    title: `Any existing manifest.xlsx file(s) in the specified dataset ${titleTerm} will be replaced.`,
     text: "Are you sure you want to continue?",
     allowEscapeKey: false,
     allowOutsideClick: false,
@@ -84,7 +89,7 @@ async function generateManifestPrecheck(type) {
       Swal.showLoading();
     },
   }).then((result) => {});
-  generateManifest("", type)
+  generateManifest("", type);
 }
 
 async function generateManifest(action, type) {
@@ -96,21 +101,21 @@ async function generateManifest(action, type) {
     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
     populate_existing_folders(datasetStructureJSONObj);
     populate_existing_metadata(sodaJSONObj);
-    sodaJSONObj["manifest-files"] = {destination: "generate-dataset"};
+    sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
     sodaJSONObj["bf-account-selected"] = {};
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["generate-dataset"] = {};
-    generateManifestHelper()
+    generateManifestHelper();
   } else {
     // Case 2: bf dataset
-    sodaJSONObj["bf-account-selected"] = {"account-name": defaultBfAccount};
-    sodaJSONObj["bf-dataset-selected"] = {"dataset-name": defaultBfDataset};
+    sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
+    sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
     extractBFDatasetForManifestFile(defaultBfAccount, defaultBfDataset);
   }
 }
 
 async function generateManifestHelper() {
-  updateJSONStructureManifestGenerate()
+  updateJSONStructureManifestGenerate();
   // now call the upload function including generating the manifest file(s)
   if (sodaJSONObj["starting-point"]["type"] === "local") {
     sodaJSONObj["starting-point"]["type"] = "new";
@@ -137,69 +142,64 @@ async function generateManifestHelper() {
   if (dataset_destination == "Pennsieve") {
     let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
-        $("#sidebarCollapse").prop("disabled", false);
-        return;
-      }
+      $("#sidebarCollapse").prop("disabled", false);
+      return;
     }
-  client.invoke(
-    "api_check_empty_files_folders",
-    sodaJSONObj,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        console.error(error);
+  }
+  client.invoke("api_check_empty_files_folders", sodaJSONObj, (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      console.error(error);
+    } else {
+      var message = "";
+      error_files = res[0];
+      error_folders = res[1];
+
+      if (error_files.length > 0) {
+        var error_message_files =
+          backend_to_frontend_warning_message(error_files);
+        message += error_message_files;
+      }
+
+      if (error_folders.length > 0) {
+        var error_message_folders =
+          backend_to_frontend_warning_message(error_folders);
+        message += error_message_folders;
+      }
+
+      if (message) {
+        message += "Would you like to continue?";
+        message = "<div style='text-align: left'>" + message + "</div>";
+        Swal.fire({
+          icon: "warning",
+          html: message,
+          showCancelButton: true,
+          cancelButtonText: "No, I want to review my files",
+          focusCancel: true,
+          confirmButtonText: "Yes, Continue",
+          backdrop: "rgba(0,0,0, 0.4)",
+          reverseButtons: reverseSwalButtons,
+          heightAuto: false,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            initiate_generate_manifest();
+          } else {
+          }
+        });
       } else {
-        var message = "";
-        error_files = res[0];
-        error_folders = res[1];
-
-        if (error_files.length > 0) {
-          var error_message_files =
-            backend_to_frontend_warning_message(error_files);
-          message += error_message_files;
-        }
-
-        if (error_folders.length > 0) {
-          var error_message_folders =
-            backend_to_frontend_warning_message(error_folders);
-          message += error_message_folders;
-        }
-
-        if (message) {
-          message += "Would you like to continue?";
-          message = "<div style='text-align: left'>" + message + "</div>";
-          Swal.fire({
-            icon: "warning",
-            html: message,
-            showCancelButton: true,
-            cancelButtonText: "No, I want to review my files",
-            focusCancel: true,
-            confirmButtonText: "Yes, Continue",
-            backdrop: "rgba(0,0,0, 0.4)",
-            reverseButtons: reverseSwalButtons,
-            heightAuto: false,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          }).then((result) => {
-            if (result.isConfirmed) {
-              initiate_generate_manifest()
-            } else {
-            }
-          });
-        } else {
-          initiate_generate_manifest()
-        }
+        initiate_generate_manifest();
       }
     }
-  );
+  });
 }
 
 function updateJSONStructureManifestGenerate() {
-
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -310,7 +310,8 @@ function initiate_generate_manifest() {
       }
 
       Swal.fire({
-        title: "Successfully generated manifest files at the specified location!",
+        title:
+          "Successfully generated manifest files at the specified location!",
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
@@ -345,7 +346,7 @@ function initiate_generate_manifest() {
   });
 }
 
-async function extractBFDatasetForManifestFile(bfaccount, bfdataset){
+async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
   var result;
   try {
     var res = await bf_request_and_populate_dataset(sodaJSONObj);
@@ -374,12 +375,15 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset){
     } else {
       datasetStructureJSONObj = { folders: {}, files: {} };
     }
-    sodaJSONObj["manifest-files"] = {destination: "generate-dataset"};
-    sodaJSONObj["generate-dataset"] = {destination: "bf", "generate-option": "existing-bf"};
-    sodaJSONObj["starting-point"] = {type: "bf"};
+    sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
+    sodaJSONObj["generate-dataset"] = {
+      destination: "bf",
+      "generate-option": "existing-bf",
+    };
+    sodaJSONObj["starting-point"] = { type: "bf" };
     populate_existing_folders(datasetStructureJSONObj);
     populate_existing_metadata(sodaJSONObj);
-    generateManifestHelper()
+    generateManifestHelper();
   }
 }
 
@@ -388,7 +392,10 @@ function validateSPARCdataset() {
   if (valid_dataset == true) {
     let action = "";
     irregularFolderArray = [];
-    detectIrregularFolders(path.basename(localDatasetFolderPath), localDatasetFolderPath);
+    detectIrregularFolders(
+      path.basename(localDatasetFolderPath),
+      localDatasetFolderPath
+    );
     var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
     if (irregularFolderArray.length > 0) {
       Swal.fire({
@@ -404,11 +411,10 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {
-      });
-      return false
+      }).then((result) => {});
+      return false;
     } else {
-      return true
+      return true;
     }
   } else {
     Swal.fire({
@@ -429,7 +435,7 @@ function validateSPARCdataset() {
         "input-manifest-local-folder-dataset"
       ).placeholder = "Browse here";
       localDatasetFolderPath = "";
-      return false
+      return false;
     });
   }
 }

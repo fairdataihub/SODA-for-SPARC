@@ -5566,7 +5566,7 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
 document
   .getElementById("button-generate")
-  .addEventListener("click", async function() {
+  .addEventListener("click", async function () {
     $($($(ev).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
@@ -5722,7 +5722,7 @@ document
         }
       }
     );
-});
+  });
 
 const delete_imported_manifest = () => {
   for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
