@@ -1749,6 +1749,8 @@ async function transitionFreeFormMode(
   let continueProgressSubmission = true;
   let continueProgressGenerateDD = true;
 
+  let continueProgressGenerateManifest = true;
+
   const dataCurrent = $(ev).attr("data-current");
 
   switch (dataCurrent) {
@@ -1811,6 +1813,9 @@ async function transitionFreeFormMode(
         return;
       }
       break;
+    case "Question-prepare-manifest-1":
+      continueProgressGenerateManifest = await switchMetadataManifestQuestion();
+      break;
   }
 
   if (!continueProgressRC) {
@@ -1830,6 +1835,10 @@ async function transitionFreeFormMode(
   }
 
   if (!continueProgressGenerateDD) {
+    return;
+  }
+
+  if (!continueProgressGenerateManifest) {
     return;
   }
   // add "non-selected" to current option-card so users cannot keep selecting it
@@ -2072,6 +2081,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
   }
 }
 
+//// 3. dataset_description
 async function switchMetadataDDQuestion() {
   if ($("#Question-prepare-dd-2").hasClass("show")) {
     var { value: continueProgressDD } = await Swal.fire({
@@ -2096,6 +2106,7 @@ async function switchMetadataDDQuestion() {
   }
 }
 
+//// 4. submission
 async function switchMetadataSubmissionQuestion() {
   if ($("#Question-prepare-submission-2").hasClass("show")) {
     var { value: continueProgressSubmission } = await Swal.fire({
@@ -2110,11 +2121,37 @@ async function switchMetadataSubmissionQuestion() {
     });
     if (continueProgressSubmission) {
       $("#existing-submission-file-destination").val("");
+      $("#existing-submission-file-destination").attr("placeholder", "Browse here");
       $($("#div-check-bf-import-submission").children()[0]).show();
       $("#div-check-bf-import-submission").css("display", "flex");
       resetSubmissionFields();
     }
     return continueProgressSubmission;
+  } else {
+    return true;
+  }
+}
+
+// 5. manifest
+async function switchMetadataManifestQuestion() {
+  if ($("#Question-prepare-manifest-2").hasClass("show")) {
+    var { value: continueProgressManifest } = await Swal.fire({
+      title:
+        "This will reset your progress so far with the manifest.xlsx file. Are you sure you want to continue?",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: reverseSwalButtons,
+    });
+    if (continueProgressManifest) {
+      $("#input-manifest-local-folder-dataset").val("");
+      $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
+      // $($("#div-confirm-manifest-local-folder-dataset").children()[0]).show();
+      $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
+    }
+    return continueProgressManifest;
   } else {
     return true;
   }
