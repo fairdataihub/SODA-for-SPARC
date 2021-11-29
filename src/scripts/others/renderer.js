@@ -5566,8 +5566,8 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
 document
   .getElementById("button-generate")
-  .addEventListener("click", async function () {
-    $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+  .addEventListener("click", async function() {
+    $($($(ev).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
     ).innerHTML = "";
@@ -5722,7 +5722,7 @@ document
         }
       }
     );
-  });
+});
 
 const delete_imported_manifest = () => {
   for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -6266,7 +6266,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
             "track-event",
             "Error",
             "Retrieve Dataset - Pennsieve",
-            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+            defaultBfDataset
           );
         } else {
           resolve(res);
@@ -6274,7 +6274,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
             "track-event",
             "Success",
             "Retrieve Dataset - Pennsieve",
-            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+            defaultBfDataset
           );
         }
       }
