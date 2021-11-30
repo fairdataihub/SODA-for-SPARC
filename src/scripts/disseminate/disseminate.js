@@ -551,9 +551,6 @@ $("#ORCID-btn").on("click", async () => {
 
   // handle the reply from the asynhronous message to sign the user into Pennsieve
   ipcRenderer.on("orcid-reply", async (event, accessCode) => {
-    // run the pre-publishing checklist items
-    showPrePublishingStatus();
-
     // show a loading sweet alert
     Swal.fire({
       title: "Connecting your ORCID iD to Pennsieve.",
@@ -607,6 +604,12 @@ $("#ORCID-btn").on("click", async () => {
       backdrop: "rgba(0,0,0, 0.4)",
       timerProgressBar: false,
     });
+
+    // mark the orcid item green
+    setPrepublishingChecklistItemIconByStatus(
+      "prepublishing-checklist-icon-ORCID",
+      true
+    );
   });
 });
 
