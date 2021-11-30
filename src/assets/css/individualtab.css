@@ -1717,3 +1717,30 @@ body.swal2-shown > [aria-hidden="true"] {
   background: #0c63e4;
   color: #e7f1ff;
 }
+
+#prepublishing-checklist button {
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #4183c4;
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+  padding: 2em;
+  padding-right: 3em;
+  margin: -2em;
+}
+
+#prepublishing-checklist button:hover {
+  text-decoration: underline;
+}
+
+#begin-prepublishing-button {
+  margin: 0 auto;
+}
+
+#begin-prepublishing-button-container {
+  display: flex;
+  justify-content: center;
+}

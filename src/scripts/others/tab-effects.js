@@ -3441,3 +3441,28 @@ for (var i = 0; i < buttons.length; i++) {
   button = buttons[i];
   initRipple(button);
 }
+
+// Input:
+//  elementId:  string - id selector of the section the user will transition to from the Submit for pre-publishing tab
+// transition from the pre-publishing review tab to the given prepare metadata tabs
+const transitionFromPrePublishingChecklist = (elementId) => {
+  // change is shown to the subtitle section
+  $(".section.is-shown").removeClass("is-shown");
+
+  // show the subtitle section instead
+  $(`#${elementId}`).addClass("is-shown");
+
+  $(".main-tabs-section").removeClass("show");
+  $(".main-tabs-section").addClass("hide");
+
+  // when a user clicks return change the tab they see
+  document
+    .getElementById("disseminate_dataset_section")
+    .classList.remove("show");
+  document.getElementById("disseminate_dataset_section").classList.add("hide");
+  document.getElementById("manage_dataset_section").classList.add("show");
+
+  // mark the tab as checked to get the appropriate tab styling
+  $("#disseminate_dataset_tab").prop("checked", false);
+  $("#manage_dataset_tab").prop("checked", true);
+};
