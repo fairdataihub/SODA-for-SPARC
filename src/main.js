@@ -371,13 +371,11 @@ ipcMain.on("orcid", (event, url) => {
   // track when the page navigates
   pennsieveModal.webContents.on("did-navigate", () => {
     // get the URL
-    console.log("Navigated to: ");
     url = pennsieveModal.webContents.getURL();
 
     // check if the url includes the access code
     if (url.includes("code=")) {
       // get the access code from the url
-      console.log(url);
       let params = new URLSearchParams(url.slice(url.search(/\?/)));
       accessCode = params.get("code");
 

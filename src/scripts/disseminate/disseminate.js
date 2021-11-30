@@ -556,24 +556,74 @@ $("#ORCID-btn").on("click", async () => {
 
     // get the access code
     let accessCode = arg;
-    console.log(accessCode);
+
+    // check that the access code is defined
+    if (!accessCode || accessCode === "") {
+      // no more processing is required because the user closed the window before finishing the OAuth flow
+      return;
+    }
 
     // show a loading sweet alert
-
-    let jwt = await get_access_token();
-    // integrate the ORCID to PEnnsieve using the access code
-    let response = await fetch("https://api.pennsieve.io/user/orcid", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+    Swal.fire({
+      title: "Connecting your ORCID iD to Pennsieve.",
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
       },
-      body: JSON.stringify({ authorizationCode: accessCode }),
     });
 
-    let data = await response.json();
+    // integrate the ORCID to PEnnsieve using the access code
+    let jwt = await get_access_token();
+    let connectOrcidResponse = await fetch(
+      "https://api.pennsieve.io/user/orcid",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+        body: JSON.stringify({ authorizationCode: accessCode }),
+      }
+    );
 
-    console.log(data);
+    // get the status code
+    let statusCode = connectOrcidResponse.status;
+
+    // check for any http errors and statuses
+    switch (statusCode) {
+      case 200:
+        // success do nothing
+        break;
+      case 404:
+        throw new Error(
+          `${statusCode} - The currently signed in user does not exist on Pennsieve.`
+        );
+      case 401:
+        throw new Error(
+          `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
+        );
+      default:
+        // something unexpected happened -- likely a 400 or something in the 500s
+        let statusText = await connectOrcidResponse.json().statusText;
+        throw new Error(`${statusCode} - ${statusText}`);
+    }
+
+    // show a success message
+    Swal.fire({
+      title: "ORCID iD integrated with Pennsieve",
+      icon: "success",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      confirmButtonText: "Ok",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+    });
   });
 });
 
