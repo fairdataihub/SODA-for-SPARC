@@ -543,22 +543,37 @@ Pre-publishing section
 
 // take the user to the Pennsieve account to sign up for an ORCID Id
 $("#ORCID-btn").on("click", async () => {
-  // get the user's organization
-  let user = await getUserInformation();
-
-  // get the user's preferred organization
-  let { preferredOrganization } = user;
-
   // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
   ipcRenderer.send(
     "orcid",
-    `https://app.pennsieve.io/${preferredOrganization}/profile/#orcid-id`
+    "https://orcid.org/oauth/authorize?client_id=APP-J86O4ZY7LKQGWJ2X&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
   );
 
   // handle the reply from the asynhronous message to sign the user into Pennsieve
-  ipcRenderer.on("orcid-reply", (event, arg) => {
+  ipcRenderer.on("orcid-reply", async (event, arg) => {
     // run the pre-publishing checklist items
     showPrePublishingStatus();
+
+    // get the access code
+    let accessCode = arg;
+    console.log(accessCode);
+
+    // show a loading sweet alert
+
+    let jwt = await get_access_token();
+    // integrate the ORCID to PEnnsieve using the access code
+    let response = await fetch("https://api.pennsieve.io/user/orcid", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
+      body: JSON.stringify({ authorizationCode: accessCode }),
+    });
+
+    let data = await response.json();
+
+    console.log(data);
   });
 });
 

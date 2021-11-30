@@ -328,6 +328,10 @@ ipcMain.on("restart_app", () => {
   autoUpdater.quitAndInstall();
 });
 
+const wait = async (delay) => {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+};
+
 ipcMain.on("orcid", (event, url) => {
   const windowOptions = {
     minWidth: 500,
@@ -347,14 +351,38 @@ ipcMain.on("orcid", (event, url) => {
   };
 
   let pennsieveModal = new BrowserWindow(windowOptions);
+
+  // send to client so they can use this for the Pennsieve endpoint for integrating an ORCID
+  let accessCode;
+
   pennsieveModal.on("close", function () {
-    pennsieveModal = null;
     // send event back to the renderer to re-run the prepublishing checks
     // this will detect if the user added their ORCID iD
-    event.reply("orcid-reply");
+    event.reply("orcid-reply", accessCode);
+
+    pennsieveModal = null;
   });
   pennsieveModal.loadURL(url);
-  pennsieveModal.once("ready-to-show", () => {
+
+  pennsieveModal.once("ready-to-show", async () => {
     pennsieveModal.show();
+  });
+
+  // track when the page navigates
+  pennsieveModal.webContents.on("did-navigate", () => {
+    // get the URL
+    console.log("Navigated to: ");
+    url = pennsieveModal.webContents.getURL();
+
+    // check if the url includes the access code
+    if (url.includes("code=")) {
+      // get the access code from the url
+      console.log(url);
+      let params = new URLSearchParams(url.slice(url.search(/\?/)));
+      accessCode = params.get("code");
+
+      // if so close the window
+      pennsieveModal.close();
+    }
   });
 });
