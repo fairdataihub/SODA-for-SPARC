@@ -146,57 +146,7 @@ async function generateManifestHelper() {
       return;
     }
   }
-  client.invoke("api_check_empty_files_folders", sodaJSONObj, (error, res) => {
-    if (error) {
-      var emessage = userError(error);
-      console.error(error);
-    } else {
-      var message = "";
-      error_files = res[0];
-      error_folders = res[1];
-
-      if (error_files.length > 0) {
-        var error_message_files =
-          backend_to_frontend_warning_message(error_files);
-        message += error_message_files;
-      }
-
-      if (error_folders.length > 0) {
-        var error_message_folders =
-          backend_to_frontend_warning_message(error_folders);
-        message += error_message_folders;
-      }
-
-      if (message) {
-        message += "Would you like to continue?";
-        message = "<div style='text-align: left'>" + message + "</div>";
-        Swal.fire({
-          icon: "warning",
-          html: message,
-          showCancelButton: true,
-          cancelButtonText: "No, I want to review my files",
-          focusCancel: true,
-          confirmButtonText: "Yes, Continue",
-          backdrop: "rgba(0,0,0, 0.4)",
-          reverseButtons: reverseSwalButtons,
-          heightAuto: false,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            initiate_generate_manifest();
-          } else {
-          }
-        });
-      } else {
-        initiate_generate_manifest();
-      }
-    }
-  });
+  initiate_generate_manifest();
 }
 
 function updateJSONStructureManifestGenerate() {
@@ -229,7 +179,6 @@ function updateJSONStructureManifestGenerate() {
       delete sodaJSONObj["bf-dataset-selected"];
     }
     sodaJSONObj["starting-point"]["type"] = "new";
-    recursive_remove_local_deleted_files(sodaJSONObj["dataset-structure"]);
   }
 }
 
@@ -438,4 +387,41 @@ function validateSPARCdataset() {
       return false;
     });
   }
+}
+
+function resetManifest() {
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over!",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Are you sure you want to start over and reset your progress?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $("#Question-prepare-manifest-1").removeClass("prev");
+      $("#Question-prepare-manifest-1").nextAll().removeClass("show");
+      $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
+      $("#Question-prepare-manifest-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop(
+        "checked",
+        false
+      );
+      $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
+      $("#div-confirm-manifest-local-folder-dataset").hide();
+    }
+  });
 }
