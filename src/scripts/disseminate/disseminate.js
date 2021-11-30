@@ -550,18 +550,9 @@ $("#ORCID-btn").on("click", async () => {
   );
 
   // handle the reply from the asynhronous message to sign the user into Pennsieve
-  ipcRenderer.on("orcid-reply", async (event, arg) => {
+  ipcRenderer.on("orcid-reply", async (event, accessCode) => {
     // run the pre-publishing checklist items
     showPrePublishingStatus();
-
-    // get the access code
-    let accessCode = arg;
-
-    // check that the access code is defined
-    if (!accessCode || accessCode === "") {
-      // no more processing is required because the user closed the window before finishing the OAuth flow
-      return;
-    }
 
     // show a loading sweet alert
     Swal.fire({
@@ -577,40 +568,32 @@ $("#ORCID-btn").on("click", async () => {
       },
     });
 
-    // integrate the ORCID to PEnnsieve using the access code
-    let jwt = await get_access_token();
-    let connectOrcidResponse = await fetch(
-      "https://api.pennsieve.io/user/orcid",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${jwt}`,
-        },
-        body: JSON.stringify({ authorizationCode: accessCode }),
-      }
-    );
+    try {
+      await integrateORCIDWithPennsieve(accessCode);
+    } catch (error) {
+      var emessage = userError(error);
+      Swal.fire({
+        title: "Unable to integrate your ORCID iD with Pennsieve",
+        text: emessage,
+        icon: "error",
+        allowEscapeKey: true,
+        allowOutsideClick: true,
+        confirmButtonText: "Ok",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+      });
 
-    // get the status code
-    let statusCode = connectOrcidResponse.status;
+      log.error(error);
+      console.error(error);
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Disseminate Datasets - Submit for pre-publishing review",
+        defaultBfDataset
+      );
 
-    // check for any http errors and statuses
-    switch (statusCode) {
-      case 200:
-        // success do nothing
-        break;
-      case 404:
-        throw new Error(
-          `${statusCode} - The currently signed in user does not exist on Pennsieve.`
-        );
-      case 401:
-        throw new Error(
-          `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
-        );
-      default:
-        // something unexpected happened -- likely a 400 or something in the 500s
-        let statusText = await connectOrcidResponse.json().statusText;
-        throw new Error(`${statusCode} - ${statusText}`);
+      return;
     }
 
     // show a success message

@@ -8080,3 +8080,56 @@ const getUserInformation = async () => {
 
   return user;
 };
+
+/*
+******************************************************
+******************************************************
+ORCID Integration with NodeJS
+******************************************************
+******************************************************
+*/
+
+const integrateORCIDWithPennsieve = async (accessCode) => {
+  // check that the accessCode is defined and non-empty
+  if (accessCode === "" || !accessCode) {
+    throw new Error(
+      "Cannot integrate your ORCID iD to Pennsieve without an access code."
+    );
+  }
+
+  // integrate the ORCID to Pennsieve using the access code
+  let jwt = await get_access_token();
+  let connectOrcidResponse = await fetch(
+    "https://api.pennsieve.io/user/orcid",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
+      body: JSON.stringify({ authorizationCode: accessCode }),
+    }
+  );
+
+  // get the status code
+  let statusCode = connectOrcidResponse.status;
+
+  // check for any http errors and statuses
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The currently signed in user does not exist on Pennsieve.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot update the dataset description while unauthenticated. Please reauthenticate and try again.`
+      );
+    default:
+      // something unexpected happened -- likely a 400 or something in the 500s
+      let statusText = await connectOrcidResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+};
