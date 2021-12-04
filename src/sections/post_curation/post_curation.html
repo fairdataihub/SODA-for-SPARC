@@ -125,7 +125,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -430,7 +434,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -735,7 +743,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -1024,6 +1036,247 @@
                   </table>
                 </div>
               </div>
+
+              <!--Continue Button comes before filetree and excluded files section-->
+              <div class="pre-publishing-continue-container">
+                <button class="pre-publishing-continue">Continue</button>
+              </div>
+
+              <!--File tree and excluded files section-->
+              <div id="excluded-files-container">
+                <div style="width: 100%; display: flex; flex-direction: row">
+                  <div
+                    class="container-fluid"
+                    style="margin-top: 5px; height: auto; border-radius: 3px"
+                  >
+                    <div id="organize-path-and-back-button-div">
+                      <!-- <div> -->
+                      <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
+          <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
+        </h5> -->
+                      <button
+                        id="button-back"
+                        class="button-back"
+                        style="float: left"
+                      >
+                        <i class="fas fa-arrow-left fa-fw"></i>
+                      </button>
+                      <input
+                        style="
+                          float: left;
+                          margin-left: 15px;
+                          height: 40px;
+                          border: none;
+                          font-family: 'Raleway', sans-serif;
+                          font-size: 14px;
+                          font-weight: 600;
+                          text-decoration: underline;
+                          cursor: default;
+                          color: #898989;
+                          width: 300px;
+                        "
+                        id="input-global-path"
+                        value="My_dataset_folder/"
+                        readonly
+                      />
+
+                      <div class="div-organize-dataset-menu">
+                        <button
+                          id="new-folder"
+                          style="
+                            float: right;
+                            margin-right: 10px;
+                            color: var(--tagify-dd-color-primary);
+                            background: #fff;
+                            border: 1px solid var(--tagify-dd-color-primary);
+                            font-weight: 600;
+                          "
+                        >
+                          <i class="fas fa-folder-plus"></i> New folder
+                        </button>
+                        <div class="btn-group" role="group">
+                          <button
+                            id="btnGroupDrop1"
+                            type="button"
+                            style="
+                              color: var(--tagify-dd-color-primary);
+                              background: #fff;
+                              border: 1px solid var(--tagify-dd-color-primary);
+                              font-weight: 600;
+                            "
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                          >
+                            <svg
+                              style="margin-right: 10px"
+                              width="1em"
+                              height="1em"
+                              viewBox="0 0 16 16"
+                              class="bi bi-upload"
+                              fill="currentColor"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+                              />
+                              <path
+                                fill-rule="evenodd"
+                                d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+                              />
+                            </svg>
+                            Import
+                          </button>
+                          <div
+                            class="dropdown-menu dropdown-menu-right"
+                            aria-labelledby="btnGroupDrop1"
+                          >
+                            <a class="dropdown-item" id="add-files" href="#"
+                              ><i
+                                class="fas fa-upload"
+                                style="margin-right: 5px"
+                              ></i
+                              >Import files</a
+                            >
+                            <a class="dropdown-item" id="add-folders" href="#"
+                              ><i
+                                class="fas fa-upload"
+                                style="margin-right: 5px"
+                              ></i
+                              >Import folders</a
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- These are the context menu options, will not appear on the UI until prompted -->
+                    <ul class="menu reg-folder off">
+                      <li id="reg-folder-rename">
+                        <i class="fas fa-edit fa-fw"></i>Rename
+                      </li>
+                      <li id="folder-move">
+                        <i class="fas fa-external-link-alt"></i>Move
+                      </li>
+                      <li id="reg-folder-delete">
+                        <i class="far fa-trash-alt fa-fw"></i>Delete
+                      </li>
+                    </ul>
+                    <ul class="menu high-level-folder off">
+                      <li id="high-folder-rename">
+                        <i class="fas fa-edit fa-fw"></i>Rename
+                      </li>
+                      <li id="high-folder-delete">
+                        <i class="far fa-trash-alt fa-fw"></i>Delete
+                      </li>
+                      <li id="tooltip-folders">
+                        <i class="fas fa-info fa-fw"></i>Details
+                      </li>
+                    </ul>
+                    <ul class="menu file off">
+                      <li id="file-rename">
+                        <i class="fas fa-edit fa-fw"></i>Rename
+                      </li>
+                      <li id="file-move">
+                        <i class="fas fa-external-link-alt"></i>Move
+                      </li>
+                      <li id="file-delete">
+                        <i class="far fa-trash-alt fa-fw"></i>Delete
+                      </li>
+                      <li id="file-description">
+                        <i class="far fa-plus-square fa-fw"></i>Details
+                      </li>
+                    </ul>
+                    <!-- <span class="hoverPath" style="display: none"></span> -->
+                    <span class="hoverFullName" style="display: none"></span>
+                    <!-- END -->
+                    <div
+                      id="items"
+                      class="div-organize-items"
+                      ondrop="drop(event);"
+                      ondragover="allowDrop(event);"
+                    ></div>
+                    <!-- "data" is jstree html element -->
+                    <div id="data" style="display: none"></div>
+                    <div class="div-display-details file">
+                      <button class="button-display-details">X</button>
+                      <div>
+                        <label
+                          ><b>Local path: <br /></b
+                        ></label>
+                        <p style="margin: 10px 0" id="para-local-path-file"></p>
+                      </div>
+                      <div>
+                        <label
+                          ><b>Description: </b>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="This information will be included in the corresponding manifest file if request from SODA in Step 5."
+                            rel="popover"
+                            data-placement="top"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </label>
+                        <textarea id="textarea-file-description"></textarea>
+                        <input
+                          id="input-add-file-description"
+                          type="checkbox"
+                          style="color: #000; float: left"
+                        /><label style="color: #000; float: left"
+                          >Apply to all files in this folder</label
+                        >
+                      </div>
+                      <div>
+                        <label
+                          ><b>Additional metadata:</b>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="This information will be included in the corresponding manifest file if request from SODA in Step 5."
+                            rel="popover"
+                            data-placement="top"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </label>
+                        <textarea id="textarea-file-metadata"></textarea>
+                        <input
+                          id="input-add-file-metadata"
+                          type="checkbox"
+                          style="color: #000; float: left"
+                        /><label style="color: #000; float: left"
+                          >Apply to all files in this folder</label
+                        >
+                      </div>
+                      <button
+                        id="button-confirm-display-details-file"
+                        onclick="addDetailsForFile(this)"
+                        class="transition-btn"
+                        style="
+                          width: 100px;
+                          margin: 10px auto;
+                          height: 30px;
+                          font-size: 13px;
+                          padding: 5px;
+                        "
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+
+                  <!--List of excluded files will be added to the above div soon-->
+                  <div style="overflow: scroll" class="excluded-files-list">
+                    <span>file path</span> <icon>x</icon>
+                    <span>file path</span> <icon>x</icon>
+                    <span>file path</span> <icon>x</icon>
+                    <span>file path</span> <icon>x</icon> <span>file path</span>
+                    <icon>x</icon>
+                  </div>
+                </div>
+              </div>
+
+              <!--Submit and Withdraw buttons-->
               <div
                 style="
                   display: flex;
