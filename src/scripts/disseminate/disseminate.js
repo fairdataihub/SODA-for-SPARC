@@ -753,6 +753,19 @@ $("#begin-prepublishing-btn").on("click", async () => {
   scrollToElement(".pre-publishing-continue-container");
 });
 
+// user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
+// files will be excluded from the dataset upon publishing
+$(".pre-publishing-continue").on("click", function () {
+  // hide the continue button
+  $(this).hide();
+
+  // show the excluded file tree container
+  $("#excluded-files-container").show();
+
+  // show the submit button
+  $("#submit-withdraw-prepublishing-btns-container").show();
+});
+
 const scrollToElement = (elementIdOrClassname) => {
   let element = document.querySelector(elementIdOrClassname);
 
