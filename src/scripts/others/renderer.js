@@ -3769,6 +3769,8 @@ const showPrePublishingPageElements = () => {
     $("#begin-prepublishing-btn").show();
     $("#prepublishing-checklist-container").hide();
     $("#submit-withdraw-prepublishing-btns-container").hide();
+    $("#excluded-files-container").hide();
+    $(".pre-publishing-continue-container").hide();
   }
 };
 
