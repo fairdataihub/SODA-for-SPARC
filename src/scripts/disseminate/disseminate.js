@@ -734,7 +734,7 @@ $("#begin-prepublishing-btn").on("click", async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
 
-  $("#submit-withdraw-prepublishing-btns-container").show();
+  // $("#submit-withdraw-prepublishing-btns-container").show();
 
   // check which of the two buttons ( withdrawal or submit ) is showing
   let withdrawBtn = $("#prepublishing-withdraw-btn-container button");
@@ -742,12 +742,15 @@ $("#begin-prepublishing-btn").on("click", async () => {
   if (withdrawBtn.css("visibility") === "hidden") {
     // show the pre-publishing checklist and the generate/withdraw button
     $("#prepublishing-checklist-container").show();
+    $(".pre-publishing-continue-container").show();
   } else {
     $("#prepublishing-checklist-container").hide();
+    $("#excluded-files-container").hide();
+    $(".pre-publishing-continue-container").hide();
   }
 
   // make the pre-publishing submit button visible
-  scrollToElement("#btn-withdraw-review-dataset");
+  scrollToElement(".pre-publishing-continue-container");
 });
 
 const scrollToElement = (elementIdOrClassname) => {
