@@ -125,7 +125,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -430,7 +434,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -735,7 +743,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -1032,6 +1044,37 @@
 
               <!--File tree and excluded files section-->
               <div id="excluded-files-container">
+                <!--Pennsieve file tree header-->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <label
+                    id="pre_publishing_label"
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      width: 100%;
+                      text-align: center;
+                      margin-bottom: 10px;
+                    "
+                    >Navigate your dataset and exclude files from publishing:
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="Navigate to the file(s) you would like to exclude from publishing. Then click '+' to add that file to the list of excluded files."
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i>
+                  </label>
+                </div>
+
+                <!--Pennsieve file tree meanu items-->
                 <div style="width: 100%; display: flex; flex-direction: row">
                   <div
                     class="container-fluid"
@@ -1178,6 +1221,8 @@
                     <!-- <span class="hoverPath" style="display: none"></span> -->
                     <span class="hoverFullName" style="display: none"></span>
                     <!-- END -->
+
+                    <!--Pennsieve file tree-->
                     <div
                       id="items"
                       class="div-organize-items"
@@ -1186,81 +1231,79 @@
                     ></div>
                     <!-- "data" is jstree html element -->
                     <div id="data" style="display: none"></div>
-                    <div class="div-display-details file">
-                      <button class="button-display-details">X</button>
-                      <div>
-                        <label
-                          ><b>Local path: <br /></b
-                        ></label>
-                        <p style="margin: 10px 0" id="para-local-path-file"></p>
-                      </div>
-                      <div>
-                        <label
-                          ><b>Description: </b>
-                          <i
-                            class="fas fa-info-circle popover-tooltip"
-                            data-content="This information will be included in the corresponding manifest file if request from SODA in Step 5."
-                            rel="popover"
-                            data-placement="top"
-                            data-html="true"
-                            data-trigger="hover"
-                          ></i>
-                        </label>
-                        <textarea id="textarea-file-description"></textarea>
-                        <input
-                          id="input-add-file-description"
-                          type="checkbox"
-                          style="color: #000; float: left"
-                        /><label style="color: #000; float: left"
-                          >Apply to all files in this folder</label
-                        >
-                      </div>
-                      <div>
-                        <label
-                          ><b>Additional metadata:</b>
-                          <i
-                            class="fas fa-info-circle popover-tooltip"
-                            data-content="This information will be included in the corresponding manifest file if request from SODA in Step 5."
-                            rel="popover"
-                            data-placement="top"
-                            data-html="true"
-                            data-trigger="hover"
-                          ></i>
-                        </label>
-                        <textarea id="textarea-file-metadata"></textarea>
-                        <input
-                          id="input-add-file-metadata"
-                          type="checkbox"
-                          style="color: #000; float: left"
-                        /><label style="color: #000; float: left"
-                          >Apply to all files in this folder</label
-                        >
-                      </div>
-                      <button
-                        id="button-confirm-display-details-file"
-                        onclick="addDetailsForFile(this)"
-                        class="transition-btn"
-                        style="
-                          width: 100px;
-                          margin: 10px auto;
-                          height: 30px;
-                          font-size: 13px;
-                          padding: 5px;
-                        "
-                      >
-                        Confirm
-                      </button>
-                    </div>
                   </div>
+                </div>
 
-                  <!--List of excluded files will be added to the above div soon-->
-                  <div style="overflow: scroll" class="excluded-files-list">
-                    <span>file path</span> <icon>x</icon>
-                    <span>file path</span> <icon>x</icon>
-                    <span>file path</span> <icon>x</icon>
-                    <span>file path</span> <icon>x</icon> <span>file path</span>
-                    <icon>x</icon>
-                  </div>
+                <!--Excluded files header-->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    margin-top: 15px;
+                  "
+                >
+                  <label
+                    id="pre_publishing_label"
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      width: 100%;
+                      text-align: center;
+                    "
+                    >Excluded files:
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="Only the files in the list will be excluded. Click 'x' to remove the file from the list."
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i>
+                  </label>
+                </div>
+
+                <!--List of excluded files will be added to the above div soon-->
+                <div id="excluded-files-list-container">
+                  <ul id="excluded-files-list">
+                    <li class="excluded-files-list-item">
+                      <span
+                        >file path
+                        hhhhhfdhdskjhjkdshfjksdfhlkjfshdklshdfhsjdkfhldfkdjksjdjksdjfljdfhjkdhsfljdhfsjksdfjhfdskjlfdhjfdslkjfljkfsdsljdkfhfsjdkhflkshdfklhsdkjhfkjfhsldkhfkjhlskdjhdsjfhkjhfdkjhdslkjhsdlkjfhdslkjfhlkjdhflkjsdflkdfhlkjsdhfjksdhfsdjkhskhdskjfhlksdjfsdkfhdfhjhsdlkjhdkjfhsdkjfhkjhkjdshksdjfhkjflkjhdlkjhflkjshkjhslkjhsdlkfsdhkjsdhfskjfhkjfkjfhkjhdlkjfshdlfkshfkdjhfjdhsdlkfhsdkjhjsdhfjsdhlhdskjhsdlkjfhsdkjhlksdhlkslksdkdshlksdhskjhkdshk</span
+                      >
+                      <i class="fas fa-times"></i>
+                    </li>
+                    <li class="excluded-files-list-item">
+                      <span>file path</span>
+                      <i class="fas fa-times"></i>
+                    </li>
+                    <li class="excluded-files-list-item">
+                      <span>file path</span>
+                      <i class="fas fa-times"></i>
+                    </li>
+                    <li class="excluded-files-list-item">
+                      <span>file path</span>
+                      <i class="fas fa-times"></i>
+                    </li>
+                  </ul>
+                </div>
+
+                <!--Submit excluded files-->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <button
+                    class="btn_animated md"
+                    id="submit-excluded-files-btn"
+                  >
+                    Exclude Files
+                  </button>
                 </div>
               </div>
 
