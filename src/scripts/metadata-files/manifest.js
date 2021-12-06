@@ -52,6 +52,7 @@ async function generateManifestPrecheck(type) {
   datasetStructureJSONObj = { folders: {}, files: {} };
   sodaJSONObj["metadata-files"] = {};
   let continueProgressValidateDataset = true;
+  let continueProgressEmptyFolder = true;
   var titleTerm = "folder";
   if (type === "bf") {
     titleTerm = "on Pennsieve";
@@ -76,8 +77,12 @@ async function generateManifestPrecheck(type) {
   if (!continueProgress) {
     return;
   }
+  generateManifest("", type);
+}
+
+async function generateManifest(action, type) {
   Swal.fire({
-    title: "Generating the manifest.xlsx file(s)",
+    title: "Reviewing the dataset structure.",
     html: "Please wait...",
     allowEscapeKey: false,
     allowOutsideClick: false,
@@ -89,10 +94,6 @@ async function generateManifestPrecheck(type) {
       Swal.showLoading();
     },
   }).then((result) => {});
-  generateManifest("", type);
-}
-
-async function generateManifest(action, type) {
   // Case 1: Local dataset
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
@@ -105,6 +106,21 @@ async function generateManifest(action, type) {
     sodaJSONObj["bf-account-selected"] = {};
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["generate-dataset"] = {};
+    let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
+    if (continueProgressEmptyFolder === false) {
+      Swal.fire({
+        title: "Failed to generate the manifest files.",
+        text:
+          "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+        heightAuto: false,
+        icon: "error",
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      return;
+    }
     generateManifestHelper();
   } else {
     // Case 2: bf dataset
@@ -183,6 +199,19 @@ function updateJSONStructureManifestGenerate() {
 }
 
 function initiate_generate_manifest() {
+  Swal.fire({
+    title: "Generating the manifest.xlsx file(s)",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -332,6 +361,21 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
     sodaJSONObj["starting-point"] = { type: "bf" };
     populate_existing_folders(datasetStructureJSONObj);
     populate_existing_metadata(sodaJSONObj);
+    let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
+    if (!continueProgressEmptyFolder) {
+      Swal.fire({
+        title: "Failed to generate the manifest files.",
+        text:
+          "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+        heightAuto: false,
+        icon: "error",
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      return;
+    }
     generateManifestHelper();
   }
 }
@@ -424,4 +468,19 @@ function resetManifest() {
       $("#div-confirm-manifest-local-folder-dataset").hide();
     }
   });
+}
+
+// check for empty sub-folders before continuing to generate manifest files
+// to avoid changes made to the dataset structure when we call the main curate function for manifest files
+function checkEmptySubFolders(datasetStructure) {
+  let isEmpty = true;
+  for (var folder in datasetStructure["folders"]) {
+    var currentFolder = datasetStructure["folders"][folder]
+    if (Object.keys(currentFolder["folders"]).length === 0 && Object.keys(currentFolder["files"]).length === 0) {
+      isEmpty = false
+    } else {
+      isEmpty = isEmpty && checkEmptySubFolders(currentFolder);
+    }
+  }
+  return isEmpty
 }
