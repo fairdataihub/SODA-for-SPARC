@@ -756,6 +756,28 @@ $("#begin-prepublishing-btn").on("click", async () => {
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
 // files will be excluded from the dataset upon publishing
 $(".pre-publishing-continue").on("click", function () {
+  // check that the user completed all pre-publishing checklist items for the given dataset
+  if (!allPrepublishingChecklistItemsCompleted()) {
+    // alert the user they must complete all checklist items before beginning the prepublishing process
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot continue this pre-publication review submission",
+      text: "You need to complete all pre-publishing checklist items before you can continue to the next step of the pre-publication review flow.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // halt execution
+    return;
+  }
+
   // hide the continue button
   $(this).hide();
 
