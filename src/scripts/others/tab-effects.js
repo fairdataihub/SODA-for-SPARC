@@ -2121,7 +2121,10 @@ async function switchMetadataSubmissionQuestion() {
     });
     if (continueProgressSubmission) {
       $("#existing-submission-file-destination").val("");
-      $("#existing-submission-file-destination").attr("placeholder", "Browse here");
+      $("#existing-submission-file-destination").attr(
+        "placeholder",
+        "Browse here"
+      );
       $($("#div-check-bf-import-submission").children()[0]).show();
       $("#div-check-bf-import-submission").css("display", "flex");
       resetSubmissionFields();
@@ -2147,7 +2150,10 @@ async function switchMetadataManifestQuestion() {
     });
     if (continueProgressManifest) {
       $("#input-manifest-local-folder-dataset").val("");
-      $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
+      $("#input-manifest-local-folder-dataset").attr(
+        "placeholder",
+        "Browse here"
+      );
       // $($("#div-confirm-manifest-local-folder-dataset").children()[0]).show();
       $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
     }
