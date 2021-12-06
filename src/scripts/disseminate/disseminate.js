@@ -766,7 +766,7 @@ $(".pre-publishing-continue").on("click", function () {
   $("#submit-withdraw-prepublishing-btns-container").show();
 
   // scroll to the ExcludeFiles button
-  scrollToElement("#submit-excluded-files-btn");
+  scrollToElement("#excluded-files-container");
 });
 
 const scrollToElement = (elementIdOrClassname) => {

@@ -1747,12 +1747,6 @@ body.swal2-shown > [aria-hidden="true"] {
 
 #excluded-files-container {
   margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-#submit-excluded-files-btn {
-  margin-top: 1rem;
-  width: 150px;
 }
 
 #excluded-files-list-container {
