@@ -1751,12 +1751,11 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 #submit-excluded-files-btn {
-  margin-top: 10px;
+  margin-top: 1rem;
   width: 150px;
 }
 
 #excluded-files-list-container {
-  margin-top: 10px;
   overflow-y: auto;
   border: 1px solid #f0f0f0;
   box-shadow: 0 0 2px #d5d5d5;
