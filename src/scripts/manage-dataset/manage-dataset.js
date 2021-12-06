@@ -748,6 +748,9 @@ $("#button-add-subtitle").click(() => {
             "Manage Dataset - Add/Edit Subtitle",
             defaultBfDataset
           );
+
+          // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+          showPrePublishingStatus();
         }
       }
     );
@@ -974,12 +977,16 @@ $("#button-add-description").click(() => {
         // hide the warning message if it exists
         $("#ds-isa-warning").css("display", "none");
         addDescription(selectedBfDataset, requiredFields.join("\n"));
+        // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+        showPrePublishingStatus();
       });
     } else {
       // hide the warning message if it exists
       $("#ds-isa-warning").css("display", "none");
       // add the user's description to Pennsieve
       addDescription(selectedBfDataset, requiredFields.join("\n"));
+      // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+      showPrePublishingStatus();
     }
   }, delayAnimation);
 });
@@ -1553,6 +1560,9 @@ const uploadBannerImage = () => {
               selectedBfDataset,
               image_file_size
             );
+
+            // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+            showPrePublishingStatus();
           }
         }
       );
@@ -1901,12 +1911,15 @@ $("#button-add-tags").click(async () => {
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  }).then(
+  }).then(() => {
+    // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
+    showPrePublishingStatus();
+
     //check if tags array is empty and set Add/Edit tags appropriately
     tags === undefined || tags.length == 0
       ? $("#button-add-tags").html("Add tags")
-      : $("#button-add-tags").html("Edit tags")
-  );
+      : $("#button-add-tags").html("Edit tags");
+  });
 });
 
 // fetch a user's metadata tags
@@ -2032,6 +2045,9 @@ $("#button-add-license").click(() => {
             "Manage Dataset - Assign License",
             selectedBfDataset
           );
+
+          // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+          showPrePublishingStatus();
         }
       }
     );

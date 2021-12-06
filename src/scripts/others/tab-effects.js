@@ -2023,8 +2023,10 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
 // 2. Subjects and Samples (MetadataSubSam)
 async function switchMetadataSubSamQuestions(metadataSubSamFile) {
   var tableData = subjectsTableData;
+  var singularName = "subject";
   if (metadataSubSamFile === "samples") {
     tableData = samplesTableData;
+    singularName = "sample";
   }
 
   if (tableData.length !== 0) {
@@ -2048,6 +2050,8 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
       // delete table rows except headers
       $(`#table-${metadataSubSamFile} tr:gt(0)`).remove();
       $(`#table-${metadataSubSamFile}`).css("display", "none");
+      // show Add a subject button
+      $(`#button-add-a-${singularName}`).show();
       // Hide Generate button
       $(`#button-generate-${metadataSubSamFile}`).css("display", "none");
       $(`#div-import-primary-folder-${metadataSubSamFile}`).show();
@@ -3488,3 +3492,28 @@ for (var i = 0; i < buttons.length; i++) {
   button = buttons[i];
   initRipple(button);
 }
+
+// Input:
+//  elementId:  string - id selector of the section the user will transition to from the Submit for pre-publishing tab
+// transition from the pre-publishing review tab to the given prepare metadata tabs
+const transitionFromPrePublishingChecklist = (elementId) => {
+  // change is shown to the subtitle section
+  $(".section.is-shown").removeClass("is-shown");
+
+  // show the subtitle section instead
+  $(`#${elementId}`).addClass("is-shown");
+
+  $(".main-tabs-section").removeClass("show");
+  $(".main-tabs-section").addClass("hide");
+
+  // when a user clicks return change the tab they see
+  document
+    .getElementById("disseminate_dataset_section")
+    .classList.remove("show");
+  document.getElementById("disseminate_dataset_section").classList.add("hide");
+  document.getElementById("manage_dataset_section").classList.add("show");
+
+  // mark the tab as checked to get the appropriate tab styling
+  $("#disseminate_dataset_tab").prop("checked", false);
+  $("#manage_dataset_tab").prop("checked", true);
+};
