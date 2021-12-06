@@ -48,10 +48,6 @@ function resetSubmission() {
       $("#Question-prepare-submission-1").removeClass("prev");
       $("#Question-prepare-submission-1").nextAll().removeClass("show");
       $("#Question-prepare-submission-1").nextAll().removeClass("prev");
-      $("#Question-prepare-submission-1")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
       $("#Question-prepare-submission-1 .option-card")
         .removeClass("checked")
         .removeClass("disabled")
