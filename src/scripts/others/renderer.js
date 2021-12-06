@@ -7266,7 +7266,7 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-// get_access_token().then((res) => console.log(res));
+get_access_token().then((res) => console.log(res));
 
 /*
 ******************************************************
@@ -8134,4 +8134,22 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
       let statusText = await connectOrcidResponse.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
+};
+
+/*
+******************************************************
+******************************************************
+Get User's Excluded Files with NodeJS
+******************************************************
+******************************************************
+*/
+
+const getFilesExcludedFromPublishing = async () => {
+  await wait(2000);
+  console.log("Fetched excluded files");
+};
+
+const getAllDatasetPackages = async () => {
+  await wait(4000);
+  console.log("Fetched all dataset packages");
 };

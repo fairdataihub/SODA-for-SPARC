@@ -125,7 +125,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -430,7 +434,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -735,7 +743,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -1169,13 +1181,27 @@
                     <!-- END -->
 
                     <!--Pennsieve file tree-->
-                    <div
-                      id="items"
-                      class="div-organize-items"
-                      ondrop="drop(event);"
-                      ondragover="allowDrop(event);"
-                      style="min-height: 200px"
-                    ></div>
+                    <div style="position: relative">
+                      <div
+                        id="items"
+                        class="div-organize-items"
+                        ondrop="drop(event);"
+                        ondragover="allowDrop(event);"
+                        style="min-height: 200px"
+                      ></div>
+
+                      <div
+                        class="ui disabled medium text loader items-spinner"
+                        style="
+                          position: absolute;
+                          top: 10rem;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                      >
+                        Fetching Files
+                      </div>
+                    </div>
                     <!-- "data" is jstree html element -->
                     <div id="data" style="display: none"></div>
                   </div>
@@ -1215,6 +1241,11 @@
 
                 <!--List of excluded files will be added to the above div soon-->
                 <div id="excluded-files-list-container">
+                  <div
+                    id="excluded-files-list-container-spinner"
+                    class="ui disabled small centered inline loader"
+                    style="margin-top: auto; margin-bottom: auto"
+                  ></div>
                   <ul id="excluded-files-list">
                     <li class="excluded-files-list-item">
                       <span>file path </span>

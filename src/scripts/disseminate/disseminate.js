@@ -755,7 +755,7 @@ $("#begin-prepublishing-btn").on("click", async () => {
 
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
 // files will be excluded from the dataset upon publishing
-$(".pre-publishing-continue").on("click", function () {
+$(".pre-publishing-continue").on("click", async function () {
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted()) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
@@ -789,6 +789,37 @@ $(".pre-publishing-continue").on("click", function () {
 
   // scroll to the ExcludeFiles button
   scrollToElement("#excluded-files-container");
+
+  // show a spinner on the file tree
+  $(".items-spinner").attr(
+    "class",
+    "ui active medium text loader items-spinner"
+  );
+
+  // show a spinner on the excluded files list
+  // show a spinner on the file tree
+  $("#excluded-files-list-container-spinner").attr(
+    "class",
+    "ui active small centered inline loader"
+  );
+
+  // read in the excluded files
+  await getFilesExcludedFromPublishing();
+
+  // hide the excluded file spinner
+  $("#excluded-files-list-container-spinner").attr(
+    "class",
+    "ui disabled small centered inline loader"
+  );
+
+  // read in all of the packages (aka file metdata stored on Pennsieve) for the dataset
+  await getAllDatasetPackages();
+
+  // hide the spinner for the file tree
+  $(".items-spinner").attr(
+    "class",
+    "ui disabled medium text loader items-spinner"
+  );
 });
 
 const scrollToElement = (elementIdOrClassname) => {
