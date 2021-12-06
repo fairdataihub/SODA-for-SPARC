@@ -106,12 +106,13 @@ async function generateManifest(action, type) {
     sodaJSONObj["bf-account-selected"] = {};
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["generate-dataset"] = {};
-    let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
+    let continueProgressEmptyFolder = await checkEmptySubFolders(
+      sodaJSONObj["dataset-structure"]
+    );
     if (continueProgressEmptyFolder === false) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
-        text:
-          "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+        text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
         heightAuto: false,
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
@@ -361,12 +362,13 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
     sodaJSONObj["starting-point"] = { type: "bf" };
     populate_existing_folders(datasetStructureJSONObj);
     populate_existing_metadata(sodaJSONObj);
-    let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
+    let continueProgressEmptyFolder = await checkEmptySubFolders(
+      sodaJSONObj["dataset-structure"]
+    );
     if (!continueProgressEmptyFolder) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
-        text:
-          "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+        text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
         heightAuto: false,
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
@@ -464,7 +466,10 @@ function resetManifest() {
         "checked",
         false
       );
-      $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
+      $("#input-manifest-local-folder-dataset").attr(
+        "placeholder",
+        "Browse here"
+      );
       $("#div-confirm-manifest-local-folder-dataset").hide();
     }
   });
@@ -475,12 +480,15 @@ function resetManifest() {
 function checkEmptySubFolders(datasetStructure) {
   let isEmpty = true;
   for (var folder in datasetStructure["folders"]) {
-    var currentFolder = datasetStructure["folders"][folder]
-    if (Object.keys(currentFolder["folders"]).length === 0 && Object.keys(currentFolder["files"]).length === 0) {
-      isEmpty = false
+    var currentFolder = datasetStructure["folders"][folder];
+    if (
+      Object.keys(currentFolder["folders"]).length === 0 &&
+      Object.keys(currentFolder["files"]).length === 0
+    ) {
+      isEmpty = false;
     } else {
       isEmpty = isEmpty && checkEmptySubFolders(currentFolder);
     }
   }
-  return isEmpty
+  return isEmpty;
 }
