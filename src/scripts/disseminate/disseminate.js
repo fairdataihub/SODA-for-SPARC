@@ -803,9 +803,12 @@ $(".pre-publishing-continue").on("click", async function () {
     "ui active small centered inline loader"
   );
 
-  // read in the excluded files
+  let excludedFileObjects;
   try {
-    await getFilesExcludedFromPublishing(defaultBfDataset);
+    // read in the excluded files
+    excludedFileObjects = await getFilesExcludedFromPublishing(
+      defaultBfDataset
+    );
   } catch (error) {
     // tell the user something went wrong getting access to their datasets ignored files
     await Swal.fire({
@@ -830,6 +833,8 @@ $(".pre-publishing-continue").on("click", async function () {
       selectedBfDataset
     );
   }
+
+  populateExcludedFilesList(excludedFileObjects);
 
   // hide the excluded file spinner
   $("#excluded-files-list-container-spinner").attr(
@@ -876,4 +881,52 @@ const scrollToElement = (elementIdOrClassname) => {
   let element = document.querySelector(elementIdOrClassname);
 
   element.scrollIntoView(true);
+};
+
+// Takes an array of excluded file objects; peels out the fileName and places them into the excluded files list
+// in the third step of the pre-publishing workflow.
+// Input: [{
+//       "datasetId": 1164,
+//       "fileName": "samples.xlsx",
+//       "id": 381
+//     }]
+const populateExcludedFilesList = (excludedFileObjects) => {
+  // get the excluded file list
+  let excluededFileUL = document.querySelector("#excluded-files-list");
+
+  // create a document fragment to avoid multiple DOM writes for each item
+  let documentFragment = new DocumentFragment();
+
+  // traverse through the list of exclued file objects
+  let fileNameListItems = excludedFileObjects.forEach((fileObject) => {
+    // get the file name from the file object
+    let { fileName } = fileObject;
+    // create a list item DOM element
+    let li = document.createElement("div");
+    // add the required class to the DOM element
+    li.setAttribute("class", "excluded-files-list-item");
+
+    // create a SPAN DOM element
+    let span = document.createElement("span");
+
+    // add the filename as the innerHTML of the span
+    span.textContent = fileName;
+
+    // add the span into the li
+    li.appendChild(span);
+
+    // create a icon
+    let icon = document.createElement("i");
+
+    // give the icon the appropriate class
+    icon.setAttribute("class", "fas fa-times");
+
+    li.appendChild(icon);
+
+    // add the icon to the li
+    documentFragment.appendChild(li);
+  });
+
+  // add the document fragment to the list
+  excluededFileUL.appendChild(documentFragment);
 };
