@@ -3317,9 +3317,9 @@ async function submitReviewDataset(embargoReleaseDate) {
   // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
   if (excludedFilesInPublicationFlow()) {
     // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
-    let files = getExcludedFilesFromPublicationFlow()
-    // exclude the user's 
-    await updateDatasetExcludedFiles(selectedBfDataset, files)
+    let files = getExcludedFilesFromPublicationFlow();
+    // exclude the user's
+    await updateDatasetExcludedFiles(selectedBfDataset, files);
     try {
     } catch (error) {}
   }
@@ -8249,11 +8249,11 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   return ignoreFiles;
 };
 
-// tell Pennsieve to ignore a set of user selected files when publishing their dataset. 
+// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
 // this keeps those files hidden from the public but visible to publishers and collaboraors.
 // I:
-//  datasetIdOrName: string - A dataset id or name 
-//  files: [{fileName: string}] - An array of file name objects 
+//  datasetIdOrName: string - A dataset id or name
+//  files: [{fileName: string}] - An array of file name objects
 const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   // ensure a valid datasetIDOrName is passed in
   if (!datasetIdOrName || datasetIdOrName === "") {
@@ -8275,7 +8275,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify(files) 
+    body: JSON.stringify(files),
   };
 
   // create the request
