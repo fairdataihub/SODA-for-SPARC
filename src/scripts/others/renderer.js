@@ -8212,6 +8212,59 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   return ignoreFiles;
 };
 
+const updateDatasetExcludedFiles = async (datasetIdOrName) => {
+  // ensure a valid datasetIDOrName is passed in 
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+
+  // get the dataset ID
+  let jwt = await get_access_token()
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt)
+  let {id} = dataset.content 
+
+
+  // create the request options
+  const options = {
+    method: "PUT",
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+  };
+
+  // create the request 
+  let excludeFilesResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/ignore-files`, options)
+
+  // check the status code
+  let {status} = excludeFilesResponse
+  switch(status) {
+
+  //  200 is success do nothing
+  case 200: 
+  break;
+
+  // 403 is forbidden from modifying this resource
+  case 403:
+    throw new Error(`${status} - You are forbidden from accessing this resouce.`)
+
+  // 401 is unauthenticated
+  case 401:
+    throw new Error(`${status} - Not authenticated. Please reauthenticate to access this dataset.`)
+
+  // else a 400 of some kind or a 500 as default 
+  default:
+    let pennsieveErrorObject = await excludeFilesResponse.json()
+    let {message} = pennsieveErrorObject
+    throw new Error(`${status} - ${message}`)
+  }
+  return 
+}
+
 const getAllDatasetPackages = async () => {
   await wait(4000);
   console.log("Fetched all dataset packages");
