@@ -8156,9 +8156,60 @@ Get User's Excluded Files with NodeJS
 ******************************************************
 */
 
-const getFilesExcludedFromPublishing = async () => {
-  await wait(2000);
-  console.log("Fetched excluded files");
+const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
+  // check a valid dataset was provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // peel out the id
+  let { id } = dataset.content;
+
+  // get the excluded files
+  let excludedFilesResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
+    {
+      headers: { Authorization: `Bearer ${jwt}` },
+    }
+  );
+
+  // get the status code
+  let statusCode = excludedFilesResponse.status;
+
+  // check the status code and respond appropriately
+  switch (statusCode) {
+    case 200:
+      break;
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - Reauthenticate to access this dataset. `
+      );
+    case 404:
+      throw new Error(`${statusCode} - Dataset could not be found. `);
+    default:
+      // something unexpected happened
+      let pennsieveErrorObject = await excludedFilesResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${statusCode} - ${message}`);
+  }
+
+  // get the ignored files array
+  let { ignoreFiles } = await excludedFilesResponse.json();
+
+  // return the ignored files
+  return ignoreFiles;
 };
 
 const getAllDatasetPackages = async () => {

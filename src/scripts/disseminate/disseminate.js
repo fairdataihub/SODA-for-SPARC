@@ -804,7 +804,32 @@ $(".pre-publishing-continue").on("click", async function () {
   );
 
   // read in the excluded files
-  await getFilesExcludedFromPublishing();
+  try {
+    await getFilesExcludedFromPublishing(defaultBfDataset);
+  } catch (error) {
+    // tell the user something went wrong getting access to their datasets ignored files
+    await Swal.fire({
+      title: "Failed to get information on any ignored files you may have",
+      text: "If you have dataset files you already set to be ignored and would like to add more, please try publishing again later.",
+      icon: "error",
+      confirmButtonText: "Ok",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+    });
+
+    // log the error information then continue execution -- this is because they may not want to ignore files when they publish
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Submit for pre-publishing review",
+      selectedBfDataset
+    );
+  }
 
   // hide the excluded file spinner
   $("#excluded-files-list-container-spinner").attr(
@@ -812,8 +837,33 @@ $(".pre-publishing-continue").on("click", async function () {
     "ui disabled small centered inline loader"
   );
 
-  // read in all of the packages (aka file metdata stored on Pennsieve) for the dataset
-  await getAllDatasetPackages();
+  try {
+    // read in all of the packages (aka file metdata stored on Pennsieve) for the dataset
+    await getAllDatasetPackages();
+  } catch (error) {
+    // tell the user something went wrong getting access to their datasets ignored files
+    await Swal.fire({
+      title: "Failed to get your dataset's files",
+      text: "If you would like to select files from your dataset to be ignored in the publishing process, please try again later.",
+      icon: "error",
+      confirmButtonText: "Ok",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+    });
+
+    // log the error information then continue execution -- this is because they may not want to ignore files when they publish
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Submit for pre-publishing review",
+      selectedBfDataset
+    );
+  }
 
   // hide the spinner for the file tree
   $(".items-spinner").attr(
