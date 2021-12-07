@@ -3351,8 +3351,13 @@ async function submitReviewDataset(embargoReleaseDate) {
     },
   });
 
-  // hide the pre-publishing checklist and show the withdraw button
+  // hide the pre-publishing checklist
   $("#prepublishing-checklist-container").hide();
+
+  // hide the excluded files container
+  $("#excluded-files-container").hide();
+
+  // show the withdraw button
   $("#confirm-submit-review").show();
 
   bfRefreshPublishingDatasetStatusBtn.disabled = false;
@@ -3502,8 +3507,15 @@ async function withdrawReviewDataset() {
     // show the checklist item and submit button
     $("#begin-prepublishing-btn").hide();
     $("#prepublishing-checklist-container").show();
+
+    // hide the submit and withdraw buttons
+    $("#submit-withdraw-prepublishing-btns-container").hide();
+
+    // show the continue button beneath the pre-publishing checklist
+    $(".pre-publishing-continue").show();
+
     // scroll to the submit button
-    scrollToElement("#prepublishing-submit-btn-container");
+    scrollToElement(".pre-publishing-continue");
 
     bfRefreshPublishingDatasetStatusBtn.disabled = false;
     bfWithdrawReviewDatasetBtn.disabled = false;
