@@ -902,7 +902,7 @@ const populateExcludedFilesList = (excludedFileObjects) => {
     // get the file name from the file object
     let { fileName } = fileObject;
     // create a list item DOM element
-    let li = document.createElement("div");
+    let li = document.createElement("li");
     // add the required class to the DOM element
     li.setAttribute("class", "excluded-files-list-item");
 
@@ -930,3 +930,32 @@ const populateExcludedFilesList = (excludedFileObjects) => {
   // add the document fragment to the list
   excluededFileUL.appendChild(documentFragment);
 };
+
+// Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow 
+const excludedFilesInPublicationFlow = () => {
+  // get the UL element in the excluded files list in step 3 of the pre-publication submission flow
+  let excludedFilesList = document.querySelector("#excluded-files-list");
+
+  //return true if the list has children and false otherwise
+  return excludedFilesList.childElementCount >= 1 ? true : false;
+};
+
+// retrieves the file path and name from the list of excluded files found in step 3 of the pre-publication submission workflow
+// Output:
+//  [{fileName: string}]
+const getExcludedFilesFromPublicationFlow = () => {
+  // get the list items  
+  let excludedFilesListItems = document.querySelectorAll(".excluded-files-list-item")
+
+  // iterate through each item 
+  let fileNames = Array.from(excludedFilesListItems).map(listItem => {
+    // get the Span element's text from the current list item 
+    let fileName = listItem.firstChild().textContent
+
+    // return the filename in an object
+    return {fileName}
+  })
+
+  // return the file names list 
+  return fileNames
+}

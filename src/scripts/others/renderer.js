@@ -3287,6 +3287,43 @@ async function submitReviewDataset(embargoReleaseDate) {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+  // title text
+  let title = "";
+
+  // check if the user has selected any files they want to be hidden to the public upon publication (aka ignored/excluded files)
+  // set the loading message title accordingly
+  if (excludedFilesInPublicationFlow()) {
+    title =
+      "Ignoring selected files and submitting dataset for pre-publishing review";
+  } else {
+    title = "Submitting dataset for pre-publishing review";
+  }
+
+  // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+  Swal.fire({
+    title: title,
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
+  if (excludedFilesInPublicationFlow()) {
+    // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
+    let files = getExcludedFilesFromPublicationFlow()
+    // exclude the user's 
+    await updateDatasetExcludedFiles(selectedBfDataset, files)
+    try {
+    } catch (error) {}
+  }
+
   try {
     await submitDatasetForPublication(
       selectedBfAccount,
@@ -8212,20 +8249,23 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   return ignoreFiles;
 };
 
-const updateDatasetExcludedFiles = async (datasetIdOrName) => {
-  // ensure a valid datasetIDOrName is passed in 
+// tell Pennsieve to ignore a set of user selected files when publishing their dataset. 
+// this keeps those files hidden from the public but visible to publishers and collaboraors.
+// I:
+//  datasetIdOrName: string - A dataset id or name 
+//  files: [{fileName: string}] - An array of file name objects 
+const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
+  // ensure a valid datasetIDOrName is passed in
   if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error(
       "Error: Must provide a valid dataset to check permissions for."
     );
   }
 
-
   // get the dataset ID
-  let jwt = await get_access_token()
-  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt)
-  let {id} = dataset.content 
-
+  let jwt = await get_access_token();
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+  let { id } = dataset.content;
 
   // create the request options
   const options = {
@@ -8235,35 +8275,42 @@ const updateDatasetExcludedFiles = async (datasetIdOrName) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
+    body: JSON.stringify(files) 
   };
 
-  // create the request 
-  let excludeFilesResponse = await fetch(`https://api.pennsieve.io/datasets/${id}/ignore-files`, options)
+  // create the request
+  let excludeFilesResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
+    options
+  );
 
   // check the status code
-  let {status} = excludeFilesResponse
-  switch(status) {
+  let { status } = excludeFilesResponse;
+  switch (status) {
+    //  200 is success do nothing
+    case 200:
+      break;
 
-  //  200 is success do nothing
-  case 200: 
-  break;
+    // 403 is forbidden from modifying this resource
+    case 403:
+      throw new Error(
+        `${status} - You are forbidden from accessing this resouce.`
+      );
 
-  // 403 is forbidden from modifying this resource
-  case 403:
-    throw new Error(`${status} - You are forbidden from accessing this resouce.`)
+    // 401 is unauthenticated
+    case 401:
+      throw new Error(
+        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
+      );
 
-  // 401 is unauthenticated
-  case 401:
-    throw new Error(`${status} - Not authenticated. Please reauthenticate to access this dataset.`)
-
-  // else a 400 of some kind or a 500 as default 
-  default:
-    let pennsieveErrorObject = await excludeFilesResponse.json()
-    let {message} = pennsieveErrorObject
-    throw new Error(`${status} - ${message}`)
+    // else a 400 of some kind or a 500 as default
+    default:
+      let pennsieveErrorObject = await excludeFilesResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${status} - ${message}`);
   }
-  return 
-}
+  return;
+};
 
 const getAllDatasetPackages = async () => {
   await wait(4000);
