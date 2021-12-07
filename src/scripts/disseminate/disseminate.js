@@ -931,7 +931,7 @@ const populateExcludedFilesList = (excludedFileObjects) => {
   excluededFileUL.appendChild(documentFragment);
 };
 
-// Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow 
+// Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow
 const excludedFilesInPublicationFlow = () => {
   // get the UL element in the excluded files list in step 3 of the pre-publication submission flow
   let excludedFilesList = document.querySelector("#excluded-files-list");
@@ -944,8 +944,10 @@ const excludedFilesInPublicationFlow = () => {
 // Output:
 //  [{fileName: string}]
 const getExcludedFilesFromPublicationFlow = () => {
-  // get the list items  
-  let excludedFilesListItems = document.querySelectorAll(".excluded-files-list-item")
+  // get the list items
+  let excludedFilesListItems = document.querySelectorAll(
+    ".excluded-files-list-item"
+  );
 
   // iterate through each item 
   let fileNames = Array.from(excludedFilesListItems).map(listItem => {
@@ -953,9 +955,9 @@ const getExcludedFilesFromPublicationFlow = () => {
     let fileName = listItem.firstChild.textContent
 
     // return the filename in an object
-    return {fileName}
-  })
+    return { fileName };
+  });
 
-  // return the file names list 
-  return fileNames
-}
+  // return the file names list
+  return fileNames;
+};
