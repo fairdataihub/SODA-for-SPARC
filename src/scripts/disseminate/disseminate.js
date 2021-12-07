@@ -950,7 +950,7 @@ const getExcludedFilesFromPublicationFlow = () => {
   // iterate through each item 
   let fileNames = Array.from(excludedFilesListItems).map(listItem => {
     // get the Span element's text from the current list item 
-    let fileName = listItem.firstChild().textContent
+    let fileName = listItem.firstChild.textContent
 
     // return the filename in an object
     return {fileName}

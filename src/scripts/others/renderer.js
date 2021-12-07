@@ -3317,11 +3317,43 @@ async function submitReviewDataset(embargoReleaseDate) {
   // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
   if (excludedFilesInPublicationFlow()) {
     // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
-    let files = getExcludedFilesFromPublicationFlow()
-    // exclude the user's 
-    await updateDatasetExcludedFiles(selectedBfDataset, files)
+    let files = getExcludedFilesFromPublicationFlow();
     try {
-    } catch (error) {}
+      // exclude the user's selected files from publication
+      await updateDatasetExcludedFiles(selectedBfDataset, files);
+    } catch (error) {
+      // log the error
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Disseminate Dataset - Pre-publishing Review",
+        selectedBfDataset
+      );
+      log.error(error);
+      console.error(error);
+
+      var emessage = userError(error);
+
+      // alert the user of the error
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        confirmButtonText: "Ok",
+        title: `Could not exclude the selected files from publication`,
+        text: "Please try again.",
+        icon: "error",
+        reverseButtons: reverseSwalButtons,
+        text: `${emessage}`,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      // stop publication
+      return;
+    }
   }
 
   try {
@@ -3363,6 +3395,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     return;
   }
 
+  // update the publishing status UI element
   await showPublishingStatus("noClear");
 
   ipcRenderer.send(
@@ -8249,11 +8282,11 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   return ignoreFiles;
 };
 
-// tell Pennsieve to ignore a set of user selected files when publishing their dataset. 
+// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
 // this keeps those files hidden from the public but visible to publishers and collaboraors.
 // I:
-//  datasetIdOrName: string - A dataset id or name 
-//  files: [{fileName: string}] - An array of file name objects 
+//  datasetIdOrName: string - A dataset id or name
+//  files: [{fileName: string}] - An array of file name objects
 const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   // ensure a valid datasetIDOrName is passed in
   if (!datasetIdOrName || datasetIdOrName === "") {
@@ -8275,7 +8308,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify(files) 
+    body: JSON.stringify(files),
   };
 
   // create the request
@@ -8309,6 +8342,7 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
       let { message } = pennsieveErrorObject;
       throw new Error(`${status} - ${message}`);
   }
+
   return;
 };
 
