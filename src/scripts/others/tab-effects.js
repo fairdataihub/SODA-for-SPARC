@@ -3466,8 +3466,6 @@ const transitionFromPrePublishingChecklist = (elementId) => {
   // mark the tab as checked to get the appropriate tab styling
   $("#disseminate_dataset_tab").prop("checked", false);
   $("#manage_dataset_tab").prop("checked", true);
-
-  
 };
 
 const scrollToElement = (elementIdOrClassname) => {
