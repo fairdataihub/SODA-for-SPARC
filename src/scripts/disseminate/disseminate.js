@@ -1109,4 +1109,4 @@ const createExcludedFileItem = (fileName) => {
   li.appendChild(icon);
 
   return li;
-};
+}
