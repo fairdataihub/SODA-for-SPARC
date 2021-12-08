@@ -1088,6 +1088,42 @@
           <div class="flex-row-container">
             <div class="flex-content-container">
               <div class="header-container">
+                <p class="content-header">Manifest files</p>
+              </div>
+              <div class="button-container">
+                <button
+                  class="content-button"
+                  id="create_manifest_btn"
+                  data-section="create_manifest"
+                  data-content="Create mandatory manifest files for your dataset."
+                  rel="popover"
+                  data-placement="bottom"
+                  data-trigger="hover"
+                >
+                  <svg
+                    width="48"
+                    height="46"
+                    viewBox="0 0 48 46"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M23.5957 32.473C23.6437 32.5343 23.7051 32.584 23.7751 32.6181C23.8452 32.6522 23.9221 32.6699 24 32.6699C24.0779 32.6699 24.1548 32.6522 24.2249 32.6181C24.2949 32.584 24.3563 32.5343 24.4043 32.473L31.5914 23.3799C31.8545 23.0462 31.6171 22.5521 31.1872 22.5521H26.4321V0.836611C26.4321 0.554258 26.2011 0.323242 25.9187 0.323242H22.0684C21.7861 0.323242 21.5551 0.554258 21.5551 0.836611V22.5457H16.8128C16.3829 22.5457 16.1455 23.0398 16.4086 23.3735L23.5957 32.473Z"
+                      fill="#B80D49"
+                    />
+                    <path
+                      d="M47.4866 30.227H43.6364C43.354 30.227 43.123 30.458 43.123 30.7404V40.6227H4.87701V30.7404C4.87701 30.458 4.64599 30.227 4.36364 30.227H0.513369C0.231016 30.227 0 30.458 0 30.7404V43.4462C0 44.5821 0.917647 45.4997 2.05348 45.4997H45.9465C47.0824 45.4997 48 44.5821 48 43.4462V30.7404C48 30.458 47.769 30.227 47.4866 30.227Z"
+                      fill="#565E6B"
+                    />
+                  </svg>
+
+                  <h2>Create manifest.xlsx</h2>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex-content-container">
+              <div class="header-container">
                 <p class="content-header">Metadata file templates</p>
               </div>
               <div class="button-container">
@@ -1287,39 +1323,27 @@
                   </svg>
                   <h2>Share with SPARC Consortium</h2>
                 </button>
-                <div
-                  class="coming-soon-div"
-                  data-content="Coming soon..."
-                  rel="popover"
-                  data-placement="bottom"
-                  data-trigger="hover"
+                <button
+                  class="content-button"
+                  id="submit_prepublishing_review_btn"
+                  style="width: 150px; height: 150px"
+                  data-section="submit_prepublishing_review"
                 >
-                  <button
-                    class="content-button"
-                    id="submit_prepublishing_review_btn"
-                    style="
-                      pointer-events: none;
-                      background: #f6f6f6;
-                      width: 150px;
-                      height: 150px;
-                    "
-                    data-section="submit_prepublishing_review"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="40px"
+                    height="40px"
+                    fill="#585858"
+                    class="bi bi-book"
+                    viewBox="0 0 16 16"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40px"
-                      height="40px"
-                      fill="#585858"
-                      class="bi bi-book"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"
-                      />
-                    </svg>
-                    <h2>Submit for pre-publishing review</h2>
-                  </button>
-                </div>
+                    <path
+                      d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"
+                    />
+                  </svg>
+                  <h2>Submit for pre-publishing review</h2>
+                </button>
+
                 <!-- <button
                   class="content-button"
                   id="submit_prepublishing_review_btn"

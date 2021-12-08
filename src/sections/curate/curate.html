@@ -3510,7 +3510,7 @@
                         <div
                           class="option-card radio-button"
                           data-next="Question-generate-dataset-generate-div-old"
-                          onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')"
+                          onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'individual-question generate-dataset')"
                         >
                           <div class="card-head">
                             <div class="folder-checkbox">
@@ -4636,6 +4636,7 @@
               >
                 <button
                   id="button-generate"
+                  onclick="generateCurate(this)"
                   class="btn_animated generate-btn"
                   style="
                     margin: 5px;
