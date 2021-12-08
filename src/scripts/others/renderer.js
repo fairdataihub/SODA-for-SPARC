@@ -8400,5 +8400,5 @@ const getAllDatasetPackages = async (datasetIdOrName) => {
   })
 
   // return the metdata files to the client
-  return metadataFiles
+  return metadataFiles;
 };
