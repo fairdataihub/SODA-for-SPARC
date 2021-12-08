@@ -8358,46 +8358,51 @@ const getAllDatasetPackages = async (datasetIdOrName) => {
   let jwt = await get_access_token();
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
-  // get the id out of the dataset 
-  let {id} = dataset.content
+  // get the id out of the dataset
+  let { id } = dataset.content;
 
-  // get the metadata files for the dataset 
-  let datasetWithChildrenResponse = await fetch(`https://api.pennsieve.io/datasets/${id}`,  {
-    headers: { Authorization: `Bearer ${jwt}` },
-  })
+  // get the metadata files for the dataset
+  let datasetWithChildrenResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}`,
+    {
+      headers: { Authorization: `Bearer ${jwt}` },
+    }
+  );
 
   // get the metadata files from the dataset
-  let datasetWithChildren = await datasetWithChildrenResponse.json()
+  let datasetWithChildren = await datasetWithChildrenResponse.json();
 
   // get the metadata packages
   let topLevelMetadataPackages = datasetWithChildren.children;
 
   // traverse the top level metadata packages and pull out -- submission.xlsx, code_description.xlsx, dataset_description.xlsx, outputs_metadata.xlsx,
   // inputs_metadata.xlsx, CHANGES.txt, README.txt, samples.xlsx, subjects.xlsx
-  const metadataFiles = topLevelMetadataPackages.map((packageObject) => {
-    // get the content
-    const { content } = packageObject;
+  const metadataFiles = topLevelMetadataPackages
+    .map((packageObject) => {
+      // get the content
+      const { content } = packageObject;
 
-    // get the file name 
-    const { name } = content;
-    // return only the name 
-    return name
-  }).filter(fileName => {
-    // return the filenames that match a metadata file name 
-    if (
-      fileName === "submission.xlsx" ||
-      fileName === "code_description.xlsx" ||
-      fileName === "dataset_description.xlsx" ||
-      fileName === "outputs_metadata.xlsx" ||
-      fileName === "inputs_metadata.xlsx" ||
-      fileName === "CHANGES.txt" ||
-      fileName === "README.txt" ||
-      fileName === "samples.xlsx" ||
-      fileName === "subjects.xlsx"
-    ) {
-      return fileName
-    }
-  })
+      // get the file name
+      const { name } = content;
+      // return only the name
+      return name;
+    })
+    .filter((fileName) => {
+      // return the filenames that match a metadata file name
+      if (
+        fileName === "submission.xlsx" ||
+        fileName === "code_description.xlsx" ||
+        fileName === "dataset_description.xlsx" ||
+        fileName === "outputs_metadata.xlsx" ||
+        fileName === "inputs_metadata.xlsx" ||
+        fileName === "CHANGES.txt" ||
+        fileName === "README.txt" ||
+        fileName === "samples.xlsx" ||
+        fileName === "subjects.xlsx"
+      ) {
+        return fileName;
+      }
+    });
 
   // return the metdata files to the client
   return metadataFiles;
