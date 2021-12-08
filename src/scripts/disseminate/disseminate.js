@@ -981,17 +981,18 @@ document.querySelector("#exclude-folder").addEventListener("click", () => {
     .appendChild(createExcludedFileItem(fileName));
 });
 
+// remove an item from the excluded files list when the user clicks the remove button
+document
+  .querySelector("#excluded-files-list")
+  .addEventListener("click", (evt) => {
+    let element = evt.target;
 
-// remove an item from the excluded files list when the user clicks the remove button 
-document.querySelector("#excluded-files-list").addEventListener("click", (evt) => {
-  let element = evt.target 
-
-  if(element.nodeName && element.nodeName.toLowerCase() === "i") {
-    // user wants to remove the file from the list 
-    // first parent is <li>; <li>'s parent is <ul>
-    element.parentNode.parentNode.removeChild(element.parentNode)
-  }
-})
+    if (element.nodeName && element.nodeName.toLowerCase() === "i") {
+      // user wants to remove the file from the list
+      // first parent is <li>; <li>'s parent is <ul>
+      element.parentNode.parentNode.removeChild(element.parentNode);
+    }
+  });
 
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
 const populateFileViewer = (metadataFiles) => {
@@ -1109,4 +1110,4 @@ const createExcludedFileItem = (fileName) => {
   li.appendChild(icon);
 
   return li;
-}
+};
