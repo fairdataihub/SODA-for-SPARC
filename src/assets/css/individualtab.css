@@ -1802,8 +1802,3 @@ body.swal2-shown > [aria-hidden="true"] {
   border: #c0c0c0;
   background-color: #d8d7d7;
 }
-
-.pre-publishing-file-viewer-file-selected:hover {
-  border: #c0c0c0;
-  background-color: #d8d7d7;
-}

@@ -536,7 +536,10 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
 /*
 ******************************************************
 ******************************************************
-Pre-publishing section 
+Pre-publishing Submission Workflow Section 
+
+Note: Some frontend elements of the workflow are in the renderer.js file as well. They are can be found under postCurationListChange() function.
+      All backend requests can be found in the renderer.js file.
 ******************************************************
 ******************************************************
 */
@@ -916,6 +919,68 @@ document
     }
   });
 
+// user can click the exclude button to add the selected metadata file in the file viewer to the list of excluded files.
+// if the file is already in the list of excluded files it will not be added.
+document.querySelector("#exclude-folder").addEventListener("click", () => {
+  // find the currently selected element
+  let selectedFile = document.querySelector(
+    "#items-pre-publication .pre-publishing-file-viewer-file-selected"
+  );
+
+  // if no selected element tell the user they must select a file to exclude
+  if (!selectedFile) {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "No file selected",
+      text: "Select a file to exclude by clicking it, then pressing the Exclude File button.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return;
+  }
+
+  // get the selected file's name
+  let fileName = selectedFile.querySelector("div").textContent;
+
+  // get the file names from the excluded files list
+  let excludedFileNames = getExcludedFilesFromPublicationFlow().map(
+    (fileNameObjects) => fileNameObjects.fileName
+  );
+
+  // check if the selected file is in the list of excluded files
+  if (excludedFileNames.includes(fileName)) {
+    //  if so tell the user the file cannot be added twice
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "The selected file is already in the list of excluded files.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return;
+  }
+
+  // add the file to the list of excluded files
+  document
+    .querySelector("#excluded-files-list")
+    .appendChild(createExcludedFileItem(fileName));
+});
+
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
 const populateFileViewer = (metadataFiles) => {
   // get the file viewer element
@@ -978,7 +1043,7 @@ const getExcludedFilesFromPublicationFlow = () => {
   return fileNames;
 };
 
-// Takes an array of excluded file objects; peels out the fileName and places them into the excluded files list
+// Takes an array of excluded file objects (from Pennsieve); peels out the fileName and places them into the excluded files list
 // in the third step of the pre-publishing workflow.
 // Input: [{
 //       "datasetId": 1164,
@@ -996,32 +1061,40 @@ const populateExcludedFilesList = (excludedFileObjects) => {
   excludedFileObjects.forEach((fileObject) => {
     // get the file name from the file object
     let { fileName } = fileObject;
-    // create a list item DOM element
-    let li = document.createElement("li");
-    // add the required class to the DOM element
-    li.setAttribute("class", "excluded-files-list-item");
 
-    // create a SPAN DOM element
-    let span = document.createElement("span");
+    // create the DOM object that represents an excluded file list item
+    let li = createExcludedFileItem(fileName);
 
-    // add the filename as the innerHTML of the span
-    span.textContent = fileName;
-
-    // add the span into the li
-    li.appendChild(span);
-
-    // create a icon
-    let icon = document.createElement("i");
-
-    // give the icon the appropriate class
-    icon.setAttribute("class", "fas fa-times");
-
-    li.appendChild(icon);
-
-    // add the icon to the li
+    // add the li to the fragment
     documentFragment.appendChild(li);
   });
 
   // add the document fragment to the list
   excluededFileUL.appendChild(documentFragment);
+};
+
+const createExcludedFileItem = (fileName) => {
+  // create a list item DOM element
+  let li = document.createElement("li");
+  // add the required class to the DOM element
+  li.setAttribute("class", "excluded-files-list-item");
+
+  // create a SPAN DOM element
+  let span = document.createElement("span");
+
+  // add the filename as the innerHTML of the span
+  span.textContent = fileName;
+
+  // add the span into the li
+  li.appendChild(span);
+
+  // create a icon
+  let icon = document.createElement("i");
+
+  // give the icon the appropriate class
+  icon.setAttribute("class", "fas fa-times");
+
+  li.appendChild(icon);
+
+  return li;
 };
