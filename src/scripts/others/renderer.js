@@ -8346,7 +8346,43 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   return;
 };
 
-const getAllDatasetPackages = async () => {
-  await wait(4000);
-  console.log("Fetched all dataset packages");
+const getAllDatasetPackages = async (datasetIdOrName) => {
+  // check that the datasetIDOrName is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the dataset id
+  let jwt = await get_access_token();
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the metadata packages
+  let topLevelMetadataPackages = dataset.children;
+
+  // traverse the top level metadata packages and pull out -- submission.xlsx, code_description.xlsx, dataset_description.xlsx, outputs_metadata.xlsx,
+  // inputs_metadata.xlsx, CHANGES.txt, README.txt, samples.xlsx, subjects.xlsx
+  const metadataFiles = topLevelMetadataPackages.filter((packageObject) => {
+    const { content } = packageObject;
+
+    const { name } = content;
+
+    if (
+      name === "submission.xlsx" ||
+      name === "code_description.xlsx" ||
+      name === "dataset_description.xlsx" ||
+      name === "outputs_metadata.xlsx" ||
+      name === "inputs_metadata.xlsx" ||
+      name === "CHANGES.txt" ||
+      name === "README.txt" ||
+      name === "samples.xlsx" ||
+      name === "subjects.xlsx"
+    ) {
+      return name
+    }
+  });
+
+  // return the metdata files to the client
+  return metadataFiles
 };

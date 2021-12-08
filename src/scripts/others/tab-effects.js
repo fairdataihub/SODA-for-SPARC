@@ -1540,6 +1540,7 @@ async function transitionSubQuestionsButton(
     var result;
     try {
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
+      console.log("Logged in like 1543 of tab-effects: ", res)
       result = [true, res];
     } catch (err) {
       result = [false, err];
