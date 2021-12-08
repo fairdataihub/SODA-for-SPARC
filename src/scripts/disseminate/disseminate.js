@@ -753,7 +753,7 @@ $("#begin-prepublishing-btn").on("click", async () => {
   }
 
   // make the pre-publishing submit button visible
-  scrollToElement(".pre-publishing-continue-container");
+  scrollToElement("#pre_publishing_checklist_label");
 });
 
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
@@ -987,8 +987,8 @@ document.querySelector("#excluded-files-list").addEventListener("click", (evt) =
   let element = evt.target 
 
   if(element.nodeName && element.nodeName.toLowerCase() === "i") {
-    console.log(element.parentNode)
     // user wants to remove the file from the list 
+    // first parent is <li>; <li>'s parent is <ul>
     element.parentNode.parentNode.removeChild(element.parentNode)
   }
 })
