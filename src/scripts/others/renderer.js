@@ -8379,10 +8379,10 @@ const getAllDatasetPackages = async (datasetIdOrName) => {
       name === "samples.xlsx" ||
       name === "subjects.xlsx"
     ) {
-      return name
+      return name;
     }
   });
 
   // return the metdata files to the client
-  return metadataFiles
+  return metadataFiles;
 };
