@@ -125,7 +125,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -430,7 +434,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -735,7 +743,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -1061,11 +1073,10 @@
                       text-align: center;
                       margin-top: 1.5rem;
                     "
-                    >Optionally navigate your dataset and exclude files from
-                    publishing:
+                    >Optionally exclude metadata files from publishing:
                     <i
                       class="fas fa-info-circle popover-tooltip"
-                      data-content="Navigate to the file(s) you would like to exclude from publishing. Then click '+' to add that file to the list of excluded files."
+                      data-content="Click a file then press the 'Exclude' button to add that file to the list of excluded files."
                       rel="popover"
                       data-html="true"
                       data-placement="right"
@@ -1080,40 +1091,10 @@
                     class="container-fluid"
                     style="margin-top: 5px; height: auto; border-radius: 3px"
                   >
-                    <div id="organize-path-and-back-button-div">
-                      <!-- <div> -->
-                      <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
-          <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
-        </h5> -->
-                      <button
-                        id="button-back"
-                        class="button-back"
-                        style="float: left"
-                      >
-                        <i class="fas fa-arrow-left fa-fw"></i>
-                      </button>
-                      <input
-                        style="
-                          float: left;
-                          margin-left: 15px;
-                          height: 40px;
-                          border: none;
-                          font-family: 'Raleway', sans-serif;
-                          font-size: 14px;
-                          font-weight: 600;
-                          text-decoration: underline;
-                          cursor: default;
-                          color: #898989;
-                          width: 300px;
-                        "
-                        id="input-global-path"
-                        value="My_dataset_folder/"
-                        readonly
-                      />
-
+                    <div id="exclude-dataset">
                       <div class="div-organize-dataset-menu">
                         <button
-                          id="new-folder"
+                          id="exclude-folder"
                           style="
                             float: right;
                             margin-right: 10px;
@@ -1127,54 +1108,19 @@
                         </button>
                       </div>
                     </div>
-                    <!-- These are the context menu options, will not appear on the UI until prompted -->
-                    <ul class="menu reg-folder off">
-                      <li id="reg-folder-rename">
-                        <i class="fas fa-edit fa-fw"></i>Rename
-                      </li>
-                      <li id="folder-move">
-                        <i class="fas fa-external-link-alt"></i>Move
-                      </li>
-                      <li id="reg-folder-delete">
-                        <i class="far fa-trash-alt fa-fw"></i>Delete
-                      </li>
-                    </ul>
-                    <ul class="menu high-level-folder off">
-                      <li id="high-folder-rename">
-                        <i class="fas fa-edit fa-fw"></i>Rename
-                      </li>
-                      <li id="high-folder-delete">
-                        <i class="far fa-trash-alt fa-fw"></i>Delete
-                      </li>
-                      <li id="tooltip-folders">
-                        <i class="fas fa-info fa-fw"></i>Details
-                      </li>
-                    </ul>
-                    <ul class="menu file off">
-                      <li id="file-rename">
-                        <i class="fas fa-edit fa-fw"></i>Rename
-                      </li>
-                      <li id="file-move">
-                        <i class="fas fa-external-link-alt"></i>Move
-                      </li>
-                      <li id="file-delete">
-                        <i class="far fa-trash-alt fa-fw"></i>Delete
-                      </li>
-                      <li id="file-description">
-                        <i class="far fa-plus-square fa-fw"></i>Details
-                      </li>
-                    </ul>
-                    <!-- <span class="hoverPath" style="display: none"></span> -->
-                    <span class="hoverFullName" style="display: none"></span>
-                    <!-- END -->
 
-                    <!--Pennsieve file tree-->
+                    <!-- These are the context menu options, will not appear on the UI until prompted -->
+                    <ul class="menu file off">
+                      <li id="file-exclude">
+                        <i class="far fa-trash-alt fa-fw"></i>Exclude
+                      </li>
+                    </ul>
+
+                    <!--Pennsieve metadata file viewer-->
                     <div style="position: relative">
                       <div
-                        id="items"
+                        id="items-pre-publication"
                         class="div-organize-items"
-                        ondrop="drop(event);"
-                        ondragover="allowDrop(event);"
                         style="min-height: 200px"
                       ></div>
 

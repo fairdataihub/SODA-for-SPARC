@@ -834,6 +834,7 @@ $(".pre-publishing-continue").on("click", async function () {
     );
   }
 
+  // place the excluded files in the excluded files list
   populateExcludedFilesList(excludedFileObjects);
 
   // hide the excluded file spinner
@@ -842,9 +843,10 @@ $(".pre-publishing-continue").on("click", async function () {
     "ui disabled small centered inline loader"
   );
 
+  let metadataFiles;
   try {
-    // read in all of the packages (aka file metdata stored on Pennsieve) for the dataset
-    await getAllDatasetPackages();
+    // read in all of the metadata files for the dataset
+    metadataFiles = await getAllDatasetPackages(defaultBfDataset);
   } catch (error) {
     // tell the user something went wrong getting access to their datasets ignored files
     await Swal.fire({
@@ -870,6 +872,9 @@ $(".pre-publishing-continue").on("click", async function () {
     );
   }
 
+  // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
+  populateFileViewer(metadataFiles);
+
   // hide the spinner for the file tree
   $(".items-spinner").attr(
     "class",
@@ -877,58 +882,69 @@ $(".pre-publishing-continue").on("click", async function () {
   );
 });
 
-const scrollToElement = (elementIdOrClassname) => {
-  let element = document.querySelector(elementIdOrClassname);
+// select a file on click and deselect previously clicked files
+document
+  .querySelector("#items-pre-publication")
+  .addEventListener("click", function (evt) {
+    // if an element is already selected remove the selection styling
+    Array.from($(this).children()).forEach((fileElement) => {
+      fileElement.classList.remove("pre-publishing-file-viewer-file-selected");
+    });
 
-  element.scrollIntoView(true);
-};
+    // get the selected element
+    let element = evt.target;
 
-// Takes an array of excluded file objects; peels out the fileName and places them into the excluded files list
-// in the third step of the pre-publishing workflow.
-// Input: [{
-//       "datasetId": 1164,
-//       "fileName": "samples.xlsx",
-//       "id": 381
-//     }]
-const populateExcludedFilesList = (excludedFileObjects) => {
-  // get the excluded file list
-  let excluededFileUL = document.querySelector("#excluded-files-list");
+    // check if the element is an h1; since there is only a single h1 for each file UI element
+    // no more checks are necessary to know this is a user selected file sub-element - see "populateFileViewer" to get the structure of the HTML
+    if (element.nodeName && element.nodeName.toLowerCase() === "h1") {
+      // add a class to the parent div that makes it look as if it is selected
+      let parent = evt.target.offsetParent;
 
-  // create a document fragment to avoid multiple DOM writes for each item
-  let documentFragment = new DocumentFragment();
+      // style the element as selected
+      parent.classList.add("pre-publishing-file-viewer-file-selected");
+    }
 
-  // traverse through the list of exclued file objects
-  let fileNameListItems = excludedFileObjects.forEach((fileObject) => {
-    // get the file name from the file object
-    let { fileName } = fileObject;
-    // create a list item DOM element
-    let li = document.createElement("li");
-    // add the required class to the DOM element
-    li.setAttribute("class", "excluded-files-list-item");
-
-    // create a SPAN DOM element
-    let span = document.createElement("span");
-
-    // add the filename as the innerHTML of the span
-    span.textContent = fileName;
-
-    // add the span into the li
-    li.appendChild(span);
-
-    // create a icon
-    let icon = document.createElement("i");
-
-    // give the icon the appropriate class
-    icon.setAttribute("class", "fas fa-times");
-
-    li.appendChild(icon);
-
-    // add the icon to the li
-    documentFragment.appendChild(li);
+    //check if the element is a div with class ds-selectable and single-item
+    if (element.nodeName && element.nodeName.toLowerCase() === "div") {
+      // check if the div has ds-selectable and single-item
+      if (
+        element.classList.contains("ds-selectable") &&
+        element.classList.contains("single-item")
+      ) {
+        element.classList.add("pre-publishing-file-viewer-file-selected");
+      }
+    }
   });
 
-  // add the document fragment to the list
-  excluededFileUL.appendChild(documentFragment);
+// Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
+const populateFileViewer = (metadataFiles) => {
+  // get the file viewer element
+  let fileViewer = document.querySelector("#items-pre-publication");
+
+  // // traverse the given files
+  metadataFiles.forEach((file) => {
+    // create a top level container
+    let div = document.createElement("div");
+    // apply classes to make it look like a file object in the UI
+    div.setAttribute("class", "single-item ds-selectable");
+
+    let h1 = document.createElement("h1");
+    // apply classes to make it look like a file object in the UI
+    h1.setAttribute("class", "myFile other");
+    div.appendChild(h1);
+
+    let nestedDiv = document.createElement("div");
+    // apply classes to make it look like a file object in the UI
+    nestedDiv.setAttribute("class", "folder_desc pennsieve_file");
+    // add the file name
+    nestedDiv.textContent = file;
+
+    // add the nested div to the top level div
+    div.appendChild(nestedDiv);
+
+    // add the struture to the file viewer
+    fileViewer.appendChild(div);
+  });
 };
 
 // Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow
@@ -960,4 +976,52 @@ const getExcludedFilesFromPublicationFlow = () => {
 
   // return the file names list
   return fileNames;
+};
+
+// Takes an array of excluded file objects; peels out the fileName and places them into the excluded files list
+// in the third step of the pre-publishing workflow.
+// Input: [{
+//       "datasetId": 1164,
+//       "fileName": "samples.xlsx",
+//       "id": 381
+//     }]
+const populateExcludedFilesList = (excludedFileObjects) => {
+  // get the excluded file list
+  let excluededFileUL = document.querySelector("#excluded-files-list");
+
+  // create a document fragment to avoid multiple DOM writes for each item
+  let documentFragment = new DocumentFragment();
+
+  // traverse through the list of exclued file objects
+  excludedFileObjects.forEach((fileObject) => {
+    // get the file name from the file object
+    let { fileName } = fileObject;
+    // create a list item DOM element
+    let li = document.createElement("li");
+    // add the required class to the DOM element
+    li.setAttribute("class", "excluded-files-list-item");
+
+    // create a SPAN DOM element
+    let span = document.createElement("span");
+
+    // add the filename as the innerHTML of the span
+    span.textContent = fileName;
+
+    // add the span into the li
+    li.appendChild(span);
+
+    // create a icon
+    let icon = document.createElement("i");
+
+    // give the icon the appropriate class
+    icon.setAttribute("class", "fas fa-times");
+
+    li.appendChild(icon);
+
+    // add the icon to the li
+    documentFragment.appendChild(li);
+  });
+
+  // add the document fragment to the list
+  excluededFileUL.appendChild(documentFragment);
 };
