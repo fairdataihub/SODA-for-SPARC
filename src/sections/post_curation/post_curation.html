@@ -1088,8 +1088,67 @@
                 <!--Pennsieve metadata file viewer-->
                 <div id="pre-publication-items-container">
                   <div
+<<<<<<< HEAD
                     id="items-pre-publication"
                   ></div>
+=======
+                    class="container-fluid"
+                    style="margin-top: 5px; height: auto; border-radius: 3px"
+                  >
+                    <div id="exclude-dataset">
+                      <div class="div-organize-dataset-menu">
+                        <button
+                          id="exclude-folder"
+                          style="
+                            float: right;
+                            margin-right: 10px;
+                            color: var(--tagify-dd-color-primary);
+                            background: #fff;
+                            border: 1px solid var(--tagify-dd-color-primary);
+                            font-weight: 600;
+                          "
+                        >
+                          <i class="fas fa-file-alt"></i> Exclude File
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- These are the context menu options, will not appear on the UI until prompted -->
+                    <ul class="menu file off">
+                      <li id="file-exclude">
+                        <i class="far fa-trash-alt fa-fw"></i>Exclude
+                      </li>
+                    </ul>
+
+                    <!--Pennsieve metadata file viewer-->
+                    <div style="position: relative">
+                      <div
+                        id="items-pre-publication"
+                        class="div-organize-items"
+                        style="
+                          min-height: 150px;
+                          overflow-y: auto;
+                          height: 150px;
+                        "
+                      ></div>
+
+                      <div
+                        class="ui disabled medium text loader items-spinner"
+                        style="
+                          position: absolute;
+                          top: 10rem;
+                          margin-left: auto;
+                          margin-right: auto;
+                        "
+                      >
+                        Fetching Files
+                      </div>
+                    </div>
+                    <!-- "data" is jstree html element -->
+                    <div id="data" style="display: none"></div>
+                  </div>
+                </div>
+>>>>>>> 3fb1445cfb8bba1a0e0bc51323cce646c75285d4
 
                   <div
                     class="ui disabled medium text loader items-spinner"
