@@ -860,6 +860,9 @@ $(".pre-publishing-continue").on("click", async function () {
     );
   }
 
+  // reset the file viewer so no duplicates appear 
+  removeChildren(document.querySelector("#items-pre-publication"))
+
   // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
   populateFileViewer(metadataFiles);
 
@@ -939,11 +942,11 @@ const populateFileViewer = (metadataFiles) => {
 
 // Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow
 const excludedFilesInPublicationFlow = () => {
-  // get the UL element in the excluded files list in step 3 of the pre-publication submission flow
-  let excludedFilesList = document.querySelector("#excluded-files-list");
+  // get the checked UI elements in step 3 of the pre-publication submission flow
+  let excludedFilesList = document.querySelectorAll("#items-pre-publication input[type='checkbox']:checked");
 
   //return true if the list has children and false otherwise
-  return excludedFilesList.childElementCount >= 1 ? true : false;
+  return excludedFilesList.length >= 1 ? true : false;
 };
 
 // retrieves the file path and name from the list of excluded files found in step 3 of the pre-publication submission workflow
@@ -952,13 +955,15 @@ const excludedFilesInPublicationFlow = () => {
 const getExcludedFilesFromPublicationFlow = () => {
   // get the list items
   let excludedFilesListItems = document.querySelectorAll(
-    ".excluded-files-list-item"
+    "#items-pre-publication input[type='checkbox']:checked"
   );
+
+  console.log(excludedFilesListItems)
 
   // iterate through each item
   let fileNames = Array.from(excludedFilesListItems).map((listItem) => {
     // get the Span element's text from the current list item
-    let fileName = listItem.firstChild.textContent;
+    let fileName = listItem.nextSibling.textContent;
 
     // return the filename in an object
     return { fileName };
@@ -1023,3 +1028,10 @@ const createExcludedFileItem = (fileName) => {
 
   return li;
 };
+
+
+const removeChildren = (parent) => {
+  while(parent.firstChild) {
+    parent.remove(parent.firstChild)
+  }
+}
