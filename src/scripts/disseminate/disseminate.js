@@ -863,7 +863,10 @@ $(".pre-publishing-continue").on("click", async function () {
   removeChildren(document.querySelector("#items-pre-publication"));
 
   // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
-  populateFileViewer(metadataFiles, excludedFileObjects.map(file =>  file.fileName));
+  populateFileViewer(
+    metadataFiles,
+    excludedFileObjects.map((file) => file.fileName)
+  );
 
   // hide the spinner for the file tree
   $(".items-spinner").attr(
@@ -913,7 +916,6 @@ const populateFileViewer = (metadataFiles, excludedFiles) => {
 
   // // traverse the given files
   metadataFiles.forEach((file) => {
-
     // create a top level container
     let div = document.createElement("div");
     div.classList.add("pre-publishing-metadata-file-container");
@@ -924,8 +926,8 @@ const populateFileViewer = (metadataFiles, excludedFiles) => {
     input.setAttribute("name", `${file}`);
     input.classList.add("pre-publishing-metadata-file-input");
     // check if the user already has this file marked as ecluded
-    if(excludedFiles.includes(file)) {
-      input.checked = true 
+    if (excludedFiles.includes(file)) {
+      input.checked = true;
     }
 
     // create the label
