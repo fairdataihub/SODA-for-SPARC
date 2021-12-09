@@ -737,7 +737,7 @@ $("#begin-prepublishing-btn").on("click", async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
 
-  // $("#submit-withdraw-prepublishing-btns-container").show();
+  $(".pre-publishing-continue-container").show();
 
   // check which of the two buttons ( withdrawal or submit ) is showing
   let withdrawBtn = $("#prepublishing-withdraw-btn-container button");
@@ -935,10 +935,7 @@ const getExcludedFilesFromPublicationFlow = () => {
 };
 
 const removeChildren = (parent) => {
-  console.log(parent);
   while (parent.firstChild) {
     parent.removeChild(parent.firstChild);
   }
-
-  console.log("Parent afte rdeleting:", parent);
 };
