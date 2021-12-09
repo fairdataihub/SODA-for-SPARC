@@ -1755,13 +1755,13 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 #pre-publication-items-container {
-  display: flex; 
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
   box-shadow: 0px 0px 10px #d5d5d5;
-  margin-top: 1rem; 
+  margin-top: 1rem;
 }
 
 #items-pre-publication {
@@ -1771,7 +1771,7 @@ body.swal2-shown > [aria-hidden="true"] {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-left: 38%; 
+  margin-left: 38%;
   margin-right: auto;
 }
 
@@ -1781,19 +1781,19 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .pre-publishing-metadata-file-input {
-  margin-right: .2rem; 
+  margin-right: 0.2rem;
   font-size: 20px;
 }
 
 .pre-publishing-metadata-file-label {
   position: absolute;
-  bottom: .3rem;
-  margin-left: .3rem;
+  bottom: 0.3rem;
+  margin-left: 0.3rem;
   font-size: 1.1rem;
   color: black;
 }
 
 .pre-publishing-metadata-file-container {
   width: 300px;
-  position: relative; 
+  position: relative;
 }

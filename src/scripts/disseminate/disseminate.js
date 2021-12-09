@@ -799,7 +799,6 @@ $(".pre-publishing-continue").on("click", async function () {
     "ui active medium text loader items-spinner"
   );
 
-
   let excludedFileObjects;
   try {
     // read in the excluded files
@@ -907,7 +906,6 @@ document
     }
   });
 
-
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
 const populateFileViewer = (metadataFiles) => {
   // get the file viewer element
@@ -916,27 +914,27 @@ const populateFileViewer = (metadataFiles) => {
   // // traverse the given files
   metadataFiles.forEach((file) => {
     // create a top level container
-    let div = document.createElement("div")
-    div.classList.add("pre-publishing-metadata-file-container")
+    let div = document.createElement("div");
+    div.classList.add("pre-publishing-metadata-file-container");
 
-    // create the checkbox 
+    // create the checkbox
     let input = document.createElement("input");
-    input.setAttribute("type", "checkbox")
-    input.setAttribute("name", `${file}`)
-    input.classList.add("pre-publishing-metadata-file-input")
+    input.setAttribute("type", "checkbox");
+    input.setAttribute("name", `${file}`);
+    input.classList.add("pre-publishing-metadata-file-input");
 
-    // create the label 
-    let label = document.createElement("label")
-    label.setAttribute("for", `${file}`)
-    label.textContent = `${file}`
-    label.classList.add("pre-publishing-metadata-file-label")
+    // create the label
+    let label = document.createElement("label");
+    label.setAttribute("for", `${file}`);
+    label.textContent = `${file}`;
+    label.classList.add("pre-publishing-metadata-file-label");
 
     // add the input and label to the container
-    div.appendChild(input)
-    div.appendChild(label)
+    div.appendChild(input);
+    div.appendChild(label);
 
     // add the struture to the file viewer
-    fileViewer.appendChild(div)
+    fileViewer.appendChild(div);
   });
 };
 
