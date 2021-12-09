@@ -799,12 +799,6 @@ $(".pre-publishing-continue").on("click", async function () {
     "ui active medium text loader items-spinner"
   );
 
-  // show a spinner on the excluded files list
-  // show a spinner on the file tree
-  $("#excluded-files-list-container-spinner").attr(
-    "class",
-    "ui active small centered inline loader"
-  );
 
   let excludedFileObjects;
   try {
@@ -836,15 +830,6 @@ $(".pre-publishing-continue").on("click", async function () {
       selectedBfDataset
     );
   }
-
-  // place the excluded files in the excluded files list
-  populateExcludedFilesList(excludedFileObjects);
-
-  // hide the excluded file spinner
-  $("#excluded-files-list-container-spinner").attr(
-    "class",
-    "ui disabled small centered inline loader"
-  );
 
   let metadataFiles;
   try {
@@ -919,80 +904,6 @@ document
     }
   });
 
-// user can click the exclude button to add the selected metadata file in the file viewer to the list of excluded files.
-// if the file is already in the list of excluded files it will not be added.
-document.querySelector("#exclude-folder").addEventListener("click", () => {
-  // find the currently selected element
-  let selectedFile = document.querySelector(
-    "#items-pre-publication .pre-publishing-file-viewer-file-selected"
-  );
-
-  // if no selected element tell the user they must select a file to exclude
-  if (!selectedFile) {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "No file selected",
-      text: "Select a file to exclude by clicking it, then pressing the Exclude File button.",
-      icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    return;
-  }
-
-  // get the selected file's name
-  let fileName = selectedFile.querySelector("div").textContent;
-
-  // get the file names from the excluded files list
-  let excludedFileNames = getExcludedFilesFromPublicationFlow().map(
-    (fileNameObjects) => fileNameObjects.fileName
-  );
-
-  // check if the selected file is in the list of excluded files
-  if (excludedFileNames.includes(fileName)) {
-    //  if so tell the user the file cannot be added twice
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "The selected file is already in the list of excluded files.",
-      icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    return;
-  }
-
-  // add the file to the list of excluded files
-  document
-    .querySelector("#excluded-files-list")
-    .appendChild(createExcludedFileItem(fileName));
-});
-
-// remove an item from the excluded files list when the user clicks the remove button
-document
-  .querySelector("#excluded-files-list")
-  .addEventListener("click", (evt) => {
-    let element = evt.target;
-
-    if (element.nodeName && element.nodeName.toLowerCase() === "i") {
-      // user wants to remove the file from the list
-      // first parent is <li>; <li>'s parent is <ul>
-      element.parentNode.parentNode.removeChild(element.parentNode);
-    }
-  });
 
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
 const populateFileViewer = (metadataFiles) => {
@@ -1002,26 +913,27 @@ const populateFileViewer = (metadataFiles) => {
   // // traverse the given files
   metadataFiles.forEach((file) => {
     // create a top level container
-    let div = document.createElement("div");
-    // apply classes to make it look like a file object in the UI
-    div.setAttribute("class", "single-item ds-selectable");
+    let div = document.createElement("div")
+    div.classList.add("pre-publishing-metadata-file-container")
 
-    let h1 = document.createElement("h1");
-    // apply classes to make it look like a file object in the UI
-    h1.setAttribute("class", "myFile other");
-    div.appendChild(h1);
+    // create the checkbox 
+    let input = document.createElement("input");
+    input.setAttribute("type", "checkbox")
+    input.setAttribute("name", `${file}`)
+    input.classList.add("pre-publishing-metadata-file-input")
 
-    let nestedDiv = document.createElement("div");
-    // apply classes to make it look like a file object in the UI
-    nestedDiv.setAttribute("class", "folder_desc pennsieve_file");
-    // add the file name
-    nestedDiv.textContent = file;
+    // create the label 
+    let label = document.createElement("label")
+    label.setAttribute("for", `${file}`)
+    label.textContent = `${file}`
+    label.classList.add("pre-publishing-metadata-file-label")
 
-    // add the nested div to the top level div
-    div.appendChild(nestedDiv);
+    // add the input and label to the container
+    div.appendChild(input)
+    div.appendChild(label)
 
     // add the struture to the file viewer
-    fileViewer.appendChild(div);
+    fileViewer.appendChild(div)
   });
 };
 

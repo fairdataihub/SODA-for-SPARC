@@ -125,7 +125,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -430,7 +434,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -735,7 +743,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -1041,7 +1053,7 @@
                 </button>
               </div>
 
-              <!--File tree and excluded files section-->
+              <!--Metadata file viewer-->
               <div id="excluded-files-container">
                 <!--Pennsieve file tree header-->
                 <div
@@ -1064,7 +1076,7 @@
                     >Optionally exclude metadata files from publishing:
                     <i
                       class="fas fa-info-circle popover-tooltip"
-                      data-content="Click a file then press the 'Exclude' button to add that file to the list of excluded files."
+                      data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
                       rel="popover"
                       data-html="true"
                       data-placement="right"
@@ -1073,102 +1085,23 @@
                   </label>
                 </div>
 
-                <!--Pennsieve file tree meanu items-->
-                <div style="width: 100%; display: flex; flex-direction: row">
+                <!--Pennsieve metadata file viewer-->
+                <div id="pre-publication-items-container">
                   <div
-                    class="container-fluid"
-                    style="margin-top: 5px; height: auto; border-radius: 3px"
-                  >
-                    <div id="exclude-dataset">
-                      <div class="div-organize-dataset-menu">
-                        <button
-                          id="exclude-folder"
-                          style="
-                            float: right;
-                            margin-right: 10px;
-                            color: var(--tagify-dd-color-primary);
-                            background: #fff;
-                            border: 1px solid var(--tagify-dd-color-primary);
-                            font-weight: 600;
-                          "
-                        >
-                          <i class="fas fa-file-alt"></i> Exclude File
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- These are the context menu options, will not appear on the UI until prompted -->
-                    <ul class="menu file off">
-                      <li id="file-exclude">
-                        <i class="far fa-trash-alt fa-fw"></i>Exclude
-                      </li>
-                    </ul>
-
-                    <!--Pennsieve metadata file viewer-->
-                    <div style="position: relative">
-                      <div
-                        id="items-pre-publication"
-                        class="div-organize-items"
-                        style="min-height: 150px; overflow-y: auto; height: 150px;"
-                      ></div>
-
-                      <div
-                        class="ui disabled medium text loader items-spinner"
-                        style="
-                          position: absolute;
-                          top: 10rem;
-                          margin-left: auto;
-                          margin-right: auto;
-                        "
-                      >
-                        Fetching Files
-                      </div>
-                    </div>
-                    <!-- "data" is jstree html element -->
-                    <div id="data" style="display: none"></div>
-                  </div>
-                </div>
-
-                <!--Excluded files header-->
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    margin-top: 15px;
-                  "
-                >
-                  <label
-                    id="pre_publishing_label"
-                    style="
-                      font-size: 17px;
-                      color: var(--color-bg-plum);
-                      width: 100%;
-                      text-align: center;
-                      margin-bottom: 1rem;
-                      margin-top: 0.5rem;
-                    "
-                    >Excluded files:
-                    <i
-                      class="fas fa-info-circle popover-tooltip"
-                      data-content="Only the files in the list will be excluded. Click 'x' to remove the file from the list."
-                      rel="popover"
-                      data-html="true"
-                      data-placement="right"
-                      data-trigger="hover"
-                    ></i>
-                  </label>
-                </div>
-
-                <!--List of excluded files will be added to the above div soon-->
-                <div id="excluded-files-list-container">
-                  <div
-                    id="excluded-files-list-container-spinner"
-                    class="ui disabled small centered inline loader"
-                    style="margin-top: auto; margin-bottom: auto"
+                    id="items-pre-publication"
                   ></div>
-                  <ul id="excluded-files-list"></ul>
+
+                  <div
+                    class="ui disabled medium text loader items-spinner"
+                    style="
+                      position: absolute;
+                      top: 10rem;
+                      margin-left: auto;
+                      margin-right: auto;
+                    "
+                  >
+                    Fetching Files
+                  </div>
                 </div>
               </div>
 
@@ -1242,17 +1175,17 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="footer-div">
-        <div style="display: flex; flex-direction: row; width: 120px">
-          <button
-            type="button"
-            class="transition-btn prev"
-            data-section="main_tabs"
-          >
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-          </button>
+        <div class="footer-div">
+          <div style="display: flex; flex-direction: row; width: 120px">
+            <button
+              type="button"
+              class="transition-btn prev"
+              data-section="main_tabs"
+            >
+              <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+            </button>
+          </div>
         </div>
       </div>
     </div>
