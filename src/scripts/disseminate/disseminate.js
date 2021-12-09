@@ -859,8 +859,8 @@ $(".pre-publishing-continue").on("click", async function () {
     );
   }
 
-  // reset the file viewer so no duplicates appear 
-  removeChildren(document.querySelector("#items-pre-publication"))
+  // reset the file viewer so no duplicates appear
+  removeChildren(document.querySelector("#items-pre-publication"));
 
   // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
   populateFileViewer(metadataFiles, excludedFileObjects.map(file =>  file.fileName));
@@ -946,7 +946,9 @@ const populateFileViewer = (metadataFiles, excludedFiles) => {
 // Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow
 const excludedFilesInPublicationFlow = () => {
   // get the checked UI elements in step 3 of the pre-publication submission flow
-  let excludedFilesList = document.querySelectorAll("#items-pre-publication input[type='checkbox']:checked");
+  let excludedFilesList = document.querySelectorAll(
+    "#items-pre-publication input[type='checkbox']:checked"
+  );
 
   //return true if the list has children and false otherwise
   return excludedFilesList.length >= 1 ? true : false;
@@ -961,7 +963,7 @@ const getExcludedFilesFromPublicationFlow = () => {
     "#items-pre-publication input[type='checkbox']:checked"
   );
 
-  console.log(excludedFilesListItems)
+  console.log(excludedFilesListItems);
 
   // iterate through each item
   let fileNames = Array.from(excludedFilesListItems).map((listItem) => {
@@ -1032,9 +1034,8 @@ const createExcludedFileItem = (fileName) => {
   return li;
 };
 
-
 const removeChildren = (parent) => {
-  while(parent.firstChild) {
-    parent.remove(parent.firstChild)
+  while (parent.firstChild) {
+    parent.remove(parent.firstChild);
   }
-}
+};
