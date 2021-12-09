@@ -1133,11 +1133,22 @@
   fill: #000;
 }
 
+.change-current-account {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.07s ease-out;
+}
+
+.change-current-account:hover {
+  transform: translateY(-2px);
+  fill: #000;
+}
+
 .card-container {
   display: flex;
   flex-direction: row;
   width: 100%;
-  overflow: auto;
   margin-bottom: 5px;
   transform: perspective(1px) translateZ(0);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0);
@@ -1197,7 +1208,7 @@
 .card-right.bf-dataset-span,
 .card-right.current-permissions {
   width: auto;
-  margin-left: 0px;
+  margin-left: 5px;
   margin-top: 0px;
   padding-left: 5px;
 }
