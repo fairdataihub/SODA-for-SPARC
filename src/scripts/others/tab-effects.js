@@ -1810,7 +1810,7 @@ async function transitionFreeFormMode(
       }
       break;
     case "submit_prepublishing_review-question-2":
-      transitionToPrePublishingChecklist();
+      transitionToPrepublishingQuestionThree();
       break;
     case "submit_prepublishing_review-question-3":
       transitionToPrePublishingSubmit();

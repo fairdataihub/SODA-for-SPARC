@@ -762,9 +762,23 @@ const allPrepublishingChecklistItemsCompleted = () => {
 
 // once the user clicks the Begin Submission button check if they are the data set owner'
 // show the next section - which has the pre-publishing checklist - if so
-const transitionToPrePublishingChecklist = async () => {
+const transitionToPrepublishingQuestionThree = async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
+
+  // check what the pre-publishing status is
+  if (
+    $("#para-review-dataset-info-disseminate").text() ===
+    "Dataset is currently under review by your Publishing Team"
+  ) {
+    // show the withdraw button
+    $("#prepublishing-withdraw-btn-container").show()
+    $(".pre-publishing-continue-container").hide();
+    $("#prepublishing-checklist-container").hide()
+
+    
+    return
+  }
 
   $(".pre-publishing-continue-container").show();
 

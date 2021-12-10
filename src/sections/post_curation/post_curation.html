@@ -125,7 +125,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -430,7 +434,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -735,7 +743,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -1048,6 +1060,32 @@
                   Continue
                 </button>
               </div>
+
+              <!--Withdraw dataset from review when Review status shows dataset is under review-->
+              <div
+                style="width: 100%; display: flex; justify-content: center"
+                id="prepublishing-withdraw-btn-container"
+              >
+                <button
+                  id="btn-withdraw-review-dataset"
+                  onclick="withdrawDatasetSubmission()"
+                  class="btn_animated md skip"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    width: 200px;
+                    height: 40px;
+                    background: #fff;
+                    color: red;
+                    font-weight: 600;
+                    border: 1px solid red;
+                    font-size: 15px;
+                  "
+                >
+                  <i class="fas fa-ban" style="padding-right: 5px"></i>
+                  Withdraw from review
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1125,32 +1163,6 @@
                     justify-content: center;
                   "
                 >
-                  <div
-                    style="width: 100%"
-                    id="prepublishing-withdraw-btn-container"
-                    style="margin: 0px auto"
-                  >
-                    <button
-                      id="btn-withdraw-review-dataset"
-                      onclick="withdrawDatasetSubmission()"
-                      class="btn_animated md skip"
-                      style="
-                        cursor: pointer;
-                        border-radius: 8px;
-                        margin: 1.5rem 23%;
-                        width: 200px;
-                        height: 40px;
-                        background: #fff;
-                        color: red;
-                        font-weight: 600;
-                        border: 1px solid red;
-                        font-size: 15px;
-                      "
-                    >
-                      <i class="fas fa-ban" style="padding-right: 5px"></i>
-                      Withdraw from review
-                    </button>
-                  </div>
                   <div
                     style="width: 100%; margin-left: -100%"
                     id="prepublishing-submit-btn-container"
