@@ -3581,7 +3581,7 @@ async function withdrawReviewDataset() {
     $("#submit-withdraw-prepublishing-btns-container").hide();
 
     // show the continue button beneath the pre-publishing checklist
-    $(".pre-publishing-continue").show();
+    $(".pre-publishing-continue-container").show();
 
     // scroll to the submit button
     scrollToElement(".pre-publishing-continue");
