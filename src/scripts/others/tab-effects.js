@@ -1837,7 +1837,6 @@ async function transitionFreeFormMode(
     return;
   }
 
-
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
   $(ev).addClass("checked");

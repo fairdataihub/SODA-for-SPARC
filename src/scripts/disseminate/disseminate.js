@@ -840,11 +840,14 @@ $(".pre-publishing-continue").on("click", async function () {
     return;
   }
 
-  // transition to the final section 
-  transitionFreeFormMode(this, 'submit_prepublishing_review-question-3', 
-  'submit_prepublishing_review-tab', '', 
-  'individual-question post-curation' )
-
+  // transition to the final section
+  transitionFreeFormMode(
+    this,
+    "submit_prepublishing_review-question-3",
+    "submit_prepublishing_review-tab",
+    "",
+    "individual-question post-curation"
+  );
 
   // reset the file viewer so no duplicates appear
   removeChildren(document.querySelector("#items-pre-publication"));
