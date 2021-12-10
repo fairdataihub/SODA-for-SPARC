@@ -640,17 +640,17 @@ const showPrePublishingStatus = async () => {
   let statuses;
   try {
     statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
-  } catch(error) {
-     log.error(error);
-     console.error(error);
-     ipcRenderer.send(
-       "track-event",
-       "Error",
-       "Disseminate Datasets - Getting prepublishing checklist statuses",
-       selectedBfDataset
-     );
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Getting prepublishing checklist statuses",
+      selectedBfDataset
+    );
 
-     return 
+    return;
   }
 
   // mark each pre-publishing item red or green to indicate if the item was completed
