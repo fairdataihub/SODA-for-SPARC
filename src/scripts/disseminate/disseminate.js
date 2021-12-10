@@ -876,7 +876,7 @@ $(".pre-publishing-continue").on("click", async () => {
   let metadataFiles;
   try {
     // read in all of the metadata files for the dataset
-    metadataFiles = await getAllDatasetPackages(defaultBfDataset);
+    metadataFiles = await getDatasetMetadataFiles(defaultBfDataset);
   } catch (error) {
     // tell the user something went wrong getting access to their datasets ignored files
     await Swal.fire({
