@@ -912,7 +912,7 @@ const populateFileViewer = (metadataFiles, excludedFiles) => {
     label.textContent = `${file}`;
     label.classList.add("pre-publishing-metadata-file-label");
     if (excludedFiles.includes(file)) {
-      label.classList.add("pre-publishing-file-viewer-file-selected")
+      label.classList.add("pre-publishing-file-viewer-file-selected");
     }
 
     // add the input and label to the container
