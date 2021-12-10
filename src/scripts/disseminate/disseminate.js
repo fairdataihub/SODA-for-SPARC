@@ -697,8 +697,10 @@ const allPrepublishingChecklistItemsCompleted = () => {
   return incompleteChecklistItems.length ? false : true;
 };
 
-// user clicks on the begin pre-publishing button
-$("#begin-prepublishing-btn").on("click", async () => {
+
+// once the user clicks the Begin Submission button check if they are the data set owner'
+// show the next section - which has the pre-publishing checklist - if so 
+const showPrePublishingChecklistIfOwner = async () => {
   // show a loading popup
   Swal.fire({
     title: "Determining your dataset permissions",
@@ -728,7 +730,7 @@ $("#begin-prepublishing-btn").on("click", async () => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    return;
+    return false;
   }
 
   // close the loading popup
@@ -753,8 +755,11 @@ $("#begin-prepublishing-btn").on("click", async () => {
   }
 
   // make the pre-publishing submit button visible
-  scrollToElement("#pre_publishing_checklist_label");
-});
+  //scrollToElement("#pre_publishing_checklist_label");
+
+  return true;
+};
+
 
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
 // files will be excluded from the dataset upon publishing
@@ -912,7 +917,7 @@ const populateFileViewer = (metadataFiles, excludedFiles) => {
     label.textContent = `${file}`;
     label.classList.add("pre-publishing-metadata-file-label");
     if (excludedFiles.includes(file)) {
-      label.classList.add("pre-publishing-file-viewer-file-selected")
+      label.classList.add("pre-publishing-file-viewer-file-selected");
     }
 
     // add the input and label to the container

@@ -1809,6 +1809,12 @@ async function transitionFreeFormMode(
         return;
       }
       break;
+    case "submit_prepublishing_review-question-2":
+      let isDatasetOwner = await showPrePublishingChecklistIfOwner()
+      if(!isDatasetOwner) {
+        return ;
+      }
+      break;
   }
 
   if (!continueProgressRC) {

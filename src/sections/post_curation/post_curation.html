@@ -125,7 +125,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -430,7 +434,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -640,7 +648,7 @@
 
       <div
         id="submit_prepublishing_review-tab"
-        style="overflow-y: auto; height: 70%"
+        style="overflow-y: auto; height: 80%"
       >
         <div
           class="individual-question post-curation show"
@@ -735,7 +743,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt(this, 'dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -838,11 +850,21 @@
               id="begin-prepublishing-btn"
               class="btn_animated md"
               style="width: 200px; height: 40px; font-size: 15px"
+              onclick="transitionFreeFormMode(this, 'submit_prepublishing_review-question-2', 
+                                              'submit_prepublishing_review-tab', '', 
+                                              'individual-question post-curation' )"
+              data-current="submit_prepublishing_review-question-2"
+              data-next="submit_prepublishing_review-question-3"
             >
               Begin Submission
             </button>
           </div>
+        </div>
 
+        <div
+          class="individual-question post-curation"
+          id="submit_prepublishing_review-question-3"
+        >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
               <div id="prepublishing-checklist-container">
@@ -852,7 +874,7 @@
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    margin-top: 1.5rem;
+                    
                   "
                 >
                   <label
@@ -1036,11 +1058,25 @@
                     font-size: 15px;
                     margin-top: 2rem;
                   "
+                  onclick="transitionFreeFormMode(this, 'submit_prepublishing_review-question-3', 
+                  'submit_prepublishing_review-tab', '', 
+                  'individual-question post-curation' )"
+                  data-current="submit_prepublishing_review-question-3"
+                  data-next="submit_prepublishing_review-question-4"
                 >
                   Continue
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
 
+        <div
+          class="individual-question post-curation"
+          id="submit_prepublishing_review-question-4"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
               <!--Metadata file viewer-->
               <div id="excluded-files-container">
                 <!--Pennsieve file tree header-->
@@ -1161,17 +1197,17 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="footer-div">
-          <div style="display: flex; flex-direction: row; width: 120px">
-            <button
-              type="button"
-              class="transition-btn prev"
-              data-section="main_tabs"
-            >
-              <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-            </button>
-          </div>
+      <div class="footer-div">
+        <div style="display: flex; flex-direction: row; width: 120px">
+          <button
+            type="button"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+          </button>
         </div>
       </div>
     </div>
