@@ -8346,10 +8346,9 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
   return;
 };
 
-
-// retrieves the currently selected dataset's metadata files 
-// I: 
-//  datasetIdOrName: string - A dataset id or name 
+// retrieves the currently selected dataset's metadata files
+// I:
+//  datasetIdOrName: string - A dataset id or name
 const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // check that the datasetIDOrName is provided
   if (!datasetIdOrName || datasetIdOrName === "") {
@@ -8373,31 +8372,31 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
     }
   );
 
-   // check the status code
-   let { status } = datasetWithChildrenResponse;
-   switch (status) {
-     //  200 is success do nothing
-     case 200:
-       break;
- 
-     // 403 is forbidden from accessing this resource
-     case 403:
-       throw new Error(
-         `${status} - You are forbidden from accessing this resouce.`
-       );
- 
-     // 401 is unauthenticated
-     case 401:
-       throw new Error(
-         `${status} - Not authenticated. Please reauthenticate to access this dataset.`
-       );
- 
-     // else a 400 of some kind or a 500 as default
-     default:
-       let pennsieveErrorObject = await datasetWithChildrenResponse.json();
-       let { message } = pennsieveErrorObject;
-       throw new Error(`${status} - ${message}`);
-   }
+  // check the status code
+  let { status } = datasetWithChildrenResponse;
+  switch (status) {
+    //  200 is success do nothing
+    case 200:
+      break;
+
+    // 403 is forbidden from accessing this resource
+    case 403:
+      throw new Error(
+        `${status} - You are forbidden from accessing this resouce.`
+      );
+
+    // 401 is unauthenticated
+    case 401:
+      throw new Error(
+        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
+      );
+
+    // else a 400 of some kind or a 500 as default
+    default:
+      let pennsieveErrorObject = await datasetWithChildrenResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${status} - ${message}`);
+  }
 
   // get the metadata files from the dataset
   let datasetWithChildren = await datasetWithChildrenResponse.json();
