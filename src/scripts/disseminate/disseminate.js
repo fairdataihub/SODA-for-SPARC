@@ -613,7 +613,8 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Error",
       "ORCID iD successfully integrated from within pre-publishing flow",
-      selectedBfDataset)
+      selectedBfDataset
+    );
 
     // mark the orcid item green
     setPrepublishingChecklistItemIconByStatus(
