@@ -1811,8 +1811,7 @@ async function transitionFreeFormMode(
       }
       break;
     case "submit_prepublishing_review-question-2":
-      continueProgressSubmitPrepublishingReview =
-        await transitionToPrePublishingChecklist();
+      transitionToPrePublishingChecklist();
       break;
     case "submit_prepublishing_review-question-3":
       continueProgressSubmitPrepublishingReview =

@@ -2956,8 +2956,6 @@ function postCurationListChange() {
   // display the pre-publishing page
   showPrePublishingPageElements();
   showPublishingStatus();
-  // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
-  showPrePublishingStatus();
 }
 
 // upload banner image //
