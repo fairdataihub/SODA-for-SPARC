@@ -817,8 +817,8 @@ $("#items-pre-publication").on("click", function (evt) {
   }
 });
 
-// gets the metadata files from the user's current dataset and populates the file tree
-$(".pre-publishing-continue").on("click", async () => {
+// transition to the final question and populate the file tree
+$(".pre-publishing-continue").on("click", async function () {
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted()) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
@@ -839,6 +839,13 @@ $(".pre-publishing-continue").on("click", async () => {
 
     return;
   }
+
+  // transition to the final section 
+  transitionFreeFormMode(this, 'submit_prepublishing_review-question-3', 
+  'submit_prepublishing_review-tab', '', 
+  'individual-question post-curation' )
+
+
   // reset the file viewer so no duplicates appear
   removeChildren(document.querySelector("#items-pre-publication"));
 

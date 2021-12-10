@@ -1746,7 +1746,6 @@ async function transitionFreeFormMode(
   let continueProgressSubSam = true;
   let continueProgressSubmission = true;
   let continueProgressGenerateDD = true;
-  let continueProgressSubmitPrepublishingReview = true;
 
   const dataCurrent = $(ev).attr("data-current");
 
@@ -1814,8 +1813,7 @@ async function transitionFreeFormMode(
       transitionToPrePublishingChecklist();
       break;
     case "submit_prepublishing_review-question-3":
-      continueProgressSubmitPrepublishingReview =
-        await transitionToPrePublishingSubmit();
+      transitionToPrePublishingSubmit();
       break;
   }
 
@@ -1839,9 +1837,6 @@ async function transitionFreeFormMode(
     return;
   }
 
-  if (!continueProgressSubmitPrepublishingReview) {
-    return;
-  }
 
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
