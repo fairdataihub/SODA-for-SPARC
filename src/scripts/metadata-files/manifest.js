@@ -45,7 +45,11 @@ $(document).ready(function () {
 
 var localDatasetFolderPath = "";
 
-async function generateManifestPrecheck(type) {
+async function generateManifestPrecheck() {
+  var type = "local";
+  if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
+    type = "bf";
+  }
   exitCurate();
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-structure"] = {};
