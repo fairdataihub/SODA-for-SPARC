@@ -608,6 +608,7 @@ $("#ORCID-btn").on("click", async () => {
       timerProgressBar: false,
     });
 
+    // track success
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -635,7 +636,21 @@ const showPrePublishingStatus = async () => {
   $(".icon-wrapper").children().css("visibility", "hidden");
 
   // run the validation checks on each pre-publishing checklist item
-  let statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
+  let statuses;
+  try {
+    statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
+  } catch(error) {
+     log.error(error);
+     console.error(error);
+     ipcRenderer.send(
+       "track-event",
+       "Error",
+       "Disseminate Datasets - Getting prepublishing checklist statuses",
+       selectedBfDataset
+     );
+
+     return 
+  }
 
   // mark each pre-publishing item red or green to indicate if the item was completed
   setPrepublishingChecklistItemIconByStatus(
