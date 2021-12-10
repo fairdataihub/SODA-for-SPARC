@@ -868,6 +868,24 @@ $(".pre-publishing-continue").on("click", async function () {
   $(".items-spinner").hide();
 });
 
+
+// bold a metadata file once the user checks it 
+$("#items-pre-publication").on("click", function (evt) {
+  let target = evt.target 
+
+  if(target.nodeName && target.nodeName.toLowerCase() === "input") {
+    // if target has a checked property and it is set to true
+    if(target.checked) {
+      // add a selected class to the label 
+      let label = target.nextSibling
+      label.classList.add("pre-publishing-file-viewer-file-selected")
+    } else if (target.checked !== undefined && target.checked === false) {
+      // remove the selected styling
+      let label = target.nextSibling
+      label.classList.remove("pre-publishing-file-viewer-file-selected")
+    }
+  }
+})
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
 const populateFileViewer = (metadataFiles, excludedFiles) => {
   // get the file viewer element

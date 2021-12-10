@@ -1776,8 +1776,8 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .pre-publishing-file-viewer-file-selected {
-  border: #c0c0c0;
-  background-color: #d8d7d7;
+  font-weight: bold;
+  color: red; 
 }
 
 .pre-publishing-metadata-file-input {
