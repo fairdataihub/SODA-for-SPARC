@@ -3398,6 +3398,7 @@ async function submitReviewDataset(embargoReleaseDate) {
   // update the publishing status UI element
   await showPublishingStatus("noClear");
 
+  // track success
   ipcRenderer.send(
     "track-event",
     "Success",

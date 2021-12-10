@@ -608,6 +608,12 @@ $("#ORCID-btn").on("click", async () => {
       timerProgressBar: false,
     });
 
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "ORCID iD successfully integrated from within pre-publishing flow",
+      selectedBfDataset)
+
     // mark the orcid item green
     setPrepublishingChecklistItemIconByStatus(
       "prepublishing-checklist-icon-ORCID",
