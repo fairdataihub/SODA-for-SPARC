@@ -834,7 +834,7 @@ $(".pre-publishing-continue").on("click", async () => {
       },
     });
 
-    return
+    return;
   }
   // reset the file viewer so no duplicates appear
   removeChildren(document.querySelector("#items-pre-publication"));
