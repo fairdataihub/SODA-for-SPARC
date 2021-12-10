@@ -3618,8 +3618,13 @@ async function withdrawReviewDataset() {
     );
   }
 
-  // log the successful withdrawal 
-  ipcRenderer.send("track-event", "Success", "Withdraw dataset submission", defaultBfDataset)
+  // log the successful withdrawal
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Withdraw dataset submission",
+    defaultBfDataset
+  );
 }
 
 //////////////////////////////////
