@@ -1810,9 +1810,9 @@ async function transitionFreeFormMode(
       }
       break;
     case "submit_prepublishing_review-question-2":
-      let isDatasetOwner = await showPrePublishingChecklistIfOwner()
-      if(!isDatasetOwner) {
-        return ;
+      let isDatasetOwner = await showPrePublishingChecklistIfOwner();
+      if (!isDatasetOwner) {
+        return;
       }
       break;
   }

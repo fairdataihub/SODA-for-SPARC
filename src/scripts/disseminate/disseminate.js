@@ -697,9 +697,8 @@ const allPrepublishingChecklistItemsCompleted = () => {
   return incompleteChecklistItems.length ? false : true;
 };
 
-
 // once the user clicks the Begin Submission button check if they are the data set owner'
-// show the next section - which has the pre-publishing checklist - if so 
+// show the next section - which has the pre-publishing checklist - if so
 const showPrePublishingChecklistIfOwner = async () => {
   // show a loading popup
   Swal.fire({
@@ -759,7 +758,6 @@ const showPrePublishingChecklistIfOwner = async () => {
 
   return true;
 };
-
 
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
 // files will be excluded from the dataset upon publishing
