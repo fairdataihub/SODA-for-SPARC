@@ -717,9 +717,9 @@ const transitionToPrePublishingChecklist = async () => {
 
   // check if the user is the dataset owner
   let owner;
-  try{
+  try {
     owner = await userIsDatasetOwner(defaultBfDataset);
-  } catch(error) {
+  } catch (error) {
     // tell the user something went wrong getting access to their dataset permissions
     await Swal.fire({
       title: "Failed to determine if you are the dataset owner",
@@ -743,12 +743,13 @@ const transitionToPrePublishingChecklist = async () => {
       selectedBfDataset
     );
 
-    return false 
+    return false;
   }
   // check if the user is the owner
   if (!owner) {
     await Swal.fire({
-      title:"Only the dataset owner can submit a dataset for pre-publishing review.",
+      title:
+        "Only the dataset owner can submit a dataset for pre-publishing review.",
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,
