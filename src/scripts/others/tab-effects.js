@@ -1746,7 +1746,7 @@ async function transitionFreeFormMode(
   let continueProgressSubSam = true;
   let continueProgressSubmission = true;
   let continueProgressGenerateDD = true;
-  let continueProgressSubmitPrepublishingReview = true 
+  let continueProgressSubmitPrepublishingReview = true;
 
   const dataCurrent = $(ev).attr("data-current");
 
@@ -1811,10 +1811,12 @@ async function transitionFreeFormMode(
       }
       break;
     case "submit_prepublishing_review-question-2":
-      continueProgressSubmitPrepublishingReview = await transitionToPrePublishingChecklist()
+      continueProgressSubmitPrepublishingReview =
+        await transitionToPrePublishingChecklist();
       break;
     case "submit_prepublishing_review-question-3":
-      continueProgressSubmitPrepublishingReview = await transitionToPrePublishingSubmit()
+      continueProgressSubmitPrepublishingReview =
+        await transitionToPrePublishingSubmit();
       break;
   }
 
@@ -1838,8 +1840,8 @@ async function transitionFreeFormMode(
     return;
   }
 
-  if(!continueProgressSubmitPrepublishingReview) {
-    return 
+  if (!continueProgressSubmitPrepublishingReview) {
+    return;
   }
 
   $(ev).removeClass("non-selected");
