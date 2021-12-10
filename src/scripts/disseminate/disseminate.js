@@ -640,7 +640,7 @@ const showPrePublishingStatus = async () => {
   let statuses;
   try {
     statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
-  } catch(error) {
+  } catch (error) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -655,23 +655,23 @@ const showPrePublishingStatus = async () => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-     log.error(error);
-     console.error(error);
-     ipcRenderer.send(
-       "track-event",
-       "Error",
-       "Disseminate Datasets - Getting prepublishing checklist statuses",
-       selectedBfDataset
-     );
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Getting prepublishing checklist statuses",
+      selectedBfDataset
+    );
 
-     // set the status icons to red crosses
-     Array.from(document.querySelectorAll(".icon-wrapper i")).forEach(icon => {
-       icon.classList.remove("check")
-       icon.classList.add("cross")
-       icon.style.color = "red";
-     })
+    // set the status icons to red crosses
+    Array.from(document.querySelectorAll(".icon-wrapper i")).forEach((icon) => {
+      icon.classList.remove("check");
+      icon.classList.add("cross");
+      icon.style.color = "red";
+    });
 
-     return 
+    return;
   }
 
   // mark each pre-publishing item red or green to indicate if the item was completed
@@ -919,7 +919,7 @@ $(".pre-publishing-continue").on("click", async () => {
 $("#begin-prepublishing-btn").on("click", async function () {
   // check if the user is the dataset owner
   // show a loading popup
-   Swal.fire({
+  Swal.fire({
     title: "Determining your dataset permissions",
     html: "Please wait...",
     // timer: 5000,
@@ -961,12 +961,13 @@ $("#begin-prepublishing-btn").on("click", async function () {
       selectedBfDataset
     );
 
-    return
+    return;
   }
   // check if the user is the owner
   if (!owner) {
     await Swal.fire({
-      title:"Only the dataset owner can submit a dataset for pre-publishing review.",
+      title:
+        "Only the dataset owner can submit a dataset for pre-publishing review.",
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,
@@ -979,15 +980,18 @@ $("#begin-prepublishing-btn").on("click", async function () {
   // close the loading popup
   Swal.close();
 
-  // transition to the next question 
-  transitionFreeFormMode(this, 'submit_prepublishing_review-question-2', 
-  'submit_prepublishing_review-tab', '', 
-  'individual-question post-curation' )
+  // transition to the next question
+  transitionFreeFormMode(
+    this,
+    "submit_prepublishing_review-question-2",
+    "submit_prepublishing_review-tab",
+    "",
+    "individual-question post-curation"
+  );
 
-  // load the next question's data 
-  await showPrePublishingStatus()
-
-})
+  // load the next question's data
+  await showPrePublishingStatus();
+});
 
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
 const populateFileViewer = (metadataFiles, excludedFiles) => {
