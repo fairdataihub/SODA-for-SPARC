@@ -697,10 +697,9 @@ const allPrepublishingChecklistItemsCompleted = () => {
   return incompleteChecklistItems.length ? false : true;
 };
 
-
 // once the user clicks the Begin Submission button check if they are the data set owner'
-// show the next section - which has the pre-publishing checklist - if so 
-const showPrePublishingChecklistIfOwner = async () => {
+// show the next section - which has the pre-publishing checklist - if so
+const transitionToPrePublishingChecklist = async () => {
   // show a loading popup
   Swal.fire({
     title: "Determining your dataset permissions",
@@ -760,10 +759,9 @@ const showPrePublishingChecklistIfOwner = async () => {
   return true;
 };
 
-
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
 // files will be excluded from the dataset upon publishing
-$(".pre-publishing-continue").on("click", async function () {
+const transitionToPrePublishingSubmit = async () => {
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted()) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
@@ -783,14 +781,11 @@ $(".pre-publishing-continue").on("click", async function () {
     });
 
     // halt execution
-    return;
+    return false;
   }
 
   // hide the continue button
-  $(this).hide();
-
-  // reset the file viewer so no duplicates appear
-  removeChildren(document.querySelector("#items-pre-publication"));
+  $(".pre-publishing-continue-container").hide();
 
   // show the submit button
   $("#submit-withdraw-prepublishing-btns-container").show();
@@ -798,10 +793,54 @@ $(".pre-publishing-continue").on("click", async function () {
   // show the excluded files section
   $("#excluded-files-container").show();
 
+  return true;
+};
+
+// bold a metadata file once the user checks it
+$("#items-pre-publication").on("click", function (evt) {
+  let target = evt.target;
+
+  if (target.nodeName && target.nodeName.toLowerCase() === "input") {
+    // if target has a checked property and it is set to true
+    if (target.checked) {
+      // add a selected class to the label
+      let label = target.nextSibling;
+      label.classList.add("pre-publishing-file-viewer-file-selected");
+    } else if (target.checked !== undefined && target.checked === false) {
+      // remove the selected styling
+      let label = target.nextSibling;
+      label.classList.remove("pre-publishing-file-viewer-file-selected");
+    }
+  }
+});
+
+// gets the metadata files from the user's current dataset and populates the file tree
+$(".pre-publishing-continue").on("click", async () => {
+  // check that the user completed all pre-publishing checklist items for the given dataset
+  if (!allPrepublishingChecklistItemsCompleted()) {
+    // alert the user they must complete all checklist items before beginning the prepublishing process
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot continue this pre-publication review submission",
+      text: "You need to complete all pre-publishing checklist items before you can continue to the next step of the pre-publication review flow.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return
+  }
+  // reset the file viewer so no duplicates appear
+  removeChildren(document.querySelector("#items-pre-publication"));
+
   // show a spinner on the file tree
   $(".items-spinner").show();
-
-  scrollToElement("#pre-publishing-file-viewer-label");
 
   let excludedFileObjects;
   try {
@@ -873,23 +912,6 @@ $(".pre-publishing-continue").on("click", async function () {
   $(".items-spinner").hide();
 });
 
-// bold a metadata file once the user checks it
-$("#items-pre-publication").on("click", function (evt) {
-  let target = evt.target;
-
-  if (target.nodeName && target.nodeName.toLowerCase() === "input") {
-    // if target has a checked property and it is set to true
-    if (target.checked) {
-      // add a selected class to the label
-      let label = target.nextSibling;
-      label.classList.add("pre-publishing-file-viewer-file-selected");
-    } else if (target.checked !== undefined && target.checked === false) {
-      // remove the selected styling
-      let label = target.nextSibling;
-      label.classList.remove("pre-publishing-file-viewer-file-selected");
-    }
-  }
-});
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
 const populateFileViewer = (metadataFiles, excludedFiles) => {
   // get the file viewer element

@@ -1746,6 +1746,7 @@ async function transitionFreeFormMode(
   let continueProgressSubSam = true;
   let continueProgressSubmission = true;
   let continueProgressGenerateDD = true;
+  let continueProgressSubmitPrepublishingReview = true 
 
   const dataCurrent = $(ev).attr("data-current");
 
@@ -1810,10 +1811,10 @@ async function transitionFreeFormMode(
       }
       break;
     case "submit_prepublishing_review-question-2":
-      let isDatasetOwner = await showPrePublishingChecklistIfOwner()
-      if(!isDatasetOwner) {
-        return ;
-      }
+      continueProgressSubmitPrepublishingReview = await transitionToPrePublishingChecklist()
+      break;
+    case "submit_prepublishing_review-question-3":
+      continueProgressSubmitPrepublishingReview = await transitionToPrePublishingSubmit()
       break;
   }
 
@@ -1835,6 +1836,10 @@ async function transitionFreeFormMode(
 
   if (!continueProgressGenerateDD) {
     return;
+  }
+
+  if(!continueProgressSubmitPrepublishingReview) {
+    return 
   }
 
   $(ev).removeClass("non-selected");
