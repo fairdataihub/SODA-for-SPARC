@@ -624,10 +624,11 @@ $("#ORCID-btn").on("click", async () => {
   });
 });
 
-// runs after a user selects a dataset
 // changes Pre-Publishing checklist elements found in the UI on the "Disseminate Datasets - Submit for pre-publishing review" section
-// to green if a user completed that item and red if they did not
-const showPrePublishingStatus = async () => {
+// to green if a user completed that item and red if they did not.
+// I:
+//  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
+const showPrePublishingStatus = async (inPrePublishing = false) => {
   if (defaultBfDataset === "Select dataset") {
     return;
   }
@@ -641,20 +642,22 @@ const showPrePublishingStatus = async () => {
   try {
     statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
   } catch (error) {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "Cannot get pre-publication checklist statuses",
-      text: `Without the statuses you will not be able to publish your dataset. Please try again. `,
-      icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
+    if (inPrePublishing) {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        confirmButtonText: "Ok",
+        title: "Cannot get pre-publication checklist statuses",
+        text: `Without the statuses you will not be able to publish your dataset. Please try again. `,
+        icon: "error",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    }
     log.error(error);
     console.error(error);
     ipcRenderer.send(
@@ -723,6 +726,23 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
     $(`#${iconElementId}`).css("color", "red");
   }
 };
+
+// update a prepublishing checklist item by its Pennsieve value
+// const updatePrepublishingChecklistIcon = async (getMetadataFunction, iconElementId) => {
+//   let result;
+
+//   try {
+//     result = await getMetadataFunction(defaultBfDataset)
+//   } catch(error) {
+//     log.error(error)
+//     console.error(error)
+//     ipcRenderer.send("track-event", "Error", "Updating prepublishing checklist item", defaultBfDataset)
+//   }
+
+//   if(result.length <  1) {
+//     setPrepublishingChecklistItemIconByStatus(iconElementId)
+//   }
+// }
 
 // reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
 const allPrepublishingChecklistItemsCompleted = () => {
@@ -840,11 +860,14 @@ $(".pre-publishing-continue").on("click", async function () {
     return;
   }
 
-  // transition to the final section 
-  transitionFreeFormMode(this, 'submit_prepublishing_review-question-3', 
-  'submit_prepublishing_review-tab', '', 
-  'individual-question post-curation' )
-
+  // transition to the final section
+  transitionFreeFormMode(
+    this,
+    "submit_prepublishing_review-question-3",
+    "submit_prepublishing_review-tab",
+    "",
+    "individual-question post-curation"
+  );
 
   // reset the file viewer so no duplicates appear
   removeChildren(document.querySelector("#items-pre-publication"));
@@ -997,7 +1020,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
   );
 
   // load the next question's data
-  await showPrePublishingStatus();
+  await showPrePublishingStatus(true);
 });
 
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
