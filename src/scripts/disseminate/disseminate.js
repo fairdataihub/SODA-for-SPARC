@@ -716,13 +716,39 @@ const transitionToPrePublishingChecklist = async () => {
   });
 
   // check if the user is the dataset owner
-  let owner = await userIsDatasetOwner(defaultBfDataset);
+  let owner;
+  try{
+    owner = await userIsDatasetOwner(defaultBfDataset);
+  } catch(error) {
+    // tell the user something went wrong getting access to their dataset permissions
+    await Swal.fire({
+      title: "Failed to determine if you are the dataset owner",
+      text: `${error}`,
+      icon: "error",
+      confirmButtonText: "Ok",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+    });
 
+    // log the error information then continue execution -- this is because they may not want to ignore files when they publish
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Submit for pre-publishing review",
+      selectedBfDataset
+    );
+
+    return false 
+  }
   // check if the user is the owner
   if (!owner) {
     await Swal.fire({
-      title:
-        "Only the dataset owner can submit a dataset for pre-publishing review.",
+      title:"Only the dataset owner can submit a dataset for pre-publishing review.",
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,
@@ -752,9 +778,6 @@ const transitionToPrePublishingChecklist = async () => {
     $("#excluded-files-container").hide();
     $(".pre-publishing-continue-container").hide();
   }
-
-  // make the pre-publishing submit button visible
-  //scrollToElement("#pre_publishing_checklist_label");
 
   return true;
 };

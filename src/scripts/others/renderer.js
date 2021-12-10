@@ -8156,8 +8156,9 @@ const getUserInformation = async () => {
       throw new Error(`${statusCode} - Resource could not be found. `);
     default:
       // something unexpected happened
-      let statusText = await userResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
+      let pennsieveErrorObject = await userResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${statusCode} - ${message}`);
   }
 
   let user = await userResponse.json();
