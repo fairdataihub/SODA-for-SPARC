@@ -772,12 +772,11 @@ const transitionToPrepublishingQuestionThree = async () => {
     "Dataset is currently under review by your Publishing Team"
   ) {
     // show the withdraw button
-    $("#prepublishing-withdraw-btn-container").show()
+    $("#prepublishing-withdraw-btn-container").show();
     $(".pre-publishing-continue-container").hide();
-    $("#prepublishing-checklist-container").hide()
+    $("#prepublishing-checklist-container").hide();
 
-    
-    return
+    return;
   }
 
   $(".pre-publishing-continue-container").show();
