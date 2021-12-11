@@ -523,15 +523,15 @@ function checkDatasetDisseminate() {
   }
 }
 
-$(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
-  if ($(this).html() !== "None") {
-    $("#submit-withdraw-prepublishing-btns-container").show();
-    $("#submit-withdraw-prepublishing-btns-container button").show();
-  } else {
-    $("#submit-withdraw-prepublishing-btns-container").hide();
-    $("#submit-withdraw-prepublishing-btns-container button").hide();
-  }
-});
+// $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
+//   if ($(this).html() !== "None") {
+//     $("#submit-withdraw-prepublishing-btns-container").show();
+//     $("#submit-withdraw-prepublishing-btns-container button").show();
+//   } else {
+//     $("#submit-withdraw-prepublishing-btns-container").hide();
+//     $("#submit-withdraw-prepublishing-btns-container button").hide();
+//   }
+// });
 
 /*
 ******************************************************
@@ -825,7 +825,7 @@ const transitionToPrePublishingSubmit = async () => {
   $(".pre-publishing-continue-container").hide();
 
   // show the submit button
-  $("#submit-withdraw-prepublishing-btns-container").show();
+  $("#prepublishing-submit-btn-container").show();
 
   // show the excluded files section
   $("#excluded-files-container").show();

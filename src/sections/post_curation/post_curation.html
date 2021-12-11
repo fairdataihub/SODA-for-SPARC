@@ -1146,7 +1146,8 @@
                 </div>
               </div>
 
-              <!--Submit and Withdraw buttons-->
+              <!--Submit Button-->
+              <!--#submit-withdraw-prepublishing-btns-container-->
               <div
                 style="
                   display: flex;
@@ -1154,42 +1155,29 @@
                   align-items: center;
                   justify-content: center;
                 "
+                id="prepublishing-submit-btn-container"
               >
-                <div
-                  id="submit-withdraw-prepublishing-btns-container"
+                <button
+                  onclick="disseminateDataset('submit-pre-publishing')"
+                  class="btn_animated md"
                   style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
+                    margin: 1.5rem 23%;
+                    width: 200px;
+                    height: 40px;
+                    font-size: 15px;
+                    border: none !important; ;
                   "
                 >
-                  <div
-                    style="width: 100%; margin-left: -100%"
-                    id="prepublishing-submit-btn-container"
-                  >
-                    <button
-                      onclick="disseminateDataset('submit-pre-publishing')"
-                      class="btn_animated md"
-                      style="
-                        margin: 1.5rem 23%;
-                        width: 200px;
-                        height: 40px;
-                        font-size: 15px;
-                        border: none !important; ;
-                      "
-                    >
-                      <i
-                        class="fas fa-sign-in-alt"
-                        style="padding-right: 5px"
-                      ></i>
-                      Submit
-                    </button>
-                  </div>
-                </div>
+                  <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
+                  Submit
+                </button>
               </div>
             </div>
           </div>
         </div>
+
+
+      <!--End of tab-->
       </div>
 
       <div class="footer-div">

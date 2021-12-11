@@ -3578,7 +3578,7 @@ async function withdrawReviewDataset() {
     $("#prepublishing-checklist-container").show();
 
     // hide the submit and withdraw buttons
-    $("#submit-withdraw-prepublishing-btns-container").hide();
+    $("#prepublishing-submit-btn-container").hide();
 
     // show the continue button beneath the pre-publishing checklist
     $(".pre-publishing-continue-container").show();
@@ -3857,7 +3857,7 @@ const showPrePublishingPageElements = () => {
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
     $("#prepublishing-checklist-container").hide();
-    $("#submit-withdraw-prepublishing-btns-container").hide();
+    $("#prepublishing-submit-btn-container").hide();
     $("#excluded-files-container").hide();
     $(".pre-publishing-continue-container").hide();
   }
