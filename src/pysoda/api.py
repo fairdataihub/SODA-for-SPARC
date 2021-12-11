@@ -481,9 +481,9 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_generate_manifest_file_locally(self, soda_json_structure):
+    def api_generate_manifest_file_locally(self, generate_purpose, soda_json_structure):
         try:
-            return generate_manifest_file_locally(soda_json_structure)
+            return generate_manifest_file_locally(generate_purpose, soda_json_structure)
         except Exception as e:
             raise e
 

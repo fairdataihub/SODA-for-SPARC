@@ -496,3 +496,38 @@ function checkEmptySubFolders(datasetStructure) {
   }
   return isEmpty;
 }
+
+// helper function 1: First, generate manifest file folder locally
+// Parameter: dataset structure object
+// Return: manifest file folder path
+function generateManifestFolderLocally(jsonObject) {
+  client.invoke(
+    "api_generate_manifest_file_locally",
+    "add-metadata",
+    jsonObject,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+      } else {
+        manifestFolderPath = res
+      }
+    }
+  );
+}
+
+// helper function 2: Second, load dataset structure as preview tree
+// (so users can choose which manifest file to add additional metadata to)
+// Parameter: dataset structure object
+// Return tree
+function loadDSTreePreviewManifest(datasetStructure) {
+  // return tree view
+  // upon clicking on a node, if node == manifest, feed the actual path of that manifest file -> UI library xspreadsheet
+  // -> popup opens up with loaded info from such manifest.xlsx file.
+  // -> upon save+close -> save the new file to the old path (make changes to the file)
+}
+
+function uploadModifiedManifest(type) {
+  // call the upload function to upload the manifest files (merge folders and skip files, remove and update manifest files)
+}

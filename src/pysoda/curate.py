@@ -3541,7 +3541,7 @@ def preview_dataset(soda_json_structure):
         raise e
 
 
-def generate_manifest_file_locally(soda_json_structure):
+def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     """
     Function to generate manifest files locally
     """
@@ -3582,5 +3582,8 @@ def generate_manifest_file_locally(soda_json_structure):
         os.path.join(manifest_destination, "SODA Manifest Files")
     )
     copytree(manifest_folder_path, manifest_destination)
+    if generate_purpose == "add-metadata":
+        return manifest_destination
+
     open_file(manifest_destination)
     return "success"
