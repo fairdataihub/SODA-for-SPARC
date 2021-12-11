@@ -47,7 +47,10 @@ var localDatasetFolderPath = "";
 
 async function generateManifestPrecheck() {
   var type = "local";
-  if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
+  if (
+    $('input[name="generate-manifest-1"]:checked').prop("id") ===
+    "generate-manifest-from-Penn"
+  ) {
     type = "bf";
   }
   exitCurate();
@@ -511,7 +514,7 @@ function generateManifestFolderLocally(jsonObject) {
         log.error(error);
         console.error(error);
       } else {
-        manifestFolderPath = res
+        manifestFolderPath = res;
       }
     }
   );
