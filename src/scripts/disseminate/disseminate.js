@@ -597,7 +597,7 @@ $("#ORCID-btn").on("click", async () => {
     }
 
     // show a success message
-    Swal.fire({
+    await Swal.fire({
       title: "ORCID iD integrated with Pennsieve",
       icon: "success",
       allowEscapeKey: true,
@@ -613,7 +613,7 @@ $("#ORCID-btn").on("click", async () => {
       "track-event",
       "Error",
       "ORCID iD successfully integrated from within pre-publishing flow",
-      selectedBfDataset
+      defaultBfDataset
     );
 
     // mark the orcid item green
@@ -684,8 +684,8 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
   );
 
   setPrepublishingChecklistItemIconByStatus(
-    "prepublishing-checklist-icon-description",
-    statuses.description
+    "prepublishing-checklist-icon-readme",
+    statuses.readme
   );
 
   setPrepublishingChecklistItemIconByStatus(
