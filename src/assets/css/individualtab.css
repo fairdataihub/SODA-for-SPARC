@@ -1620,7 +1620,7 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 #div-dataset-tree-preview-manifest .jstree-container-ul.jstree-children {
-  text-align: left
+  text-align: left;
 }
 
 #div-dataset-tree-preview-manifest {
@@ -1628,7 +1628,7 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .jstree-anchor.jstree-disabled:link {
-  color: gray !important
+  color: gray !important;
 }
 
 .popover-tooltip.subjects-form {
