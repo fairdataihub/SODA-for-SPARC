@@ -767,7 +767,7 @@ const transitionToPrepublishingQuestionThree = async () => {
   $("#begin-prepublishing-btn").hide();
 
   // hide the excluded files container
-  // because the Submit button transitions back to question three after showing this container 
+  // because the Submit button transitions back to question three after showing this container
   // it needs to be hidden
   $("#excluded-files-container").hide();
 
@@ -785,13 +785,11 @@ const transitionToPrepublishingQuestionThree = async () => {
     return;
   }
 
-
   // show the pre-publishing checklist and the continue button
   $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();
   $("#prepublishing-withdraw-btn-container").hide();
   $("#prepublishing-withdraw-btn-container button").hide();
-
 };
 
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
