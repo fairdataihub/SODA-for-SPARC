@@ -766,6 +766,11 @@ const transitionToPrepublishingQuestionThree = async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
 
+  // hide the excluded files container
+  // because the Submit button transitions back to question three after showing this container 
+  // it needs to be hidden
+  $("#excluded-files-container").hide();
+
   // check what the pre-publishing status is
   if (
     $("#para-review-dataset-info-disseminate").text() ===
@@ -773,26 +778,20 @@ const transitionToPrepublishingQuestionThree = async () => {
   ) {
     // show the withdraw button
     $("#prepublishing-withdraw-btn-container").show();
+    $("#prepublishing-withdraw-btn-container button").show();
     $(".pre-publishing-continue-container").hide();
     $("#prepublishing-checklist-container").hide();
 
     return;
   }
 
+
+  // show the pre-publishing checklist and the continue button
+  $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();
+  $("#prepublishing-withdraw-btn-container").hide();
+  $("#prepublishing-withdraw-btn-container button").hide();
 
-  // check which of the two buttons ( withdrawal or submit ) is showing
-  let withdrawBtn = $("#prepublishing-withdraw-btn-container button");
-
-  if (withdrawBtn.css("visibility") === "hidden") {
-    // show the pre-publishing checklist and the generate/withdraw button
-    $("#prepublishing-checklist-container").show();
-    $(".pre-publishing-continue-container").show();
-  } else {
-    $("#prepublishing-checklist-container").hide();
-    $("#excluded-files-container").hide();
-    $(".pre-publishing-continue-container").hide();
-  }
 };
 
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which

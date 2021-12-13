@@ -3420,21 +3420,21 @@ async function submitReviewDataset(embargoReleaseDate) {
     },
   });
 
-  // hide the pre-publishing checklist
-  $("#prepublishing-checklist-container").hide();
 
-  // hide the excluded files container
-  $("#excluded-files-container").hide();
+  await transitionFreeFormMode(
+    document.querySelector("#begin-prepublishing-btn"),
+    "submit_prepublishing_review-question-2",
+    "submit_prepublishing_review-tab",
+    "",
+    "individual-question post-curation"
+  );
 
-  // show the withdraw button
-  $("#confirm-submit-review").show();
 
-  bfRefreshPublishingDatasetStatusBtn.disabled = false;
-  bfWithdrawReviewDatasetBtn.disabled = false;
 }
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
+  console.log("In the withdrawal")
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
     title: `Preparing to withdraw the dataset submission`,
@@ -3573,18 +3573,18 @@ async function withdrawReviewDataset() {
       },
     });
 
-    // show the checklist item and submit button
-    $("#begin-prepublishing-btn").hide();
-    $("#prepublishing-checklist-container").show();
 
-    // hide the submit and withdraw buttons
-    $("#prepublishing-submit-btn-container").hide();
-
-    // show the continue button beneath the pre-publishing checklist
-    $(".pre-publishing-continue-container").show();
+    // reveal the current section (question-3) again using the new publishing status value
+    await transitionFreeFormMode(
+      document.querySelector("#begin-prepublishing-btn"),
+      "submit_prepublishing_review-question-2",
+      "submit_prepublishing_review-tab",
+      "",
+      "individual-question post-curation"
+    );
 
     // scroll to the submit button
-    scrollToElement(".pre-publishing-continue");
+    // scrollToElement(".pre-publishing-continue");
 
     bfRefreshPublishingDatasetStatusBtn.disabled = false;
     bfWithdrawReviewDatasetBtn.disabled = false;
@@ -3910,29 +3910,6 @@ function showPublishingStatus(callback) {
             resolve();
           } else {
             try {
-              // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
-              if (res[0] !== "requested") {
-                // cannot withdraw from submission if there is no review request in progress or if it is already accepted
-                $("#prepublishing-withdraw-btn-container").css(
-                  "visibility",
-                  "hidden"
-                );
-                $("#prepublishing-submit-btn-container").css(
-                  "visibility",
-                  "visible"
-                );
-              } else {
-                // show the withdraw button
-                $("#prepublishing-withdraw-btn-container").css(
-                  "visibility",
-                  "visible"
-                );
-                $("#prepublishing-submit-btn-container").css(
-                  "visibility",
-                  "hidden"
-                );
-              }
-
               // update the dataset's publication status and display it onscreen for the user under their dataset name
               $("#para-review-dataset-info-disseminate").text(
                 publishStatusOutputConversion(res)
