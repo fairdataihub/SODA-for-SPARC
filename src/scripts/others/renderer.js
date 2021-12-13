@@ -2956,8 +2956,6 @@ function postCurationListChange() {
   // display the pre-publishing page
   showPrePublishingPageElements();
   showPublishingStatus();
-  // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
-  showPrePublishingStatus();
 }
 
 // upload banner image //
@@ -3287,6 +3285,75 @@ async function submitReviewDataset(embargoReleaseDate) {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+  // title text
+  let title = "";
+
+  // check if the user has selected any files they want to be hidden to the public upon publication (aka ignored/excluded files)
+  // set the loading message title accordingly
+  if (excludedFilesInPublicationFlow()) {
+    title =
+      "Ignoring selected files and submitting dataset for pre-publishing review";
+  } else {
+    title = "Submitting dataset for pre-publishing review";
+  }
+
+  // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+  Swal.fire({
+    title: title,
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
+  if (excludedFilesInPublicationFlow()) {
+    // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
+    let files = getExcludedFilesFromPublicationFlow();
+    try {
+      // exclude the user's selected files from publication
+      await updateDatasetExcludedFiles(selectedBfDataset, files);
+    } catch (error) {
+      // log the error
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Disseminate Dataset - Pre-publishing Review",
+        selectedBfDataset
+      );
+      log.error(error);
+      console.error(error);
+
+      var emessage = userError(error);
+
+      // alert the user of the error
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        confirmButtonText: "Ok",
+        title: `Could not exclude the selected files from publication`,
+        text: "Please try again.",
+        icon: "error",
+        reverseButtons: reverseSwalButtons,
+        text: `${emessage}`,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      // stop publication
+      return;
+    }
+  }
+
   try {
     await submitDatasetForPublication(
       selectedBfAccount,
@@ -3326,8 +3393,10 @@ async function submitReviewDataset(embargoReleaseDate) {
     return;
   }
 
+  // update the publishing status UI element
   await showPublishingStatus("noClear");
 
+  // track success
   ipcRenderer.send(
     "track-event",
     "Success",
@@ -3351,16 +3420,18 @@ async function submitReviewDataset(embargoReleaseDate) {
     },
   });
 
-  // hide the pre-publishing checklist and show the withdraw button
-  $("#prepublishing-checklist-container").hide();
-  $("#confirm-submit-review").show();
-
-  bfRefreshPublishingDatasetStatusBtn.disabled = false;
-  bfWithdrawReviewDatasetBtn.disabled = false;
+  await transitionFreeFormMode(
+    document.querySelector("#begin-prepublishing-btn"),
+    "submit_prepublishing_review-question-2",
+    "submit_prepublishing_review-tab",
+    "",
+    "individual-question post-curation"
+  );
 }
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
+  console.log("In the withdrawal");
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
     title: `Preparing to withdraw the dataset submission`,
@@ -3499,11 +3570,17 @@ async function withdrawReviewDataset() {
       },
     });
 
-    // show the checklist item and submit button
-    $("#begin-prepublishing-btn").hide();
-    $("#prepublishing-checklist-container").show();
+    // reveal the current section (question-3) again using the new publishing status value
+    await transitionFreeFormMode(
+      document.querySelector("#begin-prepublishing-btn"),
+      "submit_prepublishing_review-question-2",
+      "submit_prepublishing_review-tab",
+      "",
+      "individual-question post-curation"
+    );
+
     // scroll to the submit button
-    scrollToElement("#prepublishing-submit-btn-container");
+    // scrollToElement(".pre-publishing-continue");
 
     bfRefreshPublishingDatasetStatusBtn.disabled = false;
     bfWithdrawReviewDatasetBtn.disabled = false;
@@ -3535,6 +3612,14 @@ async function withdrawReviewDataset() {
       defaultBfDataset
     );
   }
+
+  // log the successful withdrawal
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Withdraw dataset submission",
+    defaultBfDataset
+  );
 }
 
 //////////////////////////////////
@@ -3768,7 +3853,9 @@ const showPrePublishingPageElements = () => {
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
     $("#prepublishing-checklist-container").hide();
-    $("#submit-withdraw-prepublishing-btns-container").hide();
+    $("#prepublishing-submit-btn-container").hide();
+    $("#excluded-files-container").hide();
+    $(".pre-publishing-continue-container").hide();
   }
 };
 
@@ -3819,29 +3906,6 @@ function showPublishingStatus(callback) {
             resolve();
           } else {
             try {
-              // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
-              if (res[0] !== "requested") {
-                // cannot withdraw from submission if there is no review request in progress or if it is already accepted
-                $("#prepublishing-withdraw-btn-container").css(
-                  "visibility",
-                  "hidden"
-                );
-                $("#prepublishing-submit-btn-container").css(
-                  "visibility",
-                  "visible"
-                );
-              } else {
-                // show the withdraw button
-                $("#prepublishing-withdraw-btn-container").css(
-                  "visibility",
-                  "visible"
-                );
-                $("#prepublishing-submit-btn-container").css(
-                  "visibility",
-                  "hidden"
-                );
-              }
-
               // update the dataset's publication status and display it onscreen for the user under their dataset name
               $("#para-review-dataset-info-disseminate").text(
                 publishStatusOutputConversion(res)
@@ -7271,7 +7335,7 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-// get_access_token().then((res) => console.log(res));
+get_access_token().then((res) => console.log(res));
 
 /*
 ******************************************************
@@ -8079,8 +8143,9 @@ const getUserInformation = async () => {
       throw new Error(`${statusCode} - Resource could not be found. `);
     default:
       // something unexpected happened
-      let statusText = await userResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
+      let pennsieveErrorObject = await userResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${statusCode} - ${message}`);
   }
 
   let user = await userResponse.json();
@@ -8139,4 +8204,223 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
       let statusText = await connectOrcidResponse.json().statusText;
       throw new Error(`${statusCode} - ${statusText}`);
   }
+};
+
+/*
+******************************************************
+******************************************************
+Get User's Excluded Files with NodeJS
+******************************************************
+******************************************************
+*/
+
+const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
+  // check a valid dataset was provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // peel out the id
+  let { id } = dataset.content;
+
+  // get the excluded files
+  let excludedFilesResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
+    {
+      headers: { Authorization: `Bearer ${jwt}` },
+    }
+  );
+
+  // get the status code
+  let statusCode = excludedFilesResponse.status;
+
+  // check the status code and respond appropriately
+  switch (statusCode) {
+    case 200:
+      break;
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - Reauthenticate to access this dataset. `
+      );
+    case 404:
+      throw new Error(`${statusCode} - Dataset could not be found. `);
+    default:
+      // something unexpected happened
+      let pennsieveErrorObject = await excludedFilesResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${statusCode} - ${message}`);
+  }
+
+  // get the ignored files array
+  let { ignoreFiles } = await excludedFilesResponse.json();
+
+  // return the ignored files
+  return ignoreFiles;
+};
+
+// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
+// this keeps those files hidden from the public but visible to publishers and collaboraors.
+// I:
+//  datasetIdOrName: string - A dataset id or name
+//  files: [{fileName: string}] - An array of file name objects
+const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
+  // ensure a valid datasetIDOrName is passed in
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the dataset ID
+  let jwt = await get_access_token();
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+  let { id } = dataset.content;
+
+  // create the request options
+  const options = {
+    method: "PUT",
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify(files),
+  };
+
+  // create the request
+  let excludeFilesResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
+    options
+  );
+
+  // check the status code
+  let { status } = excludeFilesResponse;
+  switch (status) {
+    //  200 is success do nothing
+    case 200:
+      break;
+
+    // 403 is forbidden from modifying this resource
+    case 403:
+      throw new Error(
+        `${status} - You are forbidden from accessing this resouce.`
+      );
+
+    // 401 is unauthenticated
+    case 401:
+      throw new Error(
+        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
+      );
+
+    // else a 400 of some kind or a 500 as default
+    default:
+      let pennsieveErrorObject = await excludeFilesResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${status} - ${message}`);
+  }
+
+  return;
+};
+
+// retrieves the currently selected dataset's metadata files
+// I:
+//  datasetIdOrName: string - A dataset id or name
+const getDatasetMetadataFiles = async (datasetIdOrName) => {
+  // check that the datasetIDOrName is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the dataset id
+  let jwt = await get_access_token();
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the id out of the dataset
+  let { id } = dataset.content;
+
+  // get the metadata files for the dataset
+  let datasetWithChildrenResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}`,
+    {
+      headers: { Authorization: `Bearer ${jwt}` },
+    }
+  );
+
+  // check the status code
+  let { status } = datasetWithChildrenResponse;
+  switch (status) {
+    //  200 is success do nothing
+    case 200:
+      break;
+
+    // 403 is forbidden from accessing this resource
+    case 403:
+      throw new Error(
+        `${status} - You are forbidden from accessing this resouce.`
+      );
+
+    // 401 is unauthenticated
+    case 401:
+      throw new Error(
+        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
+      );
+
+    // else a 400 of some kind or a 500 as default
+    default:
+      let pennsieveErrorObject = await datasetWithChildrenResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${status} - ${message}`);
+  }
+
+  // get the metadata files from the dataset
+  let datasetWithChildren = await datasetWithChildrenResponse.json();
+
+  // get the metadata packages
+  let topLevelMetadataPackages = datasetWithChildren.children;
+
+  // traverse the top level metadata packages and pull out -- submission.xlsx, code_description.xlsx, dataset_description.xlsx, outputs_metadata.xlsx,
+  // inputs_metadata.xlsx, CHANGES.txt, README.txt, samples.xlsx, subjects.xlsx
+  const metadataFiles = topLevelMetadataPackages
+    .map((packageObject) => {
+      // get the content
+      const { content } = packageObject;
+
+      // get the file name
+      const { name } = content;
+      // return only the name
+      return name;
+    })
+    .filter((fileName) => {
+      // return the filenames that match a metadata file name
+      if (
+        fileName === "submission.xlsx" ||
+        fileName === "code_description.xlsx" ||
+        fileName === "dataset_description.xlsx" ||
+        fileName === "outputs_metadata.xlsx" ||
+        fileName === "inputs_metadata.xlsx" ||
+        fileName === "CHANGES.txt" ||
+        fileName === "README.txt" ||
+        fileName === "samples.xlsx" ||
+        fileName === "subjects.xlsx"
+      ) {
+        return fileName;
+      }
+    });
+
+  // return the metdata files to the client
+  return metadataFiles;
 };
