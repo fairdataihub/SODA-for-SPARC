@@ -1858,7 +1858,7 @@ function showAddAirtableAccountSweetalert(keyword) {
     reverseButtons: reverseSwalButtons,
     customClass: "swal-wide",
     footer:
-      "<a href='https://fairdataihub.org/sodaforsparc/docs/Connect-your-Airtable-account-with-SODA' target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
+      "<a href='https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Connect-your-Airtable-account-with-SODA' target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
     },

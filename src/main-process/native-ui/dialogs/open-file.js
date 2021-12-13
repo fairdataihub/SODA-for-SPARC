@@ -648,3 +648,23 @@ ipcMain.on("open-folder-dialog-save-manifest-local", async (event, arg) => {
   });
   event.sender.send("selected-manifest-folder", result);
 });
+
+/*
+This section is for Prepare metadata -> Create manifest
+*/
+
+// Browse for local dataset
+ipcMain.on("open-file-dialog-local-dataset-manifest-purpose", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      title: "Select dataset folder",
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-local-dataset-manifest-purpose", files);
+      }
+    }
+  );
+});

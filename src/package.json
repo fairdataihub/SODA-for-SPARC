@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -85,7 +85,7 @@
     "electron-log": "^4.3.5",
     "electron-settings": "^3.2.0",
     "electron-shortcut-normalizer": "^1.0.0",
-    "electron-updater": "^4.3.9",
+    "electron-updater": "4.3.9",
     "fomantic-ui": "^2.8.8",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
