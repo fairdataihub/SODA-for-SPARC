@@ -3420,7 +3420,6 @@ async function submitReviewDataset(embargoReleaseDate) {
     },
   });
 
-
   await transitionFreeFormMode(
     document.querySelector("#begin-prepublishing-btn"),
     "submit_prepublishing_review-question-2",
@@ -3428,13 +3427,11 @@ async function submitReviewDataset(embargoReleaseDate) {
     "",
     "individual-question post-curation"
   );
-
-
 }
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
-  console.log("In the withdrawal")
+  console.log("In the withdrawal");
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
     title: `Preparing to withdraw the dataset submission`,
@@ -3572,7 +3569,6 @@ async function withdrawReviewDataset() {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
     });
-
 
     // reveal the current section (question-3) again using the new publishing status value
     await transitionFreeFormMode(
