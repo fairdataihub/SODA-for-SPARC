@@ -3099,7 +3099,7 @@ async function submitReviewDatasetCheck(res) {
       reverseButtons: reverseSwalButtons,
       text: "",
       html: `
-                <div style="display: flex; flex-direction: column;  font-size: 15px;"> 
+                <div style="display: flex; flex-direction: column;  font-size: 15px;">
                 <p style="text-align:left">This dataset has already been published. This action will submit the dataset again for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published.</p>
                 <div style="text-align: left; margin-bottom: 5px; display: flex; ">
                   <input type="radio" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;" checked>
@@ -3110,15 +3110,15 @@ async function submitReviewDatasetCheck(res) {
                   <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
                 </div>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label> 
+                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
                 <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
-                     
+
                     <input
                       type="text"
                       id="tui-date-picker-target"
                       aria-label="Date-Time"
                       />
-                      
+
                       <span class="tui-ico-date"></span>
                     </div>
                     <div
@@ -3126,7 +3126,7 @@ async function submitReviewDatasetCheck(res) {
                     style="margin-top: -1px; margin-left: 60px;"
                     ></div>
                 </div>
-              </div>  
+              </div>
             `,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -3190,7 +3190,7 @@ async function submitReviewDatasetCheck(res) {
       title: `Submit your dataset for pre-publishing review`,
       reverseButtons: reverseSwalButtons,
       html: `
-              <div style="display: flex; flex-direction: column;  font-size: 15px;"> 
+              <div style="display: flex; flex-direction: column;  font-size: 15px;">
                 <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
                 <div style="text-align: left; margin-bottom: 5px; display: flex; ">
                   <input type="radio" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;" checked>
@@ -3201,15 +3201,15 @@ async function submitReviewDatasetCheck(res) {
                   <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
                 </div>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label> 
+                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
                 <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
-                     
+
                     <input
                       type="text"
                       id="tui-date-picker-target"
                       aria-label="Date-Time"
                       />
-                      
+
                       <span class="tui-ico-date"></span>
                     </div>
                     <div
@@ -3217,7 +3217,7 @@ async function submitReviewDatasetCheck(res) {
                     style="margin-top: -1px; margin-left: 60px;"
                     ></div>
                 </div>
-              </div>  
+              </div>
             `,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -5971,7 +5971,7 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 document
   .getElementById("button-generate")
   .addEventListener("click", async function () {
-    $($($(ev).parent()[0]).parents()[0]).removeClass("tab-active");
+    $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
     ).innerHTML = "";
