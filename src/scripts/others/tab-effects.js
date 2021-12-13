@@ -1542,6 +1542,7 @@ async function transitionSubQuestionsButton(
     var result;
     try {
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
+      console.log("Logged in like 1543 of tab-effects: ", res);
       result = [true, res];
     } catch (err) {
       result = [false, err];
@@ -1813,6 +1814,11 @@ async function transitionFreeFormMode(
         return;
       }
       break;
+    case "submit_prepublishing_review-question-2":
+      transitionToPrepublishingQuestionThree();
+      break;
+    case "submit_prepublishing_review-question-3":
+      transitionToPrePublishingSubmit();
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
       break;
@@ -3516,4 +3522,10 @@ const transitionFromPrePublishingChecklist = (elementId) => {
   // mark the tab as checked to get the appropriate tab styling
   $("#disseminate_dataset_tab").prop("checked", false);
   $("#manage_dataset_tab").prop("checked", true);
+};
+
+const scrollToElement = (elementIdOrClassname) => {
+  let element = document.querySelector(elementIdOrClassname);
+
+  element.scrollIntoView(true);
 };
