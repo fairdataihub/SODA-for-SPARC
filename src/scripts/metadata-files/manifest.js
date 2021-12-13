@@ -1,4 +1,6 @@
-var jstreePreviewManifest = document.getElementById("div-dataset-tree-preview-manifest");
+var jstreePreviewManifest = document.getElementById(
+  "div-dataset-tree-preview-manifest"
+);
 
 function showLocalDatasetManifest() {
   ipcRenderer.send("open-file-dialog-local-dataset-manifest-purpose");
@@ -116,23 +118,26 @@ $(document).ready(function () {
     },
   });
 
-  $(jstreePreviewManifest).on(
-    "select_node.jstree", function(evt, data){
-      var parentFolderName = $("#"+data.node.parent+"_anchor").text();
-      var localFolderPath = path.join(homeDirectory, "SODA", "SODA Manifest Files", parentFolderName);
-      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
-      // load onto library
-      console.log(selectedManifestFilePath)
-      const s = new Spreadsheet("#x-spreadsheet-demo")
-        .loadData({}) // load data
-        .change(data => {
-          // save data to db
-        });
+  $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
+    var parentFolderName = $("#" + data.node.parent + "_anchor").text();
+    var localFolderPath = path.join(
+      homeDirectory,
+      "SODA",
+      "SODA Manifest Files",
+      parentFolderName
+    );
+    var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+    // load onto library
+    console.log(selectedManifestFilePath);
+    const s = new Spreadsheet("#x-spreadsheet-demo")
+      .loadData({}) // load data
+      .change((data) => {
+        // save data to db
+      });
 
-      // data validation
-      s.validate()
-    }
-  );
+    // data validation
+    s.validate();
+  });
 });
 
 var localDatasetFolderPath = "";
@@ -643,14 +648,17 @@ async function generateManifestFolderLocallyForEdit() {
       }).then((result) => {});
       return;
     }
-    generateManifestHelper()
+    generateManifestHelper();
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
     extractBFDatasetForManifestFile(defaultBfAccount, defaultBfDataset);
   }
-  sodaJSONObj["manifest-files"]["local-destination"] = path.join(homeDirectory, "SODA")
+  sodaJSONObj["manifest-files"]["local-destination"] = path.join(
+    homeDirectory,
+    "SODA"
+  );
   client.invoke(
     "api_generate_manifest_file_locally",
     "add-metadata",
@@ -664,7 +672,7 @@ async function generateManifestFolderLocallyForEdit() {
         manifestFolderPath = res;
         loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
         // move to the next question with a Fake confirm button
-        $("#preview-manifest-fake-confirm").click()
+        $("#preview-manifest-fake-confirm").click();
       }
     }
   );
@@ -679,12 +687,25 @@ function loadDSTreePreviewManifest(datasetStructure) {
   // upon clicking on a node, if node == manifest, feed the actual path of that manifest file -> UI library xspreadsheet
   // -> popup opens up with loaded info from such manifest.xlsx file.
   // -> upon save+close -> save the new file to the old path (make changes to the file)
-  addManifestFilesForTreeView()
-  showTreeViewPreviewManifestEdits(false, false, false, "My_dataset_structure", jstreePreviewManifest, datasetStructure)
+  addManifestFilesForTreeView();
+  showTreeViewPreviewManifestEdits(
+    false,
+    false,
+    false,
+    "My_dataset_structure",
+    jstreePreviewManifest,
+    datasetStructure
+  );
 }
 
-function showTreeViewPreviewManifestEdits(disabledBoolean, selectedBoolean, manifestFileBoolean, new_dataset_name, previewDiv, datasetStructure) {
-
+function showTreeViewPreviewManifestEdits(
+  disabledBoolean,
+  selectedBoolean,
+  manifestFileBoolean,
+  new_dataset_name,
+  previewDiv,
+  datasetStructure
+) {
   var jsTreePreviewDataManifest = createChildNodeManifest(
     datasetStructure,
     new_dataset_name,
@@ -699,7 +720,6 @@ function showTreeViewPreviewManifestEdits(disabledBoolean, selectedBoolean, mani
   $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
   $(previewDiv).jstree(true).refresh();
 }
-
 
 function uploadModifiedManifest(type) {
   // call the upload function to upload the manifest files (merge folders and skip files, remove and update manifest files)
@@ -716,7 +736,7 @@ function createChildNodeManifest(
   selectedOriginalLocation,
   viewOptions
 ) {
-    /*
+  /*
     oldFormatNode: node in the format under "dataset-structure" key in SODA object
     nodeName: text to show for each node (name)
     type: "folder" or "file"
@@ -724,96 +744,94 @@ function createChildNodeManifest(
     openedState, selectedState: states of a jstree node
     selectedOriginalLocation: current folder of selected items
     */
-    selectedOriginalLocation = "";
-    var newFormatNode = {
-      text: nodeName,
-      state: {
-        opened: openedState,
-        selected: selectedState,
-        disabled: disabledState,
-      },
-      children: [],
-      type: type + ext,
-    };
-    if (oldFormatNode) {
-      for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-          if (key === selectedOriginalLocation) {
-            newFormatNode.state.selected = true;
-            newFormatNode.state.opened = true;
-            var new_node = createChildNodeManifest(
-              value,
-              key,
-              "folder",
-              "",
-              true,
-              true,
-              true,
-              selectedOriginalLocation,
-              viewOptions
-            );
+  selectedOriginalLocation = "";
+  var newFormatNode = {
+    text: nodeName,
+    state: {
+      opened: openedState,
+      selected: selectedState,
+      disabled: disabledState,
+    },
+    children: [],
+    type: type + ext,
+  };
+  if (oldFormatNode) {
+    for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
+      if (key === selectedOriginalLocation) {
+        newFormatNode.state.selected = true;
+        newFormatNode.state.opened = true;
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          true,
+          true,
+          true,
+          selectedOriginalLocation,
+          viewOptions
+        );
+      } else {
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          false,
+          false,
+          false,
+          selectedOriginalLocation,
+          viewOptions
+        );
+      }
+      newFormatNode["children"].push(new_node);
+      newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
+    }
+  }
+  if ("files" in oldFormatNode) {
+    if (oldFormatNode["files"] != undefined) {
+      for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+        if (key !== undefined || value !== undefined) {
+          if (
+            [
+              ".png",
+              ".PNG",
+              ".xls",
+              ".xlsx",
+              ".pdf",
+              ".txt",
+              ".jpeg",
+              ".JPEG",
+              ".csv",
+              ".CSV",
+              ".DOC",
+              ".DOCX",
+              ".doc",
+              ".docx",
+            ].includes(path.parse(key).ext)
+          ) {
+            nodeType = "file " + path.parse(key).ext.slice(1);
           } else {
-            var new_node = createChildNodeManifest(
-              value,
-              key,
-              "folder",
-              "",
-              false,
-              false,
-              false,
-              selectedOriginalLocation,
-              viewOptions
-            );
+            nodeType = "file other";
+          }
+          if (key === "manifest.xlsx") {
+            var new_node = {
+              text: key,
+              state: { disabled: false },
+              type: nodeType,
+            };
+          } else {
+            var new_node = {
+              text: key,
+              state: { disabled: true },
+              type: nodeType,
+            };
           }
           newFormatNode["children"].push(new_node);
           newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
         }
       }
-      if ("files" in oldFormatNode) {
-        if (oldFormatNode["files"] != undefined) {
-          for (var [key, value] of Object.entries(oldFormatNode["files"])) {
-            if (key !== undefined || value !== undefined) {
-              if (
-                [
-                  ".png",
-                  ".PNG",
-                  ".xls",
-                  ".xlsx",
-                  ".pdf",
-                  ".txt",
-                  ".jpeg",
-                  ".JPEG",
-                  ".csv",
-                  ".CSV",
-                  ".DOC",
-                  ".DOCX",
-                  ".doc",
-                  ".docx",
-                ].includes(path.parse(key).ext)
-              ) {
-                nodeType = "file " + path.parse(key).ext.slice(1);
-              } else {
-                nodeType = "file other";
-              }
-              if (key === "manifest.xlsx") {
-                var new_node = {
-                  text: key,
-                  state: { disabled: false },
-                  type: nodeType,
-                };
-              } else {
-                var new_node = {
-                  text: key,
-                  state: { disabled: true },
-                  type: nodeType,
-                };
-              }
-              newFormatNode["children"].push(new_node);
-              newFormatNode["children"].sort((a, b) =>
-                a.text > b.text ? 1 : -1
-              );
-            }
-          }
-        }
-      }
-    return newFormatNode;
+    }
+  }
+  return newFormatNode;
 }

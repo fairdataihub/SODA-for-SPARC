@@ -169,7 +169,14 @@ const showParentTab = (tabNow, nextOrPrev) => {
 
     let dataset_name = fill_info_details();
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
-    showTreeViewPreview(false, false, false, dataset_name, jstreePreview, datasetStructureJSONObj);
+    showTreeViewPreview(
+      false,
+      false,
+      false,
+      dataset_name,
+      jstreePreview,
+      datasetStructureJSONObj
+    );
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
