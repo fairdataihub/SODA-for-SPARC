@@ -5971,7 +5971,7 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 document
   .getElementById("button-generate")
   .addEventListener("click", async function () {
-    $($($(ev).parent()[0]).parents()[0]).removeClass("tab-active");
+    $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
     ).innerHTML = "";
