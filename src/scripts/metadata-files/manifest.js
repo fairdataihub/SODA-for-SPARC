@@ -1,3 +1,5 @@
+var jstreePreviewManifest = document.getElementById("div-dataset-tree-preview-manifest");
+
 function showLocalDatasetManifest() {
   ipcRenderer.send("open-file-dialog-local-dataset-manifest-purpose");
 }
@@ -41,6 +43,96 @@ $(document).ready(function () {
       $("#div-check-bf-create-manifest").css("display", "none");
     }
   });
+
+  $(jstreePreviewManifest).on("open_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder open");
+  });
+
+  $(jstreePreviewManifest).on("close_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder closed");
+  });
+
+  $(jstreePreviewManifest).jstree({
+    core: {
+      check_callback: true,
+      data: {},
+    },
+    plugins: ["types"],
+    types: {
+      folder: {
+        icon: "fas fa-folder fa-fw",
+      },
+      "folder open": {
+        icon: "fas fa-folder-open fa-fw",
+      },
+      "folder closed": {
+        icon: "fas fa-folder fa-fw",
+      },
+      "file xlsx": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file xls": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file png": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file PNG": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file pdf": {
+        icon: "./assets/img/pdf-file.png",
+      },
+      "file txt": {
+        icon: "./assets/img/txt-file.png",
+      },
+      "file csv": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file CSV": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file DOC": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file DOCX": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file docx": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file doc": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file jpeg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPEG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file other": {
+        icon: "./assets/img/other-file.png",
+      },
+    },
+  });
+
+  $(jstreePreviewManifest).on(
+    "select_node.jstree", function(evt, data){
+      var parentFolderName = $("#"+data.node.parent+"_anchor").text();
+      var localFolderPath = path.join(homeDirectory, "SODA", "SODA Manifest Files", parentFolderName);
+      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+      // load onto library
+      console.log(selectedManifestFilePath)
+      const s = new Spreadsheet("#x-spreadsheet-demo")
+        .loadData({}) // load data
+        .change(data => {
+          // save data to db
+        });
+
+      // data validation
+      s.validate()
+    }
+  );
 });
 
 var localDatasetFolderPath = "";
@@ -130,6 +222,7 @@ async function generateManifest(action, type) {
       return;
     }
     generateManifestHelper();
+    initiate_generate_manifest();
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
@@ -170,7 +263,6 @@ async function generateManifestHelper() {
       return;
     }
   }
-  initiate_generate_manifest();
 }
 
 function updateJSONStructureManifestGenerate() {
@@ -386,6 +478,7 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
       return;
     }
     generateManifestHelper();
+    initiate_generate_manifest();
   }
 }
 
@@ -503,11 +596,65 @@ function checkEmptySubFolders(datasetStructure) {
 // helper function 1: First, generate manifest file folder locally
 // Parameter: dataset structure object
 // Return: manifest file folder path
-function generateManifestFolderLocally(jsonObject) {
+async function generateManifestFolderLocallyForEdit() {
+  var type = "local";
+  if (
+    $('input[name="generate-manifest-1"]:checked').prop("id") ===
+    "generate-manifest-from-Penn"
+  ) {
+    type = "bf";
+  }
+  exitCurate();
+  sodaJSONObj["starting-point"] = {};
+  sodaJSONObj["dataset-structure"] = {};
+  datasetStructureJSONObj = { folders: {}, files: {} };
+  sodaJSONObj["metadata-files"] = {};
+  let continueProgressValidateDataset = true;
+  let continueProgressEmptyFolder = true;
+  var titleTerm = "folder";
+  continueProgressValidateDataset = await validateSPARCdataset();
+  if (!continueProgressValidateDataset) {
+    return;
+  }
+  if (type === "local") {
+    sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
+    sodaJSONObj["starting-point"]["type"] = "local";
+    create_json_object("", sodaJSONObj, localDatasetFolderPath);
+    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+    populate_existing_folders(datasetStructureJSONObj);
+    populate_existing_metadata(sodaJSONObj);
+    sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
+    sodaJSONObj["bf-account-selected"] = {};
+    sodaJSONObj["bf-dataset-selected"] = {};
+    sodaJSONObj["generate-dataset"] = {};
+    let continueProgressEmptyFolder = await checkEmptySubFolders(
+      sodaJSONObj["dataset-structure"]
+    );
+    if (continueProgressEmptyFolder === false) {
+      Swal.fire({
+        title: "Failed to generate the manifest files.",
+        text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+        heightAuto: false,
+        icon: "error",
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      return;
+    }
+    generateManifestHelper()
+  } else {
+    // Case 2: bf dataset
+    sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
+    sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
+    extractBFDatasetForManifestFile(defaultBfAccount, defaultBfDataset);
+  }
+  sodaJSONObj["manifest-files"]["local-destination"] = path.join(homeDirectory, "SODA")
   client.invoke(
     "api_generate_manifest_file_locally",
     "add-metadata",
-    jsonObject,
+    sodaJSONObj,
     (error, res) => {
       if (error) {
         var emessage = userError(error);
@@ -515,6 +662,9 @@ function generateManifestFolderLocally(jsonObject) {
         console.error(error);
       } else {
         manifestFolderPath = res;
+        loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+        // move to the next question with a Fake confirm button
+        $("#preview-manifest-fake-confirm").click()
       }
     }
   );
@@ -529,8 +679,141 @@ function loadDSTreePreviewManifest(datasetStructure) {
   // upon clicking on a node, if node == manifest, feed the actual path of that manifest file -> UI library xspreadsheet
   // -> popup opens up with loaded info from such manifest.xlsx file.
   // -> upon save+close -> save the new file to the old path (make changes to the file)
+  addManifestFilesForTreeView()
+  showTreeViewPreviewManifestEdits(false, false, false, "My_dataset_structure", jstreePreviewManifest, datasetStructure)
 }
+
+function showTreeViewPreviewManifestEdits(disabledBoolean, selectedBoolean, manifestFileBoolean, new_dataset_name, previewDiv, datasetStructure) {
+
+  var jsTreePreviewDataManifest = createChildNodeManifest(
+    datasetStructure,
+    new_dataset_name,
+    "folder",
+    "",
+    true,
+    selectedBoolean,
+    disabledBoolean,
+    "",
+    "preview"
+  );
+  $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
+  $(previewDiv).jstree(true).refresh();
+}
+
 
 function uploadModifiedManifest(type) {
   // call the upload function to upload the manifest files (merge folders and skip files, remove and update manifest files)
+}
+
+function createChildNodeManifest(
+  oldFormatNode,
+  nodeName,
+  type,
+  ext,
+  openedState,
+  selectedState,
+  disabledState,
+  selectedOriginalLocation,
+  viewOptions
+) {
+    /*
+    oldFormatNode: node in the format under "dataset-structure" key in SODA object
+    nodeName: text to show for each node (name)
+    type: "folder" or "file"
+    ext: track ext of files to match with the right CSS icons
+    openedState, selectedState: states of a jstree node
+    selectedOriginalLocation: current folder of selected items
+    */
+    selectedOriginalLocation = "";
+    var newFormatNode = {
+      text: nodeName,
+      state: {
+        opened: openedState,
+        selected: selectedState,
+        disabled: disabledState,
+      },
+      children: [],
+      type: type + ext,
+    };
+    if (oldFormatNode) {
+      for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
+          if (key === selectedOriginalLocation) {
+            newFormatNode.state.selected = true;
+            newFormatNode.state.opened = true;
+            var new_node = createChildNodeManifest(
+              value,
+              key,
+              "folder",
+              "",
+              true,
+              true,
+              true,
+              selectedOriginalLocation,
+              viewOptions
+            );
+          } else {
+            var new_node = createChildNodeManifest(
+              value,
+              key,
+              "folder",
+              "",
+              false,
+              false,
+              false,
+              selectedOriginalLocation,
+              viewOptions
+            );
+          }
+          newFormatNode["children"].push(new_node);
+          newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
+        }
+      }
+      if ("files" in oldFormatNode) {
+        if (oldFormatNode["files"] != undefined) {
+          for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+            if (key !== undefined || value !== undefined) {
+              if (
+                [
+                  ".png",
+                  ".PNG",
+                  ".xls",
+                  ".xlsx",
+                  ".pdf",
+                  ".txt",
+                  ".jpeg",
+                  ".JPEG",
+                  ".csv",
+                  ".CSV",
+                  ".DOC",
+                  ".DOCX",
+                  ".doc",
+                  ".docx",
+                ].includes(path.parse(key).ext)
+              ) {
+                nodeType = "file " + path.parse(key).ext.slice(1);
+              } else {
+                nodeType = "file other";
+              }
+              if (key === "manifest.xlsx") {
+                var new_node = {
+                  text: key,
+                  state: { disabled: false },
+                  type: nodeType,
+                };
+              } else {
+                var new_node = {
+                  text: key,
+                  state: { disabled: true },
+                  type: nodeType,
+                };
+              }
+              newFormatNode["children"].push(new_node);
+              newFormatNode["children"].sort((a, b) =>
+                a.text > b.text ? 1 : -1
+              );
+            }
+          }
+        }
+      }
+    return newFormatNode;
 }

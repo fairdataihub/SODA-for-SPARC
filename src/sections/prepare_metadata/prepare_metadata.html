@@ -9901,8 +9901,8 @@
                 color: var(--color-bg-plum);
                 text-align: center;
               "
-              >For which of the below do you want to create manifest.xlsx files
-              ? <br /><span style="color: #898989; font-size: 12px"
+              >For which of the below do you want to create manifest.xlsx files?
+              <br /><span style="color: #898989; font-size: 12px"
                 >Please select one:</span
               ></label
             >
@@ -10197,6 +10197,8 @@
           <div class="grouped fields">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Do you want to add any additional metadata to the manifest files?
+              <br /><span style="color: #898989; font-size: 12px"
+                >Please select one:</span
             </label>
             <div class="field" style="margin: auto; width: 500px">
               <div
@@ -10221,6 +10223,7 @@
                 </button>
                 <button
                   class="btn_question"
+                  onclick="generateManifestFolderLocallyForEdit(sodaJSONObj)"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -10234,7 +10237,62 @@
                 >
                   Yes, let's edit the manifest files
                 </button>
+                <button
+                  class="btn_question"
+                  data-next="Question-prepare-manifest-5"
+                  id="preview-manifest-fake-confirm"
+                  onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-4', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    background: #fff;
+                    color: var(--color-light-green);
+                    font-weight: 600;
+                    border: 1px solid var(--color-light-green);
+                    width: 160px;
+                    padding: 10px;
+                    display: none;
+                  "
+                >
+                  Fake confirm
+                </button>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question prepare-manifest"
+        id="Question-prepare-manifest-5"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              > Please select a manifest file in the dataset structure below to edit.
+              <br /><span style="color: #898989; font-size: 12px"
+                >Click on one manifest file at a time:</span
+            </label>
+            <div class="field" style="margin: 0 auto; width: fit-content; margin-top:30px">
+              <div
+                style="
+                  width: 500px;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+              <div
+                id="div-dataset-tree-preview-manifest"
+              >
+              </div>
+            </div>
+            <div id="x-spreadsheet-demo"></div>
             </div>
           </div>
         </div>
