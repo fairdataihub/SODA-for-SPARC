@@ -327,6 +327,7 @@ $("#button-rename-dataset").click(() => {
                   log.info("Request successful");
                   datasetList = [];
                   datasetList = result;
+                  // console.log("Result is: ", result)
                   refreshDatasetList();
                 }
               }

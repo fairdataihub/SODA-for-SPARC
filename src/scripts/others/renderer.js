@@ -703,6 +703,7 @@ const manifestFileCheck = document.getElementById("generate-manifest-curate");
 var bfAccountOptions;
 var defaultBfAccount;
 var defaultBfDataset = "Select dataset";
+var defaultBfDatasetId = undefined; 
 var bfAccountOptionsStatus;
 
 // Organize dataset //
@@ -3474,7 +3475,7 @@ function withdrawDatasetSubmission() {
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Disseminate Datasets - Submit for pre-publishing review",
+      "Disseminate Dataset - Pre-publishing Review",
       defaultBfDataset
     );
   });
@@ -3608,7 +3609,7 @@ async function withdrawReviewDataset() {
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Disseminate Datasets - Submit for pre-publishing review",
+      "Disseminate Dataset - Pre-publishing Review",
       defaultBfDataset
     );
   }
@@ -3899,7 +3900,7 @@ function showPublishingStatus(callback) {
             ipcRenderer.send(
               "track-event",
               "Error",
-              "Disseminate Datasets - Submit for pre-publishing review",
+              "Disseminate Dataset - Pre-publishing Review",
               defaultBfDataset
             );
 

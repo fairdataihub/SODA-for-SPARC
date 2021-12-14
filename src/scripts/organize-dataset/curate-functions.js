@@ -1059,6 +1059,16 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         confirm_click_function();
 
         defaultBfDataset = bfDataset;
+
+        // update the gloabl dataset id
+        for (const item of datasetList) {
+          let { name } = item;
+          let { id } = item;
+          if (name === bfDataset) {
+            defaultBfDatasetId = id;
+          }
+        }
+
         // document.getElementById("ds-description").innerHTML = "";
         refreshDatasetList();
         $("#dataset-loaded-message").hide();
