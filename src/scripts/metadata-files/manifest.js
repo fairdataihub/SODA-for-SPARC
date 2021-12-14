@@ -127,19 +127,22 @@ $(document).ready(function () {
         "SODA Manifest Files",
         parentFolderName
       );
-      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+      var selectedManifestFilePath = path.join(
+        localFolderPath,
+        "manifest.xlsx"
+      );
       // load onto library
 
-      jexcel.fromSpreadsheet(selectedManifestFilePath, function(result) {
-          if (! result.length) {
-              console.error('jspreadsheet: Something went wrong.');
+      jexcel.fromSpreadsheet(selectedManifestFilePath, function (result) {
+        if (!result.length) {
+          console.error("jspreadsheet: Something went wrong.");
+        } else {
+          if (result.length == 1) {
+            jspreadsheet(document.getElementById("spreadsheet"), result[0]);
           } else {
-              if (result.length == 1) {
-                  jspreadsheet(document.getElementById('spreadsheet'), result[0]);
-              } else {
-                jexcel.createTabs(document.getElementById('spreadsheet'), result);
-              }
+            jexcel.createTabs(document.getElementById("spreadsheet"), result);
           }
+        }
       });
     }
   });
