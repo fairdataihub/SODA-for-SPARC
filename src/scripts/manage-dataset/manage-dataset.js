@@ -954,7 +954,7 @@ $("#button-add-description").click(() => {
         title: "This description does not follow SPARC guidelines.",
         html: `
         Your description should include all of the mandatory sections. Additionally, each section should be no longer than one paragraph.
-        <br> 
+        <br>
         <br>
         Are you sure you want to continue?`,
         heightAuto: false,

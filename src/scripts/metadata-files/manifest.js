@@ -119,24 +119,29 @@ $(document).ready(function () {
   });
 
   $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
-    var parentFolderName = $("#" + data.node.parent + "_anchor").text();
-    var localFolderPath = path.join(
-      homeDirectory,
-      "SODA",
-      "SODA Manifest Files",
-      parentFolderName
-    );
-    var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
-    // load onto library
-    console.log(selectedManifestFilePath);
-    const s = new Spreadsheet("#x-spreadsheet-demo")
-      .loadData({}) // load data
-      .change((data) => {
-        // save data to db
-      });
+    if (data.node.text === "manifest.xlsx") {
+      var parentFolderName = $("#" + data.node.parent + "_anchor").text();
+      var localFolderPath = path.join(
+        homeDirectory,
+        "SODA",
+        "SODA Manifest Files",
+        parentFolderName
+      );
+      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+      // load onto library
 
-    // data validation
-    s.validate();
+      jexcel.fromSpreadsheet(selectedManifestFilePath, function(result) {
+          if (! result.length) {
+              console.error('jspreadsheet: Something went wrong.');
+          } else {
+              if (result.length == 1) {
+                  jspreadsheet(document.getElementById('spreadsheet'), result[0]);
+              } else {
+                jexcel.createTabs(document.getElementById('spreadsheet'), result);
+              }
+          }
+      });
+    }
   });
 });
 
