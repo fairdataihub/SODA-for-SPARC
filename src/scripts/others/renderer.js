@@ -703,7 +703,7 @@ const manifestFileCheck = document.getElementById("generate-manifest-curate");
 var bfAccountOptions;
 var defaultBfAccount;
 var defaultBfDataset = "Select dataset";
-var defaultBfDatasetId = undefined; 
+var defaultBfDatasetId = undefined;
 var bfAccountOptionsStatus;
 
 // Organize dataset //
