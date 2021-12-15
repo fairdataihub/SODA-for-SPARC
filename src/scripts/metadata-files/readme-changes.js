@@ -83,7 +83,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             "track-event",
             "Error",
             `Prepare Metadata - Create ${upperCaseLetters}`,
-            defaultBfDataset
+            defaultBfDatasetId
           );
         } else {
           Swal.fire({
@@ -96,7 +96,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             "track-event",
             "Success",
             `Prepare Metadata - Create ${upperCaseLetters}`,
-            defaultBfDataset
+            defaultBfDatasetId
           );
         }
       }
