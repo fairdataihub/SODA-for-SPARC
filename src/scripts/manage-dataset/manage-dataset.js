@@ -1,4 +1,3 @@
-
 var forbidden_characters_bf = '/:*?"<>';
 
 const check_forbidden_characters_bf = (my_string) => {
@@ -1923,8 +1922,6 @@ $("#button-add-tags").click(async () => {
       defaultBfDatasetId
     );
 
-    
-
     // halt execution
     return;
   }
@@ -1936,7 +1933,6 @@ $("#button-add-tags").click(async () => {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   }).then(() => {
-
     ipcRenderer.send(
       "track-event",
       "Success",
