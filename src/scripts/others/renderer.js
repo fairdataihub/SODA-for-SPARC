@@ -992,6 +992,12 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      `Download Template - ${templateItem}`
+    );
   } else {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
@@ -3625,8 +3631,8 @@ async function withdrawReviewDataset() {
   ipcRenderer.send(
     "track-event",
     "Success",
-    "Withdraw dataset submission",
-    defaultBfDataset
+    "Disseminate Dataset - Pre-publishing Review",
+    defaultBfDatasetId
   );
 }
 
@@ -6239,10 +6245,12 @@ function initiate_generate() {
 
   let dataset_name = "";
   let dataset_destination = "";
+  // let dataset_id = ""
 
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
+    // console.log(sodaJSONObj["bf-dataset-selected"])
   } else if ("generate-dataset" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
@@ -6742,7 +6750,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
             "track-event",
             "Error",
             "Retrieve Dataset - Pennsieve",
-            defaultBfDataset
+            defaultBfDatasetId
           );
         } else {
           resolve(res);
@@ -6750,7 +6758,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
             "track-event",
             "Success",
             "Retrieve Dataset - Pennsieve",
-            defaultBfDataset
+            defaultBfDatasetId
           );
         }
       }
