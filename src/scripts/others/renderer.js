@@ -3366,7 +3366,7 @@ async function submitReviewDataset(embargoReleaseDate) {
       "track-event",
       "Error",
       "Disseminate Dataset - Pre-publishing Review",
-      selectedBfDataset
+      defaultBfDatasetId
     );
     log.error(error);
     console.error(error);
@@ -3402,8 +3402,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     "track-event",
     "Success",
     "Disseminate Dataset - Pre-publishing Review",
-    selectedBfDataset
-  );
+    defaultBfDatasetId  );
 
   // alert the user the submission was successful
   Swal.fire({
@@ -3476,7 +3475,7 @@ function withdrawDatasetSubmission() {
       "track-event",
       "Error",
       "Disseminate Dataset - Pre-publishing Review",
-      defaultBfDataset
+      defaultBfDatasetId
     );
   });
 }
@@ -3553,6 +3552,13 @@ async function withdrawReviewDataset() {
   try {
     await withdrawDatasetReviewSubmission(selectedBfDataset);
 
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Disseminate Dataset - Pre-publishing Review",
+      defaultBfDatasetId
+    );
+
     // show the user their dataset's updated publishing status
     await showPublishingStatus("noClear");
 
@@ -3610,7 +3616,7 @@ async function withdrawReviewDataset() {
       "track-event",
       "Error",
       "Disseminate Dataset - Pre-publishing Review",
-      defaultBfDataset
+      defaultBfDatasetId
     );
   }
 
@@ -3901,7 +3907,7 @@ function showPublishingStatus(callback) {
               "track-event",
               "Error",
               "Disseminate Dataset - Pre-publishing Review",
-              defaultBfDataset
+              defaultBfDatasetId
             );
 
             resolve();
