@@ -3402,7 +3402,8 @@ async function submitReviewDataset(embargoReleaseDate) {
     "track-event",
     "Success",
     "Disseminate Dataset - Pre-publishing Review",
-    defaultBfDatasetId  );
+    defaultBfDatasetId
+  );
 
   // alert the user the submission was successful
   Swal.fire({
