@@ -290,7 +290,10 @@ $("#button-rename-dataset").click(() => {
               "track-event",
               "Error",
               "Manage Dataset - Rename Existing Dataset",
-              `${defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
+              `${defaultBfDatasetId}: ` +
+                currentDatasetName +
+                " to " +
+                renamedDatasetName
             );
           } else {
             log.info("Dataset rename success");
@@ -314,7 +317,10 @@ $("#button-rename-dataset").click(() => {
               "track-event",
               "Success",
               "Manage Dataset - Rename Existing Dataset",
-              `${defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
+              `${defaultBfDatasetId}: ` +
+                currentDatasetName +
+                " to " +
+                renamedDatasetName
             );
             log.info("Requesting list of datasets");
             client.invoke(
@@ -2333,7 +2339,7 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Success",
                 `Upload Local Dataset - Number of Folders`,
-                selectedBfDatasetId, 
+                selectedBfDatasetId,
                 num_of_folders
               );
 
