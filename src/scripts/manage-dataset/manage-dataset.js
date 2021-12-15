@@ -1,3 +1,4 @@
+
 var forbidden_characters_bf = '/:*?"<>';
 
 const check_forbidden_characters_bf = (my_string) => {
@@ -1909,6 +1910,15 @@ $("#button-add-tags").click(async () => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Manage Dataset - Add/Edit Tags",
+      defaultBfDatasetId
+    );
+
+    
+
     // halt execution
     return;
   }
@@ -1920,6 +1930,14 @@ $("#button-add-tags").click(async () => {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   }).then(() => {
+
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Manage Dataset - Add/Edit Tags",
+      defaultBfDatasetId
+    );
+
     // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
     showPrePublishingStatus();
 
