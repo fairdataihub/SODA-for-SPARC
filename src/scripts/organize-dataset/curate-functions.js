@@ -951,11 +951,11 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
       initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
-      // $("#curatebfdatasetlist").selectpicker("hide");
-      // $("#curatebfdatasetlist").selectpicker("refresh");
-      // $(".selectpicker").selectpicker("hide");
-      // $(".selectpicker").selectpicker("refresh");
-      // $("#bf-dataset-select-div").hide();
+      //$("#curatebfdatasetlist").selectpicker("hide");
+      //$("#curatebfdatasetlist").selectpicker("refresh");
+      //$(".selectpicker").selectpicker("hide");
+      //$(".selectpicker").selectpicker("refresh");
+      //$("#bf-dataset-select-div").hide();
 
       const { value: bfDS } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
