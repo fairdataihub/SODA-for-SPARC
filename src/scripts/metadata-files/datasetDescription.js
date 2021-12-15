@@ -805,7 +805,7 @@ async function generateDDFile(uploadBFBoolean) {
           "track-event",
           "Error",
           "Prepare Metadata - Create dataset_description",
-          defaultBfDataset
+          defaultBfDatasetId
         );
       } else {
         if (uploadBFBoolean) {
@@ -825,7 +825,7 @@ async function generateDDFile(uploadBFBoolean) {
           "track-event",
           "Success",
           "Prepare Metadata - Create dataset_description",
-          defaultBfDataset
+          defaultBfDatasetId
         );
       }
     }
