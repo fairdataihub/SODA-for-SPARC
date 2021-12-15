@@ -354,6 +354,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           "Disseminate Dataset - Share with Consortium",
           defaultBfDatasetId
         );
+
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
         var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
@@ -361,12 +362,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           selectedStatusOption =
             "10. Curated & Awaiting PI Approval (Curators)";
         }
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Disseminate Dataset - Share with Consortium",
-          defaultBfDatasetId
-        );
         client.invoke(
           "api_bf_change_dataset_status",
           bfAcct,
@@ -385,6 +380,14 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
                 heightAuto: false,
                 backdrop: "rgba(0,0,0, 0.4)",
               });
+
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Disseminate Dataset - Share with Consortium",
+                defaultBfDatasetId
+              );
+
               $("#share-with-sparc-consortium-spinner").hide();
               $("#sparc-consortium-share-btn").prop("disabled", false);
               $("#sparc-consortium-unshare-btn").prop("disabled", false);
@@ -398,6 +401,14 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
                 heightAuto: false,
                 backdrop: "rgba(0,0,0, 0.4)",
               });
+
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Disseminate Dataset - Share with Consortium",
+                defaultBfDatasetId
+              );
+
               if (share_status === "unshare") {
                 Swal.fire({
                   title: "Removed successfully!",
@@ -448,6 +459,12 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
         log.error(error);
         console.error(error);
         // bfCurrentPermissionProgress.style.display = "none";
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Disseminate Dataset - Show current dataset permission",
+          defaultBfDatasetId
+        );
       } else {
         var permissionList = "";
         let datasetOwner = "";
@@ -461,6 +478,14 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
         }
         currentDatasetPermission.innerHTML = datasetOwner;
         // bfCurrentPermissionProgress.style.display = "none";
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Disseminate Dataset - Show current dataset permission",
+          defaultBfDatasetId
+        );
+
       }
     });
   }
@@ -484,7 +509,19 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
           var emessage = userError(error);
           $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Disseminate Dataset - Show current dataset status",
+            defaultBfDatasetId
+          );
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Disseminate Dataset - Show current dataset status",
+            defaultBfDatasetId
+          );
           var myitemselect = [];
           removeOptions(bfListDatasetStatus);
           for (var item in res[0]) {
@@ -660,12 +697,12 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     }
     log.error(error);
     console.error(error);
-    // ipcRenderer.send(
-    //   "track-event",
-    //   "Error",
-    //   "Disseminate Datasets - Getting prepublishing checklist statuses",
-    //   selectedBfDataset
-    // );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Getting pre-publishing review checklist statuses",
+      selectedBfDatasetId
+    );
 
     // set the status icons to red crosses
     Array.from(document.querySelectorAll(".icon-wrapper i")).forEach((icon) => {
@@ -676,6 +713,14 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
 
     return;
   }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Getting pre-publishing review checklist statuses",
+    selectedBfDatasetId
+  );
+  
 
   // mark each pre-publishing item red or green to indicate if the item was completed
   setPrepublishingChecklistItemIconByStatus(
@@ -908,13 +953,20 @@ $(".pre-publishing-continue").on("click", async function () {
     // log the error information then continue execution -- this is because they may not want to ignore files when they publish
     log.error(error);
     console.error(error);
-    // ipcRenderer.send(
-    //   "track-event",
-    //   "Error",
-    //   "Disseminate Datasets - Submit for pre-publishing review",
-    //   selectedBfDataset
-    // );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Dataset - Pre-publishing review - Get excluded files excluded from publishing",
+      selectedBfDataset
+    );
   }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Disseminate Dataset - Pre-publishing review - Get excluded files excluded from publishing",
+    selectedBfDataset
+  );
 
   let metadataFiles;
   try {
@@ -937,13 +989,20 @@ $(".pre-publishing-continue").on("click", async function () {
     // log the error information then continue execution -- this is because they may not want to ignore files when they publish
     log.error(error);
     console.error(error);
-    // ipcRenderer.send(
-    //   "track-event",
-    //   "Error",
-    //   "Disseminate Datasets - Submit for pre-publishing review",
-    //   selectedBfDataset
-    // );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Datasets - Pre-publishing Review - Get metadata files",
+      selectedBfDataset
+    );
   }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Disseminate Datasets - Pre-publishing Review - Get metadata files",
+    selectedBfDataset
+  );
 
   // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
   populateFileViewer(
@@ -994,15 +1053,23 @@ $("#begin-prepublishing-btn").on("click", async function () {
     // log the error information then continue execution -- this is because they may not want to ignore files when they publish
     log.error(error);
     console.error(error);
-    // ipcRenderer.send(
-    //   "track-event",
-    //   "Error",
-    //   "Disseminate Datasets - Submit for pre-publishing review",
-    //   selectedBfDataset
-    // );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Disseminate Dataset - Pre-publishing Review - Determine user's dataset role",
+      selectedBfDataset
+    );
 
     return;
   }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Disseminate Dataset - Pre-publishing Review - Determine user's dataset role",
+    selectedBfDataset
+  );
+  
   // check if the user is the owner
   if (!owner) {
     await Swal.fire({
