@@ -1213,6 +1213,10 @@
   padding-left: 5px;
 }
 
+.card-container.manage-dataset .card-right.bf-dataset-span {
+  width: fit-content
+}
+
 .card-container.prepare-submission .card-left {
   /* text-align: right; */
   float: left;
