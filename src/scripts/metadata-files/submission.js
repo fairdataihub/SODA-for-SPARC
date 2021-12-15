@@ -503,7 +503,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           "track-event",
           "Error",
           "Prepare Metadata - Create Submission",
-          defaultBfDataset
+          defaultBfDatasetId
         );
       } else {
         if (uploadBFBoolean) {
@@ -523,7 +523,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           "track-event",
           "Success",
           "Prepare Metadata - Create Submission",
-          defaultBfDataset
+          defaultBfDatasetId
         );
       }
     }
