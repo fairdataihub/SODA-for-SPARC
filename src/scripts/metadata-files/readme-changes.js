@@ -92,6 +92,13 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
+
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            `Prepare Metadata - ${upperCaseLetters}`
+          );
+
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -324,7 +331,7 @@ async function saveRCFile(type) {
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Prepare Metadata - ${upperCaseLetters} - Generate - Local`,
+        `Prepare Metadata - ${type.toUpperCase()} - Generate - Local`,
         "Local",
         1
       );
@@ -352,7 +359,7 @@ async function saveRCFile(type) {
           ipcRenderer.send(
             "track-event",
             "Error",
-            `Prepare Metadata - ${upperCaseLetters} - Generate - Local`,
+            `Prepare Metadata - ${type.toUpperCase()} - Generate - Local`,
             "Local",
             1
           );
@@ -372,7 +379,13 @@ async function saveRCFile(type) {
           ipcRenderer.send(
             "track-event",
             "Success",
-            `Prepare Metadata - ${upperCaseLetters} - Generate - Local`,
+            `Prepare Metadata - ${type.toUpperCase()}`
+          );
+
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            `Prepare Metadata - ${type.toUpperCase()} - Generate - Local`,
             "Local",
             1
           );
