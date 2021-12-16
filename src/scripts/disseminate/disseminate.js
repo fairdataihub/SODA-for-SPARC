@@ -354,7 +354,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           "Disseminate Dataset - Share with Consortium",
           defaultBfDatasetId
         );
-
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
         var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
@@ -485,7 +484,6 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
           "Disseminate Dataset - Show current dataset permission",
           defaultBfDatasetId
         );
-
       }
     });
   }
@@ -720,7 +718,6 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     "Getting pre-publishing review checklist statuses",
     selectedBfDatasetId
   );
-  
 
   // mark each pre-publishing item red or green to indicate if the item was completed
   setPrepublishingChecklistItemIconByStatus(
@@ -1069,7 +1066,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
     "Disseminate Dataset - Pre-publishing Review - Determine user's dataset role",
     selectedBfDataset
   );
-  
+
   // check if the user is the owner
   if (!owner) {
     await Swal.fire({
