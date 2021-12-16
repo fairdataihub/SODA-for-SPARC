@@ -173,9 +173,22 @@ function checkAirtableStatus(keyword) {
               log.error(err);
               console.log(err);
               $("#current-airtable-account").html("None");
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Prepare Metadata - Add Airtable account - Check Airtable status",
+                defaultBfAccount
+              );
+              
               airtableRes = [false, ""];
               return airtableRes;
             } else {
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Prepare Metadata - Add Airtable account - Check Airtable status",
+                defaultBfAccount
+              );
               $("#current-airtable-account").text(airKeyName);
               var awardSet = new Set(sparcAwards);
               var resultArray = [...awardSet];
@@ -805,7 +818,7 @@ async function generateDDFile(uploadBFBoolean) {
           "track-event",
           "Error",
           "Prepare Metadata - Create dataset_description",
-          defaultBfDatasetId
+          defaultBfAccount
         );
       } else {
         if (uploadBFBoolean) {
@@ -825,7 +838,7 @@ async function generateDDFile(uploadBFBoolean) {
           "track-event",
           "Success",
           "Prepare Metadata - Create dataset_description",
-          defaultBfDatasetId
+          defaultBfAccount
         );
       }
     }
