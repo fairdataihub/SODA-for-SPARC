@@ -356,7 +356,6 @@ async function saveRCFile(type) {
             "Local",
             1
           );
-
         } else {
           Swal.fire({
             title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
