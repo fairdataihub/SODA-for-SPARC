@@ -546,11 +546,7 @@ const getRC = async (type) => {
           defaultBfDatasetId
         );
 
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          `Prepare Metadata - ${type}`
-        );
+        ipcRenderer.send("track-event", "Error", `Prepare Metadata - ${type}`);
       } else {
         ipcRenderer.send(
           "track-event",
@@ -681,11 +677,7 @@ function loadExistingRCFile(filepath, type) {
         1
       );
 
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Metadata - ${type}`,
-      );
+      ipcRenderer.send("track-event", "Error", `Prepare Metadata - ${type}`);
     } else {
       // populate textarea
       $(`#textarea-create-${type}`).val(data);
