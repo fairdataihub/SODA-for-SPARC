@@ -202,7 +202,20 @@ $("#button-create-bf-new-dataset").click(() => {
               if (error) {
                 log.error(error);
                 console.log(error);
+                ipcRenderer.send(
+                  "track-event",
+                  "Error",
+                  "Request list of datasets",
+                  defaultBfDatasetId
+                );
+
               } else {
+                ipcRenderer.send(
+                  "track-event",
+                  "Success",
+                  "Request list of datasets",
+                  defaultBfDatasetId
+                );
                 log.info(`Requested list of datasets successfully`);
                 datasetList = [];
                 datasetList = result;
@@ -329,7 +342,19 @@ $("#button-rename-dataset").click(() => {
                 if (error) {
                   log.error(error);
                   console.log(error);
+                  ipcRenderer.send(
+                    "track-event",
+                    "Error",
+                    "Manage Dataset - Request list of datasets",
+                    defaultBfDatasetId
+                  );
                 } else {
+                  ipcRenderer.send(
+                    "track-event",
+                    "Success",
+                    "Manage Dataset - Request list of datasets",
+                    defaultBfDatasetId
+                  );
                   log.info("Request successful");
                   datasetList = [];
                   datasetList = result;
@@ -472,7 +497,19 @@ const showCurrentPermission = () => {
         if (error) {
           log.error(error);
           console.error(error);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Get dataset permissions",
+            defaultBfDatasetId
+          );
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Manage Dataset - Get dataset permissions",
+            defaultBfDatasetId
+          );
           let permissionList = "";
           let datasetOwner = "";
 
@@ -526,8 +563,22 @@ const addPermissionUser = (
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Manage Dataset - Add dataset permissions",
+          defaultBfDatasetId
+        );
       } else {
         log.info("Dataset permission added");
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Manage Dataset - Add dataset permissions",
+          defaultBfDatasetId
+        );
 
         Swal.fire({
           title: "Successfully changed permission!",
@@ -545,7 +596,20 @@ const addPermissionUser = (
           if (error) {
             log.error(error);
             console.error(error);
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Manage Dataset - Get user account name",
+              defaultBfDatasetId
+            );
           } else {
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Manage Dataset - Get user account name",
+              defaultBfDatasetId
+            );
+
             if (selectedRole === "owner") {
               for (var i = 0; i < datasetList.length; i++) {
                 if (datasetList[i].name === selectedBfDataset) {
@@ -646,8 +710,21 @@ $("#button-add-permission-team").click(() => {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
+
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Add team permission",
+            defaultBfDatasetId
+          );
         } else {
           log.info("Added permission for the team");
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Manage Dataset - Add team permission",
+            defaultBfDatasetId
+          );
 
           Swal.fire({
             title: "Successfully changed permission",
@@ -781,6 +858,12 @@ const showCurrentSubtitle = () => {
         if (error) {
           log.error(error);
           console.error(error);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Add/Edit Subtitle - Get subtitle",
+            defaultBfDatasetId
+          );
           $("#ds-description").val("");
         } else {
           $("#bf-dataset-subtitle").val(res);
@@ -845,11 +928,18 @@ const showCurrentDescription = async () => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Manage Dataset - Add/Edit Description",
+      "Manage Dataset - Add/Edit Description - Getting dataset readme",
       defaultBfDatasetId
     );
     return;
   }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Manage Dataset - Add/Edit Description - Getting dataset readme",
+    defaultBfDatasetId
+  );
 
   // create the parsed dataset read me object
   let parsedReadme;
@@ -863,11 +953,19 @@ const showCurrentDescription = async () => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Manage Dataset - Add/Edit Description",
+      "Manage Dataset - Add/Edit Description - Create parsed readme",
       defaultBfDatasetId
     );
     return;
   }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Manage Dataset - Add/Edit Description - Create parsed readme",
+    defaultBfDatasetId
+  );
+
   // check if any of the fields have data
   if (
     parsedReadme[requiredSections.studyPurpose] ||
@@ -1096,6 +1194,13 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     );
     return;
   }
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Manage Dataset - Add/Edit Description",
+    defaultBfDatasetId
+  );
 
   // alert the user the data was uploaded successfully
   Swal.fire({
@@ -1368,7 +1473,19 @@ const showDatasetDescription = () => {
         if (error) {
           log.error(error);
           console.error(error);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Add/Edit Subtitle - Get subtitle",
+            defaultBfDatasetId
+          );
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Manage Dataset - Add/Edit Subtitle - Get subtitle",
+            defaultBfDatasetId
+          );
           $("#ds-description").html(res);
 
           setTimeout(() => {
@@ -1848,8 +1965,23 @@ const showCurrentBannerImage = () => {
           $("#div-img-container").css("display", "none");
           $("#save-banner-image").css("visibility", "hidden");
 
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Upload banner image - Get banner image",
+            defaultBfDatasetId
+          );
+
           myCropper.destroy();
         } else {
+
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Manage Dataset - Upload banner image - Get banner image",
+            defaultBfDatasetId
+          );
+
           if (res === "No banner image") {
             bfCurrentBannerImg.src = "";
             document.getElementById("para-current-banner-img").innerHTML =
@@ -2099,6 +2231,12 @@ const showCurrentLicense = () => {
         if (error) {
           log.error(error);
           console.error(error);
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Assign License Get banner image",
+            defaultBfDatasetId
+          );
         } else {
           currentDatasetLicense.innerHTML = res;
           if (res === "Creative Commons Attribution") {
@@ -2271,7 +2409,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Error",
           "Manage Dataset - Upload Local Dataset",
-          selectedBfDatasetId
+          selectedbfdataset
         );
 
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
@@ -2294,7 +2432,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Success",
           "Manage Dataset - Upload Local Dataset - name - size",
-          selectedBfDatasetId,
+          selectedbfdataset,
           totalFileSize
         );
 
@@ -2302,14 +2440,14 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Success",
           "Upload Local Dataset - size",
-          selectedBfDatasetId,
+          selectedbfdataset,
           totalFileSize
         );
 
         ipcRenderer.send(
           "track-event",
           "Success",
-          `Upload Local Dataset - ${selectedBfDatasetId} - size`,
+          `Upload Local Dataset - ${selectedbfdataset} - size`,
           totalFileSize
         );
 
@@ -2320,6 +2458,12 @@ $("#button-submit-dataset").click(async () => {
             if (error) {
               log.error(error);
               console.error(error);
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                `Upload Local Dataset - Number of Folders`,
+                selectedbfdataset
+              );
             } else {
               let num_of_files = res[0];
               let num_of_folders = res[1];
@@ -2327,7 +2471,7 @@ $("#button-submit-dataset").click(async () => {
               ipcRenderer.send(
                 "track-event",
                 "Success",
-                `Upload Local Dataset - ${selectedBfDatasetId} - Number of Folders`,
+                `Upload Local Dataset - ${selectedbfdataset} - Number of Folders`,
                 num_of_folders
               );
 
@@ -2335,7 +2479,7 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Success",
                 `Upload Local Dataset - Number of Folders`,
-                selectedBfDatasetId,
+                selectedbfdataset,
                 num_of_folders
               );
 
@@ -2343,14 +2487,14 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Success",
                 `Manage Dataset - Upload Local Dataset - name - Number of files`,
-                selectedBfDatasetId,
+                selectedbfdataset,
                 num_of_files
               );
 
               ipcRenderer.send(
                 "track-event",
                 "Success",
-                `Upload Local Dataset - ${selectedBfDatasetId} - Number of Files`,
+                `Upload Local Dataset - ${selectedbfdataset} - Number of Files`,
                 num_of_files
               );
 
@@ -2358,7 +2502,7 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Success",
                 `Upload Local Dataset - Number of Files`,
-                selectedBfDatasetId,
+                selectedbfdataset,
                 num_of_files
               );
             }
@@ -2384,10 +2528,25 @@ $("#button-submit-dataset").click(async () => {
         log.error(error);
         console.error(error);
 
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          `Upload Local Dataset - Progress track`,
+          defaultBfDataset
+        );
+        
+
         $("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );
       } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Upload Local Dataset - Progress track`,
+          defaultBfDataset
+        );
+
         completionStatus = res[1];
         let submitprintstatus = res[2];
         totalFileSize = res[3];
@@ -2584,9 +2743,24 @@ function showCurrentDatasetStatus(callback) {
             backdrop: "rgba(0,0,0, 0.4)",
           });
 
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            `Manage Dataset - Get dataset status`,
+            defaultBfDataset
+          );
+
+
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            `Manage Dataset - Get dataset status`,
+            defaultBfDataset
+          );
+
           removeOptions(bfListDatasetStatus);
           removeRadioOptions("dataset_status_ul");
 
