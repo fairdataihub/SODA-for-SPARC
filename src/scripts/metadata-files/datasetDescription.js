@@ -177,7 +177,8 @@ function checkAirtableStatus(keyword) {
                 "track-event",
                 "Error",
                 "Prepare Metadata - Add Airtable account - Check Airtable status",
-                defaultBfAccount
+                "Airtable",
+                1
               );
 
               airtableRes = [false, ""];
@@ -187,7 +188,8 @@ function checkAirtableStatus(keyword) {
                 "track-event",
                 "Success",
                 "Prepare Metadata - Add Airtable account - Check Airtable status",
-                defaultBfAccount
+                "Airtable",
+                1
               );
               $("#current-airtable-account").text(airKeyName);
               var awardSet = new Set(sparcAwards);
@@ -814,12 +816,19 @@ async function generateDDFile(uploadBFBoolean) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+
+        // log the general failure to generate the description
+        // will be used to count the operations success rate as a whole rather than looking at its steps
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Prepare Metadata - Create dataset_description",
-          defaultBfAccount
+          "Prepare Metadata - dataset_description"
         );
+
+        // log the failure to generate the description file to analytics at this step in the Generation process
+        logDatasetDescriptionForAnalytics(uploadBFBoolean, "Error", "Generate", true)
+        logDatasetDescriptionForAnalytics(uploadBFBoolean, "Error", "Generate", false)
       } else {
         if (uploadBFBoolean) {
           var successMessage =
@@ -828,18 +837,27 @@ async function generateDDFile(uploadBFBoolean) {
           var successMessage =
             "Successfully generated the dataset_description.xlsx file at the specified location.";
         }
+
+        // log the success to analytics 
+        // this will indicate an overall success of the operation rather than the success or failure of operation actions and destinations
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create dataset_description",
+        );
+
+        // log the successful attempt to generate the description file in analytics at this step in the Generation process
+        logDatasetDescriptionForAnalytics(uploadBFBoolean, "Success", "Generate", true)
+        logDatasetDescriptionForAnalytics(uploadBFBoolean, "Success", "Generate", false)
+
         Swal.fire({
           title: successMessage,
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Create dataset_description",
-          defaultBfAccount
-        );
+
+
       }
     }
   );
@@ -2141,7 +2159,8 @@ function addAirtableAccountInsideSweetalert(keyword) {
               "track-event",
               "Success",
               "Prepare Metadata - Add Airtable account",
-              defaultBfAccount
+              "Airtable",
+              1
             );
           } else if (res.statusCode === 403) {
             $("#current-airtable-account").html("None");
@@ -2162,7 +2181,8 @@ function addAirtableAccountInsideSweetalert(keyword) {
               "track-event",
               "Error",
               "Prepare Metadata - Add Airtable account",
-              defaultBfAccount
+              "Airtable",
+              1
             );
             Swal.fire({
               icon: "error",
@@ -2182,7 +2202,8 @@ function addAirtableAccountInsideSweetalert(keyword) {
               "track-event",
               "Error",
               "Prepare Metadata - Add Airtable account",
-              defaultBfAccount
+              "Airtable",
+              1
             );
             Swal.fire({
               icon: "error",
@@ -2269,8 +2290,24 @@ function checkBFImportDD() {
           icon: "error",
           html: emessage,
         });
+
+        // log the error to analytics 
+        // this will indicate an overall error rate of the operation rather than the success or failure of operation actions and destinations
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create dataset_description",
+        );
+
+        // log the import action failure to analytics
+        logDatasetDescriptionForAnalytics(true, "Error", "Existing", true)
+        logDatasetDescriptionForAnalytics(true, "Error", "Existing", false)
       } else {
         loadDDFileToUI(res, "bf");
+
+        // log the import action success to analytics
+        logDatasetDescriptionForAnalytics(true, "Success", "Existing", true)
+        logDatasetDescriptionForAnalytics(true, "Success", "Existing", false)
       }
     }
   );
@@ -2298,8 +2335,24 @@ function loadDDfileDataframe(filePath) {
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
         });
+
+        // log the error to analytics 
+        // this will indicate an overall error rate of the operation rather than the success or failure of operation actions and destinations
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create dataset_description",
+        );
+
+        // log the import action failure to analytics
+        logDatasetDescriptionForAnalytics(false, "Error", "Existing", true)
+        logDatasetDescriptionForAnalytics(false, "Error", "Existing", false)
+        
       } else {
         loadDDFileToUI(res, "local");
+        // log the import action success to analytics
+        logDatasetDescriptionForAnalytics(false, "Success", "Existing", true)
+        logDatasetDescriptionForAnalytics(false, "Success", "Existing", false)
       }
     }
   );
@@ -2457,4 +2510,52 @@ function protocolCheck(array) {
     boolean = true;
   }
   return boolean;
+}
+
+
+
+
+// Log the dataset description Successes and Errors as the user moves through the process of Preparing their metadata file
+// Inputs:
+//  uploadMetadataFile: boolean - If false the file is to be saved locally on the user's computer; If true the file is to be uploaded onto Pennsieve 
+//  category: string - "Success" indicates a successful operation; "Error" indicates a failed operation 
+//  action: string - Indicates the step in the metadata preparation process the Success or Failure occurs 
+//  actionHasDestination: boolean - Determines if the current action is directed towards a destination that can either be "Local" or "Pennsieve"
+function logDatasetDescriptionForAnalytics(
+  uploadMetadataFile = false,
+  category,
+  action,
+  actionHasDestination
+) {
+  // the name of the action being logged
+  let actionName = `Prepare Metadata - dataset_description`;
+
+  // check if the user provided an action to be part of the action name 
+  if (action) {
+    actionName = actionName + "-" + action;
+  }
+
+  // check if the action is pointed locally or to Pennsieve 
+  if(actionHasDestination) {
+    actionName = actionName + "-" + uploadMetadataFile ? "Pennsieve" : "Local";
+  }
+
+
+  // Determine the analytics formatting by whether it will be uploaded to Pennsieve or generate locally
+  if (uploadMetadataFile) {
+    ipcRenderer.send(
+      "track-event",
+      `${category}`,
+      actionName,
+      defaultBfDatasetId
+    );
+  } else {
+    ipcRenderer.send(
+      "track-event",
+      `${category}`,
+      actionName,
+      "Local",
+      1
+    );
+  }
 }
