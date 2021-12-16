@@ -179,7 +179,7 @@ function checkAirtableStatus(keyword) {
                 "Prepare Metadata - Add Airtable account - Check Airtable status",
                 defaultBfAccount
               );
-              
+
               airtableRes = [false, ""];
               return airtableRes;
             } else {
