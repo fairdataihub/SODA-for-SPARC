@@ -85,6 +85,12 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             `Prepare Metadata - ${upperCaseLetters} - Generate - Pennsieve`,
             defaultBfDatasetId
           );
+
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            `Prepare Metadata - ${upperCaseLetters}`
+          );
         } else {
           Swal.fire({
             title: `Successfully generated the ${upperCaseLetters} file on your Pennsieve dataset.`,
@@ -335,6 +341,12 @@ async function saveRCFile(type) {
         "Local",
         1
       );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Metadata - ${type.toUpperCase()}`
+      );
     } else {
       if (type === "changes") {
         var newName = path.join(path.dirname(destinationPath), "CHANGES.txt");
@@ -362,6 +374,12 @@ async function saveRCFile(type) {
             `Prepare Metadata - ${type.toUpperCase()} - Generate - Local`,
             "Local",
             1
+          );
+
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            `Prepare Metadata - ${type}`
           );
         } else {
           Swal.fire({
@@ -524,15 +542,20 @@ const getRC = async (type) => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          `Prepare Metadata - ${upperCaseLetters} - Existing - Pennsieve`,
+          `Prepare Metadata - ${type} - Existing - Pennsieve`,
           defaultBfDatasetId
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          `Prepare Metadata - ${type}`
         );
       } else {
         ipcRenderer.send(
           "track-event",
           "Success",
-          `Prepare Metadata - ${upperCaseLetters} - Existing - Pennsieve`,
-          defaultBfDatasetId
+          `Prepare Metadata - ${type}`
         );
         if (res.trim() !== "") {
           $(`#textarea-create-${shortName}`).val(res.trim());
@@ -587,6 +610,12 @@ function importExistingRCFile(type) {
       "Local",
       1
     );
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      `Prepare Metadata - ${upperCaseLetters}`
+    );
   } else {
     if (path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
       Swal.fire({
@@ -603,6 +632,12 @@ function importExistingRCFile(type) {
         `Prepare Metadata - ${upperCaseLetters} - Existing - Local`,
         "Local",
         1
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Metadata - ${upperCaseLetters}`
       );
     } else {
       Swal.fire({
@@ -644,6 +679,12 @@ function loadExistingRCFile(filepath, type) {
         `Prepare Metadata - ${type} - Existing - Local`,
         "Local",
         1
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Metadata - ${type}`,
       );
     } else {
       // populate textarea
