@@ -82,7 +82,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
           ipcRenderer.send(
             "track-event",
             "Error",
-            `Prepare Metadata - Create ${upperCaseLetters}`,
+            `Prepare Metadata - ${upperCaseLetters} - Generate - Pennsieve`,
             defaultBfDatasetId
           );
         } else {
@@ -95,7 +95,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
           ipcRenderer.send(
             "track-event",
             "Success",
-            `Prepare Metadata - Create ${upperCaseLetters}`,
+            `Prepare Metadata - ${upperCaseLetters} - Generate - Pennsieve`,
             defaultBfDatasetId
           );
         }
@@ -320,6 +320,14 @@ async function saveRCFile(type) {
           Swal.hideLoading();
         },
       });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Metadata - ${upperCaseLetters} - Generate - Local`,
+        "Local",
+        1
+      );
     } else {
       if (type === "changes") {
         var newName = path.join(path.dirname(destinationPath), "CHANGES.txt");
@@ -340,6 +348,15 @@ async function saveRCFile(type) {
               Swal.hideLoading();
             },
           });
+
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            `Prepare Metadata - ${upperCaseLetters} - Generate - Local`,
+            "Local",
+            1
+          );
+
         } else {
           Swal.fire({
             title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
@@ -351,6 +368,14 @@ async function saveRCFile(type) {
               Swal.hideLoading();
             },
           });
+
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            `Prepare Metadata - ${upperCaseLetters} - Generate - Local`,
+            "Local",
+            1
+          );
         }
       });
     }
@@ -483,7 +508,20 @@ const getRC = async (type) => {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          `Prepare Metadata - ${upperCaseLetters} - Existing - Pennsieve`,
+          defaultBfDatasetId
+        );
       } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Prepare Metadata - ${upperCaseLetters} - Existing - Pennsieve`,
+          defaultBfDatasetId
+        );
         if (res.trim() !== "") {
           $(`#textarea-create-${shortName}`).val(res.trim());
           Swal.fire({
@@ -529,6 +567,14 @@ function importExistingRCFile(type) {
       `Please select a path to your ${upperCaseLetter}.txt file`,
       "error"
     );
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      `Prepare Metadata - ${upperCaseLetters} - Existing - Local`,
+      "Local",
+      1
+    );
   } else {
     if (path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
       Swal.fire({
@@ -538,6 +584,14 @@ function importExistingRCFile(type) {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Metadata - ${upperCaseLetters} - Existing - Local`,
+        "Local",
+        1
+      );
     } else {
       Swal.fire({
         title: `Loading an existing '${upperCaseLetter}.txt' file`,
@@ -571,6 +625,14 @@ function loadExistingRCFile(filepath, type) {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Metadata - ${type} - Existing - Local`,
+        "Local",
+        1
+      );
     } else {
       // populate textarea
       $(`#textarea-create-${type}`).val(data);
@@ -585,6 +647,14 @@ function loadExistingRCFile(filepath, type) {
           Swal.hideLoading();
         },
       });
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Prepare Metadata - ${type} - Existing - Local`,
+        "Local",
+        1
+      );
       $(`#div-confirm-existing-${type}-import`).hide();
       $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
       $(`#button-fake-confirm-existing-${type}-file-load`).click();
