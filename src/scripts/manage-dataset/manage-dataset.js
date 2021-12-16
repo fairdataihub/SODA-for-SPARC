@@ -208,7 +208,6 @@ $("#button-create-bf-new-dataset").click(() => {
                   "Request list of datasets",
                   defaultBfDatasetId
                 );
-
               } else {
                 ipcRenderer.send(
                   "track-event",
@@ -1974,7 +1973,6 @@ const showCurrentBannerImage = () => {
 
           myCropper.destroy();
         } else {
-
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -2534,7 +2532,6 @@ $("#button-submit-dataset").click(async () => {
           `Upload Local Dataset - Progress track`,
           defaultBfDataset
         );
-        
 
         $("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
@@ -2749,7 +2746,6 @@ function showCurrentDatasetStatus(callback) {
             `Manage Dataset - Get dataset status`,
             defaultBfDataset
           );
-
 
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
