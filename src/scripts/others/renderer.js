@@ -1451,6 +1451,22 @@ function loadSubjectsFileToDataframe(filePath) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
+        logMetadataForAnalytics(
+          false,
+          "Error",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Existing",
+          true
+        );
+        logMetadataForAnalytics(
+          false,
+          "Error",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Existing",
+          false
+        );
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
@@ -1465,21 +1481,68 @@ function loadSubjectsFileToDataframe(filePath) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
+
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - subjects"
+            );
+            logMetadataForAnalytics(
+              false,
+              "Error",
+              metadataAnalyticsPrefix.SUBJECTS,
+              "Existing",
+              true
+            );
+            logMetadataForAnalytics(
+              false,
+              "Error",
+              metadataAnalyticsPrefix.SUBJECTS,
+              "Existing",
+              false
+            );
             return;
           }
           loadDataFrametoUI("local");
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
-            ""
+            "Prepare Metadata - subjects"
+          );
+          logMetadataForAnalytics(
+            false,
+            "Success",
+            metadataAnalyticsPrefix.SUBJECTS,
+            "Existing",
+            true
+          );
+          logMetadataForAnalytics(
+            false,
+            "Success",
+            metadataAnalyticsPrefix.SUBJECTS,
+            "Existing",
+            false
           );
         } else {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            "Prepare Metadata - subjects",
             error
+          );
+          logMetadataForAnalytics(
+            false,
+            "Error",
+            metadataAnalyticsPrefix.SUBJECTS,
+            "Existing",
+            true
+          );
+          logMetadataForAnalytics(
+            false,
+            "Error",
+            metadataAnalyticsPrefix.SUBJECTS,
+            "Existing",
+            false
           );
           Swal.fire({
             title: "Couldn't load existing subjects.xlsx file",
@@ -1519,6 +1582,22 @@ function loadSamplesFileToDataframe(filePath) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
+        logMetadataForAnalytics(
+          false,
+          "Error",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Existing",
+          true
+        );
+        logMetadataForAnalytics(
+          false,
+          "Error",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Existing",
+          false
+        );
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
@@ -1533,21 +1612,63 @@ function loadSamplesFileToDataframe(filePath) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
+
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Prepare Metadata - samples"
+            );
+            logMetadataForAnalytics(
+              false,
+              "Error",
+              metadataAnalyticsPrefix.SAMPLES,
+              "Existing",
+              true
+            );
+            logMetadataForAnalytics(
+              false,
+              "Error",
+              metadataAnalyticsPrefix.SAMPLES,
+              "Existing",
+              false
+            );
+
             return;
           }
           loadDataFrametoUISamples("local");
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
+            false,
             "Success",
-            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
-            samplesTableData
+            metadataAnalyticsPrefix.SAMPLES,
+            "Existing",
+            true
+          );
+          logMetadataForAnalytics(
+            false,
+            "Success",
+            metadataAnalyticsPrefix.SAMPLES,
+            "Existing",
+            false
           );
         } else {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
-            samplesTableData
+            "Prepare Metadata - samples"
+          );
+          logMetadataForAnalytics(
+            false,
+            "Error",
+            metadataAnalyticsPrefix.SAMPLES,
+            "Existing",
+            true
+          );
+          logMetadataForAnalytics(
+            false,
+            "Error",
+            metadataAnalyticsPrefix.SAMPLES,
+            "Existing",
+            false
           );
           Swal.fire({
             title: "Couldn't load existing samples.xlsx file",
@@ -7240,13 +7361,9 @@ function logMetadataForAnalytics(
 const metadataAnalyticsPrefix = {
   DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
   MANIFEST: "Prepare Metadata - manifest",
-<<<<<<< HEAD
-  SUBJECTS: "Prepare Metadata - subjects"
-}
-
-=======
+  SUBJECTS: "Prepare Metadata - subjects",
+  SAMPLES: "Prepare Metadata - samples",
 };
->>>>>>> 83e3d9c4db73f3d326acef61a7c10b79be58fee5
 
 /*
 ******************************************************

@@ -1,3 +1,5 @@
+const { ipcRenderer } = require("electron");
+
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
 var samplesFormDiv = document.getElementById("form-add-a-sample");
 var subjectsTableData = [];
@@ -2037,11 +2039,20 @@ $(document).ready(function () {
         document.getElementById(
           "existing-samples-file-destination"
         ).placeholder = filepath[0];
-        ipcRenderer.send(
-          "track-event",
+        logMetadataForAnalytics(
+          false,
           "Success",
-          "Prepare Metadata - Continue with existing samples.xlsx",
-          defaultBfAccount
+          metadataAnalyticsPrefix.SAMPLES,
+          "Existing",
+          true
+        );
+
+        logMetadataForAnalytics(
+          false,
+          "Success",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Existing",
+          false
         );
       } else {
         document.getElementById(
@@ -2249,6 +2260,22 @@ function importExistingSubjectsFile() {
       "Please select a path to your subjects.xlsx file,",
       "error"
     );
+
+    ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
+    logMetadataForAnalytics(
+      false,
+      "Error",
+      metadataAnalyticsPrefix.SUBJECTS,
+      "Existing",
+      true
+    );
+    logMetadataForAnalytics(
+      false,
+      "Error",
+      metadataAnalyticsPrefix.SUBJECTS,
+      "Existing",
+      false
+    );
   } else {
     if (path.parse(filePath).base !== "subjects.xlsx") {
       Swal.fire({
@@ -2258,6 +2285,21 @@ function importExistingSubjectsFile() {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+      ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
+      logMetadataForAnalytics(
+        false,
+        "Error",
+        metadataAnalyticsPrefix.SUBJECTS,
+        "Existing",
+        true
+      );
+      logMetadataForAnalytics(
+        false,
+        "Error",
+        metadataAnalyticsPrefix.SUBJECTS,
+        "Existing",
+        false
+      );
     } else {
       Swal.fire({
         title: "Loading an existing subjects.xlsx file",
@@ -2284,6 +2326,21 @@ function importExistingSamplesFile() {
       "Please select a path to your samples.xlsx file.",
       "error"
     );
+    ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
+    logMetadataForAnalytics(
+      false,
+      "Error",
+      metadataAnalyticsPrefix.SAMPLES,
+      "Existing",
+      true
+    );
+    logMetadataForAnalytics(
+      false,
+      "Error",
+      metadataAnalyticsPrefix.SAMPLES,
+      "Existing",
+      false
+    );
   } else {
     if (path.parse(filePath).base !== "samples.xlsx") {
       Swal.fire({
@@ -2293,6 +2350,21 @@ function importExistingSamplesFile() {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+      ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
+      logMetadataForAnalytics(
+        false,
+        "Error",
+        metadataAnalyticsPrefix.SAMPLES,
+        "Existing",
+        true
+      );
+      logMetadataForAnalytics(
+        false,
+        "Error",
+        metadataAnalyticsPrefix.SAMPLES,
+        "Existing",
+        false
+      );
     } else {
       Swal.fire({
         title: "Loading an existing samples.xlsx file",
@@ -2350,6 +2422,9 @@ function checkBFImportSubjects() {
           icon: "error",
           html: emessage,
         });
+
+        ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
+
         logMetadataForAnalytics(
           true,
           "Error",
@@ -2366,6 +2441,21 @@ function checkBFImportSubjects() {
           false
         );
       } else {
+        logMetadataForAnalytics(
+          true,
+          "Success",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Existing",
+          true
+        );
+
+        logMetadataForAnalytics(
+          true,
+          "Success",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Existing",
+          false
+        );
         subjectsTableData = res;
         loadDataFrametoUI("bf");
       }
@@ -2411,7 +2501,40 @@ function checkBFImportSamples() {
           icon: "error",
           html: emessage,
         });
+
+        ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
+
+        logMetadataForAnalytics(
+          true,
+          "Error",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Existing",
+          true
+        );
+
+        logMetadataForAnalytics(
+          true,
+          "Error",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Existing",
+          false
+        );
       } else {
+        logMetadataForAnalytics(
+          true,
+          "Success",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Existing",
+          true
+        );
+
+        logMetadataForAnalytics(
+          true,
+          "Success",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Existing",
+          false
+        );
         samplesTableData = res;
         loadDataFrametoUISamples("bf");
       }
