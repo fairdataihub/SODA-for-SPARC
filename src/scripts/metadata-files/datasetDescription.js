@@ -817,7 +817,6 @@ async function generateDDFile(uploadBFBoolean) {
           backdrop: "rgba(0,0,0, 0.4)",
         });
 
-
         // log the general failure to generate the description
         // will be used to count the operations success rate as a whole rather than looking at its steps
         ipcRenderer.send(
@@ -838,12 +837,12 @@ async function generateDDFile(uploadBFBoolean) {
             "Successfully generated the dataset_description.xlsx file at the specified location.";
         }
 
-        // log the success to analytics 
+        // log the success to analytics
         // this will indicate an overall success of the operation rather than the success or failure of operation actions and destinations
         ipcRenderer.send(
           "track-event",
           "Success",
-          "Prepare Metadata - Create dataset_description",
+          "Prepare Metadata - Create dataset_description"
         );
 
         // log the successful attempt to generate the description file in analytics at this step in the Generation process
@@ -856,8 +855,6 @@ async function generateDDFile(uploadBFBoolean) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-
-
       }
     }
   );
@@ -2291,12 +2288,12 @@ function checkBFImportDD() {
           html: emessage,
         });
 
-        // log the error to analytics 
+        // log the error to analytics
         // this will indicate an overall error rate of the operation rather than the success or failure of operation actions and destinations
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Prepare Metadata - Create dataset_description",
+          "Prepare Metadata - Create dataset_description"
         );
 
         // log the import action failure to analytics
@@ -2336,12 +2333,12 @@ function loadDDfileDataframe(filePath) {
           icon: "error",
         });
 
-        // log the error to analytics 
+        // log the error to analytics
         // this will indicate an overall error rate of the operation rather than the success or failure of operation actions and destinations
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Prepare Metadata - Create dataset_description",
+          "Prepare Metadata - Create dataset_description"
         );
 
         // log the import action failure to analytics
