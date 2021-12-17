@@ -1194,7 +1194,6 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
         });
 
         ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
-
         logMetadataForAnalytics(
           uploadBFBoolean,
           "Error",
@@ -1211,8 +1210,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
         );
       } else {
         Swal.fire({
-          title:
-            "The subjects.xlsx file has been successfully generated at the specified location.",
+          title: "The subjects.xlsx file has been successfully generated at the specified location.",
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1228,14 +1226,14 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           uploadBFBoolean,
           "Success",
           metadataAnalyticsPrefix.SUBJECTS,
-          "Existing",
+          "Generate",
           true
         );
         logMetadataForAnalytics(
           uploadBFBoolean,
           "Success",
           metadataAnalyticsPrefix.SUBJECTS,
-          "Existing",
+          "Generate",
           false
         );
       }
@@ -1372,9 +1370,24 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Prepare Metadata - Create samples.xlsx",
-          samplesTableData
+          "Prepare Metadata - samples",
         );
+
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Error",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Generate",
+          true
+        );
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Error",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Generate",
+          false
+        );
+
         Swal.fire({
           title: "Failed to generate the samples.xlsx file.",
           html: emessage,
@@ -1386,12 +1399,25 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         ipcRenderer.send(
           "track-event",
           "Success",
-          "Prepare Metadata - Create samples.xlsx",
-          samplesTableData
+          "Prepare Metadata - samples"
+        );
+
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Success",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Generate",
+          true
+        );
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Success",
+          metadataAnalyticsPrefix.SAMPLES,
+          "Generate",
+          false
         );
         Swal.fire({
-          title:
-            "The samples.xlsx file has been successfully generated at the specified location.",
+          title:"The samples.xlsx file has been successfully generated at the specified location.",
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
