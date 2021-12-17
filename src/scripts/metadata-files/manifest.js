@@ -121,6 +121,7 @@ async function generateManifest(action, type) {
         },
       }).then((result) => {});
 
+<<<<<<< HEAD
       // log the error to analytics 
       ipcRenderer.send(
         "track-event",
@@ -129,6 +130,12 @@ async function generateManifest(action, type) {
       );
       logMetadataForAnalytics(false, "Error", metadataAnalyticsPrefix.MANIFEST, "Generate", true)
       logMetadataForAnalytics(false, "Error", metadataAnalyticsPrefix.MANIFEST, "Generate", false)
+=======
+      // log the error to analytics
+      ipcRenderer.send("track-event", "Error", "Prepare Metadata - maniftest");
+      logDatasetDescriptionForAnalytics(false, "Error", "Generate", true);
+      logDatasetDescriptionForAnalytics(false, "Error", "Generate", false);
+>>>>>>> 83e3d9c4db73f3d326acef61a7c10b79be58fee5
 
       return;
     }

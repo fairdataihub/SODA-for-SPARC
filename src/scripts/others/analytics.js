@@ -72,5 +72,4 @@ const trackEvent = (category, action, label, value) => {
   }
 };
 
-
 module.exports = { trackEvent };
