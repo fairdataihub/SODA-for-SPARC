@@ -1210,7 +1210,8 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
         );
       } else {
         Swal.fire({
-          title: "The subjects.xlsx file has been successfully generated at the specified location.",
+          title:
+            "The subjects.xlsx file has been successfully generated at the specified location.",
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1367,11 +1368,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         var emessage = userError(error);
         log.error(error);
         console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Metadata - samples",
-        );
+        ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
 
         logMetadataForAnalytics(
           uploadBFBoolean,
@@ -1417,7 +1414,8 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
           false
         );
         Swal.fire({
-          title:"The samples.xlsx file has been successfully generated at the specified location.",
+          title:
+            "The samples.xlsx file has been successfully generated at the specified location.",
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
