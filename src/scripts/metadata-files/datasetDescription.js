@@ -817,23 +817,14 @@ async function generateDDFile(uploadBFBoolean) {
           backdrop: "rgba(0,0,0, 0.4)",
         });
 
-        // log the general failure to generate the description
-        // will be used to count the operations success rate as a whole rather than looking at its steps
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Metadata - dataset_description"
-        );
-
         // log the failure to generate the description file to analytics at this step in the Generation process
         logMetadataForAnalytics(
-          uploadBFBoolean,
           "Error",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ALL_LEVELS,
           "Generate",
-          analyticsGranularity.ALL_LEVELS
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
-        
       } else {
         if (uploadBFBoolean) {
           var successMessage =
@@ -843,23 +834,15 @@ async function generateDDFile(uploadBFBoolean) {
             "Successfully generated the dataset_description.xlsx file at the specified location.";
         }
 
-        // log the success to analytics
-        // this will indicate an overall success of the operation rather than the success or failure of operation actions and destinations
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Create dataset_description"
-        );
-
         // log the successful attempt to generate the description file in analytics at this step in the Generation process
         logMetadataForAnalytics(
-          uploadBFBoolean,
           "Success",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ALL_LEVELS,
           "Generate",
-          analyticsGranularity.ALL_LEVELS
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
-        
+
         Swal.fire({
           title: successMessage,
           icon: "success",
@@ -2299,23 +2282,14 @@ function checkBFImportDD() {
           html: emessage,
         });
 
-        // log the error to analytics
-        // this will indicate an overall error rate of the operation rather than the success or failure of operation actions and destinations
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Metadata - Create dataset_description"
-        );
-
-        // log the import action failure to analytics
+        // log the error to analytics at all levels of granularity
         logMetadataForAnalytics(
-          true,
           "Error",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ALL_LEVELS,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.PENNSIEVE
         );
-        
       } else {
         loadDDFileToUI(res, "bf");
 
@@ -2371,7 +2345,6 @@ function loadDDfileDataframe(filePath) {
           "Existing",
           analyticsGranularity.ALL_LEVELS
         );
-       
       } else {
         loadDDFileToUI(res, "local");
         // log the import action success to analytics

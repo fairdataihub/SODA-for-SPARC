@@ -7286,33 +7286,42 @@ Prepare Metadata Analytics Logging Helper Function  & Enum
 
 // Log the dataset description Successes and Errors as the user moves through the process of Preparing their metadata file
 // Inputs:
-//  uploadMetadataFile: boolean - If false the file is to be saved locally on the user's computer; If true the file is to be uploaded onto Pennsieve
 //  category: string - "Success" indicates a successful operation; "Error" indicates a failed operation
-//  action: string - Indicates the step in the metadata preparation process the Success or Failure occurs
-//  logActionWithDestination: boolean - Determines if the current action is directed towards a destination that can either be "Local" or "Pennsieve"
-//  analyticsGranularity: string - Determines what levels of granularity get logged; options are: "action", "action with destination", "all levels of granularity."
+//  analyticsActionPrefix: string - One of the analytics action prefixes defined below in an enum
+//  analyticsGranularity: string - Determines what levels of granularity get logged; options are: "prefix", "action", "action with destination", "all levels of granularity."
+//  action: string - Optional. Indicates the step in the metadata preparation process the Success or Failure occurs
+//  destination: string - Optional. The destination where the action is occurring; defined below in an enum
+
 function logMetadataForAnalytics(
-  uploadMetadataFile = false,
   category,
   analyticsActionPrefix,
+  granularity,
   action,
-  analyticsGranularity
+  destination
 ) {
   // the name of the action being logged
   let actionName = analyticsActionPrefix;
 
+  // check if only logging the prefix or all levels of granularity 
+  if(granularity === AnalyticsGranularity.PREFIX || granularity === AnalyticsGranularity.ALL_LEVELS) {
+    // log the prefix, category of the event
+    ipcRenderer.send(
+      "track-event",
+      `${category}`,
+       actionName
+    );
+  }
+
   // check if the user provided an action to be part of the action name
   if (action !== "") {
+    // update the action name with the given action
     actionName = actionName + " - " + action;
   }
 
-  // check if the action is pointed locally or to Pennsieve
-  let destination = uploadMetadataFile ? "Pennsieve" : "Local";
-
   // check if the user wants to log the action without the destination
-  if (analyticsGranularity === "action") {
+  if (granularity ===  AnalyticsGranularity.ACTION || granularity === AnalyticsGranularity.ALL_LEVELS) {
     // Determine the analytics formatting by whether it will be uploaded to Pennsieve or generate locally
-    if (uploadMetadataFile) {
+    if (destination === Destinations.PENNSIEVE) {
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7322,10 +7331,11 @@ function logMetadataForAnalytics(
     } else {
       ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
     }
-  } else if (analyticsGranularity === "action with destination") {
+  } else if (granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION || granularity === AnalyticsGranularity.ALL_LEVELS) {
+    // add the destination to the action
     actionName = actionName + " - " + destination;
     // log only the action with the destination added
-    if (uploadMetadataFile) {
+    if (destination === Destinations.PENNSIEVE) {
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7335,46 +7345,26 @@ function logMetadataForAnalytics(
     } else {
       ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
     }
-  } else {
-    // log all levels of granularity
-    if (uploadMetadataFile) {
-      ipcRenderer.send(
-        "track-event",
-        `${category}`,
-        actionName,
-        defaultBfDatasetId
-      );
-    } else {
-      ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
-    }
-
-    actionName = actionName + " - " + destination;
-
-    if (uploadMetadataFile) {
-      ipcRenderer.send(
-        "track-event",
-        `${category}`,
-        actionName,
-        defaultBfDatasetId
-      );
-    } else {
-      ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
-    }
-  }
 }
 
-const metadataAnalyticsPrefix = {
+const MetadataAnalyticsPrefix = {
   DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
   MANIFEST: "Prepare Metadata - manifest",
   SUBJECTS: "Prepare Metadata - subjects",
   SAMPLES: "Prepare Metadata - samples",
 };
 
-const analyticsGranularity = {
+const AnalyticsGranularity = {
+  PREFIX: "prefix",
   ACTION: "action",
   ACTION_WITH_DESTINATION: "action with destination",
   ALL_LEVELS: "all levels of granularity",
 };
+
+const Destinations = {
+  LOCAL: "Local",
+  PENNSIEVE: "Pennsieve"
+}
 
 /*
 ******************************************************
