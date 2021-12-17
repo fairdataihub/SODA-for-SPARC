@@ -7249,7 +7249,8 @@ function logMetadataForAnalytics(
 
 const metadataAnalyticsPrefix = {
   DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
-  MANIFEST: "Prepare Metadata - manifest"
+  MANIFEST: "Prepare Metadata - manifest",
+  SUBJECTS: "Prepare Metadata - subjects"
 }
 
 

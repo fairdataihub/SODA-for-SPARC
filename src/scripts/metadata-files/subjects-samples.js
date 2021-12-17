@@ -2350,6 +2350,21 @@ function checkBFImportSubjects() {
           icon: "error",
           html: emessage,
         });
+        logMetadataForAnalytics(
+          true,
+          "Error",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Existing",
+          true
+        );
+
+        logMetadataForAnalytics(
+          true,
+          "Error",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Existing",
+          false
+        );
       } else {
         subjectsTableData = res;
         loadDataFrametoUI("bf");
