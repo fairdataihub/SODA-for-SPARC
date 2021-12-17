@@ -833,7 +833,6 @@ async function generateDDFile(uploadBFBoolean) {
           "Generate",
           analyticsGranularity.ALL_LEVELS
         );
-        
       } else {
         if (uploadBFBoolean) {
           var successMessage =
@@ -859,7 +858,7 @@ async function generateDDFile(uploadBFBoolean) {
           "Generate",
           analyticsGranularity.ALL_LEVELS
         );
-        
+
         Swal.fire({
           title: successMessage,
           icon: "success",
@@ -2315,7 +2314,6 @@ function checkBFImportDD() {
           "Existing",
           analyticsGranularity.ALL_LEVELS
         );
-        
       } else {
         loadDDFileToUI(res, "bf");
 
@@ -2371,7 +2369,6 @@ function loadDDfileDataframe(filePath) {
           "Existing",
           analyticsGranularity.ALL_LEVELS
         );
-       
       } else {
         loadDDFileToUI(res, "local");
         // log the import action success to analytics
