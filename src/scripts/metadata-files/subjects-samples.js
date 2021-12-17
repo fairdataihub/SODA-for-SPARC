@@ -2042,15 +2042,7 @@ $(document).ready(function () {
           "Success",
           metadataAnalyticsPrefix.SAMPLES,
           "Existing",
-          true
-        );
-
-        logMetadataForAnalytics(
-          false,
-          "Success",
-          metadataAnalyticsPrefix.SAMPLES,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       } else {
         document.getElementById(
@@ -2265,14 +2257,7 @@ function importExistingSubjectsFile() {
       "Error",
       metadataAnalyticsPrefix.SUBJECTS,
       "Existing",
-      true
-    );
-    logMetadataForAnalytics(
-      false,
-      "Error",
-      metadataAnalyticsPrefix.SUBJECTS,
-      "Existing",
-      false
+      analyticsGranularity.ALL_LEVELS
     );
   } else {
     if (path.parse(filePath).base !== "subjects.xlsx") {
@@ -2289,14 +2274,7 @@ function importExistingSubjectsFile() {
         "Error",
         metadataAnalyticsPrefix.SUBJECTS,
         "Existing",
-        true
-      );
-      logMetadataForAnalytics(
-        false,
-        "Error",
-        metadataAnalyticsPrefix.SUBJECTS,
-        "Existing",
-        false
+        analyticsGranularity.ALL_LEVELS
       );
     } else {
       Swal.fire({
@@ -2330,14 +2308,7 @@ function importExistingSamplesFile() {
       "Error",
       metadataAnalyticsPrefix.SAMPLES,
       "Existing",
-      true
-    );
-    logMetadataForAnalytics(
-      false,
-      "Error",
-      metadataAnalyticsPrefix.SAMPLES,
-      "Existing",
-      false
+      analyticsGranularity.ALL_LEVELS
     );
   } else {
     if (path.parse(filePath).base !== "samples.xlsx") {
@@ -2354,14 +2325,7 @@ function importExistingSamplesFile() {
         "Error",
         metadataAnalyticsPrefix.SAMPLES,
         "Existing",
-        true
-      );
-      logMetadataForAnalytics(
-        false,
-        "Error",
-        metadataAnalyticsPrefix.SAMPLES,
-        "Existing",
-        false
+        analyticsGranularity.ALL_LEVELS
       );
     } else {
       Swal.fire({
@@ -2428,15 +2392,7 @@ function checkBFImportSubjects() {
           "Error",
           metadataAnalyticsPrefix.SUBJECTS,
           "Existing",
-          true
-        );
-
-        logMetadataForAnalytics(
-          true,
-          "Error",
-          metadataAnalyticsPrefix.SUBJECTS,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       } else {
         logMetadataForAnalytics(
@@ -2444,15 +2400,7 @@ function checkBFImportSubjects() {
           "Success",
           metadataAnalyticsPrefix.SUBJECTS,
           "Existing",
-          true
-        );
-
-        logMetadataForAnalytics(
-          true,
-          "Success",
-          metadataAnalyticsPrefix.SUBJECTS,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
         subjectsTableData = res;
         loadDataFrametoUI("bf");
@@ -2507,15 +2455,7 @@ function checkBFImportSamples() {
           "Error",
           metadataAnalyticsPrefix.SAMPLES,
           "Existing",
-          true
-        );
-
-        logMetadataForAnalytics(
-          true,
-          "Error",
-          metadataAnalyticsPrefix.SAMPLES,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       } else {
         logMetadataForAnalytics(
@@ -2523,15 +2463,7 @@ function checkBFImportSamples() {
           "Success",
           metadataAnalyticsPrefix.SAMPLES,
           "Existing",
-          true
-        );
-
-        logMetadataForAnalytics(
-          true,
-          "Success",
-          metadataAnalyticsPrefix.SAMPLES,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
         samplesTableData = res;
         loadDataFrametoUISamples("bf");

@@ -1199,18 +1199,12 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           "Error",
           metadataAnalyticsPrefix.SUBJECTS,
           "Generate",
-          true
-        );
-        logMetadataForAnalytics(
-          uploadBFBoolean,
-          "Error",
-          metadataAnalyticsPrefix.SUBJECTS,
-          "Generate",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       } else {
         Swal.fire({
-          title: "The subjects.xlsx file has been successfully generated at the specified location.",
+          title:
+            "The subjects.xlsx file has been successfully generated at the specified location.",
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1227,14 +1221,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           "Success",
           metadataAnalyticsPrefix.SUBJECTS,
           "Generate",
-          true
-        );
-        logMetadataForAnalytics(
-          uploadBFBoolean,
-          "Success",
-          metadataAnalyticsPrefix.SUBJECTS,
-          "Generate",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       }
     }
@@ -1367,25 +1354,14 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         var emessage = userError(error);
         log.error(error);
         console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Metadata - samples",
-        );
+        ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
 
         logMetadataForAnalytics(
           uploadBFBoolean,
           "Error",
           metadataAnalyticsPrefix.SAMPLES,
           "Generate",
-          true
-        );
-        logMetadataForAnalytics(
-          uploadBFBoolean,
-          "Error",
-          metadataAnalyticsPrefix.SAMPLES,
-          "Generate",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
 
         Swal.fire({
@@ -1407,17 +1383,11 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
           "Success",
           metadataAnalyticsPrefix.SAMPLES,
           "Generate",
-          true
-        );
-        logMetadataForAnalytics(
-          uploadBFBoolean,
-          "Success",
-          metadataAnalyticsPrefix.SAMPLES,
-          "Generate",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
         Swal.fire({
-          title:"The samples.xlsx file has been successfully generated at the specified location.",
+          title:
+            "The samples.xlsx file has been successfully generated at the specified location.",
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1510,14 +1480,7 @@ function loadSubjectsFileToDataframe(filePath) {
           "Error",
           metadataAnalyticsPrefix.SUBJECTS,
           "Existing",
-          true
-        );
-        logMetadataForAnalytics(
-          false,
-          "Error",
-          metadataAnalyticsPrefix.SUBJECTS,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
@@ -1544,14 +1507,7 @@ function loadSubjectsFileToDataframe(filePath) {
               "Error",
               metadataAnalyticsPrefix.SUBJECTS,
               "Existing",
-              true
-            );
-            logMetadataForAnalytics(
-              false,
-              "Error",
-              metadataAnalyticsPrefix.SUBJECTS,
-              "Existing",
-              false
+              analyticsGranularity.ALL_LEVELS
             );
             return;
           }
@@ -1566,14 +1522,7 @@ function loadSubjectsFileToDataframe(filePath) {
             "Success",
             metadataAnalyticsPrefix.SUBJECTS,
             "Existing",
-            true
-          );
-          logMetadataForAnalytics(
-            false,
-            "Success",
-            metadataAnalyticsPrefix.SUBJECTS,
-            "Existing",
-            false
+            analyticsGranularity.ALL_LEVELS
           );
         } else {
           ipcRenderer.send(
@@ -1587,14 +1536,7 @@ function loadSubjectsFileToDataframe(filePath) {
             "Error",
             metadataAnalyticsPrefix.SUBJECTS,
             "Existing",
-            true
-          );
-          logMetadataForAnalytics(
-            false,
-            "Error",
-            metadataAnalyticsPrefix.SUBJECTS,
-            "Existing",
-            false
+            analyticsGranularity.ALL_LEVELS
           );
           Swal.fire({
             title: "Couldn't load existing subjects.xlsx file",
@@ -1641,14 +1583,7 @@ function loadSamplesFileToDataframe(filePath) {
           "Error",
           metadataAnalyticsPrefix.SAMPLES,
           "Existing",
-          true
-        );
-        logMetadataForAnalytics(
-          false,
-          "Error",
-          metadataAnalyticsPrefix.SAMPLES,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
@@ -1675,14 +1610,7 @@ function loadSamplesFileToDataframe(filePath) {
               "Error",
               metadataAnalyticsPrefix.SAMPLES,
               "Existing",
-              true
-            );
-            logMetadataForAnalytics(
-              false,
-              "Error",
-              metadataAnalyticsPrefix.SAMPLES,
-              "Existing",
-              false
+              analyticsGranularity.ALL_LEVELS
             );
 
             return;
@@ -1693,14 +1621,7 @@ function loadSamplesFileToDataframe(filePath) {
             "Success",
             metadataAnalyticsPrefix.SAMPLES,
             "Existing",
-            true
-          );
-          logMetadataForAnalytics(
-            false,
-            "Success",
-            metadataAnalyticsPrefix.SAMPLES,
-            "Existing",
-            false
+            analyticsGranularity.ALL_LEVELS
           );
         } else {
           ipcRenderer.send(
@@ -1713,14 +1634,7 @@ function loadSamplesFileToDataframe(filePath) {
             "Error",
             metadataAnalyticsPrefix.SAMPLES,
             "Existing",
-            true
-          );
-          logMetadataForAnalytics(
-            false,
-            "Error",
-            metadataAnalyticsPrefix.SAMPLES,
-            "Existing",
-            false
+            analyticsGranularity.ALL_LEVELS
           );
           Swal.fire({
             title: "Couldn't load existing samples.xlsx file",
@@ -7375,38 +7289,77 @@ Prepare Metadata Analytics Logging Helper Function  & Enum
 //  uploadMetadataFile: boolean - If false the file is to be saved locally on the user's computer; If true the file is to be uploaded onto Pennsieve
 //  category: string - "Success" indicates a successful operation; "Error" indicates a failed operation
 //  action: string - Indicates the step in the metadata preparation process the Success or Failure occurs
-//  actionHasDestination: boolean - Determines if the current action is directed towards a destination that can either be "Local" or "Pennsieve"
+//  logActionWithDestination: boolean - Determines if the current action is directed towards a destination that can either be "Local" or "Pennsieve"
+//  analyticsGranularity: string - Determines what levels of granularity get logged; options are: "action", "action with destination", "all levels of granularity."
 function logMetadataForAnalytics(
   uploadMetadataFile = false,
   category,
   analyticsActionPrefix,
   action,
-  actionHasDestination
+  analyticsGranularity
 ) {
   // the name of the action being logged
   let actionName = analyticsActionPrefix;
 
   // check if the user provided an action to be part of the action name
-  if (action) {
+  if (action !== "") {
     actionName = actionName + " - " + action;
   }
 
   // check if the action is pointed locally or to Pennsieve
   let destination = uploadMetadataFile ? "Pennsieve" : "Local";
-  if (actionHasDestination) {
-    actionName = actionName + " - " + destination;
-  }
 
-  // Determine the analytics formatting by whether it will be uploaded to Pennsieve or generate locally
-  if (uploadMetadataFile) {
-    ipcRenderer.send(
-      "track-event",
-      `${category}`,
-      actionName,
-      defaultBfDatasetId
-    );
+  // check if the user wants to log the action without the destination
+  if (analyticsGranularity === "action") {
+    // Determine the analytics formatting by whether it will be uploaded to Pennsieve or generate locally
+    if (uploadMetadataFile) {
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    } else {
+      ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
+    }
+  } else if (analyticsGranularity === "action with destination") {
+    actionName = actionName + " - " + destination;
+    // log only the action with the destination added
+    if (uploadMetadataFile) {
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    } else {
+      ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
+    }
   } else {
-    ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
+    // log all levels of granularity
+    if (uploadMetadataFile) {
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    } else {
+      ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
+    }
+
+    actionName = actionName + " - " + destination;
+
+    if (uploadMetadataFile) {
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    } else {
+      ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
+    }
   }
 }
 
@@ -7415,6 +7368,12 @@ const metadataAnalyticsPrefix = {
   MANIFEST: "Prepare Metadata - manifest",
   SUBJECTS: "Prepare Metadata - subjects",
   SAMPLES: "Prepare Metadata - samples",
+};
+
+const analyticsGranularity = {
+  ACTION: "action",
+  ACTION_WITH_DESTINATION: "action with destination",
+  ALL_LEVELS: "all levels of granularity",
 };
 
 /*

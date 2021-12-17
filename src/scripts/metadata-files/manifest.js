@@ -128,16 +128,8 @@ async function generateManifest(action, type) {
         "Error",
         metadataAnalyticsPrefix.MANIFEST,
         "Generate",
-        true
+        analyticsGranularity.ALL_LEVELS
       );
-      logMetadataForAnalytics(
-        false,
-        "Error",
-        metadataAnalyticsPrefix.MANIFEST,
-        "Generate",
-        false
-      );
-
       return;
     }
     generateManifestHelper();
@@ -370,15 +362,7 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
       "Error",
       metadataAnalyticsPrefix.MANIFEST,
       "Generate",
-      false
-    );
-    // log the Generate action with the destination
-    logMetadataForAnalytics(
-      true,
-      "Error",
-      metadataAnalyticsPrefix.MANIFEST,
-      "Generate",
-      true
+      analyticsGranularity.ALL_LEVELS
     );
 
     $("#bf_dataset_create_manifest").text("None");

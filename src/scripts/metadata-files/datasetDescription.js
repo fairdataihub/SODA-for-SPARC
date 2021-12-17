@@ -831,15 +831,9 @@ async function generateDDFile(uploadBFBoolean) {
           "Error",
           metadataAnalyticsPrefix.DATASET_DESCRIPTION,
           "Generate",
-          true
+          analyticsGranularity.ALL_LEVELS
         );
-        logMetadataForAnalytics(
-          uploadBFBoolean,
-          "Error",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          "Generate",
-          false
-        );
+        
       } else {
         if (uploadBFBoolean) {
           var successMessage =
@@ -863,16 +857,9 @@ async function generateDDFile(uploadBFBoolean) {
           "Success",
           metadataAnalyticsPrefix.DATASET_DESCRIPTION,
           "Generate",
-          true
+          analyticsGranularity.ALL_LEVELS
         );
-        logMetadataForAnalytics(
-          uploadBFBoolean,
-          "Success",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          "Generate",
-          false
-        );
-
+        
         Swal.fire({
           title: successMessage,
           icon: "success",
@@ -2326,15 +2313,9 @@ function checkBFImportDD() {
           "Error",
           metadataAnalyticsPrefix.DATASET_DESCRIPTION,
           "Existing",
-          true
+          analyticsGranularity.ALL_LEVELS
         );
-        logMetadataForAnalytics(
-          true,
-          "Error",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          "Existing",
-          false
-        );
+        
       } else {
         loadDDFileToUI(res, "bf");
 
@@ -2344,14 +2325,7 @@ function checkBFImportDD() {
           "Success",
           metadataAnalyticsPrefix.DATASET_DESCRIPTION,
           "Existing",
-          true
-        );
-        logMetadataForAnalytics(
-          true,
-          "Success",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       }
     }
@@ -2395,15 +2369,9 @@ function loadDDfileDataframe(filePath) {
           "Error",
           metadataAnalyticsPrefix.DATASET_DESCRIPTION,
           "Existing",
-          true
+          analyticsGranularity.ALL_LEVELS
         );
-        logMetadataForAnalytics(
-          false,
-          "Error",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          "Existing",
-          false
-        );
+       
       } else {
         loadDDFileToUI(res, "local");
         // log the import action success to analytics
@@ -2412,14 +2380,7 @@ function loadDDfileDataframe(filePath) {
           "Success",
           metadataAnalyticsPrefix.DATASET_DESCRIPTION,
           "Existing",
-          true
-        );
-        logMetadataForAnalytics(
-          false,
-          "Success",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
-          "Existing",
-          false
+          analyticsGranularity.ALL_LEVELS
         );
       }
     }
