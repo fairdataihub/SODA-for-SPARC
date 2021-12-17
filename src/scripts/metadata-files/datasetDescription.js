@@ -826,8 +826,20 @@ async function generateDDFile(uploadBFBoolean) {
         );
 
         // log the failure to generate the description file to analytics at this step in the Generation process
-        logMetadataForAnalytics(uploadBFBoolean, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Generate", true)
-        logMetadataForAnalytics(uploadBFBoolean, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Generate", false)
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Error",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Generate",
+          true
+        );
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Error",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Generate",
+          false
+        );
       } else {
         if (uploadBFBoolean) {
           var successMessage =
@@ -846,8 +858,20 @@ async function generateDDFile(uploadBFBoolean) {
         );
 
         // log the successful attempt to generate the description file in analytics at this step in the Generation process
-        logMetadataForAnalytics(uploadBFBoolean, "Success",metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Generate", true)
-        logMetadataForAnalytics(uploadBFBoolean, "Success",metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Generate", false)
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Success",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Generate",
+          true
+        );
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Success",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Generate",
+          false
+        );
 
         Swal.fire({
           title: successMessage,
@@ -2297,14 +2321,38 @@ function checkBFImportDD() {
         );
 
         // log the import action failure to analytics
-        logMetadataForAnalytics(true, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", true)
-        logMetadataForAnalytics(true, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", false)
+        logMetadataForAnalytics(
+          true,
+          "Error",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Existing",
+          true
+        );
+        logMetadataForAnalytics(
+          true,
+          "Error",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Existing",
+          false
+        );
       } else {
         loadDDFileToUI(res, "bf");
 
         // log the import action success to analytics
-        logMetadataForAnalytics(true, "Success", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", true)
-        logMetadataForAnalytics(true, "Success", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", false)
+        logMetadataForAnalytics(
+          true,
+          "Success",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Existing",
+          true
+        );
+        logMetadataForAnalytics(
+          true,
+          "Success",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Existing",
+          false
+        );
       }
     }
   );
@@ -2342,14 +2390,37 @@ function loadDDfileDataframe(filePath) {
         );
 
         // log the import action failure to analytics
-        logMetadataForAnalytics(false, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", true)
-        logMetadataForAnalytics(false, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", false)
-        
+        logMetadataForAnalytics(
+          false,
+          "Error",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Existing",
+          true
+        );
+        logMetadataForAnalytics(
+          false,
+          "Error",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Existing",
+          false
+        );
       } else {
         loadDDFileToUI(res, "local");
         // log the import action success to analytics
-        logMetadataForAnalytics(false, "Success", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", true)
-        logMetadataForAnalytics(false, "Success", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", false)
+        logMetadataForAnalytics(
+          false,
+          "Success",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Existing",
+          true
+        );
+        logMetadataForAnalytics(
+          false,
+          "Success",
+          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          "Existing",
+          false
+        );
       }
     }
   );

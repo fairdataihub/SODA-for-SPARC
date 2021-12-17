@@ -121,14 +121,10 @@ async function generateManifest(action, type) {
         },
       }).then((result) => {});
 
-      // log the error to analytics 
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Metadata - maniftest"
-      );
-      logDatasetDescriptionForAnalytics(false, "Error", "Generate", true)
-      logDatasetDescriptionForAnalytics(false, "Error", "Generate", false)
+      // log the error to analytics
+      ipcRenderer.send("track-event", "Error", "Prepare Metadata - maniftest");
+      logDatasetDescriptionForAnalytics(false, "Error", "Generate", true);
+      logDatasetDescriptionForAnalytics(false, "Error", "Generate", false);
 
       return;
     }
