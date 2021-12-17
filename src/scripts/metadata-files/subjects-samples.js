@@ -1,5 +1,3 @@
-const { ipcRenderer } = require("electron");
-
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
 var samplesFormDiv = document.getElementById("form-add-a-sample");
 var subjectsTableData = [];

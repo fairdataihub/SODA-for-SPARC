@@ -1192,19 +1192,24 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
         });
-        ipcRenderer.send(
-          "track-event",
+
+        ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
+
+        logMetadataForAnalytics(
+          uploadBFBoolean,
           "Error",
-          "Prepare Metadata - Create subjects.xlsx",
-          subjectsTableData
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Generate",
+          true
+        );
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Error",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Generate",
+          false
         );
       } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Create subjects.xlsx",
-          subjectsTableData
-        );
         Swal.fire({
           title:
             "The subjects.xlsx file has been successfully generated at the specified location.",
@@ -1212,6 +1217,27 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - subjects"
+        );
+
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Success",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Existing",
+          true
+        );
+        logMetadataForAnalytics(
+          uploadBFBoolean,
+          "Success",
+          metadataAnalyticsPrefix.SUBJECTS,
+          "Existing",
+          false
+        );
       }
     }
   );
