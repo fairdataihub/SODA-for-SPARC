@@ -7189,6 +7189,70 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
   );
 }
 
+
+
+/*
+******************************************************
+******************************************************
+Prepare Metadata Analytics Logging Helper Function  & Enum
+******************************************************
+******************************************************
+*/
+
+
+// Log the dataset description Successes and Errors as the user moves through the process of Preparing their metadata file
+// Inputs:
+//  uploadMetadataFile: boolean - If false the file is to be saved locally on the user's computer; If true the file is to be uploaded onto Pennsieve 
+//  category: string - "Success" indicates a successful operation; "Error" indicates a failed operation 
+//  action: string - Indicates the step in the metadata preparation process the Success or Failure occurs 
+//  actionHasDestination: boolean - Determines if the current action is directed towards a destination that can either be "Local" or "Pennsieve"
+function logMetadataForAnalytics(
+  uploadMetadataFile = false,
+  category,
+  analyticsActionPrefix,
+  action,
+  actionHasDestination
+) {
+  // the name of the action being logged
+  let actionName = analyticsActionPrefix;
+
+  // check if the user provided an action to be part of the action name 
+  if (action) {
+    actionName = actionName + " - " + action;
+  }
+
+  // check if the action is pointed locally or to Pennsieve 
+  let destination = uploadMetadataFile ? "Pennsieve" : "Local"
+  if(actionHasDestination) {
+    actionName = actionName + " - " + destination;
+  }
+
+
+  // Determine the analytics formatting by whether it will be uploaded to Pennsieve or generate locally
+  if (uploadMetadataFile) {
+    ipcRenderer.send(
+      "track-event",
+      `${category}`,
+      actionName,
+      defaultBfDatasetId
+    );
+  } else {
+    ipcRenderer.send(
+      "track-event",
+      `${category}`,
+      actionName,
+      "Local",
+      1
+    );
+  }
+}
+
+const metadataAnalyticsPrefix = {
+  DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
+  MANIFEST: "Prepare Metadata - manifest"
+}
+
+
 /*
 ******************************************************
 ******************************************************

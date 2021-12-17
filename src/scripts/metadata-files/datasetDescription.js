@@ -827,8 +827,8 @@ async function generateDDFile(uploadBFBoolean) {
         );
 
         // log the failure to generate the description file to analytics at this step in the Generation process
-        logDatasetDescriptionForAnalytics(uploadBFBoolean, "Error", "Generate", true)
-        logDatasetDescriptionForAnalytics(uploadBFBoolean, "Error", "Generate", false)
+        logMetadataForAnalytics(uploadBFBoolean, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Generate", true)
+        logMetadataForAnalytics(uploadBFBoolean, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Generate", false)
       } else {
         if (uploadBFBoolean) {
           var successMessage =
@@ -847,8 +847,8 @@ async function generateDDFile(uploadBFBoolean) {
         );
 
         // log the successful attempt to generate the description file in analytics at this step in the Generation process
-        logDatasetDescriptionForAnalytics(uploadBFBoolean, "Success", "Generate", true)
-        logDatasetDescriptionForAnalytics(uploadBFBoolean, "Success", "Generate", false)
+        logMetadataForAnalytics(uploadBFBoolean, "Success",metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Generate", true)
+        logMetadataForAnalytics(uploadBFBoolean, "Success",metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Generate", false)
 
         Swal.fire({
           title: successMessage,
@@ -2300,14 +2300,14 @@ function checkBFImportDD() {
         );
 
         // log the import action failure to analytics
-        logDatasetDescriptionForAnalytics(true, "Error", "Existing", true)
-        logDatasetDescriptionForAnalytics(true, "Error", "Existing", false)
+        logMetadataForAnalytics(true, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", true)
+        logMetadataForAnalytics(true, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", false)
       } else {
         loadDDFileToUI(res, "bf");
 
         // log the import action success to analytics
-        logDatasetDescriptionForAnalytics(true, "Success", "Existing", true)
-        logDatasetDescriptionForAnalytics(true, "Success", "Existing", false)
+        logMetadataForAnalytics(true, "Success", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", true)
+        logMetadataForAnalytics(true, "Success", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", false)
       }
     }
   );
@@ -2345,14 +2345,14 @@ function loadDDfileDataframe(filePath) {
         );
 
         // log the import action failure to analytics
-        logDatasetDescriptionForAnalytics(false, "Error", "Existing", true)
-        logDatasetDescriptionForAnalytics(false, "Error", "Existing", false)
+        logMetadataForAnalytics(false, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", true)
+        logMetadataForAnalytics(false, "Error", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", false)
         
       } else {
         loadDDFileToUI(res, "local");
         // log the import action success to analytics
-        logDatasetDescriptionForAnalytics(false, "Success", "Existing", true)
-        logDatasetDescriptionForAnalytics(false, "Success", "Existing", false)
+        logMetadataForAnalytics(false, "Success", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", true)
+        logMetadataForAnalytics(false, "Success", metadataAnalyticsPrefix.DATASET_DESCRIPTION, "Existing", false)
       }
     }
   );
@@ -2510,52 +2510,4 @@ function protocolCheck(array) {
     boolean = true;
   }
   return boolean;
-}
-
-
-
-
-// Log the dataset description Successes and Errors as the user moves through the process of Preparing their metadata file
-// Inputs:
-//  uploadMetadataFile: boolean - If false the file is to be saved locally on the user's computer; If true the file is to be uploaded onto Pennsieve 
-//  category: string - "Success" indicates a successful operation; "Error" indicates a failed operation 
-//  action: string - Indicates the step in the metadata preparation process the Success or Failure occurs 
-//  actionHasDestination: boolean - Determines if the current action is directed towards a destination that can either be "Local" or "Pennsieve"
-function logDatasetDescriptionForAnalytics(
-  uploadMetadataFile = false,
-  category,
-  action,
-  actionHasDestination
-) {
-  // the name of the action being logged
-  let actionName = `Prepare Metadata - dataset_description`;
-
-  // check if the user provided an action to be part of the action name 
-  if (action) {
-    actionName = actionName + "-" + action;
-  }
-
-  // check if the action is pointed locally or to Pennsieve 
-  if(actionHasDestination) {
-    actionName = actionName + "-" + uploadMetadataFile ? "Pennsieve" : "Local";
-  }
-
-
-  // Determine the analytics formatting by whether it will be uploaded to Pennsieve or generate locally
-  if (uploadMetadataFile) {
-    ipcRenderer.send(
-      "track-event",
-      `${category}`,
-      actionName,
-      defaultBfDatasetId
-    );
-  } else {
-    ipcRenderer.send(
-      "track-event",
-      `${category}`,
-      actionName,
-      "Local",
-      1
-    );
-  }
 }

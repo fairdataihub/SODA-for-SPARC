@@ -120,6 +120,16 @@ async function generateManifest(action, type) {
           Swal.hideLoading();
         },
       }).then((result) => {});
+
+      // log the error to analytics 
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Metadata - maniftest"
+      );
+      logDatasetDescriptionForAnalytics(false, "Error", "Generate", true)
+      logDatasetDescriptionForAnalytics(false, "Error", "Generate", false)
+
       return;
     }
     generateManifestHelper();
