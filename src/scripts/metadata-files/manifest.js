@@ -285,6 +285,26 @@ function initiate_generate_manifest() {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+
+      let destination = "";
+
+      // determine if working with a Local dataset or Pennsieve
+      if ("bf-dataset-selected" in sodaJSONObj) {
+        destination = "Pennsieve";
+      } else if ("generate-dataset" in sodaJSONObj) {
+        if ("destination" in sodaJSONObj["generate-dataset"]) {
+          destination = sodaJSONObj["generate-dataset"]["destination"];
+        }
+      }
+
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        destination === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+      );
     } else {
       if (manifest_files_requested) {
         let high_level_folder_num = 0;
@@ -296,6 +316,24 @@ function initiate_generate_manifest() {
           }
         }
       }
+
+      // determine if working with a Local dataset or Pennsieve
+      if ("bf-dataset-selected" in sodaJSONObj) {
+        destination = "Pennsieve";
+      } else if ("generate-dataset" in sodaJSONObj) {
+        if ("destination" in sodaJSONObj["generate-dataset"]) {
+          destination = sodaJSONObj["generate-dataset"]["destination"];
+        }
+      }
+
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        destination === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+      );
 
       Swal.fire({
         title:
@@ -395,6 +433,14 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
           Swal.hideLoading();
         },
       }).then((result) => {});
+
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.PENNSIEVE
+      );
       return;
     }
     generateManifestHelper();
