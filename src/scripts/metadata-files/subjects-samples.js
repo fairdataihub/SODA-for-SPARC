@@ -2037,12 +2037,13 @@ $(document).ready(function () {
         document.getElementById(
           "existing-samples-file-destination"
         ).placeholder = filepath[0];
+        // log the successful import to analytics
         logMetadataForAnalytics(
-          false,
           "Success",
-          metadataAnalyticsPrefix.SAMPLES,
+          MetadataAnalyticsPrefix.SAMPLES,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.LOCAL
         );
       } else {
         document.getElementById(
@@ -2251,13 +2252,13 @@ function importExistingSubjectsFile() {
       "error"
     );
 
-    ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
+    // log the error to analytics
     logMetadataForAnalytics(
-      false,
       "Error",
-      metadataAnalyticsPrefix.SUBJECTS,
+      MetadataAnalyticsPrefix.SUBJECTS,
+      AnalyticsGranularity.ALL_LEVELS,
       "Existing",
-      analyticsGranularity.ALL_LEVELS
+      Destinations.LOCAL
     );
   } else {
     if (path.parse(filePath).base !== "subjects.xlsx") {
@@ -2268,13 +2269,14 @@ function importExistingSubjectsFile() {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
-      ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
+
+      // log the error to analytics
       logMetadataForAnalytics(
-        false,
         "Error",
-        metadataAnalyticsPrefix.SUBJECTS,
+        MetadataAnalyticsPrefix.SUBJECTS,
+        AnalyticsGranularity.ALL_LEVELS,
         "Existing",
-        analyticsGranularity.ALL_LEVELS
+        Destinations.LOCAL
       );
     } else {
       Swal.fire({
@@ -2302,13 +2304,14 @@ function importExistingSamplesFile() {
       "Please select a path to your samples.xlsx file.",
       "error"
     );
-    ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
+
+    // log the error to analytics
     logMetadataForAnalytics(
-      false,
       "Error",
-      metadataAnalyticsPrefix.SAMPLES,
+      MetadataAnalyticsPrefix.SAMPLES,
+      AnalyticsGranularity.ALL_LEVELS,
       "Existing",
-      analyticsGranularity.ALL_LEVELS
+      Destinations.LOCAL
     );
   } else {
     if (path.parse(filePath).base !== "samples.xlsx") {
@@ -2319,13 +2322,14 @@ function importExistingSamplesFile() {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
-      ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
+
+      // log the error to analytics
       logMetadataForAnalytics(
-        false,
         "Error",
-        metadataAnalyticsPrefix.SAMPLES,
+        MetadataAnalyticsPrefix.SAMPLES,
+        AnalyticsGranularity.ALL_LEVELS,
         "Existing",
-        analyticsGranularity.ALL_LEVELS
+        Destinations.LOCAL
       );
     } else {
       Swal.fire({
@@ -2385,22 +2389,22 @@ function checkBFImportSubjects() {
           html: emessage,
         });
 
-        ipcRenderer.send("track-event", "Error", "Prepare Metadata - subjects");
-
+        // log the error to analytics
         logMetadataForAnalytics(
-          true,
           "Error",
-          metadataAnalyticsPrefix.SUBJECTS,
+          MetadataAnalyticsPrefix.SUBJECTS,
+          AnalyticsGranularity.ALL_LEVELS,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.PENNSIEVE
         );
       } else {
+        // log the success to analytics
         logMetadataForAnalytics(
-          true,
           "Success",
-          metadataAnalyticsPrefix.SUBJECTS,
+          MetadataAnalyticsPrefix.SUBJECTS,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.PENNSIEVE
         );
         subjectsTableData = res;
         loadDataFrametoUI("bf");
@@ -2448,22 +2452,22 @@ function checkBFImportSamples() {
           html: emessage,
         });
 
-        ipcRenderer.send("track-event", "Error", "Prepare Metadata - samples");
-
+        // log the error to analytics
         logMetadataForAnalytics(
-          true,
           "Error",
-          metadataAnalyticsPrefix.SAMPLES,
+          MetadataAnalyticsPrefix.SAMPLES,
+          AnalyticsGranularity.ALL_LEVELS,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.PENNSIEVE
         );
       } else {
+        // log the success to analytics
         logMetadataForAnalytics(
-          true,
           "Success",
-          metadataAnalyticsPrefix.SAMPLES,
+          MetadataAnalyticsPrefix.SAMPLES,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.PENNSIEVE
         );
         samplesTableData = res;
         loadDataFrametoUISamples("bf");

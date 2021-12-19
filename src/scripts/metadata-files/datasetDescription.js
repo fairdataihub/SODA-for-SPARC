@@ -2295,11 +2295,11 @@ function checkBFImportDD() {
 
         // log the import action success to analytics
         logMetadataForAnalytics(
-          true,
           "Success",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.PENNSIEVE
         );
       }
     }
@@ -2329,31 +2329,23 @@ function loadDDfileDataframe(filePath) {
           icon: "error",
         });
 
-        // log the error to analytics
-        // this will indicate an overall error rate of the operation rather than the success or failure of operation actions and destinations
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Metadata - Create dataset_description"
-        );
-
         // log the import action failure to analytics
         logMetadataForAnalytics(
-          false,
           "Error",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ALL_LEVELS,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.LOCAL
         );
       } else {
         loadDDFileToUI(res, "local");
         // log the import action success to analytics
         logMetadataForAnalytics(
-          false,
           "Success",
-          metadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
-          analyticsGranularity.ALL_LEVELS
+          Destinations.LOCAL
         );
       }
     }

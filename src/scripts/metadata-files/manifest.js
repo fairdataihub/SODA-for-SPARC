@@ -122,13 +122,12 @@ async function generateManifest(action, type) {
       }).then((result) => {});
 
       // log the error to analytics
-      ipcRenderer.send("track-event", "Error", "Prepare Metadata - maniftest");
       logMetadataForAnalytics(
-        false,
         "Error",
-        metadataAnalyticsPrefix.MANIFEST,
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
         "Generate",
-        analyticsGranularity.ALL_LEVELS
+        Destinations.LOCAL
       );
       return;
     }
@@ -353,16 +352,14 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
-    // log the failure of the operation to generate a manifest file to analytics
-    // Note: This is tracked to make tabulating the amount of Manifest file creations that failed simple
-    ipcRenderer.send("track-event", "Error", metadataAnalyticsPrefix.MANIFEST);
+
     // log the Generate action without the destination
     logMetadataForAnalytics(
-      true,
       "Error",
-      metadataAnalyticsPrefix.MANIFEST,
+      MetadataAnalyticsPrefix.MANIFEST,
+      AnalyticsGranularity.ALL_LEVELS,
       "Generate",
-      analyticsGranularity.ALL_LEVELS
+      Destinations.PENNSIEVE
     );
 
     $("#bf_dataset_create_manifest").text("None");
