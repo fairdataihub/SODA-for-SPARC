@@ -7262,14 +7262,13 @@ function logMetadataForAnalytics(
   // the name of the action being logged
   let actionName = analyticsActionPrefix;
 
-  // check if only logging the prefix or all levels of granularity 
-  if(granularity === AnalyticsGranularity.PREFIX || granularity === AnalyticsGranularity.ALL_LEVELS) {
+  // check if only logging the prefix or all levels of granularity
+  if (
+    granularity === AnalyticsGranularity.PREFIX ||
+    granularity === AnalyticsGranularity.ALL_LEVELS
+  ) {
     // log the prefix, category of the event
-    ipcRenderer.send(
-      "track-event",
-      `${category}`,
-       actionName
-    );
+    ipcRenderer.send("track-event", `${category}`, actionName);
   }
 
   // check if the user provided an action to be part of the action name
@@ -7279,7 +7278,11 @@ function logMetadataForAnalytics(
   }
 
   // check if the user wants to log the action without the destination
-  if (granularity ===  AnalyticsGranularity.ACTION || granularity === AnalyticsGranularity.ALL_LEVELS || granulairty === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION) {
+  if (
+    granularity === AnalyticsGranularity.ACTION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS ||
+    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
     // Determine the analytics formatting by whether it will be uploaded to Pennsieve or generate locally
     if (destination === Destinations.PENNSIEVE) {
       ipcRenderer.send(
@@ -7291,7 +7294,11 @@ function logMetadataForAnalytics(
     } else {
       ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
     }
-  } else if (granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION || granularity === AnalyticsGranularity.ALL_LEVELS ||  granulairty === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION) {
+  } else if (
+    granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS ||
+    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
     // add the destination to the action
     actionName = actionName + " - " + destination;
     // log only the action with the destination added
@@ -7305,6 +7312,7 @@ function logMetadataForAnalytics(
     } else {
       ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
     }
+  }
 }
 
 const MetadataAnalyticsPrefix = {
@@ -7312,6 +7320,8 @@ const MetadataAnalyticsPrefix = {
   MANIFEST: "Prepare Metadata - manifest",
   SUBJECTS: "Prepare Metadata - subjects",
   SAMPLES: "Prepare Metadata - samples",
+  README: "Prepare Metadata - readme",
+  CHANGES: "Prepare Metadata - changes",
 };
 
 const AnalyticsGranularity = {
@@ -7324,8 +7334,8 @@ const AnalyticsGranularity = {
 
 const Destinations = {
   LOCAL: "Local",
-  PENNSIEVE: "Pennsieve"
-}
+  PENNSIEVE: "Pennsieve",
+};
 
 /*
 ******************************************************

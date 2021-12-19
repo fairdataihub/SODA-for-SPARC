@@ -79,17 +79,15 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            `Prepare Metadata - ${upperCaseLetters} - Generate - Pennsieve`,
-            defaultBfDatasetId
-          );
 
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
             "Error",
-            `Prepare Metadata - ${upperCaseLetters}`
+            upperCaseLetters === "CHANGES.txt"
+              ? MetadataAnalyticsPrefix.CHANGES
+              : MetadataAnalyticsPrefix.README,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            Destinations.PENNSIEVE
           );
         } else {
           Swal.fire({
@@ -99,17 +97,14 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             backdrop: "rgba(0,0,0, 0.4)",
           });
 
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
             "Success",
-            `Prepare Metadata - ${upperCaseLetters}`
-          );
-
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            `Prepare Metadata - ${upperCaseLetters} - Generate - Pennsieve`,
-            defaultBfDatasetId
+            upperCaseLetters === "CHANGES.txt"
+              ? MetadataAnalyticsPrefix.CHANGES
+              : MetadataAnalyticsPrefix.README,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            Destinations.PENNSIEVE
           );
         }
       }
@@ -179,11 +174,13 @@ $(document).ready(function () {
         document.getElementById(
           "existing-changes-file-destination"
         ).placeholder = filepath[0];
-        ipcRenderer.send(
-          "track-event",
+
+        logMetadataForAnalytics(
           "Success",
-          "Prepare Metadata - Continue with existing CHANGES.txt",
-          defaultBfAccount
+          MetadataAnalyticsPrefix.CHANGES,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          "Existing",
+          Destinations.PENNSIEVE
         );
         if (
           document.getElementById("existing-changes-file-destination")
@@ -214,11 +211,13 @@ $(document).ready(function () {
         document.getElementById(
           "existing-readme-file-destination"
         ).placeholder = filepath[0];
-        ipcRenderer.send(
-          "track-event",
+
+        logMetadataForAnalytics(
           "Success",
-          "Prepare Metadata - Continue with existing README.txt",
-          defaultBfAccount
+          MetadataAnalyticsPrefix.README,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          "Existing",
+          Destinations.LOCAL
         );
         if (
           document.getElementById("existing-readme-file-destination")
@@ -334,18 +333,14 @@ async function saveRCFile(type) {
         },
       });
 
-      ipcRenderer.send(
-        "track-event",
+      logMetadataForAnalytics(
         "Error",
-        `Prepare Metadata - ${type.toUpperCase()} - Generate - Local`,
-        "Local",
-        1
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Metadata - ${type.toUpperCase()}`
+        type === "changes"
+          ? MetadataAnalyticsPrefix.CHANGES
+          : MetadataAnalyticsPrefix.README,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.LOCAL
       );
     } else {
       if (type === "changes") {
@@ -368,18 +363,14 @@ async function saveRCFile(type) {
             },
           });
 
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
             "Error",
-            `Prepare Metadata - ${type.toUpperCase()} - Generate - Local`,
-            "Local",
-            1
-          );
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            `Prepare Metadata - ${type}`
+            type === "changes"
+              ? MetadataAnalyticsPrefix.CHANGES
+              : MetadataAnalyticsPrefix.README,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            Destinations.LOCAL
           );
         } else {
           Swal.fire({
@@ -393,18 +384,14 @@ async function saveRCFile(type) {
             },
           });
 
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
             "Success",
-            `Prepare Metadata - ${type.toUpperCase()}`
-          );
-
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            `Prepare Metadata - ${type.toUpperCase()} - Generate - Local`,
-            "Local",
-            1
+            type === "changes"
+              ? MetadataAnalyticsPrefix.CHANGES
+              : MetadataAnalyticsPrefix.README,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            Destinations.LOCAL
           );
         }
       });
@@ -539,19 +526,24 @@ const getRC = async (type) => {
           backdrop: "rgba(0,0,0, 0.4)",
         });
 
-        ipcRenderer.send(
-          "track-event",
+        logMetadataForAnalytics(
           "Error",
-          `Prepare Metadata - ${type} - Existing - Pennsieve`,
-          defaultBfDatasetId
+          shortName === "changes"
+            ? MetadataAnalyticsPrefix.CHANGES
+            : MetadataAnalyticsPrefix.README,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.PENNSIEVE
         );
-
-        ipcRenderer.send("track-event", "Error", `Prepare Metadata - ${type}`);
       } else {
-        ipcRenderer.send(
-          "track-event",
+        logMetadataForAnalytics(
           "Success",
-          `Prepare Metadata - ${type}`
+          shortName === "changes"
+            ? MetadataAnalyticsPrefix.CHANGES
+            : MetadataAnalyticsPrefix.README,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          "Existing",
+          Destinations.PENNSIEVE
         );
         if (res.trim() !== "") {
           $(`#textarea-create-${shortName}`).val(res.trim());
@@ -599,18 +591,14 @@ function importExistingRCFile(type) {
       "error"
     );
 
-    ipcRenderer.send(
-      "track-event",
+    logMetadataForAnalytics(
       "Error",
-      `Prepare Metadata - ${upperCaseLetters} - Existing - Local`,
-      "Local",
-      1
-    );
-
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      `Prepare Metadata - ${upperCaseLetters}`
+      type === "changes"
+        ? MetadataAnalyticsPrefix.CHANGES
+        : MetadataAnalyticsPrefix.README,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
     );
   } else {
     if (path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
@@ -622,18 +610,14 @@ function importExistingRCFile(type) {
         icon: "error",
       });
 
-      ipcRenderer.send(
-        "track-event",
+      logMetadataForAnalytics(
         "Error",
-        `Prepare Metadata - ${upperCaseLetters} - Existing - Local`,
-        "Local",
-        1
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Metadata - ${upperCaseLetters}`
+        type === "changes"
+          ? MetadataAnalyticsPrefix.CHANGES
+          : MetadataAnalyticsPrefix.README,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
       );
     } else {
       Swal.fire({
@@ -693,13 +677,16 @@ function loadExistingRCFile(filepath, type) {
         },
       });
 
-      ipcRenderer.send(
-        "track-event",
+      logMetadataForAnalytics(
         "Success",
-        `Prepare Metadata - ${type} - Existing - Local`,
-        "Local",
-        1
+        type === "changes"
+          ? MetadataAnalyticsPrefix.CHANGES
+          : MetadataAnalyticsPrefix.README,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        "Existing",
+        Destinations.LOCAL
       );
+
       $(`#div-confirm-existing-${type}-import`).hide();
       $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
       $(`#button-fake-confirm-existing-${type}-file-load`).click();
