@@ -7322,6 +7322,7 @@ const MetadataAnalyticsPrefix = {
   SAMPLES: "Prepare Metadata - samples",
   README: "Prepare Metadata - readme",
   CHANGES: "Prepare Metadata - changes",
+  SUBMISSION: "Prepare Metadata - submission",
 };
 
 const AnalyticsGranularity = {

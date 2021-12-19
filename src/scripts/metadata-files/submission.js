@@ -199,11 +199,14 @@ function openDDDimport() {
           if (filepath != null) {
             document.getElementById("input-milestone-select").placeholder =
               filepath[0];
+
+            // log the successful attempt to import a data deliverables document from the user's computer
             ipcRenderer.send(
               "track-event",
               "Success",
-              "Prepare Metadata - Add DDD",
-              defaultBfAccount
+              "Prepare Metadata - submission - import-DDD",
+              "Data Deliverables Document",
+              1
             );
           }
         }
@@ -331,12 +334,7 @@ $(document).ready(function () {
         document.getElementById(
           "existing-submission-file-destination"
         ).placeholder = filepath[0];
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Continue with existing submission.xlsx",
-          defaultBfAccount
-        );
+
         if (
           document.getElementById("existing-submission-file-destination")
             .placeholder !== "Browse here"
@@ -364,6 +362,7 @@ $(document).ready(function () {
   ipcRenderer.on(
     "selected-destination-generate-submission-locally",
     (event, dirpath) => {
+      console.log("Generate sub locally");
       if (dirpath.length > 0) {
         document.getElementById(
           "input-destination-generate-submission-locally"
@@ -499,11 +498,13 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           html: emessage,
           title: "Failed to generate the submission file",
         });
-        ipcRenderer.send(
-          "track-event",
+
+        logMetadataForAnalytics(
           "Error",
-          "Prepare Metadata - Create Submission",
-          defaultBfDatasetId
+          MetadataAnalyticsPrefix.SUBMISSION,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
       } else {
         if (uploadBFBoolean) {
@@ -519,11 +520,12 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        ipcRenderer.send(
-          "track-event",
+        logMetadataForAnalytics(
           "Success",
-          "Prepare Metadata - Create Submission",
-          defaultBfDatasetId
+          MetadataAnalyticsPrefix.SUBMISSION,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
       }
     }
@@ -650,6 +652,14 @@ function importExistingSubmissionFile(type) {
       `Please select a path to your submission.xlsx file`,
       "error"
     );
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBMISSION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
   } else {
     if (path.parse(filePath).base !== "submission.xlsx") {
       Swal.fire({
@@ -659,6 +669,14 @@ function importExistingSubmissionFile(type) {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SUBMISSION,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
     } else {
       Swal.fire({
         title: `Loading an existing submission.xlsx file`,
@@ -690,6 +708,13 @@ function loadExistingSubmissionFile(filepath) {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SUBMISSION,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
     } else {
       loadSubmissionFileToUI(res, "local");
     }
@@ -735,6 +760,15 @@ function loadSubmissionFileToUI(data, type) {
       Swal.hideLoading();
     },
   });
+
+  logMetadataForAnalytics(
+    "Success",
+    MetadataAnalyticsPrefix.SUBMISSION,
+    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+    "Existing",
+    type === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+  );
+
   if (type === "local") {
     $("#div-confirm-existing-submission-import").hide();
     $($("#div-confirm-existing-submission-import button")[0]).hide();
@@ -779,6 +813,13 @@ function checkBFImportSubmission() {
           icon: "error",
           html: emessage,
         });
+        logMetadataForAnalytics(
+          "Error",
+          MetadataAnalyticsPrefix.SUBMISSION,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.PENNSIEVE
+        );
       } else {
         loadSubmissionFileToUI(res, "bf");
       }
