@@ -6014,7 +6014,7 @@ ipcRenderer.on(
               }
             });
 
-            // log the failure to select an appropriate folder to analytics 
+            // log the failure to select an appropriate folder to analytics
             logMetadataForAnalytics(
               "Error",
               analyticsActionPrefix.CURATE,
