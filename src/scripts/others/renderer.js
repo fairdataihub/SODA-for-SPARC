@@ -7366,9 +7366,8 @@ const Actions = {
   NEW: "New",
 };
 
-
 function determineDatasetLocation() {
-  let location = ""
+  let location = "";
 
   // determine if we are using a local or Pennsieve dataset
   if ("bf-dataset-selected" in sodaJSONObj) {
@@ -7377,18 +7376,18 @@ function determineDatasetLocation() {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
       location = sodaJSONObj["generate-dataset"]["destination"];
     }
-  } else if("starting-point" in sodaJSONObj) {
+  } else if ("starting-point" in sodaJSONObj) {
     // determine if the local dataset was saved or brought imported
-    if("type" in sodaJSONObj["starting-point"]) {
-      if("save-progress" in sodaJSONObj){
-        location = "local"
+    if ("type" in sodaJSONObj["starting-point"]) {
+      if ("save-progress" in sodaJSONObj) {
+        location = "local";
       } else {
-        location = "save"
+        location = "save";
       }
     }
   }
 
-  return destination
+  return destination;
 }
 
 /*
