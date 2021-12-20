@@ -1571,6 +1571,15 @@ async function transitionSubQuestionsButton(
       sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
       $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       $("body").removeClass("waiting");
+
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        analyticsActionPrefix.CURATE,
+        AnalyticsGranularity.ALL_LEVELS,
+        Actions.EXISTING,
+        Destinations.PENNSIEVE
+      );
       return;
     } else {
       if (result[1][2].length > 0) {
@@ -1615,6 +1624,14 @@ async function transitionSubQuestionsButton(
               "Please continue below."
             );
             showHideDropdownButtons("dataset", "show");
+            // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
+            logMetadataForAnalytics(
+              "Success",
+              analyticsActionPrefix.CURATE,
+              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              Actions.EXISTING,
+              Destinations.PENNSIEVE
+            );
           } else {
             exitCurate();
           }
@@ -1633,6 +1650,15 @@ async function transitionSubQuestionsButton(
           "Please continue below."
         );
         showHideDropdownButtons("dataset", "show");
+
+        // log the successful Pennsieve import to analytics
+        logMetadataForAnalytics(
+          "Success",
+          analyticsActionPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          Actions.EXISTING,
+          Destinations.PENNSIEVE
+        );
         // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       }
     }
