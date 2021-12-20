@@ -938,7 +938,7 @@ async function transitionSubQuestions(
       "Success",
       MetadataAnalyticsPrefix.CURATE,
       AnalyticsGranularity.ALL_LEVELS,
-      Actions.NEW,
+      Actions.NEW
     );
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
