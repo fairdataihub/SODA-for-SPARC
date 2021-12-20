@@ -7363,6 +7363,7 @@ const Destinations = {
 const Actions = {
   GENERATE: "Generate",
   EXISTING: "Existing",
+  NEW: "New"
 };
 
 /*

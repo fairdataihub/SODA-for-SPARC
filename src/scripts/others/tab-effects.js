@@ -933,6 +933,13 @@ async function transitionSubQuestions(
   category
 ) {
   if (currentDiv === "Question-getting-started-1") {
+    // log the start of a new curation process from scrtch
+    logMetadataForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ALL_LEVELS,
+      Actions.NEW,
+    );
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
@@ -1754,6 +1761,7 @@ async function transitionSubQuestionsButton(
           "local-path": "",
         },
       };
+
       // this should run after a folder is selected
       reset_ui();
 
