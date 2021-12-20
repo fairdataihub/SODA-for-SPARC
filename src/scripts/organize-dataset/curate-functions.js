@@ -181,21 +181,14 @@ const progressFileParse = (ev) => {
         "<span style='color:red'>" + error + "</span>";
 
       // log the error to analytics at varying levels of granularity
-      ipcRenderer.send(
-        "track-event",
+      logMetadataForAnalytics(
         "Error",
-        "Prepare Datasets - Organize dataset"
+        analyticsActionPrefix.CURATE,
+        AnalyticsGranularity.ALL_LEVELS,
+        Actions.EXISTING,
+        Destinations.SAVED
       );
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize dataset - Existing"
-      );
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize dataset - Existing - Saved"
-      );
+
       return {};
     }
   } else {
@@ -468,16 +461,13 @@ function loadProgressFile(ev) {
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
 
-        // log the success at the action and action with destination granularith levels
-        ipcRenderer.send(
-          "track-event",
+        // log the success at the action and action with destination granularity levels
+        logMetadataForAnalytics(
           "Success",
-          "Prepare Datasets - Organize dataset - Existing"
-        );
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Datasets - Organize dataset - Existing - Saved"
+          analyticsActionPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          Actions.EXISTING,
+          Destinations.SAVED
         );
       }
     }, 1300);
@@ -538,16 +528,14 @@ const verify_missing_files = (mode) => {
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+
         // log the success at the action and action with destination granularith levels
-        ipcRenderer.send(
-          "track-event",
+        logMetadataForAnalytics(
           "Success",
-          "Prepare Datasets - Organize dataset - Existing"
-        );
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Datasets - Organize dataset - Existing - Saved"
+          analyticsActionPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          Actions.EXISTING,
+          Destinations.SAVED
         );
       } else if (mode === "new") {
         document.getElementById("div-progress-file-loader").style.display =

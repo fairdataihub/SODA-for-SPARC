@@ -5952,18 +5952,13 @@ ipcRenderer.on(
                   "Please continue below."
                 );
                 $("#nextBtn").prop("disabled", false);
-                // log the success tp analytics
-                ipcRenderer.send(
-                  "track-event",
-                  "Prepare Datasets - Organize dataset - Existing",
-                  "Existing",
-                  1
-                );
-                ipcRenderer.send(
-                  "track-event",
-                  "Prepare Datasets - Organize dataset - Existing - Local",
-                  "Local",
-                  1
+                // log the success to analytics
+                logMetadataForAnalytics(
+                  "Success",
+                  analyticsActionPrefix.CURATE,
+                  AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                  Actions.EXISTING,
+                  Destinations.LOCAL
                 );
               });
             } else {
@@ -5980,17 +5975,13 @@ ipcRenderer.on(
                 "Please continue below."
               );
               $("#nextBtn").prop("disabled", false);
-              ipcRenderer.send(
-                "track-event",
-                "Prepare Datasets - Organize dataset - Existing",
-                "Existing",
-                1
-              );
-              ipcRenderer.send(
-                "track-event",
-                "Prepare Datasets - Organize dataset - Existing - Local",
-                "Local",
-                1
+              // log the success to analytics
+              logMetadataForAnalytics(
+                "Success",
+                analyticsActionPrefix.CURATE,
+                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                Actions.EXISTING,
+                Destinations.LOCAL
               );
             }
           } else {
@@ -6022,6 +6013,15 @@ ipcRenderer.on(
                 $("#para-continue-location-dataset-getting-started").text("");
               }
             });
+
+            // log the failure to select an appropriate folder to analytics 
+            logMetadataForAnalytics(
+              "Error",
+              analyticsActionPrefix.CURATE,
+              AnalyticsGranularity.ALL_LEVELS,
+              Actions.EXISTING,
+              Destinations.LOCAL
+            );
           }
         }
       }
@@ -7303,7 +7303,7 @@ function logMetadataForAnalytics(
   } else {
     // add not set so when looking at analytics we can easily identify sections logged without providing an action
     // so we can fix the log call by including an appropriate action
-    actionName = actionName + " - " + "(not set)"
+    actionName = actionName + " - " + "(not set)";
   }
 
   // check if the user wants to log the action without the destination
@@ -7330,7 +7330,7 @@ function logMetadataForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
+      ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
     }
   }
 }
@@ -7343,6 +7343,7 @@ const MetadataAnalyticsPrefix = {
   README: "Prepare Metadata - readme",
   CHANGES: "Prepare Metadata - changes",
   SUBMISSION: "Prepare Metadata - submission",
+  CURATE: "Prepare Datasets - Organize dataset",
 };
 
 const AnalyticsGranularity = {
@@ -7356,6 +7357,12 @@ const AnalyticsGranularity = {
 const Destinations = {
   LOCAL: "Local",
   PENNSIEVE: "Pennsieve",
+  SAVED: "Saved",
+};
+
+const Actions = {
+  GENERATE: "Generate",
+  EXISTING: "Existing",
 };
 
 /*
