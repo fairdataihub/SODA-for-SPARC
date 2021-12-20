@@ -5952,6 +5952,19 @@ ipcRenderer.on(
                   "Please continue below."
                 );
                 $("#nextBtn").prop("disabled", false);
+                // log the success tp analytics
+                ipcRenderer.send(
+                  "track-event",
+                  "Prepare Datasets - Organize dataset - Existing",
+                  "Existing",
+                  1
+                );
+                ipcRenderer.send(
+                  "track-event",
+                  "Prepare Datasets - Organize dataset - Existing - Local",
+                  "Local",
+                  1
+                );
               });
             } else {
               action = "";
@@ -5967,6 +5980,18 @@ ipcRenderer.on(
                 "Please continue below."
               );
               $("#nextBtn").prop("disabled", false);
+              ipcRenderer.send(
+                "track-event",
+                "Prepare Datasets - Organize dataset - Existing",
+                "Existing",
+                1
+              );
+              ipcRenderer.send(
+                "track-event",
+                "Prepare Datasets - Organize dataset - Existing - Local",
+                "Local",
+                1
+              );
             }
           } else {
             Swal.fire({
@@ -7239,7 +7264,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
 /*
 ******************************************************
 ******************************************************
-Prepare Metadata Analytics Logging Helper Function  & Enum
+Prepare Metadata Analytics Logging Helper Function  & Enums
 ******************************************************
 ******************************************************
 */
@@ -7275,6 +7300,10 @@ function logMetadataForAnalytics(
   if (action !== "") {
     // update the action name with the given action
     actionName = actionName + " - " + action;
+  } else {
+    // add not set so when looking at analytics we can easily identify sections logged without providing an action
+    // so we can fix the log call by including an appropriate action
+    actionName = actionName + " - " + "(not set)"
   }
 
   // check if the user wants to log the action without the destination
@@ -7283,17 +7312,8 @@ function logMetadataForAnalytics(
     granularity === AnalyticsGranularity.ALL_LEVELS ||
     granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
   ) {
-    // Determine the analytics formatting by whether it will be uploaded to Pennsieve or generate locally
-    if (destination === Destinations.PENNSIEVE) {
-      ipcRenderer.send(
-        "track-event",
-        `${category}`,
-        actionName,
-        defaultBfDatasetId
-      );
-    } else {
-      ipcRenderer.send("track-event", `${category}`, actionName, "Local", 1);
-    }
+    // track every time the user wanted to generate a metadata file or everytime the user wanted to use a pre-existing metadata file
+    ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
   } else if (
     granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
     granularity === AnalyticsGranularity.ALL_LEVELS ||

@@ -179,6 +179,23 @@ const progressFileParse = (ev) => {
       console.log(error);
       document.getElementById("para-progress-file-status").innerHTML =
         "<span style='color:red'>" + error + "</span>";
+
+      // log the error to analytics at varying levels of granularity
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Datasets - Organize dataset"
+      );
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Datasets - Organize dataset - Existing"
+      );
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Datasets - Organize dataset - Existing - Saved"
+      );
       return {};
     }
   } else {
@@ -450,6 +467,18 @@ function loadProgressFile(ev) {
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+
+        // log the success at the action and action with destination granularith levels
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Datasets - Organize dataset - Existing"
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Datasets - Organize dataset - Existing - Saved"
+        );
       }
     }, 1300);
   } else {
@@ -509,6 +538,17 @@ const verify_missing_files = (mode) => {
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+        // log the success at the action and action with destination granularith levels
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Datasets - Organize dataset - Existing"
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Datasets - Organize dataset - Existing - Saved"
+        );
       } else if (mode === "new") {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
