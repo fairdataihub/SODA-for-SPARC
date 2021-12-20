@@ -7303,7 +7303,7 @@ function logMetadataForAnalytics(
   } else {
     // add not set so when looking at analytics we can easily identify sections logged without providing an action
     // so we can fix the log call by including an appropriate action
-    actionName = actionName + " - " + "(not set)"
+    actionName = actionName + " - " + "(not set)";
   }
 
   // check if the user wants to log the action without the destination
