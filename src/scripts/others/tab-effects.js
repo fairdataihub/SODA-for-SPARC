@@ -1582,7 +1582,7 @@ async function transitionSubQuestionsButton(
       // log the error to analytics
       logMetadataForAnalytics(
         "Error",
-        analyticsActionPrefix.CURATE,
+        MetadataAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ALL_LEVELS,
         Actions.EXISTING,
         Destinations.PENNSIEVE
@@ -1634,7 +1634,7 @@ async function transitionSubQuestionsButton(
             // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
             logMetadataForAnalytics(
               "Success",
-              analyticsActionPrefix.CURATE,
+              MetadataAnalyticsPrefix.CURATE,
               AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               Actions.EXISTING,
               Destinations.PENNSIEVE
@@ -1661,7 +1661,7 @@ async function transitionSubQuestionsButton(
         // log the successful Pennsieve import to analytics
         logMetadataForAnalytics(
           "Success",
-          analyticsActionPrefix.CURATE,
+          MetadataAnalyticsPrefix.CURATE,
           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           Actions.EXISTING,
           Destinations.PENNSIEVE
