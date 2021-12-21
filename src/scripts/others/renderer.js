@@ -7400,7 +7400,13 @@ function logCurationForAnalytics(
     for (let idx = 0; idx < actions.length; idx++) {
       // track the action
       actionName = actionName + " - " + actions[idx];
-      ipcRenderer.send("track-event", `${category}`, actionName, actions[idx], 1);
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        actions[idx],
+        1
+      );
     }
 
     // reset the action's name
@@ -7419,8 +7425,8 @@ function logCurationForAnalytics(
       actionName = actionName + " - " + actions[idx];
     }
 
-    // add the destination 
-    actionName = actionName + " - " + destination
+    // add the destination
+    actionName = actionName + " - " + destination;
 
     // determine logging format
     if (destination === Destinations.PENNSIEVE) {
@@ -7432,9 +7438,15 @@ function logCurationForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      // log the last action as a label and add an aggregation value  
-      let lastActionIdx = actions.length - 1
-      ipcRenderer.send("track-event", `${category}`, actionName, actions[lastActionIdx], 1);
+      // log the last action as a label and add an aggregation value
+      let lastActionIdx = actions.length - 1;
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        actions[lastActionIdx],
+        1
+      );
     }
   }
 }
