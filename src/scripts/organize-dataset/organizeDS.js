@@ -748,16 +748,13 @@ function addFilesfunction(
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      // determine if the dataset being curated is saved, stored locally, or stored on Pennsieve
-      const location = determineDatasetLocation();
-
       // log the error
       logCurationForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 3", "Import", "File"],
-        location
+        determineDatasetLocation()
       );
 
       break;
@@ -836,6 +833,15 @@ function addFilesfunction(
         globalPathValue
       );
     }
+
+    // log the success
+    logCurationForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "File"],
+      determineDatasetLocation()
+    );
   }
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
@@ -854,24 +860,16 @@ function addFilesfunction(
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
+
+    // log the user error 
+    logCurationForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "File"],
+      determineDatasetLocation()
+    );
   }
-
-  console.log("Here");
-  console.log(sodaJSONObj);
-
-  // successfully added a file
-  const location = determineDatasetLocation();
-
-  console.log(location);
-
-  // log the error
-  logCurationForAnalytics(
-    "Success",
-    MetadataAnalyticsPrefix.CURATE,
-    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-    ["Step 3", "Import", "File"],
-    location
-  );
 }
 
 ///// function to load details to show in display once
