@@ -736,7 +736,7 @@ function addFilesfunction(
     uiFilesWithoutExtension[path.parse(file).base] = 1;
   }
 
-  console.log(sodaJSONObj)
+  console.log(sodaJSONObj);
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
@@ -751,10 +751,10 @@ function addFilesfunction(
       });
 
       // determine if the dataset being curated is saved, stored locally, or stored on Pennsieve
-      const location = determineDatasetLocation()
+      const location = determineDatasetLocation();
 
-      console.log(sodaJSONObj)
-      console.log(destination)
+      console.log(sodaJSONObj);
+      console.log(destination);
 
       // track the attempt to add files to the selected SPARC folder
       ipcRenderer.send(
