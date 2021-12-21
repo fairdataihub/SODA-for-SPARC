@@ -4218,7 +4218,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               determineDatasetLocation()
             );
 
-
             hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
             hideMenu(
               "high-level-folder",
@@ -7535,6 +7534,41 @@ function determineDatasetLocation() {
   }
 
   return location;
+}
+
+function getMetadataFileNameFromStatus(metadataFileStatus) {
+  // get the UI text that displays the file path
+  let filePath = metadataFileStatus.text();
+
+  let fileName = [];
+
+  // find the starting idx for selected metadata file's extension
+  let fileExtensionIdx = filePath.search(/.(xlsx|xls|csv|txt)/);
+  if (fileExtensionIdx !== -1) {
+    // capture the filename in reverse; filename is captured once out of bounds or hit whitespace
+    for (let idx = fileExtensionIdx - 1; idx >= 0; idx--) {
+      // if whitespace the file name is completely captured
+      if (filePath[idx] === " " || filePath[idx] === "\\" || filePath === "/") {
+        break;
+      }
+
+      // add the file name character to the file name array in reverse
+      fileName.push(filePath[idx]);
+    }
+  }
+
+  return fileName.reverse().join("");
+}
+
+function determineLocationFromStatus(metadataFileStatus) {
+  let filePath = metadataFileStatus.text();
+
+  // determine if the user imported from Pennsieve or Locally
+  let pennsieveFile = filePath
+    .toUpperCase()
+    .includes("Pennsieve".toUpperCase());
+
+  return pennsieveFile;
 }
 
 /*

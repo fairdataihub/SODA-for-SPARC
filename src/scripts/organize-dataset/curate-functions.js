@@ -69,6 +69,7 @@ $(".metadata-button").click(function () {
 });
 
 function confirmMetadataFilePath(ev) {
+  console.log("Confirming metadata with ev");
   $($(ev).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
   document.getElementById("nextBtn").style.display = "inline";
@@ -88,17 +89,50 @@ function confirmMetadataFilePath(ev) {
   var metadataFileStatus = $($(ev).parents()[1]).find(
     ".para-metadata-file-status"
   );
+
   if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
     $(metadataFile).addClass("done");
+
+    // log the import to analytics
+    logCurationForAnalytics(
+      "Success",
+      MetadataAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      [
+        "Step 4",
+        "Import",
+        `${getMetadataFileNameFromStatus(metadataFileStatus)}`,
+        determineLocationFromStatus(metadataFileStatus)
+          ? Destinations.PENNSIEVE
+          : Destinations.LOCAL,
+      ],
+      determineDatasetLocation()
+    );
   } else {
     $(metadataFile).removeClass("done");
     $(metadataFileStatus).text("");
+    // log the import attempt to analytics
+    logCurationForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      [
+        "Step 4",
+        "Import",
+        `${getMetadataFileNameFromStatus(metadataFileStatus)}`,
+        determineLocationFromStatus(metadataFileStatus)
+          ? Destinations.PENNSIEVE
+          : Destinations.LOCAL,
+      ],
+      determineDatasetLocation()
+    );
   }
 }
 // $(".button-individual-metadata.confirm").click(function() {
 // })
 
 $(".button-individual-metadata.go-back").click(function () {
+  console.log("Confirming metadata with this");
   var metadataFileStatus = $($(this).parents()[1]).find(
     ".para-metadata-file-status"
   );
@@ -464,7 +498,7 @@ function loadProgressFile(ev) {
         // log the success at the action and action with destination granularity levels
         logMetadataForAnalytics(
           "Success",
-          analyticsActionPrefix.CURATE,
+          MetadataAnalyticsPrefix.CURATE,
           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           Actions.EXISTING,
           Destinations.SAVED
