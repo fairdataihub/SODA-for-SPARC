@@ -861,7 +861,7 @@ function addFilesfunction(
       },
     });
 
-    // log the user error 
+    // log the user error
     logCurationForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.CURATE,
