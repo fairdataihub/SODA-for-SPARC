@@ -1829,6 +1829,15 @@ function moveItemsHelper(item, destination, category) {
     organizeDSglobalPath,
     datasetStructureJSONObj
   );
+
+  // log moving multiple files/folders successfully
+  logCurationForAnalytics(
+    "Success",
+    MetadataAnalyticsPrefix.CURATE,
+    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+    ["Step 3", "Move", category === "files" ? "File" : "Folder"],
+    determineDatasetLocation()
+  );
 }
 
 // helper functions to add "moved" to leaf nodes a.k.a files
