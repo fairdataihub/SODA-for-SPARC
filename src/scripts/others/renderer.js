@@ -7366,9 +7366,81 @@ const Actions = {
   NEW: "New",
 };
 
+function logCurationForAnalytics(
+  category,
+  analyticsActionPrefix,
+  granularity,
+  actions,
+  destination
+) {
+  // if no actions to log return
+  if (!actions) {
+    return;
+  }
+
+  // the name of the action being logged
+  let actionName = analyticsActionPrefix;
+
+  // check if only logging the prefix or all levels of granularity
+  if (
+    granularity === AnalyticsGranularity.PREFIX ||
+    granularity === AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // log the prefix, category of the event
+    ipcRenderer.send("track-event", `${category}`, actionName);
+  }
+
+  // check if the user wants to log the action(s)
+  if (
+    granularity === AnalyticsGranularity.ACTION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS ||
+    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // iterate through the actions
+    for (let idx = 0; idx < actions.length; idx++) {
+      // track the action
+      actionName = actionName + " - " + actions[idx];
+      ipcRenderer.send("track-event", `${category}`, actionName, actions[idx], 1);
+    }
+
+    // reset the action's name
+    actionName = analyticsActionPrefix;
+  }
+
+  // check if the user wants to log the action(s) with the destination
+  if (
+    granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS ||
+    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // iterate through the actions
+    for (let idx = 0; idx < actions.length; idx++) {
+      // track the action
+      actionName = actionName + " - " + actions[idx];
+    }
+
+    // add the destination 
+    actionName = actionName + " - " + destination
+
+    // determine logging format
+    if (destination === Destinations.PENNSIEVE) {
+      // use the datasetid as a label and do not add an aggregation value
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    } else {
+      // log the last action as a label and add an aggregation value  
+      let lastActionIdx = actions.length - 1
+      ipcRenderer.send("track-event", `${category}`, actionName, actions[lastActionIdx], 1);
+    }
+  }
+}
 
 function determineDatasetLocation() {
-  let location = ""
+  let location = "";
 
   // determine if we are using a local or Pennsieve dataset
   if ("bf-dataset-selected" in sodaJSONObj) {
@@ -7377,18 +7449,18 @@ function determineDatasetLocation() {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
       location = sodaJSONObj["generate-dataset"]["destination"];
     }
-  } else if("starting-point" in sodaJSONObj) {
+  } else if ("starting-point" in sodaJSONObj) {
     // determine if the local dataset was saved or brought imported
-    if("type" in sodaJSONObj["starting-point"]) {
-      if("save-progress" in sodaJSONObj){
-        location = "local"
+    if ("type" in sodaJSONObj["starting-point"]) {
+      if ("save-progress" in sodaJSONObj) {
+        location = "local";
       } else {
-        location = "save"
+        location = "save";
       }
     }
   }
 
-  return destination
+  return destination;
 }
 
 /*
