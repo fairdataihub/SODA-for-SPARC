@@ -4167,6 +4167,14 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
+
+            logCurationForAnalytics(
+              "Error",
+              MetadataAnalyticsPrefix.CURATE,
+              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              ["Step 3", "Add", "Folder"],
+              determineDatasetLocation()
+            );
           } else {
             var appendString = "";
             appendString =
@@ -4200,6 +4208,17 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               organizeDSglobalPath,
               datasetStructureJSONObj
             );
+
+            // log that the folder was successfully added
+            logCurationForAnalytics(
+              "Success",
+              MetadataAnalyticsPrefix.CURATE,
+              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              ["Step 3", "Add", "Folder"],
+              determineDatasetLocation()
+            );
+
+
             hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
             hideMenu(
               "high-level-folder",
