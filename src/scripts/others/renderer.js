@@ -7159,26 +7159,32 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           var emessage = userError(error);
           log.error(error);
           console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Retrieve Dataset - Pennsieve",
-            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
-          );
           $("body").removeClass("waiting");
-          ipcRenderer.send(
-            "track-event",
+
+          // log the error to analytics
+          logCurationForAnalytics(
             "Error",
-            "Generate Manifest - Local Preview",
-            dataset_name
+            MetadataAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            [
+              "Step 5",
+              "Generate",
+              "Manifest"
+            ],
+            determineDatasetLocation()
           );
         } else {
           $("body").removeClass("waiting");
-          ipcRenderer.send(
-            "track-event",
+          logCurationForAnalytics(
             "Success",
-            "Retrieve Dataset - Pennsieve",
-            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+            MetadataAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            [
+              "Step 5",
+              "Generate",
+              "Manifest"
+            ],
+            determineDatasetLocation()
           );
         }
       }
