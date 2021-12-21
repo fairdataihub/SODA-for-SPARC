@@ -421,6 +421,14 @@ function checkValidRenameInput(
         heightAuto: false,
       });
       newName = "";
+      // log the error
+      logCurationForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Rename", "File"],
+        determineDatasetLocation()
+      );
     }
     //// if renaming a folder
   } else {
@@ -440,6 +448,15 @@ function checkValidRenameInput(
         heightAuto: false,
       });
       newName = "";
+
+      // log the error
+      logCurationForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Rename", "Folder"],
+        determineDatasetLocation()
+      );
     }
   }
   return newName;
@@ -583,6 +600,15 @@ function renameFolder(
               popup: "animate__animated animate__fadeOutUp animate__faster",
             },
           });
+
+          // log the success
+          logCurationForAnalytics(
+            "Success",
+            MetadataAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Rename", promptVar],
+            determineDatasetLocation()
+          );
 
           /// assign new name to folder or file in the UI
           event1.parentElement.parentElement.innerText = returnedName;
@@ -861,7 +887,7 @@ function addFilesfunction(
       },
     });
 
-    // log the user error 
+    // log the user error
     logCurationForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.CURATE,
