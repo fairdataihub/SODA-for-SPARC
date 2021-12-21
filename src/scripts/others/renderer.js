@@ -4218,7 +4218,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               determineDatasetLocation()
             );
 
-
             hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
             hideMenu(
               "high-level-folder",
