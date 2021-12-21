@@ -736,8 +736,6 @@ function addFilesfunction(
     uiFilesWithoutExtension[path.parse(file).base] = 1;
   }
 
-  console.log(sodaJSONObj);
-
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
     // check if dataset structure level is at high level folder
@@ -753,38 +751,13 @@ function addFilesfunction(
       // determine if the dataset being curated is saved, stored locally, or stored on Pennsieve
       const location = determineDatasetLocation();
 
-      console.log(sodaJSONObj);
-      console.log(destination);
-
+      // log the error
       logCurationForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 3", "Import", "File"],
         location
-      );
-
-      // track the attempt to add files to the selected SPARC folder
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize datasets - Step 3",
-        "Step 3",
-        1
-      );
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize datasets - Step 3 - Import",
-        "Import",
-        1
-      );
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize datasets - Step 3 - Import - File",
-        "File",
-        1
       );
 
       break;
@@ -882,6 +855,23 @@ function addFilesfunction(
       },
     });
   }
+
+  console.log("Here");
+  console.log(sodaJSONObj);
+
+  // successfully added a file
+  const location = determineDatasetLocation();
+
+  console.log(location);
+
+  // log the error
+  logCurationForAnalytics(
+    "Success",
+    MetadataAnalyticsPrefix.CURATE,
+    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+    ["Step 3", "Import", "File"],
+    location
+  );
 }
 
 ///// function to load details to show in display once

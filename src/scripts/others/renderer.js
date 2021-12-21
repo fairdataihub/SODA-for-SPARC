@@ -7358,6 +7358,7 @@ const Destinations = {
   LOCAL: "Local",
   PENNSIEVE: "Pennsieve",
   SAVED: "Saved",
+  NEW: "New",
 };
 
 const Actions = {
@@ -7388,6 +7389,7 @@ function logCurationForAnalytics(
   ) {
     // log the prefix, category of the event
     ipcRenderer.send("track-event", `${category}`, actionName);
+    console.log("Prefix logged");
   }
 
   // check if the user wants to log the action(s)
@@ -7400,6 +7402,7 @@ function logCurationForAnalytics(
     for (let idx = 0; idx < actions.length; idx++) {
       // track the action
       actionName = actionName + " - " + actions[idx];
+      console.log("Log will be: ", category, actionName, actions[idx], 1);
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7428,8 +7431,11 @@ function logCurationForAnalytics(
     // add the destination
     actionName = actionName + " - " + destination;
 
+    console.log("In the file: ", destination);
+
     // determine logging format
     if (destination === Destinations.PENNSIEVE) {
+      console.log("Log will be: ", category, actionName, defaultBfDatasetId);
       // use the datasetid as a label and do not add an aggregation value
       ipcRenderer.send(
         "track-event",
@@ -7438,13 +7444,13 @@ function logCurationForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      // log the last action as a label and add an aggregation value
-      let lastActionIdx = actions.length - 1;
+      // log the destination as a label and add an aggregation value
+      console.log("Log will be: ", category, actionName, destination, 1);
       ipcRenderer.send(
         "track-event",
         `${category}`,
         actionName,
-        actions[lastActionIdx],
+        destination,
         1
       );
     }
@@ -7454,25 +7460,44 @@ function logCurationForAnalytics(
 function determineDatasetLocation() {
   let location = "";
 
-  // determine if we are using a local or Pennsieve dataset
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    location = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      location = sodaJSONObj["generate-dataset"]["destination"];
-    }
-  } else if ("starting-point" in sodaJSONObj) {
+  if ("starting-point" in sodaJSONObj) {
     // determine if the local dataset was saved or brought imported
     if ("type" in sodaJSONObj["starting-point"]) {
+      //if save-progress exists then the user is curating a previously saved dataset
       if ("save-progress" in sodaJSONObj) {
-        location = "local";
+        location = Destinations.SAVED;
+        return location;
       } else {
-        location = "save";
+        location = sodaJSONObj["starting-point"]["type"];
+        // bf === blackfynn the old name for Pennsieve; bf means dataset was imported from Pennsieve
+        if (location === "bf") {
+          return Destinations.PENNSIEVE;
+        } else if (location === "local") {
+          // imported from the user's machine
+          return Destinations.LOCAL;
+        } else {
+          // if none of the above then the dataset is new
+          return Destinations.NEW;
+        }
       }
     }
   }
 
-  return destination;
+  // determine if we are using a local or Pennsieve dataset
+  if ("bf-dataset-selected" in sodaJSONObj) {
+    location = Destinations.PENNSIEVE;
+  } else if ("generate-dataset" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["generate-dataset"]) {
+      location = sodaJSONObj["generate-dataset"]["destination"];
+      if (location.toUpperCase() === "LOCAL") {
+        location = Destinations.LOCAL;
+      } else if (location.toUpperCase() === "PENNSIEVE") {
+        location = Destinations.SAVED;
+      }
+    }
+  }
+
+  return location;
 }
 
 /*
