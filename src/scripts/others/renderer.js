@@ -4708,6 +4708,15 @@ function addFoldersfunction(
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
+
+    // log the error
+    logCurationForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "Folder"],
+      determineDatasetLocation()
+    );
   } else {
     // if non-allowed characters are detected, do the action
     // AND
@@ -4782,6 +4791,15 @@ function addFoldersfunction(
           menuFile
         );
       }
+
+      // log the success
+      logCurationForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Import", "Folder"],
+        determineDatasetLocation()
+      );
     }
   }
 }
