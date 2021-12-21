@@ -756,6 +756,8 @@ function addFilesfunction(
       console.log(sodaJSONObj);
       console.log(destination);
 
+      logCurationForAnalytics("Error", MetadataAnalyticsPrefix.CURATE, AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION, ["Step 3", "Import", "File"], location)
+
       // track the attempt to add files to the selected SPARC folder
       ipcRenderer.send(
         "track-event",
