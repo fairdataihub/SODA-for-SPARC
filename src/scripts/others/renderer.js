@@ -7165,11 +7165,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
             "Error",
             MetadataAnalyticsPrefix.CURATE,
             AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            [
-              "Step 5",
-              "Generate",
-              "Manifest"
-            ],
+            ["Step 5", "Generate", "Manifest"],
             determineDatasetLocation()
           );
         } else {
@@ -7178,11 +7174,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
             "Success",
             MetadataAnalyticsPrefix.CURATE,
             AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            [
-              "Step 5",
-              "Generate",
-              "Manifest"
-            ],
+            ["Step 5", "Generate", "Manifest"],
             determineDatasetLocation()
           );
         }
