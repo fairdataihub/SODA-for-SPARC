@@ -6402,11 +6402,10 @@ function initiate_generate() {
         "Error",
         MetadataAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 7", "Generate", `${dataset_location}` ],
+        ["Step 7", "Generate", "dataset", `${dataset_destination}`],
         determineDatasetLocation()
       );
 
-      
       file_counter = 0;
       folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
@@ -6414,16 +6413,16 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Error",
-        "Step 7 - Generate - Size",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
         main_total_generate_dataset_size
       );
 
-      // get dataset id if available 
-      let datasetLocation = determineDatasetLocation()
+      // get dataset id if available
+      let datasetLocation = determineDatasetLocation();
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Step 7 - Generate - ${dataset_destination} - Size`,
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
         datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         main_total_generate_dataset_size
       );
@@ -6431,7 +6430,7 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Step 7 - Generate - Number of Files`,
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
         datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         file_counter
       );
@@ -6439,12 +6438,10 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Step 7 - Generate - ${dataset_destination} - Number of Files`,
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
         datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         file_counter
       );
-
-      // electron.powerSaveBlocker.stop(prevent_sleep_id)
 
       client.invoke(
         "api_bf_dataset_account",
@@ -6474,18 +6471,25 @@ function initiate_generate() {
           }
         }
 
+        // get dataset id if available
+        let datasetLocation = determineDatasetLocation();
         ipcRenderer.send(
           "track-event",
           "Success",
-          "Manifest Files Created",
-          dataset_name,
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest",
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
           high_level_folder_num
         );
+
         ipcRenderer.send(
           "track-event",
           "Success",
-          `Manifest Files Created - ${dataset_destination}`,
-          dataset_name,
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest - ${dataset_destination}`,
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
           high_level_folder_num
         );
       }
@@ -6494,33 +6498,47 @@ function initiate_generate() {
         show_curation_shortcut();
       }
 
-      ipcRenderer.send(
-        "track-event",
+      logCurationForAnalytics(
         "Success",
-        `Generate Dataset`,
-        dataset_name
+        MetadataAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.PREFIX,
+        [],
+        determineDatasetLocation()
       );
 
-      ipcRenderer.send(
-        "track-event",
+      logCurationForAnalytics(
         "Success",
-        `Generate Dataset - ${dataset_destination}`,
-        dataset_name
+        MetadataAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
+        determineDatasetLocation()
       );
 
+      // for tracking the total size of all datasets ever created on SODA
       ipcRenderer.send(
         "track-event",
         "Success",
-        "Generate Dataset - Size",
-        dataset_name,
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        "Size",
         main_total_generate_dataset_size
       );
 
+      let datasetLocation = determineDatasetLocation()
+      // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${dataset_destination} - Size`,
-        dataset_name,
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+        main_total_generate_dataset_size
+      );
+
+      // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         main_total_generate_dataset_size
       );
 
@@ -6528,37 +6546,21 @@ function initiate_generate() {
       folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Success",
-      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
-      //   folder_counter
-      // );
-
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Success",
-      //   "Generate Dataset - Number of Folders",
-      //   folder_counter
-      // );
-
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - Number of Files`,
-        dataset_name,
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         file_counter
       );
 
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${dataset_destination} - Number of Files`,
-        dataset_name,
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         file_counter
       );
-
-      // electron.powerSaveBlocker.stop(prevent_sleep_id)
 
       client.invoke(
         "api_bf_dataset_account",
