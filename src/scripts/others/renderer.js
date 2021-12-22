@@ -6523,7 +6523,7 @@ function initiate_generate() {
         main_total_generate_dataset_size
       );
 
-      let datasetLocation = determineDatasetLocation()
+      let datasetLocation = determineDatasetLocation();
       // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
       ipcRenderer.send(
         "track-event",
