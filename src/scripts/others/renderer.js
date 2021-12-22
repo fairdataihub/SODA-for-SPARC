@@ -6402,11 +6402,10 @@ function initiate_generate() {
         "Error",
         MetadataAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 7", "Generate", `${dataset_location}` ],
+        ["Step 7", "Generate", `${dataset_location}`],
         determineDatasetLocation()
       );
 
-      
       file_counter = 0;
       folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
@@ -6418,8 +6417,8 @@ function initiate_generate() {
         main_total_generate_dataset_size
       );
 
-      // get dataset id if available 
-      let datasetLocation = determineDatasetLocation()
+      // get dataset id if available
+      let datasetLocation = determineDatasetLocation();
       ipcRenderer.send(
         "track-event",
         "Error",
