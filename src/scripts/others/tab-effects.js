@@ -179,6 +179,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
 
 // function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
+  console.log("Adding card details")
   let new_dataset_name = "My_dataset_folder";
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {

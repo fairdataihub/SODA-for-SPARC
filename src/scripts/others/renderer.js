@@ -6523,7 +6523,7 @@ function initiate_generate() {
         main_total_generate_dataset_size
       );
 
-      let datasetLocation = determineDatasetLocation()
+      let datasetLocation = determineDatasetLocation();
       // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
       ipcRenderer.send(
         "track-event",
@@ -6560,6 +6560,37 @@ function initiate_generate() {
         `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
         datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         file_counter
+      );
+
+      // log the preview card instructions for any files and folders being generated on Pennsieve
+      Array.from(document.querySelectorAll(".generate-preview")).forEach(
+        (card) => {
+          let header = card.querySelector("h5");
+          if (header.textContent.includes("folders")) {
+            let instruction = card.querySelector("p");
+            // log the folder instructions to analytics
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.text()}`,
+              datasetLocation === "Pennsieve"
+                ? defaultBfDatasetId
+                : datasetLocation,
+              1
+            );
+          } else if (header.textContent.includes("existing files")) {
+            let instruction = card.querySelector("p");
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.text()} `,
+              datasetLocation === "Pennsieve"
+                ? defaultBfDatasetId
+                : datasetLocation,
+              1
+            );
+          }
+        }
       );
 
       client.invoke(
