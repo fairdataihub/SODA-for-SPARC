@@ -486,7 +486,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               $("#sparc-consortium-unshare-btn").prop("disabled", false);
               $("#share-with-sparc-consortium-spinner").hide();
               $(".spinner.post-curation").hide();
-              
             }
           }
         );
