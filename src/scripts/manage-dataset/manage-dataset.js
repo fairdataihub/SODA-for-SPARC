@@ -906,7 +906,6 @@ const showCurrentDescription = async () => {
     log.error(error);
     console.error(error);
 
-
     logGeneralOperationsForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
