@@ -160,8 +160,8 @@ $("#button-create-bf-new-dataset").click(() => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Manage Dataset - Create Empty Dataset",
-            defaultBfDatasetId
+            MetadataAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+            bfNewDatasetName
           );
         } else {
           Swal.fire({
@@ -189,8 +189,8 @@ $("#button-create-bf-new-dataset").click(() => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Manage Dataset - Create Empty Dataset",
-            defaultBfDatasetId
+            MetadataAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+            bfNewDatasetName
           );
 
           log.info(`Requesting list of datasets`);
@@ -202,19 +202,7 @@ $("#button-create-bf-new-dataset").click(() => {
               if (error) {
                 log.error(error);
                 console.log(error);
-                ipcRenderer.send(
-                  "track-event",
-                  "Error",
-                  "Request list of datasets",
-                  defaultBfDatasetId
-                );
               } else {
-                ipcRenderer.send(
-                  "track-event",
-                  "Success",
-                  "Request list of datasets",
-                  defaultBfDatasetId
-                );
                 log.info(`Requested list of datasets successfully`);
                 datasetList = [];
                 datasetList = result;
@@ -300,7 +288,7 @@ $("#button-rename-dataset").click(() => {
             ipcRenderer.send(
               "track-event",
               "Error",
-              "Manage Dataset - Rename Existing Dataset",
+              MetadataAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
               `${defaultBfDatasetId}: ` +
                 currentDatasetName +
                 " to " +
@@ -327,7 +315,7 @@ $("#button-rename-dataset").click(() => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              "Manage Dataset - Rename Existing Dataset",
+              MetadataAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
               `${defaultBfDatasetId}: ` +
                 currentDatasetName +
                 " to " +
@@ -341,19 +329,7 @@ $("#button-rename-dataset").click(() => {
                 if (error) {
                   log.error(error);
                   console.log(error);
-                  ipcRenderer.send(
-                    "track-event",
-                    "Error",
-                    "Manage Dataset - Request list of datasets",
-                    defaultBfDatasetId
-                  );
                 } else {
-                  ipcRenderer.send(
-                    "track-event",
-                    "Success",
-                    "Manage Dataset - Request list of datasets",
-                    defaultBfDatasetId
-                  );
                   log.info("Request successful");
                   datasetList = [];
                   datasetList = result;
@@ -421,7 +397,7 @@ $("#button-add-permission-pi").click(() => {
             ipcRenderer.send(
               "track-event",
               "Error",
-              "Manage Dataset - Change PI Owner",
+              MetadataAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
               defaultBfDatasetId
             );
 
@@ -443,7 +419,7 @@ $("#button-add-permission-pi").click(() => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              "Manage Dataset - Change PI Owner",
+              MetadataAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
               defaultBfDatasetId
             );
 
@@ -496,19 +472,7 @@ const showCurrentPermission = () => {
         if (error) {
           log.error(error);
           console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Manage Dataset - Get dataset permissions",
-            defaultBfDatasetId
-          );
         } else {
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Manage Dataset - Get dataset permissions",
-            defaultBfDatasetId
-          );
           let permissionList = "";
           let datasetOwner = "";
 
@@ -563,20 +527,20 @@ const addPermissionUser = (
           backdrop: "rgba(0,0,0, 0.4)",
         });
 
-        ipcRenderer.send(
-          "track-event",
+        logGeneralOperationsForAnalytics(
           "Error",
-          "Manage Dataset - Add dataset permissions",
-          defaultBfDatasetId
+          MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Add User Permissions"]
         );
       } else {
         log.info("Dataset permission added");
 
-        ipcRenderer.send(
-          "track-event",
+        logGeneralOperationsForAnalytics(
           "Success",
-          "Manage Dataset - Add dataset permissions",
-          defaultBfDatasetId
+          MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Add User Permissions"]
         );
 
         Swal.fire({
@@ -595,20 +559,7 @@ const addPermissionUser = (
           if (error) {
             log.error(error);
             console.error(error);
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Manage Dataset - Get user account name",
-              defaultBfDatasetId
-            );
           } else {
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Manage Dataset - Get user account name",
-              defaultBfDatasetId
-            );
-
             if (selectedRole === "owner") {
               for (var i = 0; i < datasetList.length; i++) {
                 if (datasetList[i].name === selectedBfDataset) {
@@ -710,19 +661,19 @@ $("#button-add-permission-team").click(() => {
             backdrop: "rgba(0,0,0, 0.4)",
           });
 
-          ipcRenderer.send(
-            "track-event",
+          logGeneralOperationsForAnalytics(
             "Error",
-            "Manage Dataset - Add team permission",
-            defaultBfDatasetId
+            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+            AnalyticsGranularity.ALL_LEVELS,
+            ["Add Team Permissions"]
           );
         } else {
           log.info("Added permission for the team");
-          ipcRenderer.send(
-            "track-event",
+          logGeneralOperationsForAnalytics(
             "Success",
-            "Manage Dataset - Add team permission",
-            defaultBfDatasetId
+            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+            AnalyticsGranularity.ALL_LEVELS,
+            ["Add Team Permissions"]
           );
 
           Swal.fire({
@@ -801,11 +752,11 @@ $("#button-add-subtitle").click(() => {
 
           $("#ds-description").val("");
 
-          ipcRenderer.send(
-            "track-event",
+          logGeneralOperationsForAnalytics(
             "Error",
-            "Manage Dataset - Add/Edit Subtitle",
-            defaultBfDatasetId
+            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+            AnalyticsGranularity.ALL_LEVELS,
+            ["Add Subtitle"]
           );
         } else {
           log.info("Added subtitle to dataset");
@@ -825,11 +776,11 @@ $("#button-add-subtitle").click(() => {
               : $("#button-add-subtitle").html("Edit subtitle")
           );
 
-          ipcRenderer.send(
-            "track-event",
+          logGeneralOperationsForAnalytics(
             "Success",
-            "Manage Dataset - Add/Edit Subtitle",
-            defaultBfDatasetId
+            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+            AnalyticsGranularity.ALL_LEVELS,
+            ["Add Subtitle"]
           );
 
           // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
@@ -857,14 +808,20 @@ const showCurrentSubtitle = () => {
         if (error) {
           log.error(error);
           console.error(error);
-          ipcRenderer.send(
-            "track-event",
+          logGeneralOperationsForAnalytics(
             "Error",
-            "Manage Dataset - Add/Edit Subtitle - Get subtitle",
-            defaultBfDatasetId
+            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+            AnalyticsGranularity.ALL_LEVELS,
+            ["Get Subtitle"]
           );
           $("#ds-description").val("");
         } else {
+          logGeneralOperationsForAnalytics(
+            "Success",
+            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+            AnalyticsGranularity.ACTION,
+            ["Get Subtitle"]
+          );
           $("#bf-dataset-subtitle").val(res);
           $("#ds-description").val(res);
           let result = countCharacters(
