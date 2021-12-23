@@ -558,14 +558,14 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Disseminate Dataset - Show current dataset status",
+            "Disseminate Datasets - Show current dataset status",
             defaultBfDatasetId
           );
         } else {
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Disseminate Dataset - Show current dataset status",
+            "Disseminate Datasets - Show current dataset status",
             defaultBfDatasetId
           );
           var myitemselect = [];
@@ -669,11 +669,11 @@ $("#ORCID-btn").on("click", async () => {
 
       log.error(error);
       console.error(error);
-      ipcRenderer.send(
-        "track-event",
+      logGeneralOperationsForAnalytics(
         "Error",
-        "Disseminate Dataset - Integrate ORCID iD",
-        defaultBfDatasetId
+        MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Integrate ORCID iD"]
       );
 
       return;
@@ -695,7 +695,7 @@ $("#ORCID-btn").on("click", async () => {
     ipcRenderer.send(
       "track-event",
       "Success",
-      "Disseminate Dataset - Integrate ORCID iD",
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -743,13 +743,11 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     }
     log.error(error);
     console.error(error);
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
-        " - " +
-        "Fetch Checklist Statuses",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Fetch Pre-publishing Checklist Statuses"]
     );
 
     // set the status icons to red crosses
@@ -762,13 +760,11 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     return;
   }
 
-  ipcRenderer.send(
-    "track-event",
+  logGeneralOperationsForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
-      " - " +
-      "Fetch Checklist Statuses",
-    defaultBfDatasetId
+    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+    AnalyticsGranularity.ACTION,
+    ["Fetch Pre-publishing Checklist Statuses"]
   );
 
   // mark each pre-publishing item red or green to indicate if the item was completed
@@ -1103,21 +1099,21 @@ $("#begin-prepublishing-btn").on("click", async function () {
     // log the error information then continue execution -- this is because they may not want to ignore files when they publish
     log.error(error);
     console.error(error);
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Disseminate Dataset - Pre-publishing Review - Determine Role",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Determine User's Dataset Role"]
     );
 
     return;
   }
 
-  ipcRenderer.send(
-    "track-event",
+  logGeneralOperationsForAnalytics(
     "Success",
-    "Disseminate Datasets - Pre-publishing Review - Determine Role",
-    defaultBfDatasetId
+    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+    AnalyticsGranularity.ACTION,
+    ["Determine User's Dataset Role"]
   );
 
   // check if the user is the owner
