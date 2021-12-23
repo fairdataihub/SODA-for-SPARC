@@ -230,15 +230,14 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
           "Error",
           MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
           AnalyticsGranularity.ALL_LEVELS,
-          ["Give Consortium Team Permissions"],
+          ["Give Consortium Team Permissions"]
         );
-
       } else {
         logGeneralOperationsForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
           AnalyticsGranularity.ACTION,
-          ["Give Consortium Team Permissions"],
+          ["Give Consortium Team Permissions"]
         );
 
         disseminateShowCurrentPermission(account, dataset);
@@ -274,7 +273,11 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                 "Error",
                 MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                 AnalyticsGranularity.ALL_LEVELS,
-                [share_status === "unshare" ? "Change Dataset Status to Work In Progress" : "Change Dataset Status to Ready for Curation"]
+                [
+                  share_status === "unshare"
+                    ? "Change Dataset Status to Work In Progress"
+                    : "Change Dataset Status to Ready for Curation",
+                ]
               );
               $(".spinner.post-curation").hide();
             } else {
@@ -295,7 +298,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                   "Success",
                   MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                   AnalyticsGranularity.ALL_LEVELS,
-                  ["Change Dataset Status to Work In Progress"],
+                  ["Change Dataset Status to Work In Progress"]
                 );
               } else {
                 Swal.fire({
@@ -313,7 +316,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                   "Success",
                   MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                   AnalyticsGranularity.ALL_LEVELS,
-                  ["Change Dataset Status to Ready for Curation"],
+                  ["Change Dataset Status to Ready for Curation"]
                 );
               }
 
@@ -716,7 +719,9 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - " + "Fetch Checklist Statuses",
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
+        " - " +
+        "Fetch Checklist Statuses",
       defaultBfDatasetId
     );
 
@@ -733,7 +738,9 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
   ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - " + "Fetch Checklist Statuses",
+    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
+      " - " +
+      "Fetch Checklist Statuses",
     defaultBfDatasetId
   );
 
@@ -971,7 +978,8 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - Get Excluded Files",
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
+        " - Get Excluded Files",
       defaultBfDatasetId
     );
   }
