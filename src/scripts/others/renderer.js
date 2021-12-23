@@ -7412,13 +7412,18 @@ const MetadataAnalyticsPrefix = {
   CURATE: "Prepare Datasets - Organize dataset",
   DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
   DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
-  DISSEMINATE_SPARC_CONSORTIUM: "Disseminate Datasets - Share with SPARC Consortium",
+  DISSEMINATE_SPARC_CONSORTIUM:
+    "Disseminate Datasets - Share with SPARC Consortium",
   MANAGE_DATASETS_CREATE_DATASET: "Manage Datasets - Create a new dataset",
-  MANAGE_DATASETS_RENAME_DATASET: "Manage Datasets - Rename an existing dataset",
+  MANAGE_DATASETS_RENAME_DATASET:
+    "Manage Datasets - Rename an existing dataset",
   MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
   MANAGE_DATASETS_ADD_EDIT_PERMISSIONS: "Manage Datasets Add/edit permissions",
   MANAGE_DATASETS_ADD_EDIT_SUBTITLE: "Manage Datasets - Add/Edit Subtitle",
+<<<<<<< HEAD
   MANAGE_DATASETS_ADD_EDIT_README: "Manage Datasets - Add/Edit Readme"
+=======
+>>>>>>> b1b71a5f38c998dfff0da87b5ae7f118662b8d8e
 };
 
 const AnalyticsGranularity = {
