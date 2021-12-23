@@ -285,7 +285,6 @@ function delFolder(
                 myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
                 delete myPath[type][itemToDelete];
               }
-
             } else {
               delete myPath[type][itemToDelete];
             }
