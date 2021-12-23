@@ -7410,7 +7410,8 @@ const MetadataAnalyticsPrefix = {
   CHANGES: "Prepare Metadata - changes",
   SUBMISSION: "Prepare Metadata - submission",
   CURATE: "Prepare Datasets - Organize dataset",
-  DISSEMINATE: "Disseminate Datasets - Pre-publishing Review",
+  DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
+  DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
 };
 
 const AnalyticsGranularity = {
@@ -7596,6 +7597,50 @@ function determineLocationFromStatus(metadataFileStatus) {
     .includes("Pennsieve".toUpperCase());
 
   return pennsieveFile;
+}
+
+function logGeneralOperationsForAnalytics(
+  category,
+  analyticsPrefix,
+  granularity,
+  actions
+) {
+  // if no actions to log return
+  if (!actions) {
+    return;
+  }
+
+  // the name of the action being logged
+  let actionName = analyticsPrefix;
+
+  // check if only logging the prefix or all levels of granularity
+  if (
+    granularity === AnalyticsGranularity.PREFIX ||
+    granularity === AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // log the prefix, category of the event
+    ipcRenderer.send("track-event", `${category}`, actionName);
+    console.log("Prefix logged");
+  }
+
+  // check if the user wants to log the action(s)
+  if (
+    granularity === AnalyticsGranularity.ACTION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // iterate through the actions
+    for (let idx = 0; idx < actions.length; idx++) {
+      // track the action
+      actionName = analyticsPrefix + " - " + actions[idx];
+      console.log("Log will be: ", category, actionName, defaultBfDatasetId);
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    }
+  }
 }
 
 /*

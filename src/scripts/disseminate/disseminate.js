@@ -151,7 +151,7 @@ const disseminateDataset = (option) => {
       // log the failure to publish to analytics
       logCurationForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.DISSEMINATE,
+        MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Publish"],
         Destinations.PENNSIEVE,
@@ -226,13 +226,21 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
         $("#curation-team-share-btn").prop("disabled", false);
         $("#curation-team-unshare-btn").prop("disabled", false);
 
-        ipcRenderer.send(
-          "track-event",
+        logGeneralOperationsForAnalytics(
           "Error",
-          "Disseminate Dataset - Share with Curation Team",
-          defaultBfDatasetId
+          MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Give Consortium Team Permissions"],
         );
+
       } else {
+        logGeneralOperationsForAnalytics(
+          "Success",
+          MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+          AnalyticsGranularity.ACTION,
+          ["Give Consortium Team Permissions"],
+        );
+
         disseminateShowCurrentPermission(account, dataset);
         var selectedStatusOption = "03. Ready for Curation (Investigator)";
 
@@ -261,11 +269,12 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
               $("#share-curation-team-spinner").hide();
               $("#curation-team-share-btn").prop("disabled", false);
               $("#curation-team-unshare-btn").prop("disabled", false);
-              ipcRenderer.send(
-                "track-event",
+
+              logGeneralOperationsForAnalytics(
                 "Error",
-                "Disseminate Dataset - Share with Curation Team",
-                defaultBfDatasetId
+                MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+                AnalyticsGranularity.ALL_LEVELS,
+                [share_status === "unshare" ? "Change Dataset Status to Work In Progress" : "Change Dataset Status to Ready for Curation"]
               );
               $(".spinner.post-curation").hide();
             } else {
@@ -282,6 +291,12 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                 });
                 $("#curation-team-unshare-btn").hide();
                 $("#curation-team-share-btn").show();
+                logGeneralOperationsForAnalytics(
+                  "Success",
+                  MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+                  AnalyticsGranularity.ALL_LEVELS,
+                  ["Change Dataset Status to Work In Progress"],
+                );
               } else {
                 Swal.fire({
                   title: "Successfully shared with Curation team!",
@@ -293,18 +308,19 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                 });
                 $("#curation-team-unshare-btn").show();
                 $("#curation-team-share-btn").hide();
+
+                logGeneralOperationsForAnalytics(
+                  "Success",
+                  MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+                  AnalyticsGranularity.ALL_LEVELS,
+                  ["Change Dataset Status to Ready for Curation"],
+                );
               }
 
               curation_consortium_check("update");
               showCurrentPermission();
               showCurrentDatasetStatus();
 
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Disseminate Dataset - Share with Curation Team",
-                defaultBfDatasetId
-              );
               disseminiateShowCurrentDatasetStatus("", account, dataset);
               $(".spinner.post-curation").hide();
               $("#curation-team-share-btn").prop("disabled", false);
@@ -700,7 +716,7 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE + " - " + "Fetch Checklist Statuses",
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - " + "Fetch Checklist Statuses",
       defaultBfDatasetId
     );
 
@@ -717,7 +733,7 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
   ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE + " - " + "Fetch Checklist Statuses",
+    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - " + "Fetch Checklist Statuses",
     defaultBfDatasetId
   );
 
@@ -955,7 +971,7 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE + " - Get Excluded Files",
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - Get Excluded Files",
       defaultBfDatasetId
     );
   }
@@ -963,7 +979,7 @@ $(".pre-publishing-continue").on("click", async function () {
   ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE + " - Get Excluded Files",
+    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -991,7 +1007,7 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE + " - Get Metadata Files",
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -999,7 +1015,7 @@ $(".pre-publishing-continue").on("click", async function () {
   ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE + " - Get Metadata Files",
+    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Metadata Files",
     defaultBfDatasetId
   );
 
