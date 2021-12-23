@@ -7412,6 +7412,7 @@ const MetadataAnalyticsPrefix = {
   CURATE: "Prepare Datasets - Organize dataset",
   DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
   DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
+  DISSEMINATE_SPARC_CONSORTIUM: "Disseminate Datasets - Share with SPARC Consortium"
 };
 
 const AnalyticsGranularity = {

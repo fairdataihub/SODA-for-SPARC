@@ -230,15 +230,14 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
           "Error",
           MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
           AnalyticsGranularity.ALL_LEVELS,
-          ["Give Consortium Team Permissions"],
+          ["Give Consortium Team Permissions"]
         );
-
       } else {
         logGeneralOperationsForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
           AnalyticsGranularity.ACTION,
-          ["Give Consortium Team Permissions"],
+          ["Give Consortium Team Permissions"]
         );
 
         disseminateShowCurrentPermission(account, dataset);
@@ -274,7 +273,11 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                 "Error",
                 MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                 AnalyticsGranularity.ALL_LEVELS,
-                [share_status === "unshare" ? "Change Dataset Status to Work In Progress" : "Change Dataset Status to Ready for Curation"]
+                [
+                  share_status === "unshare"
+                    ? "Change Dataset Status to Work In Progress"
+                    : "Change Dataset Status to Ready for Curation",
+                ]
               );
               $(".spinner.post-curation").hide();
             } else {
@@ -295,7 +298,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                   "Success",
                   MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                   AnalyticsGranularity.ALL_LEVELS,
-                  ["Change Dataset Status to Work In Progress"],
+                  ["Change Dataset Status to Work In Progress"]
                 );
               } else {
                 Swal.fire({
@@ -313,7 +316,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                   "Success",
                   MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                   AnalyticsGranularity.ALL_LEVELS,
-                  ["Change Dataset Status to Ready for Curation"],
+                  ["Change Dataset Status to Ready for Curation"]
                 );
               }
 
@@ -366,13 +369,31 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         $(".spinner.post-curation").hide();
         $("#sparc-consortium-share-btn").prop("disabled", false);
         $("#sparc-consortium-unshare-btn").prop("disabled", false);
-        ipcRenderer.send(
-          "track-event",
+
+        // log the error to SPARC
+        logGeneralOperationsForAnalytics(
           "Error",
-          "Disseminate Dataset - Share with Consortium",
-          defaultBfDatasetId
+          MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+          AnalyticsGranularity.ALL_LEVELS,
+          [
+            share_status === "unshare"
+              ? "Removed Team Permissions SPARC Consortium"
+              : "Add Team Permissions SPARC Consortium",
+          ]
         );
       } else {
+        // log the success to SPARC
+        logGeneralOperationsForAnalytics(
+          "Success",
+          MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+          AnalyticsGranularity.ACTION,
+          [
+            share_status === "unshare"
+              ? "Removed Team Permissions SPARC Consortium"
+              : "Add Team Permissions SPARC Consortium",
+          ]
+        );
+
         disseminateShowCurrentPermission(bfAcct, bfDS);
         var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
         if (share_status === "unshare") {
@@ -398,11 +419,15 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
                 backdrop: "rgba(0,0,0, 0.4)",
               });
 
-              ipcRenderer.send(
-                "track-event",
+              logGeneralOperationsForAnalytics(
                 "Error",
-                "Disseminate Dataset - Share with Consortium",
-                defaultBfDatasetId
+                MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+                AnalyticsGranularity.All_LEVELS,
+                [
+                  share_status === "unshare"
+                    ? "Curated & Awaiting PI Approval"
+                    : "Change Dataset Status to Under Embargo",
+                ]
               );
 
               $("#share-with-sparc-consortium-spinner").hide();
@@ -410,22 +435,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               $("#sparc-consortium-unshare-btn").prop("disabled", false);
               $(".spinner.post-curation").hide();
             } else {
-              Swal.fire({
-                title: "Successfully shared with Consortium!",
-                text: `This provided viewer permissions to Consortium members and set dataset status to "Under Embargo"`,
-                icon: "success",
-                showConfirmButton: true,
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Disseminate Dataset - Share with Consortium",
-                defaultBfDatasetId
-              );
-
               if (share_status === "unshare") {
                 Swal.fire({
                   title: "Removed successfully!",
@@ -437,6 +446,16 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
                 });
                 $("#sparc-consortium-unshare-btn").hide();
                 $("#sparc-consortium-share-btn").show();
+                logGeneralOperationsForAnalytics(
+                  "Success",
+                  MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+                  AnalyticsGranularity.ALL_LEVELS,
+                  [
+                    share_status === "unshare"
+                      ? "Curated & Awaiting PI Approval"
+                      : "Change Dataset Status to Under Embargo",
+                  ]
+                );
               } else {
                 Swal.fire({
                   title: "Successully shared with Consortium!",
@@ -448,6 +467,16 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
                 });
                 $("#sparc-consortium-unshare-btn").show();
                 $("#sparc-consortium-share-btn").hide();
+                logGeneralOperationsForAnalytics(
+                  "Success",
+                  MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+                  AnalyticsGranularity.ALL_LEVELS,
+                  [
+                    share_status === "unshare"
+                      ? "Curated & Awaiting PI Approval"
+                      : "Change Dataset Status to Under Embargo",
+                  ]
+                );
               }
               curation_consortium_check("update");
               showCurrentPermission();
@@ -457,6 +486,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               $("#sparc-consortium-unshare-btn").prop("disabled", false);
               $("#share-with-sparc-consortium-spinner").hide();
               $(".spinner.post-curation").hide();
+              
             }
           }
         );
@@ -716,7 +746,9 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - " + "Fetch Checklist Statuses",
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
+        " - " +
+        "Fetch Checklist Statuses",
       defaultBfDatasetId
     );
 
@@ -733,7 +765,9 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
   ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - " + "Fetch Checklist Statuses",
+    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
+      " - " +
+      "Fetch Checklist Statuses",
     defaultBfDatasetId
   );
 
@@ -971,7 +1005,8 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - Get Excluded Files",
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
+        " - Get Excluded Files",
       defaultBfDatasetId
     );
   }
