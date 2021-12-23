@@ -133,7 +133,7 @@ const disseminateDataset = (option) => {
       console.error(error);
       var emessage = userError(error);
       Swal.fire({
-        title: "Could not withdraw dataset from publication!",
+        title: "Could not submit dataset for publication",
         text: `${emessage}`,
         heightAuto: false,
         icon: "error",
@@ -148,12 +148,14 @@ const disseminateDataset = (option) => {
         },
       });
 
-      // track the error for analysis
-      ipcRenderer.send(
-        "track-event",
+      // log the failure to publish to analytics
+      logCurationForAnalytics(
         "Error",
-        "Disseminate Dataset - Pre-publishing Review",
-        defaultBfDatasetId
+        MetadataAnalyticsPrefix.DISSEMINATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Publish"],
+        Destinations.PENNSIEVE,
+        true
       );
     });
   }
@@ -698,8 +700,8 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Getting pre-publishing review checklist statuses",
-      selectedBfDatasetId
+      MetadataAnalyticsPrefix.DISSEMINATE + " - " + "Fetch Checklist Statuses",
+      defaultBfDatasetId
     );
 
     // set the status icons to red crosses
@@ -715,8 +717,8 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
   ipcRenderer.send(
     "track-event",
     "Success",
-    "Getting pre-publishing review checklist statuses",
-    selectedBfDatasetId
+    MetadataAnalyticsPrefix.DISSEMINATE + " - " + "Fetch Checklist Statuses",
+    defaultBfDatasetId
   );
 
   // mark each pre-publishing item red or green to indicate if the item was completed
@@ -953,16 +955,16 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Disseminate Dataset - Pre-publishing review - Get excluded files excluded from publishing",
-      selectedBfDataset
+      MetadataAnalyticsPrefix.DISSEMINATE + " - Get Excluded Files",
+      defaultBfDatasetId
     );
   }
 
   ipcRenderer.send(
     "track-event",
     "Success",
-    "Disseminate Dataset - Pre-publishing review - Get excluded files excluded from publishing",
-    selectedBfDataset
+    MetadataAnalyticsPrefix.DISSEMINATE + " - Get Excluded Files",
+    defaultBfDatasetId
   );
 
   let metadataFiles;
@@ -989,16 +991,16 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Disseminate Datasets - Pre-publishing Review - Get metadata files",
-      selectedBfDataset
+      MetadataAnalyticsPrefix.DISSEMINATE + " - Get Metadata Files",
+      defaultBfDatasetId
     );
   }
 
   ipcRenderer.send(
     "track-event",
     "Success",
-    "Disseminate Datasets - Pre-publishing Review - Get metadata files",
-    selectedBfDataset
+    MetadataAnalyticsPrefix.DISSEMINATE + " - Get Metadata Files",
+    defaultBfDatasetId
   );
 
   // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
@@ -1053,8 +1055,8 @@ $("#begin-prepublishing-btn").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      "Disseminate Dataset - Pre-publishing Review - Determine user's dataset role",
-      selectedBfDataset
+      "Disseminate Dataset - Pre-publishing Review - Determine Role",
+      defaultBfDatasetId
     );
 
     return;
@@ -1063,8 +1065,8 @@ $("#begin-prepublishing-btn").on("click", async function () {
   ipcRenderer.send(
     "track-event",
     "Success",
-    "Disseminate Dataset - Pre-publishing Review - Determine user's dataset role",
-    selectedBfDataset
+    "Disseminate Datasets - Pre-publishing Review - Determine Role",
+    defaultBfDatasetId
   );
 
   // check if the user is the owner

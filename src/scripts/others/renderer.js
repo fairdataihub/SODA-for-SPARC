@@ -7410,6 +7410,7 @@ const MetadataAnalyticsPrefix = {
   CHANGES: "Prepare Metadata - changes",
   SUBMISSION: "Prepare Metadata - submission",
   CURATE: "Prepare Datasets - Organize dataset",
+  DISSEMINATE: "Disseminate Datasets - Pre-publishing Review",
 };
 
 const AnalyticsGranularity = {
@@ -7438,7 +7439,8 @@ function logCurationForAnalytics(
   analyticsActionPrefix,
   granularity,
   actions,
-  destination
+  location,
+  generalLog
 ) {
   // if no actions to log return
   if (!actions) {
@@ -7494,13 +7496,14 @@ function logCurationForAnalytics(
       actionName = actionName + " - " + actions[idx];
     }
 
-    // add the destination
-    actionName = actionName + " - " + destination;
-
-    console.log("In the file: ", destination);
+    if (!generalLog) {
+      // add the location
+      actionName = actionName + " - " + location;
+    }
+    console.log("In the file: ", location);
 
     // determine logging format
-    if (destination === Destinations.PENNSIEVE) {
+    if (location === Destinations.PENNSIEVE) {
       console.log("Log will be: ", category, actionName, defaultBfDatasetId);
       // use the datasetid as a label and do not add an aggregation value
       ipcRenderer.send(
@@ -7510,15 +7513,9 @@ function logCurationForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      // log the destination as a label and add an aggregation value
-      console.log("Log will be: ", category, actionName, destination, 1);
-      ipcRenderer.send(
-        "track-event",
-        `${category}`,
-        actionName,
-        destination,
-        1
-      );
+      // log the location as a label and add an aggregation value
+      console.log("Log will be: ", category, actionName, location, 1);
+      ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
 }
