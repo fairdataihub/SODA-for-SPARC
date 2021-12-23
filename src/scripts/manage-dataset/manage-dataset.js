@@ -881,20 +881,20 @@ const showCurrentDescription = async () => {
     log.error(error);
     console.error(error);
 
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Manage Dataset - Add/Edit Description - Getting dataset readme",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Get readme"]
     );
     return;
   }
 
-  ipcRenderer.send(
-    "track-event",
+  logGeneralOperationsForAnalytics(
     "Success",
-    "Manage Dataset - Add/Edit Description - Getting dataset readme",
-    defaultBfDatasetId
+    MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    AnalyticsGranularity.ACTION,
+    ["Get readme"]
   );
 
   // create the parsed dataset read me object
@@ -906,20 +906,21 @@ const showCurrentDescription = async () => {
     log.error(error);
     console.error(error);
 
-    ipcRenderer.send(
-      "track-event",
+
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Manage Dataset - Add/Edit Description - Create parsed readme",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Parse readme"]
     );
     return;
   }
 
-  ipcRenderer.send(
-    "track-event",
+  logGeneralOperationsForAnalytics(
     "Success",
-    "Manage Dataset - Add/Edit Description - Create parsed readme",
-    defaultBfDatasetId
+    MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    AnalyticsGranularity.ACTION,
+    ["Parse readme"]
   );
 
   // check if any of the fields have data
@@ -1091,11 +1092,11 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Manage Dataset - Add/Edit Description",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Get readme"]
     );
     return;
   }
@@ -1142,20 +1143,20 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Manage Dataset - Add/Edit Description",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Update readme"]
     );
     return;
   }
 
-  ipcRenderer.send(
-    "track-event",
+  logGeneralOperationsForAnalytics(
     "Success",
-    "Manage Dataset - Add/Edit Description",
-    defaultBfDatasetId
+    MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    AnalyticsGranularity.ALL_LEVELS,
+    ["Update readme"]
   );
 
   // alert the user the data was uploaded successfully
@@ -1172,14 +1173,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       !$("#ds-description-primary-conclusion").val()
       ? $("#button-add-description").html("Add description")
       : $("#button-add-description").html("Edit description")
-  );
-
-  // alert analytics
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    "Manage Dataset - Add/Edit Description",
-    defaultBfDatasetId
   );
 };
 

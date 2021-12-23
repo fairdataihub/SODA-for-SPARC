@@ -7417,7 +7417,8 @@ const MetadataAnalyticsPrefix = {
   MANAGE_DATASETS_RENAME_DATASET: "Manage Datasets - Rename an existing dataset",
   MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
   MANAGE_DATASETS_ADD_EDIT_PERMISSIONS: "Manage Datasets Add/edit permissions",
-  MANAGE_DATASETS_ADD_EDIT_SUBTITLE: "Manage Datasets - Add/Edit Subtitle"
+  MANAGE_DATASETS_ADD_EDIT_SUBTITLE: "Manage Datasets - Add/Edit Subtitle",
+  MANAGE_DATASETS_ADD_EDIT_README: "Manage Datasets - Add/Edit Readme"
 };
 
 const AnalyticsGranularity = {
