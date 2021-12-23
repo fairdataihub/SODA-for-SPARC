@@ -54,19 +54,6 @@ $(".button-individual-metadata.remove").click(function () {
     ".para-metadata-file-status"
   );
 
-  // track that the file was removed
-  logCurationForAnalytics(
-    "Success",
-    MetadataAnalyticsPrefix.CURATE,
-    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-    [
-      "Step 4",
-      "Remove",
-      `${getMetadataFileNameFromStatus(metadataFileStatus)}`,
-    ],
-    determineDatasetLocation()
-  );
-
   $(metadataFileStatus).text("");
   $($(this).parents()[1]).find(".div-metadata-confirm").css("display", "none");
   $($(this).parents()[1]).find(".div-metadata-go-back").css("display", "flex");

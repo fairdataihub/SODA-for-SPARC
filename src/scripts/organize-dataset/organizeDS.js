@@ -286,24 +286,8 @@ function delFolder(
                 delete myPath[type][itemToDelete];
               }
 
-              // log the successful delete operation to analytics
-              logCurationForAnalytics(
-                "Success",
-                MetadataAnalyticsPrefix.CURATE,
-                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                ["Step 3", "Delete", type === "folders" ? "Folder" : "File"],
-                determineDatasetLocation()
-              );
             } else {
               delete myPath[type][itemToDelete];
-              // log the successful delete operation to analytics
-              logCurationForAnalytics(
-                "Success",
-                MetadataAnalyticsPrefix.CURATE,
-                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                ["Step 3", "Delete", type === "folders" ? "Folder" : "File"],
-                determineDatasetLocation()
-              );
             }
           });
 
@@ -371,15 +355,6 @@ function delFolder(
             uiItem,
             organizeCurrentLocation,
             inputGlobal
-          );
-
-          // log the successful delete operation to analytics
-          logCurationForAnalytics(
-            "Success",
-            MetadataAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 3", "Delete", promptVar],
-            determineDatasetLocation()
           );
         }
       });
