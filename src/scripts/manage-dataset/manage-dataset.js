@@ -164,6 +164,7 @@ $("#button-create-bf-new-dataset").click(() => {
             bfNewDatasetName
           );
         } else {
+
           Swal.fire({
             title: `Dataset ${bfNewDatasetName} was created successfully`,
             icon: "success",
@@ -180,6 +181,7 @@ $("#button-create-bf-new-dataset").click(() => {
           $("#button-create-bf-new-dataset").hide();
 
           defaultBfDataset = bfNewDatasetName;
+          defaultBfDatasetId = res 
           refreshDatasetList();
           currentDatasetPermission.innerHTML = "";
           currentAddEditDatasetPermission.innerHTML = "";
@@ -862,9 +864,13 @@ const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+
+  console.log("Current dataset is: ", selectedBfDataset)
+
   if (selectedBfDataset === "Select dataset") {
     return;
   }
+
 
   // check if the warning message for invalid text is showing on the page
   let warningDisplayProperty = $("#ds-isa-warning").css("display");
@@ -1922,7 +1928,7 @@ const showCurrentBannerImage = () => {
           myCropper.destroy();
         } else {
           logGeneralOperationsForAnalytics(
-            "Error",
+            "Success",
             MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
             AnalyticsGranularity.ACTION,
             ["Get Banner Image"]
