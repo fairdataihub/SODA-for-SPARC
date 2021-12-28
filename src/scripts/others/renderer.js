@@ -3375,11 +3375,11 @@ async function submitReviewDataset(embargoReleaseDate) {
       await updateDatasetExcludedFiles(selectedBfDataset, files);
     } catch (error) {
       // log the error
-      ipcRenderer.send(
-        "track-event",
+      logGeneralOperationsForAnalytics(
         "Error",
-        "Disseminate Dataset - Pre-publishing Review",
-        selectedBfDataset
+        MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Updating excluded files"]
       );
       log.error(error);
       console.error(error);
@@ -3415,11 +3415,11 @@ async function submitReviewDataset(embargoReleaseDate) {
       embargoReleaseDate
     );
   } catch (error) {
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Disseminate Dataset - Pre-publishing Review",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Submit dataset"]
     );
     log.error(error);
     console.error(error);
@@ -3451,11 +3451,11 @@ async function submitReviewDataset(embargoReleaseDate) {
   await showPublishingStatus("noClear");
 
   // track success
-  ipcRenderer.send(
-    "track-event",
+  logGeneralOperationsForAnalytics(
     "Success",
-    "Disseminate Dataset - Pre-publishing Review",
-    defaultBfDatasetId
+    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+    AnalyticsGranularity.ALL_LEVELS,
+    ["Submit dataset"]
   );
 
   // alert the user the submission was successful
@@ -3525,11 +3525,11 @@ function withdrawDatasetSubmission() {
     });
 
     // track the error for analysis
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Disseminate Dataset - Pre-publishing Review",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Withdraw dataset"]
     );
   });
 }
@@ -3606,11 +3606,11 @@ async function withdrawReviewDataset() {
   try {
     await withdrawDatasetReviewSubmission(selectedBfDataset);
 
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Success",
-      "Disseminate Dataset - Pre-publishing Review",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Withdraw dataset"]
     );
 
     // show the user their dataset's updated publishing status
@@ -3666,21 +3666,13 @@ async function withdrawReviewDataset() {
     });
 
     // track the error for analysis
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Disseminate Dataset - Pre-publishing Review",
-      defaultBfDatasetId
+      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Withdraw dataset"]
     );
   }
-
-  // log the successful withdrawal
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    "Disseminate Dataset - Pre-publishing Review",
-    defaultBfDatasetId
-  );
 }
 
 //////////////////////////////////
@@ -3957,11 +3949,11 @@ function showPublishingStatus(callback) {
               },
             });
 
-            ipcRenderer.send(
-              "track-event",
+            logGeneralOperationsForAnalytics(
               "Error",
-              "Disseminate Dataset - Pre-publishing Review",
-              defaultBfDatasetId
+              MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+              AnalyticsGranularity.ALL_LEVELS,
+              ["Show publishing status"]
             );
 
             resolve();
@@ -7420,10 +7412,13 @@ const MetadataAnalyticsPrefix = {
   MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
   MANAGE_DATASETS_ADD_EDIT_PERMISSIONS: "Manage Datasets Add/edit permissions",
   MANAGE_DATASETS_ADD_EDIT_SUBTITLE: "Manage Datasets - Add/Edit Subtitle",
-<<<<<<< HEAD
-  MANAGE_DATASETS_ADD_EDIT_README: "Manage Datasets - Add/Edit Readme"
-=======
->>>>>>> b1b71a5f38c998dfff0da87b5ae7f118662b8d8e
+  MANAGE_DATASETS_ADD_EDIT_README: "Manage Datasets - Add/Edit Readme",
+  MANAGE_DATASETS_ADD_EDIT_BANNER: "Manage Datasets - Upload a banner image",
+  MANAGE_DATASETS_ADD_EDIT_TAGS: "Manage Datasets - Add/Edit tags",
+  MANAGE_DATASETS_ASSIGN_LICENSE: "Manage Datasets - Assign a license",
+  MANAGE_DATASETS_UPLOAD_LOCAL_DATASET:
+    "Manage Datasets - Upload local dataset",
+  MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
 };
 
 const AnalyticsGranularity = {
