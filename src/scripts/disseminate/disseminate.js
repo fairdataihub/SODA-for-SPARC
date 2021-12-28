@@ -508,7 +508,7 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Disseminate Dataset - Show current dataset permission",
+          "Disseminate Datasets - Show current dataset permission",
           defaultBfDatasetId
         );
       } else {
@@ -528,7 +528,7 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
         ipcRenderer.send(
           "track-event",
           "Success",
-          "Disseminate Dataset - Show current dataset permission",
+          "Disseminate Datasets - Show current dataset permission",
           defaultBfDatasetId
         );
       }

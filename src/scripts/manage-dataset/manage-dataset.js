@@ -752,11 +752,11 @@ $("#button-add-subtitle").click(() => {
 
           $("#ds-description").val("");
 
-          logGeneralOperationsForAnalytics(
+          ipcRenderer.send(
+            "track-event",
             "Error",
             MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Add Subtitle"]
+            defaultBfDatasetId
           );
         } else {
           log.info("Added subtitle to dataset");
@@ -776,11 +776,11 @@ $("#button-add-subtitle").click(() => {
               : $("#button-add-subtitle").html("Edit subtitle")
           );
 
-          logGeneralOperationsForAnalytics(
+          ipcRenderer.send(
+            "track-event",
             "Success",
             MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Add Subtitle"]
+            defaultBfDatasetId
           );
 
           // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
@@ -1142,20 +1142,21 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logGeneralOperationsForAnalytics(
+    ipcRenderer.send(
+      "track-event",
       "Error",
       MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      AnalyticsGranularity.ALL_LEVELS,
-      ["Update readme"]
+      defaultBfDatasetId
     );
+
     return;
   }
 
-  logGeneralOperationsForAnalytics(
+  ipcRenderer.send(
+    "track-event",
     "Success",
     MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-    AnalyticsGranularity.ALL_LEVELS,
-    ["Update readme"]
+    defaultBfDatasetId
   );
 
   // alert the user the data was uploaded successfully
@@ -1618,11 +1619,11 @@ const uploadBannerImage = () => {
               "<span style='color: red;'> " + emessage + "</span>"
             );
 
-            logGeneralOperationsForAnalytics(
+            ipcRenderer.send(
+              "track-event",
               "Error",
               MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-              AnalyticsGranularity.ALL_LEVELS,
-              ["Upload Banner Image"]
+              defaultBfDatasetId
             );
           } else {
             $("#para-dataset-banner-image-status").html(res);
@@ -1631,11 +1632,11 @@ const uploadBannerImage = () => {
 
             $("#edit_banner_image_modal").modal("hide");
 
-            logGeneralOperationsForAnalytics(
+            ipcRenderer.send(
+              "track-event",
               "Success",
               MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-              AnalyticsGranularity.ALL_LEVELS,
-              ["Importing Banner Image"]
+              defaultBfDatasetId
             );
 
             // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
@@ -2127,14 +2128,12 @@ $("#button-add-license").click(() => {
             backdrop: "rgba(0,0,0, 0.4)",
           });
 
-          logGeneralOperationsForAnalytics(
+          ipcRenderer.send(
+            "track-event",
             "Error",
             MetadataAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Upload License"]
+            defaultBfDatasetId
           );
-
-          MetadataAnalyticsPrefix;
         } else {
           Swal.fire({
             title: "Successfully added license to dataset!",
@@ -2146,11 +2145,11 @@ $("#button-add-license").click(() => {
 
           showCurrentLicense();
 
-          logGeneralOperationsForAnalytics(
+          ipcRenderer.send(
+            "track-event",
             "Success",
             MetadataAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-            AnalyticsGranularity.ALL_LEVELS,
-            ["Upload License"]
+            defaultBfDatasetId
           );
 
           // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
@@ -2367,7 +2366,7 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Manage Dataset - Upload Local Dataset",
+          "Manage Datasets - Upload Local Dataset",
           datasetName
         );
 
