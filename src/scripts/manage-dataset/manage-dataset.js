@@ -2342,6 +2342,11 @@ $("#button-submit-dataset").click(async () => {
   }
   datasetName = datasetPath.slice(idx);
 
+<<<<<<< HEAD
+=======
+  console.log(datasetName);
+
+>>>>>>> 6cf3f8941cb0ca38157b3171972295a45af7d6a7
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
