@@ -863,8 +863,6 @@ const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  console.log("Current dataset is: ", selectedBfDataset);
-
   if (selectedBfDataset === "Select dataset") {
     return;
   }
@@ -2343,8 +2341,6 @@ $("#button-submit-dataset").click(async () => {
     }
   }
   datasetName = datasetPath.slice(idx);
-
-  console.log(datasetName)
 
   client.invoke(
     "api_bf_submit_dataset",

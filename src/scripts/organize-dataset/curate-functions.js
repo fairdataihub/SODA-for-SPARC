@@ -70,7 +70,6 @@ $(".metadata-button").click(function () {
 });
 
 function confirmMetadataFilePath(ev) {
-  console.log("Confirming metadata with ev");
   $($(ev).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
   document.getElementById("nextBtn").style.display = "inline";

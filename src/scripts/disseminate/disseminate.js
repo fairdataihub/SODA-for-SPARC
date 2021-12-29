@@ -230,14 +230,22 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
           "Error",
           MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
           AnalyticsGranularity.ALL_LEVELS,
-          ["Give Consortium Team Permissions"]
+          [
+            share_status === "unshare"
+              ? "Remove Consortium's Team Permissions"
+              : "Give Consortium Team Permissions",
+          ]
         );
       } else {
         logGeneralOperationsForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
           AnalyticsGranularity.ACTION,
-          ["Give Consortium Team Permissions"]
+          [
+            share_status === "unshare"
+              ? "Remove Consortium's Team Permissions"
+              : "Give Consortium Team Permissions",
+          ]
         );
 
         disseminateShowCurrentPermission(account, dataset);

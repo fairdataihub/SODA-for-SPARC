@@ -1365,7 +1365,6 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
           uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
       } else {
-        console.log("Should generate to Pennsieve: ", uploadBFBoolean);
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.SAMPLES,
@@ -3486,7 +3485,6 @@ async function submitReviewDataset(embargoReleaseDate) {
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
-  console.log("In the withdrawal");
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
     title: `Preparing to withdraw the dataset submission`,
@@ -5984,7 +5982,7 @@ ipcRenderer.on(
                 // log the success to analytics
                 logMetadataForAnalytics(
                   "Success",
-                  analyticsActionPrefix.CURATE,
+                  MetadataAnalyticsPrefix.CURATE,
                   AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
                   Actions.EXISTING,
                   Destinations.LOCAL
@@ -6007,7 +6005,7 @@ ipcRenderer.on(
               // log the success to analytics
               logMetadataForAnalytics(
                 "Success",
-                analyticsActionPrefix.CURATE,
+                MetadataAnalyticsPrefix.CURATE,
                 AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
                 Actions.EXISTING,
                 Destinations.LOCAL
@@ -7384,7 +7382,6 @@ function logMetadataForAnalytics(
     actionName = actionName + " - " + destination;
     // log only the action with the destination added
     if (destination === Destinations.PENNSIEVE) {
-      console.log("Metadata log Pennsieve: ", category, actionName, defaultBfDatasetId);
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7392,7 +7389,6 @@ function logMetadataForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      console.log("Metadata log local: ", category, actionName, action);
       ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
     }
   }
@@ -7470,7 +7466,6 @@ function logCurationForAnalytics(
   ) {
     // log the prefix, category of the event
     ipcRenderer.send("track-event", `${category}`, actionName);
-    console.log("Prefix logged");
   }
 
   // check if the user wants to log the action(s)
@@ -7483,7 +7478,6 @@ function logCurationForAnalytics(
     for (let idx = 0; idx < actions.length; idx++) {
       // track the action
       actionName = actionName + " - " + actions[idx];
-      console.log("Log will be: ", category, actionName, actions[idx], 1);
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7513,11 +7507,9 @@ function logCurationForAnalytics(
       // add the location
       actionName = actionName + " - " + location;
     }
-    console.log("In the file: ", location);
 
     // determine logging format
     if (location === Destinations.PENNSIEVE) {
-      console.log("Log will be: ", category, actionName, defaultBfDatasetId);
       // use the datasetid as a label and do not add an aggregation value
       ipcRenderer.send(
         "track-event",
@@ -7527,7 +7519,6 @@ function logCurationForAnalytics(
       );
     } else {
       // log the location as a label and add an aggregation value
-      console.log("Log will be: ", category, actionName, location, 1);
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
@@ -7632,7 +7623,6 @@ function logGeneralOperationsForAnalytics(
   ) {
     // log the prefix, category of the event
     ipcRenderer.send("track-event", `${category}`, actionName);
-    console.log("Prefix logged");
   }
 
   // check if the user wants to log the action(s)
@@ -7644,7 +7634,6 @@ function logGeneralOperationsForAnalytics(
     for (let idx = 0; idx < actions.length; idx++) {
       // track the action
       actionName = analyticsPrefix + " - " + actions[idx];
-      console.log("Log will be: ", category, actionName, defaultBfDatasetId);
       ipcRenderer.send(
         "track-event",
         `${category}`,

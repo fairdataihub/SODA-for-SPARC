@@ -935,14 +935,14 @@ async function transitionSubQuestions(
 ) {
   if (currentDiv === "Question-getting-started-1") {
     // log the start of a new curation process from scratch
-    logCurationForAnalytics(
-      "Success",
-      MetadataAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION,
-      ["New"],
-      "Local",
-      true
-    );
+    // logCurationForAnalytics(
+    //   "Success",
+    //   MetadataAnalyticsPrefix.CURATE,
+    //   AnalyticsGranularity.ACTION,
+    //   ["New"],
+    //   "Local",
+    //   true
+    // );
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
@@ -1552,7 +1552,6 @@ async function transitionSubQuestionsButton(
     var result;
     try {
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
-      console.log("Logged in like 1543 of tab-effects: ", res);
       result = [true, res];
     } catch (err) {
       result = [false, err];
@@ -1582,12 +1581,12 @@ async function transitionSubQuestionsButton(
       $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       $("body").removeClass("waiting");
 
-      // log the error to analytics
+      // // log the error to analytics
       logCurationForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION,
-        ["New"],
+        ["Existing"],
         "Pennsieve",
         true
       );

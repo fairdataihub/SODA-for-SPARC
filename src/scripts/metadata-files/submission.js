@@ -362,7 +362,6 @@ $(document).ready(function () {
   ipcRenderer.on(
     "selected-destination-generate-submission-locally",
     (event, dirpath) => {
-      console.log("Generate sub locally");
       if (dirpath.length > 0) {
         document.getElementById(
           "input-destination-generate-submission-locally"
