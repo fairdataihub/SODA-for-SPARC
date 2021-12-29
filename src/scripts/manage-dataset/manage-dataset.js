@@ -2344,7 +2344,7 @@ $("#button-submit-dataset").click(async () => {
   }
   datasetName = datasetPath.slice(idx);
 
-  console.log(datasetName)
+  console.log(datasetName);
 
   client.invoke(
     "api_bf_submit_dataset",

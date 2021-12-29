@@ -7384,7 +7384,12 @@ function logMetadataForAnalytics(
     actionName = actionName + " - " + destination;
     // log only the action with the destination added
     if (destination === Destinations.PENNSIEVE) {
-      console.log("Metadata log Pennsieve: ", category, actionName, defaultBfDatasetId);
+      console.log(
+        "Metadata log Pennsieve: ",
+        category,
+        actionName,
+        defaultBfDatasetId
+      );
       ipcRenderer.send(
         "track-event",
         `${category}`,
