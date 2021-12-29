@@ -934,12 +934,14 @@ async function transitionSubQuestions(
   category
 ) {
   if (currentDiv === "Question-getting-started-1") {
-    // log the start of a new curation process from scrtch
-    logMetadataForAnalytics(
+    // log the start of a new curation process from scratch
+    logCurationForAnalytics(
       "Success",
       MetadataAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ALL_LEVELS,
-      Actions.NEW
+      AnalyticsGranularity.ACTION,
+      ["New"],
+      "Local",
+      true
     );
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
@@ -1581,13 +1583,15 @@ async function transitionSubQuestionsButton(
       $("body").removeClass("waiting");
 
       // log the error to analytics
-      logMetadataForAnalytics(
+      logCurationForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ALL_LEVELS,
-        Actions.EXISTING,
-        Destinations.PENNSIEVE
+        AnalyticsGranularity.ACTION,
+        ["New"],
+        "Pennsieve",
+        true
       );
+
       return;
     } else {
       if (result[1][2].length > 0) {
@@ -1633,12 +1637,13 @@ async function transitionSubQuestionsButton(
             );
             showHideDropdownButtons("dataset", "show");
             // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
-            logMetadataForAnalytics(
+            logCurationForAnalytics(
               "Success",
               MetadataAnalyticsPrefix.CURATE,
               AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-              Actions.EXISTING,
-              Destinations.PENNSIEVE
+              ["Existing"],
+              "Pennsieve",
+              true
             );
           } else {
             exitCurate();
@@ -1660,12 +1665,14 @@ async function transitionSubQuestionsButton(
         showHideDropdownButtons("dataset", "show");
 
         // log the successful Pennsieve import to analytics
-        logMetadataForAnalytics(
+
+        logCurationForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.CURATE,
           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          Actions.EXISTING,
-          Destinations.PENNSIEVE
+          ["Existing"],
+          "Pennsieve",
+          true
         );
         // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       }

@@ -567,7 +567,7 @@ const verify_missing_files = (mode) => {
         // log the success at the action and action with destination granularith levels
         logMetadataForAnalytics(
           "Success",
-          analyticsActionPrefix.CURATE,
+          MetadataAnalyticsPrefix.CURATE,
           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           Actions.EXISTING,
           Destinations.SAVED

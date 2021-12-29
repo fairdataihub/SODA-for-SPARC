@@ -1365,6 +1365,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
           uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
       } else {
+        console.log("Should generate to Pennsieve: ", uploadBFBoolean);
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.SAMPLES,
@@ -7372,7 +7373,9 @@ function logMetadataForAnalytics(
   ) {
     // track every time the user wanted to generate a metadata file or everytime the user wanted to use a pre-existing metadata file
     ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
-  } else if (
+  }
+
+  if (
     granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
     granularity === AnalyticsGranularity.ALL_LEVELS ||
     granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
@@ -7381,6 +7384,7 @@ function logMetadataForAnalytics(
     actionName = actionName + " - " + destination;
     // log only the action with the destination added
     if (destination === Destinations.PENNSIEVE) {
+      console.log("Metadata log Pennsieve: ", category, actionName, defaultBfDatasetId);
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7388,6 +7392,7 @@ function logMetadataForAnalytics(
         defaultBfDatasetId
       );
     } else {
+      console.log("Metadata log local: ", category, actionName, action);
       ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
     }
   }
@@ -7417,7 +7422,7 @@ const MetadataAnalyticsPrefix = {
   MANAGE_DATASETS_ADD_EDIT_TAGS: "Manage Datasets - Add/Edit tags",
   MANAGE_DATASETS_ASSIGN_LICENSE: "Manage Datasets - Assign a license",
   MANAGE_DATASETS_UPLOAD_LOCAL_DATASET:
-    "Manage Datasets - Upload local dataset",
+    "Manage Datasets - Upload Local Dataset",
   MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
 };
 

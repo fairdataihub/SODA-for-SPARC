@@ -2347,6 +2347,8 @@ $("#button-submit-dataset").click(async () => {
   }
   datasetName = datasetPath.slice(idx);
 
+  console.log(datasetName)
+
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2395,7 +2397,8 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          "Manage Datasets - Upload Local Dataset"
+          "Manage Datasets - Upload Local Dataset",
+          datasetName
         );
 
         ipcRenderer.send(
