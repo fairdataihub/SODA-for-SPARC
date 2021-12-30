@@ -1644,7 +1644,8 @@ const uploadBannerImage = () => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + "- Size",
+              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+                "- Size",
               "Size",
               image_file_size
             );
@@ -1653,7 +1654,8 @@ const uploadBannerImage = () => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + "- Size",
+              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+                "- Size",
               defaultBfDatasetId,
               image_file_size
             );
@@ -2420,7 +2422,6 @@ $("#button-submit-dataset").click(async () => {
 
         log.info("Completed submit function");
         console.log("Completed submit function");
-       
 
         ipcRenderer.send(
           "track-event",
@@ -2447,7 +2448,7 @@ $("#button-submit-dataset").click(async () => {
           totalFileSize
         );
 
-        console.log("Size of local dataset upload: ",  totalFileSize)
+        console.log("Size of local dataset upload: ", totalFileSize);
 
         client.invoke(
           "api_get_number_of_files_and_folders_locally",
