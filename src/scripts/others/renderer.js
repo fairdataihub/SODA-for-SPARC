@@ -7382,7 +7382,7 @@ function logMetadataForAnalytics(
     actionName = actionName + " - " + destination;
     // log only the action with the destination added
     if (destination === Destinations.PENNSIEVE) {
-      console.log("Metadata log: ", category, actionName, defaultBfDatasetId)
+      console.log("Metadata log: ", category, actionName, defaultBfDatasetId);
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7390,7 +7390,7 @@ function logMetadataForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      console.log("Metadata log: ", category, actionName, action, 1)
+      console.log("Metadata log: ", category, actionName, action, 1);
       ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
     }
   }
@@ -7413,7 +7413,8 @@ const MetadataAnalyticsPrefix = {
   MANAGE_DATASETS_RENAME_DATASET:
     "Manage Datasets - Rename an existing dataset",
   MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
-  MANAGE_DATASETS_ADD_EDIT_PERMISSIONS: "Manage Datasets - Add/Edit Permissions",
+  MANAGE_DATASETS_ADD_EDIT_PERMISSIONS:
+    "Manage Datasets - Add/Edit Permissions",
   MANAGE_DATASETS_ADD_EDIT_SUBTITLE: "Manage Datasets - Add/Edit Subtitle",
   MANAGE_DATASETS_ADD_EDIT_README: "Manage Datasets - Add/Edit Readme",
   MANAGE_DATASETS_ADD_EDIT_BANNER: "Manage Datasets - Upload a Banner Image",
@@ -7487,7 +7488,7 @@ function logCurationForAnalytics(
         actions[idx],
         1
       );
-      console.log('Log: ', category, actionName, actions[idx])
+      console.log("Log: ", category, actionName, actions[idx]);
     }
 
     // reset the action's name
@@ -7514,7 +7515,7 @@ function logCurationForAnalytics(
     // determine logging format
     if (location === Destinations.PENNSIEVE) {
       // use the datasetid as a label and do not add an aggregation value
-      console.log('Log: ', category, actionName, defaultBfDatasetId)
+      console.log("Log: ", category, actionName, defaultBfDatasetId);
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7522,7 +7523,7 @@ function logCurationForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      console.log('Log: ', category, actionName, location)
+      console.log("Log: ", category, actionName, location);
       // log the location as a label and add an aggregation value
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
