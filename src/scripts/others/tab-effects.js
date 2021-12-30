@@ -1588,7 +1588,7 @@ async function transitionSubQuestionsButton(
         AnalyticsGranularity.ACTION,
         ["Existing"],
         "Pennsieve",
-        true
+        false
       );
 
       return;
@@ -1642,7 +1642,7 @@ async function transitionSubQuestionsButton(
               AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               ["Existing"],
               "Pennsieve",
-              true
+              false
             );
           } else {
             exitCurate();
@@ -1671,7 +1671,7 @@ async function transitionSubQuestionsButton(
           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           ["Existing"],
           "Pennsieve",
-          true
+          false
         );
         // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       }

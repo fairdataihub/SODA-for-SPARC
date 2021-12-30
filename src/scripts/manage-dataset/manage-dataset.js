@@ -886,7 +886,7 @@ const showCurrentDescription = async () => {
       "Error",
       MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       AnalyticsGranularity.ALL_LEVELS,
-      ["Get readme"]
+      ["Get Readme"]
     );
     return;
   }
@@ -895,7 +895,7 @@ const showCurrentDescription = async () => {
     "Success",
     MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
     AnalyticsGranularity.ACTION,
-    ["Get readme"]
+    ["Get Readme"]
   );
 
   // create the parsed dataset read me object
@@ -911,7 +911,7 @@ const showCurrentDescription = async () => {
       "Error",
       MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       AnalyticsGranularity.ALL_LEVELS,
-      ["Parse readme"]
+      ["Parse Readme"]
     );
     return;
   }
@@ -920,7 +920,7 @@ const showCurrentDescription = async () => {
     "Success",
     MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
     AnalyticsGranularity.ACTION,
-    ["Parse readme"]
+    ["Parse Readme"]
   );
 
   // check if any of the fields have data
@@ -1096,7 +1096,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       "Error",
       MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       AnalyticsGranularity.ALL_LEVELS,
-      ["Get readme"]
+      ["Get Readme"]
     );
     return;
   }
@@ -1994,11 +1994,11 @@ $("#button-add-tags").click(async () => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logGeneralOperationsForAnalytics(
+    ipcRenderer.send(
+      "track-event",
       "Error",
       MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-      AnalyticsGranularity.ALL_LEVELS,
-      ["Get Tags"]
+      defaultBfDatasetId
     );
 
     // halt execution
@@ -2012,11 +2012,11 @@ $("#button-add-tags").click(async () => {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   }).then(() => {
-    logGeneralOperationsForAnalytics(
+    ipcRenderer.send(
+      "track-event",
       "Success",
       MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-      AnalyticsGranularity.ACTION,
-      ["Get Tags"]
+      defaultBfDatasetId
     );
 
     // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
@@ -2071,6 +2071,13 @@ const showCurrentTags = async () => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+
+      logGeneralOperationsForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Get Tags"]
+      );
 
       // stop the loader -- no data can be fetched for this dataset
       datasetTagsTagify.loading(false);
@@ -2342,11 +2349,6 @@ $("#button-submit-dataset").click(async () => {
   }
   datasetName = datasetPath.slice(idx);
 
-<<<<<<< HEAD
-=======
-  console.log(datasetName);
-
->>>>>>> 6cf3f8941cb0ca38157b3171972295a45af7d6a7
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2395,7 +2397,7 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          "Manage Datasets - Upload Local Dataset",
+          MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
           datasetName
         );
 
@@ -2404,7 +2406,7 @@ $("#button-submit-dataset").click(async () => {
           "Success",
           MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             " - size",
-          "Upload local dataset",
+          "Upload Local Dataset",
           totalFileSize
         );
 
@@ -2723,7 +2725,7 @@ function showCurrentDatasetStatus(callback) {
             "track-event",
             "Success",
             MetadataAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
-              ` - Get dataset status`,
+              ` - Get dataset Status`,
             defaultBfDatasetId
           );
 
