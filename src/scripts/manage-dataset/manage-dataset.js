@@ -1640,6 +1640,24 @@ const uploadBannerImage = () => {
               defaultBfDatasetId
             );
 
+            // track the size for all dataset banner uploads
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + "- Size",
+              "Size",
+              image_file_size
+            );
+
+            // track the size for the given dataset
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + "- Size",
+              defaultBfDatasetId,
+              image_file_size
+            );
+
             // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
             showPrePublishingStatus();
           }
@@ -2378,6 +2396,15 @@ $("#button-submit-dataset").click(async () => {
           datasetName
         );
 
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            " - size",
+          "Size",
+          totalFileSize
+        );
+
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
           behavior: "smooth",
           block: "start",
@@ -2393,6 +2420,7 @@ $("#button-submit-dataset").click(async () => {
 
         log.info("Completed submit function");
         console.log("Completed submit function");
+       
 
         ipcRenderer.send(
           "track-event",
@@ -2406,7 +2434,7 @@ $("#button-submit-dataset").click(async () => {
           "Success",
           MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             " - size",
-          "Upload Local Dataset",
+          "Size",
           totalFileSize
         );
 
@@ -2418,6 +2446,8 @@ $("#button-submit-dataset").click(async () => {
           datasetName,
           totalFileSize
         );
+
+        console.log("Size of local dataset upload: ",  totalFileSize)
 
         client.invoke(
           "api_get_number_of_files_and_folders_locally",

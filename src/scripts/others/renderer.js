@@ -6405,6 +6405,14 @@ function initiate_generate() {
         "track-event",
         "Error",
         "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        "Size",
+        main_total_generate_dataset_size
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
         main_total_generate_dataset_size
       );
 
@@ -6416,6 +6424,14 @@ function initiate_generate() {
         `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
         datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         main_total_generate_dataset_size
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        "Number of Files",
+        file_counter
       );
 
       ipcRenderer.send(
@@ -6489,19 +6505,15 @@ function initiate_generate() {
         show_curation_shortcut();
       }
 
+      file_counter = 0;
+      folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+
       logCurationForAnalytics(
         "Success",
         MetadataAnalyticsPrefix.CURATE,
         AnalyticsGranularity.PREFIX,
         [],
-        determineDatasetLocation()
-      );
-
-      logCurationForAnalytics(
-        "Success",
-        MetadataAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
         determineDatasetLocation()
       );
 
@@ -6512,6 +6524,16 @@ function initiate_generate() {
         "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
         "Size",
         main_total_generate_dataset_size
+      );
+
+      console.log("The generate size is: ", main_total_generate_dataset_size);
+
+      logCurationForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
+        determineDatasetLocation()
       );
 
       let datasetLocation = determineDatasetLocation();
@@ -6533,10 +6555,16 @@ function initiate_generate() {
         main_total_generate_dataset_size
       );
 
-      file_counter = 0;
-      folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+      // track amount of files for all datasets
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        "Number of Files",
+        file_counter
+      );
 
+      // track amount of files for datasets by ID or Local
       ipcRenderer.send(
         "track-event",
         "Success",
