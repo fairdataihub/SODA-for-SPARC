@@ -1066,22 +1066,25 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               $("#curatebfdatasetlist").selectpicker("hide");
               $("#curatebfdatasetlist").selectpicker("refresh");
               $("#bf-dataset-select-div").hide();
+              console.log(datasetList);
             },
             didOpen: () => {
               $(".ui.active.green.inline.loader.small").css("display", "none");
-            },
-            preConfirm: () => {
-              $("body").addClass("waiting");
 
+              console.log(datasetList);
               $(datasetPermissionDiv)
                 .find("#div-filter-datasets-progress-2")
-                .css("display", "block");
-              $("#curatebfdatasetlist").selectpicker("hide");
+                .css("display", "none");
               $("#curatebfdatasetlist").selectpicker("refresh");
-              $("#bf-dataset-select-div").hide();
+              $("#curatebfdatasetlist").selectpicker("show");
+              $("#bf-dataset-select-div").show();
 
               bfDataset = $("#curatebfdatasetlist").val();
-
+              console.log(bfDataset + "checking here if bfdataset is present");
+            },
+            preConfirm: () => {
+              console.log(bfDataset + "checking once more");
+              bfDataset = $("#curatebfdatasetlist").val();
               if (!bfDataset) {
                 Swal.showValidationMessage("Please select a dataset!");
 
