@@ -1131,6 +1131,11 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           }
         }
 
+        // log a map of datasetId to dataset name to analytics
+        // this will be used to help us track private datasets which are not trackable using a datasetId alone 
+        ipcRenderer.send("track-event", "Dataset ID to Dataset Name Map", defaultBfDatasetId, defaultBfDataset)
+
+
         // document.getElementById("ds-description").innerHTML = "";
         refreshDatasetList();
         $("#dataset-loaded-message").hide();
