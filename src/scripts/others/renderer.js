@@ -6006,7 +6006,6 @@ ipcRenderer.on(
                 } else if (result.isDenied) {
                   action = "remove";
                 } else {
-                  console.log("5");
                   $("#guided-input-destination-getting-started-locally").attr(
                     "placeholder",
                     "Browse here"
