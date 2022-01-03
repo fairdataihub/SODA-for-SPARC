@@ -746,6 +746,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             $("#current-bf-account").text(bfacct);
             $("#current-bf-account-generate").text(bfacct);
             $("#create_empty_dataset_BF_account_span").text(bfacct);
+            $("#guided-bf-account").text(bfacct);
             $(".bf-account-span").text(bfacct);
             updateBfAccountList();
             client.invoke("api_bf_dataset_account", bfacct, (error, result) => {
@@ -875,6 +876,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                       $("#current-bf-dataset-generate").text("None");
                       $(".bf-dataset-span").html("None");
                       $("#para-account-detail-curate-generate").html(res);
+                      $("guided-account-details").html(res);
                       $("#para_create_empty_dataset_BF_account").html(res);
                       $(".bf-account-details-span").html(res);
                       $("#para-continue-bf-dataset-getting-started").text("");

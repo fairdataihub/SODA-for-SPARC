@@ -42,6 +42,23 @@ ipcMain.on("open-file-dialog-local-destination-curate", (event) => {
   );
 });
 
+ipcMain.on("guided-open-file-dialog-local-destination-curate", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send(
+          "guided-selected-local-destination-datasetCurate",
+          files
+        );
+      }
+    }
+  );
+});
+
 ipcMain.on("open-file-dialog-local-destination-curate-generate", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),

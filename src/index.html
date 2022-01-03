@@ -65,6 +65,7 @@
       rel="stylesheet"
       href="node_modules/intro.js/minified/introjs.min.css"
     />
+    <link rel="stylesheet" href="assets/css/guided.css" />
 
     <link rel="import" href="sections/welcome/welcome.html" />
     <link rel="import" href="sections/getting_started/getting_started.html" />
@@ -74,6 +75,8 @@
     <link rel="import" href="sections/curate/curate.html" />
     <link rel="import" href="sections/main_tabs/main_tabs.html" />
     <link rel="import" href="sections/help/help.html" />
+    <link rel="import" href="sections/guided_mode/guided_mode.html" />
+    <link rel="import" href="sections/guided_mode/guided_curate_dataset.html" />
 
     <style>
       #notification {
@@ -168,22 +171,8 @@
               </a>
             </li>
 
-            <li
-              class="coming-soon-div"
-              data-content="Coming soon..."
-              rel="popover"
-              data-placement="right"
-              data-trigger="hover"
-            >
-              <a
-                href="#"
-                data-section="guided_mode"
-                class="coming-soon-div"
-                data-content="Coming soon..."
-                rel="popover"
-                data-placement="right"
-                data-trigger="hover"
-              >
+            <li>
+              <a href="#" data-section="guided_mode" id="guided_mode_view">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20px"
