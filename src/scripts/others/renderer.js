@@ -394,7 +394,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
-            openDropdownPrompt("bf");
+            await openDropdownPrompt(this, "bf");
             resolve(false);
           } else {
             resolve(true);

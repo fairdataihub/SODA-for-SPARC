@@ -957,61 +957,136 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //$(".selectpicker").selectpicker("refresh");
       //$("#bf-dataset-select-div").hide();
 
-      const { value: bfDS } = await Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Confirm",
-        focusCancel: true,
-        focusConfirm: false,
-        heightAuto: false,
-        allowOutsideClick: false,
-        allowEscapeKey: true,
-        html: datasetPermissionDiv,
-        reverseButtons: reverseSwalButtons,
-        showCloseButton: true,
-        showCancelButton: true,
-        title:
-          "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
-        showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster",
-        },
-        hideClass: {
-          popup:
-            "animate__animated animate__fadeOutUp animate__faster animate_fastest",
-        },
-        willOpen: () => {
-          $("#curatebfdatasetlist").selectpicker("hide");
-          $("#curatebfdatasetlist").selectpicker("refresh");
-          $("#bf-dataset-select-div").hide();
-        },
-        didOpen: () => {
-          $(".ui.active.green.inline.loader.small").css("display", "none");
-        },
-        preConfirm: () => {
-          $("body").addClass("waiting");
-
-          $(datasetPermissionDiv)
-            .find("#div-filter-datasets-progress-2")
-            .css("display", "block");
-          $("#curatebfdatasetlist").selectpicker("hide");
-          $("#curatebfdatasetlist").selectpicker("refresh");
-          $("#bf-dataset-select-div").hide();
-
-          bfDataset = $("#curatebfdatasetlist").val();
-
-          if (!bfDataset) {
-            Swal.showValidationMessage("Please select a dataset!");
-
+      accountPresent = await check_api_key();
+      if (accountPresent === false) {
+        //If there is no API key pair, warning will pop up allowing user to sign in
+        await Swal.fire({
+          icon: "warning",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Yes",
+          showCancelButton: true,
+          reverseButtons: reverseSwalButtons,
+          cancelButtonText: "I'll do it later",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await openDropdownPrompt(this, "bf");
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
+          } else {
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
+          }
+        });
+      } else {
+        //account is signed in but no datasets have been fetched or created
+        //invoke dataset request to ensure no datasets have been created
+        if (datasetList.length === 0) {
+          client.invoke(
+            "api_bf_dataset_account",
+            defaultBfAccount,
+            (error, result) => {
+              if (error) {
+                log.error(error);
+                console.log(error);
+                var emessage = error;
+              } else {
+                datasetList = [];
+                datasetList = result;
+                refreshDatasetList();
+              }
+            }
+          );
+        }
+        //after request check length again
+        //if 0 then no datasets have been created
+        if (datasetList.length === 0) {
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: "Cancel",
+            confirmButtonText: "Create new dataset",
+            focusCancel: false,
+            focusConfirm: true,
+            showCloseButton: true,
+            showCancelButton: true,
+            heightAuto: false,
+            allowOutsideClick: false,
+            allowEscapeKey: true,
+            title:
+              "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
+            html: "It appears that your don't have any datasets on Pennsieve with owner or manage permission.<br><br>Please create one to get started.",
+            showClass: {
+              popup: "animate__animated animate__fadeInDown animate__faster",
+            },
+            hideClass: {
+              popup:
+                "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+            },
+            didOpen: () => {
+              $(".ui.active.green.inline.loader.small").css("display", "none");
+              $(".svg-change-current-account.dataset").css("display", "block");
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $("#create_new_bf_dataset_btn").click();
+            }
+          });
+        }
+      }
+      //datasets do exist so display popup with dataset options
+      //else datasets have been created
+      if (datasetList.length > 0) {
+        console.log("pop up to select datasets is created");
+        const { value: bfDS } = await Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          cancelButtonText: "Cancel",
+          confirmButtonText: "Confirm",
+          focusCancel: true,
+          focusConfirm: false,
+          heightAuto: false,
+          allowOutsideClick: false,
+          allowEscapeKey: true,
+          html: datasetPermissionDiv,
+          reverseButtons: reverseSwalButtons,
+          showCloseButton: true,
+          showCancelButton: true,
+          title:
+            "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup:
+              "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+          },
+          willOpen: () => {
+            $("#curatebfdatasetlist").selectpicker("hide");
+            $("#curatebfdatasetlist").selectpicker("refresh");
+            $("#bf-dataset-select-div").hide();
+          },
+          didOpen: () => {
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $("#curatebfdatasetlist").attr("disabled", false);
             $(datasetPermissionDiv)
               .find("#div-filter-datasets-progress-2")
               .css("display", "none");
-            $("#curatebfdatasetlist").selectpicker("show");
             $("#curatebfdatasetlist").selectpicker("refresh");
+            $("#curatebfdatasetlist").selectpicker("show");
             $("#bf-dataset-select-div").show();
 
-            return undefined;
-          } else {
-            if (bfDataset === "Select dataset") {
+            bfDataset = $("#curatebfdatasetlist").val();
+          },
+          preConfirm: () => {
+            console.log(bfDataset + "checking once more");
+            bfDataset = $("#curatebfdatasetlist").val();
+            if (!bfDataset) {
               Swal.showValidationMessage("Please select a dataset!");
 
               $(datasetPermissionDiv)
@@ -1023,66 +1098,77 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
               return undefined;
             } else {
-              return bfDataset;
+              if (bfDataset === "Select dataset") {
+                Swal.showValidationMessage("Please select a dataset!");
+
+                $(datasetPermissionDiv)
+                  .find("#div-filter-datasets-progress-2")
+                  .css("display", "none");
+                $("#curatebfdatasetlist").selectpicker("show");
+                $("#curatebfdatasetlist").selectpicker("refresh");
+                $("#bf-dataset-select-div").show();
+
+                return undefined;
+              } else {
+                return bfDataset;
+              }
             }
+          },
+        });
+
+        // check return value
+        if (bfDS) {
+          if (show_timer) {
+            Swal.fire({
+              allowEscapeKey: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: false,
+              title: "Loading your dataset details...",
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
           }
-        },
-      });
 
-      // check return value
-      if (bfDS) {
-        if (show_timer) {
-          Swal.fire({
-            allowEscapeKey: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: false,
-            title: "Loading your dataset details...",
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          });
+          if (dropdownEventID === "dd-select-pennsieve-dataset") {
+            $("#ds-name").val(bfDataset);
+            $("body").removeClass("waiting");
+            $(".svg-change-current-account.dataset").css("display", "block");
+            dropdownEventID = "";
+            return;
+          }
+          $("#current-bf-dataset").text(bfDataset);
+          $("#current-bf-dataset-generate").text(bfDataset);
+          $(".bf-dataset-span").html(bfDataset);
+          confirm_click_function();
+
+          defaultBfDataset = bfDataset;
+          // document.getElementById("ds-description").innerHTML = "";
+          refreshDatasetList();
+          $("#dataset-loaded-message").hide();
+
+          showHideDropdownButtons("dataset", "show");
+          // checkPrevDivForConfirmButton("dataset");
+        }
+        if ($("#current-bf-dataset-generate").text() === "None") {
+          showHideDropdownButtons("dataset", "hide");
+        } else {
+          showHideDropdownButtons("dataset", "show");
         }
 
-        if (dropdownEventID === "dd-select-pennsieve-dataset") {
-          $("#ds-name").val(bfDataset);
-          $("body").removeClass("waiting");
-          $(".svg-change-current-account.dataset").css("display", "block");
-          dropdownEventID = "";
-          return;
+        // hide "Confirm" button if Current dataset under Getting started set to None
+        if ($("#current-bf-dataset").text() === "None") {
+          showHideDropdownButtons("dataset", "hide");
+        } else {
+          showHideDropdownButtons("dataset", "show");
         }
-        $("#current-bf-dataset").text(bfDataset);
-        $("#current-bf-dataset-generate").text(bfDataset);
-        $(".bf-dataset-span").html(bfDataset);
-        confirm_click_function();
-
-        defaultBfDataset = bfDataset;
-        // document.getElementById("ds-description").innerHTML = "";
-        refreshDatasetList();
-        $("#dataset-loaded-message").hide();
-
-        showHideDropdownButtons("dataset", "show");
-        // checkPrevDivForConfirmButton("dataset");
+        $("body").removeClass("waiting");
+        $(".svg-change-current-account.dataset").css("display", "block");
+        $(".ui.active.green.inline.loader.small").css("display", "none");
       }
-
-      // hide "Confirm" button if Current dataset set to None
-      if ($("#current-bf-dataset-generate").text() === "None") {
-        showHideDropdownButtons("dataset", "hide");
-      } else {
-        showHideDropdownButtons("dataset", "show");
-      }
-
-      // hide "Confirm" button if Current dataset under Getting started set to None
-      if ($("#current-bf-dataset").text() === "None") {
-        showHideDropdownButtons("dataset", "hide");
-      } else {
-        showHideDropdownButtons("dataset", "show");
-      }
-      $("body").removeClass("waiting");
-      $(".svg-change-current-account.dataset").css("display", "block");
-      $(".ui.active.green.inline.loader.small").css("display", "none");
     }, 10);
   }
 }
