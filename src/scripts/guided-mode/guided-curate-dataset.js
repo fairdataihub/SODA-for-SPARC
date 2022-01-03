@@ -36,10 +36,6 @@ const validateGuidedBasicDescriptionTabInput = () => {
   }
 };
 
-const guidedAllowDrop = (ev) => {
-  ev.preventDefault();
-};
-
 var guidedFilesElement;
 var guidedTargetElement;
 const guidedDrop = (ev) => {
@@ -55,8 +51,8 @@ const guidedDrop = (ev) => {
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
-  var myPath = getRecursivePath(filtered, guidedDatasetStructureJSONObj);
-  console.log(guidedDatasetStructureJSONObj);
+  var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+  console.log(datasetStructureJSONObj);
   console.log(myPath);
   var importedFiles = {};
   var importedFolders = {};
@@ -389,57 +385,9 @@ $(document).ready(() => {
     validateGuidedBasicDescriptionTabInput();
   });
 
-  //Dropbox event listeners
-  $("#guided-items").on("drop", () => {
-    guidedDrop(event);
-  });
-  $("#guided-items").on("dragover", () => {
-    guidedAllowDrop(event);
-  });
-
-  $("#button-user-no-files").on("click", () => {
-    current_selected_folder.css("opacity", "0.2");
-    current_selected_folder.next().css("opacity", "1.0");
-    current_selected_folder = current_selected_folder.next();
-  });
-
   $("#prepare-dataset-tab").on("click", () => {
     $("#guided-basic-description-tab").hide();
     $("#guided-prepare-dataset-parent-tab").css("display", "flex");
-  });
-
-  $("#guided-confirm-folder-organization").on("click", () => {
-    $("#guided_folder_organization-tab").hide();
-    current_selected_folder.css("opacity", "0.2");
-    current_selected_folder.next().css("opacity", "1.0");
-    current_selected_folder = current_selected_folder.next();
-
-    $("#guided_folder_selection-tab").show();
-  });
-
-  $("#button-user-has-files").on("click", () => {
-    folderName = current_selected_folder.data("folder-name");
-    $("#guided_folder_selection-tab").hide();
-    console.log(guidedDatasetStructureJSONObj);
-    guidedDatasetStructureJSONObj["folders"][folderName] = {
-      files: {},
-      folders: {},
-    };
-    console.log(guidedDatasetStructureJSONObj);
-
-    console.log(sodaJSONObj);
-    const emptyFolderObj = {
-      folders: {},
-      files: {},
-    };
-    sodaJSONObj["dataset-structure"]["code"] = emptyFolderObj;
-    $("#guided-folder-name").text(
-      "Organize " + current_selected_folder.data("folder-name") + " folder"
-    );
-    $("#guided-input-global-path").val(
-      "My_dataset_folder/" + current_selected_folder.data("folder-name") + "/"
-    );
-    $("#guided_folder_organization-tab").show();
   });
 
   $("#guided-input-destination-getting-started-locally").on("click", () => {
@@ -480,13 +428,15 @@ $(document).ready(() => {
     });
   };
 
+  //next button click handler
   $("#guided-next-button").on("click", () => {
     //individual sub step processes
     if (current_sub_step.attr("id") == "guided-basic-description-tab") {
+      sodaJSONObj["mode"] = "guided";
       sodaJSONObj["starting-point"] = {};
       sodaJSONObj["starting-point"]["type"] = "new";
       sodaJSONObj["dataset-structure"] = {};
-      guidedDatasetStructureJSONObj = { folders: {}, files: {} };
+      datasetStructureJSONObj = { folders: {}, files: {} };
       sodaJSONObj["metadata-files"] = {};
       sodaJSONObj["manifest-files"] = {};
       sodaJSONObj["generate-dataset"] = {};
@@ -500,6 +450,8 @@ $(document).ready(() => {
       sodaJSONObj["metadata"]["subtitle"] = $("#guided-dataset-subtitle-input")
         .val()
         .trim();
+
+      console.log(sodaJSONObj);
     }
 
     if (current_sub_step.attr("id") == "guided-dataset-generation-tab") {
@@ -534,9 +486,6 @@ $(document).ready(() => {
 
   $("#guided-generate-dataset-button").on("click", async function () {
     alert("guided generate dataset button pushed");
-    // updateJSON structure after Generate dataset tab
-    console.log("GGGGSSSSJJJJ");
-    console.log(sodaJSONObj);
     //updateJSONStructureGenerate();
     if (sodaJSONObj["starting-point"]["type"] === "local") {
       sodaJSONObj["starting-point"]["type"] = "new";

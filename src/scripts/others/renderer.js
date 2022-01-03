@@ -5969,7 +5969,6 @@ ipcRenderer.on(
           sodaJSONObj["starting-point"]["type"] === "local" &&
           sodaJSONObj["starting-point"]["local-path"] == ""
         ) {
-          alert("validating dastaset");
           valid_dataset = verify_sparc_folder(
             $("#guided-input-destination-getting-started-locally").attr(
               "placeholder"
@@ -6017,31 +6016,32 @@ ipcRenderer.on(
                   return;
                 }
                 sodaJSONObj["starting-point"]["local-path"] = filepath[0];
-                create_json_object(action, sodaJSONObj);
-                guidedDatasetStructureJSONObj =
-                  sodaJSONObj["dataset-structure"];
-                populate_existing_folders(guidedDatasetStructureJSONObj);
+
+                let root_folder_path = $(
+                  "#guided-input-destination-getting-started-locally"
+                ).attr("placeholder");
+
+                create_json_object(action, sodaJSONObj, root_folder_path);
+                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                populate_existing_folders(datasetStructureJSONObj);
                 populate_existing_metadata(sodaJSONObj);
-                $("#para-continue-location-dataset-getting-started").text(
-                  "Please continue below."
-                );
                 enableProgressButton();
                 console.log(sodaJSONObj);
-                console.log(guidedDatasetStructureJSONObj);
+                console.log(datasetStructureJSONObj);
               });
             } else {
               action = "";
+              let root_folder_path = $(
+                "#guided-input-destination-getting-started-locally"
+              ).attr("placeholder");
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               sodaJSONObj["object-mode"] = "guided";
-              create_json_object(action, sodaJSONObj);
-              guidedDatasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-              populate_existing_folders(guidedDatasetStructureJSONObj);
+              create_json_object(action, sodaJSONObj, root_folder_path);
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              populate_existing_folders(datasetStructureJSONObj);
               populate_existing_metadata(sodaJSONObj);
               console.log(sodaJSONObj);
-              console.log(guidedDatasetStructureJSONObj);
-              $("#para-continue-location-dataset-getting-started").text(
-                "Please continue below."
-              );
+              console.log(datasetStructureJSONObj);
               enableProgressButton();
             }
           } else {
