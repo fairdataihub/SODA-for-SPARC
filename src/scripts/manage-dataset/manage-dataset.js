@@ -2408,7 +2408,7 @@ $("#button-submit-dataset").click(async () => {
 
         ipcRenderer.send(
           "track-event",
-          "Success",
+          "Error",
           MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             " - size",
           "Size",

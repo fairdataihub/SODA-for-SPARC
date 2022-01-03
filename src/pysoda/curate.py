@@ -1763,7 +1763,7 @@ def generate_dataset_locally(soda_json_structure):
             open_file(join(dataset_absolute_path, original_dataset_path))
         else:
             open_file(join(dataset_absolute_path, datasetpath))
-        return datasetpath
+        return datasetpath, main_total_generate_dataset_size
 
     except Exception as e:
         raise e
@@ -3399,7 +3399,7 @@ def main_curate_function(soda_json_structure):
                 main_generate_destination = soda_json_structure["generate-dataset"][
                     "destination"
                 ]
-                generate_dataset_locally(soda_json_structure)
+                _, main_total_generate_dataset_size = generate_dataset_locally(soda_json_structure)
                 # if "manifest-files" in main_keys:
                 #     main_curate_progress_message = "Generating manifest files"
                 #     add_local_manifest_files(manifest_files_structure, datasetpath)
@@ -3429,7 +3429,7 @@ def main_curate_function(soda_json_structure):
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
 
-    return main_curate_progress_message
+    return main_curate_progress_message, main_total_generate_dataset_size
 
 
 def main_curate_function_progress():

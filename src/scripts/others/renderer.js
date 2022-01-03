@@ -6465,6 +6465,8 @@ function initiate_generate() {
         }
       );
     } else {
+      main_total_generate_dataset_size = res[1]
+      console.log("Dataset size for local dataset upload is: ", main_total_generate_dataset_size)
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
       console.log("Completed curate function");
