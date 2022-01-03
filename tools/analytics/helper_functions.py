@@ -9,7 +9,7 @@ import calendar
 
 SCOPES = ['https://www.googleapis.com/auth/analytics.readonly']
 KEY_FILE_LOCATION = 'client_secrets.json'
-VIEW_ID = '234549909'
+VIEW_ID = '223394018'
 
 
 def initialize_analyticsreporting():
