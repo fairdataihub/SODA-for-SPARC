@@ -70,9 +70,6 @@
   border-left: 1px solid var(--color-border);
 }
 
-.guided--footer div:first-child {
-  margin-left: 50px;
-}
 .dot {
   height: 30px;
   width: 30px;
@@ -224,6 +221,11 @@
   margin-bottom: 7px;
 }
 
+.guided--prompt-continue {
+  color: var(--color-light-green) !important;
+  margin-top: 15px !important;
+}
+
 .guided--sub-step-text {
   display: block;
   font-size: 17px;
@@ -232,6 +234,7 @@
   font-weight: 700;
   margin-bottom: 7px;
 }
+
 .guided--progress-container {
   display: flex;
   flex-direction: row;
@@ -488,11 +491,11 @@
 }
 
 .guided--footer button:first-child {
-  margin-left: 10%;
+  margin-left: 7%;
 }
 
 .guided--footer button:last-child {
-  margin-right: 10%;
+  margin-right: 7%;
 }
 
 .guided--field {

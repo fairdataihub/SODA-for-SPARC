@@ -395,11 +395,10 @@ $(document).ready(() => {
   });
 
   $(".guided--card-container > div").on("click", function () {
+    $(this).attr("data-enable-next-button") == "true"
+      ? enableProgressButton()
+      : disableProgressButton();
     const selectedTab = $(this);
-    if (selectedTab.attr("id") == "guided-generate-dataset-new-card") {
-      enableProgressButton();
-      $("#guided-next-button").click();
-    }
     selectedTab.siblings().removeClass("checked");
     selectedTab.siblings().addClass("non-selected");
     selectedTab.removeClass("non-selected");
@@ -440,7 +439,6 @@ $(document).ready(() => {
       sodaJSONObj["metadata-files"] = {};
       sodaJSONObj["manifest-files"] = {};
       sodaJSONObj["generate-dataset"] = {};
-
       sodaJSONObj["metadata"] = {};
       sodaJSONObj["generate-dataset"]["dataset-name"] = $(
         "#guided-dataset-name-input"
@@ -486,7 +484,8 @@ $(document).ready(() => {
 
   $("#guided-generate-dataset-button").on("click", async function () {
     alert("guided generate dataset button pushed");
-    //updateJSONStructureGenerate();
+    console.log(sodaJSONObj);
+    updateJSONStructureGenerate();
     if (sodaJSONObj["starting-point"]["type"] === "local") {
       sodaJSONObj["starting-point"]["type"] = "new";
     }
@@ -516,8 +515,11 @@ $(document).ready(() => {
       "Please wait while we verify a few things...";*/
 
     if (dataset_destination == "Pennsieve") {
+      alert("supp checks");
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
+        alert("!supp checks");
+
         $("#sidebarCollapse").prop("disabled", false);
         return;
       }

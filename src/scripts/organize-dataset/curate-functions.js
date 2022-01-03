@@ -1057,6 +1057,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         }
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
+        $("#guided-current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
         confirm_click_function();
 
