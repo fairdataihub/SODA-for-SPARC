@@ -13,7 +13,10 @@
       <header class="guided--header">
         <div class="guided--progression-tab-container">
           <div
-            class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+            class="
+              guided--progression-tab guided--progression-tab-triangle
+              selected-tab
+            "
             id="prepare-dataset-progression-tab"
           >
             <div class="guided--progression-tab-content">
@@ -66,7 +69,7 @@
       </header>
 
       <div class="guided--body">
-        <div id="prepare-dataset-parent-tab">
+        <div id="prepare-dataset-parent-tab" style="width: 100%">
           <div class="guided--capsule-container">
             <div
               class="guided--capsule active"
@@ -81,7 +84,7 @@
             <div class="guided--capsule"></div>
           </div>
 
-          <div id="guided-basic-description-tab">
+          <div id="guided-basic-description-tab" class="guided--panel">
             <div class="guided--question">
               <h1 class="guided--sub-step-text">
                 Curate a new dataset or continue from existing?<br /><span
@@ -91,7 +94,12 @@
               </h1>
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card checked"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    checked
+                  "
                   id="guided-curate-new-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -120,7 +128,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-curate-existing-local-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -146,7 +159,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-curate-existing-Pennsieve-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -250,7 +268,7 @@
             </div>
           </div>
 
-          <div id="guided-folder-importation-tab" class="hidden">
+          <div id="guided-folder-importation-tab" class="guided--panel hidden">
             <div class="guided--question show" id="guided_dataset_name_div">
               <label class="guided--prompt-text" style="color: black"
                 >What is the location of the dataset?
@@ -284,7 +302,10 @@
             </div>
           </div>
 
-          <div id="guided-dataset-generate-location-tab" class="hidden">
+          <div
+            id="guided-dataset-generate-location-tab"
+            class="guided--panel hidden"
+          >
             <div class="guided--question">
               <h1 class="guided--sub-step-text">
                 Where would you like to generate your dataset? <br /><span
@@ -295,7 +316,12 @@
 
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-local-card"
                   data-enable-next-button="true"
                 >
@@ -306,7 +332,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-pennsieve-card"
                 >
                   <div class="card-head"></div>
@@ -398,7 +429,10 @@
                                 >
                               </div>
                               <svg
-                                class="svg-change-current-account bi bi-pencil-fill"
+                                class="
+                                  svg-change-current-account
+                                  bi bi-pencil-fill
+                                "
                                 onclick="openDropdownPrompt(this, 'bf')"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="18"
@@ -569,9 +603,14 @@
 
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-new-card"
-                  data-enable-next-button="true"
+                  data-enable-next-button="false"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -599,7 +638,12 @@
                 </div>
 
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-existing-card"
                   data-enable-next-button="true"
                 >
@@ -633,7 +677,69 @@
                   id="guided-generate-dataset-new-panel"
                   class="guided--panel hidden"
                 >
-                  generate new panel
+                  <div class="guided--question">
+                    <h4 class="ui header guided--prompt-continue">
+                      Please confirm your dataset name:
+                    </h4>
+                    <div class="guided--container-modify">
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                        "
+                      >
+                        <div class="card-container manage-dataset">
+                          <h5 class="card-left" style="margin-bottom: 0px">
+                            Current name:
+                          </h5>
+                          <div
+                            class="change-current-account"
+                            onclick="openDropdownPrompt(this, 'bf')"
+                          >
+                            <span
+                              class="card-right"
+                              style="
+                                color: #000;
+                                font-weight: 600;
+                                font-size: 15px;
+                                margin-left: -15px;
+                              "
+                              id="guided-bf-dataset-name-confirm"
+                              >None</span
+                            >
+
+                            <svg
+                              class="
+                                svg-change-current-account
+                                bi bi-pencil-fill
+                              "
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="18"
+                              height="18"
+                              fill="#000"
+                              viewBox="0 0 16 16"
+                            >
+                              <path
+                                d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    class="ui positive button guided--button"
+                    id="guided-dataset-name-confirm-button"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      width: 120px !important;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    Confirm
+                  </button>
                 </div>
                 <div
                   id="guided-generate-dataset-existing-panel"
@@ -686,7 +792,11 @@
                                 </h5>
                               </div>
                               <svg
-                                class="svg-change-current-account dataset bi bi-pencil-fill"
+                                class="
+                                  svg-change-current-account
+                                  dataset
+                                  bi bi-pencil-fill
+                                "
                                 onclick="openDropdownPrompt(this, 'dataset')"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="18"
@@ -813,7 +923,6 @@
                             <button
                               id="guided-button-confirm-bf-dataset"
                               class="btn_animated"
-                              onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
                               data-next="Question-generate-dataset-existing-folders-options"
                               style="
                                 display: none;

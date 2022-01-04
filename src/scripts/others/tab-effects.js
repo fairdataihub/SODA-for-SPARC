@@ -755,6 +755,7 @@ const nextPrev = (n) => {
     // Display the correct tab:
     showParentTab(currentTab, n);
   }
+  console.log(sodaJSONObj);
 };
 
 const fixStepIndicator = (n) => {
