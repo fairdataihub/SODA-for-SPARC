@@ -1219,10 +1219,13 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
 
+        
         // log the size of the metadata file that was generated at varying levels of granularity
+        const size = res
         logMetadataSizeForAnalytics(
           uploadBFBoolean,
-          "subjects.xlsx"
+          "subjects.xlsx",
+          size
         );
       }
     }
@@ -1388,9 +1391,11 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         );
 
         // log the size of the metadata file that was generated at varying levels of granularity
+        const size = res
         logMetadataSizeForAnalytics(
           uploadBFBoolean,
-          "samples.xlsx"
+          "samples.xlsx",
+          size
         );
       }
     }
@@ -7447,7 +7452,7 @@ function logMetadataForAnalytics(
 // Inputs:
 //    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
 //    metadataFileName: string - the name of the metadata file that was created along with its extension
-async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName) {
+async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, size) {
   let fileNameToPrefixMapping = {
     dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
     submission: MetadataAnalyticsPrefix.SUBMISSION,
@@ -7466,13 +7471,8 @@ async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName) {
 
   // get the appropriate prefix for logging the given metadata file's size
   let currentMetadataLoggingPrefix =
-    fileNameToPrefixMapping[`${metadataFileWithoutExtension}`];
+    fileNameToPrefixMapping[`${metadataFileWithoutExtension.toLowerCase()}`];
 
-  // get the size of the created metadata file
-  let size = await getCreatedMetadataFileSize(
-    uploadBFBoolean,
-    `${metadataFileName}`
-  );
 
   // log the size to analytics using the Action as a root logging level
   // that aggregates the size of all metadata files of a particular type created through SODA
@@ -7500,56 +7500,6 @@ async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName) {
     size
   );
 }
-
-// Gets the file size (in bytes) of a Metadata file created in the Prepare Metadata Section
-// Inputs:
-//  uploadedBFBoolean: boolean - When true the metadata file was uploaded to Pennsieve; When false it was created locally
-//  metadataFileName: string - The name of the metadata file that was created (including the extension)
-const getCreatedMetadataFileSize = async (
-  uploadedBFBoolean,
-  metadataFileName
-) => {
-  // check if the metadata file was uploaded to Pennsieve
-  if (uploadedBFBoolean) {
-    metadataFileLocation = `~/SODA/METADATA/${metadataFileName}`;
-
-    // get the size of the metadata file
-  } else {
-    // get the name of the metadata file without the extension
-    let metadataFile = metadataFileName.slice(0, metadataFileName.indexOf("."));
-
-    // map the given metadata file name to the input that contains its file path
-    const metadataNameToFileLocationInput = {
-      dataset_description: "input-destination-generate-dd-locally",
-      submission: "input-destination-generate-submission-locally",
-      subjects: "input-destination-generate-subjects-locally",
-      samples: "input-destination-generate-samples-locally",
-      readme: "input-destination-generate-readme-locally",
-      changes: "input-destination-generate-changes-locally",
-      manifest: "input-manifest-local-folder-dataset",
-    };
-
-    // get the file path from the mapping
-    let inputId = metadataNameToFileLocationInput[`${metadataFile}`];
-    let metadataFilePath = path.join(
-      document.querySelector(`#${inputId}`).placeholder,
-      `${metadataFileName}`
-    );
-
-    console.log(metadataFilePath);
-
-    try {
-      // get the size of the metadata file in bytes
-      let size = await getFileSizeInBytes(metadataFilePath);
-      console.log("Size of the metadata file created locally is: ", size);
-      return size;
-    } catch (e) {
-      console.error(e);
-      log.error(e);
-      return -1;
-    }
-  }
-};
 
 // get the size of a file in bytes given a path to a file
 const getFileSizeInBytes = (path) => {

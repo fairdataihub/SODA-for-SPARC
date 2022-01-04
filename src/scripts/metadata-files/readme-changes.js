@@ -106,6 +106,14 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             "Generate",
             Destinations.PENNSIEVE
           );
+
+          const size = res[0]
+          console.log("File path: ", res[1])
+          logMetadataSizeForAnalytics(
+            true,
+            upperCaseLetters === "CHANGES.txt" ? "CHANGES.txt" : "README.txt",
+            size
+          );
         }
       }
     );
@@ -348,7 +356,7 @@ async function saveRCFile(type) {
       } else {
         var newName = path.join(path.dirname(destinationPath), "README.txt");
       }
-      fs.rename(destinationPath, newName, (err) => {
+      fs.rename(destinationPath, newName, async (err) => {
         if (err) {
           console.log(err);
           log.error(err);
@@ -395,9 +403,11 @@ async function saveRCFile(type) {
           );
 
           // log the size of the metadata file that was generated at varying levels of granularity
+          let size = await getFileSizeInBytes(destinationPath);
           logMetadataSizeForAnalytics(
             false,
-            type === "changes" ? "changes.txt" : "readme.txt"
+            type === "changes" ? "changes.txt" : "readme.txt",
+            size
           );
         }
       });
