@@ -3399,7 +3399,9 @@ def main_curate_function(soda_json_structure):
                 main_generate_destination = soda_json_structure["generate-dataset"][
                     "destination"
                 ]
-                _, main_total_generate_dataset_size = generate_dataset_locally(soda_json_structure)
+                _, main_total_generate_dataset_size = generate_dataset_locally(
+                    soda_json_structure
+                )
                 # if "manifest-files" in main_keys:
                 #     main_curate_progress_message = "Generating manifest files"
                 #     add_local_manifest_files(manifest_files_structure, datasetpath)
