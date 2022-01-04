@@ -483,7 +483,6 @@ $(document).ready(() => {
   });
 
   $("#guided-generate-dataset-button").on("click", async function () {
-    alert("guided generate dataset button pushed");
     console.log(sodaJSONObj);
     updateJSONStructureGenerate();
     if (sodaJSONObj["starting-point"]["type"] === "local") {
@@ -518,8 +517,6 @@ $(document).ready(() => {
       alert("supp checks");
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
-        alert("!supp checks");
-
         $("#sidebarCollapse").prop("disabled", false);
         return;
       }
