@@ -393,6 +393,12 @@ async function saveRCFile(type) {
             "Generate",
             Destinations.LOCAL
           );
+
+          // log the size of the metadata file that was generated at varying levels of granularity
+          logMetadataSizeForAnalytics(
+            false,
+            type === "changes" ? "changes.txt" : "readme.txt"
+          );
         }
       });
     }

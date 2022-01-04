@@ -804,7 +804,7 @@ async function generateDDFile(uploadBFBoolean) {
     json_str_study,
     json_str_con,
     json_str_related_info,
-    (error, res) => {
+    async (error, res) => {
       if (error) {
         var emessage = userError(error);
         log.error(error);
@@ -834,6 +834,13 @@ async function generateDDFile(uploadBFBoolean) {
             "Successfully generated the dataset_description.xlsx file at the specified location.";
         }
 
+        Swal.fire({
+          title: successMessage,
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+
         // log the successful attempt to generate the description file in analytics at this step in the Generation process
         logMetadataForAnalytics(
           "Success",
@@ -843,12 +850,8 @@ async function generateDDFile(uploadBFBoolean) {
           uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
 
-        Swal.fire({
-          title: successMessage,
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
+        // log the size of the metadata file that was generated at varying levels of granularity
+        logMetadataSizeForAnalytics(uploadBFBoolean, "dataset_description.xlsx")
       }
     }
   );

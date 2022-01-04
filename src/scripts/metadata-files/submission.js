@@ -526,6 +526,9 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           "Generate",
           uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
+
+        // log the size of the metadata file that was generated at varying levels of granularity
+        logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx")
       }
     }
   );
