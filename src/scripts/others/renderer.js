@@ -33,6 +33,7 @@ const selectpicker = require("bootstrap-select");
 const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
+const diskCheck = require("check-disk-space").default;
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 
@@ -394,7 +395,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
-            await openDropdownPrompt(this, "bf");
+            await openDropdownPrompt(null, "bf");
             resolve(false);
           } else {
             resolve(true);

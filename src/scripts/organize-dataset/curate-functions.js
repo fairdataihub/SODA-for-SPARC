@@ -1,3 +1,5 @@
+const checkDiskSpace = require("check-disk-space").default;
+
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
@@ -957,7 +959,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //$(".selectpicker").selectpicker("refresh");
       //$("#bf-dataset-select-div").hide();
 
-      accountPresent = await check_api_key();
+      var accountPresent = await check_api_key();
       if (accountPresent === false) {
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
@@ -986,24 +988,30 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           }
         });
       } else {
+        console.log(datasetList.length + "\nchecking length of list");
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
         if (datasetList.length === 0) {
-          client.invoke(
-            "api_bf_dataset_account",
-            defaultBfAccount,
-            (error, result) => {
-              if (error) {
-                log.error(error);
-                console.log(error);
-                var emessage = error;
-              } else {
-                datasetList = [];
-                datasetList = result;
-                refreshDatasetList();
+          const fetchData = new Promise((resolve, reject) => {
+            client.invoke(
+              "api_bf_dataset_account",
+              defaultBfAccount,
+              (error, result) => {
+                if (error) {
+                  log.error(error);
+                  console.log(error);
+                  var emessage = error;
+                  reject(emessage);
+                } else {
+                  console.log("one more check in else");
+                  datasetList = [];
+                  datasetList = result;
+                  refreshDatasetList();
+                  resolve();
+                }
               }
-            }
-          );
+            );
+          });
         }
         //after request check length again
         //if 0 then no datasets have been created
@@ -1043,7 +1051,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //datasets do exist so display popup with dataset options
       //else datasets have been created
       if (datasetList.length > 0) {
-        console.log("pop up to select datasets is created");
+        console.log(datasetList[0] + "\nfirst item of list");
         const { value: bfDS } = await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
@@ -1084,7 +1092,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             bfDataset = $("#curatebfdatasetlist").val();
           },
           preConfirm: () => {
-            console.log(bfDataset + "checking once more");
             bfDataset = $("#curatebfdatasetlist").val();
             if (!bfDataset) {
               Swal.showValidationMessage("Please select a dataset!");
@@ -1110,6 +1117,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
                 return undefined;
               } else {
+                console.log(bfDataset + "checking once more");
                 return bfDataset;
               }
             }
