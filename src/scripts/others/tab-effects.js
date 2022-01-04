@@ -2979,6 +2979,8 @@ const updateJSONStructureGenerate = (progress = false) => {
       sodaJSONObj["starting-point"]["type"] = starting_point;
     }
   }
+  alert("updating");
+  console.log(sodaJSONObj);
 };
 
 // function to call when users click on Continue at each step
