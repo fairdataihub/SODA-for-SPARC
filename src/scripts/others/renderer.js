@@ -1219,14 +1219,9 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
 
-        
         // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "subjects.xlsx",
-          size
-        );
+        const size = res;
+        logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
       }
     }
   );
@@ -1391,12 +1386,8 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         );
 
         // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "samples.xlsx",
-          size
-        );
+        const size = res;
+        logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
       }
     }
   );
@@ -7452,7 +7443,11 @@ function logMetadataForAnalytics(
 // Inputs:
 //    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
 //    metadataFileName: string - the name of the metadata file that was created along with its extension
-async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, size) {
+async function logMetadataSizeForAnalytics(
+  uploadBFBoolean,
+  metadataFileName,
+  size
+) {
   let fileNameToPrefixMapping = {
     dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
     submission: MetadataAnalyticsPrefix.SUBMISSION,
@@ -7472,7 +7467,6 @@ async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, si
   // get the appropriate prefix for logging the given metadata file's size
   let currentMetadataLoggingPrefix =
     fileNameToPrefixMapping[`${metadataFileWithoutExtension.toLowerCase()}`];
-
 
   // log the size to analytics using the Action as a root logging level
   // that aggregates the size of all metadata files of a particular type created through SODA
