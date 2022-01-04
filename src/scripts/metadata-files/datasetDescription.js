@@ -851,8 +851,15 @@ async function generateDDFile(uploadBFBoolean) {
         );
 
         // log the size of the metadata file that was generated at varying levels of granularity
+<<<<<<< HEAD
         const size = res
         logMetadataSizeForAnalytics(uploadBFBoolean, "dataset_description.xlsx", size)
+=======
+        logMetadataSizeForAnalytics(
+          uploadBFBoolean,
+          "dataset_description.xlsx"
+        );
+>>>>>>> 25b36cec389b42ae21b579987c0845b1cfba4f11
       }
     }
   );
