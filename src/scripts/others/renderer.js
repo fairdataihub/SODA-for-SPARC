@@ -1220,10 +1220,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
         );
 
         // log the size of the metadata file that was generated at varying levels of granularity
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "subjects.xlsx"
-        );
+        logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx");
       }
     }
   );
@@ -1388,10 +1385,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         );
 
         // log the size of the metadata file that was generated at varying levels of granularity
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "samples.xlsx"
-        );
+        logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx");
       }
     }
   );

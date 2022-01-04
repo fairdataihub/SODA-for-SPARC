@@ -528,7 +528,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
         );
 
         // log the size of the metadata file that was generated at varying levels of granularity
-        logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx")
+        logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx");
       }
     }
   );
