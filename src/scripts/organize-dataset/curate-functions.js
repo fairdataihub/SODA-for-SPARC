@@ -1,5 +1,3 @@
-const checkDiskSpace = require("check-disk-space").default;
-
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
@@ -988,7 +986,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           }
         });
       } else {
-        console.log(datasetList.length + "\nchecking length of list");
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
         if (datasetList.length === 0) {
@@ -1003,7 +1000,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                   var emessage = error;
                   reject(emessage);
                 } else {
-                  console.log("one more check in else");
                   datasetList = [];
                   datasetList = result;
                   refreshDatasetList();
@@ -1051,7 +1047,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //datasets do exist so display popup with dataset options
       //else datasets have been created
       if (datasetList.length > 0) {
-        console.log(datasetList[0] + "\nfirst item of list");
         const { value: bfDS } = await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
@@ -1117,7 +1112,6 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
                 return undefined;
               } else {
-                console.log(bfDataset + "checking once more");
                 return bfDataset;
               }
             }
