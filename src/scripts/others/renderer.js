@@ -7448,7 +7448,13 @@ async function logMetadataSizeForAnalytics(
   metadataFileName,
   size
 ) {
-  ipcRenderer.send("track-event", "Success", "Prepare Metadata - Generate", "Size of Total Metadata Files Generated", size);
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Metadata - Generate",
+    "Size of Total Metadata Files Generated",
+    size
+  );
 
   let fileNameToPrefixMapping = {
     dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
