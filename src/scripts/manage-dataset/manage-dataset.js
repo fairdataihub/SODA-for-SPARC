@@ -1653,7 +1653,7 @@ const uploadBannerImage = () => {
               "track-event",
               "Success",
               MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                "- Size",
+                " - Size",
               "Size",
               image_file_size
             );
@@ -1663,7 +1663,7 @@ const uploadBannerImage = () => {
               "track-event",
               "Success",
               MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                "- Size",
+                " - Size",
               defaultBfDatasetId,
               image_file_size
             );
