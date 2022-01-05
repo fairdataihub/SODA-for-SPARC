@@ -7478,7 +7478,7 @@ async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, si
   ipcRenderer.send(
     "track-event",
     "Success",
-    currentMetadataLoggingPrefix + "- Generate - Size",
+    currentMetadataLoggingPrefix + " - Generate - Size",
     "Size",
     size
   );
