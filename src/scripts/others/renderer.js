@@ -1219,14 +1219,9 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
 
-        
         // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "subjects.xlsx",
-          size
-        );
+        const size = res;
+        logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
       }
     }
   );
@@ -1391,12 +1386,8 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         );
 
         // log the size of the metadata file that was generated at varying levels of granularity
-        const size = res
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "samples.xlsx",
-          size
-        );
+        const size = res;
+        logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
       }
     }
   );
@@ -7481,7 +7472,6 @@ async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, si
   // get the appropriate prefix for logging the given metadata file's size
   let currentMetadataLoggingPrefix =
     fileNameToPrefixMapping[`${metadataFileWithoutExtension.toLowerCase()}`];
-
 
   // log the size to analytics using the Action as a root logging level
   // that aggregates the size of all metadata files of a particular type created through SODA
