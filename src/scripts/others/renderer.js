@@ -6532,6 +6532,13 @@ function initiate_generate() {
         determineDatasetLocation()
       );
 
+      
+      if(dataset_destination === "Local") {
+        // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
+        let datasetName = document.querySelector("#inputNewNameDataset").value
+        ipcRenderer.send("track-event", "Success", "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Local", datasetName);
+      }
+
       // for tracking the total size of all datasets ever created on SODA
       ipcRenderer.send(
         "track-event",
@@ -6540,8 +6547,6 @@ function initiate_generate() {
         "Size",
         main_total_generate_dataset_size
       );
-
-      console.log("The generate size is: ", main_total_generate_dataset_size);
 
       logCurationForAnalytics(
         "Success",
