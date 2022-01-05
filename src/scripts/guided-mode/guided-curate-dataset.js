@@ -135,9 +135,8 @@ $(document).ready(() => {
     //1st: create guided mode sodaObj, append properties per user input
     if (current_sub_step.attr("id") == "guided-basic-description-tab") {
       sodaJSONObj["bf-account-selected"] = {};
-      sodaJSONObj["bf-dataset-selected"] = {};
       sodaJSONObj["mode"] = "guided";
-      sodaJSONObj["dataset-structure"] = {};
+      sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
       sodaJSONObj["generate-dataset"] = {};
       sodaJSONObj["manifest-files"] = {};
       sodaJSONObj["metadata-files"] = {};
@@ -178,6 +177,23 @@ $(document).ready(() => {
       }
     }
 
+    if (
+      current_sub_step.attr("id") == "guided-dataset-generate-destination-tab"
+    ) {
+      if ($("#guided-generate-dataset-new-card").hasClass("checked")) {
+        confirmed_dataset_name = $("#guided-bf-dataset-name-confirm").text();
+        sodaJSONObj["generate-dataset"]["dataset-name"] =
+          confirmed_dataset_name;
+      }
+      sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+      sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
+      sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
+
+      if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
+        sodaJSONObj["generate-dataset"]["destination"] = "bf";
+      }
+    }
+
     //if more tabs in parent tab, go to next tab and update capsule
     if (current_sub_step.next().attr("id") !== undefined) {
       current_sub_step.hide();
@@ -200,7 +216,7 @@ $(document).ready(() => {
   });
 
   const guidedUpdateJSONStructureGenerate = () => {
-    let starting_point = sodaJSONObj["starting-point"]["type"];
+    /* let starting_point = sodaJSONObj["starting-point"]["type"];
     if (starting_point == "bf") {
       sodaJSONObj["generate-dataset"] = {
         destination: "bf",
@@ -364,7 +380,7 @@ $(document).ready(() => {
           }
         }
       }
-    }
+    }*/
   };
   $("#guided-generate-dataset-button").on("click", async function () {
     guidedUpdateJSONStructureGenerate();
