@@ -179,6 +179,12 @@
   width: 100%;
 }
 
+.guided--parent-tab {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .guided--panel {
   width: 100%;
   display: flex;
