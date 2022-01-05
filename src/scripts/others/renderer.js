@@ -36,7 +36,7 @@ const cognitoClient = require("amazon-cognito-identity-js");
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 
-const xlsxToJson = require('xlsx-to-json');
+const xlsxToJson = require("xlsx-to-json");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;

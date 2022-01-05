@@ -7,8 +7,6 @@ function showLocalDatasetManifest() {
 }
 
 $(document).ready(function () {
-
-
   ipcRenderer.on(
     "selected-local-dataset-manifest-purpose",
     (event, folderPath) => {
@@ -156,23 +154,20 @@ $(document).ready(function () {
         localFolderPath,
         "manifest.xlsx"
       );
-      var jsonManifestFilePath = path.join(
-        localFolderPath,
-        "manifest.json"
-      );
+      var jsonManifestFilePath = path.join(localFolderPath, "manifest.json");
       //Set up options for xlsx-to-json:
-       var optionsConvertManifest = {
-           input: selectedManifestFilePath,
-           output: jsonManifestFilePath,
-       };
-       //Set up the callback function
-       let callbackConvertManifest = function(err, result) {
-         if(err) {
-           console.log('Error : ', err);
-         }
-       }
+      var optionsConvertManifest = {
+        input: selectedManifestFilePath,
+        output: jsonManifestFilePath,
+      };
+      //Set up the callback function
+      let callbackConvertManifest = function (err, result) {
+        if (err) {
+          console.log("Error : ", err);
+        }
+      };
       xlsxToJson(optionsConvertManifest, callbackConvertManifest);
-      loadManifestFileEdits(jsonManifestFilePath, selectedManifestFilePath)
+      loadManifestFileEdits(jsonManifestFilePath, selectedManifestFilePath);
     }
   });
 });
@@ -181,45 +176,45 @@ function loadManifestFileEdits(jsonPath, excelManifestFilePath) {
   let rawdata = fs.readFileSync(jsonPath);
   let jsondata = JSON.parse(rawdata);
   // After ID in pop has been initiated, initialize jspreadsheet
-  jspreadsheet(document.getElementById('div-manifest-edit'), {
+  jspreadsheet(document.getElementById("div-manifest-edit"), {
     data: jsondata,
     columns: [
       {
-          type:'text',
-          width:'150px',
-          name:'filename',
-          title: 'Filename',
-          readOnly:true,
+        type: "text",
+        width: "150px",
+        name: "filename",
+        title: "Filename",
+        readOnly: true,
       },
       {
-          type:'text',
-          width:'150px',
-          name:'description',
-          title:'Description',
-          readOnly:false,
+        type: "text",
+        width: "150px",
+        name: "description",
+        title: "Description",
+        readOnly: false,
       },
       {
-          type:'text',
-          width:'150px',
-          name:'Additional Metadata',
-          title:'Additional Metadata',
-          readOnly:false,
+        type: "text",
+        width: "150px",
+        name: "Additional Metadata",
+        title: "Additional Metadata",
+        readOnly: false,
       },
       {
-          type:'text',
-          width:'100px',
-          name:'file type',
-          title: 'File type',
-          readOnly:true,
+        type: "text",
+        width: "100px",
+        name: "file type",
+        title: "File type",
+        readOnly: true,
       },
       {
-          type:'text',
-          width:'100px',
-          name:'timestamp',
-          title: 'Timestamp',
-          readOnly:true,
+        type: "text",
+        width: "100px",
+        name: "timestamp",
+        title: "Timestamp",
+        readOnly: true,
       },
-   ],
+    ],
   });
 }
 
