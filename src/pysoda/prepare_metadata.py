@@ -164,13 +164,13 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
 
     wb.save(destination)
 
-    # calculate the size of the metadata file 
+    # calculate the size of the metadata file
     size = getsize(destination)
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
         upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
-    
+
     return size
 
 
@@ -456,7 +456,7 @@ def save_ds_description_file(
         upload_metadata_file(
             "dataset_description.xlsx", bfaccount, bfdataset, destination
         )
-    
+
     return size
 
 
@@ -656,6 +656,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
         upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
 
     return size
+
 
 # check for non-empty fields (cells)
 def column_check(x):
