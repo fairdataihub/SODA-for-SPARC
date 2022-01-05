@@ -2861,9 +2861,6 @@ const updateJSONStructureGenerate = (progress = false) => {
           localDestination = "";
         }
         var newDatasetName = $("#inputNewNameDataset").val().trim();
-        // if (progress == false) {
-        //   delete sodaJSONObj["starting-point"]["local-path"];
-        // }
         sodaJSONObj["generate-dataset"] = {
           destination: "local",
           path: localDestination,

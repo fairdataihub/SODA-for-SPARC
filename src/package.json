@@ -96,6 +96,7 @@
     "jimp": "^0.16.1",
     "jquery": "^3.6.0",
     "jstree": "^3.3.11",
+    "jsuites": "^4.9.33",
     "node-localstorage": "^2.1.6",
     "notyf": "^3.9.0",
     "pdfkit": "^0.11.0",
@@ -108,6 +109,7 @@
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",
+    "xlsx-to-json": "^0.3.0",
     "zerorpc": "github:megasanjay/zerorpc-node#master"
   },
   "devDependencies": {

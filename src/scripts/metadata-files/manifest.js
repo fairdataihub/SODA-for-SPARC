@@ -7,6 +7,8 @@ function showLocalDatasetManifest() {
 }
 
 $(document).ready(function () {
+
+
   ipcRenderer.on(
     "selected-local-dataset-manifest-purpose",
     (event, folderPath) => {
@@ -120,6 +122,21 @@ $(document).ready(function () {
 
   $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
     if (data.node.text === "manifest.xlsx") {
+      // Show loading popup
+      Swal.fire({
+        title: "Edit the manifest file below:",
+        html: "<div id='div-manifest-edit'></div>",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: true,
+        confirmButtonText: "Confirm",
+        showCancelButton: true,
+        width: 600,
+        // this "swal-large" class has overflow-x = "scroll"
+        customClass: "swal-large",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      }).then((result) => {});
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
       var localFolderPath = path.join(
         homeDirectory,
@@ -127,26 +144,84 @@ $(document).ready(function () {
         "SODA Manifest Files",
         parentFolderName
       );
+      // load onto library
+      var localFolderPath = path.join(
+        homeDirectory,
+        "SODA",
+        "SODA Manifest Files",
+        parentFolderName
+      );
+
       var selectedManifestFilePath = path.join(
         localFolderPath,
         "manifest.xlsx"
       );
-      // load onto library
-
-      jexcel.fromSpreadsheet(selectedManifestFilePath, function (result) {
-        if (!result.length) {
-          console.error("jspreadsheet: Something went wrong.");
-        } else {
-          if (result.length == 1) {
-            jspreadsheet(document.getElementById("spreadsheet"), result[0]);
-          } else {
-            jexcel.createTabs(document.getElementById("spreadsheet"), result);
-          }
-        }
-      });
+      var jsonManifestFilePath = path.join(
+        localFolderPath,
+        "manifest.json"
+      );
+      //Set up options for xlsx-to-json:
+       var optionsConvertManifest = {
+           input: selectedManifestFilePath,
+           output: jsonManifestFilePath,
+       };
+       //Set up the callback function
+       let callbackConvertManifest = function(err, result) {
+         if(err) {
+           console.log('Error : ', err);
+         }
+       }
+      xlsxToJson(optionsConvertManifest, callbackConvertManifest);
+      loadManifestFileEdits(jsonManifestFilePath, selectedManifestFilePath)
     }
   });
 });
+
+function loadManifestFileEdits(jsonPath, excelManifestFilePath) {
+  let rawdata = fs.readFileSync(jsonPath);
+  let jsondata = JSON.parse(rawdata);
+  // After ID in pop has been initiated, initialize jspreadsheet
+  jspreadsheet(document.getElementById('div-manifest-edit'), {
+    data: jsondata,
+    columns: [
+      {
+          type:'text',
+          width:'150px',
+          name:'filename',
+          title: 'Filename',
+          readOnly:true,
+      },
+      {
+          type:'text',
+          width:'150px',
+          name:'description',
+          title:'Description',
+          readOnly:false,
+      },
+      {
+          type:'text',
+          width:'150px',
+          name:'Additional Metadata',
+          title:'Additional Metadata',
+          readOnly:false,
+      },
+      {
+          type:'text',
+          width:'100px',
+          name:'file type',
+          title: 'File type',
+          readOnly:true,
+      },
+      {
+          type:'text',
+          width:'100px',
+          name:'timestamp',
+          title: 'Timestamp',
+          readOnly:true,
+      },
+   ],
+  });
+}
 
 var localDatasetFolderPath = "";
 

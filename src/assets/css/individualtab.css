@@ -1667,6 +1667,14 @@ body.swal2-shown > [aria-hidden="true"] {
   font-weight: 600;
 }
 
+.swal-large {
+  overflow-x: scroll;
+}
+
+#div-manifest-edit td.readonly {
+  color: #000;
+}
+
 .tagify.form-container-input-bf {
   overflow-x: hidden;
 }
