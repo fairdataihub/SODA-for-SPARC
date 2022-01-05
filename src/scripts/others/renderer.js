@@ -7453,6 +7453,15 @@ function logMetadataForAnalytics(
 //    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
 //    metadataFileName: string - the name of the metadata file that was created along with its extension
 async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, size) {
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Metadata",
+    "Size",
+    size
+  );
+
   let fileNameToPrefixMapping = {
     dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
     submission: MetadataAnalyticsPrefix.SUBMISSION,
