@@ -338,7 +338,7 @@ $("#button-rename-dataset").click(() => {
               defaultBfDatasetId,
               renamedDatasetName
             );
-            
+
             log.info("Requesting list of datasets");
             client.invoke(
               "api_bf_dataset_account",
@@ -2373,7 +2373,6 @@ $("#button-submit-dataset").click(async () => {
 
   log.info("Files selected for upload:");
   logFilesForUpload(pathSubmitDataset.placeholder);
-
 
   client.invoke(
     "api_bf_submit_dataset",
