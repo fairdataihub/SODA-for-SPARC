@@ -62,7 +62,7 @@ const guided_dataset_subtitle_char_count = document.getElementById(
 const create_dataset_button = $("#guided-create-empty-dataset");
 let current_selected_folder = $("#code-card");
 let current_progression_tab = $("#prepare-dataset-progression-tab");
-let current_sub_step = $("#guided-basic-description-tab");
+let current_sub_step = $("#guided-make-pi-owner-tab");
 let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
 const enableProgressButton = () => {
@@ -92,10 +92,14 @@ $(document).ready(() => {
     data.map((x) => {
       console.log(x);
       $("#guided-bf-users-select-pi").append(
-        $("<option>", {
-          value: 1,
-          text: `${x.firstName} ${x.lastName} (${x.email})`,
-        })
+        $(
+          "<option>",
+          {
+            value: 1,
+            text: `${x.firstName} ${x.lastName} (${x.email})`,
+          },
+          onclick
+        )
       );
     })
   );
