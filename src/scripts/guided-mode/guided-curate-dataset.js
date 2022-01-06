@@ -72,7 +72,11 @@ const disableProgressButton = () => {
   $("#guided-next-button").prop("disabled", true);
 };
 
-const validateGuidedBasicDescriptionTabInput = () => {
+/////////////////////////////////////////////////////////
+//////////       GUIDED FORM VALIDATORS       ///////////
+/////////////////////////////////////////////////////////
+
+const validateGuidedBasicDescriptionInputs = () => {
   //True if dataset name and dataset subtitle inputs are valid
   if (
     check_forbidden_characters_bf(
@@ -81,9 +85,21 @@ const validateGuidedBasicDescriptionTabInput = () => {
     $("#guided-dataset-name-input").val().trim().length == 0 ||
     $("#guided-dataset-subtitle-input").val().trim().length == 0
   ) {
-    $("#guided-next-button").prop("disabled", true);
+    disableProgressButton();
   } else {
-    $("#guided-next-button").prop("disabled", false);
+    enableProgressButton();
+  }
+};
+
+const validateGuidedDatasetDescriptionInputs = () => {
+  if (
+    $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
+    $("#guided-ds-description-data-collection").val().trim().length == 0 ||
+    $("#guided-ds-description-primary-conclusion").val().trim().length == 0
+  ) {
+    disableProgressButton();
+  } else {
+    enableProgressButton();
   }
 };
 
@@ -103,6 +119,10 @@ $(document).ready(() => {
       );
     })
   );
+
+  $(".guided--text-data-description").on("keyup", function () {
+    validateGuidedDatasetDescriptionInputs();
+  });
 
   //Handles high-level progress and their respective panels opening and closing
   $(".guided--progression-tab").on("click", function () {
@@ -131,7 +151,7 @@ $(document).ready(() => {
       } else {
         /*change this to continue button $("#create-pennsieve-dataset").hide(); */
         $("#guided-dataset-name-input-warning-message").hide();
-        validateGuidedBasicDescriptionTabInput();
+        validateGuidedBasicDescriptionInputs();
       }
     } else {
       $("#guided-dataset-name-input-warning-message").hide();
@@ -143,7 +163,7 @@ $(document).ready(() => {
       guided_dataset_subtitle,
       guided_dataset_subtitle_char_count
     );
-    validateGuidedBasicDescriptionTabInput();
+    validateGuidedBasicDescriptionInputs();
   });
 
   $("#prepare-dataset-tab").on("click", () => {
@@ -259,6 +279,25 @@ $(document).ready(() => {
       if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
+    }
+
+    if (current_sub_step.attr("id") == "add-edit-description-tab") {
+      sodaJSONObj["digital-metadata"]["study-purpose"] = $(
+        "#guided-ds-description-study-purpose"
+      )
+        .val()
+        .trim();
+      sodaJSONObj["digital-metadata"]["data-collection"] = $(
+        "#guided-ds-description-data-collection"
+      )
+        .val()
+        .trim();
+      sodaJSONObj["digital-metadata"]["primary-conclusion"] = $(
+        "#guided-ds-description-primary-conclusion"
+      )
+        .val()
+        .trim();
+      console.log("description metadata added");
     }
 
     //if more tabs in parent tab, go to next tab and update capsule

@@ -27,7 +27,10 @@
             </div>
           </div>
           <div
-            class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+            class="
+              guided--progression-tab guided--progression-tab-triangle
+              selected-tab
+            "
             id="prepare-metadata-progression-tab"
           >
             <div class="guided--progression-tab-content">
@@ -93,7 +96,12 @@
               </h1>
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card checked"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    checked
+                  "
                   id="guided-curate-new-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -122,7 +130,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-curate-existing-local-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -148,7 +161,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-curate-existing-Pennsieve-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -300,7 +318,12 @@
 
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-local-card"
                   data-enable-next-button="true"
                 >
@@ -311,7 +334,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-pennsieve-card"
                 >
                   <div class="card-head"></div>
@@ -403,7 +431,10 @@
                                 >
                               </div>
                               <svg
-                                class="svg-change-current-account bi bi-pencil-fill"
+                                class="
+                                  svg-change-current-account
+                                  bi bi-pencil-fill
+                                "
                                 onclick="openDropdownPrompt(this, 'bf')"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="18"
@@ -574,7 +605,12 @@
 
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-new-card"
                   data-enable-next-button="false"
                 >
@@ -604,7 +640,12 @@
                 </div>
 
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-existing-card"
                   data-enable-next-button="true"
                 >
@@ -671,7 +712,10 @@
                             >
 
                             <svg
-                              class="svg-change-current-account bi bi-pencil-fill"
+                              class="
+                                svg-change-current-account
+                                bi bi-pencil-fill
+                              "
                               xmlns="http://www.w3.org/2000/svg"
                               width="18"
                               height="18"
@@ -750,7 +794,11 @@
                                 </h5>
                               </div>
                               <svg
-                                class="svg-change-current-account dataset bi bi-pencil-fill"
+                                class="
+                                  svg-change-current-account
+                                  dataset
+                                  bi bi-pencil-fill
+                                "
                                 onclick="openDropdownPrompt(this, 'dataset')"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="18"
@@ -1041,7 +1089,7 @@
               </h1>
               <div
                 class="ui styled accordion"
-                id="dd-accordion"
+                id="guided-dd-accordion"
                 style="width: 100% !important"
               >
                 <div
@@ -1085,8 +1133,9 @@
                             style="display: flex; flex-direction: column"
                           >
                             <textarea
+                              class="guided--text-data-description"
                               type="text"
-                              id="ds-description-study-purpose"
+                              id="guided-ds-description-study-purpose"
                               placeholder="Enter your study purpose here..."
                               style="
                                 font-size: 14px;
@@ -1098,7 +1147,7 @@
                             ></textarea>
                             <div
                               class="isa_warning"
-                              id="ds-isa-warning"
+                              id="guided-ds-isa-warning"
                               style="
                                 font-size: 14px;
                                 width: 100%;
@@ -1110,7 +1159,7 @@
                               <button
                                 class="close-btn"
                                 title="close"
-                                id="ds-close-btn"
+                                id="guided-ds-close-btn"
                               >
                                 <span>X</span>
                               </button>
@@ -1178,8 +1227,9 @@
                         <div class="demo-controls-body" style="width: 100%">
                           <div class="ui input modified">
                             <textarea
+                              class="guided--text-data-description"
                               type="text"
-                              id="ds-description-data-collection"
+                              id="guided-ds-description-data-collection"
                               placeholder="Enter you data collection methods here..."
                               style="
                                 font-size: 14px;
@@ -1233,8 +1283,9 @@
                         <div class="demo-controls-body" style="width: 100%">
                           <div class="ui input modified">
                             <textarea
+                              class="guided--text-data-description"
                               type="text"
-                              id="ds-description-primary-conclusion"
+                              id="guided-ds-description-primary-conclusion"
                               placeholder="Enter your primary conclusion here..."
                               style="
                                 font-size: 14px;
