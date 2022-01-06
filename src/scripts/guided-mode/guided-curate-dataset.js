@@ -368,7 +368,9 @@ $(document).ready(() => {
   const guidedUploadBannerImage = () => {
     //search uploadBannerImage
   };
-
+  $("#guided-button-add-banner-image").on("click", () => {
+    $("#guided_banner_image_modal").modal("show");
+  });
   //next button click handler
   $("#guided-next-button").on("click", () => {
     //individual sub step processes
