@@ -13,13 +13,18 @@
       <header class="guided--header">
         <div class="guided--progression-tab-container">
           <div
-            class="guided--progression-tab guided--progression-tab-triangle"
+            class="
+              guided--progression-tab guided--progression-tab-triangle
+              selected-tab
+            "
             id="prepare-dataset-progression-tab"
           >
             <div class="guided--progression-tab-content">
               <span class="dot">1</span>
               <div class="guided--progression-tab-labels">
-                <h1 class="guided--progression-tab-label-main">S1. text</h1>
+                <h1 class="guided--progression-tab-label-main">
+                  Specify data files
+                </h1>
                 <h2 class="guided--progression-tab-label-sub">
                   Dataset description
                 </h2>
@@ -27,7 +32,7 @@
             </div>
           </div>
           <div
-            class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+            class="guided--progression-tab guided--progression-tab-triangle"
             id="prepare-metadata-progression-tab"
           >
             <div class="guided--progression-tab-content">
@@ -68,7 +73,7 @@
       </header>
 
       <div class="guided--body">
-        <div id="prepare-dataset-parent-tab" style="width: 100%" class="hidden">
+        <div id="prepare-dataset-parent-tab" style="width: 100%">
           <div class="guided--capsule-container">
             <div
               class="guided--capsule active"
@@ -80,10 +85,9 @@
             ></div>
             <div class="guided--capsule"></div>
             <div class="guided--capsule"></div>
-            <div class="guided--capsule"></div>
           </div>
 
-          <div id="guided-basic-description-tab" class="guided--panel hidden">
+          <div id="guided-basic-description-tab" class="guided--panel">
             <div class="guided--question">
               <h1 class="guided--sub-step-text">
                 Curate a new dataset or continue from existing?<br /><span
@@ -93,7 +97,12 @@
               </h1>
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card checked"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    checked
+                  "
                   id="guided-curate-new-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -122,7 +131,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-curate-existing-local-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -148,7 +162,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-curate-existing-Pennsieve-dataset-card"
                   data-enable-next-button="false"
                 >
@@ -300,7 +319,12 @@
 
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-local-card"
                   data-enable-next-button="true"
                 >
@@ -311,7 +335,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-pennsieve-card"
                 >
                   <div class="card-head"></div>
@@ -403,7 +432,10 @@
                                 >
                               </div>
                               <svg
-                                class="svg-change-current-account bi bi-pencil-fill"
+                                class="
+                                  svg-change-current-account
+                                  bi bi-pencil-fill
+                                "
                                 onclick="openDropdownPrompt(this, 'bf')"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="18"
@@ -574,7 +606,12 @@
 
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-new-card"
                   data-enable-next-button="false"
                 >
@@ -604,7 +641,12 @@
                 </div>
 
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-existing-card"
                   data-enable-next-button="true"
                 >
@@ -671,7 +713,10 @@
                             >
 
                             <svg
-                              class="svg-change-current-account bi bi-pencil-fill"
+                              class="
+                                svg-change-current-account
+                                bi bi-pencil-fill
+                              "
                               xmlns="http://www.w3.org/2000/svg"
                               width="18"
                               height="18"
@@ -750,7 +795,11 @@
                                 </h5>
                               </div>
                               <svg
-                                class="svg-change-current-account dataset bi bi-pencil-fill"
+                                class="
+                                  svg-change-current-account
+                                  dataset
+                                  bi bi-pencil-fill
+                                "
                                 onclick="openDropdownPrompt(this, 'dataset')"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="18"
@@ -935,7 +984,7 @@
           </div>-->
         </div>
 
-        <div id="prepare-metadata-parent-tab" class="guided--parent-tab">
+        <div id="prepare-metadata-parent-tab" class="guided--parent-tab hidden">
           <div class="guided--capsule-container">
             <div class="guided--capsule active"></div>
             <div class="guided--capsule"></div>
@@ -945,7 +994,7 @@
             <div class="guided--capsule"></div>
             <div class="guided--capsule"></div>
           </div>
-          <div id="guided-make-pi-owner-tab" class="guided--panel hidden">
+          <div id="guided-make-pi-owner-tab" class="guided--panel">
             <div class="guided--question">
               <h1 class="guided--sub-step-text">Select a PI Owner</h1>
 
@@ -1028,13 +1077,13 @@
               </h1>
             </div>
           </div>
-          <div id="add-edit-subtitle-tab" class="guided--panel">
+          <div id="add-edit-subtitle-tab" class="guided--panel hidden">
             <div
               class="guided--question show"
               id="guided_dataset_name_div"
             ></div>
           </div>
-          <div id="add-edit-description-tab" class="guided--panel">
+          <div id="add-edit-description-tab" class="guided--panel hidden">
             <div class="guided--question show" id="guided_dataset_name_div">
               <h1 class="guided--sub-step-text">
                 Enter your descriptions in the section below

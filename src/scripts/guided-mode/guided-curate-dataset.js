@@ -62,7 +62,7 @@ const guided_dataset_subtitle_char_count = document.getElementById(
 const create_dataset_button = $("#guided-create-empty-dataset");
 let current_selected_folder = $("#code-card");
 let current_progression_tab = $("#prepare-dataset-progression-tab");
-let current_sub_step = $("#guided-make-pi-owner-tab");
+let current_sub_step = $("#guided-basic-description-tab");
 let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
 const enableProgressButton = () => {
@@ -104,7 +104,7 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
-  getOrganizationMembers().then((data) =>
+  /*getOrganizationMembers().then((data) =>
     data.map((x) => {
       console.log(x);
       $("#guided-bf-users-select-pi").append(
@@ -118,13 +118,14 @@ $(document).ready(() => {
         )
       );
     })
-  );
+  );*/
 
   $(".guided--text-data-description").on("keyup", function () {
     validateGuidedDatasetDescriptionInputs();
   });
 
-  //Handles high-level progress and their respective panels opening and closing
+  //Handles high-level progress and their respective panels opening and closing,
+  //as well as updates current tabs/capsule state
   $(".guided--progression-tab").on("click", function () {
     const selectedTab = $(this);
     selectedTab.siblings().removeClass("selected-tab");
@@ -134,6 +135,11 @@ $(document).ready(() => {
       .attr("id")
       .replace("progression-tab", "parent-tab");
     const tabPanel = $("#" + tabPanelId);
+    current_sub_step = tabPanel.children(".guided--panel").first();
+    current_sub_step_capsule = tabPanel
+      .children(".guided--capsule-container")
+      .children()
+      .first();
     tabPanel.siblings().hide();
     tabPanel.show();
   });
@@ -214,112 +220,6 @@ $(document).ready(() => {
       block: "center",
     });
   };
-
-  //next button click handler
-  $("#guided-next-button").on("click", () => {
-    //individual sub step processes
-
-    //1st: create guided mode sodaObj, append properties per user input
-    if (current_sub_step.attr("id") == "guided-basic-description-tab") {
-      sodaJSONObj["bf-account-selected"] = {};
-      sodaJSONObj["mode"] = "guided";
-      sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
-      sodaJSONObj["generate-dataset"] = {};
-      sodaJSONObj["manifest-files"] = {};
-      sodaJSONObj["metadata-files"] = {};
-      sodaJSONObj["starting-point"] = {};
-
-      //set starting point to local for now for curate new dataset until new dataset functionality implemented
-      if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-        sodaJSONObj["starting-point"]["type"] = "local";
-      }
-      if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-        sodaJSONObj["starting-point"]["type"] = "local";
-      }
-      datasetStructureJSONObj = { folders: {}, files: {} };
-      sodaJSONObj["metadata"] = {};
-      let datasetName = $("#guided-dataset-name-input").val().trim();
-      sodaJSONObj["generate-dataset"]["dataset-name"] = datasetName;
-      $("#guided-bf-dataset-name-confirm").text(datasetName);
-      sodaJSONObj["metadata"]["subtitle"] = $("#guided-dataset-subtitle-input")
-        .val()
-        .trim();
-    }
-
-    if (current_sub_step.attr("id") == "guided-dataset-generation-tab") {
-      if ($("#generate-dataset-local-card").hasClass("checked")) {
-        sodaJSONObj["generate-dataset"]["destination"] = "local";
-      }
-      if ($("#generate-dataset-pennsieve-card").hasClass("checked")) {
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
-    }
-
-    if (current_sub_step.attr("id") == "guided-dataset-generate-location-tab") {
-      if ($("#guided-generate-dataset-local-card").hasClass("checked")) {
-        sodaJSONObj["generate-dataset"]["destination"] = "local";
-      }
-      if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
-    }
-
-    if (
-      current_sub_step.attr("id") == "guided-dataset-generate-destination-tab"
-    ) {
-      if ($("#guided-generate-dataset-new-card").hasClass("checked")) {
-        confirmed_dataset_name = $("#guided-bf-dataset-name-confirm").text();
-        sodaJSONObj["generate-dataset"]["dataset-name"] =
-          confirmed_dataset_name;
-      }
-      sodaJSONObj["generate-dataset"]["generate-option"] = "new";
-      sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
-      sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
-
-      if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
-    }
-
-    if (current_sub_step.attr("id") == "add-edit-description-tab") {
-      sodaJSONObj["digital-metadata"]["study-purpose"] = $(
-        "#guided-ds-description-study-purpose"
-      )
-        .val()
-        .trim();
-      sodaJSONObj["digital-metadata"]["data-collection"] = $(
-        "#guided-ds-description-data-collection"
-      )
-        .val()
-        .trim();
-      sodaJSONObj["digital-metadata"]["primary-conclusion"] = $(
-        "#guided-ds-description-primary-conclusion"
-      )
-        .val()
-        .trim();
-      console.log("description metadata added");
-    }
-
-    //if more tabs in parent tab, go to next tab and update capsule
-    if (current_sub_step.next().attr("id") !== undefined) {
-      current_sub_step.hide();
-      current_sub_step = current_sub_step.next();
-      current_sub_step_capsule.css("background-color", "#ddd");
-      current_sub_step_capsule = current_sub_step_capsule.next();
-      current_sub_step_capsule.css(
-        "background-color",
-        "var(--color-light-green)"
-      );
-      current_sub_step.css("display", "flex");
-    } else {
-      //go to next tab
-      current_progression_tab.next().click();
-    }
-    disableProgressButton();
-    console.log(sodaJSONObj);
-    console.log(current_sub_step);
-    console.log(current_progression_tab);
-  });
 
   $("#guided-generate-dataset-button").on("click", async function () {
     console.log(sodaJSONObj);
@@ -463,5 +363,115 @@ $(document).ready(() => {
         }
       }
     );
+  });
+  //next button click handler
+  $("#guided-next-button").on("click", () => {
+    //individual sub step processes
+
+    //1st: create guided mode sodaObj, append properties per user input
+    if (current_sub_step.attr("id") == "guided-basic-description-tab") {
+      sodaJSONObj["bf-account-selected"] = {};
+      sodaJSONObj["mode"] = "guided";
+      sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
+      sodaJSONObj["generate-dataset"] = {};
+      sodaJSONObj["manifest-files"] = {};
+      sodaJSONObj["metadata-files"] = {};
+      sodaJSONObj["starting-point"] = {};
+
+      //set starting point to local for now for curate new dataset until new dataset functionality implemented
+      if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
+        sodaJSONObj["starting-point"]["type"] = "local";
+      }
+      if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
+        sodaJSONObj["starting-point"]["type"] = "local";
+      }
+      datasetStructureJSONObj = { folders: {}, files: {} };
+      sodaJSONObj["metadata"] = {};
+      sodaJSONObj["digital-metadata"] = {};
+      let datasetName = $("#guided-dataset-name-input").val().trim();
+      sodaJSONObj["generate-dataset"]["dataset-name"] = datasetName;
+      $("#guided-bf-dataset-name-confirm").text(datasetName);
+      sodaJSONObj["metadata"]["subtitle"] = $("#guided-dataset-subtitle-input")
+        .val()
+        .trim();
+    }
+
+    if (current_sub_step.attr("id") == "guided-dataset-generation-tab") {
+      if ($("#generate-dataset-local-card").hasClass("checked")) {
+        sodaJSONObj["generate-dataset"]["destination"] = "local";
+      }
+      if ($("#generate-dataset-pennsieve-card").hasClass("checked")) {
+        sodaJSONObj["generate-dataset"]["destination"] = "bf";
+      }
+    }
+
+    if (current_sub_step.attr("id") == "guided-dataset-generate-location-tab") {
+      if ($("#guided-generate-dataset-local-card").hasClass("checked")) {
+        sodaJSONObj["generate-dataset"]["destination"] = "local";
+      }
+      if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
+        sodaJSONObj["generate-dataset"]["destination"] = "bf";
+      }
+    }
+
+    if (
+      current_sub_step.attr("id") == "guided-dataset-generate-destination-tab"
+    ) {
+      if ($("#guided-generate-dataset-new-card").hasClass("checked")) {
+        confirmed_dataset_name = $("#guided-bf-dataset-name-confirm").text();
+        sodaJSONObj["generate-dataset"]["dataset-name"] =
+          confirmed_dataset_name;
+      }
+      sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+      sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
+      sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
+
+      if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
+        sodaJSONObj["generate-dataset"]["destination"] = "bf";
+      }
+    }
+
+    if (current_sub_step.attr("id") == "add-edit-description-tab") {
+      sodaJSONObj["digital-metadata"]["study-purpose"] = $(
+        "#guided-ds-description-study-purpose"
+      )
+        .val()
+        .trim();
+      sodaJSONObj["digital-metadata"]["data-collection"] = $(
+        "#guided-ds-description-data-collection"
+      )
+        .val()
+        .trim();
+      sodaJSONObj["digital-metadata"]["primary-conclusion"] = $(
+        "#guided-ds-description-primary-conclusion"
+      )
+        .val()
+        .trim();
+      console.log("description metadata added");
+    }
+
+    //if more tabs in parent tab, go to next tab and update capsule
+    if (current_sub_step.next().attr("id") !== undefined) {
+      current_sub_step.hide();
+      current_sub_step = current_sub_step.next();
+      current_sub_step_capsule.css("background-color", "#ddd");
+      current_sub_step_capsule = current_sub_step_capsule.next();
+      current_sub_step_capsule.css(
+        "background-color",
+        "var(--color-light-green)"
+      );
+      current_sub_step.css("display", "flex");
+    } else {
+      //go to next tab
+      current_progression_tab = current_progression_tab.next();
+      console.log(current_progression_tab.attr("id"));
+      console.log(current_progression_tab.first(".guided--panel").attr("id"));
+      console.log(current_progression_tab.first(".guided--capsule").attr("id"));
+      current_progression_tab.click();
+    }
+    /*disableProgressButton();
+    console.log(sodaJSONObj);
+    console.log(current_sub_step);
+    console.log(current_progression_tab);*/
   });
 });
