@@ -330,6 +330,15 @@ $("#button-rename-dataset").click(() => {
                 " to " +
                 renamedDatasetName
             );
+
+            // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
+            ipcRenderer.send(
+              "track-event",
+              "Dataset ID to Dataset Name Map",
+              defaultBfDatasetId,
+              renamedDatasetName
+            );
+            
             log.info("Requesting list of datasets");
             client.invoke(
               "api_bf_dataset_account",
@@ -2365,17 +2374,6 @@ $("#button-submit-dataset").click(async () => {
   log.info("Files selected for upload:");
   logFilesForUpload(pathSubmitDataset.placeholder);
 
-  let datasetPath = pathSubmitDataset.placeholder;
-  let datasetName = "";
-  let idx = 0;
-  // get dataset name
-  for (idx = datasetPath.length - 1; idx >= 0; idx--) {
-    if (datasetPath[idx] === "/" || datasetPath[idx] === "\\") {
-      idx += 1;
-      break;
-    }
-  }
-  datasetName = datasetPath.slice(idx);
 
   client.invoke(
     "api_bf_submit_dataset",
@@ -2403,7 +2401,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Error",
           "Manage Datasets - Upload Local Dataset",
-          datasetName
+          defaultBfDatasetId
         );
 
         ipcRenderer.send(
@@ -2435,7 +2433,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Success",
           MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
-          datasetName
+          defaultBfDatasetId
         );
 
         ipcRenderer.send(
@@ -2452,7 +2450,7 @@ $("#button-submit-dataset").click(async () => {
           "Success",
           MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             " - name - size",
-          datasetName,
+          defaultBfDatasetId,
           totalFileSize
         );
 
