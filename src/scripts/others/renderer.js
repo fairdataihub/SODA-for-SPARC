@@ -7457,7 +7457,7 @@ async function logMetadataSizeForAnalytics(
   metadataFileName,
   size
 ) {
-  console.log("Logging Metadata size: ", size)
+  console.log("Logging Metadata size: ", size);
   ipcRenderer.send(
     "track-event",
     "Success",
