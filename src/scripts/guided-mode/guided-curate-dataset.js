@@ -364,6 +364,11 @@ $(document).ready(() => {
       }
     );
   });
+
+  const guidedUploadBannerImage = () => {
+    //search uploadBannerImage
+  };
+
   //next button click handler
   $("#guided-next-button").on("click", () => {
     //individual sub step processes
@@ -469,9 +474,9 @@ $(document).ready(() => {
       console.log(current_progression_tab.first(".guided--capsule").attr("id"));
       current_progression_tab.click();
     }
-    /*disableProgressButton();
+    /*disableProgressButton();*/
     console.log(sodaJSONObj);
     console.log(current_sub_step);
-    console.log(current_progression_tab);*/
+    console.log(current_progression_tab);
   });
 });
