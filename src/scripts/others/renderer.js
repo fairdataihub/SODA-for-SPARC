@@ -7712,6 +7712,7 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   // grab the readme out of the response
   let { readme } = await readmeResponse.json();
+  console.log({ readme });
 
   return readme;
 };
@@ -8284,6 +8285,7 @@ const getUserInformation = async () => {
   }
 
   let user = await userResponse.json();
+  console.log(user);
 
   return user;
 };

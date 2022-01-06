@@ -1,3 +1,54 @@
+const getOrganizationMembers = async () => {
+  sodaOrganizationId = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0";
+
+  // get the user's access token
+  let jwt = await get_access_token();
+
+  // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
+  let organizationMembersResponse = await fetch(
+    `https://api.pennsieve.io/organizations/${sodaOrganizationId}/members`,
+    {
+      headers: {
+        Accept: "*/*",
+        Authorization: `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  // get the status code out of the response
+  let statusCode = organizationMembersResponse.status;
+
+  // check the status code of the response
+  switch (statusCode) {
+    case 200:
+      // success do nothing
+      break;
+    case 404:
+      throw new Error(
+        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - You cannot get the dataset readme while unauthenticated. Please reauthenticate and try again.`
+      );
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+
+    default:
+      // something unexpected happened
+      let statusText = await organizationMembersResponse.json().statusText;
+      throw new Error(`${statusCode} - ${statusText}`);
+  }
+
+  // grab the organization members out of the response
+  let organizationMembers = await organizationMembersResponse.json();
+
+  return organizationMembers;
+};
+
 //SHARED VARIABLES
 
 const guided_dataset_name = $("#guided-dataset-name-input");
@@ -37,6 +88,18 @@ const validateGuidedBasicDescriptionTabInput = () => {
 };
 
 $(document).ready(() => {
+  getOrganizationMembers().then((data) =>
+    data.map((x) => {
+      console.log(x);
+      $("#guided-bf-users-select-pi").append(
+        $("<option>", {
+          value: 1,
+          text: `${x.firstName} ${x.lastName} (${x.email})`,
+        })
+      );
+    })
+  );
+
   //Handles high-level progress and their respective panels opening and closing
   $(".guided--progression-tab").on("click", function () {
     const selectedTab = $(this);
