@@ -76,7 +76,7 @@ curateprintstatus = " "
 total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
-totalDatasetSize = 1
+totalDatasetSize = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
