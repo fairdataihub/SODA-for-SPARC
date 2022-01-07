@@ -306,8 +306,8 @@ function initiate_generate_manifest() {
         destination === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
       );
     } else {
+      let high_level_folder_num = 0;
       if (manifest_files_requested) {
-        let high_level_folder_num = 0;
         if ("dataset-structure" in sodaJSONObj) {
           if ("folders" in sodaJSONObj["dataset-structure"]) {
             for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -316,6 +316,9 @@ function initiate_generate_manifest() {
           }
         }
       }
+
+      console.log("Generated file size: ", res[1]);
+      console.log("Number of generated files: ", high_level_folder_num);
 
       // determine if working with a Local dataset or Pennsieve
       if ("bf-dataset-selected" in sodaJSONObj) {
@@ -326,13 +329,28 @@ function initiate_generate_manifest() {
         }
       }
 
-      // log the error to analytics
+      // log the manifest file creation to analytics
       logMetadataForAnalytics(
         "Success",
         MetadataAnalyticsPrefix.MANIFEST,
         AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         destination === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+      );
+
+      // log the amount of high level manifest files that were created
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        MetadataAnalyticsPrefix.MANIFEST + " - Generate - Number of Files ",
+        "Number of Files",
+        high_level_folder_num
+      );
+
+      logMetadataSizeForAnalytics(
+        destination === "Pennsieve" ? true : false,
+        "manifest.xlsx",
+        res[1]
       );
 
       Swal.fire({
