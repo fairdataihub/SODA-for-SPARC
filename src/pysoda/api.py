@@ -52,6 +52,7 @@ from curate import (
     main_curate_function,
     main_curate_function_progress,
     generate_manifest_file_locally,
+    checkJSONsize,
 )
 
 from prepare_metadata import (
@@ -157,6 +158,15 @@ class SodaApi(object):
     ### Load Taxonomy species info
     def api_load_taxonomy_species(self, animalArr):
         return load_taxonomy_species(animalArr)
+
+    ##check file size of everything in sodaJSONObj
+    def api_checkJSONsize(self, jsonObj):
+        try:
+            return checkJSONsize(
+                jsonObj
+            )
+        except Exception as e:
+            raise e
 
     ### Generate dataset locally
     def api_generate_dataset_locally(
