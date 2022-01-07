@@ -943,6 +943,12 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   datasetTagsTagify = new Tagify(datasetTagsInput);
 
+var guidedDatasetTagsInput = document.getElementById(
+    "guided-tagify-dataset-tags"
+  ),
+  // initialize Tagify on the above input node reference
+  guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
+
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 

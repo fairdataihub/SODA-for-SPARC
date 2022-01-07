@@ -143,7 +143,7 @@ $(document).ready(() => {
     tabPanel.siblings().hide();
     tabPanel.show();
   });
-  //click new dataset card until from existing and from Pennsieve functionalities are built.
+
   $("#guided-curate-new-dataset-card").click();
   $("#guided-dataset-name-input").on("keyup", () => {
     let newName = $("#guided-dataset-name-input").val().trim();
@@ -362,17 +362,6 @@ $(document).ready(() => {
         }
       }
     );
-  });
-
-  const guidedUploadBannerImage = () => {
-    //search uploadBannerImage
-  };
-  $("#guided-button-add-banner-image").on("click", () => {
-    $("#guided-banner_image_modal").modal("show");
-  });
-  $("#guided-button-import-banner-image").click(() => {
-    $("#guided-para-dataset-banner-image-status").html("");
-    ipcRenderer.send("guided-open-file-dialog-import-banner-image");
   });
 
   //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
@@ -601,6 +590,7 @@ $(document).ready(() => {
       }
     }
   });
+
   //next button click handler
   $("#guided-next-button").on("click", () => {
     //individual sub step processes
