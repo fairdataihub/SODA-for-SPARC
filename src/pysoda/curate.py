@@ -1635,11 +1635,10 @@ def create_high_level_manifest_files(soda_json_structure):
 def checkJSONsize(jsonStructure):
     global totalDatasetSize
     totalDatasetSize = 0
-    
+
     try:
-        def recursive_dataset_scan(
-            folder
-        ):
+
+        def recursive_dataset_scan(folder):
             global totalDatasetSize
 
             if "files" in folder.keys():
@@ -1651,19 +1650,16 @@ def checkJSONsize(jsonStructure):
                             if isfile(file_path):
                                 totalDatasetSize += getsize(file_path)
 
-
             if "folders" in folder.keys():
                 for folder_key, folder in folder["folders"].items():
                     recursive_dataset_scan(folder)
 
-
-        #scan dataset structure
+        # scan dataset structure
         dataset_structure = jsonStructure["dataset-structure"]
         folderSection = dataset_structure["folders"]
         # gets keys like code, primary, source and their content...
         for keys, contents in folderSection.items():
             recursive_dataset_scan(contents)
-
 
         if "metadata-files" in jsonStructure.keys():
             metadata_files = jsonStructure["metadata-files"]
@@ -1686,7 +1682,6 @@ def checkJSONsize(jsonStructure):
         return totalDatasetSize
     except Exception as e:
         raise e
-
 
 
 def generate_dataset_locally(soda_json_structure):

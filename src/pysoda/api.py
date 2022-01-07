@@ -162,9 +162,7 @@ class SodaApi(object):
     ##check file size of everything in sodaJSONObj
     def api_checkJSONsize(self, jsonObj):
         try:
-            return checkJSONsize(
-                jsonObj
-            )
+            return checkJSONsize(jsonObj)
         except Exception as e:
             raise e
 
