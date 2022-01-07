@@ -437,6 +437,23 @@ ipcMain.on("open-file-dialog-import-banner-image", (event) => {
   );
 });
 
+ipcMain.on("guided-open-file-dialog-import-banner-image", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [
+        { name: "Image", extensions: ["jpg", "png", "jpeg", "tiff", "tif"] },
+      ],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("guided-selected-banner-image", files);
+      }
+    }
+  );
+});
+
 /// Validate import local dataset
 ipcMain.on("open-file-dialog-validate-local-ds", (event) => {
   dialog.showOpenDialog(

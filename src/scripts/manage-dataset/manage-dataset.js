@@ -1493,7 +1493,7 @@ $("#edit_banner_image_button").click(async () => {
 });
 
 // Action when user click on "Import image" button for banner image
-$("#button-import-banner-image").click(() => {
+$("#guided-button-import-banner-image").click(() => {
   $("#para-dataset-banner-image-status").html("");
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });

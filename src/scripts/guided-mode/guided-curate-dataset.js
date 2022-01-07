@@ -252,7 +252,6 @@ $(document).ready(() => {
       "Please wait while we verify a few things...";*/
 
     if (dataset_destination == "Pennsieve") {
-      alert("supp checks");
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
         $("#sidebarCollapse").prop("disabled", false);
@@ -369,7 +368,238 @@ $(document).ready(() => {
     //search uploadBannerImage
   };
   $("#guided-button-add-banner-image").on("click", () => {
-    $("#guided_banner_image_modal").modal("show");
+    $("#guided-banner_image_modal").modal("show");
+  });
+  $("#guided-button-import-banner-image").click(() => {
+    $("#guided-para-dataset-banner-image-status").html("");
+    ipcRenderer.send("guided-open-file-dialog-import-banner-image");
+  });
+
+  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+
+  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+
+  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+
+  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO EDIT GUIDED SAVE BANNER IMAGE!
+
+  $("#guided-save-banner-image").click((event) => {
+    $("#guided-para-dataset-banner-image-status").html("");
+    if (bfViewImportedImage.src.length > 0) {
+      if (formBannerHeight.value > 511) {
+        Swal.fire({
+          icon: "warning",
+          text: `As per NIH guidelines, banner image must not display animals or graphic/bloody tissues. Do you confirm that?`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          focusCancel: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+          reverseButtons: reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          if (formBannerHeight.value < 1024) {
+            Swal.fire({
+              icon: "warning",
+              text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showCancelButton: true,
+              focusCancel: true,
+              confirmButtonText: "Yes",
+              cancelButtonText: "No",
+              reverseButtons: reverseSwalButtons,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                uploadBannerImage();
+              }
+            });
+          } else {
+            uploadBannerImage();
+          }
+        });
+      } else {
+        $("#guided-para-dataset-banner-image-status").html(
+          "<span style='color: red;'> " +
+            "Dimensions of cropped area must be at least 512 px" +
+            "</span>"
+        );
+      }
+    } else {
+      $("#guided-para-dataset-banner-image-status").html(
+        "<span style='color: red;'> " +
+          "Please import an image first" +
+          "</span>"
+      );
+    }
+  });
+
+  ipcRenderer.on("guided-selected-banner-image", async (event, path) => {
+    if (path.length > 0) {
+      let original_image_path = path[0];
+      let image_path = original_image_path;
+      let destination_image_path = require("path").join(
+        homeDirectory,
+        "SODA",
+        "banner-image-conversion"
+      );
+      let converted_image_file = require("path").join(
+        destination_image_path,
+        "converted-tiff.jpg"
+      );
+      let conversion_success = true;
+      imageExtension = path[0].split(".").pop();
+
+      if (imageExtension.toLowerCase() == "tiff") {
+        $("body").addClass("waiting");
+        Swal.fire({
+          title: "Image conversion in progress!",
+          html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp animate__faster",
+          },
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        await Jimp.read(original_image_path)
+          .then(async (file) => {
+            console.log("starting tiff conversion");
+            if (!fs.existsSync(destination_image_path)) {
+              fs.mkdirSync(destination_image_path);
+            }
+
+            try {
+              if (fs.existsSync(converted_image_file)) {
+                fs.unlinkSync(converted_image_file);
+              }
+            } catch (err) {
+              conversion_success = false;
+              console.error(err);
+            }
+
+            return file.write(converted_image_file, async () => {
+              if (fs.existsSync(converted_image_file)) {
+                let stats = fs.statSync(converted_image_file);
+                let fileSizeInBytes = stats.size;
+                let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                if (fileSizeInMegabytes > 5) {
+                  console.log("File size too large. Resizing image");
+
+                  fs.unlinkSync(converted_image_file);
+
+                  await Jimp.read(original_image_path)
+                    .then((file) => {
+                      return file
+                        .resize(1024, 1024)
+                        .write(converted_image_file, () => {
+                          document.getElementById(
+                            "guided-div-img-container-holder"
+                          ).style.display = "none";
+                          document.getElementById(
+                            "guided-div-img-container"
+                          ).style.display = "block";
+
+                          $("#guided-para-path-image").html(image_path);
+                          bfViewImportedImage.src = converted_image_file;
+                          myCropper.destroy();
+                          myCropper = new Cropper(
+                            bfViewImportedImage,
+                            cropOptions
+                          );
+                          $("#guided-save-banner-image").css(
+                            "visibility",
+                            "visible"
+                          );
+                          $("body").removeClass("waiting");
+                        });
+                    })
+                    .catch((err) => {
+                      conversion_success = false;
+                      console.error(err);
+                    });
+                  if (fs.existsSync(converted_image_file)) {
+                    let stats = fs.statSync(converted_image_file);
+                    let fileSizeInBytes = stats.size;
+                    let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                    if (fileSizeInMegabytes > 5) {
+                      console.log("File size is too big", fileSizeInMegabytes);
+                      conversion_success = false;
+                      // SHOW ERROR
+                    }
+                  }
+                }
+                console.log("file conversion complete");
+                image_path = converted_image_file;
+                imageExtension = "jpg";
+                $("#guided-para-path-image").html(image_path);
+                bfViewImportedImage.src = image_path;
+                myCropper.destroy();
+                myCropper = new Cropper(bfViewImportedImage, cropOptions);
+                $("#guided-save-banner-image").css("visibility", "visible");
+              }
+            });
+          })
+          .catch((err) => {
+            conversion_success = false;
+            console.error(err);
+            Swal.fire({
+              icon: "error",
+              text: "Something went wrong",
+              confirmButtonText: "OK",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+          });
+        if (conversion_success == false) {
+          $("body").removeClass("waiting");
+          return;
+        } else {
+          Swal.close();
+        }
+      } else {
+        document.getElementById(
+          "guided-div-img-container-holder"
+        ).style.display = "none";
+        document.getElementById("guided-div-img-container").style.display =
+          "block";
+
+        $("#guided-para-path-image").html(image_path);
+        bfViewImportedImage.src = image_path;
+        myCropper.destroy();
+        myCropper = new Cropper(bfViewImportedImage, cropOptions);
+
+        $("#guided-save-banner-image").css("visibility", "visible");
+      }
+    } else {
+      if ($("#guided-para-current-banner-img").text() === "None") {
+        $("#guided-save-banner-image").css("visibility", "hidden");
+      } else {
+        $("#guided-save-banner-image").css("visibility", "visible");
+      }
+    }
   });
   //next button click handler
   $("#guided-next-button").on("click", () => {
