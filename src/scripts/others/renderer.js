@@ -9036,7 +9036,7 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
 };
 
 function testMapping() {
-  console.log("Test mapping being tested")
+  console.log("Test mapping being tested");
   ipcRenderer.send(
     "track-event",
     "Dataset ID to Dataset Name Map",
@@ -9094,4 +9094,4 @@ function testMapping() {
   // );
 }
 
-testMapping()
+testMapping();
