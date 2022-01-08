@@ -2452,9 +2452,7 @@ $("#button-submit-dataset").click(async () => {
           defaultBfDatasetId,
           totalFileSize
         );
-
-        console.log("Size of local dataset upload: ", totalFileSize);
-
+        
         client.invoke(
           "api_get_number_of_files_and_folders_locally",
           pathSubmitDataset.placeholder,

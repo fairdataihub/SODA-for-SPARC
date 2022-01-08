@@ -108,7 +108,6 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
           );
 
           const size = res[0];
-          console.log("File path: ", res[1]);
           logMetadataSizeForAnalytics(
             true,
             upperCaseLetters === "CHANGES.txt" ? "CHANGES.txt" : "README.txt",

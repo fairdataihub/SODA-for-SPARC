@@ -316,10 +316,6 @@ function initiate_generate_manifest() {
           }
         }
       }
-
-      console.log("Generated file size: ", res[1]);
-      console.log("Number of generated files: ", high_level_folder_num);
-
       // determine if working with a Local dataset or Pennsieve
       if ("bf-dataset-selected" in sodaJSONObj) {
         destination = "Pennsieve";

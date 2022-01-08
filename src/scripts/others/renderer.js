@@ -6295,7 +6295,6 @@ document
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                console.log("Continue");
                 initiate_generate();
               } else {
                 console.log("Stop");
@@ -6476,10 +6475,6 @@ function initiate_generate() {
       );
     } else {
       main_total_generate_dataset_size = res[1];
-      console.log(
-        "Dataset size for local dataset upload is: ",
-        main_total_generate_dataset_size
-      );
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
       console.log("Completed curate function");
@@ -7515,14 +7510,12 @@ async function logMetadataSizeForAnalytics(
 
 // get the size of a file in bytes given a path to a file
 const getFileSizeInBytes = (path) => {
-  console.log("Path is: ", path);
   return new Promise((resolve, reject) => {
     fs.stat(path, (err, stats) => {
       if (err) {
         console.error(err);
         reject(err);
       } else {
-        console.log(stats);
         resolve(stats.size);
       }
     });
@@ -9034,64 +9027,3 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
-
-function testMapping() {
-  console.log("Test mapping being tested")
-  ipcRenderer.send(
-    "track-event",
-    "Dataset ID to Dataset Name Map",
-    "123",
-    "Marge"
-  );
-
-  // ipcRenderer.send(
-  //   "track-event",
-  //   "Dataset ID to Dataset Name Map",
-  //   "221",
-  //   "JC"
-  // );
-
-  // ipcRenderer.send(
-  //   "track-event",
-  //   "Dataset ID to Dataset Name Map",
-  //   "221",
-  //   "Chess"
-  // );
-
-  ipcRenderer.send(
-    "track-event",
-    "Dataset ID to Dataset Name Map",
-    "221",
-    "Celery"
-  );
-
-  // ipcRenderer.send(
-  //   "track-event",
-  //   "Dataset ID to Dataset Name Map",
-  //   "233",
-  //   "Dev"
-  // );
-
-  ipcRenderer.send(
-    "track-event",
-    "Dataset ID to Dataset Name Map",
-    "233",
-    "Toupe"
-  );
-
-  ipcRenderer.send(
-    "track-event",
-    "Dataset ID to Dataset Name Map",
-    "244",
-    "Gasolina"
-  );
-
-  // ipcRenderer.send(
-  //   "track-event",
-  //   "Dataset ID to Dataset Name Map",
-  //   "244",
-  //   "Marg"
-  // );
-}
-
-testMapping()
