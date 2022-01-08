@@ -1079,6 +1079,8 @@ label.input-banner-img {
 }
 
 .tagify {
+  max-width: 600px;
+  width: 100%;
   border: 1px solid rgba(34, 36, 38, 0.15) !important;
   /* border-left: 2px solid var(--color-light-green) !important; */
   border-radius: 5px !important;

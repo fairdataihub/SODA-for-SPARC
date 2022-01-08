@@ -104,7 +104,7 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
-  /*getOrganizationMembers().then((data) =>
+  getOrganizationMembers().then((data) =>
     data.map((x) => {
       console.log(x);
       $("#guided-bf-users-select-pi").append(
@@ -118,7 +118,7 @@ $(document).ready(() => {
         )
       );
     })
-  );*/
+  );
 
   $(".guided--text-data-description").on("keyup", function () {
     validateGuidedDatasetDescriptionInputs();
@@ -589,6 +589,16 @@ $(document).ready(() => {
         $("#guided-save-banner-image").css("visibility", "visible");
       }
     }
+  });
+
+  $("#guided-button-add-dataset-tags").on("click", () => {
+    const guidedTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
+      (tag) => {
+        return tag.textContent;
+      }
+    );
+    sodaJSONObj["digital-metadata"]["tags"] = guidedTags;
+    guidedTags.length > 0 ? enableProgressButton() : disableProgressButton();
   });
 
   //next button click handler
