@@ -9034,3 +9034,64 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
+
+function testMapping() {
+  console.log("Test mapping being tested")
+  ipcRenderer.send(
+    "track-event",
+    "Dataset ID to Dataset Name Map",
+    "123",
+    "Marge"
+  );
+
+  // ipcRenderer.send(
+  //   "track-event",
+  //   "Dataset ID to Dataset Name Map",
+  //   "221",
+  //   "JC"
+  // );
+
+  // ipcRenderer.send(
+  //   "track-event",
+  //   "Dataset ID to Dataset Name Map",
+  //   "221",
+  //   "Chess"
+  // );
+
+  ipcRenderer.send(
+    "track-event",
+    "Dataset ID to Dataset Name Map",
+    "221",
+    "Celery"
+  );
+
+  // ipcRenderer.send(
+  //   "track-event",
+  //   "Dataset ID to Dataset Name Map",
+  //   "233",
+  //   "Dev"
+  // );
+
+  ipcRenderer.send(
+    "track-event",
+    "Dataset ID to Dataset Name Map",
+    "233",
+    "Toupe"
+  );
+
+  ipcRenderer.send(
+    "track-event",
+    "Dataset ID to Dataset Name Map",
+    "244",
+    "Gasolina"
+  );
+
+  // ipcRenderer.send(
+  //   "track-event",
+  //   "Dataset ID to Dataset Name Map",
+  //   "244",
+  //   "Marg"
+  // );
+}
+
+testMapping()
