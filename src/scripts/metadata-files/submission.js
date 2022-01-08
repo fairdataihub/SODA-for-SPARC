@@ -408,6 +408,43 @@ $(document).ready(function () {
   });
 });
 
+//Function is used for when user is creating Metadata files locally
+//At most the metadata files should be no bigger than 3MB
+//Function checks the selected storage device to ensure at least 3MB are available
+const checkStorage = (id) => {
+  var location = id;
+  var threeMB = 3145728;
+  //console.log(location);
+  checkDiskSpace(location).then((diskSpace) => {
+    freeMem = diskSpace.free;
+    //console.log(freeMem + "\nfree me in bytes");
+    //console.log(threeMB + "\nthree mb comparison");
+    if (freeMem < threeMB) {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "OK",
+        heightAuto: false,
+        icon: "warning",
+        showCancelButton: false,
+        title: "Not enough space",
+        text: "Please free up at least 3MB",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    }
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Create metadata file locally",
+      "Free memory: " + freeMem + "\nMemory needed: " + threeMB
+    );
+  });
+};
+
 async function generateSubmissionHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
@@ -443,91 +480,91 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     if (!continueProgress) {
       return;
     }
-  }
-  Swal.fire({
-    title: "Generating the submission.xlsx file",
-    html: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {});
-  var awardRes = $("#submission-sparc-award").val();
-  var dateRes = $("#submission-completion-date").val();
-  var milestonesRes = $("#selected-milestone-1").val();
-  let milestoneValue = [{ value: "" }];
-  if (milestonesRes !== "") {
-    milestoneValue = JSON.parse(milestonesRes);
-  }
-  var json_arr = [];
-  json_arr.push({
-    award: awardRes,
-    date: dateRes,
-    milestone: milestoneValue[0].value,
-  });
-  if (milestoneValue.length > 0) {
-    for (var index = 1; index < milestoneValue.length; index++) {
-      json_arr.push({
-        award: "",
-        date: "",
-        milestone: milestoneValue[index].value,
-      });
+    Swal.fire({
+      title: "Generating the submission.xlsx file",
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    }).then((result) => {});
+    var awardRes = $("#submission-sparc-award").val();
+    var dateRes = $("#submission-completion-date").val();
+    var milestonesRes = $("#selected-milestone-1").val();
+    let milestoneValue = [{ value: "" }];
+    if (milestonesRes !== "") {
+      milestoneValue = JSON.parse(milestonesRes);
     }
-  }
-  json_str = JSON.stringify(json_arr);
-  client.invoke(
-    "api_save_submission_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_submission").text().trim(),
-    submissionDestinationPath,
-    json_str,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-          title: "Failed to generate the submission file",
+    var json_arr = [];
+    json_arr.push({
+      award: awardRes,
+      date: dateRes,
+      milestone: milestoneValue[0].value,
+    });
+    if (milestoneValue.length > 0) {
+      for (var index = 1; index < milestoneValue.length; index++) {
+        json_arr.push({
+          award: "",
+          date: "",
+          milestone: milestoneValue[index].value,
         });
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Metadata - Create Submission",
-          defaultBfDataset
-        );
-      } else {
-        if (uploadBFBoolean) {
-          var successMessage =
-            "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
-        } else {
-          var successMessage =
-            "Successfully generated the submission.xlsx file at the specified location.";
-        }
-        Swal.fire({
-          title: successMessage,
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Create Submission",
-          defaultBfDataset
-        );
       }
     }
-  );
+    json_str = JSON.stringify(json_arr);
+    client.invoke(
+      "api_save_submission_file",
+      uploadBFBoolean,
+      defaultBfAccount,
+      $("#bf_dataset_load_submission").text().trim(),
+      submissionDestinationPath,
+      json_str,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            html: emessage,
+            title: "Failed to generate the submission file",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create Submission",
+            defaultBfDataset
+          );
+        } else {
+          if (uploadBFBoolean) {
+            var successMessage =
+              "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+          } else {
+            var successMessage =
+              "Successfully generated the submission.xlsx file at the specified location.";
+          }
+          Swal.fire({
+            title: successMessage,
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create Submission",
+            defaultBfDataset
+          );
+        }
+      }
+    );
+  }
 }
 
 $("#submission-completion-date").change(function () {

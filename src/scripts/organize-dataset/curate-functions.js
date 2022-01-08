@@ -993,7 +993,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       });
     }
   } else if (dropdown === "dataset") {
-    dropdownEventID = ev.id;
+    if (ev != null) {
+      dropdownEventID = ev.id;
+    }
     $(".svg-change-current-account.dataset").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
