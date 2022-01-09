@@ -6607,10 +6607,11 @@ function initiate_generate() {
           if (header.textContent.includes("folders")) {
             let instruction = card.querySelector("p");
             // log the folder instructions to analytics
+            console.log("Folder xontent: ", instruction.textContent);
             ipcRenderer.send(
               "track-event",
               "Success",
-              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.text()}`,
+              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent}`,
               datasetLocation === "Pennsieve"
                 ? defaultBfDatasetId
                 : datasetLocation,
@@ -6618,10 +6619,11 @@ function initiate_generate() {
             );
           } else if (header.textContent.includes("existing files")) {
             let instruction = card.querySelector("p");
+            console.log("File xontent: ", instruction.textContent);
             ipcRenderer.send(
               "track-event",
               "Success",
-              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.text()} `,
+              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent} `,
               datasetLocation === "Pennsieve"
                 ? defaultBfDatasetId
                 : datasetLocation,
@@ -7703,24 +7705,14 @@ function getMetadataFileNameFromStatus(metadataFileStatus) {
   // get the UI text that displays the file path
   let filePath = metadataFileStatus.text();
 
-  let fileName = [];
+  let fileName = path.basename(filePath);
 
-  // find the starting idx for selected metadata file's extension
-  let fileExtensionIdx = filePath.search(/.(xlsx|xls|csv|txt)/);
-  if (fileExtensionIdx !== -1) {
-    // capture the filename in reverse; filename is captured once out of bounds or hit whitespace
-    for (let idx = fileExtensionIdx - 1; idx >= 0; idx--) {
-      // if whitespace the file name is completely captured
-      if (filePath[idx] === " " || filePath[idx] === "\\" || filePath === "/") {
-        break;
-      }
+  console.log("The file name is: ", fileName);
 
-      // add the file name character to the file name array in reverse
-      fileName.push(filePath[idx]);
-    }
-  }
+  // remove the extension
+  fileName = fileName.slice(0, fileName.indexOf("."));
 
-  return fileName.reverse().join("");
+  return fileName;
 }
 
 function determineLocationFromStatus(metadataFileStatus) {
