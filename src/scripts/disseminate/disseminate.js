@@ -151,7 +151,7 @@ const disseminateDataset = (option) => {
       // log the failure to publish to analytics
       logCurationForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Publish"],
         Destinations.PENNSIEVE,
@@ -228,7 +228,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
 
         logGeneralOperationsForAnalytics(
           "Error",
-          MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
           AnalyticsGranularity.ALL_LEVELS,
           [
             share_status === "unshare"
@@ -239,7 +239,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
       } else {
         logGeneralOperationsForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
           AnalyticsGranularity.ACTION,
           [
             share_status === "unshare"
@@ -279,7 +279,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
 
               logGeneralOperationsForAnalytics(
                 "Error",
-                MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+                DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                 AnalyticsGranularity.ALL_LEVELS,
                 [
                   share_status === "unshare"
@@ -304,7 +304,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                 $("#curation-team-share-btn").show();
                 logGeneralOperationsForAnalytics(
                   "Success",
-                  MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+                  DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                   AnalyticsGranularity.ALL_LEVELS,
                   ["Change Dataset Status to Work In Progress"]
                 );
@@ -322,7 +322,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
 
                 logGeneralOperationsForAnalytics(
                   "Success",
-                  MetadataAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
+                  DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
                   AnalyticsGranularity.ALL_LEVELS,
                   ["Change Dataset Status to Ready for Curation"]
                 );
@@ -381,7 +381,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         // log the error to SPARC
         logGeneralOperationsForAnalytics(
           "Error",
-          MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
           AnalyticsGranularity.ALL_LEVELS,
           [
             share_status === "unshare"
@@ -393,7 +393,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         // log the success to SPARC
         logGeneralOperationsForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
           AnalyticsGranularity.ACTION,
           [
             share_status === "unshare"
@@ -429,7 +429,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
 
               logGeneralOperationsForAnalytics(
                 "Error",
-                MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+                DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
                 AnalyticsGranularity.All_LEVELS,
                 [
                   share_status === "unshare"
@@ -456,7 +456,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
                 $("#sparc-consortium-share-btn").show();
                 logGeneralOperationsForAnalytics(
                   "Success",
-                  MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+                  DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
                   AnalyticsGranularity.ALL_LEVELS,
                   [
                     share_status === "unshare"
@@ -477,7 +477,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
                 $("#sparc-consortium-share-btn").hide();
                 logGeneralOperationsForAnalytics(
                   "Success",
-                  MetadataAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
+                  DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_SPARC_CONSORTIUM,
                   AnalyticsGranularity.ALL_LEVELS,
                   [
                     share_status === "unshare"
@@ -678,7 +678,7 @@ $("#ORCID-btn").on("click", async () => {
       console.error(error);
       logGeneralOperationsForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
         AnalyticsGranularity.ALL_LEVELS,
         ["Integrate ORCID iD"]
       );
@@ -702,7 +702,8 @@ $("#ORCID-btn").on("click", async () => {
     ipcRenderer.send(
       "track-event",
       "Success",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+        " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
@@ -752,7 +753,7 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     console.error(error);
     logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       AnalyticsGranularity.ALL_LEVELS,
       ["Fetch Pre-publishing Checklist Statuses"]
     );
@@ -769,7 +770,7 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
 
   logGeneralOperationsForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
     AnalyticsGranularity.ACTION,
     ["Fetch Pre-publishing Checklist Statuses"]
   );
@@ -1045,7 +1046,8 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Metadata Files",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+        " - Get Metadata Files",
       defaultBfDatasetId
     );
   }
@@ -1053,7 +1055,8 @@ $(".pre-publishing-continue").on("click", async function () {
   ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Metadata Files",
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+      " - Get Metadata Files",
     defaultBfDatasetId
   );
 
@@ -1108,7 +1111,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
     console.error(error);
     logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       AnalyticsGranularity.ALL_LEVELS,
       ["Determine User's Dataset Role"]
     );
@@ -1118,7 +1121,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
 
   logGeneralOperationsForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
     AnalyticsGranularity.ACTION,
     ["Determine User's Dataset Role"]
   );

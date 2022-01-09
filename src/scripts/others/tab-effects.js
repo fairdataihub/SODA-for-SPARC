@@ -937,7 +937,7 @@ async function transitionSubQuestions(
     // log the start of a new curation process from scratch
     // logCurationForAnalytics(
     //   "Success",
-    //   MetadataAnalyticsPrefix.CURATE,
+    //   PrepareDatasetsAnalyticsPrefix.CURATE,
     //   AnalyticsGranularity.ACTION,
     //   ["New"],
     //   "Local",
@@ -1584,7 +1584,7 @@ async function transitionSubQuestionsButton(
       // // log the error to analytics
       logCurationForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION,
         ["Existing"],
         "Pennsieve",
@@ -1638,7 +1638,7 @@ async function transitionSubQuestionsButton(
             // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
             logCurationForAnalytics(
               "Success",
-              MetadataAnalyticsPrefix.CURATE,
+              PrepareDatasetsAnalyticsPrefix.CURATE,
               AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               ["Existing"],
               "Pennsieve",
@@ -1667,7 +1667,7 @@ async function transitionSubQuestionsButton(
 
         logCurationForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.CURATE,
+          PrepareDatasetsAnalyticsPrefix.CURATE,
           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           ["Existing"],
           "Pennsieve",

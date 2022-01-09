@@ -102,7 +102,7 @@ function confirmMetadataFilePath(ev) {
     // log the import to analytics
     logCurationForAnalytics(
       "Success",
-      MetadataAnalyticsPrefix.CURATE,
+      PrepareDatasetsAnalyticsPrefix.CURATE,
       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       [
         "Step 4",
@@ -120,7 +120,7 @@ function confirmMetadataFilePath(ev) {
     // log the import attempt to analytics
     logCurationForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.CURATE,
+      PrepareDatasetsAnalyticsPrefix.CURATE,
       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       [
         "Step 4",
@@ -223,7 +223,7 @@ const progressFileParse = (ev) => {
       // log the error to analytics at varying levels of granularity
       logMetadataForAnalytics(
         "Error",
-        analyticsActionPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ALL_LEVELS,
         Actions.EXISTING,
         Destinations.SAVED
@@ -504,7 +504,7 @@ function loadProgressFile(ev) {
         // log the success at the action and action with destination granularity levels
         logMetadataForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.CURATE,
+          PrepareDatasetsAnalyticsPrefix.CURATE,
           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           Actions.EXISTING,
           Destinations.SAVED
@@ -572,7 +572,7 @@ const verify_missing_files = (mode) => {
         // log the success at the action and action with destination granularith levels
         logMetadataForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.CURATE,
+          PrepareDatasetsAnalyticsPrefix.CURATE,
           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           Actions.EXISTING,
           Destinations.SAVED
@@ -1882,7 +1882,7 @@ function moveItemsHelper(item, destination, category) {
   // log moving multiple files/folders successfully
   logCurationForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.CURATE,
+    PrepareDatasetsAnalyticsPrefix.CURATE,
     AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
     ["Step 3", "Move", category === "files" ? "File" : "Folder"],
     determineDatasetLocation()

@@ -424,7 +424,7 @@ function checkValidRenameInput(
       // log the error
       logCurationForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 3", "Rename", "File"],
         determineDatasetLocation()
@@ -452,7 +452,7 @@ function checkValidRenameInput(
       // log the error
       logCurationForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 3", "Rename", "Folder"],
         determineDatasetLocation()
@@ -604,7 +604,7 @@ function renameFolder(
           // log the success
           logCurationForAnalytics(
             "Success",
-            MetadataAnalyticsPrefix.CURATE,
+            PrepareDatasetsAnalyticsPrefix.CURATE,
             AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
             ["Step 3", "Rename", promptVar],
             determineDatasetLocation()
@@ -777,7 +777,7 @@ function addFilesfunction(
       // log the error
       logCurationForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 3", "Import", "File"],
         determineDatasetLocation()
@@ -863,7 +863,7 @@ function addFilesfunction(
     // log the success
     logCurationForAnalytics(
       "Success",
-      MetadataAnalyticsPrefix.CURATE,
+      PrepareDatasetsAnalyticsPrefix.CURATE,
       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       ["Step 3", "Import", "File"],
       determineDatasetLocation()
@@ -890,7 +890,7 @@ function addFilesfunction(
     // log the user error
     logCurationForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.CURATE,
+      PrepareDatasetsAnalyticsPrefix.CURATE,
       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       ["Step 3", "Import", "File"],
       determineDatasetLocation()

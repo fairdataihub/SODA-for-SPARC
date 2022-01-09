@@ -3387,7 +3387,7 @@ async function submitReviewDataset(embargoReleaseDate) {
       // log the error
       logGeneralOperationsForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
         AnalyticsGranularity.ALL_LEVELS,
         ["Updating excluded files"]
       );
@@ -3427,7 +3427,7 @@ async function submitReviewDataset(embargoReleaseDate) {
   } catch (error) {
     logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       AnalyticsGranularity.ALL_LEVELS,
       ["Submit dataset"]
     );
@@ -3463,7 +3463,7 @@ async function submitReviewDataset(embargoReleaseDate) {
   // track success
   logGeneralOperationsForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
     AnalyticsGranularity.ALL_LEVELS,
     ["Submit dataset"]
   );
@@ -3536,7 +3536,7 @@ function withdrawDatasetSubmission() {
     // track the error for analysis
     logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
@@ -3617,7 +3617,7 @@ async function withdrawReviewDataset() {
 
     logGeneralOperationsForAnalytics(
       "Success",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
@@ -3677,7 +3677,7 @@ async function withdrawReviewDataset() {
     // track the error for analysis
     logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
@@ -3960,7 +3960,7 @@ function showPublishingStatus(callback) {
 
             logGeneralOperationsForAnalytics(
               "Error",
-              MetadataAnalyticsPrefix.DISSEMINATE_REVIEW,
+              DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
               AnalyticsGranularity.ALL_LEVELS,
               ["Show publishing status"]
             );
@@ -4171,7 +4171,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
             logCurationForAnalytics(
               "Error",
-              MetadataAnalyticsPrefix.CURATE,
+              PrepareDatasetsAnalyticsPrefix.CURATE,
               AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               ["Step 3", "Add", "Folder"],
               determineDatasetLocation()
@@ -4213,7 +4213,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             // log that the folder was successfully added
             logCurationForAnalytics(
               "Success",
-              MetadataAnalyticsPrefix.CURATE,
+              PrepareDatasetsAnalyticsPrefix.CURATE,
               AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               ["Step 3", "Add", "Folder"],
               determineDatasetLocation()
@@ -4731,7 +4731,7 @@ function addFoldersfunction(
     // log the error
     logCurationForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.CURATE,
+      PrepareDatasetsAnalyticsPrefix.CURATE,
       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       ["Step 3", "Import", "Folder"],
       determineDatasetLocation()
@@ -4814,7 +4814,7 @@ function addFoldersfunction(
       // log the success
       logCurationForAnalytics(
         "Success",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 3", "Import", "Folder"],
         determineDatasetLocation()
@@ -5992,7 +5992,7 @@ ipcRenderer.on(
                 // log the success to analytics
                 logMetadataForAnalytics(
                   "Success",
-                  MetadataAnalyticsPrefix.CURATE,
+                  PrepareDatasetsAnalyticsPrefix.CURATE,
                   AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
                   Actions.EXISTING,
                   Destinations.LOCAL
@@ -6015,7 +6015,7 @@ ipcRenderer.on(
               // log the success to analytics
               logMetadataForAnalytics(
                 "Success",
-                MetadataAnalyticsPrefix.CURATE,
+                PrepareDatasetsAnalyticsPrefix.CURATE,
                 AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
                 Actions.EXISTING,
                 Destinations.LOCAL
@@ -6054,7 +6054,7 @@ ipcRenderer.on(
             // log the failure to select an appropriate folder to analytics
             logMetadataForAnalytics(
               "Error",
-              MetadataAnalyticsPrefix.CURATE,
+              PrepareDatasetsAnalyticsPrefix.CURATE,
               AnalyticsGranularity.ALL_LEVELS,
               Actions.EXISTING,
               Destinations.LOCAL
@@ -6392,7 +6392,7 @@ function initiate_generate() {
 
       logCurationForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.PREFIX,
         [],
         determineDatasetLocation()
@@ -6400,7 +6400,7 @@ function initiate_generate() {
 
       logCurationForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 7", "Generate", "dataset", `${dataset_destination}`],
         determineDatasetLocation()
@@ -6521,7 +6521,7 @@ function initiate_generate() {
 
       logCurationForAnalytics(
         "Success",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.PREFIX,
         [],
         determineDatasetLocation()
@@ -6549,7 +6549,7 @@ function initiate_generate() {
 
       logCurationForAnalytics(
         "Success",
-        MetadataAnalyticsPrefix.CURATE,
+        PrepareDatasetsAnalyticsPrefix.CURATE,
         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
         determineDatasetLocation()
@@ -7236,7 +7236,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           // log the error to analytics
           logCurationForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.CURATE,
+            PrepareDatasetsAnalyticsPrefix.CURATE,
             AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
             ["Step 5", "Generate", "Manifest"],
             determineDatasetLocation()
@@ -7245,7 +7245,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           $("body").removeClass("waiting");
           logCurationForAnalytics(
             "Success",
-            MetadataAnalyticsPrefix.CURATE,
+            PrepareDatasetsAnalyticsPrefix.CURATE,
             AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
             ["Step 5", "Generate", "Manifest"],
             determineDatasetLocation()
@@ -7370,7 +7370,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
 /*
 ******************************************************
 ******************************************************
-Prepare Metadata Analytics Logging Helper Function  & Enums
+Analytics Logging Section
 ******************************************************
 ******************************************************
 */
@@ -7532,11 +7532,9 @@ const MetadataAnalyticsPrefix = {
   README: "Prepare Metadata - readme",
   CHANGES: "Prepare Metadata - changes",
   SUBMISSION: "Prepare Metadata - submission",
-  CURATE: "Prepare Datasets - Organize dataset",
-  DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
-  DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
-  DISSEMINATE_SPARC_CONSORTIUM:
-    "Disseminate Datasets - Share with SPARC Consortium",
+};
+
+const ManageDatasetsAnalyticsPrefix = {
   MANAGE_DATASETS_CREATE_DATASET: "Manage Datasets - Create a new dataset",
   MANAGE_DATASETS_RENAME_DATASET:
     "Manage Datasets - Rename an existing dataset",
@@ -7551,6 +7549,17 @@ const MetadataAnalyticsPrefix = {
   MANAGE_DATASETS_UPLOAD_LOCAL_DATASET:
     "Manage Datasets - Upload Local Dataset",
   MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
+};
+
+const DisseminateDatasetsAnalyticsPrefix = {
+  DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
+  DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
+  DISSEMINATE_SPARC_CONSORTIUM:
+    "Disseminate Datasets - Share with SPARC Consortium",
+};
+
+const PrepareDatasetsAnalyticsPrefix = {
+  CURATE: "Prepare Datasets - Organize dataset",
 };
 
 const AnalyticsGranularity = {

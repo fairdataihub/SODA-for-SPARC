@@ -160,7 +160,7 @@ $("#button-create-bf-new-dataset").click(() => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
             bfNewDatasetName
           );
         } else {
@@ -198,7 +198,7 @@ $("#button-create-bf-new-dataset").click(() => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
             bfNewDatasetName
           );
 
@@ -297,7 +297,7 @@ $("#button-rename-dataset").click(() => {
             ipcRenderer.send(
               "track-event",
               "Error",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
               `${defaultBfDatasetId}: ` +
                 currentDatasetName +
                 " to " +
@@ -324,7 +324,7 @@ $("#button-rename-dataset").click(() => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
               `${defaultBfDatasetId}: ` +
                 currentDatasetName +
                 " to " +
@@ -415,7 +415,7 @@ $("#button-add-permission-pi").click(() => {
             ipcRenderer.send(
               "track-event",
               "Error",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
+              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
               defaultBfDatasetId
             );
 
@@ -437,7 +437,7 @@ $("#button-add-permission-pi").click(() => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
+              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
               defaultBfDatasetId
             );
 
@@ -547,7 +547,7 @@ const addPermissionUser = (
 
         logGeneralOperationsForAnalytics(
           "Error",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
           AnalyticsGranularity.ALL_LEVELS,
           ["Add User Permissions"]
         );
@@ -556,7 +556,7 @@ const addPermissionUser = (
 
         logGeneralOperationsForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
           AnalyticsGranularity.ALL_LEVELS,
           ["Add User Permissions"]
         );
@@ -681,7 +681,7 @@ $("#button-add-permission-team").click(() => {
 
           logGeneralOperationsForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
             AnalyticsGranularity.ALL_LEVELS,
             ["Add Team Permissions"]
           );
@@ -689,7 +689,7 @@ $("#button-add-permission-team").click(() => {
           log.info("Added permission for the team");
           logGeneralOperationsForAnalytics(
             "Success",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
             AnalyticsGranularity.ALL_LEVELS,
             ["Add Team Permissions"]
           );
@@ -773,7 +773,7 @@ $("#button-add-subtitle").click(() => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
             defaultBfDatasetId
           );
         } else {
@@ -797,7 +797,7 @@ $("#button-add-subtitle").click(() => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
             defaultBfDatasetId
           );
 
@@ -828,7 +828,7 @@ const showCurrentSubtitle = () => {
           console.error(error);
           logGeneralOperationsForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
             AnalyticsGranularity.ALL_LEVELS,
             ["Get Subtitle"]
           );
@@ -836,7 +836,7 @@ const showCurrentSubtitle = () => {
         } else {
           logGeneralOperationsForAnalytics(
             "Success",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
             AnalyticsGranularity.ACTION,
             ["Get Subtitle"]
           );
@@ -901,7 +901,7 @@ const showCurrentDescription = async () => {
 
     logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       AnalyticsGranularity.ALL_LEVELS,
       ["Get Readme"]
     );
@@ -910,7 +910,7 @@ const showCurrentDescription = async () => {
 
   logGeneralOperationsForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
     AnalyticsGranularity.ACTION,
     ["Get Readme"]
   );
@@ -926,7 +926,7 @@ const showCurrentDescription = async () => {
 
     logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       AnalyticsGranularity.ALL_LEVELS,
       ["Parse Readme"]
     );
@@ -935,7 +935,7 @@ const showCurrentDescription = async () => {
 
   logGeneralOperationsForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
     AnalyticsGranularity.ACTION,
     ["Parse Readme"]
   );
@@ -1111,7 +1111,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
 
     logGeneralOperationsForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       AnalyticsGranularity.ALL_LEVELS,
       ["Get Readme"]
     );
@@ -1163,7 +1163,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       defaultBfDatasetId
     );
 
@@ -1173,7 +1173,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
     defaultBfDatasetId
   );
 
@@ -1525,7 +1525,7 @@ $("#edit_banner_image_button").click(async () => {
 
           logGeneralOperationsForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
             AnalyticsGranularity.ALL_LEVELS,
             ["Importing Banner Image"]
           );
@@ -1546,7 +1546,7 @@ $("#edit_banner_image_button").click(async () => {
 
         logGeneralOperationsForAnalytics(
           "Error",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
           AnalyticsGranularity.ALL_LEVELS,
           ["Importing Banner Image"]
         );
@@ -1567,7 +1567,7 @@ $("#edit_banner_image_button").click(async () => {
 
       logGeneralOperationsForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
         AnalyticsGranularity.ALL_LEVELS,
         ["Importing Banner Image"]
       );
@@ -1577,7 +1577,7 @@ $("#edit_banner_image_button").click(async () => {
 
     logGeneralOperationsForAnalytics(
       "Success",
-      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
       AnalyticsGranularity.ACTION,
       ["Importing Banner Image"]
     );
@@ -1640,7 +1640,7 @@ const uploadBannerImage = () => {
             ipcRenderer.send(
               "track-event",
               "Error",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
               defaultBfDatasetId
             );
           } else {
@@ -1653,7 +1653,7 @@ const uploadBannerImage = () => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
               defaultBfDatasetId
             );
 
@@ -1661,7 +1661,7 @@ const uploadBannerImage = () => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
                 " - Size",
               "Size",
               image_file_size
@@ -1671,7 +1671,7 @@ const uploadBannerImage = () => {
             ipcRenderer.send(
               "track-event",
               "Success",
-              MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
                 " - Size",
               defaultBfDatasetId,
               image_file_size
@@ -1952,7 +1952,7 @@ const showCurrentBannerImage = () => {
 
           logGeneralOperationsForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
             AnalyticsGranularity.ALL_LEVELS,
             ["Get Banner Image"]
           );
@@ -1961,7 +1961,7 @@ const showCurrentBannerImage = () => {
         } else {
           logGeneralOperationsForAnalytics(
             "Success",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
             AnalyticsGranularity.ACTION,
             ["Get Banner Image"]
           );
@@ -2034,7 +2034,7 @@ $("#button-add-tags").click(async () => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
       defaultBfDatasetId
     );
 
@@ -2052,7 +2052,7 @@ $("#button-add-tags").click(async () => {
     ipcRenderer.send(
       "track-event",
       "Success",
-      MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
       defaultBfDatasetId
     );
 
@@ -2111,7 +2111,7 @@ const showCurrentTags = async () => {
 
       logGeneralOperationsForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
         AnalyticsGranularity.ALL_LEVELS,
         ["Get Tags"]
       );
@@ -2176,7 +2176,7 @@ $("#button-add-license").click(() => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
             defaultBfDatasetId
           );
         } else {
@@ -2193,7 +2193,7 @@ $("#button-add-license").click(() => {
           ipcRenderer.send(
             "track-event",
             "Success",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
             defaultBfDatasetId
           );
 
@@ -2224,7 +2224,7 @@ const showCurrentLicense = () => {
           console.error(error);
           logGeneralOperationsForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
             AnalyticsGranularity.ALL_LEVELS,
             ["Get License"]
           );
@@ -2406,7 +2406,7 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             " - size",
           "Size",
           totalFileSize
@@ -2431,14 +2431,14 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
           defaultBfDatasetId
         );
 
         ipcRenderer.send(
           "track-event",
           "Success",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             " - size",
           "Size",
           totalFileSize
@@ -2447,7 +2447,7 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             " - name - size",
           defaultBfDatasetId,
           totalFileSize
@@ -2463,7 +2463,7 @@ $("#button-submit-dataset").click(async () => {
               ipcRenderer.send(
                 "track-event",
                 "Error",
-                MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - Number of Folders`,
                 datasetName
               );
@@ -2474,7 +2474,7 @@ $("#button-submit-dataset").click(async () => {
               ipcRenderer.send(
                 "track-event",
                 "Success",
-                MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - Number of Folders`,
                 "Number of folders local dataset",
                 num_of_folders
@@ -2483,7 +2483,7 @@ $("#button-submit-dataset").click(async () => {
               ipcRenderer.send(
                 "track-event",
                 "Success",
-                MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - name - Number of Folders`,
                 datasetName,
                 num_of_folders
@@ -2492,7 +2492,7 @@ $("#button-submit-dataset").click(async () => {
               ipcRenderer.send(
                 "track-event",
                 "Success",
-                MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - Number of Files`,
                 "Number of files local dataset",
                 num_of_files
@@ -2501,7 +2501,7 @@ $("#button-submit-dataset").click(async () => {
               ipcRenderer.send(
                 "track-event",
                 "Success",
-                MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - name - Number of Files`,
                 datasetName,
                 num_of_files
@@ -2532,7 +2532,7 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             ` - Progress track`,
           datasetName
         );
@@ -2544,7 +2544,7 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             ` - Progress track`,
           datasetName
         );
@@ -2665,7 +2665,7 @@ $("#bf_list_dataset_status").on("change", () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
           defaultBfDatasetId
         );
 
@@ -2693,7 +2693,7 @@ $("#bf_list_dataset_status").on("change", () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          MetadataAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
           defaultBfDatasetId
         );
 
@@ -2747,7 +2747,7 @@ function showCurrentDatasetStatus(callback) {
 
           logGeneralOperationsForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
             AnalyticsGranularity.ALL_LEVELS,
             ["Get Dataset Status"]
           );
@@ -2758,7 +2758,7 @@ function showCurrentDatasetStatus(callback) {
           ipcRenderer.send(
             "track-event",
             "Success",
-            MetadataAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
               ` - Get dataset Status`,
             defaultBfDatasetId
           );
