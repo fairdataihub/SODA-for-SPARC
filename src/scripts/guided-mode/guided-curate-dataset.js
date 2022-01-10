@@ -140,11 +140,12 @@ $(document).ready(() => {
       .children(".guided--capsule-container")
       .children()
       .first();
+    console.log(current_sub_step);
+    console.log(current_sub_step_capsule);
     tabPanel.siblings().hide();
     tabPanel.show();
   });
 
-  $("#guided-curate-new-dataset-card").click();
   $("#guided-dataset-name-input").on("keyup", () => {
     let newName = $("#guided-dataset-name-input").val().trim();
     if (newName !== "") {
@@ -711,4 +712,17 @@ $(document).ready(() => {
     console.log(current_sub_step);
     console.log(current_progression_tab);
   });
+  const goToGuidedTab = (tabIsd) => {
+    $("#guided_mode_view").click();
+    $("#guided_create_new_bf_dataset_btn").click();
+    $("#guided-dataset-name-input").val("asdlfkj");
+    $("#guided-dataset-subtitle-input").val("lkjasdf");
+    enableProgressButton();
+    for (var i = 1; i <= 100; i++) {
+      if (current_sub_step.attr("id") != tabIsd) {
+        $("#guided-next-button").click();
+      }
+    }
+  };
+  goToGuidedTab("add-edit-tags-tab");
 });

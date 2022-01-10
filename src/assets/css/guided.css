@@ -540,3 +540,8 @@
 .guided--form {
   width: 600px !important;
 }
+
+.guided--accordion {
+  margin: 25px 0px !important;
+  width: 100% !important;
+}
