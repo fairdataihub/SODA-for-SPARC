@@ -86,6 +86,7 @@
     "electron-settings": "^3.2.0",
     "electron-shortcut-normalizer": "^1.0.0",
     "electron-updater": "4.3.9",
+    "excel4node": "^1.7.2",
     "fomantic-ui": "^2.8.8",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",

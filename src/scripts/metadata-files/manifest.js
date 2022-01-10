@@ -150,6 +150,7 @@ $(document).ready(function () {
            console.log('Error : ', err);
          }
        }
+       xlsxToJson(optionsConvertManifest, callbackConvertManifest);
       // Show loading popup
       Swal.fire({
         title: "Edit the manifest file below:",
@@ -164,10 +165,6 @@ $(document).ready(function () {
         customClass: "swal-large",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          xlsxToJson(optionsConvertManifest, callbackConvertManifest);
-          loadManifestFileEdits(jsonManifestFilePath, selectedManifestFilePath)
-        }
       }).then((result) => {
         // json of new info:
         // write this new json to existing manifest.json file
@@ -177,23 +174,42 @@ $(document).ready(function () {
           }
         );
         // convert manifest.json to existing manifest.xlsx file
-        // console.log()
+        convertJSONToXlsx(JSON.parse(updatedManifestObj), selectedManifestFilePath)
       });
-
+      loadManifestFileEdits(jsonManifestFilePath)
     }
   });
 });
 
+function convertJSONToXlsx(jsondata, excelfile) {
+  const wb = new excel4node.Workbook();
+  const ws = wb.addWorksheet('Sheet1');
+  const headingColumnNames = Object.keys(jsondata[0])
+  //Write Column Title in Excel file
+  let headingColumnIndex = 1;
+  headingColumnNames.forEach(heading => {
+      ws.cell(1, headingColumnIndex++)
+          .string(heading)
+  });
+  //Write Data in Excel file
+  let rowIndex = 2;
+  jsondata.forEach( record => {
+      let columnIndex = 1;
+      Object.keys(record ).forEach(columnName =>{
+          ws.cell(rowIndex,columnIndex++)
+              .string(record [columnName])
+      });
+      rowIndex++;
+  });
+  wb.write(excelfile);
+}
+
 var table1;
-function loadManifestFileEdits(jsonPath, excelManifestFilePath) {
+function loadManifestFileEdits(jsonPath) {
   let rawdata = fs.readFileSync(jsonPath);
   let jsondata = JSON.parse(rawdata);
   // After ID in pop has been initiated, initialize jspreadsheet
-<<<<<<< HEAD
   table1 = jspreadsheet(document.getElementById('div-manifest-edit'), {
-=======
-  jspreadsheet(document.getElementById("div-manifest-edit"), {
->>>>>>> eec3be2656178f2bae93caaf153b19ebda224f1d
     data: jsondata,
     columns: [
       {
