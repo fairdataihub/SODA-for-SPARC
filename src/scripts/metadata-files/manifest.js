@@ -97,32 +97,55 @@ async function generateManifest(action, type) {
   // Case 1: Local dataset
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
-    sodaJSONObj["starting-point"]["type"] = "local";
-    create_json_object(action, sodaJSONObj, localDatasetFolderPath);
-    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-    populate_existing_folders(datasetStructureJSONObj);
-    populate_existing_metadata(sodaJSONObj);
-    sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
-    sodaJSONObj["bf-account-selected"] = {};
-    sodaJSONObj["bf-dataset-selected"] = {};
-    sodaJSONObj["generate-dataset"] = {};
-    let continueProgressEmptyFolder = await checkEmptySubFolders(
-      sodaJSONObj["dataset-structure"]
-    );
-    if (continueProgressEmptyFolder === false) {
-      Swal.fire({
-        title: "Failed to generate the manifest files.",
-        text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
-        heightAuto: false,
-        icon: "error",
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      }).then((result) => {});
-      return;
-    }
-    generateManifestHelper();
+    //checking size of local folder path
+    checkDiskSpace(localDatasetFolderPath).then(async (diskSpace) => {
+      let freeMem = diskSpace.free;
+      //if free memory is less than 3MB
+      if (freeMem < 3145728) {
+        Swal.fire({
+          title: "Not enough space in local storage",
+          html: "Please select another storage device or free up 3MB",
+          allowEscapeKey: true,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "warning",
+          showConfirmButton: "OK",
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Not enough local storage for Manifest files"
+        );
+      } else {
+        sodaJSONObj["starting-point"]["type"] = "local";
+        create_json_object(action, sodaJSONObj, localDatasetFolderPath);
+        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+        populate_existing_folders(datasetStructureJSONObj);
+        populate_existing_metadata(sodaJSONObj);
+        sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
+        sodaJSONObj["bf-account-selected"] = {};
+        sodaJSONObj["bf-dataset-selected"] = {};
+        sodaJSONObj["generate-dataset"] = {};
+        let continueProgressEmptyFolder = await checkEmptySubFolders(
+          sodaJSONObj["dataset-structure"]
+        );
+        if (continueProgressEmptyFolder === false) {
+          Swal.fire({
+            title: "Failed to generate the manifest files.",
+            text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+            heightAuto: false,
+            icon: "error",
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              Swal.hideLoading();
+            },
+          }).then((result) => {});
+          return;
+        }
+        generateManifestHelper();
+      }
+    });
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };

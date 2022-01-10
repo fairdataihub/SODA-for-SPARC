@@ -1850,7 +1850,7 @@
           >
             <button
               id="btn-confirm-local-submission-destination"
-              onclick="generateSubmissionHelper(false); checkStorage(document.getElementById('input-destination-generate-submission-locally').getAttribute('placeholder'));"
+              onclick="generateSubmissionHelper(false)"
               type="button"
               class="btn_animated popover-tooltip"
               data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -3828,7 +3828,7 @@
           >
             <button
               id="btn-confirm-local-dd-destination"
-              onclick="generateDDFile(false); checkStorage(document.getElementById('input-destination-generate-dd-locally').getAttribute('placeholder'));"
+              onclick="generateDDFile(false)"
               type="button"
               class="btn_animated popover-tooltip"
               data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -4851,7 +4851,7 @@
           >
             <button
               id="btn-confirm-local-subjects-destination"
-              onclick="generateSubjectsFileHelper(false); checkStorage(document.getElementById('input-destination-generate-subjects-locally').getAttribute('placeholder'));"
+              onclick="generateSubjectsFileHelper(false)"
               type="button"
               class="btn_animated popover-tooltip"
               data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -7004,7 +7004,7 @@
           >
             <button
               id="btn-confirm-local-samples-destination"
-              onclick="generateSamplesFileHelper(false); checkStorage(document.getElementById('input-destination-generate-samples-locally').getAttribute('placeholder'));"
+              onclick="generateSamplesFileHelper(false)"
               type="button"
               class="btn_animated popover-tooltip"
               data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -8782,7 +8782,7 @@
           >
             <button
               id="btn-confirm-local-changes-destination"
-              onclick="saveRCFile('changes'); checkStorage(document.getElementById('input-destination-generate-changes-locally').getAttribute('placeholder'));"
+              onclick="saveRCFile('changes')"
               type="button"
               class="btn_animated popover-tooltip"
               data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -9757,7 +9757,7 @@
                 border: none !important;
                 overflow: visible !important;
               "
-              onclick="saveRCFile('readme'); checkStorage(document.getElementById('input-destination-generate-readme-locally').getAttribute('placeholder'));"
+              onclick="saveRCFile('readme')"
             >
               Generate
             </button>

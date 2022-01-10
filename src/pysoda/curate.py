@@ -76,7 +76,6 @@ curateprintstatus = " "
 total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
-totalDatasetSize = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -1632,14 +1631,14 @@ def create_high_level_manifest_files(soda_json_structure):
 
 # This function is called to check size of files
 # that will be created locally on a user's device
-def checkJSONsize(jsonStructure):
-    global totalDatasetSize
-    totalDatasetSize = 0
+def check_JSON_size(jsonStructure):
+    global total_dataset_size
+    total_dataset_size = 0
 
     try:
 
         def recursive_dataset_scan(folder):
-            global totalDatasetSize
+            global total_dataset_size
 
             if "files" in folder.keys():
                 for file_key, file in folder["files"].items():
@@ -1648,7 +1647,7 @@ def checkJSONsize(jsonStructure):
                         if file_type == "local":
                             file_path = file["path"]
                             if isfile(file_path):
-                                totalDatasetSize += getsize(file_path)
+                                total_dataset_size += getsize(file_path)
 
             if "folders" in folder.keys():
                 for folder_key, folder in folder["folders"].items():
@@ -1668,18 +1667,18 @@ def checkJSONsize(jsonStructure):
                     metadata_path = file["path"]
                     if isfile(metadata_path):
                         if "new" in file["action"]:
-                            totalDatasetSize += getsize(metadata_path)
+                            total_dataset_size += getsize(metadata_path)
 
         if "manifest-files" in jsonStructure.keys():
             manifest_files_structure = create_high_level_manifest_files(jsonStructure)
             for key in manifest_files_structure.keys():
                 manifestpath = manifest_files_structure[key]
                 if isfile(manifestpath):
-                    totalDatasetSize += getsize(manifestpath)
+                    total_dataset_size += getsize(manifestpath)
 
-        # totalDatasetSize = totalDatasetSize/(1024**2)
+        # total_dataset_size = total_dataset_size/(1024**2)
         # returns in bytes
-        return totalDatasetSize
+        return total_dataset_size
     except Exception as e:
         raise e
 

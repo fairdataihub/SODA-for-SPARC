@@ -167,28 +167,28 @@ const checkAvailableSpace = () => {
   const roundToHundredth = (value) => {
     return Number(parseFloat(value.toFixed(2)));
   };
-  var location = document
+  let location = document
     .getElementById("input-destination-generate-dataset-locally")
     .getAttribute("placeholder");
 
   checkDiskSpace(location).then((diskSpace) => {
-    var freeMemory = diskSpace.free; //returns in bytes
-    var freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
+    let freeMemory = diskSpace.free; //returns in bytes
+    let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
 
-    client.invoke("api_checkJSONsize", sodaJSONObj, (error, res) => {
+    client.invoke("api_check_JSON_size", sodaJSONObj, (error, res) => {
       if (error) {
         console.error(error);
       } else {
-        var tempFolderSize = res;
-        var folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
-        var warningText =
+        let tempFolderSize = res;
+        let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
+        let warningText =
           "Please free up " +
           roundToHundredth(folderSizeMB) +
           "MB " +
           "or consider uploading directly to Pennsieve.";
-        console.log(res);
-        console.log(freeMemoryMB + "\n free mem in mb");
-        console.log(folderSizeMB + "\n folder size in mb");
+        //console.log(res);
+        //console.log(freeMemoryMB + "\n free mem in mb");
+        //console.log(folderSizeMB + "\n folder size in mb");
 
         //converted to MB/GB/TB for user readability
         if (folderSizeMB > 1000) {
@@ -235,11 +235,18 @@ const checkAvailableSpace = () => {
               popup: "animate__animated animate__zoomOut animate__faster",
             },
           });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Not enough local storage to generate dataset"
+          );
         }
       }
     });
   });
 };
+const btn = document.getElementById("btn-confirm-local-destination");
+btn.addEventListener("click", checkAvailableSpace, false);
 
 ////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 const progressFileDropdown = document.getElementById("progress-files-dropdown");
@@ -1067,6 +1074,11 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             $(".svg-change-current-account.dataset").css("display", "block");
           }
         });
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "User was not signed in before selected dataset"
+        );
       } else {
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
@@ -1124,6 +1136,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
               $("#create_new_bf_dataset_btn").click();
             }
           });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "User has no dataset created, prompted to go create one",
+            defaultBfAccount
+          );
         }
       }
       //datasets do exist so display popup with dataset options
@@ -1253,6 +1271,12 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
         $(".svg-change-current-account.dataset").css("display", "block");
         $(".ui.active.green.inline.loader.small").css("display", "none");
       }
+      ipcRenderer(
+        "track-event",
+        "Succes",
+        "User has succesfully chosen a dataset",
+        defaultBfDataset
+      );
     }, 10);
   }
 }

@@ -6341,7 +6341,6 @@ function initiate_generate() {
     } else {
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
-      console.log("Completed curate function");
       if (manifest_files_requested) {
         let high_level_folder_num = 0;
         if ("dataset-structure" in sodaJSONObj) {
@@ -6553,7 +6552,6 @@ function initiate_generate() {
       countDone++;
       if (countDone > 1) {
         log.info("Done curate track");
-        console.log("Done curate track");
         // then show the sidebar again
         // forceActionSidebar("show");
         clearInterval(timerProgress);

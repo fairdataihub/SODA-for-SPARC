@@ -412,6 +412,8 @@ $(document).ready(function () {
 //At most the metadata files should be no bigger than 3MB
 //Function checks the selected storage device to ensure at least 3MB are available
 const checkStorage = (id) => {
+  console.log(id);
+  console.log("function ran");
   var location = id;
   var threeMB = 3145728;
   //console.log(location);
@@ -444,6 +446,89 @@ const checkStorage = (id) => {
     );
   });
 };
+const localSubmissionBtn = document.getElementById(
+  "btn-confirm-local-submission-destination"
+);
+const localDDBtn = document.getElementById("btn-confirm-local-dd-destination");
+const localSubjectsBtn = document.getElementById(
+  "btn-confirm-local-subjects-destination"
+);
+const localSamplesBtn = document.getElementById(
+  "btn-confirm-local-samples-destination"
+);
+const localChangesBtn = document.getElementById(
+  "btn-confirm-local-changes-destination"
+);
+const localReadmeBtn = document.getElementById(
+  "btn-confirm-local-readme-destination"
+);
+//event listeners for each button since each one uses a different ID
+localSubmissionBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-submission-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localDDBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-dd-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localSubjectsBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-subjects-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localSamplesBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-samples-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localChangesBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-changes-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localReadmeBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-readme-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
 
 async function generateSubmissionHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
