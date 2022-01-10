@@ -122,21 +122,6 @@ $(document).ready(function () {
 
   $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
     if (data.node.text === "manifest.xlsx") {
-      // Show loading popup
-      Swal.fire({
-        title: "Edit the manifest file below:",
-        html: "<div id='div-manifest-edit'></div>",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        showConfirmButton: true,
-        confirmButtonText: "Confirm",
-        showCancelButton: true,
-        width: 600,
-        // this "swal-large" class has overflow-x = "scroll"
-        customClass: "swal-large",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      }).then((result) => {});
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
       var localFolderPath = path.join(
         homeDirectory,
@@ -151,7 +136,6 @@ $(document).ready(function () {
         "SODA Manifest Files",
         parentFolderName
       );
-
       var selectedManifestFilePath = path.join(
         localFolderPath,
         "manifest.xlsx"
@@ -171,17 +155,46 @@ $(document).ready(function () {
            console.log('Error : ', err);
          }
        }
-      xlsxToJson(optionsConvertManifest, callbackConvertManifest);
-      loadManifestFileEdits(jsonManifestFilePath, selectedManifestFilePath)
+      // Show loading popup
+      Swal.fire({
+        title: "Edit the manifest file below:",
+        html: "<div id='div-manifest-edit'></div>",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: true,
+        confirmButtonText: "Confirm",
+        showCancelButton: true,
+        width: 600,
+        // this "swal-large" class has overflow-x = "scroll"
+        customClass: "swal-large",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          xlsxToJson(optionsConvertManifest, callbackConvertManifest);
+          loadManifestFileEdits(jsonManifestFilePath, selectedManifestFilePath)
+        }
+      }).then((result) => {
+        // json of new info:
+        // write this new json to existing manifest.json file
+        var updatedManifestObj = JSON.stringify(table1.getJson());
+        fs.writeFile (jsonManifestFilePath, updatedManifestObj, function(err) {
+            if (err) throw err;
+          }
+        );
+        // convert manifest.json to existing manifest.xlsx file
+        // console.log()
+      });
+
     }
   });
 });
 
+var table1;
 function loadManifestFileEdits(jsonPath, excelManifestFilePath) {
   let rawdata = fs.readFileSync(jsonPath);
   let jsondata = JSON.parse(rawdata);
   // After ID in pop has been initiated, initialize jspreadsheet
-  jspreadsheet(document.getElementById('div-manifest-edit'), {
+  table1 = jspreadsheet(document.getElementById('div-manifest-edit'), {
     data: jsondata,
     columns: [
       {
