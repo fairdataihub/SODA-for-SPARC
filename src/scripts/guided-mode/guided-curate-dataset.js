@@ -811,4 +811,13 @@ $(document).ready(() => {
   $(".guided-award-and-milestone-information").change(function () {
     validateCreateSubmissionMetadata();
   });
+
+  var guidedDatasetKeywordsTagsInput =
+      document.getElementById("guided-ds-keywords"),
+    keywordTagify = new Tagify(keywordInput, {
+      duplicates: false,
+    });
+  const guidedDatasetKeywordsTagsTagify = new Tagify(
+    guidedDatasetKeywordsTagsInput
+  );
 });

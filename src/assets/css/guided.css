@@ -568,3 +568,6 @@
   justify-content: center;
   flex-direction: column;
 }
+.guided--accordion-field-container .guided--accordion-field:last-child {
+  margin-bottom: 10px;
+}
