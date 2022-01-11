@@ -6607,7 +6607,6 @@ function initiate_generate() {
           if (header.textContent.includes("folders")) {
             let instruction = card.querySelector("p");
             // log the folder instructions to analytics
-            console.log("Folder xontent: ", instruction.textContent);
             ipcRenderer.send(
               "track-event",
               "Success",
@@ -6619,7 +6618,6 @@ function initiate_generate() {
             );
           } else if (header.textContent.includes("existing files")) {
             let instruction = card.querySelector("p");
-            console.log("File xontent: ", instruction.textContent);
             ipcRenderer.send(
               "track-event",
               "Success",
@@ -7431,7 +7429,6 @@ function logMetadataForAnalytics(
     actionName = actionName + " - " + destination;
     // log only the action with the destination added
     if (destination === Destinations.PENNSIEVE) {
-      console.log("Metadata log: ", category, actionName, defaultBfDatasetId);
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7439,7 +7436,6 @@ function logMetadataForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      console.log("Metadata log: ", category, actionName, action, 1);
       ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
     }
   }
@@ -7454,7 +7450,6 @@ async function logMetadataSizeForAnalytics(
   metadataFileName,
   size
 ) {
-  console.log("Logging Metadata size: ", size);
   ipcRenderer.send(
     "track-event",
     "Success",
@@ -7493,12 +7488,8 @@ async function logMetadataSizeForAnalytics(
     size
   );
 
-  console.log("First log: ", currentMetadataLoggingPrefix, size);
-
   // get the destination of the metadata file
   let destination = uploadBFBoolean ? "Pennsieve" : "Local";
-
-  console.log("The second log's destination", destination);
 
   // log the size of the metadata file along with its location; label is the selected dataset's ID or a note informing us the dataset is stored locally
   ipcRenderer.send(
@@ -7625,7 +7616,6 @@ function logCurationForAnalytics(
         actions[idx],
         1
       );
-      console.log("Log: ", category, actionName, actions[idx]);
     }
 
     // reset the action's name
@@ -7652,7 +7642,6 @@ function logCurationForAnalytics(
     // determine logging format
     if (location === Destinations.PENNSIEVE) {
       // use the datasetid as a label and do not add an aggregation value
-      console.log("Log: ", category, actionName, defaultBfDatasetId);
       ipcRenderer.send(
         "track-event",
         `${category}`,
@@ -7660,7 +7649,6 @@ function logCurationForAnalytics(
         defaultBfDatasetId
       );
     } else {
-      console.log("Log: ", category, actionName, location);
       // log the location as a label and add an aggregation value
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
@@ -7715,8 +7703,6 @@ function getMetadataFileNameFromStatus(metadataFileStatus) {
   let filePath = metadataFileStatus.text();
 
   let fileName = path.basename(filePath);
-
-  console.log("The file name is: ", fileName);
 
   // remove the extension
   fileName = fileName.slice(0, fileName.indexOf("."));
@@ -7939,7 +7925,7 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-get_access_token().then((res) => console.log(res));
+// get_access_token().then((res) => console.log(res));
 
 /*
 ******************************************************

@@ -93,12 +93,6 @@ function confirmMetadataFilePath(ev) {
   if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
     $(metadataFile).addClass("done");
 
-    console.log("Status is: ", metadataFileStatus);
-    console.log(
-      "File name from status is: ",
-      getMetadataFileNameFromStatus(metadataFileStatus)
-    );
-
     // log the import to analytics
     logCurationForAnalytics(
       "Success",
@@ -138,7 +132,6 @@ function confirmMetadataFilePath(ev) {
 // })
 
 $(".button-individual-metadata.go-back").click(function () {
-  console.log("Confirming metadata with this");
   var metadataFileStatus = $($(this).parents()[1]).find(
     ".para-metadata-file-status"
   );
