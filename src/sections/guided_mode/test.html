@@ -1,160 +1,143 @@
-<div class="ui styled accordion">
-  <div
-    id="guided-submission-title-accordion"
-    class="title active"
-    style="background: var(--color-bg-light-green-button)"
-  >
-    <i class="dropdown icon"></i>
-    Award and milestone information
-  </div>
-  <div class="content active" id="guided-submission-accordion">
-    <div style="display: block; width: 90%; margin: 0 auto; font-size: 13px">
-      <div>
-        <div
-          class="div-dd-info"
-          style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
-        >
-          <div
-            class="demo-controls-head"
-            style="text-align: left; width: 90%; margin-bottom: 5px"
+<div id="guided-create-description-metadata-tab" class="guided--panel">
+  <div class="guided--question show">
+    <h1 class="guided--sub-step-text">Please select an option below:</h1>
+    <div class="guided--card-container">
+      <div
+        class="
+          option-card
+          radio-button
+          guided--generate-location-card
+          non-selected
+        "
+        id="guided-generate-new-description-card"
+        data-enable-next-button="false"
+      >
+        <div class="card-head"></div>
+        <div class="card-body">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="40px"
+            height="40px"
+            fill="var(--color-accent)"
+            class="bi bi-file-earmark-plus"
+            viewBox="0 0 16 16"
           >
-            <div style="width: 100%">
-              <font style="font-weight: 600; color: #090909">
-                SPARC Award number:
-              </font>
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="SPARC award associated with the dataset."
-                rel="popover"
-                data-placement="right"
-                data-html="true"
-                data-trigger="hover"
-                style="margin-left: 5px; color: black"
-              ></i>
-            </div>
-          </div>
-
-          <div class="demo-controls-body" style="width: 90%">
-            <div class="ui input modified">
-              <input
-                type="text"
-                id="guided-submission-sparc-award"
-                name="dataset name"
-                placeholder="Type here..."
-                style="font-size: 14px"
-              />
-            </div>
-          </div>
-          <div
-            style="
-              display: flex;
-              justify-content: center;
-              margin: 0 auto;
-              text-decoration: none;
-              text-align: center;
-              font-size: 14px;
-              margin-top: 10px;
-              padding-bottom: 20px;
-            "
-          >
-            <a
-              onclick="helpSPARCAward('submission')"
-              target="_blank"
-              id="guided-a-help-submission-Airtable"
-            >
-              Click here to import my SPARC award from Airtable
-            </a>
-            <div
-              id="guided-select-sparc-award-submission-spinner"
-              class="ui active green inline loader sparc-award small"
-              style="display: none; margin-left: 10px"
-            ></div>
-          </div>
+            <path
+              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+            />
+            <path
+              d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+            />
+          </svg>
+          <h2>I want to start a new dataset_description.xlsx file</h2>
         </div>
-
-        <div
-          class="div-dd-info"
-          style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
-        >
-          <div
-            class="demo-controls-head"
-            style="text-align: left; width: 90%; margin-bottom: 5px"
-          >
-            <div style="width: 100%">
-              <font style="font-weight: 600; color: #090909">
-                Enter the milestone(s):
-              </font>
-              <i
-                class="fas fa-info-circle popover-tooltip"
-                data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+      </div>
+      <div
+        class="
+          option-card
+          radio-button
+          guided--generate-location-card
+          non-selected
+        "
+        id="guided-continue-existing-description-card"
+      >
+        <div class="card-head"></div>
+        <div class="card-body">
+          <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
+          <h2>
+            I want to continue working on an existing dataset_description.xlsx
+            file
+          </h2>
+        </div>
+      </div>
+    </div>
+    <div id="guided-create-description-metadata-panels" class="guided--panel">
+      <div
+        id="guided-generate-new-description-panel"
+        class="guided--panel hidden"
+      >
+        <div class="ui styled fluid accordion guided--accordion">
+          <div class="title active">
+            <i class="dropdown icon active"></i>Award and milestone information
+          </div>
+          <div class="content active">
+            <div class="guided--accordion-field">
+              <label class="guided--label-accordion-field"
+                >SPARC Award number
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="SPARC award associated with the dataset."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i
+              ></label>
+              <div class="ui input modified">
+                <input
+                  class="guided-award-and-milestone-information"
+                  type="text"
+                  id="guided-description-sparc-award"
+                  placeholder="Type here..."
+                />
+              </div>
+              <label class="guided--label-accordion-field"
+                >Enter the milestone(s):
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
                                   <br/><br/>
                                   Hit 'Enter' to register it."
-                rel="popover"
-                data-placement="right"
-                data-html="true"
-                data-trigger="hover"
-                style="margin-left: 5px; color: black"
-              ></i>
-            </div>
-          </div>
-          <div class="demo-controls-body" style="width: 90%">
-            <div class="ui input modified">
-              <textarea
-                id="guided-selected-milestone-1"
-                class="form-container-input-bf"
-                placeholder="Type here and hit 'Enter' after each keyword."
-              ></textarea>
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </label>
+              <input
+                class="guided-award-and-milestone-information"
+                id="guided-tagify-description-milestone-tags"
+                name="milestone-tags"
+                placeholder="Tye here and hit 'Enter' after each keyword."
+                value=""
+                autofocus
+              />
+              <label class="guided--label-accordion-field"
+                >Completion date:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="Enter the completion date for your milestone(s) specified above."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </label>
+              <div class="demo-controls-body" style="width: 90%">
+                <div class="ui input modified">
+                  <select
+                    class="guided-award-and-milestone-information"
+                    id="guided-description-completion-date"
+                  >
+                    <option disabled selected hidden>Select an option</option>
+                    <option
+                      id="guided-date-entry-pseudo-parent"
+                      value="Enter my own date"
+                    >
+                      Enter my own date
+                    </option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div
-        class="div-dd-info"
-        style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
+        id="guided-continue-existing-description-panel"
+        class="guided--panel hidden"
       >
-        <div
-          class="demo-controls-head"
-          style="text-align: left; width: 90%; margin-bottom: 5px"
-        >
-          <div style="width: 100%">
-            <font style="font-weight: 600; color: #090909"
-              >Completion date:
-            </font>
-            <i
-              class="fas fa-info-circle popover-tooltip"
-              data-content="Enter the completion date for your milestone(s) specified above."
-              rel="popover"
-              data-placement="right"
-              data-html="true"
-              data-trigger="hover"
-              style="margin-left: 5px; color: black"
-            ></i>
-          </div>
-        </div>
-        <div class="demo-controls-body" style="width: 90%">
-          <div class="ui input modified">
-            <select id="guided-submission-completion-date">
-              <option value="Select" selected>Select an option</option>
-              <option value="Enter my own date">Enter my own date</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div
-        style="
-          display: flex;
-          justify-content: center;
-          margin: 0 auto;
-          text-decoration: underline;
-          text-align: center;
-          font-size: 14px;
-          margin-top: 25px;
-          padding-bottom: 20px;
-        "
-      >
-        <a id="guided-a-help-submission-milestones">
-          Click here to import milestones from my Data Deliverables document
-        </a>
+        b
       </div>
     </div>
   </div>

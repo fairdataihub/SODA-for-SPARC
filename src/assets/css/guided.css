@@ -252,7 +252,7 @@
   font-size: 14px;
   color: #090909;
   font-weight: 600;
-  margin-top: 15px;
+  margin-top: 10px;
   margin-bottom: 10px;
 }
 
@@ -552,6 +552,13 @@
 .guided--accordion {
   margin: 25px 0px !important;
   width: 100% !important;
+}
+
+.guided--accordion-field-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .guided--accordion-field {
