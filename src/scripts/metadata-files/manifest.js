@@ -120,6 +120,15 @@ async function generateManifest(action, type) {
           Swal.hideLoading();
         },
       }).then((result) => {});
+
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.LOCAL
+      );
       return;
     }
     generateManifestHelper();
@@ -276,9 +285,29 @@ function initiate_generate_manifest() {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+
+      let destination = "";
+
+      // determine if working with a Local dataset or Pennsieve
+      if ("bf-dataset-selected" in sodaJSONObj) {
+        destination = "Pennsieve";
+      } else if ("generate-dataset" in sodaJSONObj) {
+        if ("destination" in sodaJSONObj["generate-dataset"]) {
+          destination = sodaJSONObj["generate-dataset"]["destination"];
+        }
+      }
+
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        destination === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+      );
     } else {
+      let high_level_folder_num = 0;
       if (manifest_files_requested) {
-        let high_level_folder_num = 0;
         if ("dataset-structure" in sodaJSONObj) {
           if ("folders" in sodaJSONObj["dataset-structure"]) {
             for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -287,6 +316,38 @@ function initiate_generate_manifest() {
           }
         }
       }
+      // determine if working with a Local dataset or Pennsieve
+      if ("bf-dataset-selected" in sodaJSONObj) {
+        destination = "Pennsieve";
+      } else if ("generate-dataset" in sodaJSONObj) {
+        if ("destination" in sodaJSONObj["generate-dataset"]) {
+          destination = sodaJSONObj["generate-dataset"]["destination"];
+        }
+      }
+
+      // log the manifest file creation to analytics
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        destination === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+      );
+
+      // log the amount of high level manifest files that were created
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        MetadataAnalyticsPrefix.MANIFEST + " - Generate - Number of Files ",
+        "Number of Files",
+        high_level_folder_num
+      );
+
+      logMetadataSizeForAnalytics(
+        destination === "Pennsieve" ? true : false,
+        "manifest.xlsx",
+        res[1]
+      );
 
       Swal.fire({
         title:
@@ -343,6 +404,16 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
+
+    // log the Generate action without the destination
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.MANIFEST,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      Destinations.PENNSIEVE
+    );
+
     $("#bf_dataset_create_manifest").text("None");
     $("#div-check-bf-create-manifest").hide();
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
@@ -376,6 +447,14 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
           Swal.hideLoading();
         },
       }).then((result) => {});
+
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.PENNSIEVE
+      );
       return;
     }
     generateManifestHelper();
