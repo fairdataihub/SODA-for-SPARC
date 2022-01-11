@@ -734,10 +734,16 @@ function addFilesfunction(
 
   for (var file in currentLocation["files"]) {
     uiFilesWithoutExtension[path.parse(file).base] = 1;
+    console.log(path.parse(file).base + "\n uiFilesWithoutExtension");
+    console.log(JSON.stringify(uiFilesWithoutExtension));
+    //use uiFilesWithoutExtension to compare names
+    //if names and path are the same it is nonallowed
+    //if just name is the same
   }
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
+    console.log("this is the file name: " + fileName);
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {
@@ -754,17 +760,31 @@ function addFilesfunction(
         JSON.stringify(currentLocation["files"]) === "{}" &&
         JSON.stringify(regularFiles) === "{}"
       ) {
+        //regular files object key with path, and basename
         regularFiles[path.parse(fileName).base] = {
           path: fileName,
           basename: path.parse(fileName).base,
         };
       } else {
         for (var objectKey in currentLocation["files"]) {
+          //tries finding duplicates with the same path
+          console.log(
+            "printing out object key in currentLocation['files']\n" + objectKey
+          );
           if (objectKey !== undefined) {
             var nonAllowedDuplicate = false;
+            //if file already exist in json
             if (fileName === currentLocation["files"][objectKey]["path"]) {
               nonAllowedDuplicateFiles.push(fileName);
               nonAllowedDuplicate = true;
+              console.log(
+                objectKey +
+                  "\nobject key" +
+                  fileName +
+                  "\nfile name" +
+                  nonAllowedDuplicateFiles +
+                  "\nnonallowed"
+              );
               break;
             }
           }
@@ -772,6 +792,9 @@ function addFilesfunction(
         if (!nonAllowedDuplicate) {
           var j = 1;
           var fileBaseName = path.basename(fileName);
+          console.log(
+            fileBaseName + "\nthis is File base in !nonAllowedDuplicates"
+          );
           var originalFileNameWithoutExt = path.parse(fileBaseName).name;
           var fileNameWithoutExt = originalFileNameWithoutExt;
           while (
@@ -795,6 +818,7 @@ function addFilesfunction(
   // and regular files (append to UI)
   if (Object.keys(regularFiles).length > 0) {
     for (var element in regularFiles) {
+      console.log(regularFiles + "\nthis is the regular files");
       currentLocation["files"][regularFiles[element]["basename"]] = {
         path: regularFiles[element]["path"],
         type: "local",
@@ -806,6 +830,7 @@ function addFilesfunction(
       var originalName = path.parse(
         currentLocation["files"][regularFiles[element]["basename"]]["path"]
       ).base;
+      console.log(originalName + "\noriginal name here");
       if (element !== originalName) {
         currentLocation["files"][regularFiles[element]["basename"]][
           "action"
@@ -815,6 +840,7 @@ function addFilesfunction(
         '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         regularFiles[element]["basename"] +
         "</div></div>";
+      console.log(appendString + "\nappended string");
       $(uiItem).html(appendString);
       listItems(currentLocation, uiItem);
       getInFolder(
@@ -825,6 +851,12 @@ function addFilesfunction(
       );
     }
   }
+  //add sweetalert here before non duplicate files pop
+  //
+  //if (AllowedDuplicateFiles.length > 0) {
+  //}
+
+  //alert giving a list of files + path that cannot be copied bc theyre duplicates
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
     Swal.fire({
