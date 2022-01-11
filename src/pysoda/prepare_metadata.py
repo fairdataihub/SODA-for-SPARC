@@ -2,7 +2,6 @@
 
 ### Import required python modules
 
-from sys import getsizeof
 from gevent import monkey
 
 monkey.patch_all()
