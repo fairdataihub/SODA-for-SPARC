@@ -688,6 +688,16 @@ $(document).ready(() => {
       console.log("description metadata added");
     }
 
+    if (
+      current_sub_step.attr("id") == "guided-create-submission-metadata-tab"
+    ) {
+      if ($("#guided-generate-new-submission-card").hasClass("checked")) {
+        confirmed_dataset_name = $("#guided-bf-dataset-name-confirm").text();
+        sodaJSONObj["generate-dataset"]["dataset-name"] =
+          confirmed_dataset_name;
+      }
+    }
+
     //if more tabs in parent tab, go to next tab and update capsule
     if (current_sub_step.next().attr("id") !== undefined) {
       current_sub_step.hide();
@@ -725,4 +735,80 @@ $(document).ready(() => {
     }
   };
   goToGuidedTab("add-edit-tags-tab");
+
+  //CREATE SUBMISSION METADATA
+  var guidedSubmissionTagsInput = document.getElementById(
+    "guided-tagify-submission-milestone-tags"
+  );
+  // initialize Tagify on the above input node reference
+  guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput);
+
+  $("#guided-submission-completion-date").change(function () {
+    const text = $("#guided-submission-completion-date").val();
+    if (text == "Enter my own date") {
+      Swal.fire({
+        allowOutsideClick: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Confirm",
+        showCloseButton: true,
+        focusConfirm: true,
+        heightAuto: false,
+        reverseButtons: reverseSwalButtons,
+        showCancelButton: false,
+        title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
+        html: `<input type="date" id="milestone_date_picker" >`,
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          document.getElementById("milestone_date_picker").valueAsDate =
+            new Date();
+        },
+        preConfirm: async () => {
+          const input_date = document.getElementById(
+            "milestone_date_picker"
+          ).value;
+          return {
+            date: input_date,
+          };
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const input_date = result.value.date;
+          $("#guided-submission-completion-date").append(
+            $("<option>", {
+              value: input_date,
+              text: input_date,
+            })
+          );
+          var $option = $("#guided-submission-completion-date")
+            .children()
+            .last();
+          $option.prop("selected", true);
+          validateCreateSubmissionMetadata();
+        }
+      });
+    }
+  });
+  //TODO
+  //MAYBE TRY CHANGING THE SELECTOR LOCATION FOR GUIDEDSUBMISSIONTAGSTAGIFY
+  const validateCreateSubmissionMetadata = () => {
+    if (
+      $("#guided-submission-sparc-award").val().trim().length === 0 ||
+      guidedSubmissionTagsTagify.getTagElms().length === 0 ||
+      $("#guided-submission-completion-date").children().length <= 2
+    ) {
+      disableProgressButton();
+    } else {
+      enableProgressButton();
+    }
+  };
+
+  $(".guided-award-and-milestone-information").change(function () {
+    validateCreateSubmissionMetadata();
+  });
 });

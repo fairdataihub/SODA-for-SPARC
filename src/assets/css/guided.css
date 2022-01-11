@@ -248,6 +248,14 @@
   margin-bottom: 15px;
 }
 
+.guided--label-accordion-field {
+  font-size: 14px;
+  color: #090909;
+  font-weight: 600;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
 .guided--progress-container {
   display: flex;
   flex-direction: row;
@@ -544,4 +552,12 @@
 .guided--accordion {
   margin: 25px 0px !important;
   width: 100% !important;
+}
+
+.guided--accordion-field {
+  width: 100%;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
