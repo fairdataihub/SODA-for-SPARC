@@ -1443,14 +1443,14 @@ const showDatasetDescription = () => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Manage Dataset - Add/Edit Subtitle - Get subtitle",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE + " - Get Subtitle",
             defaultBfDatasetId
           );
         } else {
           ipcRenderer.send(
             "track-event",
             "Success",
-            "Manage Dataset - Add/Edit Subtitle - Get subtitle",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE + " - Get Subtitle",
             defaultBfDatasetId
           );
           $("#ds-description").html(res);
@@ -2465,7 +2465,7 @@ $("#button-submit-dataset").click(async () => {
                 "Error",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - Number of Folders`,
-                datasetName
+                defaultBfDatasetId
               );
             } else {
               let num_of_files = res[0];
@@ -2485,7 +2485,7 @@ $("#button-submit-dataset").click(async () => {
                 "Success",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - name - Number of Folders`,
-                datasetName,
+                defaultBfDatasetId,
                 num_of_folders
               );
 
@@ -2503,7 +2503,7 @@ $("#button-submit-dataset").click(async () => {
                 "Success",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - name - Number of Files`,
-                datasetName,
+                defaultBfDatasetId,
                 num_of_files
               );
             }
@@ -2534,7 +2534,7 @@ $("#button-submit-dataset").click(async () => {
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             ` - Progress track`,
-          datasetName
+          defaultBfDatasetId
         );
 
         $("#para-progress-bar-error-status").html(
@@ -2546,7 +2546,7 @@ $("#button-submit-dataset").click(async () => {
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             ` - Progress track`,
-          datasetName
+            defaultBfDatasetId
         );
 
         completionStatus = res[1];
