@@ -432,6 +432,8 @@ function checkValidRenameInput(
         break;
       }
     }
+    var itemDivElements = document.getElementById("items").children;
+    renameFolder(this, organizeCurrentLocation, itemDivElements, )
     if (duplicate) {
       Swal.fire({
         icon: "error",
@@ -447,12 +449,12 @@ function checkValidRenameInput(
 
 ///// Option to rename a folder and files
 function renameFolder(
-  event1,
-  organizeCurrentLocation,
-  itemElement,
-  inputGlobal,
-  uiItem,
-  singleUIItem
+  event1,                   //this
+  organizeCurrentLocation, //current section of My_folder
+  itemElement,    //the elements in the container with items
+  inputGlobal,   //datasetStructureJSONObj
+  uiItem,       //container with the folders
+  singleUIItem //class name
 ) {
   var promptVar;
   var type; // renaming files or folders
@@ -460,6 +462,7 @@ function renameFolder(
   var currentName = event1.parentElement.innerText;
   var nameWithoutExtension;
   var highLevelFolderBool;
+  console.log("Parameters of renameFolder\n" + event1 + " END\n" + organizeCurrentLocation + " END\n" + JSON.stringify(itemElement) + "END\n" + JSON.stringify(inputGlobal) + "END\n" + JSON.stringify(uiItem) + "END\n" + JSON.stringify(singleUIItem) + "END\n");
 
   double_extensions = [
     ".ome.tiff",
@@ -713,11 +716,125 @@ function checkSubArrayBool(parentArray, childArray) {
 
 function showItemsAsListBootbox(arrayOfItems) {
   var htmlElement = "";
+  let i = 0
   for (var element of arrayOfItems) {
     htmlElement = htmlElement + "<li>" + element + "</li>";
+    i++;
+    if(i === 3) {
+      return htmlElement;
+    }
   }
   return htmlElement;
 }
+var onBtnClicked = (btnId) => {
+  Swal.close();
+  if (btnId === "skip") {
+    //do nothing
+    console.log("SKIPPED");
+  };
+  if(btnId === 'replace') {
+    //replace old file with new one trying to be uploaded (case: single file)
+    //new prompt with list and radio buttons on each (select to replace old with new) (case: multiple files)
+    console.log("REPLACE");
+  }
+  if(btnId === 'rename') {
+    //new prompt with list of files and input fields to rename files
+    //if left blank prompt with a list of the blank asking if want to skip files or replace old files 
+    console.log("RENAME");
+    Swal.fire({
+      title: `Rename File`,
+      text: "Please enter a new name:",
+      input: "text",
+      inputValue: 'nameWithoutExtension',
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      focusCancel: true,
+      confirmButtonText: "Save",
+      cancelButtonText: "Cancel",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+      didOpen: () => {
+        $(".swal2-input").attr("id", "rename-folder-input");
+        $(".swal2-confirm").attr("id", "rename-folder-button");
+        $("#rename-folder-input").keyup(function () {
+          var val = $("#rename-folder-input").val();
+          for (var char of nonAllowedCharacters) {
+            if (val.includes(char)) {
+              Swal.showValidationMessage(
+                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
+              );
+              $("#rename-folder-button").attr("disabled", true);
+              return;
+            }
+            $("#rename-folder-button").attr("disabled", false);
+          }
+        });
+      },
+      didDestroy: () => {
+        $(".swal2-confirm").attr("id", "");
+        $(".swal2-input").attr("id", "");
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        var returnedName = checkValidRenameInput(
+          event1,
+          result.value.trim(),
+          type,
+          currentName,
+          newName,
+          itemElement
+          // myBootboxDialog
+        );
+        if (returnedName !== "") {
+          Swal.fire({
+            icon: "success",
+            text: "Successfully renamed!.",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showClass: {
+              popup: "animate__animated animate__fadeInDown animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__fadeOutUp animate__faster",
+            },
+          });
+
+          /// assign new name to folder or file in the UI
+          event1.parentElement.parentElement.innerText = returnedName;
+          /// get location of current file or folder in JSON obj
+          var filtered = getGlobalPath(organizeCurrentLocation);
+          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          /// update jsonObjGlobal with the new name
+          storedValue = myPath[type][currentName];
+          delete myPath[type][currentName];
+          myPath[type][returnedName] = storedValue;
+          if ("action" in myPath[type][returnedName]) {
+            if (!myPath[type][returnedName]["action"].includes("renamed")) {
+              myPath[type][returnedName]["action"].push("renamed");
+            }
+          } else {
+            myPath[type][returnedName]["action"] = [];
+            myPath[type][returnedName]["action"].push("renamed");
+          }
+          /// list items again with updated JSON obj
+          listItems(myPath, uiItem);
+          getInFolder(
+            singleUIItem,
+            uiItem,
+            organizeCurrentLocation,
+            inputGlobal
+          );
+        }
+      }
+    });
+  }
+};
 
 function addFilesfunction(
   fileArray,
@@ -735,11 +852,12 @@ function addFilesfunction(
   for (var file in currentLocation["files"]) {
     uiFilesWithoutExtension[path.parse(file).base] = 1;
     console.log(path.parse(file).base + "\n uiFilesWithoutExtension");
-    console.log(JSON.stringify(uiFilesWithoutExtension));
     //use uiFilesWithoutExtension to compare names
     //if names and path are the same it is nonallowed
     //if just name is the same
   }
+  //gets files already placed and puts into json
+  console.log(uiFilesWithoutExtension);
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
@@ -779,9 +897,9 @@ function addFilesfunction(
               nonAllowedDuplicate = true;
               console.log(
                 objectKey +
-                  "\nobject key" +
+                  "\nobject key\n" +
                   fileName +
-                  "\nfile name" +
+                  "\nfile name\n" +
                   nonAllowedDuplicateFiles +
                   "\nnonallowed"
               );
@@ -790,19 +908,24 @@ function addFilesfunction(
           }
         }
         if (!nonAllowedDuplicate) {
+          console.log(nonAllowedDuplicate + "\nboolean");
+          //there was a duplicate with the same name but different path
           var j = 1;
           var fileBaseName = path.basename(fileName);
           console.log(
             fileBaseName + "\nthis is File base in !nonAllowedDuplicates"
-          );
+          );          
           var originalFileNameWithoutExt = path.parse(fileBaseName).name;
           var fileNameWithoutExt = originalFileNameWithoutExt;
+
           while (
             fileBaseName in uiFilesWithoutExtension ||
             fileBaseName in regularFiles
           ) {
             fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
             fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
+            console.log(fileBaseName + "\nfileBaseName");
+            console.log(fileNameWithoutExt + "\nfileNameWOutExt");
             j++;
           }
           regularFiles[fileBaseName] = {
@@ -818,7 +941,7 @@ function addFilesfunction(
   // and regular files (append to UI)
   if (Object.keys(regularFiles).length > 0) {
     for (var element in regularFiles) {
-      console.log(regularFiles + "\nthis is the regular files");
+      console.log(JSON.stringify(regularFiles) + "\nthis is the regular files");
       currentLocation["files"][regularFiles[element]["basename"]] = {
         path: regularFiles[element]["path"],
         type: "local",
@@ -830,7 +953,7 @@ function addFilesfunction(
       var originalName = path.parse(
         currentLocation["files"][regularFiles[element]["basename"]]["path"]
       ).base;
-      console.log(originalName + "\noriginal name here");
+      console.log(originalName + "\noriginal name here\n" + element + "\nelement here");
       if (element !== originalName) {
         currentLocation["files"][regularFiles[element]["basename"]][
           "action"
@@ -857,22 +980,49 @@ function addFilesfunction(
   //}
 
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
-  if (nonAllowedDuplicateFiles.length > 0) {
-    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
+  console.log(nonAllowedDuplicateFiles.length + "\nlength of nonallowedfiles");
+  var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
+  if (nonAllowedDuplicateFiles.length === 1) {
     Swal.fire({
+      title: "A duplicate file is trying to be uploaded",
       icon: "warning",
-      html: `The following files are already imported into the current location of your dataset: <p><ul>${listElements}</ul></p>`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      customClass: {
-        content: "swal-left-align",
-      },
+      showConfirmButton: false,
+      showCloseButton: true,
+      backdrop: "rgba(0, 0, 0, 0.4)",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate_animated animate_zoomout animate__faster"
       },
+      html: `
+        <p>The following file is already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
+        <div style="display: flex; justify-content: space-around;">
+          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip')">Skip File</button>
+          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace')">Replace Old File</button>
+          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename')">Rename File</button>
+        </div>`
+    });
+  } else if (nonAllowedDuplicateFiles.length > 1) {
+    Swal.fire({
+      title: "Multiple duplicate files are trying to be uploaded",
+      icon: "warning",
+      showConfirmButton: false,
+      showCloseButton: true,
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate_animated animate_zoomout animate__faster"
+      },
+      html: `
+        <p>The following files are already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
+        <div style="display: flex; justify-content: space-around;">
+          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip')">Skip Files</button>
+          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace')">Replace Old Files</button>
+          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename')">Rename Files</button>
+        </div>`
     });
   }
 }
