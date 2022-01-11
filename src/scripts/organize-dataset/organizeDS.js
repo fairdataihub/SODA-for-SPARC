@@ -433,7 +433,7 @@ function checkValidRenameInput(
       }
     }
     var itemDivElements = document.getElementById("items").children;
-    renameFolder(this, organizeCurrentLocation, itemDivElements, )
+    renameFolder(this, organizeCurrentLocation, itemDivElements);
     if (duplicate) {
       Swal.fire({
         icon: "error",
@@ -449,11 +449,11 @@ function checkValidRenameInput(
 
 ///// Option to rename a folder and files
 function renameFolder(
-  event1,                   //this
+  event1, //this
   organizeCurrentLocation, //current section of My_folder
-  itemElement,    //the elements in the container with items
-  inputGlobal,   //datasetStructureJSONObj
-  uiItem,       //container with the folders
+  itemElement, //the elements in the container with items
+  inputGlobal, //datasetStructureJSONObj
+  uiItem, //container with the folders
   singleUIItem //class name
 ) {
   var promptVar;
@@ -462,7 +462,21 @@ function renameFolder(
   var currentName = event1.parentElement.innerText;
   var nameWithoutExtension;
   var highLevelFolderBool;
-  console.log("Parameters of renameFolder\n" + event1 + " END\n" + organizeCurrentLocation + " END\n" + JSON.stringify(itemElement) + "END\n" + JSON.stringify(inputGlobal) + "END\n" + JSON.stringify(uiItem) + "END\n" + JSON.stringify(singleUIItem) + "END\n");
+  console.log(
+    "Parameters of renameFolder\n" +
+      event1 +
+      " END\n" +
+      organizeCurrentLocation +
+      " END\n" +
+      JSON.stringify(itemElement) +
+      "END\n" +
+      JSON.stringify(inputGlobal) +
+      "END\n" +
+      JSON.stringify(uiItem) +
+      "END\n" +
+      JSON.stringify(singleUIItem) +
+      "END\n"
+  );
 
   double_extensions = [
     ".ome.tiff",
@@ -716,11 +730,11 @@ function checkSubArrayBool(parentArray, childArray) {
 
 function showItemsAsListBootbox(arrayOfItems) {
   var htmlElement = "";
-  let i = 0
+  let i = 0;
   for (var element of arrayOfItems) {
     htmlElement = htmlElement + "<li>" + element + "</li>";
     i++;
-    if(i === 3) {
+    if (i === 3) {
       return htmlElement;
     }
   }
@@ -731,21 +745,21 @@ var onBtnClicked = (btnId) => {
   if (btnId === "skip") {
     //do nothing
     console.log("SKIPPED");
-  };
-  if(btnId === 'replace') {
+  }
+  if (btnId === "replace") {
     //replace old file with new one trying to be uploaded (case: single file)
     //new prompt with list and radio buttons on each (select to replace old with new) (case: multiple files)
     console.log("REPLACE");
   }
-  if(btnId === 'rename') {
+  if (btnId === "rename") {
     //new prompt with list of files and input fields to rename files
-    //if left blank prompt with a list of the blank asking if want to skip files or replace old files 
+    //if left blank prompt with a list of the blank asking if want to skip files or replace old files
     console.log("RENAME");
     Swal.fire({
       title: `Rename File`,
       text: "Please enter a new name:",
       input: "text",
-      inputValue: 'nameWithoutExtension',
+      inputValue: "nameWithoutExtension",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -914,7 +928,7 @@ function addFilesfunction(
           var fileBaseName = path.basename(fileName);
           console.log(
             fileBaseName + "\nthis is File base in !nonAllowedDuplicates"
-          );          
+          );
           var originalFileNameWithoutExt = path.parse(fileBaseName).name;
           var fileNameWithoutExt = originalFileNameWithoutExt;
 
@@ -953,7 +967,9 @@ function addFilesfunction(
       var originalName = path.parse(
         currentLocation["files"][regularFiles[element]["basename"]]["path"]
       ).base;
-      console.log(originalName + "\noriginal name here\n" + element + "\nelement here");
+      console.log(
+        originalName + "\noriginal name here\n" + element + "\nelement here"
+      );
       if (element !== originalName) {
         currentLocation["files"][regularFiles[element]["basename"]][
           "action"
@@ -993,7 +1009,7 @@ function addFilesfunction(
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster"
+        popup: "animate_animated animate_zoomout animate__faster",
       },
       html: `
         <p>The following file is already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
@@ -1001,7 +1017,7 @@ function addFilesfunction(
           <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip')">Skip File</button>
           <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace')">Replace Old File</button>
           <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename')">Rename File</button>
-        </div>`
+        </div>`,
     });
   } else if (nonAllowedDuplicateFiles.length > 1) {
     Swal.fire({
@@ -1014,7 +1030,7 @@ function addFilesfunction(
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster"
+        popup: "animate_animated animate_zoomout animate__faster",
       },
       html: `
         <p>The following files are already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
@@ -1022,7 +1038,7 @@ function addFilesfunction(
           <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip')">Skip Files</button>
           <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace')">Replace Old Files</button>
           <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename')">Rename Files</button>
-        </div>`
+        </div>`,
     });
   }
 }
