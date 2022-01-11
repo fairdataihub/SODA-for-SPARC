@@ -1443,14 +1443,16 @@ const showDatasetDescription = () => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE + " - Get Subtitle",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE +
+              " - Get Subtitle",
             defaultBfDatasetId
           );
         } else {
           ipcRenderer.send(
             "track-event",
             "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE + " - Get Subtitle",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE +
+              " - Get Subtitle",
             defaultBfDatasetId
           );
           $("#ds-description").html(res);
@@ -2546,7 +2548,7 @@ $("#button-submit-dataset").click(async () => {
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             ` - Progress track`,
-            defaultBfDatasetId
+          defaultBfDatasetId
         );
 
         completionStatus = res[1];
