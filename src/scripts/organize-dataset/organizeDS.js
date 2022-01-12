@@ -741,9 +741,7 @@ function showItemsAsListBootbox(arrayOfItems) {
   return htmlElement;
 }
 var onBtnClicked = (btnId, jsonFile) => {
-  function renameDuplicate(objectFile) {
-    
-  }
+  function renameDuplicate(objectFile) {}
   Swal.close();
   if (btnId === "skip") {
     //do nothing
@@ -758,8 +756,8 @@ var onBtnClicked = (btnId, jsonFile) => {
     //new prompt with list of files and input fields to rename files
     //if left blank prompt with a list of the blank asking if want to skip files or replace old files
     var itemDivElements = document.getElementById("items").children;
-    renameFolder(this, jsonFile, itemDivElements)
-    
+    renameFolder(this, jsonFile, itemDivElements);
+
     console.log("RENAME");
     /*Swal.fire({
       title: `Rename File`,
