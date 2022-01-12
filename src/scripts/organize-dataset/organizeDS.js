@@ -910,14 +910,6 @@ function addFilesfunction(
             if (fileName === currentLocation["files"][objectKey]["path"]) {
               nonAllowedDuplicateFiles.push(fileName);
               nonAllowedDuplicate = true;
-              console.log(
-                objectKey +
-                  "\nobject key\n" +
-                  fileName +
-                  "\nfile name\n" +
-                  nonAllowedDuplicateFiles +
-                  "\nnonallowed"
-              );
               break;
             }
           }
@@ -994,7 +986,12 @@ function addFilesfunction(
   //
   //if (AllowedDuplicateFiles.length > 0) {
   //}
-
+  console.log(nonAllowedDuplicateFiles)
+  for(var checking in nonAllowedDuplicateFiles) {
+    let nameString = nonAllowedDuplicateFiles[checking]
+    let filename = nameString.split("/").pop();
+    console.log(filename);
+  }
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
   console.log(nonAllowedDuplicateFiles.length + "\nlength of nonallowedfiles");
   var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
