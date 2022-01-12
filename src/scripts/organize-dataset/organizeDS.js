@@ -464,18 +464,18 @@ function renameFolder(
   var highLevelFolderBool;
   console.log(
     "Parameters of renameFolder\n" +
-      event1 +
-      " END\n" +
-      organizeCurrentLocation +
-      " END\n" +
-      JSON.stringify(itemElement) +
-      "END\n" +
+      event1.value +
+      "\nEVENT 1 END\n" +
+      organizeCurrentLocation.value +
+      "\norganizeCurrentLocation END\n" +
+      itemElement.length +
+      "\nitem element END\n" +
       JSON.stringify(inputGlobal) +
-      "END\n" +
+      "\niput global END\n" +
       JSON.stringify(uiItem) +
-      "END\n" +
+      "\nuiItem END\n" +
       JSON.stringify(singleUIItem) +
-      "END\n"
+      "\nsingleUIItem END\n"
   );
 
   double_extensions = [
@@ -740,7 +740,10 @@ function showItemsAsListBootbox(arrayOfItems) {
   }
   return htmlElement;
 }
-var onBtnClicked = (btnId) => {
+var onBtnClicked = (btnId, jsonFile) => {
+  function renameDuplicate(objectFile) {
+    
+  }
   Swal.close();
   if (btnId === "skip") {
     //do nothing
@@ -754,8 +757,11 @@ var onBtnClicked = (btnId) => {
   if (btnId === "rename") {
     //new prompt with list of files and input fields to rename files
     //if left blank prompt with a list of the blank asking if want to skip files or replace old files
+    var itemDivElements = document.getElementById("items").children;
+    renameFolder(this, jsonFile, itemDivElements)
+    
     console.log("RENAME");
-    Swal.fire({
+    /*Swal.fire({
       title: `Rename File`,
       text: "Please enter a new name:",
       input: "text",
@@ -846,7 +852,7 @@ var onBtnClicked = (btnId) => {
           );
         }
       }
-    });
+    });*/
   }
 };
 
@@ -871,11 +877,11 @@ function addFilesfunction(
     //if just name is the same
   }
   //gets files already placed and puts into json
-  console.log(uiFilesWithoutExtension);
+  console.log(currentLocation);
+  console.log("ABOVE IS CURRENTLOCATION");
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
-    console.log("this is the file name: " + fileName);
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {
@@ -900,9 +906,6 @@ function addFilesfunction(
       } else {
         for (var objectKey in currentLocation["files"]) {
           //tries finding duplicates with the same path
-          console.log(
-            "printing out object key in currentLocation['files']\n" + objectKey
-          );
           if (objectKey !== undefined) {
             var nonAllowedDuplicate = false;
             //if file already exist in json
@@ -922,7 +925,6 @@ function addFilesfunction(
           }
         }
         if (!nonAllowedDuplicate) {
-          console.log(nonAllowedDuplicate + "\nboolean");
           //there was a duplicate with the same name but different path
           var j = 1;
           var fileBaseName = path.basename(fileName);
@@ -998,6 +1000,7 @@ function addFilesfunction(
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
   console.log(nonAllowedDuplicateFiles.length + "\nlength of nonallowedfiles");
   var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
+  jsonPass = currentLocation;
   if (nonAllowedDuplicateFiles.length === 1) {
     Swal.fire({
       title: "A duplicate file is trying to be uploaded",
@@ -1014,9 +1017,9 @@ function addFilesfunction(
       html: `
         <p>The following file is already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
         <div style="display: flex; justify-content: space-around;">
-          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip')">Skip File</button>
-          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace')">Replace Old File</button>
-          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename')">Rename File</button>
+          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip', jsonPass)">Skip File</button>
+          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace', jsonPass)">Replace Old File</button>
+          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename', jsonPass)">Rename File</button>
         </div>`,
     });
   } else if (nonAllowedDuplicateFiles.length > 1) {
