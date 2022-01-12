@@ -49,8 +49,9 @@ const getOrganizationMembers = async () => {
   return organizationMembers;
 };
 
-//SHARED VARIABLES
-
+/////////////////////////////////////////////////////////
+//////////          Shared variables          ///////////
+/////////////////////////////////////////////////////////
 const guided_dataset_name = $("#guided-dataset-name-input");
 const guided_dataset_subtitle = document.getElementById(
   "guided-dataset-subtitle-input"
@@ -58,13 +59,15 @@ const guided_dataset_subtitle = document.getElementById(
 const guided_dataset_subtitle_char_count = document.getElementById(
   "guided-subtitle-char-count"
 );
-
 const create_dataset_button = $("#guided-create-empty-dataset");
 let current_selected_folder = $("#code-card");
+
+//main nav variables
 let current_progression_tab = $("#prepare-dataset-progression-tab");
 let current_sub_step = $("#guided-basic-description-tab");
 let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
+//nav functions
 const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
 };
@@ -75,7 +78,6 @@ const disableProgressButton = () => {
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
 /////////////////////////////////////////////////////////
-
 const validateGuidedBasicDescriptionInputs = () => {
   //True if dataset name and dataset subtitle inputs are valid
   if (
@@ -90,7 +92,6 @@ const validateGuidedBasicDescriptionInputs = () => {
     enableProgressButton();
   }
 };
-
 const validateGuidedDatasetDescriptionInputs = () => {
   if (
     $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
@@ -104,6 +105,7 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
+  //gets SPARC consortium members from Pennsieve, then populates proper fields
   getOrganizationMembers().then((data) =>
     data.map((x) => {
       console.log(x);
@@ -123,29 +125,6 @@ $(document).ready(() => {
   $(".guided--text-data-description").on("keyup", function () {
     validateGuidedDatasetDescriptionInputs();
   });
-
-  //Handles high-level progress and their respective panels opening and closing,
-  //as well as updates current tabs/capsule state
-  $(".guided--progression-tab").on("click", function () {
-    const selectedTab = $(this);
-    selectedTab.siblings().removeClass("selected-tab");
-    selectedTab.addClass("selected-tab");
-
-    const tabPanelId = selectedTab
-      .attr("id")
-      .replace("progression-tab", "parent-tab");
-    const tabPanel = $("#" + tabPanelId);
-    current_sub_step = tabPanel.children(".guided--panel").first();
-    current_sub_step_capsule = tabPanel
-      .children(".guided--capsule-container")
-      .children()
-      .first();
-    console.log(current_sub_step);
-    console.log(current_sub_step_capsule);
-    tabPanel.siblings().hide();
-    tabPanel.show();
-  });
-
   $("#guided-dataset-name-input").on("keyup", () => {
     let newName = $("#guided-dataset-name-input").val().trim();
     if (newName !== "") {
@@ -164,7 +143,6 @@ $(document).ready(() => {
       $("#guided-dataset-name-input-warning-message").hide();
     }
   });
-
   $("#guided-dataset-subtitle-input").on("keyup", () => {
     countCharacters(
       guided_dataset_subtitle,
@@ -173,15 +151,27 @@ $(document).ready(() => {
     validateGuidedBasicDescriptionInputs();
   });
 
-  $("#prepare-dataset-tab").on("click", () => {
-    $("#guided-basic-description-tab").hide();
-    $("#guided-prepare-dataset-parent-tab").css("display", "flex");
-  });
+  //Handles high-level progress and their respective panels opening and closing,
+  //as well as updates current tabs/capsule state
+  $(".guided--progression-tab").on("click", function () {
+    const selectedTab = $(this);
+    selectedTab.siblings().removeClass("selected-tab");
+    selectedTab.addClass("selected-tab");
 
-  $("#guided-input-destination-getting-started-locally").on("click", () => {
-    ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
+    const tabPanelId = selectedTab
+      .attr("id")
+      .replace("progression-tab", "parent-tab");
+    const tabPanel = $("#" + tabPanelId);
+    current_sub_step = tabPanel.children(".guided--panel").first();
+    current_sub_step_capsule = tabPanel
+      .children(".guided--capsule-container")
+      .children()
+      .first();
+    tabPanel.siblings().hide();
+    tabPanel.show();
   });
-
+  //card click hanndler that displays the card's panel using the card's id prefix
+  //e.g. clicking a card with id "foo-bar-card" will display the panel with the id "foo-bar-panel"
   $(".guided--card-container > div").on("click", function () {
     $(this).attr("data-enable-next-button") == "true"
       ? enableProgressButton()
@@ -198,246 +188,10 @@ $(document).ready(() => {
     tabPanel.css("display", "flex");
   });
 
-  $("#pennsieve-account-confirm-button").on("click", () => {
-    sodaJSONObj["generate-dataset"]["destination"] = "bf";
-    sodaJSONObj["bf-account-selected"]["account-name"] =
-      $("#guided-bf-account").text();
-    enableProgressButton();
-    $("#guided-next-button").click();
+  //ipcRenderer event handlers
+  $("#guided-input-destination-getting-started-locally").on("click", () => {
+    ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
   });
-
-  $("#guided-dataset-name-confirm-button").on("click", () => {
-    enableProgressButton();
-    $("#guided-next-button").click();
-  });
-
-  const complete_curr_question = (questionID) => {
-    questionID.css("opacity", ".5");
-    nextQuestion = questionID.next();
-    nextQuestion.css("display", "flex");
-    nextId = nextQuestion.attr("id");
-    document.getElementById(nextId).scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-  };
-
-  $("#guided-generate-dataset-button").on("click", async function () {
-    console.log(sodaJSONObj);
-    if (sodaJSONObj["starting-point"]["type"] === "local") {
-      sodaJSONObj["starting-point"]["type"] = "new";
-    }
-
-    let dataset_name = "";
-    let dataset_destination = "";
-
-    if ("bf-dataset-selected" in sodaJSONObj) {
-      dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-      dataset_destination = "Pennsieve";
-    } else if ("generate-dataset" in sodaJSONObj) {
-      if ("destination" in sodaJSONObj["generate-dataset"]) {
-        let destination = sodaJSONObj["generate-dataset"]["destination"];
-        if (destination == "local") {
-          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-          dataset_destination = "Local";
-        }
-        if (destination == "bf") {
-          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-          dataset_destination = "Pennsieve";
-        }
-      }
-    }
-    /*
-    generateProgressBar.value = 0;
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "Please wait while we verify a few things...";*/
-
-    if (dataset_destination == "Pennsieve") {
-      let supplementary_checks = await run_pre_flight_checks(false);
-      if (!supplementary_checks) {
-        $("#sidebarCollapse").prop("disabled", false);
-        return;
-      }
-    }
-
-    //  from here you can modify
-    document.getElementById("para-please-wait-new-curate").innerHTML =
-      "Please wait...";
-    document.getElementById(
-      "para-new-curate-progress-bar-error-status"
-    ).innerHTML = "";
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "";
-    document.getElementById("div-new-curate-progress").style.display = "none";
-
-    progressBarNewCurate.value = 0;
-
-    // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-    if ("files" in sodaJSONObj["dataset-structure"]) {
-      sodaJSONObj["dataset-structure"]["files"] = {};
-    }
-    // delete manifest files added for treeview
-    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-      if (
-        "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
-        ]["forTreeview"]
-      ) {
-        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
-          "files"
-        ]["manifest.xlsx"];
-      }
-    }
-
-    client.invoke(
-      "api_check_empty_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          document.getElementById(
-            "para-new-curate-progress-bar-error-status"
-          ).innerHTML =
-            "<span style='color: red;'> Error: " + emessage + "</span>";
-          document.getElementById("para-please-wait-new-curate").innerHTML = "";
-          console.error(error);
-          $("#sidebarCollapse").prop("disabled", false);
-        } else {
-          document.getElementById("para-please-wait-new-curate").innerHTML =
-            "Please wait...";
-          log.info("Continue with curate");
-          var message = "";
-          error_files = res[0];
-          error_folders = res[1];
-
-          if (error_files.length > 0) {
-            var error_message_files =
-              backend_to_frontend_warning_message(error_files);
-            message += error_message_files;
-          }
-
-          if (error_folders.length > 0) {
-            var error_message_folders =
-              backend_to_frontend_warning_message(error_folders);
-            message += error_message_folders;
-          }
-
-          if (message) {
-            message += "Would you like to continue?";
-            message = "<div style='text-align: left'>" + message + "</div>";
-            Swal.fire({
-              icon: "warning",
-              html: message,
-              showCancelButton: true,
-              cancelButtonText: "No, I want to review my files",
-              focusCancel: true,
-              confirmButtonText: "Yes, Continue",
-              backdrop: "rgba(0,0,0, 0.4)",
-              reverseButtons: reverseSwalButtons,
-              heightAuto: false,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                console.log("Continue");
-                initiate_generate();
-              } else {
-                console.log("Stop");
-                $("#sidebarCollapse").prop("disabled", false);
-                document.getElementById(
-                  "para-please-wait-new-curate"
-                ).innerHTML = "Return to make changes";
-                document.getElementById("div-generate-comeback").style.display =
-                  "flex";
-              }
-            });
-          } else {
-            initiate_generate();
-          }
-        }
-      }
-    );
-  });
-
-  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
-
-  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
-  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
-
-  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
-
-  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
-  //TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO EDIT GUIDED SAVE BANNER IMAGE!
-
-  $("#guided-save-banner-image").click((event) => {
-    $("#guided-para-dataset-banner-image-status").html("");
-    if (bfViewImportedImage.src.length > 0) {
-      if (formBannerHeight.value > 511) {
-        Swal.fire({
-          icon: "warning",
-          text: `As per NIH guidelines, banner image must not display animals or graphic/bloody tissues. Do you confirm that?`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showCancelButton: true,
-          focusCancel: true,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-          reverseButtons: reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          if (formBannerHeight.value < 1024) {
-            Swal.fire({
-              icon: "warning",
-              text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showCancelButton: true,
-              focusCancel: true,
-              confirmButtonText: "Yes",
-              cancelButtonText: "No",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                uploadBannerImage();
-              }
-            });
-          } else {
-            uploadBannerImage();
-          }
-        });
-      } else {
-        $("#guided-para-dataset-banner-image-status").html(
-          "<span style='color: red;'> " +
-            "Dimensions of cropped area must be at least 512 px" +
-            "</span>"
-        );
-      }
-    } else {
-      $("#guided-para-dataset-banner-image-status").html(
-        "<span style='color: red;'> " +
-          "Please import an image first" +
-          "</span>"
-      );
-    }
-  });
-
   ipcRenderer.on("guided-selected-banner-image", async (event, path) => {
     if (path.length > 0) {
       let original_image_path = path[0];
@@ -592,6 +346,236 @@ $(document).ready(() => {
     }
   });
 
+  $("#pennsieve-account-confirm-button").on("click", () => {
+    sodaJSONObj["generate-dataset"]["destination"] = "bf";
+    sodaJSONObj["bf-account-selected"]["account-name"] =
+      $("#guided-bf-account").text();
+    enableProgressButton();
+    $("#guided-next-button").click();
+  });
+
+  $("#guided-dataset-name-confirm-button").on("click", () => {
+    enableProgressButton();
+    $("#guided-next-button").click();
+  });
+
+  //TODO changes completed question's opacity to .5, then scrolls to next question
+  const complete_curr_question = (questionID) => {
+    questionID.css("opacity", ".5");
+    nextQuestion = questionID.next();
+    nextQuestion.css("display", "flex");
+    nextId = nextQuestion.attr("id");
+    document.getElementById(nextId).scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
+  $("#guided-generate-dataset-button").on("click", async function () {
+    if (sodaJSONObj["starting-point"]["type"] === "local") {
+      sodaJSONObj["starting-point"]["type"] = "new";
+    }
+
+    let dataset_name = "";
+    let dataset_destination = "";
+
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      dataset_destination = "Pennsieve";
+    } else if ("generate-dataset" in sodaJSONObj) {
+      if ("destination" in sodaJSONObj["generate-dataset"]) {
+        let destination = sodaJSONObj["generate-dataset"]["destination"];
+        if (destination == "local") {
+          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+          dataset_destination = "Local";
+        }
+        if (destination == "bf") {
+          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+          dataset_destination = "Pennsieve";
+        }
+      }
+    }
+    /*
+    generateProgressBar.value = 0;
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "Please wait while we verify a few things...";*/
+
+    if (dataset_destination == "Pennsieve") {
+      let supplementary_checks = await run_pre_flight_checks(false);
+      if (!supplementary_checks) {
+        $("#sidebarCollapse").prop("disabled", false);
+        return;
+      }
+    }
+
+    //  from here you can modify
+    document.getElementById("para-please-wait-new-curate").innerHTML =
+      "Please wait...";
+    document.getElementById(
+      "para-new-curate-progress-bar-error-status"
+    ).innerHTML = "";
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
+
+    progressBarNewCurate.value = 0;
+
+    // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+    if ("files" in sodaJSONObj["dataset-structure"]) {
+      sodaJSONObj["dataset-structure"]["files"] = {};
+    }
+    // delete manifest files added for treeview
+    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+      if (
+        "manifest.xlsx" in
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+          "manifest.xlsx"
+        ]["forTreeview"]
+      ) {
+        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
+          "files"
+        ]["manifest.xlsx"];
+      }
+    }
+
+    client.invoke(
+      "api_check_empty_files_folders",
+      sodaJSONObj,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          document.getElementById(
+            "para-new-curate-progress-bar-error-status"
+          ).innerHTML =
+            "<span style='color: red;'> Error: " + emessage + "</span>";
+          document.getElementById("para-please-wait-new-curate").innerHTML = "";
+          console.error(error);
+          $("#sidebarCollapse").prop("disabled", false);
+        } else {
+          document.getElementById("para-please-wait-new-curate").innerHTML =
+            "Please wait...";
+          log.info("Continue with curate");
+          var message = "";
+          error_files = res[0];
+          error_folders = res[1];
+
+          if (error_files.length > 0) {
+            var error_message_files =
+              backend_to_frontend_warning_message(error_files);
+            message += error_message_files;
+          }
+
+          if (error_folders.length > 0) {
+            var error_message_folders =
+              backend_to_frontend_warning_message(error_folders);
+            message += error_message_folders;
+          }
+
+          if (message) {
+            message += "Would you like to continue?";
+            message = "<div style='text-align: left'>" + message + "</div>";
+            Swal.fire({
+              icon: "warning",
+              html: message,
+              showCancelButton: true,
+              cancelButtonText: "No, I want to review my files",
+              focusCancel: true,
+              confirmButtonText: "Yes, Continue",
+              backdrop: "rgba(0,0,0, 0.4)",
+              reverseButtons: reverseSwalButtons,
+              heightAuto: false,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                console.log("Continue");
+                initiate_generate();
+              } else {
+                console.log("Stop");
+                $("#sidebarCollapse").prop("disabled", false);
+                document.getElementById(
+                  "para-please-wait-new-curate"
+                ).innerHTML = "Return to make changes";
+                document.getElementById("div-generate-comeback").style.display =
+                  "flex";
+              }
+            });
+          } else {
+            initiate_generate();
+          }
+        }
+      }
+    );
+  });
+
+  $("#guided-save-banner-image").click((event) => {
+    $("#guided-para-dataset-banner-image-status").html("");
+    if (bfViewImportedImage.src.length > 0) {
+      if (formBannerHeight.value > 511) {
+        Swal.fire({
+          icon: "warning",
+          text: `As per NIH guidelines, banner image must not display animals or graphic/bloody tissues. Do you confirm that?`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          focusCancel: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+          reverseButtons: reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          if (formBannerHeight.value < 1024) {
+            Swal.fire({
+              icon: "warning",
+              text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showCancelButton: true,
+              focusCancel: true,
+              confirmButtonText: "Yes",
+              cancelButtonText: "No",
+              reverseButtons: reverseSwalButtons,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                uploadBannerImage();
+              }
+            });
+          } else {
+            uploadBannerImage();
+          }
+        });
+      } else {
+        $("#guided-para-dataset-banner-image-status").html(
+          "<span style='color: red;'> " +
+            "Dimensions of cropped area must be at least 512 px" +
+            "</span>"
+        );
+      }
+    } else {
+      $("#guided-para-dataset-banner-image-status").html(
+        "<span style='color: red;'> " +
+          "Please import an image first" +
+          "</span>"
+      );
+    }
+  });
+
   $("#guided-button-add-dataset-tags").on("click", () => {
     const guidedTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
       (tag) => {
@@ -717,11 +701,12 @@ $(document).ready(() => {
       console.log(current_progression_tab.first(".guided--capsule").attr("id"));
       current_progression_tab.click();
     }
-    /*disableProgressButton();*/
+    disableProgressButton();
     console.log(sodaJSONObj);
     console.log(current_sub_step);
     console.log(current_progression_tab);
   });
+
   const goToGuidedTab = (tabIsd) => {
     $("#guided_mode_view").click();
     $("#guided_create_new_bf_dataset_btn").click();
@@ -734,14 +719,25 @@ $(document).ready(() => {
       }
     }
   };
-  goToGuidedTab("add-edit-tags-tab");
+  //goToGuidedTab("add-edit-tags-tab");
 
-  //CREATE SUBMISSION METADATA
+  //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(
     "guided-tagify-submission-milestone-tags"
   );
-  // initialize Tagify on the above input node reference
   guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput);
+  const guidedDatasetKeywordsInput =
+    document.getElementById("guided-ds-keywords");
+  const guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeywordsInput, {
+    duplicates: false,
+  });
+  const guidedOtherFundingSourcesInput = document.getElementById(
+    "guided-ds-other-funding"
+  );
+  const guidedOtherFundingsourcesTagify = new Tagify(
+    guidedOtherFundingSourcesInput,
+    { duplicates: false }
+  );
 
   $("#guided-submission-completion-date").change(function () {
     const text = $("#guided-submission-completion-date").val();
@@ -811,27 +807,4 @@ $(document).ready(() => {
   $(".guided-award-and-milestone-information").change(function () {
     validateCreateSubmissionMetadata();
   });
-
-  const guidedDatasetKeywordsTagsInput =
-      document.getElementById("guided-ds-keywords"),
-    keywordTagify = new Tagify(keywordInput, {
-      duplicates: false,
-    });
-  const guidedDatasetKeywordsTagsTagify = new Tagify(
-    guidedDatasetKeywordsTagsInput
-  );
-
-  const guidedDatasetKeywordsInput =
-    document.getElementById("guided-ds-keywords");
-  const guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeywordsInput, {
-    duplicates: false,
-  });
-
-  const guidedOtherFundingSourcesInput = document.getElementById(
-    "guided-ds-other-funding"
-  );
-  const guidedOtherFundingsourcesTagify = new Tagify(
-    guidedOtherFundingSourcesInput,
-    { duplicates: false }
-  );
 });
