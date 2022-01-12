@@ -564,7 +564,7 @@
 
 .guided--accordion-field {
   width: 100%;
-  padding: 15px 20px;
+  padding: 15px 6%;
   display: flex;
   justify-content: center;
   flex-direction: column;
