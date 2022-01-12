@@ -1009,7 +1009,7 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW +
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
         " - Get Excluded Files",
       defaultBfDatasetId
     );
@@ -1018,7 +1018,7 @@ $(".pre-publishing-continue").on("click", async function () {
   ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.DISSEMINATE_REVIEW_REVIEW + " - Get Excluded Files",
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Excluded Files",
     defaultBfDatasetId
   );
 
