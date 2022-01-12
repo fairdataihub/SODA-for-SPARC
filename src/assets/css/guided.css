@@ -36,7 +36,6 @@
   justify-content: center;
   align-items: center;
   padding-right: 30px;
-  margin-bottom: 10px;
 }
 
 .guided--body {
@@ -511,13 +510,15 @@
 .guided--form-label {
   font-size: 1.2em !important;
 }
-
+.guided--card-large {
+  max-width: 180px !important;
+  max-height: 180px !important;
+}
 .guided--footer {
   border-top: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
   margin-right: 30px;
   padding-top: 15px;
   margin-bottom: 10px;
