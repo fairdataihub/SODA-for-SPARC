@@ -812,12 +812,26 @@ $(document).ready(() => {
     validateCreateSubmissionMetadata();
   });
 
-  var guidedDatasetKeywordsTagsInput =
+  const guidedDatasetKeywordsTagsInput =
       document.getElementById("guided-ds-keywords"),
     keywordTagify = new Tagify(keywordInput, {
       duplicates: false,
     });
   const guidedDatasetKeywordsTagsTagify = new Tagify(
     guidedDatasetKeywordsTagsInput
+  );
+
+  const guidedDatasetKeywordsInput =
+    document.getElementById("guided-ds-keywords");
+  const guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeywordsInput, {
+    duplicates: false,
+  });
+
+  const guidedOtherFundingSourcesInput = document.getElementById(
+    "guided-ds-other-funding"
+  );
+  const guidedOtherFundingsourcesTagify = new Tagify(
+    guidedOtherFundingSourcesInput,
+    { duplicates: false }
   );
 });
