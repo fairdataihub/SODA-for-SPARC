@@ -986,9 +986,9 @@ function addFilesfunction(
   //
   //if (AllowedDuplicateFiles.length > 0) {
   //}
-  console.log(nonAllowedDuplicateFiles)
-  for(var checking in nonAllowedDuplicateFiles) {
-    let nameString = nonAllowedDuplicateFiles[checking]
+  console.log(nonAllowedDuplicateFiles);
+  for (var checking in nonAllowedDuplicateFiles) {
+    let nameString = nonAllowedDuplicateFiles[checking];
     let filename = nameString.split("/").pop();
     console.log(filename);
   }
