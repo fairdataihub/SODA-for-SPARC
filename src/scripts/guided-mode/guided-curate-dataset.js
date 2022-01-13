@@ -109,7 +109,7 @@ $(document).ready(() => {
   getOrganizationMembers().then((data) =>
     data.map((x) => {
       console.log(x);
-      $("#guided-bf-users-select-pi").append(
+      $("#guided_bf_list_users_pi").append(
         $(
           "<option>",
           {
@@ -740,7 +740,7 @@ $(document).ready(() => {
       }
     }
   };
-  //goToGuidedTab("guided-dataset-generation-confirmation-tab");
+  goToGuidedTab("guided-make-pi-owner-tab");
 
   //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(
