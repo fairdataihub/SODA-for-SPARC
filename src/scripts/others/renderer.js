@@ -8791,8 +8791,9 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
       );
     default:
       // something unexpected happened -- likely a 400 or something in the 500s
-      let statusText = await connectOrcidResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
+      let pennsieveErrorObject = await connectOrcidResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${statusCode} - ${message}`);
   }
 };
 
