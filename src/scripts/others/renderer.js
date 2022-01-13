@@ -8278,7 +8278,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   const readme = await getDatasetReadme(datasetIdOrName);
 
   // set the readme's status
-  statuses.readme = readme && readme.length ? true : false;
+  statuses.readme = readme && readme.length >= 1 ? true : false;
 
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;

@@ -995,8 +995,8 @@ const showCurrentDescription = async () => {
   }
 };
 
-$("#button-add-description").click(() => {
-  setTimeout(() => {
+$("#button-add-description").click( () => {
+  setTimeout(async () => {
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
 
@@ -1049,13 +1049,13 @@ $("#button-add-description").click(() => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then((result) => {
+      }).then( async (result) => {
         if (!result.isConfirmed) {
           return;
         }
         // hide the warning message if it exists
         $("#ds-isa-warning").css("display", "none");
-        addDescription(selectedBfDataset, requiredFields.join("\n"));
+        await addDescription(selectedBfDataset, requiredFields.join("\n"));
         // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
         showPrePublishingStatus();
       });
@@ -1063,7 +1063,7 @@ $("#button-add-description").click(() => {
       // hide the warning message if it exists
       $("#ds-isa-warning").css("display", "none");
       // add the user's description to Pennsieve
-      addDescription(selectedBfDataset, requiredFields.join("\n"));
+      await addDescription(selectedBfDataset, requiredFields.join("\n"));
       // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
       showPrePublishingStatus();
     }
