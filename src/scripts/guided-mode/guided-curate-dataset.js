@@ -122,15 +122,15 @@ $(document).ready(() => {
     })
   );
   $(".guided-change-dataset-name").on("click", async function () {
-    const { value: email } = await Swal.fire({
-      title: "Input email address",
-      input: "email",
-      inputLabel: "Your email address",
-      inputPlaceholder: "Enter your email address",
+    const { value: datasetName } = await Swal.fire({
+      title: "Input new dataset name",
+      input: "text",
+      inputPlaceholder: "Enter your new dataset name here",
     });
 
-    if (email) {
-      $(".guidedDatasetName").text(email);
+    if (datasetName) {
+      $(".guidedDatasetName").text(datasetName);
+      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = datasetName;
     }
   });
   $("#testButton").on("click", function () {});
@@ -383,6 +383,11 @@ $(document).ready(() => {
     });
   };
 
+  //FOR TESTING
+  $("#guided-div-dataset-tree-preview").on("click", function () {
+    $("#guided-generate-dataset-button").click();
+  });
+
   $("#guided-generate-dataset-button").on("click", async function () {
     if (sodaJSONObj["starting-point"]["type"] === "local") {
       sodaJSONObj["starting-point"]["type"] = "new";
@@ -604,6 +609,10 @@ $(document).ready(() => {
 
     //1st: create guided mode sodaObj, append properties per user input
     if (current_sub_step.attr("id") == "guided-basic-description-tab") {
+      $(".guidedDatasetName").text($("#guided-dataset-name-input").val());
+      $(".guidedDatasetSubtitle").text(
+        $("#guided-dataset-subtitle-input").val()
+      );
       sodaJSONObj["bf-account-selected"] = {};
       sodaJSONObj["mode"] = "guided";
       sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
@@ -731,7 +740,7 @@ $(document).ready(() => {
       }
     }
   };
-  //goToGuidedTab("add-edit-tags-tab");
+  //goToGuidedTab("guided-dataset-generation-confirmation-tab");
 
   //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(
