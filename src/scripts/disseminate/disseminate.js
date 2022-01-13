@@ -644,6 +644,11 @@ $("#ORCID-btn").on("click", async () => {
 
   // handle the reply from the asynhronous message to sign the user into Pennsieve
   ipcRenderer.on("orcid-reply", async (event, accessCode) => {
+
+    if(!accessCode || accessCode === "") {
+      return 
+    }
+
     // show a loading sweet alert
     Swal.fire({
       title: "Connecting your ORCID iD to Pennsieve.",
