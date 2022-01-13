@@ -733,15 +733,41 @@ function showItemsAsListBootbox(arrayOfItems) {
   let i = 0;
   for (var element of arrayOfItems) {
     htmlElement = htmlElement + "<li>" + element + "</li>";
-    i++;
-    if (i === 3) {
-      return htmlElement;
-    }
   }
   return htmlElement;
 }
-var onBtnClicked = (btnId, jsonFile) => {
-  function renameDuplicate(objectFile) {}
+var onBtnClicked = (btnId, duplicateArray) => {
+  fileNames = [];
+  for (var checking in nonAllowedDuplicateFiles) {
+    let nameString = nonAllowedDuplicateFiles[checking];
+    let filename = nameString.split("/").pop();
+    fileNames.push(fileNames);
+  }
+  function renameDuplicate(duplicates) {
+    function addFields() {
+      var number = document.getElementById("fileName").value;
+      var container = document.getElementById("swal-container");
+      while (container.hasChildNodes()) {
+        container.removeChild(container.lastChild);
+      }
+      for (let i = 0; i < number; i++) {
+        container.appendChild(document.createTextNode("fileName " + (i + 1)));
+        var input = document.createElement("input");
+        input.type = "text";
+        container.appendChild(input);
+        container.appendChild(document.createElement("br"));
+      }
+    }
+    Swal.fire({
+      title: "List of files to rename",
+      html: `
+      <div id="swal-container">
+        <input type="text" id="fileName" value="">
+        <a href="#" id="filldetails" onclick="addFields()">Fill details</a>
+      </div>
+      `,
+    });
+  }
   Swal.close();
   if (btnId === "skip") {
     //do nothing
@@ -755,102 +781,9 @@ var onBtnClicked = (btnId, jsonFile) => {
   if (btnId === "rename") {
     //new prompt with list of files and input fields to rename files
     //if left blank prompt with a list of the blank asking if want to skip files or replace old files
-    var itemDivElements = document.getElementById("items").children;
-    renameFolder(this, jsonFile, itemDivElements);
+    renameDuplicate(fileNames);
 
     console.log("RENAME");
-    /*Swal.fire({
-      title: `Rename File`,
-      text: "Please enter a new name:",
-      input: "text",
-      inputValue: "nameWithoutExtension",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      focusCancel: true,
-      confirmButtonText: "Save",
-      cancelButtonText: "Cancel",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
-      didOpen: () => {
-        $(".swal2-input").attr("id", "rename-folder-input");
-        $(".swal2-confirm").attr("id", "rename-folder-button");
-        $("#rename-folder-input").keyup(function () {
-          var val = $("#rename-folder-input").val();
-          for (var char of nonAllowedCharacters) {
-            if (val.includes(char)) {
-              Swal.showValidationMessage(
-                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
-              );
-              $("#rename-folder-button").attr("disabled", true);
-              return;
-            }
-            $("#rename-folder-button").attr("disabled", false);
-          }
-        });
-      },
-      didDestroy: () => {
-        $(".swal2-confirm").attr("id", "");
-        $(".swal2-input").attr("id", "");
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        var returnedName = checkValidRenameInput(
-          event1,
-          result.value.trim(),
-          type,
-          currentName,
-          newName,
-          itemElement
-          // myBootboxDialog
-        );
-        if (returnedName !== "") {
-          Swal.fire({
-            icon: "success",
-            text: "Successfully renamed!.",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showClass: {
-              popup: "animate__animated animate__fadeInDown animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__fadeOutUp animate__faster",
-            },
-          });
-
-          /// assign new name to folder or file in the UI
-          event1.parentElement.parentElement.innerText = returnedName;
-          /// get location of current file or folder in JSON obj
-          var filtered = getGlobalPath(organizeCurrentLocation);
-          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
-          /// update jsonObjGlobal with the new name
-          storedValue = myPath[type][currentName];
-          delete myPath[type][currentName];
-          myPath[type][returnedName] = storedValue;
-          if ("action" in myPath[type][returnedName]) {
-            if (!myPath[type][returnedName]["action"].includes("renamed")) {
-              myPath[type][returnedName]["action"].push("renamed");
-            }
-          } else {
-            myPath[type][returnedName]["action"] = [];
-            myPath[type][returnedName]["action"].push("renamed");
-          }
-          /// list items again with updated JSON obj
-          listItems(myPath, uiItem);
-          getInFolder(
-            singleUIItem,
-            uiItem,
-            organizeCurrentLocation,
-            inputGlobal
-          );
-        }
-      }
-    });*/
   }
 };
 
@@ -869,7 +802,6 @@ function addFilesfunction(
 
   for (var file in currentLocation["files"]) {
     uiFilesWithoutExtension[path.parse(file).base] = 1;
-    console.log(path.parse(file).base + "\n uiFilesWithoutExtension");
     //use uiFilesWithoutExtension to compare names
     //if names and path are the same it is nonallowed
     //if just name is the same
@@ -882,6 +814,9 @@ function addFilesfunction(
     var fileName = fileArray[i];
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+    console.log(JSON.stringify(currentLocation["files"]));
+    console.log("checking currentlocation[files] stringified");
+    console.log(JSON.stringify(regularFiles));
     if (slashCount === 1) {
       Swal.fire({
         icon: "error",
@@ -914,8 +849,10 @@ function addFilesfunction(
             }
           }
         }
+
         if (!nonAllowedDuplicate) {
           //there was a duplicate with the same name but different path
+          //prompt user if they want to allow duplicate
           var j = 1;
           var fileBaseName = path.basename(fileName);
           console.log(
@@ -938,6 +875,7 @@ function addFilesfunction(
             path: fileName,
             basename: fileBaseName,
           };
+          console.log(regularFiles);
         }
       }
     }
@@ -947,7 +885,6 @@ function addFilesfunction(
   // and regular files (append to UI)
   if (Object.keys(regularFiles).length > 0) {
     for (var element in regularFiles) {
-      console.log(JSON.stringify(regularFiles) + "\nthis is the regular files");
       currentLocation["files"][regularFiles[element]["basename"]] = {
         path: regularFiles[element]["path"],
         type: "local",
@@ -959,9 +896,6 @@ function addFilesfunction(
       var originalName = path.parse(
         currentLocation["files"][regularFiles[element]["basename"]]["path"]
       ).base;
-      console.log(
-        originalName + "\noriginal name here\n" + element + "\nelement here"
-      );
       if (element !== originalName) {
         currentLocation["files"][regularFiles[element]["basename"]][
           "action"
@@ -987,11 +921,7 @@ function addFilesfunction(
   //if (AllowedDuplicateFiles.length > 0) {
   //}
   console.log(nonAllowedDuplicateFiles);
-  for (var checking in nonAllowedDuplicateFiles) {
-    let nameString = nonAllowedDuplicateFiles[checking];
-    let filename = nameString.split("/").pop();
-    console.log(filename);
-  }
+
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
   console.log(nonAllowedDuplicateFiles.length + "\nlength of nonallowedfiles");
   var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
@@ -1012,12 +942,13 @@ function addFilesfunction(
       html: `
         <p>The following file is already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
         <div style="display: flex; justify-content: space-around;">
-          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip', jsonPass)">Skip File</button>
-          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace', jsonPass)">Replace Old File</button>
-          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename', jsonPass)">Rename File</button>
+          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip', nonAllowedDuplicateFiles)">Skip File</button>
+          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace', nonAllowedDuplicateFiles)">Replace Old File</button>
+          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename', nonAllowedDuplicateFiles)">Rename File</button>
         </div>`,
     });
   } else if (nonAllowedDuplicateFiles.length > 1) {
+    var list = nonAllowedDuplicateFiles;
     Swal.fire({
       title: "Multiple duplicate files are trying to be uploaded",
       icon: "warning",
@@ -1031,12 +962,14 @@ function addFilesfunction(
         popup: "animate_animated animate_zoomout animate__faster",
       },
       html: `
+      <div style="max-height: 250px; overflow-y: auto;">
         <p>The following files are already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
-        <div style="display: flex; justify-content: space-around;">
-          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip')">Skip Files</button>
-          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace')">Replace Old Files</button>
-          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename')">Rename Files</button>
-        </div>`,
+      </div>  
+      <div style="display: flex; justify-content: space-around; overflow: visible;">
+        <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip')">Skip Files</button>
+        <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace')">Replace Old Files</button>
+        <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename')">Rename Files</button>
+      </div>`,
     });
   }
 }
