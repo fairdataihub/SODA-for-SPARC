@@ -1018,7 +1018,8 @@ $(".pre-publishing-continue").on("click", async function () {
   ipcRenderer.send(
     "track-event",
     "Success",
-    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Excluded Files",
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+      " - Get Excluded Files",
     defaultBfDatasetId
   );
 
