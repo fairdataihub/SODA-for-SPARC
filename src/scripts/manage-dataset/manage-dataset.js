@@ -995,7 +995,7 @@ const showCurrentDescription = async () => {
   }
 };
 
-$("#button-add-description").click( () => {
+$("#button-add-description").click(() => {
   setTimeout(async () => {
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
@@ -1049,7 +1049,7 @@ $("#button-add-description").click( () => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then( async (result) => {
+      }).then(async (result) => {
         if (!result.isConfirmed) {
           return;
         }
