@@ -121,7 +121,19 @@ $(document).ready(() => {
       );
     })
   );
+  $(".guided-change-dataset-name").on("click", async function () {
+    const { value: email } = await Swal.fire({
+      title: "Input email address",
+      input: "email",
+      inputLabel: "Your email address",
+      inputPlaceholder: "Enter your email address",
+    });
 
+    if (email) {
+      $(".guidedDatasetName").text(email);
+    }
+  });
+  $("#testButton").on("click", function () {});
   $(".guided--text-data-description").on("keyup", function () {
     validateGuidedDatasetDescriptionInputs();
   });
@@ -701,7 +713,7 @@ $(document).ready(() => {
       console.log(current_progression_tab.first(".guided--capsule").attr("id"));
       current_progression_tab.click();
     }
-    disableProgressButton();
+    //disableProgressButton();
     console.log(sodaJSONObj);
     console.log(current_sub_step);
     console.log(current_progression_tab);
