@@ -1,3 +1,18 @@
+//guidedDatasetName guidedDatasetSubtitle guidedDatasetPIOwner
+guidedSetDatasetName = (newDatasetName) => {
+  datasetName = newDatasetName.val().trim();
+  $(".guidedDatasetName").text(datasetName);
+};
+
+guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
+  datasetSubtitle = newDatasetSubtitle.val().trim();
+  $(".guidedDatasetSubtitle").text(datasetSubtitle);
+};
+
+guidedSetPIOwner = (newPIOwner) => {
+  $(".guidedDatasetPIOwner").text("John Ownerman");
+};
+
 const getOrganizationMembers = async () => {
   sodaOrganizationId = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0";
 
@@ -67,6 +82,10 @@ let current_progression_tab = $("#prepare-dataset-progression-tab");
 let current_sub_step = $("#guided-basic-description-tab");
 let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
+var guidedJstreePreview = document.getElementById(
+  "guided-div-dataset-tree-preview"
+);
+
 //nav functions
 const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
@@ -105,9 +124,110 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
+  $(guidedJstreePreview).jstree({
+    core: {
+      check_callback: true,
+      data: {},
+    },
+    plugins: ["types"],
+    types: {
+      folder: {
+        icon: "fas fa-folder fa-fw",
+      },
+      "folder open": {
+        icon: "fas fa-folder-open fa-fw",
+      },
+      "folder closed": {
+        icon: "fas fa-folder fa-fw",
+      },
+      "file xlsx": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file xls": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file png": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file PNG": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file pdf": {
+        icon: "./assets/img/pdf-file.png",
+      },
+      "file txt": {
+        icon: "./assets/img/txt-file.png",
+      },
+      "file csv": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file CSV": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file DOC": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file DOCX": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file docx": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file doc": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file jpeg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPEG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file other": {
+        icon: "./assets/img/other-file.png",
+      },
+    },
+  });
+
+  $(guidedJstreePreview).on("open_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder open");
+  });
+
+  $(guidedJstreePreview).on("close_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder closed");
+  });
+
+  function guidedShowTreePreview(new_dataset_name) {
+    datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
+    if (manifestFileCheck.checked) {
+      addManifestFilesForTreeView();
+    } else {
+      revertManifestForTreeView();
+    }
+
+    var guidedJsTreePreviewData = create_child_node(
+      datasetStructureJSONObj,
+      new_dataset_name,
+      "folder",
+      "",
+      true,
+      false,
+      false,
+      "",
+      "preview"
+    );
+    $(guidedJstreePreview).jstree(true).settings.core.data =
+      guidedJsTreePreviewData;
+    $(guidedJstreePreview).jstree(true).refresh();
+  }
   //gets SPARC consortium members from Pennsieve, then populates proper fields
+  /*
   getOrganizationMembers().then((data) =>
     data.map((x) => {
+      addOption(
+        $("#guided_bf_list_users_pi"),
+        `${x.firstName} ${x.lastName} (${x.email})`,
+        `${x.email}`
+      );
       console.log(x);
       $("#guided_bf_list_users_pi").append(
         $(
@@ -120,7 +240,7 @@ $(document).ready(() => {
         )
       );
     })
-  );
+  );*/
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
       title: "Input new dataset name",
@@ -130,10 +250,20 @@ $(document).ready(() => {
 
     if (datasetName) {
       $(".guidedDatasetName").text(datasetName);
-      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = datasetName;
     }
   });
-  $("#testButton").on("click", function () {});
+  $(".guided-change-dataset-subtitle").on("click", async function () {
+    const { value: datasetSubtitle } = await Swal.fire({
+      title: "Input new dataset subtitle",
+      input: "text",
+      inputPlaceholder: "Enter your new dataset subtitle here",
+    });
+
+    if (datasetSubtitle) {
+      $(".guidedDatasetSubtitle").text(datasetSubtitle);
+    }
+  });
+
   $(".guided--text-data-description").on("keyup", function () {
     validateGuidedDatasetDescriptionInputs();
   });
@@ -383,11 +513,6 @@ $(document).ready(() => {
     });
   };
 
-  //FOR TESTING
-  $("#guided-div-dataset-tree-preview").on("click", function () {
-    $("#guided-generate-dataset-button").click();
-  });
-
   $("#guided-generate-dataset-button").on("click", async function () {
     if (sodaJSONObj["starting-point"]["type"] === "local") {
       sodaJSONObj["starting-point"]["type"] = "new";
@@ -593,6 +718,10 @@ $(document).ready(() => {
     }
   });
 
+  $("#guided_bf_list_users_pi").change(function () {
+    console.log($(this).val(1));
+  });
+
   $("#guided-button-add-dataset-tags").on("click", () => {
     const guidedTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
       (tag) => {
@@ -610,6 +739,9 @@ $(document).ready(() => {
     //1st: create guided mode sodaObj, append properties per user input
     if (current_sub_step.attr("id") == "guided-basic-description-tab") {
       $(".guidedDatasetName").text($("#guided-dataset-name-input").val());
+      $(".guidedDatasetSubtitle").text(
+        $("guided-dataset-subtitle-input").val()
+      );
       $(".guidedDatasetSubtitle").text(
         $("#guided-dataset-subtitle-input").val()
       );
@@ -631,12 +763,19 @@ $(document).ready(() => {
       datasetStructureJSONObj = { folders: {}, files: {} };
       sodaJSONObj["metadata"] = {};
       sodaJSONObj["digital-metadata"] = {};
-      let datasetName = $("#guided-dataset-name-input").val().trim();
-      sodaJSONObj["generate-dataset"]["dataset-name"] = datasetName;
-      $("#guided-bf-dataset-name-confirm").text(datasetName);
-      sodaJSONObj["metadata"]["subtitle"] = $("#guided-dataset-subtitle-input")
+      sodaJSONObj["generate-dataset"]["dataset-name"] = $(
+        "#guided-dataset-name-input"
+      )
         .val()
         .trim();
+
+      sodaJSONObj["digital-metadata"]["subtitle"] = $(
+        "#guided-dataset-subtitle-input"
+      )
+        .val()
+        .trim();
+      guidedSetDatasetName($("#guided-dataset-name-input"));
+      guidedSetDatasetSubtitle($("#guided-dataset-subtitle-input"));
     }
 
     if (current_sub_step.attr("id") == "guided-dataset-generation-tab") {
@@ -724,11 +863,14 @@ $(document).ready(() => {
     }
     //disableProgressButton();
     console.log(sodaJSONObj);
-    console.log(current_sub_step);
-    console.log(current_progression_tab);
+    console.log(current_sub_step.attr("id"));
+    console.log(current_progression_tab.attr("id"));
+    if (current_sub_step.attr("id") == "guided-create-readme-metadata-tab") {
+      alert("hi");
+      guidedShowTreePreview("food");
+    }
   });
-
-  const goToGuidedTab = (tabIsd) => {
+  const goToTabOnStart = (tabIsd) => {
     $("#guided_mode_view").click();
     $("#guided_create_new_bf_dataset_btn").click();
     $("#guided-dataset-name-input").val("asdlfkj");
@@ -740,7 +882,7 @@ $(document).ready(() => {
       }
     }
   };
-  goToGuidedTab("guided-make-pi-owner-tab");
+  //goToTabOnStart("guided-make-pi-owner-tab");
 
   //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(
