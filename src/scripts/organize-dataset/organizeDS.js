@@ -737,41 +737,13 @@ function showItemsAsListBootbox(arrayOfItems) {
   return htmlElement;
 }
 var onBtnClicked = (btnId, duplicateArray) => {
-  fileNames = [];
-  for (var checking in nonAllowedDuplicateFiles) {
-    let nameString = nonAllowedDuplicateFiles[checking];
-    let filename = nameString.split("/").pop();
-    fileNames.push(fileNames);
-  }
-  function renameDuplicate(duplicates) {
-    function addFields() {
-      var number = document.getElementById("fileName").value;
-      var container = document.getElementById("swal-container");
-      while (container.hasChildNodes()) {
-        container.removeChild(container.lastChild);
-      }
-      for (let i = 0; i < number; i++) {
-        container.appendChild(document.createTextNode("fileName " + (i + 1)));
-        var input = document.createElement("input");
-        input.type = "text";
-        container.appendChild(input);
-        container.appendChild(document.createElement("br"));
-      }
-    }
-    Swal.fire({
-      title: "List of files to rename",
-      html: `
-      <div id="swal-container">
-        <input type="text" id="fileName" value="">
-        <a href="#" id="filldetails" onclick="addFields()">Fill details</a>
-      </div>
-      `,
-    });
-  }
   Swal.close();
   if (btnId === "skip") {
     //do nothing
     console.log("SKIPPED");
+    console.log(duplicateArray);
+    newDulicate = duplicateArray.map.join(",");
+    console.log(newDulicate);
   }
   if (btnId === "replace") {
     //replace old file with new one trying to be uploaded (case: single file)
@@ -781,7 +753,7 @@ var onBtnClicked = (btnId, duplicateArray) => {
   if (btnId === "rename") {
     //new prompt with list of files and input fields to rename files
     //if left blank prompt with a list of the blank asking if want to skip files or replace old files
-    renameDuplicate(fileNames);
+    //renameDuplicate(fileNames);
 
     console.log("RENAME");
   }
@@ -920,7 +892,10 @@ function addFilesfunction(
   //
   //if (AllowedDuplicateFiles.length > 0) {
   //}
-  console.log(nonAllowedDuplicateFiles);
+  var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+
+  console.log(list);
+  console.log("this is the list");
 
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
   console.log(nonAllowedDuplicateFiles.length + "\nlength of nonallowedfiles");
@@ -942,13 +917,12 @@ function addFilesfunction(
       html: `
         <p>The following file is already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
         <div style="display: flex; justify-content: space-around;">
-          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip', nonAllowedDuplicateFiles)">Skip File</button>
-          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace', nonAllowedDuplicateFiles)">Replace Old File</button>
-          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename', nonAllowedDuplicateFiles)">Rename File</button>
+          <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip', list)">Skip File</button>
+          <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace', list)">Replace Old File</button>
+          <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename', list)">Rename File</button>
         </div>`,
     });
   } else if (nonAllowedDuplicateFiles.length > 1) {
-    var list = nonAllowedDuplicateFiles;
     Swal.fire({
       title: "Multiple duplicate files are trying to be uploaded",
       icon: "warning",
@@ -961,14 +935,17 @@ function addFilesfunction(
       hideClass: {
         popup: "animate_animated animate_zoomout animate__faster",
       },
-      html: `
+      html:
+        `
       <div style="max-height: 250px; overflow-y: auto;">
         <p>The following files are already imported into the current location of your dataset: <p><ul>${listElements}</ul></p></p>
       </div>  
       <div style="display: flex; justify-content: space-around; overflow: visible;">
-        <button class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip')">Skip Files</button>
-        <button class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace')">Replace Old Files</button>
-        <button class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename')">Rename Files</button>
+        <button id="btnId1" class="btn" style="background-color: #757575; color: white; border-radius: 8px;" onclick="onBtnClicked('skip', '` +
+        list +
+        `')">Skip Files</button>
+        <button id="btnId2" class="btn" style="background-color: var(--color-bg-plum); color: white; border-radius: 8px;" onclick="onBtnClicked('replace', '${list}')">Replace Old Files</button>
+        <button id="btnId3: class="btn" style="background-color: var(--color-light-green); color: white; border-radius: 8px;" onclick="onBtnClicked('rename', '${list}')">Rename Files</button>
       </div>`,
     });
   }
