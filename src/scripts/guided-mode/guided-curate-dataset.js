@@ -1,11 +1,29 @@
-//guidedDatasetName guidedDatasetSubtitle guidedDatasetPIOwner
+/////////////////////////////////////////////////////////
+//////////          Shared variables          ///////////
+/////////////////////////////////////////////////////////
+let guided_dataset_name = "";
+let guided_dataset_subtitle = "";
+const guided_dataset_subtitle_char_count = document.getElementById(
+  "guided-subtitle-char-count"
+);
+const create_dataset_button = $("#guided-create-empty-dataset");
+let current_selected_folder = $("#code-card");
+
+//main nav variables
+let current_progression_tab = $("#prepare-dataset-progression-tab");
+let current_sub_step = $("#guided-basic-description-tab");
+let current_sub_step_capsule = $("#guided-basic-description-capsule");
+
 guidedSetDatasetName = (newDatasetName) => {
   datasetName = newDatasetName.val().trim();
+  guided_dataset_name = datasetName;
   $(".guidedDatasetName").text(datasetName);
+  defaultBfDataset = datasetName;
 };
 
 guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
   datasetSubtitle = newDatasetSubtitle.val().trim();
+  guided_dataset_subtitle = datasetSubtitle;
   $(".guidedDatasetSubtitle").text(datasetSubtitle);
 };
 
@@ -63,24 +81,6 @@ const getOrganizationMembers = async () => {
 
   return organizationMembers;
 };
-
-/////////////////////////////////////////////////////////
-//////////          Shared variables          ///////////
-/////////////////////////////////////////////////////////
-const guided_dataset_name = $("#guided-dataset-name-input");
-const guided_dataset_subtitle = document.getElementById(
-  "guided-dataset-subtitle-input"
-);
-const guided_dataset_subtitle_char_count = document.getElementById(
-  "guided-subtitle-char-count"
-);
-const create_dataset_button = $("#guided-create-empty-dataset");
-let current_selected_folder = $("#code-card");
-
-//main nav variables
-let current_progression_tab = $("#prepare-dataset-progression-tab");
-let current_sub_step = $("#guided-basic-description-tab");
-let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
 var guidedJstreePreview = document.getElementById(
   "guided-div-dataset-tree-preview"
@@ -287,7 +287,7 @@ $(document).ready(() => {
   });
   $("#guided-dataset-subtitle-input").on("keyup", () => {
     countCharacters(
-      guided_dataset_subtitle,
+      document.getElementById("guided-dataset-subtitle-input"),
       guided_dataset_subtitle_char_count
     );
     validateGuidedBasicDescriptionInputs();
@@ -635,10 +635,8 @@ $(document).ready(() => {
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                console.log("Continue");
-                initiate_generate();
+                guided_generate();
               } else {
-                console.log("Stop");
                 $("#sidebarCollapse").prop("disabled", false);
                 document.getElementById(
                   "para-please-wait-new-curate"
@@ -648,8 +646,57 @@ $(document).ready(() => {
               }
             });
           } else {
-            initiate_generate();
+            guided_generate().then();
           }
+        }
+      }
+    );
+  });
+  $("#gs").on("click", function () {
+    let selectedBfAccount = defaultBfAccount;
+    let selectedBfDataset = defaultBfDataset;
+    let inputSubtitle = guided_dataset_subtitle;
+
+    log.info("Adding subtitle to dataset");
+    log.info(inputSubtitle);
+
+    client.invoke(
+      "api_bf_add_subtitle",
+      selectedBfAccount,
+      selectedBfDataset,
+      inputSubtitle,
+      (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          let emessage = userError(error);
+
+          Swal.fire({
+            title: "Failed to add subtitle!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Add/Edit Subtitle",
+            defaultBfDataset
+          );
+        } else {
+          log.info("Added subtitle to dataset");
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Manage Dataset - Add/Edit Subtitle",
+            defaultBfDataset
+          );
+
+          // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+          showPrePublishingStatus();
         }
       }
     );
@@ -720,16 +767,6 @@ $(document).ready(() => {
 
   $("#guided_bf_list_users_pi").change(function () {
     console.log($(this).val(1));
-  });
-
-  $("#guided-button-add-dataset-tags").on("click", () => {
-    const guidedTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
-      (tag) => {
-        return tag.textContent;
-      }
-    );
-    sodaJSONObj["digital-metadata"]["tags"] = guidedTags;
-    guidedTags.length > 0 ? enableProgressButton() : disableProgressButton();
   });
 
   //next button click handler
@@ -831,15 +868,22 @@ $(document).ready(() => {
         .trim();
       console.log("description metadata added");
     }
-
-    if (
-      current_sub_step.attr("id") == "guided-create-submission-metadata-tab"
-    ) {
-      if ($("#guided-generate-new-submission-card").hasClass("checked")) {
-        confirmed_dataset_name = $("#guided-bf-dataset-name-confirm").text();
-        sodaJSONObj["generate-dataset"]["dataset-name"] =
-          confirmed_dataset_name;
-      }
+    if (current_sub_step.attr("id") == "add-edit-description-tab") {
+      sodaJSONObj["digital-metadata"]["tags"] = $(
+        "#guided-ds-description-study-purpose"
+      )
+        .val()
+        .trim();
+    }
+    if (current_sub_step.attr("id") == "add-edit-tags-tab") {
+      const guidedTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
+        (tag) => {
+          return tag.textContent;
+        }
+      );
+      sodaJSONObj["digital-metadata"]["tags"] = guidedTags;
+      console.log(guidedTags);
+      guidedTags.length > 0 ? enableProgressButton() : disableProgressButton();
     }
 
     //if more tabs in parent tab, go to next tab and update capsule
@@ -866,7 +910,6 @@ $(document).ready(() => {
     console.log(current_sub_step.attr("id"));
     console.log(current_progression_tab.attr("id"));
     if (current_sub_step.attr("id") == "guided-create-readme-metadata-tab") {
-      alert("hi");
       guidedShowTreePreview("food");
     }
   });
@@ -971,3 +1014,357 @@ $(document).ready(() => {
     validateCreateSubmissionMetadata();
   });
 });
+
+function guided_generate() {
+  // Initiate curation by calling Python function
+  let manifest_files_requested = false;
+  var main_curate_status = "Solving";
+  var main_total_generate_dataset_size;
+
+  document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+    "Preparing files ...";
+  document.getElementById("para-please-wait-new-curate").innerHTML = "";
+  document.getElementById("div-new-curate-progress").style.display = "block";
+  document.getElementById("div-generate-comeback").style.display = "none";
+
+  if ("manifest-files" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["manifest-files"]) {
+      if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
+        manifest_files_requested = true;
+        delete_imported_manifest();
+      }
+    }
+  }
+
+  let dataset_name = "";
+  let dataset_destination = "";
+
+  if ("bf-dataset-selected" in sodaJSONObj) {
+    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    dataset_destination = "Pennsieve";
+  } else if ("generate-dataset" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["generate-dataset"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"];
+      if (destination == "local") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Local";
+      }
+      if (destination == "bf") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Pennsieve";
+      }
+    }
+  }
+
+  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+
+  client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
+    if (error) {
+      $("#sidebarCollapse").prop("disabled", false);
+      var emessage = userError(error);
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+      document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+        "";
+      document.getElementById("div-new-curate-progress").style.display = "none";
+      generateProgressBar.value = 0;
+      log.error(error);
+      console.error(error);
+      // forceActionSidebar('show');
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Generate Dataset",
+        dataset_name
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Generate Dataset - ${dataset_destination}`,
+        dataset_name
+      );
+
+      file_counter = 0;
+      folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Generate Dataset - Size",
+        main_total_generate_dataset_size
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Generate Dataset - ${dataset_destination} - Size`,
+        dataset_name,
+        main_total_generate_dataset_size
+      );
+
+      // ipcRenderer.send(
+      //   "track-event",
+      //   "Error",
+      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
+      //   folder_counter
+      // );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Generate Dataset - Number of Files`,
+        dataset_name,
+        file_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Generate Dataset - ${dataset_destination} - Number of Files`,
+        dataset_name,
+        file_counter
+      );
+
+      // electron.powerSaveBlocker.stop(prevent_sleep_id)
+
+      client.invoke(
+        "api_bf_dataset_account",
+        defaultBfAccount,
+        (error, result) => {
+          if (error) {
+            log.error(error);
+            console.log(error);
+            var emessage = error;
+          } else {
+            datasetList = [];
+            datasetList = result;
+          }
+        }
+      );
+    } else {
+      $("#sidebarCollapse").prop("disabled", false);
+      log.info("Completed curate function");
+      console.log("Completed curate function");
+      if (manifest_files_requested) {
+        let high_level_folder_num = 0;
+        if ("dataset-structure" in sodaJSONObj) {
+          if ("folders" in sodaJSONObj["dataset-structure"]) {
+            for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+              high_level_folder_num += 1;
+            }
+          }
+        }
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Manifest Files Created",
+          dataset_name,
+          high_level_folder_num
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Manifest Files Created - ${dataset_destination}`,
+          dataset_name,
+          high_level_folder_num
+        );
+      }
+
+      if (dataset_destination == "Pennsieve") {
+        show_curation_shortcut();
+      }
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset`,
+        dataset_name
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${dataset_destination}`,
+        dataset_name
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Generate Dataset - Size",
+        dataset_name,
+        main_total_generate_dataset_size
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${dataset_destination} - Size`,
+        dataset_name,
+        main_total_generate_dataset_size
+      );
+
+      file_counter = 0;
+      folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+
+      // ipcRenderer.send(
+      //   "track-event",
+      //   "Success",
+      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
+      //   folder_counter
+      // );
+
+      // ipcRenderer.send(
+      //   "track-event",
+      //   "Success",
+      //   "Generate Dataset - Number of Folders",
+      //   folder_counter
+      // );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - Number of Files`,
+        dataset_name,
+        file_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${dataset_destination} - Number of Files`,
+        dataset_name,
+        file_counter
+      );
+
+      // electron.powerSaveBlocker.stop(prevent_sleep_id)
+
+      client.invoke(
+        "api_bf_dataset_account",
+        defaultBfAccount,
+        (error, result) => {
+          if (error) {
+            log.error(error);
+            console.log(error);
+            var emessage = error;
+          } else {
+            datasetList = [];
+            datasetList = result;
+          }
+        }
+      );
+    }
+    document.getElementById("div-generate-comeback").style.display = "flex";
+  });
+
+  // Progress tracking function for main curate
+  var countDone = 0;
+  var timerProgress = setInterval(main_progressfunction, 1000);
+  function main_progressfunction() {
+    client.invoke("api_main_curate_function_progress", (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        document.getElementById(
+          "para-new-curate-progress-bar-error-status"
+        ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+        log.error(error);
+        console.error(error);
+      } else {
+        main_curate_status = res[0];
+        var start_generate = res[1];
+        var main_curate_progress_message = res[2];
+        main_total_generate_dataset_size = res[3];
+        var main_generated_dataset_size = res[4];
+        var elapsed_time_formatted = res[5];
+
+        //console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
+
+        if (start_generate === 1) {
+          divGenerateProgressBar.style.display = "block";
+          if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+            generateProgressBar.value = 100;
+            document.getElementById(
+              "para-new-curate-progress-bar-status"
+            ).innerHTML = main_curate_status + smileyCan;
+          } else {
+            var value =
+              (main_generated_dataset_size / main_total_generate_dataset_size) *
+              100;
+            generateProgressBar.value = value;
+            if (main_total_generate_dataset_size < displaySize) {
+              var totalSizePrint =
+                main_total_generate_dataset_size.toFixed(2) + " B";
+            } else if (
+              main_total_generate_dataset_size <
+              displaySize * displaySize
+            ) {
+              var totalSizePrint =
+                (main_total_generate_dataset_size / displaySize).toFixed(2) +
+                " KB";
+            } else if (
+              main_total_generate_dataset_size <
+              displaySize * displaySize * displaySize
+            ) {
+              var totalSizePrint =
+                (
+                  main_total_generate_dataset_size /
+                  displaySize /
+                  displaySize
+                ).toFixed(2) + " MB";
+            } else {
+              var totalSizePrint =
+                (
+                  main_total_generate_dataset_size /
+                  displaySize /
+                  displaySize /
+                  displaySize
+                ).toFixed(2) + " GB";
+            }
+            var progressMessage = "";
+            progressMessage += main_curate_progress_message + "<br>";
+            progressMessage +=
+              "Progress: " +
+              value.toFixed(2) +
+              "%" +
+              " (total size: " +
+              totalSizePrint +
+              ") " +
+              "<br>";
+            progressMessage +=
+              "Elaspsed time: " + elapsed_time_formatted + "<br>";
+            document.getElementById(
+              "para-new-curate-progress-bar-status"
+            ).innerHTML = progressMessage;
+          }
+        } else {
+          document.getElementById(
+            "para-new-curate-progress-bar-status"
+          ).innerHTML =
+            main_curate_progress_message +
+            "<br>" +
+            "Elapsed time: " +
+            elapsed_time_formatted +
+            "<br>";
+        }
+      }
+    });
+
+    if (main_curate_status === "Done") {
+      $("#sidebarCollapse").prop("disabled", false);
+      countDone++;
+      if (countDone > 1) {
+        log.info("Done curate track");
+        console.log("Done curate track");
+        // then show the sidebar again
+        // forceActionSidebar("show");
+        clearInterval(timerProgress);
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
+      }
+    }
+  }
+}
