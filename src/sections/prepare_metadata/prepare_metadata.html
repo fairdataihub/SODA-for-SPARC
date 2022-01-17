@@ -10205,7 +10205,7 @@
                 style="display: flex; justify-content: center; margin-top: 25px"
               >
                 <button
-                  onclick="generateManifestPrecheck()"
+                  onclick="generateManifestPrecheck(false)"
                   class="btn_question"
                   style="
                     cursor: pointer;
@@ -10217,6 +10217,7 @@
                     border: none;
                     width: 160px;
                     padding: 10px;
+                    font-size: 14px;
                   "
                 >
                   No, generate now
@@ -10233,6 +10234,7 @@
                     border: 1px solid var(--color-light-green);
                     width: 160px;
                     padding: 10px;
+                    font-size: 14px;
                   "
                 >
                   Yes, let's edit the manifest files
@@ -10292,10 +10294,33 @@
               >
               </div>
             </div>
+              <div
+                style="display: flex; justify-content: center; margin-top: 25px"
+              >
+                <button
+                  onclick="generateManifestPrecheck(true)"
+                  class="btn_question"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin-right: 15px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    width: 160px;
+                    padding: 10px;
+                    font-size: 14px;
+                  "
+                >
+                  Generate now
+                </button>
+              </div>
             </div>
 
           </div>
         </div>
+
       </div>
     </div>
     <div class="footer-div">

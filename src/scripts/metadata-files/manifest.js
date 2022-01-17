@@ -120,6 +120,20 @@ $(document).ready(function () {
 
   $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
     if (data.node.text === "manifest.xlsx") {
+      // Show loading popup
+      Swal.fire({
+        title: `Loading the manifest file.`,
+        html: "Please wait...",
+        timer: 1500,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
       var localFolderPath = path.join(
         homeDirectory,
@@ -151,7 +165,7 @@ $(document).ready(function () {
          }
        }
        xlsxToJson(optionsConvertManifest, callbackConvertManifest);
-      // Show loading popup
+
       Swal.fire({
         title: "Edit the manifest file below:",
         html: "<div id='div-manifest-edit'></div>",
@@ -165,6 +179,9 @@ $(document).ready(function () {
         customClass: "swal-large",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        }
       }).then((result) => {
         // json of new info:
         // write this new json to existing manifest.json file
@@ -176,7 +193,7 @@ $(document).ready(function () {
         // convert manifest.json to existing manifest.xlsx file
         convertJSONToXlsx(JSON.parse(updatedManifestObj), selectedManifestFilePath)
       });
-      loadManifestFileEdits(jsonManifestFilePath)
+     setTimeout(loadManifestFileEdits(jsonManifestFilePath), 500)
     }
   });
 });
@@ -216,15 +233,29 @@ function loadManifestFileEdits(jsonPath) {
         type: "text",
         width: "150px",
         name: "filename",
-        title: "Filename",
+        title: "filename",
+        readOnly: true,
+      },
+      {
+        type: "text",
+        width: "100px",
+        name: "timestamp",
+        title: "timestamp",
         readOnly: true,
       },
       {
         type: "text",
         width: "150px",
         name: "description",
-        title: "Description",
+        title: "description",
         readOnly: false,
+      },
+      {
+        type: "text",
+        width: "100px",
+        name: "file type",
+        title: "file type",
+        readOnly: true,
       },
       {
         type: "text",
@@ -233,27 +264,13 @@ function loadManifestFileEdits(jsonPath) {
         title: "Additional Metadata",
         readOnly: false,
       },
-      {
-        type: "text",
-        width: "100px",
-        name: "file type",
-        title: "File type",
-        readOnly: true,
-      },
-      {
-        type: "text",
-        width: "100px",
-        name: "timestamp",
-        title: "Timestamp",
-        readOnly: true,
-      },
     ],
   });
 }
 
 var localDatasetFolderPath = "";
 
-async function generateManifestPrecheck() {
+async function generateManifestPrecheck(manifestEditBoolean) {
   var type = "local";
   if (
     $('input[name="generate-manifest-1"]:checked').prop("id") ===
@@ -292,10 +309,10 @@ async function generateManifestPrecheck() {
   if (!continueProgress) {
     return;
   }
-  generateManifest("", type);
+  generateManifest("", type, manifestEditBoolean);
 }
 
-async function generateManifest(action, type) {
+async function generateManifest(action, type, manifestEditBoolean) {
   Swal.fire({
     title: "Reviewing the dataset structure.",
     html: "Please wait...",
@@ -313,6 +330,10 @@ async function generateManifest(action, type) {
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
     sodaJSONObj["starting-point"]["type"] = "local";
+    // if users would like to edit manifest files before generating them
+    if (manifestEditBoolean) {
+      localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder")
+    }
     create_json_object(action, sodaJSONObj, localDatasetFolderPath);
     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
     populate_existing_folders(datasetStructureJSONObj);
@@ -398,9 +419,10 @@ function updateJSONStructureManifestGenerate() {
     );
     sodaJSONObj["generate-dataset"] = {
       destination: "local",
-      path: localDestination,
+      path: $("#input-manifest-local-folder-dataset").attr("placeholder"),
       "dataset-name": newDatasetName,
       "if-existing": "merge",
+      "if-existing-files": "replace",
       "generate-option": "new",
     };
     // delete bf account and dataset keys
@@ -830,10 +852,6 @@ function showTreeViewPreviewManifestEdits(
   );
   $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
   $(previewDiv).jstree(true).refresh();
-}
-
-function uploadModifiedManifest(type) {
-  // call the upload function to upload the manifest files (merge folders and skip files, remove and update manifest files)
 }
 
 function createChildNodeManifest(
