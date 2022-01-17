@@ -221,7 +221,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  margin: 3px 0px;
+  margin: 5px 0px;
 }
 .guided--dataset-info-type-container {
   padding: 5px 8px;

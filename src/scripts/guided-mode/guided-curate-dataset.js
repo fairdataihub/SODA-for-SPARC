@@ -910,7 +910,7 @@ $(document).ready(() => {
     console.log(current_sub_step.attr("id"));
     console.log(current_progression_tab.attr("id"));
     if (current_sub_step.attr("id") == "guided-create-readme-metadata-tab") {
-      guidedShowTreePreview("food");
+      guidedShowTreePreview(guided_dataset_name);
     }
   });
   const goToTabOnStart = (tabIsd) => {
