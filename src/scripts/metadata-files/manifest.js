@@ -154,17 +154,17 @@ $(document).ready(function () {
       );
       var jsonManifestFilePath = path.join(localFolderPath, "manifest.json");
       //Set up options for xlsx-to-json:
-       var optionsConvertManifest = {
-           input: selectedManifestFilePath,
-           output: jsonManifestFilePath,
-       };
-       //Set up the callback function
-       let callbackConvertManifest = function(err, result) {
-         if(err) {
-           console.log('Error : ', err);
-         }
-       }
-       xlsxToJson(optionsConvertManifest, callbackConvertManifest);
+      var optionsConvertManifest = {
+        input: selectedManifestFilePath,
+        output: jsonManifestFilePath,
+      };
+      //Set up the callback function
+      let callbackConvertManifest = function (err, result) {
+        if (err) {
+          console.log("Error : ", err);
+        }
+      };
+      xlsxToJson(optionsConvertManifest, callbackConvertManifest);
 
       Swal.fire({
         title: "Edit the manifest file below:",
@@ -181,42 +181,42 @@ $(document).ready(function () {
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           Swal.hideLoading();
-        }
+        },
       }).then((result) => {
         // json of new info:
         // write this new json to existing manifest.json file
         var updatedManifestObj = JSON.stringify(table1.getJson());
-        fs.writeFile (jsonManifestFilePath, updatedManifestObj, function(err) {
-            if (err) throw err;
-          }
-        );
+        fs.writeFile(jsonManifestFilePath, updatedManifestObj, function (err) {
+          if (err) throw err;
+        });
         // convert manifest.json to existing manifest.xlsx file
-        convertJSONToXlsx(JSON.parse(updatedManifestObj), selectedManifestFilePath)
+        convertJSONToXlsx(
+          JSON.parse(updatedManifestObj),
+          selectedManifestFilePath
+        );
       });
-     setTimeout(loadManifestFileEdits(jsonManifestFilePath), 500)
+      setTimeout(loadManifestFileEdits(jsonManifestFilePath), 500);
     }
   });
 });
 
 function convertJSONToXlsx(jsondata, excelfile) {
   const wb = new excel4node.Workbook();
-  const ws = wb.addWorksheet('Sheet1');
-  const headingColumnNames = Object.keys(jsondata[0])
+  const ws = wb.addWorksheet("Sheet1");
+  const headingColumnNames = Object.keys(jsondata[0]);
   //Write Column Title in Excel file
   let headingColumnIndex = 1;
-  headingColumnNames.forEach(heading => {
-      ws.cell(1, headingColumnIndex++)
-          .string(heading)
+  headingColumnNames.forEach((heading) => {
+    ws.cell(1, headingColumnIndex++).string(heading);
   });
   //Write Data in Excel file
   let rowIndex = 2;
-  jsondata.forEach( record => {
-      let columnIndex = 1;
-      Object.keys(record ).forEach(columnName =>{
-          ws.cell(rowIndex,columnIndex++)
-              .string(record [columnName])
-      });
-      rowIndex++;
+  jsondata.forEach((record) => {
+    let columnIndex = 1;
+    Object.keys(record).forEach((columnName) => {
+      ws.cell(rowIndex, columnIndex++).string(record[columnName]);
+    });
+    rowIndex++;
   });
   wb.write(excelfile);
 }
@@ -226,7 +226,7 @@ function loadManifestFileEdits(jsonPath) {
   let rawdata = fs.readFileSync(jsonPath);
   let jsondata = JSON.parse(rawdata);
   // After ID in pop has been initiated, initialize jspreadsheet
-  table1 = jspreadsheet(document.getElementById('div-manifest-edit'), {
+  table1 = jspreadsheet(document.getElementById("div-manifest-edit"), {
     data: jsondata,
     columns: [
       {
@@ -332,7 +332,9 @@ async function generateManifest(action, type, manifestEditBoolean) {
     sodaJSONObj["starting-point"]["type"] = "local";
     // if users would like to edit manifest files before generating them
     if (manifestEditBoolean) {
-      localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder")
+      localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr(
+        "placeholder"
+      );
     }
     create_json_object(action, sodaJSONObj, localDatasetFolderPath);
     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
