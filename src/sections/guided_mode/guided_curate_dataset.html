@@ -97,7 +97,7 @@
                 <div
                   class="option-card radio-button guided--generate-location-card checked"
                   id="guided-curate-new-dataset-card"
-                  data-enable-next-button="false"
+                  data-enable-next-button="true"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -126,7 +126,7 @@
                 <div
                   class="option-card radio-button guided--generate-location-card non-selected"
                   id="guided-curate-existing-local-dataset-card"
-                  data-enable-next-button="false"
+                  data-enable-next-button="true"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -152,7 +152,7 @@
                 <div
                   class="option-card radio-button guided--generate-location-card non-selected"
                   id="guided-curate-existing-Pennsieve-dataset-card"
-                  data-enable-next-button="false"
+                  data-enable-next-button="true"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -428,7 +428,7 @@
 
           <div id="guided-folder-importation-tab" class="guided--panel hidden">
             <div class="guided--question show" id="guided_dataset_name_div">
-              <label class="guided--sub-step-text" style="color: black"
+              <label class="guided--sub-step-text"
                 >What is the location of the dataset?
                 <i
                   class="fas fa-info-circle popover-tooltip"
@@ -634,6 +634,7 @@
                     style="
                       background-color: var(--color-light-green) !important;
                       width: 120px !important;
+                      margin: 20px !important;
                     "
                   >
                     Confirm
@@ -750,7 +751,7 @@
                 <div
                   class="option-card radio-button guided--generate-location-card non-selected"
                   id="guided-generate-dataset-new-card"
-                  data-enable-next-button="false"
+                  data-enable-next-button="true"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -814,7 +815,7 @@
                 >
                   <div class="guided--question">
                     <h4 class="ui header guided--prompt-continue">
-                      Please confirm your dataset name:
+                      Please modify or confirm your dataset name:
                     </h4>
                     <div class="guided--container-modify">
                       <div
@@ -1086,52 +1087,53 @@
           </div>
           <div id="guided-make-pi-owner-tab" class="guided--panel">
             <div class="guided--question">
-              <h1 class="guided--sub-step-text">Select a PI Owner</h1>
+              <h1 class="guided--sub-step-text">Dataset Permissions</h1>
 
-              <div class="ui form" style="width: 500px">
-                <div
-                  class="grouped fields"
-                  style="align-items: center; justify-content: center"
+              <label class="guided--sub-step-text"
+                >Select a PI Owner:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
+              </label>
+
+              <div
+                id="guided_pi_bootstrap_select_div"
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-around;
+                  width: 100%;
+                "
+              >
+                <select
+                  class="selectpicker"
+                  data-live-search="true"
+                  style="
+                    padding: 8px 12px;
+                    margin-right: 30px;
+                    height: 38px;
+                    border-radius: 5px;
+                    border: 1px solid black;
+                  "
+                  id="guided_bf_list_users_pi"
                 >
-                  <label
-                    style="
-                      font-size: 17px;
-                      color: var(--color-bg-plum);
-                      text-align: center;
-                      margin-bottom: 20px;
-                    "
-                    >Change dataset ownership:
-                    <i
-                      class="fas fa-info-circle popover-tooltip"
-                      data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset."
-                      rel="popover"
-                      data-html="true"
-                      data-placement="right"
-                      data-trigger="hover"
-                    ></i>
-                  </label>
-
-                  <select
-                    class="selectpicker"
-                    data-live-search="true"
-                    style="
-                      padding: 8px 12px;
-                      margin-right: 30px;
-                      height: 38px;
-                      border-radius: 5px;
-                      border: 1px solid black;
-                    "
-                    id="guided_bf_list_users_pi"
-                  >
-                    <option>Select PI</option>
-                  </select>
-                </div>
+                  <option>Select PI</option>
+                </select>
               </div>
 
               <button
                 id="guided-button-add-permission-pi"
                 class="btn_animated"
-                style="width: 140px; border: none !important"
+                style="
+                  width: 140px;
+                  border: none !important;
+                  margin: 20px !important;
+                "
               >
                 Make PI owner
               </button>
@@ -1597,7 +1599,7 @@
                 <div
                   class="option-card radio-button guided--generate-location-card non-selected guided--card-large"
                   id="guided-generate-new-description-card"
-                  data-enable-next-button="false"
+                  data-enable-next-button="true"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -2337,7 +2339,7 @@
                 <div
                   class="option-card radio-button guided--generate-location-card non-selected"
                   id="guided-start-new-readme-card"
-                  data-enable-next-button="false"
+                  data-enable-next-button="true"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -2429,7 +2431,7 @@
                 <div
                   class="option-card radio-button guided--generate-location-card non-selected"
                   id="guided-start-new-changes-card"
-                  data-enable-next-button="false"
+                  data-enable-next-button="true"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
