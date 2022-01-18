@@ -634,7 +634,10 @@ function resetManifest() {
 // to avoid changes made to the dataset structure when we call the main curate function for manifest files
 function checkEmptySubFolders(datasetStructure) {
   let isEmpty = true;
-  if (JSON.stringify(datasetStructure) !== "{}" && Object.keys(datasetStructure).includes("folders")) {
+  if (
+    JSON.stringify(datasetStructure) !== "{}" &&
+    Object.keys(datasetStructure).includes("folders")
+  ) {
     for (var folder in datasetStructure["folders"]) {
       var currentFolder = datasetStructure["folders"][folder];
       if (
@@ -647,7 +650,7 @@ function checkEmptySubFolders(datasetStructure) {
       }
     }
   } else {
-    isEmpty = true
+    isEmpty = true;
   }
   return isEmpty;
 }
@@ -656,20 +659,23 @@ function checkEmptySubFolders(datasetStructure) {
 // to avoid changes made to the dataset structure when we call the main curate function for manifest files
 function checkNoSparcFolders(datasetStructure) {
   let noSPARCFolders = false;
-  if (JSON.stringify(datasetStructure) !== "{}" && Object.keys(datasetStructure).includes("folders")) {
+  if (
+    JSON.stringify(datasetStructure) !== "{}" &&
+    Object.keys(datasetStructure).includes("folders")
+  ) {
     let datasetFolderArray = Object.keys(datasetStructure["folders"]);
     if (datasetFolderArray.length === 0) {
-      noSPARCFolders = true
+      noSPARCFolders = true;
     } else {
       for (var folder of datasetFolderArray) {
         if (!highLevelFolders.includes(folder)) {
-          noSPARCFolders = true
-          return noSPARCFolders
+          noSPARCFolders = true;
+          return noSPARCFolders;
         }
       }
     }
   } else {
-    noSPARCFolders = true
+    noSPARCFolders = true;
   }
   return noSPARCFolders;
 }
@@ -678,16 +684,21 @@ function checkNoSparcFolders(datasetStructure) {
 // to avoid changes made to the dataset structure when we call the main curate function for manifest files
 function checkInvalidHighLevelFolders(datasetStructure) {
   let invalidFolders;
-  if (JSON.stringify(datasetStructure) !== "{}" && Object.keys(datasetStructure).includes("folders")) {
+  if (
+    JSON.stringify(datasetStructure) !== "{}" &&
+    Object.keys(datasetStructure).includes("folders")
+  ) {
     let datasetFolderArray = Object.keys(datasetStructure["folders"]);
     if (datasetFolderArray.length === 0) {
-      invalidFolders = true
+      invalidFolders = true;
     } else {
       // checking if the datasetFolderArray is a subset of the highLevelFolders array or not, if not, then it must contain invalid folder(s)
-      invalidFolders = datasetFolderArray.some(val => !highLevelFolders.includes(val));
+      invalidFolders = datasetFolderArray.some(
+        (val) => !highLevelFolders.includes(val)
+      );
     }
   } else {
-    invalidFolders = true
+    invalidFolders = true;
   }
   return invalidFolders;
 }
