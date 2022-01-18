@@ -29,6 +29,10 @@
       rel="stylesheet"
       href="node_modules/@toast-ui/editor/dist/toastui-editor.css"
     />
+    <link
+      rel="stylesheet"
+      href="node_modules/tui-date-picker/dist/tui-date-picker.css"
+    />
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css" />
     <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css" />
     <link
@@ -243,31 +247,6 @@
     >
       <main id="content" class="content js-content"></main>
     </div>
-
-    <!-- <div id="notification" class="hidden">
-      <p id="message"></p>
-      <button
-        class="ui negative basic button"
-        id="close-button"
-        onClick="closeNotification()"
-        style="height: 35px"
-      >
-        Dismiss
-      </button>
-      <button
-        class="ui blue button hidden"
-        id="restart-button"
-        onClick="restartApp()"
-        style="height: 35px"
-      >
-        Restart SODA
-        <div
-          id="restart_loader"
-          class="ui active red inline loader tiny inverted"
-          style="display: none"
-        ></div>
-      </button>
-    </div> -->
 
     <script>
       require("./assets/imports"); // Imports html files into app

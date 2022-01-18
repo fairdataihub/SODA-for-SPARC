@@ -729,7 +729,8 @@ def bf_new_dataset_folder(datasetname, accountname):
         if datasetname in dataset_list:
             raise Exception("Error: Dataset name already exists")
         else:
-            bf.create_dataset(datasetname)
+            d = bf.create_dataset(datasetname)
+            return d.id
 
     except Exception as e:
         raise e
@@ -812,6 +813,9 @@ def agent_running():
     listen_port = 11235
 
     try:
+        # x = "ws://127.0.0.1:11235"
+        # create_connection(x).close()
+        # CHANGE BACK
         create_connection(socket_address(listen_port)).close()
 
     except socket.error as e:

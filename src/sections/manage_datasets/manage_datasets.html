@@ -25,7 +25,7 @@
             <h2>Manage Datasets - Create a new dataset</h2>
             <a
               target="_blank"
-              href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Create-a-new-dataset"
+              href="https://docs.sodaforsparc.io/docs/manage-dataset/create-a-new-dataset"
               >Need help?</a
             >
           </div>
@@ -72,7 +72,7 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="
@@ -84,33 +84,40 @@
                         >
                           Current account:
                         </h5>
-                        <h5
-                          class="card-right bf-account-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          id="create_empty_dataset_BF_account_span"
+                        <div
+                          class="change-current-account"
+                          style="margin-left: -7px;"
+                          onclick="openDropdownPrompt(this, 'bf')"
                         >
-                          None
-                        </h5>
+                          <h5
+                            class="card-right bf-account-span"
+                            style="
+                              color: #000;
+                              font-weight: 600;
+                              margin-left: 8px;
+                              font-size: 15px;
+                              width: fit-content;
+                            "
+                            id="create_empty_dataset_BF_account_span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -316,7 +323,7 @@
               <h2>Manage Datasets - Rename an existing dataset</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Rename-an-existing-dataset"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/rename-an-existing-dataset"
                 >Need help?</a
               >
             </div>
@@ -359,29 +366,34 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -410,34 +422,44 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current dataset:
                         </h5>
-                        <h5
-                          id="rename_dataset_name"
-                          class="card-right bf-dataset-span"
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'dataset')"
                         >
-                          None
-                        </h5>
+                          <h5
+                            id="rename_dataset_name"
+                            class="card-right bf-dataset-span"
+                            style="width: fit-content;"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="
+                              svg-change-current-account
+                              dataset
+                              bi bi-pencil-fill
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -616,7 +638,7 @@
               <h2>Manage Datasets - Make PI owner of dataset</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Make-PI-owner-of-dataset"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/make-pi-owner-of-dataset"
                 >Need help?</a
               >
             </div>
@@ -664,7 +686,7 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="
@@ -675,22 +697,27 @@
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -723,7 +750,7 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div style="width: 100%">
+                      <div style="width: 100%; display: flex;">
                         <h5
                           class="card-left"
                           style="
@@ -734,22 +761,31 @@
                         >
                           Current dataset:
                         </h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'dataset')"
+                        >
+                          <h5 class="card-right bf-dataset-span">None</h5>
+
+                          <svg
+                            class="
+                              svg-change-current-account
+                              dataset
+                              bi bi-pencil-fill
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -978,7 +1014,7 @@
               <h2>Manage Datasets - Add/edit dataset permissions</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-permissions"
                 >Need help?</a
               >
             </div>
@@ -994,7 +1030,7 @@
 
       <div
         id="add_edit_permissions_parent-tab"
-        style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
+        style="overflow-y: auto; height: calc(100% - 150px); margin-left: 0px"
       >
         <div
           class="individual-question manage-dataset show"
@@ -1027,33 +1063,40 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="
                             text-align: right;
                             padding-right: 5px;
+                            margin-left: 30px;
                             width: 165px;
                           "
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                          style="margin-left: -4px;"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -1086,33 +1129,43 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div style="width: 100%">
+                      <div style="width: 100%; display: flex;">
                         <h5
                           class="card-left"
                           style="
                             text-align: right;
                             padding-right: 5px;
                             width: 165px;
+                            margin-left: 24px;
                           "
                         >
                           Current dataset:
                         </h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'dataset')"
+                        >
+                          <h5 class="card-right bf-dataset-span " style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="
+                              svg-change-current-account
+                              dataset
+                              bi bi-pencil-fill
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -1302,7 +1355,7 @@
                 >Please select the user for whom you want to modify permissions:
                 <i
                   class="fas fa-info-circle popover-tooltip"
-                  data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
+                  data-content="See our associated <a href='https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
                   rel="popover"
                   data-html="true"
                   data-placement="right"
@@ -1409,7 +1462,7 @@
                 >Please select the team for whom you want to modify permissions:
                 <i
                   class="fas fa-info-circle popover-tooltip"
-                  data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
+                  data-content="See our associated <a href='https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
                   rel="popover"
                   data-html="true"
                   data-placement="right"
@@ -1559,7 +1612,7 @@
               <h2>Manage Datasets - Add/edit subtitle</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-subtitle"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-subtitle"
                 >Need help?</a
               >
             </div>
@@ -1574,14 +1627,14 @@
 
       <div
         id="add_edit_subtitle_parent-tab"
-        style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
+        style="overflow-y: auto; height: calc(100% - 150px); margin-left: 0px"
       >
         <div
           class="individual-question manage-dataset show"
           id="add_edit_subtitle_tab"
-          style="height: auto"
+          style="height: auto; width: auto;"
         >
-          <div class="ui form" style="width: 100%">
+          <div class="ui form" style="width: 100%; margin-bottom: 35px;">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Pennsieve dataset would you like to work on?
@@ -1607,29 +1660,35 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                          style="margin-left: -4px;"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -1658,29 +1717,38 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div style="width: 100%">
+                      <div style="width: 100%; display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current dataset:
                         </h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'dataset')"
+                          style="margin-left: -5px"
+                        >
+                          <h5 class="card-right bf-dataset-span" >None</h5>
+
+                          <svg
+                            class="
+                              svg-change-current-account
+                              dataset
+                              bi bi-pencil-fill
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -1877,7 +1945,7 @@
               <h2>Manage Datasets - Add/edit tags</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-tags"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-tags"
                 >Need help?</a
               >
             </div>
@@ -1920,29 +1988,35 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                          style="margin-left: -4px;"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -1971,29 +2045,39 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div style="width: 100%">
+                      <div style="width: 100%; display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current dataset:
                         </h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'dataset')"
+                          style="margin-left: -5px;"
+                        >
+                          <h5 class="card-right bf-dataset-span" >None</h5>
+
+                          <svg
+                            class="
+                              svg-change-current-account
+                              dataset
+                              bi bi-pencil-fill
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                               d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -2176,7 +2260,7 @@
               <h2>Manage Datasets - Add/edit description</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-description"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-description"
                 >Need help?</a
               >
             </div>
@@ -2219,29 +2303,36 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                          style="margin-left: -3px;"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
+
                   </div>
                   <div
                     style="
@@ -2270,29 +2361,39 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current dataset:
                         </h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'dataset')"
+                          style="margin-left: -6px;"
+                        >
+                          <h5 class="card-right bf-dataset-span" >None</h5>
+
+                          <svg
+                            class="
+                              svg-change-current-account
+                              dataset
+                              bi bi-pencil-fill
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -2454,7 +2555,7 @@
                                   placing it into the appropriate section(s).
                                   <br />
                                   <a
-                                    href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-description"
+                                    href="https://docs.sodaforsparc.io/docs/manage-dataset/add-edit-description"
                                     >Learn more.</a
                                   >
                                 </strong>
@@ -2690,7 +2791,7 @@
               <h2>Manage Datasets - Upload a banner image</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Upload-a-banner-image"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/upload-a-banner-image"
                 >Need help?</a
               >
             </div>
@@ -2738,29 +2839,35 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                          style="margin-left: -4px;"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -2789,29 +2896,39 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current dataset:
                         </h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'dataset')"
+                          style="margin-left: -5px;"
+                        >
+                          <h5 class="card-right bf-dataset-span" >None</h5>
+
+                          <svg
+                            class="
+                              svg-change-current-account
+                              dataset
+                              bi bi-pencil-fill
+                            "
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -3132,7 +3249,7 @@
               <h2>Manage Datasets - Assign a license</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Assign-a-license"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/assign-a-license"
                 >Need help?</a
               >
             </div>
@@ -3175,29 +3292,35 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                          style="margin-left: -4px;"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -3214,7 +3337,7 @@
                         >
                           Account details:
                         </h5>
-                        <h5 class="card-right bf-account-details-span">None</h5>
+                        <h5 class="card-right bf-account-details-span" style="margin-left: 135px;">None</h5>
                       </div>
                     </div>
                   </div>
@@ -3226,29 +3349,39 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current dataset:
                         </h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'dataset')"
+                          style="margin-left: -5px;"
+                        >
+                            <h5 class="card-right bf-dataset-span" >None</h5>
+
+                            <svg
+                              class="
+                                svg-change-current-account
+                                dataset
+                                bi bi-pencil-fill
+                              "
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="18"
+                              height="18"
+                              fill="#000"
+                              viewBox="0 0 16 16"
+                            >
+                              <path
+                                d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                              />
+                            </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -3275,7 +3408,7 @@
                         <h5
                           id="para-dataset-license-current"
                           class="card-right"
-                          style="margin-top: 0px"
+                          style="margin-top: 0px; margin-left: 140px;"
                         >
                           None
                         </h5>
@@ -3464,7 +3597,7 @@
               <h2>Manage Datasets - Upload a local dataset</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Upload-a-local-dataset-to-Pennsieve"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/upload-a-local-dataset-to-pennsieve"
                 >Need help?</a
               >
             </div>
@@ -3512,29 +3645,34 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current account:
                         </h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                        <div
+                          class="change-current-account"
+                          onclick="openDropdownPrompt(this, 'bf')"
+                        >
+                          <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -3563,29 +3701,38 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5
                           class="card-left"
                           style="text-align: right; padding-right: 5px"
                         >
                           Current dataset:
                         </h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                        <div
+                        class="change-current-account"
+                        onclick="openDropdownPrompt(this, 'dataset')"
+                      >
+                        <h5 class="card-right bf-dataset-span" >None</h5>
+
+                        <svg
+                          class="
+                            svg-change-current-account
+                            dataset
+                            bi bi-pencil-fill
+                          "
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"
@@ -3838,7 +3985,7 @@
               <h2>Manage Datasets - View/change dataset status</h2>
               <a
                 target="_blank"
-                href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/View-and-change-status"
+                href="https://docs.sodaforsparc.io/docs/manage-dataset/view-and-change-status"
                 >Need help?</a
               >
             </div>
@@ -3887,24 +4034,30 @@
                     "
                   >
                     <div class="card-container manage-dataset">
-                      <div>
+                      <div style="display: flex;">
                         <h5 class="card-left">Current account:</h5>
-                        <h5 class="card-right bf-account-span">None</h5>
+                      </div>
+                      <div
+                        class="change-current-account"
+                        style="margin-left: -210px;"
+                        onclick="openDropdownPrompt(this, 'bf')"
+                      >
+                        <h5 class="card-right bf-account-span" style="width: fit-content;">None</h5>
+
+                        <svg
+                          class="svg-change-current-account bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                   </div>
                   <div
                     style="
@@ -3915,7 +4068,7 @@
                   >
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="margin-right: -11px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -3930,22 +4083,32 @@
                     <div class="card-container manage-dataset">
                       <div>
                         <h5 class="card-left">Current dataset:</h5>
-                        <h5 class="card-right bf-dataset-span">None</h5>
+                      </div>
+                      <div
+                        class="change-current-account"
+                        style="margin-left: -212px;"
+                        onclick="openDropdownPrompt(this, 'dataset')"
+                      >
+                        <h5 class="card-right bf-dataset-span" >None</h5>
+
+                        <svg
+                          class="
+                            svg-change-current-account
+                            dataset
+                            bi bi-pencil-fill
+                          "
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
                       </div>
                     </div>
-                    <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
-                      onclick="openDropdownPrompt(this, 'dataset')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
                     <div
                       class="ui active green inline loader small"
                       style="display: none"

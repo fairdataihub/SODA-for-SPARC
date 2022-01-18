@@ -163,9 +163,14 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_st
 
     wb.save(destination)
 
+    # calculate the size of the metadata file
+    size = getsize(destination)
+
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
         upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination)
+
+    return size
 
 
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
@@ -177,7 +182,11 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
     with open(file_path, "w") as f:
         f.write(text_string)
 
+    size = getsize(file_path)
+
     upload_metadata_file(file_type, bfaccount, bfdataset, file_path)
+
+    return size, file_path
 
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path):
@@ -439,11 +448,15 @@ def save_ds_description_file(
 
     wb.save(destination)
 
+    size = getsize(destination)
+
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
         upload_metadata_file(
             "dataset_description.xlsx", bfaccount, bfdataset, destination
         )
+
+    return size
 
 
 subjectsTemplateHeaderList = [
@@ -564,9 +577,13 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
 
     wb.save(destination)
 
+    size = getsize(destination)
+
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
         upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination)
+
+    return size
 
 
 def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
@@ -631,9 +648,13 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
     wb.save(destination)
 
+    size = getsize(destination)
+
     ## if generating directly on Pennsieve, call upload function
     if upload_boolean:
         upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination)
+
+    return size
 
 
 # check for non-empty fields (cells)

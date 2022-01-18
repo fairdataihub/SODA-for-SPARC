@@ -933,6 +933,15 @@ async function transitionSubQuestions(
   category
 ) {
   if (currentDiv === "Question-getting-started-1") {
+    // log the start of a new curation process from scratch
+    // logCurationForAnalytics(
+    //   "Success",
+    //   PrepareDatasetsAnalyticsPrefix.CURATE,
+    //   AnalyticsGranularity.ACTION,
+    //   ["New"],
+    //   "Local",
+    //   true
+    // );
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
@@ -945,10 +954,12 @@ async function transitionSubQuestions(
       return;
     }
   }
+
+  // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
   $(ev).addClass("checked");
-  //
+
   // uncheck the other radio buttons
   $($(ev).parents()[0])
     .siblings()
@@ -961,12 +972,13 @@ async function transitionSubQuestions(
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
+  // hide related previous divs
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
     setTimeout(function () {
       $(target).addClass("show");
-      // auto-scroll to bottom of div
+      // auto-scroll to bottom of div (except the dataset_description 4 sections)
       if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
         document.getElementById(parentDiv).scrollTop =
           document.getElementById(parentDiv).scrollHeight;
@@ -1055,9 +1067,11 @@ async function transitionSubQuestions(
     document.getElementById(parentDiv).appendChild(target);
     $("#para-continue-existing-files-generate").text("");
   } else {
+    // disable Next button if all questions are not fully answered by users
     $("#nextBtn").prop("disabled", false);
   }
 
+  // add "prev" to previous questions just so the text becomes gray -> take the attention away from those questions
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
@@ -1181,7 +1195,7 @@ async function transitionSubQuestions(
           "local-path": "",
         },
       };
-      // this should run after a folder is selected
+      // reset the UI back to fresh new
       reset_ui();
       $("#nextBtn").prop("disabled", true);
     }
@@ -1189,7 +1203,7 @@ async function transitionSubQuestions(
 }
 
 // Create the dataset structure for sodaJSONObj
-const create_json_object = (action, sodaJSONObj) => {
+const create_json_object = (action, sodaJSONObj, root_folder_path) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -1209,9 +1223,6 @@ const create_json_object = (action, sodaJSONObj) => {
     "inputs_metadata.xlsx",
     "outputs_metadata.xlsx",
   ];
-  let root_folder_path = $("#input-destination-getting-started-locally").attr(
-    "placeholder"
-  );
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
   // Get high level folders and metadata files first
@@ -1568,6 +1579,17 @@ async function transitionSubQuestionsButton(
       sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
       $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       $("body").removeClass("waiting");
+
+      // // log the error to analytics
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION,
+        ["Existing"],
+        "Pennsieve",
+        false
+      );
+
       return;
     } else {
       if (result[1][2].length > 0) {
@@ -1612,6 +1634,15 @@ async function transitionSubQuestionsButton(
               "Please continue below."
             );
             showHideDropdownButtons("dataset", "show");
+            // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
+            logCurationForAnalytics(
+              "Success",
+              PrepareDatasetsAnalyticsPrefix.CURATE,
+              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              ["Existing"],
+              "Pennsieve",
+              false
+            );
           } else {
             exitCurate();
           }
@@ -1630,6 +1661,17 @@ async function transitionSubQuestionsButton(
           "Please continue below."
         );
         showHideDropdownButtons("dataset", "show");
+
+        // log the successful Pennsieve import to analytics
+
+        logCurationForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          ["Existing"],
+          "Pennsieve",
+          false
+        );
         // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       }
     }
@@ -1725,6 +1767,7 @@ async function transitionSubQuestionsButton(
           "local-path": "",
         },
       };
+
       // this should run after a folder is selected
       reset_ui();
 
@@ -1742,9 +1785,12 @@ async function transitionFreeFormMode(
 ) {
   let continueProgressRC = true;
   let continueProgressDD = true;
+
   let continueProgressSubSam = true;
   let continueProgressSubmission = true;
   let continueProgressGenerateDD = true;
+
+  let continueProgressGenerateManifest = true;
 
   const dataCurrent = $(ev).attr("data-current");
 
@@ -1808,6 +1854,14 @@ async function transitionFreeFormMode(
         return;
       }
       break;
+    case "submit_prepublishing_review-question-2":
+      transitionToPrepublishingQuestionThree();
+      break;
+    case "submit_prepublishing_review-question-3":
+      transitionToPrePublishingSubmit();
+    case "Question-prepare-manifest-1":
+      continueProgressGenerateManifest = await switchMetadataManifestQuestion();
+      break;
   }
 
   if (!continueProgressRC) {
@@ -1830,6 +1884,10 @@ async function transitionFreeFormMode(
     return;
   }
 
+  if (!continueProgressGenerateManifest) {
+    return;
+  }
+  // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
   $(ev).addClass("checked");
@@ -1863,6 +1921,7 @@ async function transitionFreeFormMode(
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
+  // hide related previous divs
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
@@ -1908,11 +1967,11 @@ async function transitionFreeFormMode(
     }
   }
 
-  if (ev.getAttribute("data-next") == "Question-prepare-submission-DDD") {
+  if (ev.getAttribute("data-next") === "Question-prepare-submission-DDD") {
     $("#button-skip-DDD").show();
   }
 
-  if (ev.getAttribute("data-next") == "Post-curation-question-2") {
+  if (ev.getAttribute("data-next") === "Post-curation-question-2") {
     //checkDatasetDisseminate()
     setTimeout(function () {
       $(target).addClass("test2");
@@ -2072,6 +2131,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
   }
 }
 
+//// 3. dataset_description
 async function switchMetadataDDQuestion() {
   if ($("#Question-prepare-dd-2").hasClass("show")) {
     var { value: continueProgressDD } = await Swal.fire({
@@ -2096,6 +2156,7 @@ async function switchMetadataDDQuestion() {
   }
 }
 
+//// 4. submission
 async function switchMetadataSubmissionQuestion() {
   if ($("#Question-prepare-submission-2").hasClass("show")) {
     var { value: continueProgressSubmission } = await Swal.fire({
@@ -2110,11 +2171,43 @@ async function switchMetadataSubmissionQuestion() {
     });
     if (continueProgressSubmission) {
       $("#existing-submission-file-destination").val("");
+      $("#existing-submission-file-destination").attr(
+        "placeholder",
+        "Browse here"
+      );
       $($("#div-check-bf-import-submission").children()[0]).show();
       $("#div-check-bf-import-submission").css("display", "flex");
       resetSubmissionFields();
     }
     return continueProgressSubmission;
+  } else {
+    return true;
+  }
+}
+
+// 5. manifest
+async function switchMetadataManifestQuestion() {
+  if ($("#Question-prepare-manifest-2").hasClass("show")) {
+    var { value: continueProgressManifest } = await Swal.fire({
+      title:
+        "This will reset your progress so far with the manifest.xlsx file. Are you sure you want to continue?",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      reverseButtons: reverseSwalButtons,
+    });
+    if (continueProgressManifest) {
+      $("#input-manifest-local-folder-dataset").val("");
+      $("#input-manifest-local-folder-dataset").attr(
+        "placeholder",
+        "Browse here"
+      );
+      // $($("#div-confirm-manifest-local-folder-dataset").children()[0]).show();
+      $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
+    }
+    return continueProgressManifest;
   } else {
     return true;
   }
@@ -3445,3 +3538,34 @@ for (var i = 0; i < buttons.length; i++) {
   button = buttons[i];
   initRipple(button);
 }
+
+// Input:
+//  elementId:  string - id selector of the section the user will transition to from the Submit for pre-publishing tab
+// transition from the pre-publishing review tab to the given prepare metadata tabs
+const transitionFromPrePublishingChecklist = (elementId) => {
+  // change is shown to the subtitle section
+  $(".section.is-shown").removeClass("is-shown");
+
+  // show the subtitle section instead
+  $(`#${elementId}`).addClass("is-shown");
+
+  $(".main-tabs-section").removeClass("show");
+  $(".main-tabs-section").addClass("hide");
+
+  // when a user clicks return change the tab they see
+  document
+    .getElementById("disseminate_dataset_section")
+    .classList.remove("show");
+  document.getElementById("disseminate_dataset_section").classList.add("hide");
+  document.getElementById("manage_dataset_section").classList.add("show");
+
+  // mark the tab as checked to get the appropriate tab styling
+  $("#disseminate_dataset_tab").prop("checked", false);
+  $("#manage_dataset_tab").prop("checked", true);
+};
+
+const scrollToElement = (elementIdOrClassname) => {
+  let element = document.querySelector(elementIdOrClassname);
+
+  element.scrollIntoView(true);
+};
