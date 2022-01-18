@@ -835,7 +835,9 @@ var onBtnClicked = (btnId, duplicateArray) => {
             reNamedFiles.includes(newName) === false
           ) {
             //plus extension
-            newName = newName.concat(tempFile[i].substring(extIndex, tempFile[i].length))
+            newName = newName.concat(
+              tempFile[i].substring(extIndex, tempFile[i].length)
+            );
             reNamedFiles.push(newName);
             fileLocation.push(temp[i]);
           }
@@ -853,12 +855,15 @@ var onBtnClicked = (btnId, duplicateArray) => {
           //location of temp folder and json object of the files already imported
           var filtered = getGlobalPath(organizeDSglobalPath);
           let uiItem = "#items";
-          var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-          let type = "files"
+          var myPath = getRecursivePath(
+            filtered.slice(1),
+            datasetStructureJSONObj
+          );
+          let type = "files";
           //add files function (array of new names, object of files' paths to-be imported, currently import object)
           /// update jsonObjGlobal with the new name
           //delete myPath[type][currentName];
-          for(let index = 0; index < temp.length; index++) {
+          for (let index = 0; index < temp.length; index++) {
             myPath["files"][reNamedFiles[index]] = {
               path: fileLocation[index],
               basename: reNamedFiles[index],
@@ -868,18 +873,23 @@ var onBtnClicked = (btnId, duplicateArray) => {
               action: ["new", "renamed"],
             };
             var appendString =
-            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-            myPath["files"][reNamedFiles[index]]["basename"] +
-            "</div></div>";
+              '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+              myPath["files"][reNamedFiles[index]]["basename"] +
+              "</div></div>";
 
             $(uiItem).html(appendString);
             listItems(myPath, uiItem);
             console.log(organizeDSglobalPath);
-            getInFolder("#items", uiItem, organizeDSglobalPath, datasetStructureJSONObj);
+            getInFolder(
+              "#items",
+              uiItem,
+              organizeDSglobalPath,
+              datasetStructureJSONObj
+            );
           }
           console.log("should be updated now");
           console.log(myPath);
-          
+
           /*
                 listItems(currentLocation, uiItem);
       getInFolder(
@@ -1032,9 +1042,9 @@ function addFilesfunction(
         "</div></div>";
       $(uiItem).html(appendString);
       console.log("Under is uiItem");
-      console.log(uiItem);  //the div id=items that contains all the file elements 
+      console.log(uiItem); //the div id=items that contains all the file elements
       console.log("Underis singleUIItem");
-      console.log(singleUIItem);  //.single-item class
+      console.log(singleUIItem); //.single-item class
       console.log("Under is organizeCurrentLocation");
       console.log(organizeCurrentLocation); //div id=input-global-path
       console.log("underis globalpath");
