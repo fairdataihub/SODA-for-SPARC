@@ -116,6 +116,7 @@ async function generateManifest(action, type) {
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
         heightAuto: false,
         icon: "error",
+        showConfirmButton: true,
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           Swal.hideLoading();
@@ -130,6 +131,7 @@ async function generateManifest(action, type) {
         "Generate",
         Destinations.LOCAL
       );
+      $("#div-confirm-manifest-local-folder-dataset").hide();
       return;
     }
     // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
@@ -142,6 +144,7 @@ async function generateManifest(action, type) {
         text: "The dataset does not contain any SPARC folder(s). Please choose a valid dataset before generating the manifest files.",
         heightAuto: false,
         icon: "error",
+        showConfirmButton: true,
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           Swal.hideLoading();
@@ -155,6 +158,7 @@ async function generateManifest(action, type) {
         "Generate",
         Destinations.LOCAL
       );
+      $("#div-confirm-manifest-local-folder-dataset").hide();
       return;
     }
     // check for invalid high level folders in a dataset
@@ -166,6 +170,7 @@ async function generateManifest(action, type) {
         title: "Failed to generate the manifest files.",
         text: "The dataset contains invalid, non-SPARC high level folder(s). Please delete or rename them according to SPARC standards before generating the manifest files.",
         heightAuto: false,
+        showConfirmButton: true,
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
@@ -180,6 +185,7 @@ async function generateManifest(action, type) {
         "Generate",
         Destinations.LOCAL
       );
+      $("#div-confirm-manifest-local-folder-dataset").hide();
       return;
     }
     generateManifestHelper();
@@ -492,6 +498,7 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
         heightAuto: false,
+        showConfirmButton: true,
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
@@ -517,6 +524,7 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
         title: "Failed to generate the manifest files.",
         text: "The dataset does not contain any SPARC folder(s). Please choose a valid dataset before generating the manifest files.",
         heightAuto: false,
+        showConfirmButton: true,
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
@@ -572,7 +580,7 @@ function validateSPARCdataset() {
       html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      showConfirmButton: false,
+      showConfirmButton: true,
       reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -584,6 +592,7 @@ function validateSPARCdataset() {
       document.getElementById(
         "input-manifest-local-folder-dataset"
       ).placeholder = "Browse here";
+      $("#div-confirm-manifest-local-folder-dataset").hide();
       localDatasetFolderPath = "";
       return false;
     });
