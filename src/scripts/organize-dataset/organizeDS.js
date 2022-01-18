@@ -803,6 +803,7 @@ var onBtnClicked = (btnId, duplicateArray) => {
     swal.fire({
       title: "Rename Files",
       confirmButtonText: "Save",
+      allowOutsideClick: false,
       heightAuto: false,
       customClass: "wide-swal",
       showCloseButton: true,
@@ -815,12 +816,14 @@ var onBtnClicked = (btnId, duplicateArray) => {
       },
       html: container,
       didOpen: () => {
-        $(tempFile[0]).focus();
+        firstinput = tempFile[0];
+        $(firstinput).focus();
       },
       preConfirm: () => {
         //check the same name isn't being used
         var reNamedFiles = [];
         var fileLocation = [];
+        sameName = [];
         for (var i = 0; i < tempFile.length; i++) {
           console.log(i);
           let inputField = tempFile[i];
@@ -830,29 +833,29 @@ var onBtnClicked = (btnId, duplicateArray) => {
           let newName = document.getElementById(inputField).value;
 
           if (justFileName === newName || newName === "") {
-            console.log("they are the same");
-            sameName = true;
             document.getElementById(inputField).style.borderColor = "red";
             document.getElementById(inputField).value = "";
             document.getElementById(inputField).placeholder =
               "Provide a new name";
+            console.log("they are the same");
+            sameName.push(true);
           } else {
-            sameName = false;
+            sameName.push(false);
           }
-          console.log(reNamedFiles.includes(newName));
           if (
             justFileName != newName &&
             newName != "" &&
             reNamedFiles.includes(newName) === false
           ) {
-            console.log("should push newName into array");
             reNamedFiles.push(newName);
             fileLocation.push(temp[i]);
           }
         }
         console.log(reNamedFiles);
         console.log(fileLocation);
-        if (sameName === true) {
+        console.log(sameName.includes(true) === true);
+        if (sameName.includes(true) === true) {
+          sameName = [];
           i = 0;
           return false;
           $("swal2-confirm swal2-styled").removeAttr("disabled");
@@ -1037,6 +1040,7 @@ function addFilesfunction(
       title: "Multiple duplicate files are trying to be uploaded",
       icon: "warning",
       showConfirmButton: false,
+      allowOutsideClick: false,
       showCloseButton: true,
       customClass: "wide-swal-auto",
       backdrop: "rgba(0, 0, 0, 0.4)",
