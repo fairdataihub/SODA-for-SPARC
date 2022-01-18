@@ -1,44 +1,3 @@
-function guidedRefreshBfUsersList() {
-  var accountSelected = defaultBfAccount;
-  /*
-  removeOptions(bfListUsers);
-  var optionUser = document.createElement("option");
-  optionUser.textContent = "Select user";
-  bfListUsers.appendChild(optionUser);*/
-
-  removeOptions(bfListUsersPI);
-  var optionUserPI = document.createElement("option");
-  optionUserPI.textContent = "Select PI";
-  bfListUsersPI.appendChild(optionUserPI);
-
-  if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_users", accountSelected, (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-      } else {
-        // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
-        $("#bf_list_users").selectpicker("refresh");
-        $("#bf_list_users").find("option:not(:first)").remove();
-        $("#button-add-permission-user").hide();
-        $("#bf_list_users_pi").selectpicker("refresh");
-        $("#bf_list_users_pi").find("option:not(:first)").remove();
-        for (var myItem in res) {
-          // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
-          let sep_pos = res[myItem].lastIndexOf("!|**|!");
-          var myUser = res[myItem].substring(0, sep_pos);
-          var optionUser = document.createElement("option");
-          optionUser.textContent = myUser;
-          optionUser.value = res[myItem].substring(sep_pos + 6);
-          bfListUsers.appendChild(optionUser);
-          var optionUser2 = optionUser.cloneNode(true);
-          bfListUsersPI.appendChild(optionUser2);
-        }
-      }
-    });
-  }
-}
-
 function guidedRefreshBfTeamsList(teamList) {
   removeOptions(teamList);
 
@@ -100,61 +59,6 @@ guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
   $(".guidedDatasetSubtitle").text(datasetSubtitle);
 };
 
-guidedSetPIOwner = (newPIOwner) => {
-  $(".guidedDatasetPIOwner").text("John Ownerman");
-};
-
-const getOrganizationMembers = async () => {
-  sodaOrganizationId = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0";
-
-  // get the user's access token
-  let jwt = await get_access_token();
-
-  // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-  let organizationMembersResponse = await fetch(
-    `https://api.pennsieve.io/organizations/${sodaOrganizationId}/members`,
-    {
-      headers: {
-        Accept: "*/*",
-        Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  // get the status code out of the response
-  let statusCode = organizationMembersResponse.status;
-
-  // check the status code of the response
-  switch (statusCode) {
-    case 200:
-      // success do nothing
-      break;
-    case 404:
-      throw new Error(
-        `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
-      );
-    case 401:
-      throw new Error(
-        `${statusCode} - You cannot get the dataset readme while unauthenticated. Please reauthenticate and try again.`
-      );
-    case 403:
-      throw new Error(
-        `${statusCode} - You do not have access to this dataset. `
-      );
-
-    default:
-      // something unexpected happened
-      let statusText = await organizationMembersResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
-  }
-
-  // grab the organization members out of the response
-  let organizationMembers = await organizationMembersResponse.json();
-
-  return organizationMembers;
-};
-
 var guidedJstreePreview = document.getElementById(
   "guided-div-dataset-tree-preview"
 );
@@ -197,8 +101,7 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
-  $("#guided_bf_list_users_pi").selectpicker();
-  $("#guided_bf_list_users_pi").selectpicker("refresh");
+  $("#guided-dataset-name-input").val("test 2");
   $(guidedJstreePreview).jstree({
     core: {
       check_callback: true,
@@ -295,123 +198,8 @@ $(document).ready(() => {
     $(guidedJstreePreview).jstree(true).refresh();
   }
   $("#guided-button-add-permission-pi").on("click", function () {
-    Swal.fire({
-      icon: "warning",
-      text: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
-      heightAuto: false,
-      showCancelButton: true,
-      cancelButtonText: "No",
-      focusCancel: true,
-      confirmButtonText: "Yes",
-      backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        log.info("Changing PI Owner of datset");
-
-        Swal.fire({
-          title: "Changing PI Owner of dataset",
-          html: "Please wait...",
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-
-        let selectedBfAccount = defaultBfAccount;
-        let selectedBfDataset = defaultBfDataset;
-        let selectedUser = $("#guided_bf_list_users_pi").val();
-        let selectedRole = "owner";
-
-        client.invoke(
-          "api_bf_add_permission",
-          selectedBfAccount,
-          selectedBfDataset,
-          selectedUser,
-          selectedRole,
-          (error, res) => {
-            if (error) {
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Manage Dataset - Change PI Owner",
-                selectedBfDataset
-              );
-
-              log.error(error);
-              console.error(error);
-              let emessage = userError(error);
-
-              Swal.fire({
-                title: "Failed to change PI permission!",
-                text: emessage,
-                icon: "error",
-                showConfirmButton: true,
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-            } else {
-              log.info("Changed PI Owner of datset");
-
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Manage Dataset - Change PI Owner",
-                selectedBfDataset
-              );
-
-              let nodeStorage = new JSONStorage(app.getPath("userData"));
-              nodeStorage.setItem("previously_selected_PI", selectedUser);
-
-              showCurrentPermission();
-              changeDatasetRolePI(selectedBfDataset);
-
-              Swal.fire({
-                title: "Successfully changed PI Owner of dataset",
-                text: res,
-                icon: "success",
-                showConfirmButton: true,
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-              });
-            }
-          }
-        );
-      }
-    });
+    console.log($("#guided_bf_list_users_pi").val());
   });
-  //gets SPARC consortium members from Pennsieve, then populates proper fields
-  /*
-  getOrganizationMembers().then((data) =>
-    data.map((x) => {
-      addOption(
-        $("#guided_bf_list_users_pi"),
-        `${x.firstName} ${x.lastName} (${x.email})`,
-        `${x.email}`
-      );
-      console.log(x);
-      $("#guided_bf_list_users_pi").append(
-        $(
-          "<option>",
-          {
-            value: 1,
-            text: `${x.firstName} ${x.lastName} (${x.email})`,
-          },
-          onclick
-        )
-      );
-    })
-  );*/
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
       title: "Input new dataset name",
@@ -474,6 +262,9 @@ $(document).ready(() => {
     const tabPanelId = selectedTab
       .attr("id")
       .replace("progression-tab", "parent-tab");
+    if (tabPanelId == "prepare-pennsieve-metadata-parent-tab") {
+      $(".selectpicker").selectpicker("refresh");
+    }
     const tabPanel = $("#" + tabPanelId);
     current_sub_step = tabPanel.children(".guided--panel").first();
     current_sub_step_capsule = tabPanel
@@ -936,10 +727,6 @@ $(document).ready(() => {
     }
   });
 
-  $("#guided_bf_list_users_pi").change(function () {
-    console.log($(this).val(1));
-  });
-
   //next button click handler
   $("#guided-next-button").on("click", () => {
     //individual sub step processes
@@ -1020,6 +807,9 @@ $(document).ready(() => {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
     }
+    if (current_sub_step.attr("id") == "add-edit-permission-tab") {
+      console.log($("#guided_bf_list_users_pi").val());
+    }
 
     if (current_sub_step.attr("id") == "add-edit-description-tab") {
       sodaJSONObj["digital-metadata"]["study-purpose"] = $(
@@ -1096,7 +886,7 @@ $(document).ready(() => {
       }
     }
   };
-  goToTabOnStart("guided-make-pi-owner-tab");
+  //goToTabOnStart("guided-make-pi-owner-tab");
 
   //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(

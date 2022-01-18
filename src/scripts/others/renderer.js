@@ -784,6 +784,7 @@ const currentAddEditDatasetPermission = document.querySelector(
   "#para-add-edit-dataset-permission-current"
 );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
+const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
 
 const bfAddPermissionCurationTeamBtn = document.getElementById(
   "button-add-permission-curation-team"
@@ -3661,6 +3662,9 @@ function refreshBfUsersList() {
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
+  removeOptions(guidedBfListUsersPi);
+  bfListUsersPI.appendChild(optionUserPI);
+
   if (accountSelected !== "Select") {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error) {
@@ -3673,6 +3677,8 @@ function refreshBfUsersList() {
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
+        $("#guided_bf_list_users_pi").selectpicker("refresh");
+        $("#guided_bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
           let sep_pos = res[myItem].lastIndexOf("!|**|!");
@@ -3683,6 +3689,8 @@ function refreshBfUsersList() {
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
+          var optionUser3 = optionUser.cloneNode(true);
+          guidedBfListUsersPi.appendChild(optionUser3);
         }
       }
     });
@@ -4392,13 +4400,13 @@ function showDefaultBFAccount() {
               $("#para-account-detail-curate").html("None");
               $("#current-bf-account").text("None");
               $("#current-bf-account-generate").text("None");
-              $("#guided-bf-account").text("None");
+              $(".guidedBfAccount").text("None");
               $("#guided-bf-account-generate").text("None");
               $("#create_empty_dataset_BF_account_span").text("None");
               $(".bf-account-span").text("None");
               $("#para-account-detail-curate-generate").html("None");
               $("#para_create_empty_dataset_BF_account").html("None");
-              $("#guided-account-details").html("None");
+              $(".guidedBfAccountDetails").html("None");
               $("#guided-account-details-generate").html("None");
               $(".bf-account-details-span").html("None");
               $("#div-bf-account-load-progress").css("display", "none");
@@ -4407,13 +4415,13 @@ function showDefaultBFAccount() {
               $("#para-account-detail-curate").html(res);
               $("#current-bf-account").text(defaultBfAccount);
               $("#current-bf-account-generate").text(defaultBfAccount);
-              $("#guided-bf-account").text(defaultBfAccount);
+              $(".guidedBfAccount").text(defaultBfAccount);
               $("#guided-bf-account-generate").text(defaultBfAccount);
               $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
               $(".bf-account-span").text(defaultBfAccount);
               $("#para-account-detail-curate-generate").html(res);
               $("#para_create_empty_dataset_BF_account").html(res);
-              $("#guided-account-details").html(res);
+              $(".guidedBfAccountDetails").html(res);
               $("#guided-account-details-generate").html(res);
               $(".bf-account-details-span").html(res);
 
