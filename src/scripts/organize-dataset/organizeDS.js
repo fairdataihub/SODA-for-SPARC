@@ -1,4 +1,5 @@
 const { BrowserWindow } = require("electron");
+const { rename } = require("fs");
 
 //// option to show tool-tips for high-level folders
 function showTooltips(ev) {
@@ -464,21 +465,6 @@ function renameFolder(
   var currentName = event1.parentElement.innerText;
   var nameWithoutExtension;
   var highLevelFolderBool;
-  console.log(
-    "Parameters of renameFolder\n" +
-      event1.value +
-      "\nEVENT 1 END\n" +
-      organizeCurrentLocation.value +
-      "\norganizeCurrentLocation END\n" +
-      itemElement.length +
-      "\nitem element END\n" +
-      JSON.stringify(inputGlobal) +
-      "\niput global END\n" +
-      JSON.stringify(uiItem) +
-      "\nuiItem END\n" +
-      JSON.stringify(singleUIItem) +
-      "\nsingleUIItem END\n"
-  );
 
   double_extensions = [
     ".ome.tiff",
@@ -768,7 +754,8 @@ var onBtnClicked = (btnId, duplicateArray) => {
     for (let i = 0; i < temp.length; i++) {
       let lastSlash = temp[i].lastIndexOf("\\") + 1;
       let fieldContainer = document.createElement("div");
-      if (lastSlash === -1) {
+      console.log(lastSlash);
+      if (lastSlash === 0) {
         //in case it's on mac
         lastSlash = temp[i].lastIndexOf("/") + 1;
       }
@@ -847,6 +834,8 @@ var onBtnClicked = (btnId, duplicateArray) => {
             newName != "" &&
             reNamedFiles.includes(newName) === false
           ) {
+            //plus extension
+            newName = newName.concat(tempFile[i].substring(extIndex, tempFile[i].length))
             reNamedFiles.push(newName);
             fileLocation.push(temp[i]);
           }
@@ -861,6 +850,67 @@ var onBtnClicked = (btnId, duplicateArray) => {
           $("swal2-confirm swal2-styled").removeAttr("disabled");
         } else {
           console.log("SUCCESS");
+          //location of temp folder and json object of the files already imported
+          var filtered = getGlobalPath(organizeDSglobalPath);
+          let uiItem = "#items";
+          var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+          let type = "files"
+          //add files function (array of new names, object of files' paths to-be imported, currently import object)
+          /// update jsonObjGlobal with the new name
+          //delete myPath[type][currentName];
+          for(let index = 0; index < temp.length; index++) {
+            myPath["files"][reNamedFiles[index]] = {
+              path: fileLocation[index],
+              basename: reNamedFiles[index],
+              type: "local",
+              description: "",
+              "additional-metadata": "",
+              action: ["new", "renamed"],
+            };
+            var appendString =
+            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+            myPath["files"][reNamedFiles[index]]["basename"] +
+            "</div></div>";
+
+            $(uiItem).html(appendString);
+            listItems(myPath, uiItem);
+            console.log(organizeDSglobalPath);
+            getInFolder("#items", uiItem, organizeDSglobalPath, datasetStructureJSONObj);
+          }
+          console.log("should be updated now");
+          console.log(myPath);
+          
+          /*
+                listItems(currentLocation, uiItem);
+      getInFolder(
+        singleUIItem,
+        uiItem,
+        organizeCurrentLocation,
+        globalPathValue
+      );
+              path,
+            myPath,
+        organizeDSglobalPath,
+        "#items",
+        ".single-item",
+        datasetStructureJSONObj
+          myPath[type][returnedName] = storedValue;
+          if ("action" in myPath[type][returnedName]) {
+            if (!myPath[type][returnedName]["action"].includes("renamed")) {
+              myPath[type][returnedName]["action"].push("renamed");
+            }
+          } else {
+            myPath[type][returnedName]["action"] = [];
+            myPath[type][returnedName]["action"].push("renamed");
+          }
+          /// list items again with updated JSON obj
+          listItems(myPath, uiItem);
+          getInFolder(
+            singleUIItem,
+            uiItem,
+            organizeCurrentLocation,
+            inputGlobal
+          );*/
         }
       },
     });
@@ -880,10 +930,6 @@ function addFilesfunction(
   singleUIItem,
   globalPathValue
 ) {
-  console.log(fileArray);
-  console.log(currentLocation);
-  console.log(organizeCurrentLocation);
-  console.log("first three of addFiles function");
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
@@ -896,8 +942,6 @@ function addFilesfunction(
     //if just name is the same
   }
   //gets files already placed and puts into json
-  console.log(currentLocation);
-
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
     // check if dataset structure level is at high level folder
@@ -915,6 +959,7 @@ function addFilesfunction(
         JSON.stringify(currentLocation["files"]) === "{}" &&
         JSON.stringify(regularFiles) === "{}"
       ) {
+        console.log(regularFiles[path.parse(fileName).base]);
         //regular files object key with path, and basename
         regularFiles[path.parse(fileName).base] = {
           path: fileName,
@@ -939,9 +984,6 @@ function addFilesfunction(
           //prompt user if they want to allow duplicate
           var j = 1;
           var fileBaseName = path.basename(fileName);
-          console.log(
-            fileBaseName + "\nthis is File base in !nonAllowedDuplicates"
-          );
           var originalFileNameWithoutExt = path.parse(fileBaseName).name;
           var fileNameWithoutExt = originalFileNameWithoutExt;
 
@@ -965,7 +1007,9 @@ function addFilesfunction(
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
   if (Object.keys(regularFiles).length > 0) {
+    console.log(regularFiles);
     for (var element in regularFiles) {
+      console.log(element);
       currentLocation["files"][regularFiles[element]["basename"]] = {
         path: regularFiles[element]["path"],
         type: "local",
@@ -986,8 +1030,15 @@ function addFilesfunction(
         '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         regularFiles[element]["basename"] +
         "</div></div>";
-      console.log(appendString + "\nappended string");
       $(uiItem).html(appendString);
+      console.log("Under is uiItem");
+      console.log(uiItem);  //the div id=items that contains all the file elements 
+      console.log("Underis singleUIItem");
+      console.log(singleUIItem);  //.single-item class
+      console.log("Under is organizeCurrentLocation");
+      console.log(organizeCurrentLocation); //div id=input-global-path
+      console.log("underis globalpath");
+      console.log(globalPathValue); //datasetStructureJsonOBJ
       listItems(currentLocation, uiItem);
       getInFolder(
         singleUIItem,
@@ -997,21 +1048,14 @@ function addFilesfunction(
       );
     }
   }
-  console.log("parameters needed to get in folder");
-  console.log(currentLocation);
-  console.log(singleUIItem);
-  console.log(uiItem);
-  console.log(organizeCurrentLocation);
-  console.log(globalPathValue);
   //add sweetalert here before non duplicate files pop
   //
   //if (AllowedDuplicateFiles.length > 0) {
   //}
+
   var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
-
+  console.log("under is the lsit");
   console.log(list);
-  console.log("this is the list");
-
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
   var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
   if (nonAllowedDuplicateFiles.length === 1) {
