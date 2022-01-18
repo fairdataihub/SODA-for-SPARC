@@ -642,6 +642,8 @@ $(document).ready(function () {
   $("#guided_bf_list_users_pi").selectpicker("refresh");
   $("#bf_list_users").selectpicker();
   $("#bf_list_users").selectpicker("refresh");
+  $("#guided_bf_list_users").selectpicker();
+  $("#guided_bf_list_users").selectpicker("refresh");
   $("#bf_list_roles_user").selectpicker();
   $("#bf_list_roles_user").selectpicker("refresh");
   $("#bf_list_teams").selectpicker();
@@ -748,7 +750,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             $("#current-bf-account").text(bfacct);
             $("#current-bf-account-generate").text(bfacct);
             $("#create_empty_dataset_BF_account_span").text(bfacct);
-            $("#guided-bf-account").text(bfacct);
+            $(".guidedBfAccount").text(bfacct);
             $(".bf-account-span").text(bfacct);
             updateBfAccountList();
             client.invoke("api_bf_dataset_account", bfacct, (error, result) => {
@@ -878,7 +880,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
                       $("#current-bf-dataset-generate").text("None");
                       $(".bf-dataset-span").html("None");
                       $("#para-account-detail-curate-generate").html(res);
-                      $("guided-account-details").html(res);
+                      $(".guidedBfAccountDetails").html(res);
                       $("#para_create_empty_dataset_BF_account").html(res);
                       $(".bf-account-details-span").html(res);
                       $("#para-continue-bf-dataset-getting-started").text("");

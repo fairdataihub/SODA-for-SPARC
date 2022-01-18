@@ -80,13 +80,13 @@ button[data-id="guided_bf_list_users_pi"] {
   width: 430px;
 }
 
-#guided_pi_bootstrap_select_div > .dropdown.bootstrap-select {
+#guided_pi_bootstrap_select_div > .dropdown.bootstrap-select,
+#guided_user_bootstrap_select_div > .dropdown.bootstrap-select {
   width: 100%;
 }
 
 .sidebar {
   background-color: var(--color-teal);
-
   height: 100%;
 }
 .sidebar_title {
@@ -234,7 +234,6 @@ button[data-id="guided_bf_list_users_pi"] {
   padding: 8px 10px !important;
   text-align: center;
   vertical-align: middle;
-  margin-top: ;
 }
 
 .modal-footer {
