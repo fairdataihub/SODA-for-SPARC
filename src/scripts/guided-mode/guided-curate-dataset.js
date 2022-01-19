@@ -69,6 +69,9 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
+  $("#guided-button-add-permission-user").on("click", function () {
+    console.log($("#guided_bf_list_users option:selected").text());
+  });
   /*$("#bf_list_users").on("change", () => {
   let user_val = $("#bf_list_users").val();
   let user_role = $("#bf_list_roles_user").val();

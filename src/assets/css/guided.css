@@ -223,6 +223,13 @@
   flex-direction: column;
   justify-content: center;
 }
+
+.guided--container-dataset-info {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .guided--card-dataset-info {
   width: 100%;
   display: flex;
