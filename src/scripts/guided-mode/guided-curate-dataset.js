@@ -815,7 +815,7 @@ $(document).ready(() => {
       console.log($("#guided_bf_list_users_pi").val());
     }
 
-    if (current_sub_step.attr("id") == "add-edit-description-tab") {
+    if (current_sub_step.attr("id") == "add-edit-description-tags-tab") {
       sodaJSONObj["digital-metadata"]["study-purpose"] = $(
         "#guided-ds-description-study-purpose"
       )
@@ -837,13 +837,7 @@ $(document).ready(() => {
         return tag.textContent;
       });
     }
-    if (current_sub_step.attr("id") == "add-edit-description-tab") {
-      sodaJSONObj["digital-metadata"]["tags"] = $(
-        "#guided-ds-description-study-purpose"
-      )
-        .val()
-        .trim();
-    }
+
     if (current_sub_step.attr("id") == "add-edit-tags-tab") {
       const guidedTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
         (tag) => {
@@ -894,7 +888,7 @@ $(document).ready(() => {
       }
     }
   };
-  //goToTabOnStart("guided-make-pi-owner-tab");
+  //goToTabOnStart("guided-designate-pi-owner-tab");
 
   //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(

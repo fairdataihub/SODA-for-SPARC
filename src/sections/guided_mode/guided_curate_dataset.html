@@ -467,23 +467,92 @@
             <div class="guided--capsule active"></div>
             <div class="guided--capsule"></div>
             <div class="guided--capsule"></div>
+            <div class="guided--capsule"></div>
           </div>
-          <div id="guided-make-pi-owner-tab" class="guided--panel">
+          <div id="guided-designate-pi-owner-tab" class="guided--panel">
+            <div class="guided--container-data-display">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-info-type-container">
+                  <h5 class="guided--dataset-info-type">Designated owner:</h5>
+                </div>
+                <div
+                  class="guided--dataset-info-content-container guided-change-dataset-name"
+                >
+                  <h5 class="guided--dataset-info-content guidedDatasetOwner">
+                    None
+                  </h5>
+                  <i class="far fa-edit jump-back" style="color: #000"></i>
+                </div>
+              </div>
+            </div>
+
             <div class="guided--question">
-              <div class="guided--container-data-display">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-info-type-container">
-                    <h5 class="guided--dataset-info-type">Current owner:</h5>
-                  </div>
+              <label class="guided--text-sub-step"
+                >Designate a PI Owner:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
+              </label>
+              <div class="guided--container-permissions">
+                <div style="flex-grow: 1">
                   <div
-                    class="guided--dataset-info-content-container guided-change-dataset-name"
+                    class="field"
+                    style="
+                      display: flex;
+                      width: 100%;
+                      justify-content: center;
+                      align-items: center;
+                      flex-direction: column;
+                    "
                   >
-                    <h5 class="guided--dataset-info-content guidedDatasetOwner">
-                      None
-                    </h5>
-                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                    <div
+                      id="guided_pi_bootstrap_select_div"
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-around;
+                        width: 100%;
+                        margin-bottom: 20px;
+                      "
+                    >
+                      <select
+                        class="selectpicker"
+                        data-live-search="true"
+                        style="
+                          padding: 8px 12px;
+                          margin-right: 30px;
+                          height: 38px;
+                          border-radius: 5px;
+                          border: 1px solid black;
+                        "
+                        id="guided_bf_list_users_pi"
+                      >
+                        <option>Select PI</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
+                <button
+                  id="guided-button-add-permission-pi"
+                  class="btn_animated"
+                  style="width: 155px; border: none !important"
+                >
+                  Designate PI owner
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            id="guided-designate-permissions-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--question">
+              <div class="guided--container-data-display">
                 <div class="guided--card-dataset-info">
                   <div class="guided--dataset-info-type-container">
                     <h5
@@ -498,96 +567,6 @@
                     <h5 class="guided--dataset-info-content">None</h5>
                     <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_edit_permissions_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_tab', 'add_edit_permissions_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="add_edit_permissions_choice_div"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-              <div class="guided--question">
-                <label class="guided--text-sub-step"
-                  >Select a PI Owner:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset."
-                    rel="popover"
-                    data-html="true"
-                    data-placement="right"
-                    data-trigger="hover"
-                  ></i>
-                </label>
-                <div class="guided--container-permissions">
-                  <div style="flex-grow: 1">
-                    <div
-                      class="field"
-                      style="
-                        display: flex;
-                        width: 100%;
-                        justify-content: center;
-                        align-items: center;
-                        flex-direction: column;
-                      "
-                    >
-                      <div
-                        id="guided_pi_bootstrap_select_div"
-                        style="
-                          display: flex;
-                          flex-direction: row;
-                          justify-content: space-around;
-                          width: 100%;
-                          margin-bottom: 20px;
-                        "
-                      >
-                        <select
-                          class="selectpicker"
-                          data-live-search="true"
-                          style="
-                            padding: 8px 12px;
-                            margin-right: 30px;
-                            height: 38px;
-                            border-radius: 5px;
-                            border: 1px solid black;
-                          "
-                          id="guided_bf_list_users_pi"
-                        >
-                          <option>Select PI</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    id="guided-button-add-permission-pi"
-                    class="btn_animated"
-                    style="width: 150px; border: none !important"
-                  >
-                    Make PI owner
-                  </button>
                 </div>
               </div>
               <div class="guided--question">
