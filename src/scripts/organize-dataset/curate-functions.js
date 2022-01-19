@@ -644,10 +644,14 @@ $(document).ready(function () {
   $("#bf_list_users").selectpicker("refresh");
   $("#guided_bf_list_users").selectpicker();
   $("#guided_bf_list_users").selectpicker("refresh");
+  $("#guided_bf_list_users").selectpicker();
+  $("#guided_bf_list_users").selectpicker("refresh");
   $("#bf_list_roles_user").selectpicker();
   $("#bf_list_roles_user").selectpicker("refresh");
   $("#bf_list_teams").selectpicker();
   $("#bf_list_teams").selectpicker("refresh");
+  $("#guided_bf_list_teams").selectpicker();
+  $("#guided_bf_list_teams").selectpicker("refresh");
   $("#bf_list_roles_team").selectpicker();
   $("#bf_list_roles_team").selectpicker("refresh");
 });

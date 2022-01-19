@@ -799,9 +799,9 @@ const bfAddPermissionTeamBtn = document.getElementById(
 );
 // Guided mode dropdowns
 const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
-/*
 const guidedBfListUsers = document.querySelector("#guided_bf_list_users");
-const guidedBfListTeams = document.querySelector("#guided_bf_list_teams");*/
+const guidedBfListTeams = document.querySelector("#guided_bf_list_teams");
+
 //Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
@@ -3675,9 +3675,13 @@ function refreshBfUsersList() {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
+        $("guided_bf_list_users").selectpicker("refresh");
+        $("#guided_bf_list_users").find("option:not(:first)").remove();
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
+        $("#guided_bf_list_users_pi").selectpicker("refresh");
+        $("#guided_bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
           let sep_pos = res[myItem].lastIndexOf("!|**|!");
@@ -3690,6 +3694,8 @@ function refreshBfUsersList() {
           bfListUsersPI.appendChild(optionUser2);
           var optionUser3 = optionUser.cloneNode(true);
           guidedBfListUsersPi.appendChild(optionUser3);
+          var optionUser4 = optionUser.cloneNode(true);
+          guidedBfListUsers.appendChild(optionUser4);
         }
       }
     });
@@ -3715,6 +3721,9 @@ function refreshBfTeamsList(teamList) {
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
         $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
+        $("#guided_bf_list_teams").selectpicker("refresh");
+        $("#guided_bf_list_teams").find("option:not(:first)").remove();
+
         $("#button-add-permission-team").hide();
         for (var myItem in res) {
           var myTeam = res[myItem];
@@ -3722,6 +3731,8 @@ function refreshBfTeamsList(teamList) {
           optionTeam.textContent = myTeam;
           optionTeam.value = myTeam;
           teamList.appendChild(optionTeam);
+          var optionTeam2 = optionTeam.cloneNode(true);
+          guidedBfListTeams.appendChild(optionTeam2);
         }
         confirm_click_account_function();
       }

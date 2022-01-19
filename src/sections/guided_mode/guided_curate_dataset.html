@@ -551,87 +551,163 @@
             id="guided-designate-permissions-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--question">
-              <div class="guided--container-data-display">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-info-type-container">
-                    <h5
-                      class="guided--dataset-info-type guidedDatasetUserPermissions"
-                    >
-                      User permissions:
-                    </h5>
-                  </div>
-                  <div
-                    class="guided--dataset-info-content-container guided-change-dataset-name"
+            <div class="guided--container-data-display">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-info-type-container">
+                  <h5
+                    class="guided--dataset-info-type guidedDatasetUserPermissions"
                   >
-                    <h5 class="guided--dataset-info-content">None</h5>
-                    <i class="far fa-edit jump-back" style="color: #000"></i>
-                  </div>
+                    Designated user permissions:
+                  </h5>
+                </div>
+                <div
+                  class="guided--dataset-info-content-container guided-change-dataset-name"
+                >
+                  <h5 class="guided--dataset-info-content">None</h5>
+                  <i class="far fa-edit jump-back" style="color: #000"></i>
                 </div>
               </div>
-              <div class="guided--question">
-                <label class="guided--text-sub-step"
-                  >Manage individual user permissions:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
-                    rel="popover"
-                    data-html="true"
-                    data-placement="right"
-                    data-trigger="hover"
-                  ></i>
-                </label>
-                <div class="guided--container-permissions">
-                  <div style="flex-grow: 1">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-info-type-container">
+                  <h5
+                    class="guided--dataset-info-type guidedDatasetTeamPermissions"
+                  >
+                    Designated team permissions:
+                  </h5>
+                </div>
+                <div
+                  class="guided--dataset-info-content-container guided-change-dataset-name"
+                >
+                  <h5 class="guided--dataset-info-content">None</h5>
+                  <i class="far fa-edit jump-back" style="color: #000"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="guided--question">
+              <label class="guided--text-sub-step"
+                >Designate individual user permissions:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
+              </label>
+              <div class="guided--container-permissions">
+                <div style="flex-grow: 1">
+                  <div
+                    class="field"
+                    style="
+                      display: flex;
+                      width: 100%;
+                      justify-content: center;
+                      align-items: center;
+                      flex-direction: column;
+                    "
+                  >
                     <div
-                      class="field"
+                      id="guided_user_bootstrap_select_div"
                       style="
                         display: flex;
+                        flex-direction: row;
+                        justify-content: space-around;
                         width: 100%;
-                        justify-content: center;
-                        align-items: center;
-                        flex-direction: column;
+                        margin-bottom: 20px;
                       "
                     >
-                      <div
-                        id="guided_user_bootstrap_select_div"
+                      <select
+                        class="selectpicker"
+                        data-live-search="true"
                         style="
-                          display: flex;
-                          flex-direction: row;
-                          justify-content: space-around;
-                          width: 100%;
-                          margin-bottom: 20px;
+                          padding: 8px 12px;
+                          margin-right: 30px;
+                          height: 38px;
+                          border-radius: 5px;
+                          border: 1px solid black;
                         "
+                        id="guided_bf_list_users"
                       >
-                        <select
-                          class="selectpicker"
-                          data-live-search="true"
-                          style="
-                            padding: 8px 12px;
-                            margin-right: 30px;
-                            height: 38px;
-                            border-radius: 5px;
-                            border: 1px solid black;
-                          "
-                          id="guided_bf_list_users"
-                        >
-                          <option>Select PI</option>
-                        </select>
-                      </div>
+                        <option>Select user</option>
+                      </select>
                     </div>
                   </div>
-                  <select
-                    class="my-dropdown"
-                    style="width: 150px; margin: 0px 10px; cursor: pointer"
-                    id="select-permission-list-2"
-                  >
-                    <option default>All</option>
-                    <option>Owner</option>
-                    <option>Manager</option>
-                    <option>Editor</option>
-                    <option>Viewer</option>
-                  </select>
                 </div>
+                <select
+                  class="my-dropdown"
+                  style="width: 150px; margin: 0px 10px; cursor: pointer"
+                  id="select-permission-list-3"
+                >
+                  <option default>All</option>
+                  <option>Owner</option>
+                  <option>Manager</option>
+                  <option>Editor</option>
+                  <option>Viewer</option>
+                </select>
+              </div>
+              <label class="guided--text-sub-step"
+                >Designate individual team permissions:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
+              </label>
+              <div class="guided--container-permissions">
+                <div style="flex-grow: 1">
+                  <div
+                    class="field"
+                    style="
+                      display: flex;
+                      width: 100%;
+                      justify-content: center;
+                      align-items: center;
+                      flex-direction: column;
+                    "
+                  >
+                    <div
+                      id="guided_user_bootstrap_select_div"
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-around;
+                        width: 100%;
+                        margin-bottom: 20px;
+                      "
+                    >
+                      <select
+                        class="selectpicker"
+                        data-live-search="true"
+                        style="
+                          padding: 8px 12px;
+                          margin-right: 30px;
+                          height: 38px;
+                          border-radius: 5px;
+                          border: 1px solid black;
+                        "
+                        id="guided_bf_list_teams"
+                      >
+                        <option>Select team</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <select
+                  class="my-dropdown"
+                  style="width: 150px; margin: 0px 10px; cursor: pointer"
+                  id="select-permission-list-4"
+                >
+                  <option default>All</option>
+                  <option>Owner</option>
+                  <option>Manager</option>
+                  <option>Editor</option>
+                  <option>Viewer</option>
+                </select>
               </div>
             </div>
           </div>
