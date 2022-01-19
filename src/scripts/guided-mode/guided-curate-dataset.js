@@ -1,35 +1,3 @@
-function guidedRefreshBfTeamsList(teamList) {
-  removeOptions(teamList);
-
-  var accountSelected = defaultBfAccount;
-  var optionTeam = document.createElement("option");
-
-  optionTeam.textContent = "Select team";
-  teamList.appendChild(optionTeam);
-
-  if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_teams", accountSelected, (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        confirm_click_account_function();
-      } else {
-        // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
-        $("#bf_list_teams").selectpicker("refresh");
-        $("#bf_list_teams").find("option:not(:first)").remove();
-        $("#button-add-permission-team").hide();
-        for (var myItem in res) {
-          var myTeam = res[myItem];
-          var optionTeam = document.createElement("option");
-          optionTeam.textContent = myTeam;
-          optionTeam.value = myTeam;
-          teamList.appendChild(optionTeam);
-        }
-        confirm_click_account_function();
-      }
-    });
-  }
-}
 /////////////////////////////////////////////////////////
 //////////          Shared variables          ///////////
 /////////////////////////////////////////////////////////
@@ -101,6 +69,17 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
+  /*$("#bf_list_users").on("change", () => {
+  let user_val = $("#bf_list_users").val();
+  let user_role = $("#bf_list_roles_user").val();
+
+  if (user_val == "Select user" || user_role == "Select role") {
+    $("#button-add-permission-user").hide();
+  } else {
+    $("#button-add-permission-user").show();
+  }
+});*/
+
   $("#guided-dataset-name-input").val("test 2");
   $(guidedJstreePreview).jstree({
     core: {
@@ -198,7 +177,6 @@ $(document).ready(() => {
     $(guidedJstreePreview).jstree(true).refresh();
   }
   $("#guided-button-add-permission-pi").on("click", function () {
-    console.log($("#guided_bf_list_users_pi").val());
     $(".guidedDatasetOwner").text($("#guided_bf_list_users_pi").val());
   });
   $(".guided-change-dataset-name").on("click", async function () {
@@ -811,9 +789,6 @@ $(document).ready(() => {
       if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
-    }
-    if (current_sub_step.attr("id") == "add-edit-permission-tab") {
-      console.log($("#guided_bf_list_users_pi").val());
     }
 
     if (current_sub_step.attr("id") == "add-edit-description-tags-tab") {

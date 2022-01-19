@@ -203,7 +203,7 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
 }
 .guided--container-data-display {
   display: flex;

@@ -615,7 +615,6 @@
                         flex-direction: row;
                         justify-content: space-around;
                         width: 100%;
-                        margin-bottom: 20px;
                       "
                     >
                       <select
@@ -640,12 +639,20 @@
                   style="width: 150px; margin: 0px 10px; cursor: pointer"
                   id="select-permission-list-3"
                 >
-                  <option default>All</option>
-                  <option>Owner</option>
-                  <option>Manager</option>
-                  <option>Editor</option>
-                  <option>Viewer</option>
-                </select>
+                  <option value="Select role">Select role</option>
+                  <option value="viewer">viewer</option>
+                  <option value="manager">manager</option>
+                  <option value="editor">editor</option>
+                  <option value="remove current permissions">
+                    remove current permissions
+                  </option></select
+                ><button
+                  id="guided-button-add-permission-user"
+                  class="btn_animated"
+                  style="width: 130px; border: none !important; margin: 0px"
+                >
+                  Add permission
+                </button>
               </div>
               <label class="guided--text-sub-step"
                 >Designate individual team permissions:
@@ -677,7 +684,6 @@
                         flex-direction: row;
                         justify-content: space-around;
                         width: 100%;
-                        margin-bottom: 20px;
                       "
                     >
                       <select
@@ -702,12 +708,21 @@
                   style="width: 150px; margin: 0px 10px; cursor: pointer"
                   id="select-permission-list-4"
                 >
-                  <option default>All</option>
-                  <option>Owner</option>
-                  <option>Manager</option>
-                  <option>Editor</option>
-                  <option>Viewer</option>
+                  <option value="Select role">Select role</option>
+                  <option value="viewer">viewer</option>
+                  <option value="manager">manager</option>
+                  <option value="editor">editor</option>
+                  <option value="remove current permissions">
+                    remove current permissions
+                  </option>
                 </select>
+                <button
+                  id="guided-button-add-permission-team"
+                  class="btn_animated"
+                  style="width: 130px; border: none !important; margin: 0px"
+                >
+                  Add permission
+                </button>
               </div>
             </div>
           </div>
