@@ -784,7 +784,6 @@ const currentAddEditDatasetPermission = document.querySelector(
   "#para-add-edit-dataset-permission-current"
 );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
-const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
 
 const bfAddPermissionCurationTeamBtn = document.getElementById(
   "button-add-permission-curation-team"
@@ -798,8 +797,11 @@ const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById(
   "button-add-permission-team"
 );
+// Guided mode dropdowns
+const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
+/*
 const guidedBfListUsers = document.querySelector("#guided_bf_list_users");
-const guidedBfListTeams = document.querySelector("#guided_bf_list_teams");
+const guidedBfListTeams = document.querySelector("#guided_bf_list_teams");*/
 //Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
@@ -3659,16 +3661,10 @@ function refreshBfUsersList() {
   optionUser.textContent = "Select user";
   bfListUsers.appendChild(optionUser);
 
-  removeOptions(guidedBfListUsers);
-  guidedBfListUsers.appendChild(optionUser);
-
   removeOptions(bfListUsersPI);
   var optionUserPI = document.createElement("option");
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
-
-  removeOptions(guidedBfListUsersPi);
-  guidedBfListUsersPi.appendChild(optionUserPI);
 
   if (accountSelected !== "Select") {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
@@ -3679,13 +3675,9 @@ function refreshBfUsersList() {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
-        $("#guided_bf_list_users").selectpicker("refresh");
-        $("#guided_bf_list_users").find("option:not(:first)").remove();
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
-        $("#guided_bf_list_users_pi").selectpicker("refresh");
-        $("#guided_bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
           let sep_pos = res[myItem].lastIndexOf("!|**|!");
@@ -3694,10 +3686,10 @@ function refreshBfUsersList() {
           optionUser.textContent = myUser;
           optionUser.value = res[myItem].substring(sep_pos + 6);
           bfListUsers.appendChild(optionUser);
-          guidedBfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
-          guidedBfListUsersPi.appendChild(optionUser2);
+          var optionUser3 = optionUser.cloneNode(true);
+          guidedBfListUsersPi.appendChild(optionUser3);
         }
       }
     });

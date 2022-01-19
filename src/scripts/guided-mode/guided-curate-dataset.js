@@ -199,6 +199,7 @@ $(document).ready(() => {
   }
   $("#guided-button-add-permission-pi").on("click", function () {
     console.log($("#guided_bf_list_users_pi").val());
+    $(".guidedDatasetOwner").text($("#guided_bf_list_users_pi").val());
   });
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
