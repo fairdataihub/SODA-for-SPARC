@@ -284,14 +284,24 @@
   margin-top: 15px !important;
 }
 
-.guided--sub-step-text {
+.guided--text-sub-step {
   display: block;
   font-size: 17px;
   color: rgba(0, 0, 0, 0.87);
   text-align: center;
   font-weight: 700;
-  margin-top: 15px !important;
+  margin-top: 10px !important;
   margin-bottom: 15px;
+}
+
+.guided--text-info {
+  display: block;
+  font-size: 15px;
+  color: var(--color-bg-plum) !important;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 9px !important;
+  margin-bottom: 9px;
 }
 
 .guided--label-accordion-field {

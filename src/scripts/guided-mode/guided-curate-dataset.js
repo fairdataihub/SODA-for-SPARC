@@ -251,7 +251,11 @@ $(document).ready(() => {
     );
     validateGuidedBasicDescriptionInputs();
   });
-
+  $("#guided-button-add-license").on("click", function () {
+    $(".guidedBfLicense").text("Creative Commons Attribution (CC-BY)");
+    $("#guided-button-add-license").attr("disabled");
+    enableProgressButton();
+  });
   //Handles high-level progress and their respective panels opening and closing,
   //as well as updates current tabs/capsule state
   $(".guided--progression-tab").on("click", function () {
@@ -827,7 +831,11 @@ $(document).ready(() => {
       )
         .val()
         .trim();
-      console.log("description metadata added");
+      sodaJSONObj["digital-metadata"]["dataset-tags"] = Array.from(
+        guidedDatasetTagsTagify.getTagElms()
+      ).map((tag) => {
+        return tag.textContent;
+      });
     }
     if (current_sub_step.attr("id") == "add-edit-description-tab") {
       sodaJSONObj["digital-metadata"]["tags"] = $(

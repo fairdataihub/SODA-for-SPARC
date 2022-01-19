@@ -85,7 +85,7 @@
 
           <div id="guided-basic-description-tab" class="guided--panel">
             <div class="guided--question">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Curate a new dataset or continue from existing?<br /><span
                   style="color: #898989; font-size: 12px"
                   >Please select one:</span
@@ -426,7 +426,7 @@
 
           <div id="guided-folder-importation-tab" class="guided--panel hidden">
             <div class="guided--question show" id="guided_dataset_name_div">
-              <label class="guided--sub-step-text"
+              <label class="guided--text-sub-step"
                 >What is the location of the dataset?
                 <i
                   class="fas fa-info-circle popover-tooltip"
@@ -531,7 +531,7 @@
                 </button>
               </div>
               <div class="guided--question">
-                <label class="guided--sub-step-text"
+                <label class="guided--text-sub-step"
                   >Select a PI Owner:
                   <i
                     class="fas fa-info-circle popover-tooltip"
@@ -591,7 +591,7 @@
                 </div>
               </div>
               <div class="guided--question">
-                <label class="guided--sub-step-text"
+                <label class="guided--text-sub-step"
                   >Manage individual user permissions:
                   <i
                     class="fas fa-info-circle popover-tooltip"
@@ -656,9 +656,9 @@
               </div>
             </div>
           </div>
-          <div id="add-edit-description-tab" class="guided--panel hidden">
+          <div id="add-edit-description-tags-tab" class="guided--panel hidden">
             <div class="guided--question show">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Enter your descriptions in the section below
               </h1>
               <div
@@ -878,7 +878,7 @@
               </div>
             </div>
             <div class="guided--question show">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Enter dataset tags below<i
                   class="fas fa-info-circle popover-tooltip"
                   data-content="Add, edit, or remive metadata tags that describe key elements of your research. This will make your datasets more easily searchable once published. Click the x to delete a tag. Double click an existing tag to edit its contents."
@@ -907,10 +907,44 @@
             </div>
           </div>
           <div id="assign-license-tab" class="guided--panel hidden">
+            <div class="guided--container-data-display">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-info-type-container">
+                  <h5 class="guided--dataset-info-type">Current license:</h5>
+                </div>
+                <div class="guided--dataset-info-content-container">
+                  <h5 class="guided--dataset-info-content guidedBfLicense">
+                    None
+                  </h5>
+                  <i
+                    class="far fa-edit jump-back guided-change-dataset-name"
+                    style="color: #000"
+                  ></i>
+                </div>
+              </div>
+            </div>
             <div class="guided--question show">
-              <h1 class="guided--sub-step-text">
-                Select a license for your dataset:
+              <h1 class="guided--text-sub-step">
+                Assign a license to your datset:
               </h1>
+              <div style="width: 450px; margin-bottom: 50px">
+                <p class="guided--text-info">
+                  As per SPARC rules, you must assign the Creative Commons
+                  Attribution (CC-BY) license to your SPARC dataset.
+                </p>
+              </div>
+              <button
+                id="guided-button-add-license"
+                class="btn_animated lg"
+                style="
+                  margin: 15 10px;
+                  width: 290px;
+                  height: 50px;
+                  font-size: 15px;
+                "
+              >
+                Assign Creative Commons Attribution (CC-BY) license
+              </button>
             </div>
           </div>
         </div>
@@ -927,7 +961,7 @@
           </div>
           <div id="guided-create-submission-metadata-tab" class="guided--panel">
             <div class="guided--question show">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
@@ -1085,7 +1119,7 @@
             class="guided--panel hidden"
           >
             <div class="guided--question show">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
@@ -1825,7 +1859,7 @@
             class="guided--panel hidden"
           >
             <div class="guided--question show">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
@@ -1879,7 +1913,7 @@
                   class="guided--panel hidden"
                 >
                   <div class="guided--question">
-                    <h1 class="guided--sub-step-text">
+                    <h1 class="guided--text-sub-step">
                       Draft your README file below:
                       <i
                         class="fas fa-info-circle popover-tooltip"
@@ -1917,7 +1951,7 @@
             class="guided--panel hidden"
           >
             <div class="guided--question show">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
@@ -1971,7 +2005,7 @@
                   class="guided--panel hidden"
                 >
                   <div class="guided--question">
-                    <h1 class="guided--sub-step-text">
+                    <h1 class="guided--text-sub-step">
                       Draft your CHANGES file below:
                       <i
                         class="fas fa-info-circle popover-tooltip"
@@ -2017,7 +2051,7 @@
           </div>
           <div id="guided-dataset-generate-location-tab" class="guided--panel">
             <div class="guided--question">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Where would you like to generate your dataset? <br /><span
                   style="color: #898989; font-size: 12px"
                   >Please select one:</span
@@ -2084,7 +2118,7 @@
                   class="guided--panel hidden"
                 >
                   <div class="guided--question">
-                    <h1 class="guided--sub-step-text">
+                    <h1 class="guided--text-sub-step">
                       Is this your Pennsieve account?
                     </h1>
                     <div class="guided--container-data-display">
@@ -2182,7 +2216,7 @@
               </div>
             </div>
             <div class="guided--question">
-              <h1 class="guided--sub-step-text">
+              <h1 class="guided--text-sub-step">
                 Which dataset would you like to generate on? <br /><span
                   style="color: #898989; font-size: 12px"
                   >Please select one:</span
@@ -2304,7 +2338,7 @@
                   <div class="guided--question">
                     <div class="ui form" style="width: 100%">
                       <div class="grouped fields">
-                        <h1 class="guided--sub-step-text">
+                        <h1 class="guided--text-sub-step">
                           Which existing Pennsieve dataset would you like to
                           use?
                         </h1>
