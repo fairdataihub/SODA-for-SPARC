@@ -229,6 +229,7 @@ $(document).ready(() => {
     $(".guidedDatasetOwner").text(
       $("#guided_bf_list_users_pi option:selected").text().trim()
     );
+    //setGuidedDatasetPiOwner = (newOwnerString) => {}
   });
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
