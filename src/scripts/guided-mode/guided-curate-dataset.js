@@ -90,7 +90,7 @@ $(document).ready(() => {
         onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
       })
     );
-    $("#guided-user-permissions-container").append(newUserPermission);
+    $(".guidedDatasetUserPermissions").append(newUserPermission);
     $;
   });
 
@@ -115,7 +115,7 @@ $(document).ready(() => {
         onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
       })
     );
-    $("#guided-team-permissions-container").append(newTeamPermission);
+    $(".guidedDatasetTeamPermissions").append(newTeamPermission);
     $;
   });
   /*$("#bf_list_users").on("change", () => {
