@@ -745,7 +745,7 @@ function selectAll(source) {
   let checkboxes = container.querySelectorAll("input[type=checkbox]");
   console.log(container);
   console.log(checkboxes);
-  for(let i = 0; i < checkboxes.length; i++) {
+  for (let i = 0; i < checkboxes.length; i++) {
     checkboxes[i].checked = source.checked;
   }
 }
@@ -770,7 +770,6 @@ var onBtnClicked = (btnId, duplicateArray) => {
       //removes [ ] at end of string
       tempFile[i] = list[i].substring(lastSlash, list[i].length);
 
-      
       let para = document.createElement("p");
       var extIndex = tempFile[i].lastIndexOf(".");
       var justFileName = tempFile[i].substring(0, extIndex);
@@ -787,13 +786,13 @@ var onBtnClicked = (btnId, duplicateArray) => {
       container.style =
         "max-height: 300px; overflow: overlay; margin: 5px; text-align-last: center;";
 
-      if (type === "checkbox") {        
+      if (type === "checkbox") {
         input.className = "checkbox-design";
         input.style = "margin-bottom: 1px; margin-left: 10px;";
         input.name = "checkbox";
         fieldContainer.style =
           "display: flex; justify-content: space-between; margin-top: 10px; margin-bottom: 10px; margin-right: 60px; margin-left: 25px; background-color: var(--color-bg-plum); border-radius: 8px;";
-        
+
         para.append(text);
         fieldContainer.append(para);
         fieldContainer.appendChild(input);
@@ -824,18 +823,17 @@ var onBtnClicked = (btnId, duplicateArray) => {
     var selectAll = document.createElement("div");
     var selectText = document.createTextNode("Select All");
     var para2 = document.createElement("p");
-    para2.style = "display: flex; justify-content: space-around;"
+    para2.style = "display: flex; justify-content: space-around;";
     let selectAllCheckbox = document.createElement("input");
     selectAllCheckbox.setAttribute("onclick", "selectAll(this);");
-    selectAllCheckbox.type = "checkbox"
+    selectAllCheckbox.type = "checkbox";
     selectAllCheckbox.className = "checkbox-design";
-    selectAllCheckbox.style = "margin-left: 15px;"
+    selectAllCheckbox.style = "margin-left: 15px;";
     para2.append(selectText);
     para2.append(selectAllCheckbox);
     selectAll.append(para2);
     selectAll.append(container);
     console.log(selectAll);
-
 
     //array of path files created
     //now need just the file name
@@ -848,14 +846,14 @@ var onBtnClicked = (btnId, duplicateArray) => {
       html: selectAll,
       customClass: "wide-swal-auto",
     }).then((result) => {
-      if(result.isConfirmed) {
+      if (result.isConfirmed) {
         let container = document.getElementById("container");
-        let checkboxes = container.querySelectorAll("input[type=checkbox]:checked");
+        let checkboxes = container.querySelectorAll(
+          "input[type=checkbox]:checked"
+        );
         for (let i = 0; i < checkboxes.length; i++) {
           console.log(checkboxes[i].id);
         }
-
-
       }
     });
     //console.log(newDulicate);
@@ -918,7 +916,11 @@ var onBtnClicked = (btnId, duplicateArray) => {
               newName != "" &&
               reNamedFiles.includes(newName) === false
             ) {
-              reNamedFiles.push(newName.concat(tempFile[i].substring(extIndex, tempFile[i].length)));
+              reNamedFiles.push(
+                newName.concat(
+                  tempFile[i].substring(extIndex, tempFile[i].length)
+                )
+              );
               fileLocation.push(temp[i]);
             }
           }
@@ -982,18 +984,17 @@ var onBtnClicked = (btnId, duplicateArray) => {
     var selectAll = document.createElement("div");
     var selectText = document.createTextNode("Select All");
     var para2 = document.createElement("p");
-    para2.style = "display: flex; justify-content: space-around;"
+    para2.style = "display: flex; justify-content: space-around;";
     let selectAllCheckbox = document.createElement("input");
     selectAllCheckbox.setAttribute("onclick", "selectAll(this);");
-    selectAllCheckbox.type = "checkbox"
+    selectAllCheckbox.type = "checkbox";
     selectAllCheckbox.className = "checkbox-design";
-    selectAllCheckbox.style = "margin-left: 15px;"
+    selectAllCheckbox.style = "margin-left: 15px;";
     para2.append(selectText);
     para2.append(selectAllCheckbox);
     selectAll.append(para2);
     selectAll.append(container);
     console.log(selectAll);
-
 
     //array of path files created
     //now need just the file name
@@ -1005,14 +1006,14 @@ var onBtnClicked = (btnId, duplicateArray) => {
       title: "Select which files to replace",
       html: selectAll,
     }).then((result) => {
-      if(result.isConfirmed) {
+      if (result.isConfirmed) {
         let container = document.getElementById("container");
-        let checkboxes = container.querySelectorAll("input[type=checkbox]:checked");
+        let checkboxes = container.querySelectorAll(
+          "input[type=checkbox]:checked"
+        );
         for (let i = 0; i < checkboxes.length; i++) {
           console.log(checkboxes[i].id);
         }
-
-
       }
     });
     //then handle the selected checkboxes
