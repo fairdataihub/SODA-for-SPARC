@@ -327,11 +327,18 @@ $(document).ready(() => {
     tabPanel.css("display", "flex");
   });
 
-  //ipcRenderer event handlers
-  $("#guided-input-destination-getting-started-locally").on("click", () => {
-    ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
+  // function for importing a banner image if one already exists
+  $("#guided-button-add-banner-image").click(async () => {
+    $("#guided-banner-image-modal").modal("show");
   });
+
+  // Action when user click on "Import image" button for banner image
+  $("#guided-button-import-banner-image").click(() => {
+    ipcRenderer.send("guided-open-file-dialog-import-banner-image");
+  });
+
   ipcRenderer.on("guided-selected-banner-image", async (event, path) => {
+    console.log(path);
     if (path.length > 0) {
       let original_image_path = path[0];
       let image_path = original_image_path;
@@ -346,8 +353,10 @@ $(document).ready(() => {
       );
       let conversion_success = true;
       imageExtension = path[0].split(".").pop();
+      console.log(path);
 
       if (imageExtension.toLowerCase() == "tiff") {
+        alert("tiff");
         $("body").addClass("waiting");
         Swal.fire({
           title: "Image conversion in progress!",
@@ -463,6 +472,7 @@ $(document).ready(() => {
           Swal.close();
         }
       } else {
+        alert("not tiff");
         document.getElementById(
           "guided-div-img-container-holder"
         ).style.display = "none";
@@ -483,6 +493,11 @@ $(document).ready(() => {
         $("#guided-save-banner-image").css("visibility", "visible");
       }
     }
+  });
+
+  //ipcRenderer event handlers
+  $("#guided-input-destination-getting-started-locally").on("click", () => {
+    ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
   });
 
   $("#pennsieve-account-confirm-button").on("click", () => {

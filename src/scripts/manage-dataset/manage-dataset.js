@@ -691,7 +691,7 @@ $("#button-add-subtitle").click(() => {
 
     let selectedBfAccount = defaultBfAccount;
     let selectedBfDataset = defaultBfDataset;
-    let inputSubtitle = $("#bf-dataset-subtitle").val();
+    let inputSubtitle = "subtitle test";
 
     log.info("Adding subtitle to dataset");
     log.info(inputSubtitle);
@@ -1492,12 +1492,6 @@ $("#edit_banner_image_button").click(async () => {
   }
 });
 
-// Action when user click on "Import image" button for banner image
-$("#button-import-banner-image").click(() => {
-  $("#para-dataset-banner-image-status").html("");
-  ipcRenderer.send("open-file-dialog-import-banner-image");
-});
-
 const uploadBannerImage = () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
@@ -1653,6 +1647,7 @@ $(document).ready(() => {
         "converted-tiff.jpg"
       );
       let conversion_success = true;
+      console.log(path[0]);
       imageExtension = path[0].split(".").pop();
 
       if (imageExtension.toLowerCase() == "tiff") {

@@ -1028,7 +1028,8 @@ progress.progresstrack[value]::-webkit-progress-value {
   /*  padding-bottom: 30%;*/
 }
 
-#div-img-container-holder {
+#div-img-container-holder,
+#guided-div-img-container-holder {
   color: black;
   text-align: center;
   font-size: 20px;
