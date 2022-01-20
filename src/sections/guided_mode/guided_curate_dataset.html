@@ -552,10 +552,7 @@
           >
             <div class="guided--container-data-display">
               <div class="guided--card-dataset-info">
-                <div
-                  class="guided--dataset-info-type-container"
-                  style="width: 50%"
-                >
+                <div class="guided--dataset-info-type-container">
                   <h5
                     class="guided--dataset-info-type guidedDatasetUserPermissions"
                   >
@@ -575,12 +572,16 @@
                     Designated team permissions:
                   </h5>
                 </div>
+                <div
+                  class="guided--container-dataset-info"
+                  id="guided-team-permissions-container"
+                ></div>
               </div>
             </div>
 
             <div class="guided--question">
               <label class="guided--text-sub-step"
-                >Designate individual user permissions:
+                >Designate user permissions:
                 <i
                   class="fas fa-info-circle popover-tooltip"
                   data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
@@ -636,20 +637,21 @@
                   <option value="Select role">Select role</option>
                   <option value="viewer">viewer</option>
                   <option value="manager">manager</option>
-                  <option value="editor">editor</option>
-                  <option value="remove current permissions">
-                    remove current permissions
-                  </option></select
+                  <option value="editor">editor</option></select
                 ><button
                   id="guided-button-add-permission-user"
                   class="btn_animated"
-                  style="width: 130px; border: none !important; margin: 0px"
+                  style="width: 160px; border: none !important; margin: 0px"
                 >
                   Add permission
                 </button>
               </div>
-              <label class="guided--text-sub-step"
-                >Designate individual team permissions:
+            </div>
+            <div class="guided--question">
+              <label
+                class="guided--text-sub-step"
+                style="margin-top: 18px !important"
+                >Designate team permissions:
                 <i
                   class="fas fa-info-circle popover-tooltip"
                   data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
@@ -706,16 +708,13 @@
                   <option value="viewer">viewer</option>
                   <option value="manager">manager</option>
                   <option value="editor">editor</option>
-                  <option value="remove current permissions">
-                    remove current permissions
-                  </option>
                 </select>
                 <button
                   id="guided-button-add-permission-team"
                   class="btn_animated"
-                  style="width: 130px; border: none !important; margin: 0px"
+                  style="width: 160px; border: none !important; margin: 0px"
                 >
-                  Add permission
+                  Designate permission
                 </button>
               </div>
             </div>
@@ -728,7 +727,7 @@
               <div
                 class="ui styled accordion"
                 id="guided-dd-accordion"
-                style="width: 100% !important"
+                style="width: 100% !important; max-width: 1000px !important"
               >
                 <div
                   class="title active"
@@ -2658,8 +2657,8 @@
                   <h5 class="guided--dataset-info-type">Dataset PI:</h5>
                 </div>
                 <div class="guided--dataset-info-content-container">
-                  <h5 class="guided--dataset-info-content guidedDatasetPIOwner">
-                    N:user:b74d56f7-d028-401b-94ef-a580c4abd741
+                  <h5 class="guided--dataset-info-content guidedDatasetOwner">
+                    None
                   </h5>
                   <i class="far fa-edit jump-back" style="color: #000"></i>
                 </div>

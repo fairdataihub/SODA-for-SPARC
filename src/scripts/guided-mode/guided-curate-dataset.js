@@ -79,7 +79,7 @@ $(document).ready(() => {
         class: "guided--dataset-info-content",
         text:
           $("#guided_bf_list_users option:selected").text().trim() +
-          ": " +
+          " : " +
           $("#select-permission-list-3").val(),
       })
     );
@@ -91,6 +91,31 @@ $(document).ready(() => {
       })
     );
     $("#guided-user-permissions-container").append(newUserPermission);
+    $;
+  });
+
+  $("#guided-button-add-permission-team").on("click", function () {
+    const newTeamPermission = $("<div>", {
+      class: "guided--dataset-info-content-container",
+      style: "width: 100%",
+    });
+    newTeamPermission.append(
+      $("<h5>", {
+        class: "guided--dataset-info-content",
+        text:
+          $("#guided_bf_list_teams option:selected").text().trim() +
+          " : " +
+          $("#select-permission-list-4").val(),
+      })
+    );
+    newTeamPermission.append(
+      $("<i>", {
+        class: "fas fa-user-times guided-delete-permission",
+        style: "color: red",
+        onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
+      })
+    );
+    $("#guided-team-permissions-container").append(newTeamPermission);
     $;
   });
   /*$("#bf_list_users").on("change", () => {
@@ -201,7 +226,9 @@ $(document).ready(() => {
     $(guidedJstreePreview).jstree(true).refresh();
   }
   $("#guided-button-add-permission-pi").on("click", function () {
-    $(".guidedDatasetOwner").text($("#guided_bf_list_users_pi").val());
+    $(".guidedDatasetOwner").text(
+      $("#guided_bf_list_users_pi option:selected").text().trim()
+    );
   });
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
