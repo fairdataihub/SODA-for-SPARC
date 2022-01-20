@@ -18,7 +18,7 @@ guidedSetDatasetName = (newDatasetName) => {
   datasetName = newDatasetName.val().trim();
   guided_dataset_name = datasetName;
   $(".guidedDatasetName").text(datasetName);
-  defaultBfDataset = datasetName;
+  //defaultBfDataset = datasetName;
 };
 
 guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
@@ -70,7 +70,28 @@ const validateGuidedDatasetDescriptionInputs = () => {
 
 $(document).ready(() => {
   $("#guided-button-add-permission-user").on("click", function () {
-    console.log($("#guided_bf_list_users option:selected").text());
+    const newUserPermission = $("<div>", {
+      class: "guided--dataset-info-content-container",
+      style: "width: 100%",
+    });
+    newUserPermission.append(
+      $("<h5>", {
+        class: "guided--dataset-info-content",
+        text:
+          $("#guided_bf_list_users option:selected").text().trim() +
+          ": " +
+          $("#select-permission-list-3").val(),
+      })
+    );
+    newUserPermission.append(
+      $("<i>", {
+        class: "fas fa-user-times guided-delete-permission",
+        style: "color: red",
+        onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
+      })
+    );
+    $("#guided-user-permissions-container").append(newUserPermission);
+    $;
   });
   /*$("#bf_list_users").on("change", () => {
   let user_val = $("#bf_list_users").val();
@@ -596,55 +617,6 @@ $(document).ready(() => {
           } else {
             guided_generate().then();
           }
-        }
-      }
-    );
-  });
-  $("#gs").on("click", function () {
-    let selectedBfAccount = defaultBfAccount;
-    let selectedBfDataset = defaultBfDataset;
-    let inputSubtitle = guided_dataset_subtitle;
-
-    log.info("Adding subtitle to dataset");
-    log.info(inputSubtitle);
-
-    client.invoke(
-      "api_bf_add_subtitle",
-      selectedBfAccount,
-      selectedBfDataset,
-      inputSubtitle,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          let emessage = userError(error);
-
-          Swal.fire({
-            title: "Failed to add subtitle!",
-            text: emessage,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Manage Dataset - Add/Edit Subtitle",
-            defaultBfDataset
-          );
-        } else {
-          log.info("Added subtitle to dataset");
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Manage Dataset - Add/Edit Subtitle",
-            defaultBfDataset
-          );
-
-          // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-          showPrePublishingStatus();
         }
       }
     );
