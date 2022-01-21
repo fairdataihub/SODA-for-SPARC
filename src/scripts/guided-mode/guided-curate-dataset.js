@@ -69,11 +69,25 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
+  let userPermissions = [];
+  let teamPermissions = [];
   $("#guided-button-add-permission-user").on("click", function () {
+    const newUserPermissionObj = {
+      userString: $("#guided_bf_list_users option:selected").text().trim(),
+      UUID: $("#guided_bf_list_users").val().trim(),
+      permission: $("#select-permission-list-3").val(),
+    };
     const newUserPermission = $("<div>", {
       class: "guided--dataset-info-content-container",
       style: "width: 100%",
     });
+    newUserPermission.attr("data-user-string", newUserPermissionObj.userString);
+    newUserPermission.attr("data-uuid", newUserPermissionObj.UUID);
+    newUserPermission.attr(
+      "data-user-permission",
+      newUserPermissionObj.permission
+    );
+
     newUserPermission.append(
       $("<h5>", {
         class: "guided--dataset-info-content",
@@ -226,10 +240,13 @@ $(document).ready(() => {
     $(guidedJstreePreview).jstree(true).refresh();
   }
   $("#guided-button-add-permission-pi").on("click", function () {
-    $(".guidedDatasetOwner").text(
-      $("#guided_bf_list_users_pi option:selected").text().trim()
-    );
-    //setGuidedDatasetPiOwner = (newOwnerString) => {}
+    const setGuidedDatasetPiOwner = (newPiOwner) => {
+      newPiOwner = newPiOwner.text().trim();
+      $(".guidedDatasetOwner").text(newPiOwner);
+      sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwner;
+      console.log(sodaJSONObj["digital-metadata"]["pi-owner"]);
+    };
+    setGuidedDatasetPiOwner($("#guided_bf_list_users_pi option:selected"));
   });
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
@@ -772,6 +789,19 @@ $(document).ready(() => {
         .trim();
       guidedSetDatasetName($("#guided-dataset-name-input"));
       guidedSetDatasetSubtitle($("#guided-dataset-subtitle-input"));
+    }
+
+    if (current_sub_step.attr("id") == "guided-designate-permissions-tab") {
+      /*const setGuidedDatasetPiOwner = (newPiOwner) => {
+        newPiOwner = newPiOwner.text().trim();
+        $(".guidedDatasetOwner").text(newPiOwner);
+        sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwner;
+        console.log(sodaJSONObj["digital-metadata"]["pi-owner"]);
+      };
+      setGuidedDatasetPiOwner($("#guided_bf_list_users_pi option:selected"));*/
+      if ($("#generate-dataset-pennsieve-card").hasClass("checked")) {
+        sodaJSONObj["generate-dataset"]["destination"] = "bf";
+      }
     }
 
     if (current_sub_step.attr("id") == "guided-dataset-generation-tab") {
