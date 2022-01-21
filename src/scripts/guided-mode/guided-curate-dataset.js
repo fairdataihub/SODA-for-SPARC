@@ -3,6 +3,8 @@
 /////////////////////////////////////////////////////////
 let guided_dataset_name = "";
 let guided_dataset_subtitle = "";
+let guidedUserPermissions = [];
+let guidedTeamPermissions = [];
 const guided_dataset_subtitle_char_count = document.getElementById(
   "guided-subtitle-char-count"
 );
@@ -69,43 +71,51 @@ const validateGuidedDatasetDescriptionInputs = () => {
 };
 
 $(document).ready(() => {
-  let userPermissions = [];
-  let teamPermissions = [];
   $("#guided-button-add-permission-user").on("click", function () {
+    //create user permissions object and append to user permissions array
     const newUserPermissionObj = {
       userString: $("#guided_bf_list_users option:selected").text().trim(),
       UUID: $("#guided_bf_list_users").val().trim(),
       permission: $("#select-permission-list-3").val(),
     };
-    const newUserPermission = $("<div>", {
-      class: "guided--dataset-info-content-container",
-      style: "width: 100%",
-    });
-    newUserPermission.attr("data-user-string", newUserPermissionObj.userString);
-    newUserPermission.attr("data-uuid", newUserPermissionObj.UUID);
-    newUserPermission.attr(
-      "data-user-permission",
-      newUserPermissionObj.permission
-    );
 
-    newUserPermission.append(
-      $("<h5>", {
-        class: "guided--dataset-info-content",
-        text:
-          $("#guided_bf_list_users option:selected").text().trim() +
-          " : " +
-          $("#select-permission-list-3").val(),
-      })
-    );
-    newUserPermission.append(
-      $("<i>", {
-        class: "fas fa-user-times guided-delete-permission",
-        style: "color: red",
-        onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
-      })
-    );
-    $(".guidedDatasetUserPermissions").append(newUserPermission);
-    $;
+    const guidedAddUserPermission = (newUserPermission) => {
+      guidedUserPermissions.push(newUserPermissionObj);
+
+      /*create user permissions element and append to all elements
+      with guidedDatasetUserPermissions class.*/
+      const newUserPermissionElement = $("<div>", {
+        class: "guided--dataset-info-content-container",
+        style: "width: 100%",
+      });
+      newUserPermissionElement.attr(
+        "data-user-string",
+        newUserPermissionObj.userString
+      );
+      newUserPermissionElement.attr("data-uuid", newUserPermissionObj.UUID);
+      newUserPermissionElement.attr(
+        "data-user-permission",
+        newUserPermissionObj.permission
+      );
+      newUserPermissionElement.append(
+        $("<h5>", {
+          class: "guided--dataset-info-content",
+          text:
+            $("#guided_bf_list_users option:selected").text().trim() +
+            " : " +
+            $("#select-permission-list-3").val(),
+        })
+      );
+      newUserPermissionElement.append(
+        $("<i>", {
+          class: "fas fa-user-times guided-delete-permission",
+          style: "color: red",
+          onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
+        })
+      );
+      $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
+    };
+    guidedAddUserPermission(newUserPermissionObj);
   });
 
   $("#guided-button-add-permission-team").on("click", function () {
@@ -792,16 +802,10 @@ $(document).ready(() => {
     }
 
     if (current_sub_step.attr("id") == "guided-designate-permissions-tab") {
-      /*const setGuidedDatasetPiOwner = (newPiOwner) => {
-        newPiOwner = newPiOwner.text().trim();
-        $(".guidedDatasetOwner").text(newPiOwner);
-        sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwner;
-        console.log(sodaJSONObj["digital-metadata"]["pi-owner"]);
-      };
-      setGuidedDatasetPiOwner($("#guided_bf_list_users_pi option:selected"));*/
-      if ($("#generate-dataset-pennsieve-card").hasClass("checked")) {
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
+      sodaJSONObj["digital-metadata"]["user-permissions"] =
+        guidedUserPermissions;
+      sodaJSONObj["digital-metadata"]["team-permissions"] =
+        guidedUserPermissions;
     }
 
     if (current_sub_step.attr("id") == "guided-dataset-generation-tab") {
