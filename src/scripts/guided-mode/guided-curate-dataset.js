@@ -72,7 +72,7 @@ const validateGuidedDatasetDescriptionInputs = () => {
 
 $(document).ready(() => {
   $("#guided-button-add-permission-user").on("click", function () {
-    //create user permissions object and append to user permissions array
+    //create user permissions object
     const newUserPermissionObj = {
       userString: $("#guided_bf_list_users option:selected").text().trim(),
       UUID: $("#guided_bf_list_users").val().trim(),
@@ -80,6 +80,7 @@ $(document).ready(() => {
     };
 
     const guidedAddUserPermission = (newUserPermission) => {
+      //append created user to permissions array
       guidedUserPermissions.push(newUserPermissionObj);
 
       /*create user permissions element and append to all elements
@@ -119,39 +120,38 @@ $(document).ready(() => {
   });
 
   $("#guided-button-add-permission-team").on("click", function () {
-    const newTeamPermission = $("<div>", {
-      class: "guided--dataset-info-content-container",
-      style: "width: 100%",
-    });
-    newTeamPermission.append(
-      $("<h5>", {
-        class: "guided--dataset-info-content",
-        text:
-          $("#guided_bf_list_teams option:selected").text().trim() +
-          " : " +
-          $("#select-permission-list-4").val(),
-      })
-    );
-    newTeamPermission.append(
-      $("<i>", {
-        class: "fas fa-user-times guided-delete-permission",
-        style: "color: red",
-        onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
-      })
-    );
-    $(".guidedDatasetTeamPermissions").append(newTeamPermission);
-    $;
-  });
-  /*$("#bf_list_users").on("change", () => {
-  let user_val = $("#bf_list_users").val();
-  let user_role = $("#bf_list_roles_user").val();
+    const newTeamPermissionObj = {
+      teamString: $("#guided_bf_list_teams option:selected").text().trim(),
+      UUID: $("#guided_bf_list_teams").val().trim(),
+      permission: $("#select-permission-list-4").val(),
+    };
 
-  if (user_val == "Select user" || user_role == "Select role") {
-    $("#button-add-permission-user").hide();
-  } else {
-    $("#button-add-permission-user").show();
-  }
-});*/
+    const guidedAddTeamPermission = (newTeamPermission) => {
+      guidedTeamPermissions.push(newTeamPermissionObj);
+      const newTeamPermissionElement = $("<div>", {
+        class: "guided--dataset-info-content-container",
+        style: "width: 100%",
+      });
+      newTeamPermissionElement.append(
+        $("<h5>", {
+          class: "guided--dataset-info-content",
+          text:
+            $("#guided_bf_list_teams option:selected").text().trim() +
+            " : " +
+            $("#select-permission-list-4").val(),
+        })
+      );
+      newTeamPermissionElement.append(
+        $("<i>", {
+          class: "fas fa-user-times guided-delete-permission",
+          style: "color: red",
+          onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
+        })
+      );
+      $(".guidedDatasetTeamPermissions").append(newTeamPermissionElement);
+    };
+    guidedAddTeamPermission(newTeamPermissionObj);
+  });
 
   $("#guided-dataset-name-input").val("test 2");
   $(guidedJstreePreview).jstree({
@@ -791,7 +791,9 @@ $(document).ready(() => {
       )
         .val()
         .trim();
-
+      sodaJSONObj["digital-metadata"]["name"] = $("#guided-dataset-name-input")
+        .val()
+        .trim();
       sodaJSONObj["digital-metadata"]["subtitle"] = $(
         "#guided-dataset-subtitle-input"
       )
@@ -864,6 +866,11 @@ $(document).ready(() => {
       ).map((tag) => {
         return tag.textContent;
       });
+    }
+
+    if (current_sub_step.attr("id") == "guided-assign-license-tab") {
+      sodaJSONObj["digital-metadata"]["license"] =
+        "Creative Commons Attribution";
     }
 
     if (current_sub_step.attr("id") == "add-edit-tags-tab") {
