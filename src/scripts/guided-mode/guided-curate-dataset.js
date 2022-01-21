@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////
 let guided_dataset_name = "";
 let guided_dataset_subtitle = "";
+let guided_PI_owner = {};
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
 const guided_dataset_subtitle_char_count = document.getElementById(
@@ -73,13 +74,13 @@ const validateGuidedDatasetDescriptionInputs = () => {
 $(document).ready(() => {
   $("#guided-button-add-permission-user").on("click", function () {
     //create user permissions object
-    const newUserPermissionObj = {
+    const newUserPermission = {
       userString: $("#guided_bf_list_users option:selected").text().trim(),
       UUID: $("#guided_bf_list_users").val().trim(),
       permission: $("#select-permission-list-3").val(),
     };
 
-    const guidedAddUserPermission = (newUserPermission) => {
+    const guidedAddUserPermission = (newUserPermissionObj) => {
       //append created user to permissions array
       guidedUserPermissions.push(newUserPermissionObj);
 
@@ -116,7 +117,7 @@ $(document).ready(() => {
       );
       $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
     };
-    guidedAddUserPermission(newUserPermissionObj);
+    guidedAddUserPermission(newUserPermission);
   });
 
   $("#guided-button-add-permission-team").on("click", function () {
@@ -250,13 +251,18 @@ $(document).ready(() => {
     $(guidedJstreePreview).jstree(true).refresh();
   }
   $("#guided-button-add-permission-pi").on("click", function () {
-    const setGuidedDatasetPiOwner = (newPiOwner) => {
-      newPiOwner = newPiOwner.text().trim();
-      $(".guidedDatasetOwner").text(newPiOwner);
-      sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwner;
-      console.log(sodaJSONObj["digital-metadata"]["pi-owner"]);
+    const newPiOwner = {
+      PiOwnerString: $("#guided_bf_list_users_pi option:selected")
+        .text()
+        .trim(),
+      UUID: $("#guided_bf_list_users_pi").val().trim(),
+      permission: "owner",
     };
-    setGuidedDatasetPiOwner($("#guided_bf_list_users_pi option:selected"));
+    const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
+      guided_PI_owner = newPiOwnerObj;
+      $(".guidedDatasetOwner").text(newPiOwnerObj.PiOwnerString);
+    };
+    setGuidedDatasetPiOwner(newPiOwner);
   });
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
@@ -552,7 +558,99 @@ $(document).ready(() => {
     });
   };
 
-  $("#guided-generate-dataset-button").on("click", async function () {
+  $("#guided-generate-dataset-button").on("click", function () {
+    let bfNewDatasetName =
+      "testingtesting2" + Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    const guidedCreateDataset = async () => {
+      let selectedbfaccount = defaultBfAccount;
+
+      log.info(`Creating a new dataset with the name: ${bfNewDatasetName}`);
+      Swal.fire({
+        title: `Creating a new dataset named: ${bfNewDatasetName}`,
+        html: "Please wait...",
+        // timer: 5000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      const newDs = await client.invoke(
+        "api_bf_new_dataset_folder",
+        bfNewDatasetName,
+        selectedbfaccount,
+        (error, res) => {
+          if (error) {
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            Swal.fire({
+              title: `Failed to create a new dataset.`,
+              text: emessage,
+              showCancelButton: false,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              icon: "error",
+            });
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Manage Dataset - Create Empty Dataset",
+              bfNewDatasetName
+            );
+            return error;
+          } else {
+            Swal.fire({
+              title: `Dataset ${bfNewDatasetName} was created successfully`,
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              didOpen: () => {
+                Swal.hideLoading();
+              },
+            });
+
+            log.info(`Created dataset successfully`);
+
+            defaultBfDataset = bfNewDatasetName;
+            refreshDatasetList();
+            addNewDatasetToList(bfNewDatasetName);
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Manage Dataset - Create Empty Dataset",
+              bfNewDatasetName
+            );
+
+            log.info(`Requesting list of datasets`);
+
+            client.invoke(
+              "api_bf_dataset_account",
+              defaultBfAccount,
+              (error, result) => {
+                if (error) {
+                  log.error(error);
+                  console.log(error);
+                } else {
+                  log.info(`Requested list of datasets successfully`);
+                  datasetList = [];
+                  datasetList = result;
+                }
+              }
+            );
+          }
+        }
+      );
+      return newDs;
+    };
+    guidedCreateDataset().then();
+  });
+
+  /*
     if (sodaJSONObj["starting-point"]["type"] === "local") {
       sodaJSONObj["starting-point"]["type"] = "new";
     }
@@ -576,10 +674,7 @@ $(document).ready(() => {
         }
       }
     }
-    /*
-    generateProgressBar.value = 0;
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "Please wait while we verify a few things...";*/
+
 
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
@@ -689,8 +784,7 @@ $(document).ready(() => {
           }
         }
       }
-    );
-  });
+    );*/
 
   $("#guided-save-banner-image").click((event) => {
     $("#guided-para-dataset-banner-image-status").html("");
@@ -801,6 +895,10 @@ $(document).ready(() => {
         .trim();
       guidedSetDatasetName($("#guided-dataset-name-input"));
       guidedSetDatasetSubtitle($("#guided-dataset-subtitle-input"));
+    }
+
+    if (current_sub_step.attr("id") == "guided-designate-pi-owner-tab") {
+      sodaJSONObj["digital-metadata"]["pi-owner"] = guided_PI_owner;
     }
 
     if (current_sub_step.attr("id") == "guided-designate-permissions-tab") {
