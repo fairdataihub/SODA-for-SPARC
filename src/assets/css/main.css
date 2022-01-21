@@ -28,6 +28,9 @@ button:focus {
   transform: translateY(-0.075em);
   display: grid;
   place-content: center;
+  align-self: center;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .checkbox-design::before {
@@ -43,10 +46,150 @@ button:focus {
   transform: scale(1);
 }
 
+.skip-btn {
+  margin-right: 15px;
+  background-color: #fff;
+  border: solid 1px var(--color-light-green);
+  color: var(--color-light-green);
+  border-radius: 8px;
+}
+
+.skip-btn:hover {
+  background-color: var(--color-light-green);
+  color: #fff;
+}
+
+.replace-btn {
+  background-color: var(--color-bg-plum);
+  color: white;
+  border-radius: 8px;
+}
+
+#selectAll {
+  display: flex;
+  justify-content: space-around;
+}
+
+@-o-keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #8ac0e4;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+@keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #8ac0e4;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+.updated-file {
+  background-image: none !important;
+  -o-animation: fadeIt 3s ease-in-out;
+  animation: fadeIt 3s ease-in-out;
+}
+
+.input-name {
+  color: black;
+  align-self: center;
+}
+
+.selectAll-container {
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
+
+.selectAll-checkbox {
+  margin-left: 40px;
+}
+
+.input-field-design {
+  margin-bottom: 1px;
+  margin-right: 10px;
+  margin-left: 10px;
+  align-self: center;
+}
+
+.input-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 60px;
+  margin-left: 25px;
+  align-items: start;
+  border-radius: 8px;
+  background-color: #f7f7f7;
+}
+
+.selectAll-text {
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+  margin: 10px;
+}
+
+.checkbox-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 60px;
+  margin-left: 25px;
+  border-radius: 8px;
+}
+
+.checkbox-container:hover {
+  background-color: #f7f7f7;
+}
+
+#container {
+  max-height: 300px;
+  overflow: overlay;
+  margin: 5px;
+  text-align-last: center;
+}
+
+.rename-btn {
+  margin-left: 15px;
+  background-color: var(--color-light-green);
+  color: white;
+  border-radius: 8px;
+}
+
+.cancel-btn {
+  margin-left: 100px;
+  background-color: #757575;
+  color: white;
+  border-radius: 8px;
+}
+
 .wide-swal-auto {
   width: auto !important;
   height: auto !important;
   display: block;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+  margin-top: 5px;
+}
+
+.caption {
+  max-height: 250px;
+  overflow-y: overlay;
 }
 
 .rename-input {

@@ -4935,20 +4935,34 @@ function dropHelper(
   }
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
+    var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
     Swal.fire({
+      title: "Duplicate file(s) detected",
       icon: "warning",
-      html:
-        "The following files are already imported into the current location of your dataset: <p><ul>" +
-        listElements +
-        "</ul></p>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      showCloseButton: true,
+      customClass: "wide-swal-auto",
+      backdrop: "rgba(0, 0, 0, 0.4)",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate_animated animate_zoomout animate__faster",
       },
+      html:
+        `
+      <div class="caption">
+        <p>Files with the following names are already in the current folder: <p><ul>${listElements}</ul></p></p>
+      </div>  
+      <div class="button-container">
+        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+        list +
+        `')">Skip Files</button>
+        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing Files</button>
+        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+        </div>`,
     });
   }
   // // now append to UI files and folders
@@ -5608,16 +5622,30 @@ function listItems(jsonObj, uiItem) {
         cloud_item = " local_file_deleted";
       }
     }
-
-    appendString =
-      appendString +
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-      extension +
-      '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-      cloud_item +
-      '">' +
-      item +
-      "</div></div>";
+    if (
+      sortedObj["files"][item]["type"] == "local" &&
+      sortedObj["files"][item]["action"].includes("updated")
+    ) {
+      appendString =
+        appendString +
+        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+        extension +
+        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    } else {
+      appendString =
+        appendString +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+        extension +
+        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    }
   }
 
   $(uiItem).empty();
