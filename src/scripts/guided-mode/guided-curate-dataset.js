@@ -561,6 +561,7 @@ $(document).ready(() => {
   $("#guided-generate-dataset-button").on("click", function () {
     let bfNewDatasetName =
       "testingtesting2" + Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    let blah = "false";
     const guidedCreateDataset = async () => {
       let selectedbfaccount = defaultBfAccount;
 
@@ -578,7 +579,7 @@ $(document).ready(() => {
           Swal.showLoading();
         },
       });
-      const newDs = await client.invoke(
+      const res = await client.invoke(
         "api_bf_new_dataset_folder",
         bfNewDatasetName,
         selectedbfaccount,
@@ -613,40 +614,15 @@ $(document).ready(() => {
                 Swal.hideLoading();
               },
             });
-
+            blah = "true";
+            return "xyz";
             log.info(`Created dataset successfully`);
-
-            defaultBfDataset = bfNewDatasetName;
-            refreshDatasetList();
-            addNewDatasetToList(bfNewDatasetName);
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Manage Dataset - Create Empty Dataset",
-              bfNewDatasetName
-            );
-
-            log.info(`Requesting list of datasets`);
-
-            client.invoke(
-              "api_bf_dataset_account",
-              defaultBfAccount,
-              (error, result) => {
-                if (error) {
-                  log.error(error);
-                  console.log(error);
-                } else {
-                  log.info(`Requested list of datasets successfully`);
-                  datasetList = [];
-                  datasetList = result;
-                }
-              }
-            );
           }
         }
       );
-      return newDs;
+      console.log(await res);
     };
+
     guidedCreateDataset().then();
   });
 
