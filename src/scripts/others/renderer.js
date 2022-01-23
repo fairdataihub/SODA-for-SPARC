@@ -706,6 +706,7 @@ const manifestFileCheck = document.getElementById("generate-manifest-curate");
 var bfAccountOptions;
 var defaultBfAccount;
 var defaultBfDataset = "Select dataset";
+var defaultBfDatasetId = undefined;
 var bfAccountOptionsStatus;
 
 // Organize dataset //
@@ -994,6 +995,12 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
+
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      `Download Template - ${templateItem}`
+    );
   } else {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
@@ -1188,19 +1195,16 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
         });
-        ipcRenderer.send(
-          "track-event",
+
+        // log the error to analytics
+        logMetadataForAnalytics(
           "Error",
-          "Prepare Metadata - Create subjects.xlsx",
-          subjectsTableData
+          MetadataAnalyticsPrefix.SUBJECTS,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
       } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Create subjects.xlsx",
-          subjectsTableData
-        );
         Swal.fire({
           title:
             "The subjects.xlsx file has been successfully generated at the specified location.",
@@ -1208,6 +1212,19 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        // log the success to Pennsieve
+        logMetadataForAnalytics(
+          "Success",
+          MetadataAnalyticsPrefix.SUBJECTS,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+        );
+
+        // log the size of the metadata file that was generated at varying levels of granularity
+        const size = res;
+        logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
       }
     }
   );
@@ -1339,12 +1356,6 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
         var emessage = userError(error);
         log.error(error);
         console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Metadata - Create samples.xlsx",
-          samplesTableData
-        );
         Swal.fire({
           title: "Failed to generate the samples.xlsx file.",
           html: emessage,
@@ -1352,13 +1363,15 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
         });
-      } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Create samples.xlsx",
-          samplesTableData
+
+        logMetadataForAnalytics(
+          "Error",
+          MetadataAnalyticsPrefix.SAMPLES,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
+      } else {
         Swal.fire({
           title:
             "The samples.xlsx file has been successfully generated at the specified location.",
@@ -1366,6 +1379,18 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        logMetadataForAnalytics(
+          "Success",
+          MetadataAnalyticsPrefix.SAMPLES,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+        );
+
+        // log the size of the metadata file that was generated at varying levels of granularity
+        const size = res;
+        logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
       }
     }
   );
@@ -1447,6 +1472,14 @@ function loadSubjectsFileToDataframe(filePath) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        logMetadataForAnalytics(
+          "Error",
+          MetadataAnalyticsPrefix.SUBJECTS,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.LOCAL
+        );
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
@@ -1461,21 +1494,31 @@ function loadSubjectsFileToDataframe(filePath) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
+
+            logMetadataForAnalytics(
+              "Error",
+              MetadataAnalyticsPrefix.SUBJECTS,
+              AnalyticsGranularity.ALL_LEVELS,
+              "Existing",
+              Destinations.LOCAL
+            );
             return;
           }
-          loadDataFrametoUI("local");
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
             "Success",
-            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
-            ""
+            MetadataAnalyticsPrefix.SUBJECTS,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            "Existing",
+            Destinations.LOCAL
           );
+          loadDataFrametoUI("local");
         } else {
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
             "Error",
-            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
-            error
+            MetadataAnalyticsPrefix.SUBJECTS,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Existing",
+            Destinations.LOCAL
           );
           Swal.fire({
             title: "Couldn't load existing subjects.xlsx file",
@@ -1515,6 +1558,14 @@ function loadSamplesFileToDataframe(filePath) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        logMetadataForAnalytics(
+          "Error",
+          MetadataAnalyticsPrefix.SAMPLES,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.LOCAL
+        );
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
@@ -1529,21 +1580,33 @@ function loadSamplesFileToDataframe(filePath) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
+
+            logMetadataForAnalytics(
+              "Error",
+              MetadataAnalyticsPrefix.SAMPLES,
+              AnalyticsGranularity.ALL_LEVELS,
+              "Existing",
+              Destinations.LOCAL
+            );
+
             return;
           }
-          loadDataFrametoUISamples("local");
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
             "Success",
-            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
-            samplesTableData
+            MetadataAnalyticsPrefix.SAMPLES,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            "Existing",
+            Destinations.LOCAL
           );
+
+          loadDataFrametoUISamples("local");
         } else {
-          ipcRenderer.send(
-            "track-event",
+          logMetadataForAnalytics(
             "Error",
-            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
-            samplesTableData
+            MetadataAnalyticsPrefix.SAMPLES,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Existing",
+            Destinations.LOCAL
           );
           Swal.fire({
             title: "Couldn't load existing samples.xlsx file",
@@ -2959,14 +3022,13 @@ function postCurationListChange() {
   // display the pre-publishing page
   showPrePublishingPageElements();
   showPublishingStatus();
-  // run pre-publishing checks and show the results on the 'Disseminate Datasets - Submit for pre-publishing review' page
-  showPrePublishingStatus();
 }
 
 // upload banner image //
 const Cropper = require("cropperjs");
 const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
+const { resolve } = require("path");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -3290,6 +3352,75 @@ async function submitReviewDataset(embargoReleaseDate) {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+  // title text
+  let title = "";
+
+  // check if the user has selected any files they want to be hidden to the public upon publication (aka ignored/excluded files)
+  // set the loading message title accordingly
+  if (excludedFilesInPublicationFlow()) {
+    title =
+      "Ignoring selected files and submitting dataset for pre-publishing review";
+  } else {
+    title = "Submitting dataset for pre-publishing review";
+  }
+
+  // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+  Swal.fire({
+    title: title,
+    html: "Please wait...",
+    // timer: 5000,
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
+  if (excludedFilesInPublicationFlow()) {
+    // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
+    let files = getExcludedFilesFromPublicationFlow();
+    try {
+      // exclude the user's selected files from publication
+      await updateDatasetExcludedFiles(selectedBfDataset, files);
+    } catch (error) {
+      // log the error
+      logGeneralOperationsForAnalytics(
+        "Error",
+        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Updating excluded files"]
+      );
+      log.error(error);
+      console.error(error);
+
+      var emessage = userError(error);
+
+      // alert the user of the error
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        confirmButtonText: "Ok",
+        title: `Could not exclude the selected files from publication`,
+        text: "Please try again.",
+        icon: "error",
+        reverseButtons: reverseSwalButtons,
+        text: `${emessage}`,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      // stop publication
+      return;
+    }
+  }
+
   try {
     await submitDatasetForPublication(
       selectedBfAccount,
@@ -3297,11 +3428,11 @@ async function submitReviewDataset(embargoReleaseDate) {
       embargoReleaseDate
     );
   } catch (error) {
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Disseminate Dataset - Pre-publishing Review",
-      selectedBfDataset
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Submit dataset"]
     );
     log.error(error);
     console.error(error);
@@ -3329,13 +3460,15 @@ async function submitReviewDataset(embargoReleaseDate) {
     return;
   }
 
+  // update the publishing status UI element
   await showPublishingStatus("noClear");
 
-  ipcRenderer.send(
-    "track-event",
+  // track success
+  logGeneralOperationsForAnalytics(
     "Success",
-    "Disseminate Dataset - Pre-publishing Review",
-    selectedBfDataset
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+    AnalyticsGranularity.ALL_LEVELS,
+    ["Submit dataset"]
   );
 
   // alert the user the submission was successful
@@ -3354,12 +3487,13 @@ async function submitReviewDataset(embargoReleaseDate) {
     },
   });
 
-  // hide the pre-publishing checklist and show the withdraw button
-  $("#prepublishing-checklist-container").hide();
-  $("#confirm-submit-review").show();
-
-  bfRefreshPublishingDatasetStatusBtn.disabled = false;
-  bfWithdrawReviewDatasetBtn.disabled = false;
+  await transitionFreeFormMode(
+    document.querySelector("#begin-prepublishing-btn"),
+    "submit_prepublishing_review-question-2",
+    "submit_prepublishing_review-tab",
+    "",
+    "individual-question post-curation"
+  );
 }
 
 // //Withdraw dataset from review
@@ -3403,11 +3537,11 @@ function withdrawDatasetSubmission() {
     });
 
     // track the error for analysis
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Disseminate Datasets - Submit for pre-publishing review",
-      defaultBfDataset
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Withdraw dataset"]
     );
   });
 }
@@ -3484,6 +3618,13 @@ async function withdrawReviewDataset() {
   try {
     await withdrawDatasetReviewSubmission(selectedBfDataset);
 
+    logGeneralOperationsForAnalytics(
+      "Success",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Withdraw dataset"]
+    );
+
     // show the user their dataset's updated publishing status
     await showPublishingStatus("noClear");
 
@@ -3502,11 +3643,17 @@ async function withdrawReviewDataset() {
       },
     });
 
-    // show the checklist item and submit button
-    $("#begin-prepublishing-btn").hide();
-    $("#prepublishing-checklist-container").show();
+    // reveal the current section (question-3) again using the new publishing status value
+    await transitionFreeFormMode(
+      document.querySelector("#begin-prepublishing-btn"),
+      "submit_prepublishing_review-question-2",
+      "submit_prepublishing_review-tab",
+      "",
+      "individual-question post-curation"
+    );
+
     // scroll to the submit button
-    scrollToElement("#prepublishing-submit-btn-container");
+    // scrollToElement(".pre-publishing-continue");
 
     bfRefreshPublishingDatasetStatusBtn.disabled = false;
     bfWithdrawReviewDatasetBtn.disabled = false;
@@ -3531,11 +3678,11 @@ async function withdrawReviewDataset() {
     });
 
     // track the error for analysis
-    ipcRenderer.send(
-      "track-event",
+    logGeneralOperationsForAnalytics(
       "Error",
-      "Disseminate Datasets - Submit for pre-publishing review",
-      defaultBfDataset
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ALL_LEVELS,
+      ["Withdraw dataset"]
     );
   }
 }
@@ -3771,7 +3918,9 @@ const showPrePublishingPageElements = () => {
     // show the "Begin Publishing" button and hide the checklist and submission section
     $("#begin-prepublishing-btn").show();
     $("#prepublishing-checklist-container").hide();
-    $("#submit-withdraw-prepublishing-btns-container").hide();
+    $("#prepublishing-submit-btn-container").hide();
+    $("#excluded-files-container").hide();
+    $(".pre-publishing-continue-container").hide();
   }
 };
 
@@ -3812,39 +3961,16 @@ function showPublishingStatus(callback) {
               },
             });
 
-            ipcRenderer.send(
-              "track-event",
+            logGeneralOperationsForAnalytics(
               "Error",
-              "Disseminate Datasets - Submit for pre-publishing review",
-              defaultBfDataset
+              DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+              AnalyticsGranularity.ALL_LEVELS,
+              ["Show publishing status"]
             );
 
             resolve();
           } else {
             try {
-              // check if the dataset review status is currently one of: 'draft, cancelled, rejected, or accepted'
-              if (res[0] !== "requested") {
-                // cannot withdraw from submission if there is no review request in progress or if it is already accepted
-                $("#prepublishing-withdraw-btn-container").css(
-                  "visibility",
-                  "hidden"
-                );
-                $("#prepublishing-submit-btn-container").css(
-                  "visibility",
-                  "visible"
-                );
-              } else {
-                // show the withdraw button
-                $("#prepublishing-withdraw-btn-container").css(
-                  "visibility",
-                  "visible"
-                );
-                $("#prepublishing-submit-btn-container").css(
-                  "visibility",
-                  "hidden"
-                );
-              }
-
               // update the dataset's publication status and display it onscreen for the user under their dataset name
               $("#para-review-dataset-info-disseminate").text(
                 publishStatusOutputConversion(res)
@@ -4045,6 +4171,14 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
+
+            logCurationForAnalytics(
+              "Error",
+              PrepareDatasetsAnalyticsPrefix.CURATE,
+              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              ["Step 3", "Add", "Folder"],
+              determineDatasetLocation()
+            );
           } else {
             var appendString = "";
             appendString =
@@ -4078,6 +4212,16 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               organizeDSglobalPath,
               datasetStructureJSONObj
             );
+
+            // log that the folder was successfully added
+            logCurationForAnalytics(
+              "Success",
+              PrepareDatasetsAnalyticsPrefix.CURATE,
+              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              ["Step 3", "Add", "Folder"],
+              determineDatasetLocation()
+            );
+
             hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
             hideMenu(
               "high-level-folder",
@@ -4282,7 +4426,7 @@ var bfAddAccountBootboxMessage = `<form>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-tippy-content="See our dedicated <a target='_blank' href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-tippy-content="See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 retrieveBFAccounts();
 
@@ -4586,6 +4730,15 @@ function addFoldersfunction(
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
+
+    // log the error
+    logCurationForAnalytics(
+      "Error",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "Folder"],
+      determineDatasetLocation()
+    );
   } else {
     // if non-allowed characters are detected, do the action
     // AND
@@ -4660,6 +4813,15 @@ function addFoldersfunction(
           menuFile
         );
       }
+
+      // log the success
+      logCurationForAnalytics(
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Import", "Folder"],
+        determineDatasetLocation()
+      );
     }
   }
 }
@@ -5830,6 +5992,14 @@ ipcRenderer.on(
                   "Please continue below."
                 );
                 $("#nextBtn").prop("disabled", false);
+                // log the success to analytics
+                logMetadataForAnalytics(
+                  "Success",
+                  PrepareDatasetsAnalyticsPrefix.CURATE,
+                  AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                  Actions.EXISTING,
+                  Destinations.LOCAL
+                );
               });
             } else {
               action = "";
@@ -5845,6 +6015,14 @@ ipcRenderer.on(
                 "Please continue below."
               );
               $("#nextBtn").prop("disabled", false);
+              // log the success to analytics
+              logMetadataForAnalytics(
+                "Success",
+                PrepareDatasetsAnalyticsPrefix.CURATE,
+                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                Actions.EXISTING,
+                Destinations.LOCAL
+              );
             }
           } else {
             Swal.fire({
@@ -5875,6 +6053,15 @@ ipcRenderer.on(
                 $("#para-continue-location-dataset-getting-started").text("");
               }
             });
+
+            // log the failure to select an appropriate folder to analytics
+            logMetadataForAnalytics(
+              "Error",
+              PrepareDatasetsAnalyticsPrefix.CURATE,
+              AnalyticsGranularity.ALL_LEVELS,
+              Actions.EXISTING,
+              Destinations.LOCAL
+            );
           }
         }
       }
@@ -6111,7 +6298,6 @@ document
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                console.log("Continue");
                 initiate_generate();
               } else {
                 console.log("Stop");
@@ -6170,10 +6356,12 @@ function initiate_generate() {
 
   let dataset_name = "";
   let dataset_destination = "";
+  // let dataset_id = ""
 
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
+    // console.log(sodaJSONObj["bf-dataset-selected"])
   } else if ("generate-dataset" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
@@ -6204,18 +6392,21 @@ function initiate_generate() {
       log.error(error);
       console.error(error);
       // forceActionSidebar('show');
-      ipcRenderer.send(
-        "track-event",
+
+      logCurationForAnalytics(
         "Error",
-        "Generate Dataset",
-        dataset_name
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.PREFIX,
+        [],
+        determineDatasetLocation()
       );
 
-      ipcRenderer.send(
-        "track-event",
+      logCurationForAnalytics(
         "Error",
-        `Generate Dataset - ${dataset_destination}`,
-        dataset_name
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 7", "Generate", "dataset", `${dataset_destination}`],
+        determineDatasetLocation()
       );
 
       file_counter = 0;
@@ -6225,42 +6416,51 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Error",
-        "Generate Dataset - Size",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        "Size",
         main_total_generate_dataset_size
       );
 
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Generate Dataset - ${dataset_destination} - Size`,
-        dataset_name,
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
         main_total_generate_dataset_size
       );
 
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Error",
-      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
-      //   folder_counter
-      // );
+      // get dataset id if available
+      let datasetLocation = determineDatasetLocation();
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+        main_total_generate_dataset_size
+      );
 
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Generate Dataset - Number of Files`,
-        dataset_name,
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        "Number of Files",
         file_counter
       );
 
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Generate Dataset - ${dataset_destination} - Number of Files`,
-        dataset_name,
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         file_counter
       );
 
-      // electron.powerSaveBlocker.stop(prevent_sleep_id)
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+        file_counter
+      );
 
       client.invoke(
         "api_bf_dataset_account",
@@ -6277,6 +6477,7 @@ function initiate_generate() {
         }
       );
     } else {
+      main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
       console.log("Completed curate function");
@@ -6290,18 +6491,25 @@ function initiate_generate() {
           }
         }
 
+        // get dataset id if available
+        let datasetLocation = determineDatasetLocation();
         ipcRenderer.send(
           "track-event",
           "Success",
-          "Manifest Files Created",
-          dataset_name,
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest",
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
           high_level_folder_num
         );
+
         ipcRenderer.send(
           "track-event",
           "Success",
-          `Manifest Files Created - ${dataset_destination}`,
-          dataset_name,
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest - ${dataset_destination}`,
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
           high_level_folder_num
         );
       }
@@ -6310,71 +6518,121 @@ function initiate_generate() {
         show_curation_shortcut();
       }
 
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset`,
-        dataset_name
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset - ${dataset_destination}`,
-        dataset_name
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Generate Dataset - Size",
-        dataset_name,
-        main_total_generate_dataset_size
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset - ${dataset_destination} - Size`,
-        dataset_name,
-        main_total_generate_dataset_size
-      );
-
       file_counter = 0;
       folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Success",
-      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
-      //   folder_counter
-      // );
+      logCurationForAnalytics(
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.PREFIX,
+        [],
+        determineDatasetLocation()
+      );
 
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Success",
-      //   "Generate Dataset - Number of Folders",
-      //   folder_counter
-      // );
+      if (dataset_destination === "Local") {
+        // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
+        let datasetName = document.querySelector("#inputNewNameDataset").value;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Local",
+          datasetName
+        );
+      }
 
+      // for tracking the total size of all datasets ever created on SODA
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - Number of Files`,
-        dataset_name,
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        "Size",
+        main_total_generate_dataset_size
+      );
+
+      logCurationForAnalytics(
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
+        determineDatasetLocation()
+      );
+
+      let datasetLocation = determineDatasetLocation();
+      // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+        main_total_generate_dataset_size
+      );
+
+      // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+        main_total_generate_dataset_size
+      );
+
+      // track amount of files for all datasets
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        "Number of Files",
+        file_counter
+      );
+
+      // track amount of files for datasets by ID or Local
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         file_counter
       );
 
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${dataset_destination} - Number of Files`,
-        dataset_name,
+        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
+        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         file_counter
       );
 
-      // electron.powerSaveBlocker.stop(prevent_sleep_id)
+      // log the preview card instructions for any files and folders being generated on Pennsieve
+      Array.from(document.querySelectorAll(".generate-preview")).forEach(
+        (card) => {
+          let header = card.querySelector("h5");
+          if (header.textContent.includes("folders")) {
+            let instruction = card.querySelector("p");
+            // log the folder instructions to analytics
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent}`,
+              datasetLocation === "Pennsieve"
+                ? defaultBfDatasetId
+                : datasetLocation,
+              1
+            );
+          } else if (header.textContent.includes("existing files")) {
+            let instruction = card.querySelector("p");
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent} `,
+              datasetLocation === "Pennsieve"
+                ? defaultBfDatasetId
+                : datasetLocation,
+              1
+            );
+          }
+        }
+      );
 
       client.invoke(
         "api_bf_dataset_account",
@@ -6673,7 +6931,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
             "track-event",
             "Error",
             "Retrieve Dataset - Pennsieve",
-            defaultBfDataset
+            defaultBfDatasetId
           );
         } else {
           resolve(res);
@@ -6681,7 +6939,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
             "track-event",
             "Success",
             "Retrieve Dataset - Pennsieve",
-            defaultBfDataset
+            defaultBfDatasetId
           );
         }
       }
@@ -6975,26 +7233,24 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
           var emessage = userError(error);
           log.error(error);
           console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Retrieve Dataset - Pennsieve",
-            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
-          );
           $("body").removeClass("waiting");
-          ipcRenderer.send(
-            "track-event",
+
+          // log the error to analytics
+          logCurationForAnalytics(
             "Error",
-            "Generate Manifest - Local Preview",
-            dataset_name
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 5", "Generate", "Manifest"],
+            determineDatasetLocation()
           );
         } else {
           $("body").removeClass("waiting");
-          ipcRenderer.send(
-            "track-event",
+          logCurationForAnalytics(
             "Success",
-            "Retrieve Dataset - Pennsieve",
-            sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 5", "Generate", "Manifest"],
+            determineDatasetLocation()
           );
         }
       }
@@ -7111,6 +7367,404 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
       }
     }
   );
+}
+
+/*
+******************************************************
+******************************************************
+Analytics Logging Section
+******************************************************
+******************************************************
+*/
+
+// Log the dataset description Successes and Errors as the user moves through the process of Preparing their metadata file
+// Inputs:
+//  category: string - "Success" indicates a successful operation; "Error" indicates a failed operation
+//  analyticsActionPrefix: string - One of the analytics action prefixes defined below in an enum
+//  analyticsGranularity: string - Determines what levels of granularity get logged; options are: "prefix", "action", "action with destination", "all levels of granularity."
+//  action: string - Optional. Indicates the step in the metadata preparation process the Success or Failure occurs
+//  destination: string - Optional. The destination where the action is occurring; defined below in an enum
+
+function logMetadataForAnalytics(
+  category,
+  analyticsActionPrefix,
+  granularity,
+  action,
+  destination
+) {
+  // the name of the action being logged
+  let actionName = analyticsActionPrefix;
+
+  // check if only logging the prefix or all levels of granularity
+  if (
+    granularity === AnalyticsGranularity.PREFIX ||
+    granularity === AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // log the prefix, category of the event
+    ipcRenderer.send("track-event", `${category}`, actionName);
+  }
+
+  // check if the user provided an action to be part of the action name
+  if (action !== "") {
+    // update the action name with the given action
+    actionName = actionName + " - " + action;
+  } else {
+    // add not set so when looking at analytics we can easily identify sections logged without providing an action
+    // so we can fix the log call by including an appropriate action
+    actionName = actionName + " - " + "(not set)";
+  }
+
+  // check if the user wants to log the action without the destination
+  if (
+    granularity === AnalyticsGranularity.ACTION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS ||
+    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // track every time the user wanted to generate a metadata file or everytime the user wanted to use a pre-existing metadata file
+    ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
+  }
+
+  if (
+    granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS ||
+    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // add the destination to the action
+    actionName = actionName + " - " + destination;
+    // log only the action with the destination added
+    if (destination === Destinations.PENNSIEVE) {
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    } else {
+      ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
+    }
+  }
+}
+
+// Log the size of a metadata file that was created locally or uploaded to Pennsieve
+// Inputs:
+//    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
+//    metadataFileName: string - the name of the metadata file that was created along with its extension
+async function logMetadataSizeForAnalytics(
+  uploadBFBoolean,
+  metadataFileName,
+  size
+) {
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Metadata - Generate",
+    "Size of Total Metadata Files Generated",
+    size
+  );
+
+  let fileNameToPrefixMapping = {
+    dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+    submission: MetadataAnalyticsPrefix.SUBMISSION,
+    subjects: MetadataAnalyticsPrefix.SUBJECTS,
+    samples: MetadataAnalyticsPrefix.SAMPLES,
+    readme: MetadataAnalyticsPrefix.README,
+    changes: MetadataAnalyticsPrefix.CHANGES,
+    manifest: MetadataAnalyticsPrefix.MANIFEST,
+  };
+
+  // remove the extension from the metadata file's name
+  let metadataFileWithoutExtension = metadataFileName.slice(
+    0,
+    metadataFileName.indexOf(".")
+  );
+
+  // get the appropriate prefix for logging the given metadata file's size
+  let currentMetadataLoggingPrefix =
+    fileNameToPrefixMapping[`${metadataFileWithoutExtension.toLowerCase()}`];
+
+  // log the size to analytics using the Action as a root logging level
+  // that aggregates the size of all metadata files of a particular type created through SODA
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    currentMetadataLoggingPrefix + " - Generate - Size",
+    "Size",
+    size
+  );
+
+  // get the destination of the metadata file
+  let destination = uploadBFBoolean ? "Pennsieve" : "Local";
+
+  // log the size of the metadata file along with its location; label is the selected dataset's ID or a note informing us the dataset is stored locally
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    currentMetadataLoggingPrefix + ` - Generate - ${destination} - Size`,
+    uploadBFBoolean ? defaultBfDatasetId : "Local",
+    size
+  );
+}
+
+// get the size of a file in bytes given a path to a file
+const getFileSizeInBytes = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.stat(path, (err, stats) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(stats.size);
+      }
+    });
+  });
+};
+
+const MetadataAnalyticsPrefix = {
+  DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
+  MANIFEST: "Prepare Metadata - manifest",
+  SUBJECTS: "Prepare Metadata - subjects",
+  SAMPLES: "Prepare Metadata - samples",
+  README: "Prepare Metadata - readme",
+  CHANGES: "Prepare Metadata - changes",
+  SUBMISSION: "Prepare Metadata - submission",
+};
+
+const ManageDatasetsAnalyticsPrefix = {
+  MANAGE_DATASETS_CREATE_DATASET: "Manage Datasets - Create a new dataset",
+  MANAGE_DATASETS_RENAME_DATASET:
+    "Manage Datasets - Rename an existing dataset",
+  MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
+  MANAGE_DATASETS_ADD_EDIT_PERMISSIONS:
+    "Manage Datasets - Add/Edit Permissions",
+  MANAGE_DATASETS_ADD_EDIT_SUBTITLE: "Manage Datasets - Add/Edit Subtitle",
+  MANAGE_DATASETS_ADD_EDIT_README: "Manage Datasets - Add/Edit Readme",
+  MANAGE_DATASETS_ADD_EDIT_BANNER: "Manage Datasets - Upload a Banner Image",
+  MANAGE_DATASETS_ADD_EDIT_TAGS: "Manage Datasets - Add/Edit Tags",
+  MANAGE_DATASETS_ASSIGN_LICENSE: "Manage Datasets - Assign a License",
+  MANAGE_DATASETS_UPLOAD_LOCAL_DATASET:
+    "Manage Datasets - Upload Local Dataset",
+  MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
+};
+
+const DisseminateDatasetsAnalyticsPrefix = {
+  DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
+  DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
+  DISSEMINATE_SPARC_CONSORTIUM:
+    "Disseminate Datasets - Share with SPARC Consortium",
+};
+
+const PrepareDatasetsAnalyticsPrefix = {
+  CURATE: "Prepare Datasets - Organize dataset",
+};
+
+const AnalyticsGranularity = {
+  PREFIX: "prefix",
+  ACTION: "action",
+  ACTION_WITH_DESTINATION: "action with destination",
+  ACTION_AND_ACTION_WITH_DESTINATION: "action and action with destination",
+  ALL_LEVELS: "all levels of granularity",
+};
+
+const Destinations = {
+  LOCAL: "Local",
+  PENNSIEVE: "Pennsieve",
+  SAVED: "Saved",
+  NEW: "New",
+};
+
+const Actions = {
+  GENERATE: "Generate",
+  EXISTING: "Existing",
+  NEW: "New",
+};
+
+function logCurationForAnalytics(
+  category,
+  analyticsActionPrefix,
+  granularity,
+  actions,
+  location,
+  generalLog
+) {
+  // if no actions to log return
+  if (!actions) {
+    return;
+  }
+
+  // the name of the action being logged
+  let actionName = analyticsActionPrefix;
+
+  // check if only logging the prefix or all levels of granularity
+  if (
+    granularity === AnalyticsGranularity.PREFIX ||
+    granularity === AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // log the prefix, category of the event
+    ipcRenderer.send("track-event", `${category}`, actionName);
+  }
+
+  // check if the user wants to log the action(s)
+  if (
+    granularity === AnalyticsGranularity.ACTION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS ||
+    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // iterate through the actions
+    for (let idx = 0; idx < actions.length; idx++) {
+      // track the action
+      actionName = actionName + " - " + actions[idx];
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        actions[idx],
+        1
+      );
+    }
+
+    // reset the action's name
+    actionName = analyticsActionPrefix;
+  }
+
+  // check if the user wants to log the action(s) with the destination
+  if (
+    granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS ||
+    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // iterate through the actions
+    for (let idx = 0; idx < actions.length; idx++) {
+      // track the action
+      actionName = actionName + " - " + actions[idx];
+    }
+
+    if (!generalLog) {
+      // add the location
+      actionName = actionName + " - " + location;
+    }
+
+    // determine logging format
+    if (location === Destinations.PENNSIEVE) {
+      // use the datasetid as a label and do not add an aggregation value
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    } else {
+      // log the location as a label and add an aggregation value
+      ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
+    }
+  }
+}
+
+function determineDatasetLocation() {
+  let location = "";
+
+  if ("starting-point" in sodaJSONObj) {
+    // determine if the local dataset was saved or brought imported
+    if ("type" in sodaJSONObj["starting-point"]) {
+      //if save-progress exists then the user is curating a previously saved dataset
+      if ("save-progress" in sodaJSONObj) {
+        location = Destinations.SAVED;
+        return location;
+      } else {
+        location = sodaJSONObj["starting-point"]["type"];
+        // bf === blackfynn the old name for Pennsieve; bf means dataset was imported from Pennsieve
+        if (location === "bf") {
+          return Destinations.PENNSIEVE;
+        } else if (location === "local") {
+          // imported from the user's machine
+          return Destinations.LOCAL;
+        } else {
+          // if none of the above then the dataset is new
+          return Destinations.NEW;
+        }
+      }
+    }
+  }
+
+  // determine if we are using a local or Pennsieve dataset
+  if ("bf-dataset-selected" in sodaJSONObj) {
+    location = Destinations.PENNSIEVE;
+  } else if ("generate-dataset" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["generate-dataset"]) {
+      location = sodaJSONObj["generate-dataset"]["destination"];
+      if (location.toUpperCase() === "LOCAL") {
+        location = Destinations.LOCAL;
+      } else if (location.toUpperCase() === "PENNSIEVE") {
+        location = Destinations.SAVED;
+      }
+    }
+  }
+
+  return location;
+}
+
+function getMetadataFileNameFromStatus(metadataFileStatus) {
+  // get the UI text that displays the file path
+  let filePath = metadataFileStatus.text();
+
+  let fileName = path.basename(filePath);
+
+  // remove the extension
+  fileName = fileName.slice(0, fileName.indexOf("."));
+
+  return fileName;
+}
+
+function determineLocationFromStatus(metadataFileStatus) {
+  let filePath = metadataFileStatus.text();
+
+  // determine if the user imported from Pennsieve or Locally
+  let pennsieveFile = filePath
+    .toUpperCase()
+    .includes("Pennsieve".toUpperCase());
+
+  return pennsieveFile;
+}
+
+function logGeneralOperationsForAnalytics(
+  category,
+  analyticsPrefix,
+  granularity,
+  actions
+) {
+  // if no actions to log return
+  if (!actions) {
+    return;
+  }
+
+  // the name of the action being logged
+  let actionName = analyticsPrefix;
+
+  // check if only logging the prefix or all levels of granularity
+  if (
+    granularity === AnalyticsGranularity.PREFIX ||
+    granularity === AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // log the prefix, category of the event
+    ipcRenderer.send("track-event", `${category}`, actionName);
+  }
+
+  // check if the user wants to log the action(s)
+  if (
+    granularity === AnalyticsGranularity.ACTION ||
+    granularity === AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // iterate through the actions
+    for (let idx = 0; idx < actions.length; idx++) {
+      // track the action
+      actionName = analyticsPrefix + " - " + actions[idx];
+      ipcRenderer.send(
+        "track-event",
+        `${category}`,
+        actionName,
+        defaultBfDatasetId
+      );
+    }
+  }
 }
 
 /*
@@ -7628,7 +8282,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   const readme = await getDatasetReadme(datasetIdOrName);
 
   // set the readme's status
-  statuses.readme = readme && readme.length ? true : false;
+  statuses.readme = readme && readme.length >= 1 ? true : false;
 
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
@@ -8083,8 +8737,9 @@ const getUserInformation = async () => {
       throw new Error(`${statusCode} - Resource could not be found. `);
     default:
       // something unexpected happened
-      let statusText = await userResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
+      let pennsieveErrorObject = await userResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${statusCode} - ${message}`);
   }
 
   let user = await userResponse.json();
@@ -8140,7 +8795,227 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
       );
     default:
       // something unexpected happened -- likely a 400 or something in the 500s
-      let statusText = await connectOrcidResponse.json().statusText;
-      throw new Error(`${statusCode} - ${statusText}`);
+      let pennsieveErrorObject = await connectOrcidResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${statusCode} - ${message}`);
   }
+};
+
+/*
+******************************************************
+******************************************************
+Get User's Excluded Files with NodeJS
+******************************************************
+******************************************************
+*/
+
+const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
+  // check a valid dataset was provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the access token
+  let jwt = await get_access_token();
+
+  // get the dataset
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // peel out the id
+  let { id } = dataset.content;
+
+  // get the excluded files
+  let excludedFilesResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
+    {
+      headers: { Authorization: `Bearer ${jwt}` },
+    }
+  );
+
+  // get the status code
+  let statusCode = excludedFilesResponse.status;
+
+  // check the status code and respond appropriately
+  switch (statusCode) {
+    case 200:
+      break;
+    case 403:
+      throw new Error(
+        `${statusCode} - You do not have access to this dataset. `
+      );
+    case 401:
+      throw new Error(
+        `${statusCode} - Reauthenticate to access this dataset. `
+      );
+    case 404:
+      throw new Error(`${statusCode} - Dataset could not be found. `);
+    default:
+      // something unexpected happened
+      let pennsieveErrorObject = await excludedFilesResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${statusCode} - ${message}`);
+  }
+
+  // get the ignored files array
+  let { ignoreFiles } = await excludedFilesResponse.json();
+
+  // return the ignored files
+  return ignoreFiles;
+};
+
+// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
+// this keeps those files hidden from the public but visible to publishers and collaboraors.
+// I:
+//  datasetIdOrName: string - A dataset id or name
+//  files: [{fileName: string}] - An array of file name objects
+const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
+  // ensure a valid datasetIDOrName is passed in
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the dataset ID
+  let jwt = await get_access_token();
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+  let { id } = dataset.content;
+
+  // create the request options
+  const options = {
+    method: "PUT",
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`,
+    },
+    body: JSON.stringify(files),
+  };
+
+  // create the request
+  let excludeFilesResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}/ignore-files`,
+    options
+  );
+
+  // check the status code
+  let { status } = excludeFilesResponse;
+  switch (status) {
+    //  200 is success do nothing
+    case 200:
+      break;
+
+    // 403 is forbidden from modifying this resource
+    case 403:
+      throw new Error(
+        `${status} - You are forbidden from accessing this resouce.`
+      );
+
+    // 401 is unauthenticated
+    case 401:
+      throw new Error(
+        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
+      );
+
+    // else a 400 of some kind or a 500 as default
+    default:
+      let pennsieveErrorObject = await excludeFilesResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${status} - ${message}`);
+  }
+
+  return;
+};
+
+// retrieves the currently selected dataset's metadata files
+// I:
+//  datasetIdOrName: string - A dataset id or name
+const getDatasetMetadataFiles = async (datasetIdOrName) => {
+  // check that the datasetIDOrName is provided
+  if (!datasetIdOrName || datasetIdOrName === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to check permissions for."
+    );
+  }
+
+  // get the dataset id
+  let jwt = await get_access_token();
+  let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
+
+  // get the id out of the dataset
+  let { id } = dataset.content;
+
+  // get the metadata files for the dataset
+  let datasetWithChildrenResponse = await fetch(
+    `https://api.pennsieve.io/datasets/${id}`,
+    {
+      headers: { Authorization: `Bearer ${jwt}` },
+    }
+  );
+
+  // check the status code
+  let { status } = datasetWithChildrenResponse;
+  switch (status) {
+    //  200 is success do nothing
+    case 200:
+      break;
+
+    // 403 is forbidden from accessing this resource
+    case 403:
+      throw new Error(
+        `${status} - You are forbidden from accessing this resouce.`
+      );
+
+    // 401 is unauthenticated
+    case 401:
+      throw new Error(
+        `${status} - Not authenticated. Please reauthenticate to access this dataset.`
+      );
+
+    // else a 400 of some kind or a 500 as default
+    default:
+      let pennsieveErrorObject = await datasetWithChildrenResponse.json();
+      let { message } = pennsieveErrorObject;
+      throw new Error(`${status} - ${message}`);
+  }
+
+  // get the metadata files from the dataset
+  let datasetWithChildren = await datasetWithChildrenResponse.json();
+
+  // get the metadata packages
+  let topLevelMetadataPackages = datasetWithChildren.children;
+
+  // traverse the top level metadata packages and pull out -- submission.xlsx, code_description.xlsx, dataset_description.xlsx, outputs_metadata.xlsx,
+  // inputs_metadata.xlsx, CHANGES.txt, README.txt, samples.xlsx, subjects.xlsx
+  const metadataFiles = topLevelMetadataPackages
+    .map((packageObject) => {
+      // get the content
+      const { content } = packageObject;
+
+      // get the file name
+      const { name } = content;
+      // return only the name
+      return name;
+    })
+    .filter((fileName) => {
+      // return the filenames that match a metadata file name
+      if (
+        fileName === "submission.xlsx" ||
+        fileName === "code_description.xlsx" ||
+        fileName === "dataset_description.xlsx" ||
+        fileName === "outputs_metadata.xlsx" ||
+        fileName === "inputs_metadata.xlsx" ||
+        fileName === "CHANGES.txt" ||
+        fileName === "README.txt" ||
+        fileName === "samples.xlsx" ||
+        fileName === "subjects.xlsx"
+      ) {
+        return fileName;
+      }
+    });
+
+  // return the metdata files to the client
+  return metadataFiles;
 };

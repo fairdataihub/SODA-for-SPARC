@@ -313,7 +313,10 @@ button[data-id="bf_list_users_pi"] {
   -webkit-transform: all 3s;
 }
 
-.single-item:hover {
+/*Pre publishing submission flow file viewer uses .single-item but allows a user to select a file UI element.
+  When the element is selected it adds styling. This sets it up to ignore the hover effect styling once selected.  
+*/
+.single-item:not(.pre-publishing-file-viewer-file-selected):hover {
   border: #c0c0c0;
   background-color: #f5f5f5;
   transition: all 0.15s linear;

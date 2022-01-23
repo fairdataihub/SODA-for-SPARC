@@ -344,6 +344,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
     sodaJSONObj["bf-account-selected"] = {};
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["generate-dataset"] = {};
+    // check for empty folders/sub-folders
     let continueProgressEmptyFolder = await checkEmptySubFolders(
       sodaJSONObj["dataset-structure"]
     );
@@ -353,11 +354,76 @@ async function generateManifest(action, type, manifestEditBoolean) {
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
         heightAuto: false,
         icon: "error",
+        showConfirmButton: true,
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           Swal.hideLoading();
         },
       }).then((result) => {});
+
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.LOCAL
+      );
+      $("#div-confirm-manifest-local-folder-dataset").hide();
+      return;
+    }
+    // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
+    let continueProgressNoSPARCFolders = await checkNoSparcFolders(
+      sodaJSONObj["dataset-structure"]
+    );
+    if (continueProgressNoSPARCFolders === true) {
+      Swal.fire({
+        title: "Failed to generate the manifest files.",
+        text: "The dataset does not contain any SPARC folder(s). Please choose a valid dataset before generating the manifest files.",
+        heightAuto: false,
+        icon: "error",
+        showConfirmButton: true,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.LOCAL
+      );
+      $("#div-confirm-manifest-local-folder-dataset").hide();
+      return;
+    }
+    // check for invalid high level folders in a dataset
+    let continueProgressInvalidFolders = await checkInvalidHighLevelFolders(
+      sodaJSONObj["dataset-structure"]
+    );
+    if (continueProgressInvalidFolders === true) {
+      Swal.fire({
+        title: "Failed to generate the manifest files.",
+        text: "The dataset contains invalid, non-SPARC high level folder(s). Please delete or rename them according to SPARC standards before generating the manifest files.",
+        heightAuto: false,
+        showConfirmButton: true,
+        icon: "error",
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.LOCAL
+      );
+      $("#div-confirm-manifest-local-folder-dataset").hide();
       return;
     }
     generateManifestHelper();
@@ -515,9 +581,29 @@ function initiate_generate_manifest() {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+
+      let destination = "";
+
+      // determine if working with a Local dataset or Pennsieve
+      if ("bf-dataset-selected" in sodaJSONObj) {
+        destination = "Pennsieve";
+      } else if ("generate-dataset" in sodaJSONObj) {
+        if ("destination" in sodaJSONObj["generate-dataset"]) {
+          destination = sodaJSONObj["generate-dataset"]["destination"];
+        }
+      }
+
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        destination === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+      );
     } else {
+      let high_level_folder_num = 0;
       if (manifest_files_requested) {
-        let high_level_folder_num = 0;
         if ("dataset-structure" in sodaJSONObj) {
           if ("folders" in sodaJSONObj["dataset-structure"]) {
             for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
@@ -526,6 +612,38 @@ function initiate_generate_manifest() {
           }
         }
       }
+      // determine if working with a Local dataset or Pennsieve
+      if ("bf-dataset-selected" in sodaJSONObj) {
+        destination = "Pennsieve";
+      } else if ("generate-dataset" in sodaJSONObj) {
+        if ("destination" in sodaJSONObj["generate-dataset"]) {
+          destination = sodaJSONObj["generate-dataset"]["destination"];
+        }
+      }
+
+      // log the manifest file creation to analytics
+      logMetadataForAnalytics(
+        "Success",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        destination === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+      );
+
+      // log the amount of high level manifest files that were created
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        MetadataAnalyticsPrefix.MANIFEST + " - Generate - Number of Files ",
+        "Number of Files",
+        high_level_folder_num
+      );
+
+      logMetadataSizeForAnalytics(
+        destination === "Pennsieve" ? true : false,
+        "manifest.xlsx",
+        res[1]
+      );
 
       Swal.fire({
         title:
@@ -582,6 +700,16 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
+
+    // log the Generate action without the destination
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.MANIFEST,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Generate",
+      Destinations.PENNSIEVE
+    );
+
     $("#bf_dataset_create_manifest").text("None");
     $("#div-check-bf-create-manifest").hide();
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
@@ -609,12 +737,47 @@ async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
         heightAuto: false,
+        showConfirmButton: true,
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
           Swal.hideLoading();
         },
       }).then((result) => {});
+
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.PENNSIEVE
+      );
+      return;
+    }
+    // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
+    let continueProgressNoSPARCFolders = await checkNoSparcFolders(
+      sodaJSONObj["dataset-structure"]
+    );
+    if (continueProgressNoSPARCFolders === true) {
+      Swal.fire({
+        title: "Failed to generate the manifest files.",
+        text: "The dataset does not contain any SPARC folder(s). Please choose a valid dataset before generating the manifest files.",
+        heightAuto: false,
+        showConfirmButton: true,
+        icon: "error",
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {});
+      // log the error to analytics
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.MANIFEST,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.PENNSIEVE
+      );
       return;
     }
     generateManifestHelper();
@@ -657,7 +820,7 @@ function validateSPARCdataset() {
       html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      showConfirmButton: false,
+      showConfirmButton: true,
       reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -669,6 +832,7 @@ function validateSPARCdataset() {
       document.getElementById(
         "input-manifest-local-folder-dataset"
       ).placeholder = "Browse here";
+      $("#div-confirm-manifest-local-folder-dataset").hide();
       localDatasetFolderPath = "";
       return false;
     });
@@ -719,16 +883,23 @@ function resetManifest() {
 // to avoid changes made to the dataset structure when we call the main curate function for manifest files
 function checkEmptySubFolders(datasetStructure) {
   let isEmpty = true;
-  for (var folder in datasetStructure["folders"]) {
-    var currentFolder = datasetStructure["folders"][folder];
-    if (
-      Object.keys(currentFolder["folders"]).length === 0 &&
-      Object.keys(currentFolder["files"]).length === 0
-    ) {
-      isEmpty = false;
-    } else {
-      isEmpty = isEmpty && checkEmptySubFolders(currentFolder);
+  if (
+    JSON.stringify(datasetStructure) !== "{}" &&
+    Object.keys(datasetStructure).includes("folders")
+  ) {
+    for (var folder in datasetStructure["folders"]) {
+      var currentFolder = datasetStructure["folders"][folder];
+      if (
+        Object.keys(currentFolder["folders"]).length === 0 &&
+        Object.keys(currentFolder["files"]).length === 0
+      ) {
+        isEmpty = false;
+      } else {
+        isEmpty = isEmpty && checkEmptySubFolders(currentFolder);
+      }
     }
+  } else {
+    isEmpty = true;
   }
   return isEmpty;
 }
@@ -965,4 +1136,51 @@ function createChildNodeManifest(
     }
   }
   return newFormatNode;
+
+// check for no SPARC folders on a Pennsieve dataset before continuing to generate manifest files
+// to avoid changes made to the dataset structure when we call the main curate function for manifest files
+function checkNoSparcFolders(datasetStructure) {
+  let noSPARCFolders = false;
+  if (
+    JSON.stringify(datasetStructure) !== "{}" &&
+    Object.keys(datasetStructure).includes("folders")
+  ) {
+    let datasetFolderArray = Object.keys(datasetStructure["folders"]);
+    if (datasetFolderArray.length === 0) {
+      noSPARCFolders = true;
+    } else {
+      for (var folder of datasetFolderArray) {
+        if (!highLevelFolders.includes(folder)) {
+          noSPARCFolders = true;
+          return noSPARCFolders;
+        }
+      }
+    }
+  } else {
+    noSPARCFolders = true;
+  }
+  return noSPARCFolders;
+}
+
+// check for invalid high level folders before continuing to generate manifest files
+// to avoid changes made to the dataset structure when we call the main curate function for manifest files
+function checkInvalidHighLevelFolders(datasetStructure) {
+  let invalidFolders;
+  if (
+    JSON.stringify(datasetStructure) !== "{}" &&
+    Object.keys(datasetStructure).includes("folders")
+  ) {
+    let datasetFolderArray = Object.keys(datasetStructure["folders"]);
+    if (datasetFolderArray.length === 0) {
+      invalidFolders = true;
+    } else {
+      // checking if the datasetFolderArray is a subset of the highLevelFolders array or not, if not, then it must contain invalid folder(s)
+      invalidFolders = datasetFolderArray.some(
+        (val) => !highLevelFolders.includes(val)
+      );
+    }
+  } else {
+    invalidFolders = true;
+  }
+  return invalidFolders;
 }
