@@ -4,7 +4,7 @@
 let guided_PI_owner = {};
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
-const guided_dataset_subtitle_char_count = document.getElementById(
+const guidedDatasetSubtitle_char_count = document.getElementById(
   "guided-subtitle-char-count"
 );
 const create_dataset_button = $("#guided-create-empty-dataset");
@@ -310,7 +310,7 @@ $(document).ready(() => {
   $("#guided-dataset-subtitle-input").on("keyup", () => {
     countCharacters(
       document.getElementById("guided-dataset-subtitle-input"),
-      guided_dataset_subtitle_char_count
+      guidedDatasetSubtitle_char_count
     );
     validateGuidedBasicDescriptionInputs();
   });
@@ -601,13 +601,72 @@ $(document).ready(() => {
     });
   };
 
-  $("#guided-generate-dataset-button").on("click", async function () {
-    let guided_dataset_name = sodaJSONObj["digital-metadata"]["name"];
-    let selectedbfaccount = defaultBfAccount;
+  const guided_add_subtitle = async (bfAccount, bfDataset, datasetSubtitle) => {
+    console.log(bfAccount);
+    console.log(bfDataset);
+    console.log(datasetSubtitle);
+    return new Promise((resolve) => {
+      log.info("Adding subtitle to dataset");
+      log.info(datasetSubtitle);
 
-    log.info(`Creating a new dataset with the name: ${guided_dataset_name}`);
+      client.invoke(
+        "api_bf_add_subtitle",
+        bfAccount,
+        bfDataset,
+        datasetSubtitle,
+        (error, res) => {
+          if (error) {
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+
+            Swal.fire({
+              title: "Failed to add subtitle!",
+              text: emessage,
+              icon: "error",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Manage Dataset - Add/Edit Subtitle",
+              defaultBfDataset
+            );
+            resolve(["failed", error]);
+          } else {
+            log.info("Added subtitle to dataset");
+            Swal.fire({
+              title: "successfully added subtitle!",
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Manage Dataset - Add/Edit Subtitle",
+              defaultBfDataset
+            );
+            resolve(["success", res]);
+          }
+        }
+      );
+    });
+  };
+
+  $("#guided-generate-dataset-button").on("click", async function () {
+    let selectedbfaccount = defaultBfAccount;
+    let selectedBfDataset = "test 2bot2";
+
+    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
+    let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+
+    log.info(`Creating a new dataset with the name: ${guidedDatasetName}`);
     Swal.fire({
-      title: `Creating a new dataset named: ${guided_dataset_name}`,
+      title: `Creating a new dataset named: ${guidedDatasetName}`,
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -621,9 +680,27 @@ $(document).ready(() => {
     });
     let response = await guided_create_dataset(
       selectedbfaccount,
-      guided_dataset_name
+      guidedDatasetName
     );
-    console.log(response);
+    if (response[0] == "failed") {
+      Swal.hideLoading();
+      Swal.showValidationMessage(userError(response[1]));
+    } else if (response[0] == "success") {
+      /*
+      guided_add_subtitle(
+        selectedbfaccount,
+        "test 2bot2",
+        guidedDatasetSubtitle
+      );*/
+    }
+
+    /*.then(
+      guided_add_subtitle(
+        selectedbfaccount,
+        "test 2bot2",
+        guidedDatasetSubtitle
+      )
+    );*/
   });
 
   /*
