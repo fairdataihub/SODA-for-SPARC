@@ -136,7 +136,7 @@ $("#button-create-bf-new-dataset").click(() => {
       },
     });
 
-    client.invoke(
+    const foo = client.invoke(
       "api_bf_new_dataset_folder",
       bfNewDatasetName,
       selectedbfaccount,
@@ -219,6 +219,7 @@ $("#button-create-bf-new-dataset").click(() => {
         }
       }
     );
+    console.log(foo);
   }, delayAnimation);
 });
 

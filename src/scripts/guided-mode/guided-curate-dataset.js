@@ -1,8 +1,6 @@
 /////////////////////////////////////////////////////////
 //////////          Shared variables          ///////////
 /////////////////////////////////////////////////////////
-let guided_dataset_name = "";
-let guided_dataset_subtitle = "";
 let guided_PI_owner = {};
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
@@ -19,14 +17,15 @@ let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
 guidedSetDatasetName = (newDatasetName) => {
   datasetName = newDatasetName.val().trim();
-  guided_dataset_name = datasetName;
+  sodaJSONObj["digital-metadata"]["name"] = datasetName;
+
   $(".guidedDatasetName").text(datasetName);
   //defaultBfDataset = datasetName;
 };
 
 guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
   datasetSubtitle = newDatasetSubtitle.val().trim();
-  guided_dataset_subtitle = datasetSubtitle;
+  sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
   $(".guidedDatasetSubtitle").text(datasetSubtitle);
 };
 
@@ -558,35 +557,15 @@ $(document).ready(() => {
     });
   };
 
-  $("#guided-generate-dataset-button").on("click", function () {
-    let bfNewDatasetName =
-      "testingtesting2" + Math.floor(Math.random() * (999 - 100 + 1) + 100);
-    let blah = "false";
-    const guidedCreateDataset = async () => {
-      let selectedbfaccount = defaultBfAccount;
-
-      log.info(`Creating a new dataset with the name: ${bfNewDatasetName}`);
-      Swal.fire({
-        title: `Creating a new dataset named: ${bfNewDatasetName}`,
-        html: "Please wait...",
-        // timer: 5000,
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-      const res = await client.invoke(
+  const guided_create_dataset = async (bfAccount, datasetName) => {
+    return new Promise((resolve) => {
+      client.invoke(
         "api_bf_new_dataset_folder",
-        bfNewDatasetName,
-        selectedbfaccount,
+        datasetName,
+        bfAccount,
         (error, res) => {
           if (error) {
             log.error(error);
-            console.error(error);
             let emessage = userError(error);
             Swal.fire({
               title: `Failed to create a new dataset.`,
@@ -600,12 +579,12 @@ $(document).ready(() => {
               "track-event",
               "Error",
               "Manage Dataset - Create Empty Dataset",
-              bfNewDatasetName
+              datasetName
             );
-            return error;
+            resolve(["failed", error]);
           } else {
             Swal.fire({
-              title: `Dataset ${bfNewDatasetName} was created successfully`,
+              title: `Dataset ${datasetName} was created successfully`,
               icon: "success",
               showConfirmButton: true,
               heightAuto: false,
@@ -614,16 +593,37 @@ $(document).ready(() => {
                 Swal.hideLoading();
               },
             });
-            blah = "true";
-            return "xyz";
             log.info(`Created dataset successfully`);
+            resolve(["success", res]);
           }
         }
       );
-      console.log(await res);
-    };
+    });
+  };
 
-    guidedCreateDataset().then();
+  $("#guided-generate-dataset-button").on("click", async function () {
+    let guided_dataset_name = sodaJSONObj["digital-metadata"]["name"];
+    let selectedbfaccount = defaultBfAccount;
+
+    log.info(`Creating a new dataset with the name: ${guided_dataset_name}`);
+    Swal.fire({
+      title: `Creating a new dataset named: ${guided_dataset_name}`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+    let response = await guided_create_dataset(
+      selectedbfaccount,
+      guided_dataset_name
+    );
+    console.log(response);
   });
 
   /*
@@ -861,14 +861,6 @@ $(document).ready(() => {
       )
         .val()
         .trim();
-      sodaJSONObj["digital-metadata"]["name"] = $("#guided-dataset-name-input")
-        .val()
-        .trim();
-      sodaJSONObj["digital-metadata"]["subtitle"] = $(
-        "#guided-dataset-subtitle-input"
-      )
-        .val()
-        .trim();
       guidedSetDatasetName($("#guided-dataset-name-input"));
       guidedSetDatasetSubtitle($("#guided-dataset-subtitle-input"));
     }
@@ -981,8 +973,9 @@ $(document).ready(() => {
     console.log(sodaJSONObj);
     console.log(current_sub_step.attr("id"));
     console.log(current_progression_tab.attr("id"));
+
     if (current_sub_step.attr("id") == "guided-create-readme-metadata-tab") {
-      guidedShowTreePreview(guided_dataset_name);
+      guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"]);
     }
   });
   const goToTabOnStart = (tabIsd) => {
