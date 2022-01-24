@@ -657,12 +657,85 @@ $(document).ready(() => {
     });
   };
 
+  const guided_add_PI_owner = async (bfAccount, bfDataset, datasetPiOwner) => {
+    return new Promise((resolve) => {
+      log.info("Changing PI Owner of datset");
+
+      Swal.fire({
+        title: "Changing PI Owner of dataset",
+        html: "Please wait...",
+        // timer: 5000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      client.invoke(
+        "api_bf_add_permission",
+        bfAccount,
+        bfDataset,
+        datasetPiOwner,
+        "owner",
+        (error, res) => {
+          if (error) {
+            ipcRenderer.send(
+              "track-event",
+              "Error",
+              "Manage Dataset - Change PI Owner",
+              bfDataset
+            );
+
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+
+            Swal.fire({
+              title: "Failed to change PI permission!",
+              text: emessage,
+              icon: "error",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            resolve(["failed", error]);
+          } else {
+            log.info("Changed PI Owner of datset");
+
+            ipcRenderer.send(
+              "track-event",
+              "Success",
+              "Manage Dataset - Change PI Owner",
+              bfDataset
+            );
+            Swal.fire({
+              title: "Successfully changed PI Owner of dataset",
+              text: res,
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            resolve(["success", res]);
+          }
+        }
+      );
+    });
+  };
+
   $("#guided-generate-dataset-button").on("click", async function () {
     let selectedbfaccount = defaultBfAccount;
-    let selectedBfDataset = "test 2bot2";
-
-    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
+    let selectedBfDataset = sodaJSONObj["digital-metadata"]["name"];
     let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+    let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
+    let guidedDataCollection =
+      sodaJSONObj["digital-metadata"]["data-collection"];
+    let guidedPrimaryConclusion =
+      sodaJSONObj["digital-metadata"]["primary-conclusion"];
 
     log.info(`Creating a new dataset with the name: ${guidedDatasetName}`);
     Swal.fire({
@@ -683,24 +756,25 @@ $(document).ready(() => {
       guidedDatasetName
     );
     if (response[0] == "failed") {
-      Swal.hideLoading();
-      Swal.showValidationMessage(userError(response[1]));
+      //TODO TODO TODO TODO HANDLE CREATE DATASET FAIL
     } else if (response[0] == "success") {
-      /*
-      guided_add_subtitle(
+      let subtitleResponse = guided_add_subtitle(
         selectedbfaccount,
-        "test 2bot2",
+        selectedBfDataset,
         guidedDatasetSubtitle
+      );
+      /*let piResponse = guided_add_PI_owner(
+        selectedbfaccount,
+        selectedBfDataset,
+        "N:user:b74d56f7-d028-401b-94ef-a580c4abd741"
       );*/
-    }
-
-    /*.then(
-      guided_add_subtitle(
+      let descriptionResponse = guided_add_description(
         selectedbfaccount,
-        "test 2bot2",
-        guidedDatasetSubtitle
-      )
-    );*/
+        selectedBfDataset /**/
+      );
+      let responseValues = await Promise.all([subtitleResponse /*piResponse*/]);
+      console.log(responseValues);
+    }
   });
 
   /*
