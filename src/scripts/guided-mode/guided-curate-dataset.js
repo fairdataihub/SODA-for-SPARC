@@ -575,6 +575,14 @@ $(document).ready(() => {
           if (error) {
             log.error(error);
             let emessage = userError(error);
+            Swal.fire({
+              title: `Failed to create a new dataset.`,
+              text: emessage,
+              showCancelButton: false,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              icon: "error",
+            });
             ipcRenderer.send(
               "track-event",
               "Error",
@@ -583,6 +591,16 @@ $(document).ready(() => {
             );
             reject(error);
           } else {
+            Swal.fire({
+              title: `Dataset ${datasetName} was created successfully`,
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              didOpen: () => {
+                Swal.hideLoading();
+              },
+            });
             log.info(`Created dataset successfully`);
             resolve(`Dataset ${datasetName} was created successfully`);
           }
@@ -591,18 +609,14 @@ $(document).ready(() => {
     });
   };
 
-  const guided_add_subtitle = async (bfAccount, bfDataset, datasetSubtitle) => {
-    console.log(bfAccount);
-    console.log(bfDataset);
-    console.log(datasetSubtitle);
-    return new Promise((resolve) => {
+  const guided_add_subtitle = (bfAccount, datasetName, datasetSubtitle) => {
+    return new Promise((resolve, reject) => {
       log.info("Adding subtitle to dataset");
       log.info(datasetSubtitle);
-
       client.invoke(
         "api_bf_add_subtitle",
         bfAccount,
-        bfDataset,
+        datasetName,
         datasetSubtitle,
         (error, res) => {
           if (error) {
@@ -624,7 +638,7 @@ $(document).ready(() => {
               "Manage Dataset - Add/Edit Subtitle",
               defaultBfDataset
             );
-            resolve(["failed", error]);
+            reject(error);
           } else {
             log.info("Added subtitle to dataset");
             Swal.fire({
@@ -640,7 +654,7 @@ $(document).ready(() => {
               "Manage Dataset - Add/Edit Subtitle",
               defaultBfDataset
             );
-            resolve(["success", res]);
+            resolve(`Subtitle added to ${datasetName}`);
           }
         }
       );
@@ -928,33 +942,45 @@ $(document).ready(() => {
       },
     });
     guided_create_dataset(selectedbfaccount, guidedDatasetName)
-      .then((data) => console.log(data))
+      .then((data) => {
+        (async function () {
+          const promises = [
+            guided_add_subtitle(
+              selectedbfaccount,
+              guidedDatasetName,
+              guidedDatasetSubtitle
+            ),
+          ];
+          const result = await Promise.allSettled(promises);
+          console.log(result.map((promise) => promise.status));
+          // ['fulfilled', 'rejected']
+        })();
+      })
       .catch((error) => console.log(error));
     /*if (response[0] == "failed") {
-      //TODO TODO TODO TODO HANDLE CREATE DATASET FAIL
     } else if (response[0] == "success") {
       let subtitleResponse = guided_add_subtitle(
         selectedbfaccount,
         guidedDatasetName,
         guidedDatasetSubtitle
       );
-      /*let piResponse = guided_add_PI_owner(
+      let piResponse = guided_add_PI_owner(
         selectedbfaccount,
         guidedDatasetName,
         "N:user:b74d56f7-d028-401b-94ef-a580c4abd741"
-      );*/
-    //let descriptionResponse = guided_add_description(
-    //selectedbfaccount,
-    //  guidedDatasetName
-    // );
-    //let tagsResponse = guided_add_tags(selectedbfaccount, guidedDatasetName);
-    //let responseValues = await Promise.all([
-    //   subtitleResponse,
-    // /*piResponse*/ descriptionResponse,
-    // ]);
-    //let datasetFilesFolders = guided_add_dataset_files_folders
-    // console.log(responseValues);
-    //}
+      );
+    let descriptionResponse = guided_add_description(
+    selectedbfaccount,
+    guidedDatasetName
+    );
+    let tagsResponse = guided_add_tags(selectedbfaccount, guidedDatasetName);
+    let responseValues = await Promise.all([
+       subtitleResponse,
+    piResponse descriptionResponse,
+     ]);
+    let datasetFilesFolders = guided_add_dataset_files_folders
+     console.log(responseValues);
+    }/*/
   });
 
   $("#guided-save-banner-image").click((event) => {
