@@ -1,5 +1,3 @@
-const { BrowserWindow } = require("electron");
-
 //// option to show tool-tips for high-level folders
 function showTooltips(ev) {
   var folderName = ev.parentElement.innerText;
@@ -423,6 +421,14 @@ function checkValidRenameInput(
         heightAuto: false,
       });
       newName = "";
+      // log the error
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Rename", "File"],
+        determineDatasetLocation()
+      );
     }
     //// if renaming a folder
   } else {
@@ -445,6 +451,15 @@ function checkValidRenameInput(
         heightAuto: false,
       });
       newName = "";
+
+      // log the error
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Rename", "Folder"],
+        determineDatasetLocation()
+      );
     }
   }
   return newName;
@@ -589,6 +604,15 @@ function renameFolder(
               popup: "animate__animated animate__fadeOutUp animate__faster",
             },
           });
+
+          // log the success
+          logCurationForAnalytics(
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Rename", promptVar],
+            determineDatasetLocation()
+          );
 
           /// assign new name to folder or file in the UI
           event1.parentElement.parentElement.innerText = returnedName;
@@ -1393,6 +1417,15 @@ function addFilesfunction(
         globalPathValue
       );
     }
+
+    // log the success
+    logCurationForAnalytics(
+      "Success",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "File"],
+      determineDatasetLocation()
+    );
   }
   //add sweetalert here before non duplicate files pop
   //
@@ -1444,6 +1477,15 @@ function addFilesfunction(
         <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
         </div>`,
     });
+
+    // log the user error
+    logCurationForAnalytics(
+      "Error",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "File"],
+      determineDatasetLocation()
+    );
   }
 }
 
