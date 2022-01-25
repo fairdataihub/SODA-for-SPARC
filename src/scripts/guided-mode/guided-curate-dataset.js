@@ -727,9 +727,75 @@ $(document).ready(() => {
     });
   };
 
+  const guided_add_description = async (bfAccount, bfDataset) => {
+    // get the text from the three boxes and store them in their own variables
+    let requiredFields = [];
+
+    // read and sanatize the input for spaces and reintroduced bolded keywords
+    let studyPurpose = $("#guided-ds-description-study-purpose").val().trim();
+    studyPurpose.replace("**Study Purpose:**", "");
+    if (studyPurpose.length) {
+      requiredFields.push("**Study Purpose:** " + studyPurpose + "\n");
+    }
+
+    let dataCollection = $("#guided-ds-description-data-collection")
+      .val()
+      .trim();
+    dataCollection.replace("**Data Collection:**", "");
+    if (dataCollection.length) {
+      requiredFields.push("**Data Collection:** " + dataCollection + "\n");
+    }
+
+    let primaryConclusion = $("#guided-ds-description-primary-conclusion")
+      .val()
+      .trim();
+    primaryConclusion.replace("**Primary Conclusion:**", "");
+    if (primaryConclusion.length) {
+      requiredFields.push(
+        "**Primary Conclusion:** " + primaryConclusion + "\n"
+      );
+    }
+
+    // validate the new markdown description the user created
+    let response = validateDescription(requiredFields.join(""));
+
+    if (!response) {
+      Swal.fire({
+        icon: "warning",
+        title: "This description does not follow SPARC guidelines.",
+        html: `
+        Your description should include all of the mandatory sections. Additionally, each section should be no longer than one paragraph.
+        <br> 
+        <br>
+        Are you sure you want to continue?`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Continue",
+        cancelButtonText: "No, I want to edit my description",
+        reverseButtons: true,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          return;
+        }
+        // hide the warning message if it exists
+        addDescription(bfDataset, requiredFields.join("\n"));
+      });
+    } else {
+      addDescription(bfDataset, requiredFields.join("\n"));
+    }
+  };
+
   $("#guided-generate-dataset-button").on("click", async function () {
     let selectedbfaccount = defaultBfAccount;
-    let selectedBfDataset = sodaJSONObj["digital-metadata"]["name"];
+    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
@@ -760,19 +826,24 @@ $(document).ready(() => {
     } else if (response[0] == "success") {
       let subtitleResponse = guided_add_subtitle(
         selectedbfaccount,
-        selectedBfDataset,
+        guidedDatasetName,
         guidedDatasetSubtitle
       );
       /*let piResponse = guided_add_PI_owner(
         selectedbfaccount,
-        selectedBfDataset,
+        guidedDatasetName,
         "N:user:b74d56f7-d028-401b-94ef-a580c4abd741"
       );*/
       let descriptionResponse = guided_add_description(
         selectedbfaccount,
-        selectedBfDataset /**/
+        guidedDatasetName
       );
-      let responseValues = await Promise.all([subtitleResponse /*piResponse*/]);
+      //let tagsResponse = guided_add_tags(selectedbfaccount, guidedDatasetName);
+      let responseValues = await Promise.all([
+        subtitleResponse,
+        /*piResponse*/ descriptionResponse,
+      ]);
+      //let datasetFilesFolders = guided_add_dataset_files_folders
       console.log(responseValues);
     }
   });
