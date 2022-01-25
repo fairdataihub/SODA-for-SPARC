@@ -70,29 +70,6 @@ button:focus {
   justify-content: space-between;
 }
 
-@-o-keyframes fadeIt {
-  0% {
-    background-color: #ffffff;
-  }
-  50% {
-    background-color: #8ac0e4;
-  }
-  100% {
-    background-color: #ffffff;
-  }
-}
-@keyframes fadeIt {
-  0% {
-    background-color: #ffffff;
-  }
-  50% {
-    background-color: #8ac0e4;
-  }
-  100% {
-    background-color: #ffffff;
-  }
-}
-
 .update-file:before {
   opacity: 0.5;
 }
