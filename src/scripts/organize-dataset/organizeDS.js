@@ -960,7 +960,7 @@ function onBtnClicked(btnId, duplicateArray) {
               var folder = true;
               justFileName = tempFile[i];
               let newName = document.getElementById(inputField).value;
-              if (myPath["folders"].hasOwnProperty(newName)) {
+              if (myPath["folders"].hasOwnProperty(newName) || newName === "") {
                 //checks if newName has already been used
                 document.getElementById(inputField).style.borderColor = "red";
                 document.getElementById(inputField).value = "";
@@ -984,12 +984,14 @@ function onBtnClicked(btnId, duplicateArray) {
               justFileName = tempFile[i].substring(0, extIndex);
               let newName = document.getElementById(inputField).value;
 
+              let filewithExt = tempFile[i].substring(
+                extIndex,
+                tempFile[i].length
+              );
+              newNamewithExt = newName.concat(filewithExt);
               if (
-                myPath["files"].hasOwnProperty(
-                  newName.concat(
-                    tempFile[i].substring(extIndex, tempFile[i].length)
-                  )
-                )
+                myPath["files"].hasOwnProperty(newNamewithExt) ||
+                newName == ""
               ) {
                 document.getElementById(inputField).style.borderColor = "red";
                 document.getElementById(inputField).value = "";
