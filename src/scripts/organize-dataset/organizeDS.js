@@ -826,7 +826,7 @@ function onBtnClicked(btnId, duplicateArray) {
     //returns array of file names or folder names
   }
 
-        //toast alert created with Notyf
+  //toast alert created with Notyf
   var toastUpdate = new Notyf({
     position: { x: "right", y: "bottom" },
     ripple: true,
@@ -951,7 +951,7 @@ function onBtnClicked(btnId, duplicateArray) {
             </div>`,
         });
       } else {
-        if(tempFile[0].indexOf(".") === -1) {
+        if (tempFile[0].indexOf(".") === -1) {
           toastUpdate.open({
             type: "file_updated",
             message: "Skipped File(s)",
