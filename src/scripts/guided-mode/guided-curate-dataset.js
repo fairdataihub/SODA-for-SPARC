@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////
 //////////          Shared variables          ///////////
 /////////////////////////////////////////////////////////
-let guided_PI_owner = {};
+let guidedPiOwner = {};
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
 const guidedDatasetSubtitle_char_count = document.getElementById(
@@ -15,7 +15,7 @@ let current_progression_tab = $("#prepare-dataset-progression-tab");
 let current_sub_step = $("#guided-basic-description-tab");
 let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
-guidedSetDatasetName = (newDatasetName) => {
+const guidedSetDatasetName = (newDatasetName) => {
   datasetName = newDatasetName.val().trim();
   sodaJSONObj["digital-metadata"]["name"] = datasetName;
 
@@ -23,10 +23,84 @@ guidedSetDatasetName = (newDatasetName) => {
   //defaultBfDataset = datasetName;
 };
 
-guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
+const guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
   datasetSubtitle = newDatasetSubtitle.val().trim();
   sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
   $(".guidedDatasetSubtitle").text(datasetSubtitle);
+};
+
+const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
+  $(".guidedDatasetOwner").text(newPiOwnerObj.PiOwnerString);
+  sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwnerObj.UUID;
+  console.log(sodaJSONObj["digital-metadata"]["pi-owner"]);
+};
+
+const guidedAddUserPermission = (newUserPermissionObj) => {
+  //append created user to permissions array
+  guidedUserPermissions.push(newUserPermissionObj);
+
+  /*create user permissions element and append to all elements
+      with guidedDatasetUserPermissions class.*/
+  const newUserPermissionElement = $("<div>", {
+    class: "guided--dataset-info-content-container",
+    style: "width: 100%",
+  });
+  newUserPermissionElement.attr(
+    "data-user-string",
+    newUserPermissionObj.userString
+  );
+  newUserPermissionElement.attr("data-uuid", newUserPermissionObj.UUID);
+  newUserPermissionElement.attr(
+    "data-user-permission",
+    newUserPermissionObj.permission
+  );
+  newUserPermissionElement.append(
+    $("<h5>", {
+      class: "guided--dataset-info-content",
+      text:
+        $("#guided_bf_list_users option:selected").text().trim() +
+        " : " +
+        $("#select-permission-list-3").val(),
+    })
+  );
+  newUserPermissionElement.append(
+    $("<i>", {
+      class: "fas fa-user-times guided-delete-permission",
+      style: "color: red",
+      onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
+    })
+  );
+  $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
+};
+
+const guidedAddTeamPermission = (newTeamPermissionObj) => {
+  guidedTeamPermissions.push(newTeamPermissionObj);
+  const newTeamPermissionElement = $("<div>", {
+    class: "guided--dataset-info-content-container",
+    style: "width: 100%",
+  });
+  newTeamPermissionElement.append(
+    $("<h5>", {
+      class: "guided--dataset-info-content",
+      text:
+        $("#guided_bf_list_teams option:selected").text().trim() +
+        " : " +
+        $("#select-permission-list-4").val(),
+    })
+  );
+  newTeamPermissionElement.append(
+    $("<i>", {
+      class: "fas fa-user-times guided-delete-permission",
+      style: "color: red",
+      onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
+    })
+  );
+  $(".guidedDatasetTeamPermissions").append(newTeamPermissionElement);
+};
+
+setGuidedLicense = (newLicense) => {
+  $(".guidedBfLicense").text(newLicense);
+  sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
 
 var guidedJstreePreview = document.getElementById(
@@ -78,44 +152,6 @@ $(document).ready(() => {
       UUID: $("#guided_bf_list_users").val().trim(),
       permission: $("#select-permission-list-3").val(),
     };
-
-    const guidedAddUserPermission = (newUserPermissionObj) => {
-      //append created user to permissions array
-      guidedUserPermissions.push(newUserPermissionObj);
-
-      /*create user permissions element and append to all elements
-      with guidedDatasetUserPermissions class.*/
-      const newUserPermissionElement = $("<div>", {
-        class: "guided--dataset-info-content-container",
-        style: "width: 100%",
-      });
-      newUserPermissionElement.attr(
-        "data-user-string",
-        newUserPermissionObj.userString
-      );
-      newUserPermissionElement.attr("data-uuid", newUserPermissionObj.UUID);
-      newUserPermissionElement.attr(
-        "data-user-permission",
-        newUserPermissionObj.permission
-      );
-      newUserPermissionElement.append(
-        $("<h5>", {
-          class: "guided--dataset-info-content",
-          text:
-            $("#guided_bf_list_users option:selected").text().trim() +
-            " : " +
-            $("#select-permission-list-3").val(),
-        })
-      );
-      newUserPermissionElement.append(
-        $("<i>", {
-          class: "fas fa-user-times guided-delete-permission",
-          style: "color: red",
-          onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
-        })
-      );
-      $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
-    };
     guidedAddUserPermission(newUserPermission);
   });
 
@@ -124,31 +160,6 @@ $(document).ready(() => {
       teamString: $("#guided_bf_list_teams option:selected").text().trim(),
       UUID: $("#guided_bf_list_teams").val().trim(),
       permission: $("#select-permission-list-4").val(),
-    };
-
-    const guidedAddTeamPermission = (newTeamPermission) => {
-      guidedTeamPermissions.push(newTeamPermissionObj);
-      const newTeamPermissionElement = $("<div>", {
-        class: "guided--dataset-info-content-container",
-        style: "width: 100%",
-      });
-      newTeamPermissionElement.append(
-        $("<h5>", {
-          class: "guided--dataset-info-content",
-          text:
-            $("#guided_bf_list_teams option:selected").text().trim() +
-            " : " +
-            $("#select-permission-list-4").val(),
-        })
-      );
-      newTeamPermissionElement.append(
-        $("<i>", {
-          class: "fas fa-user-times guided-delete-permission",
-          style: "color: red",
-          onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
-        })
-      );
-      $(".guidedDatasetTeamPermissions").append(newTeamPermissionElement);
     };
     guidedAddTeamPermission(newTeamPermissionObj);
   });
@@ -249,6 +260,7 @@ $(document).ready(() => {
       guidedJsTreePreviewData;
     $(guidedJstreePreview).jstree(true).refresh();
   }
+
   $("#guided-button-add-permission-pi").on("click", function () {
     const newPiOwner = {
       PiOwnerString: $("#guided_bf_list_users_pi option:selected")
@@ -257,12 +269,9 @@ $(document).ready(() => {
       UUID: $("#guided_bf_list_users_pi").val().trim(),
       permission: "owner",
     };
-    const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
-      guided_PI_owner = newPiOwnerObj;
-      $(".guidedDatasetOwner").text(newPiOwnerObj.PiOwnerString);
-    };
     setGuidedDatasetPiOwner(newPiOwner);
   });
+
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
       title: "Input new dataset name",
@@ -315,7 +324,7 @@ $(document).ready(() => {
     validateGuidedBasicDescriptionInputs();
   });
   $("#guided-button-add-license").on("click", function () {
-    $(".guidedBfLicense").text("Creative Commons Attribution (CC-BY)");
+    setGuidedLicense("Creative Commons Attribution (CC-BY)");
     $("#guided-button-add-license").attr("disabled");
     enableProgressButton();
   });
@@ -793,7 +802,7 @@ $(document).ready(() => {
     }
   };
 
-  const guided_add_folders_files = async (
+  /*const guided_add_folders_files = async (
     bfAccount,
     bfDataset,
     datasetPiOwner
@@ -908,7 +917,7 @@ $(document).ready(() => {
         }
       );
     });
-  };
+  };*/
 
   $("#guided-generate-dataset-button").on("click", async function () {
     let selectedbfaccount = defaultBfAccount;
@@ -1068,8 +1077,27 @@ $(document).ready(() => {
       guidedSetDatasetSubtitle($("#guided-dataset-subtitle-input"));
     }
 
-    if (current_sub_step.attr("id") == "guided-designate-pi-owner-tab") {
-      sodaJSONObj["digital-metadata"]["pi-owner"] = guided_PI_owner;
+    if (current_sub_step.attr("id") == "add-edit-description-tags-tab") {
+      sodaJSONObj["digital-metadata"]["study-purpose"] = $(
+        "#guided-ds-description-study-purpose"
+      )
+        .val()
+        .trim();
+      sodaJSONObj["digital-metadata"]["data-collection"] = $(
+        "#guided-ds-description-data-collection"
+      )
+        .val()
+        .trim();
+      sodaJSONObj["digital-metadata"]["primary-conclusion"] = $(
+        "#guided-ds-description-primary-conclusion"
+      )
+        .val()
+        .trim();
+      sodaJSONObj["digital-metadata"]["dataset-tags"] = Array.from(
+        guidedDatasetTagsTagify.getTagElms()
+      ).map((tag) => {
+        return tag.textContent;
+      });
     }
 
     if (current_sub_step.attr("id") == "guided-designate-permissions-tab") {
@@ -1112,34 +1140,6 @@ $(document).ready(() => {
       if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
-    }
-
-    if (current_sub_step.attr("id") == "add-edit-description-tags-tab") {
-      sodaJSONObj["digital-metadata"]["study-purpose"] = $(
-        "#guided-ds-description-study-purpose"
-      )
-        .val()
-        .trim();
-      sodaJSONObj["digital-metadata"]["data-collection"] = $(
-        "#guided-ds-description-data-collection"
-      )
-        .val()
-        .trim();
-      sodaJSONObj["digital-metadata"]["primary-conclusion"] = $(
-        "#guided-ds-description-primary-conclusion"
-      )
-        .val()
-        .trim();
-      sodaJSONObj["digital-metadata"]["dataset-tags"] = Array.from(
-        guidedDatasetTagsTagify.getTagElms()
-      ).map((tag) => {
-        return tag.textContent;
-      });
-    }
-
-    if (current_sub_step.attr("id") == "guided-assign-license-tab") {
-      sodaJSONObj["digital-metadata"]["license"] =
-        "Creative Commons Attribution";
     }
 
     if (current_sub_step.attr("id") == "add-edit-tags-tab") {
