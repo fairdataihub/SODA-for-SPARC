@@ -517,9 +517,9 @@ function initiate_generate_manifest_local(originalDataset) {
   }).then((result) => {});
   // SODA Manifest Files folder
   path.join(homeDirectory, "SODA", "METADATA");
-  let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
+  let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
   // Move manifest files to the local dataset
-  moveManifestFiles(dir, originalDataset)
+  moveManifestFiles(dir, originalDataset);
 
   // reset sodaJSONObj
   sodaJSONObj = {
@@ -529,8 +529,7 @@ function initiate_generate_manifest_local(originalDataset) {
   };
 
   Swal.fire({
-    title:
-      "Successfully generated manifest files at the specified location!",
+    title: "Successfully generated manifest files at the specified location!",
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
@@ -597,7 +596,6 @@ function initiate_generate_manifest_bf() {
       }
     }
   }
-
 
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
@@ -710,7 +708,10 @@ function initiate_generate_manifest_bf() {
 
       // delete temp SODA Manifest Files folder in user's SODA folder if from local
       if (sodaJSONObj["generate-dataset"]["destination"] === "local") {
-        let dir = path.join(sodaJSONObj["manifest-file"]["local-destination"], "SODA Manifest Files")
+        let dir = path.join(
+          sodaJSONObj["manifest-file"]["local-destination"],
+          "SODA Manifest Files"
+        );
         fs.rmdir(dir, { recursive: true }, (err) => {
           if (err) {
             throw err;
@@ -748,44 +749,47 @@ function initiate_generate_manifest_bf() {
 
 function moveManifestFiles(sourceFolder, destinationFolder) {
   fs.readdir(sourceFolder, (err, folders) => {
-    if (err)
-      console.log(err);
+    if (err) console.log(err);
     else {
-      folders.forEach(function(folder) {
+      folders.forEach(function (folder) {
         let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
-        let destinationManifest = path.join(destinationFolder, folder, "manifest.xlsx");
-        fs.rename(sourceManifest, destinationManifest)
-      })
+        let destinationManifest = path.join(
+          destinationFolder,
+          folder,
+          "manifest.xlsx"
+        );
+        fs.rename(sourceManifest, destinationManifest);
+      });
       // delete temp SODA Manifest Files folder in user's SODA folder if from local
       removeDir(sourceFolder);
     }
-  })
+  });
 }
 
-const removeDir = function(pathdir) {
+const removeDir = function (pathdir) {
   if (fs.existsSync(pathdir)) {
-    const files = fs.readdirSync(pathdir)
+    const files = fs.readdirSync(pathdir);
     if (files.length > 0) {
-      files.forEach(function(filename) {
+      files.forEach(function (filename) {
         let ele = path.join(pathdir, filename);
         if (fs.statSync(ele).isDirectory()) {
-          removeDir(ele)
+          removeDir(ele);
         } else {
-            try {
-              fs.unlinkSync(ele)
-            } catch {
-              fd = fs.openSync(ele, 'r');
-              fs.closeSync(fd);
-              fs.unlinkSync(ele)
-            }
+          try {
+            fs.unlinkSync(ele);
+          } catch {
+            fd = fs.openSync(ele, "r");
+            fs.closeSync(fd);
+            fs.unlinkSync(ele);
           }
-      })
-      fs.rmdirSync(pathdir)
+        }
+      });
+      fs.rmdirSync(pathdir);
     } else {
-      fs.rmdirSync(pathdir)
+      fs.rmdirSync(pathdir);
     }
   }
-}
+};
 
 async function extractBFDatasetForManifestFile(bfaccount, bfdataset) {
   var result;
