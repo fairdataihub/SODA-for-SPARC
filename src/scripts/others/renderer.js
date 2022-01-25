@@ -4703,7 +4703,7 @@ function addFoldersfunction(
             html:
               `
             <div class="caption">
-              <p>Folders with the following names are already in the current folder: <p><ul>${listElements}</ul></p></p>
+              <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
             </div>  
             <div class="button-container">
               <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
@@ -5000,7 +5000,7 @@ function dropHelper(
       html:
         `
       <div class="caption">
-        <p>Folders with the following names are already in the current folder: <p><ul>${listElements}</ul></p></p>
+        <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
       </div>  
       <div class="button-container">
         <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
@@ -5045,7 +5045,7 @@ function dropHelper(
       html:
         `
       <div class="caption">
-        <p>Files with the following names are already in the current folder: <p><ul>${listElements}</ul></p></p>
+        <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
       </div>  
       <div class="button-container">
         <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
@@ -6231,7 +6231,7 @@ document
       }
     }
 
-    //  from here you can modify
+    // from here you can modify
     document.getElementById("para-please-wait-new-curate").innerHTML =
       "Please wait...";
     document.getElementById(

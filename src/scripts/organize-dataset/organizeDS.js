@@ -747,7 +747,7 @@ function showItemsAsListBootbox(arrayOfItems) {
   for (var element of arrayOfItems) {
     htmlElement =
       htmlElement +
-      "<li style='font-size: large; margin-bottom: 5px; margin-right: 80px; margin-left: 80px;'>" +
+      "<li style='font-size: large; margin-bottom: 5px; margin-right: 270px; margin-left: 242px;'>" +
       element +
       "</li>";
   }
@@ -825,6 +825,26 @@ function onBtnClicked(btnId, duplicateArray) {
     return tempFile;
     //returns array of file names or folder names
   }
+
+        //toast alert created with Notyf
+  var toastUpdate = new Notyf({
+    position: { x: "right", y: "bottom" },
+    ripple: true,
+    dismissible: true,
+    ripple: false,
+    types: [
+      {
+        type: "file_updated",
+        background: "#13716D",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+        //duration: 3000,
+      },
+    ],
+  });
 
   //SKIP OPTION
   if (btnId === "skip") {
@@ -915,7 +935,7 @@ function onBtnClicked(btnId, duplicateArray) {
           html:
             `
           <div class="caption">
-            <p>Files with the following names are already in the current folder: <p><ul>${listElements}</ul></p></p>
+            <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
           </div>  
           <div class="button-container">
             <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
@@ -930,6 +950,18 @@ function onBtnClicked(btnId, duplicateArray) {
             <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
             </div>`,
         });
+      } else {
+        if(tempFile[0].indexOf(".") === -1) {
+          toastUpdate.open({
+            type: "file_updated",
+            message: "Skipped File(s)",
+          });
+        } else {
+          toastUpdate.open({
+            type: "file_updated",
+            message: "Skipped Folder(s)",
+          });
+        }
       }
     });
   }
@@ -1129,7 +1161,10 @@ function onBtnClicked(btnId, duplicateArray) {
               folders[i].parentNode.dispatchEvent(new Event("dblclick"));
             }
           }
-          Swal.fire("Succesfully imported and renamed!", "", "success");
+          toastUpdate.open({
+            type: "file_updated",
+            message: "Succesfully Imported and Renamed!",
+          });
         }
       });
   }
@@ -1257,42 +1292,13 @@ function onBtnClicked(btnId, duplicateArray) {
           folders[i].parentNode.dispatchEvent(new Event("dblclick"));
         }
       }
-      //toast alert created with Notyf
-      let fileUpdated = new Notyf({
-        position: { x: "right", y: "bottom" },
-        ripple: true,
-        dismissible: true,
-        ripple: false,
-        types: [
-          {
-            type: "file_updated",
-            background: "#13716D",
-            icon: {
-              className: "fas fa-check-circle",
-              tagName: "i",
-              color: "white",
-            },
-            //duration: 3000,
-          },
-          {
-            type: "folder_updated",
-            background: "#13716D",
-            icon: {
-              className: "fas fa-check-circle",
-              tagName: "i",
-              color: "white",
-            },
-            //duration: 3000,
-          },
-        ],
-      });
       if (removeExt === -1) {
-        fileUpdated.open({
+        toastUpdate.open({
           type: "file_updated",
           message: "Updated Folder(s)",
         });
       } else {
-        fileUpdated.open({
+        toastUpdate.open({
           type: "file_updated",
           message: "Updated File(s)",
         });
@@ -1466,7 +1472,7 @@ function addFilesfunction(
       html:
         `
       <div class="caption">
-        <p>Files with the following names are already in the current folder: <p><ul>${listElements}</ul></p></p>
+        <p>Files with the following names are already in the current folder: <p><ul style="text-align:start;">${listElements}</ul></p></p>
       </div>  
       <div class="button-container">
         <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
