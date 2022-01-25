@@ -1,7 +1,6 @@
 /////////////////////////////////////////////////////////
 //////////          Shared variables          ///////////
 /////////////////////////////////////////////////////////
-let guidedPiOwner = {};
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
 const guidedDatasetSubtitle_char_count = document.getElementById(
@@ -32,7 +31,6 @@ const guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
   $(".guidedDatasetOwner").text(newPiOwnerObj.PiOwnerString);
   sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwnerObj.UUID;
-  console.log(sodaJSONObj["digital-metadata"]["pi-owner"]);
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
@@ -132,6 +130,7 @@ const validateGuidedBasicDescriptionInputs = () => {
     enableProgressButton();
   }
 };
+
 const validateGuidedDatasetDescriptionInputs = () => {
   if (
     $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
@@ -566,8 +565,8 @@ $(document).ready(() => {
     });
   };
 
-  const guided_create_dataset = async (bfAccount, datasetName) => {
-    return new Promise((resolve) => {
+  const guided_create_dataset = (bfAccount, datasetName) => {
+    return new Promise((resolve, reject) => {
       client.invoke(
         "api_bf_new_dataset_folder",
         datasetName,
@@ -576,34 +575,16 @@ $(document).ready(() => {
           if (error) {
             log.error(error);
             let emessage = userError(error);
-            Swal.fire({
-              title: `Failed to create a new dataset.`,
-              text: emessage,
-              showCancelButton: false,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              icon: "error",
-            });
             ipcRenderer.send(
               "track-event",
               "Error",
               "Manage Dataset - Create Empty Dataset",
               datasetName
             );
-            resolve(["failed", error]);
+            reject(error);
           } else {
-            Swal.fire({
-              title: `Dataset ${datasetName} was created successfully`,
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              didOpen: () => {
-                Swal.hideLoading();
-              },
-            });
             log.info(`Created dataset successfully`);
-            resolve(["success", res]);
+            resolve(`Dataset ${datasetName} was created successfully`);
           }
         }
       );
@@ -923,6 +904,9 @@ $(document).ready(() => {
     let selectedbfaccount = defaultBfAccount;
     let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+    let guidedPiOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
+    let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+    let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
       sodaJSONObj["digital-metadata"]["data-collection"];
@@ -943,11 +927,10 @@ $(document).ready(() => {
         Swal.showLoading();
       },
     });
-    let response = await guided_create_dataset(
-      selectedbfaccount,
-      guidedDatasetName
-    );
-    if (response[0] == "failed") {
+    guided_create_dataset(selectedbfaccount, guidedDatasetName)
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
+    /*if (response[0] == "failed") {
       //TODO TODO TODO TODO HANDLE CREATE DATASET FAIL
     } else if (response[0] == "success") {
       let subtitleResponse = guided_add_subtitle(
@@ -960,18 +943,18 @@ $(document).ready(() => {
         guidedDatasetName,
         "N:user:b74d56f7-d028-401b-94ef-a580c4abd741"
       );*/
-      let descriptionResponse = guided_add_description(
-        selectedbfaccount,
-        guidedDatasetName
-      );
-      //let tagsResponse = guided_add_tags(selectedbfaccount, guidedDatasetName);
-      let responseValues = await Promise.all([
-        subtitleResponse,
-        /*piResponse*/ descriptionResponse,
-      ]);
-      //let datasetFilesFolders = guided_add_dataset_files_folders
-      console.log(responseValues);
-    }
+    //let descriptionResponse = guided_add_description(
+    //selectedbfaccount,
+    //  guidedDatasetName
+    // );
+    //let tagsResponse = guided_add_tags(selectedbfaccount, guidedDatasetName);
+    //let responseValues = await Promise.all([
+    //   subtitleResponse,
+    // /*piResponse*/ descriptionResponse,
+    // ]);
+    //let datasetFilesFolders = guided_add_dataset_files_folders
+    // console.log(responseValues);
+    //}
   });
 
   $("#guided-save-banner-image").click((event) => {
