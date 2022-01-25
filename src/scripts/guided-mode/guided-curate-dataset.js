@@ -793,6 +793,123 @@ $(document).ready(() => {
     }
   };
 
+  const guided_add_folders_files = async (
+    bfAccount,
+    bfDataset,
+    datasetPiOwner
+  ) => {
+    return new Promise((resolve) => {
+      if (sodaJSONObj["starting-point"]["type"] === "local") {
+        sodaJSONObj["starting-point"]["type"] = "new";
+      }
+
+      let dataset_name = "";
+      let dataset_destination = "";
+
+      if ("bf-dataset-selected" in sodaJSONObj) {
+        dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+        dataset_destination = "Pennsieve";
+      } else if ("generate-dataset" in sodaJSONObj) {
+        if ("destination" in sodaJSONObj["generate-dataset"]) {
+          let destination = sodaJSONObj["generate-dataset"]["destination"];
+          if (destination == "local") {
+            dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+            dataset_destination = "Local";
+          }
+          if (destination == "bf") {
+            dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+            dataset_destination = "Pennsieve";
+          }
+        }
+      }
+
+      if (dataset_destination == "Pennsieve") {
+        let supplementary_checks = await run_pre_flight_checks(false);
+        if (!supplementary_checks) {
+          $("#sidebarCollapse").prop("disabled", false);
+          return;
+        }
+      }
+
+      // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+      if ("files" in sodaJSONObj["dataset-structure"]) {
+        sodaJSONObj["dataset-structure"]["files"] = {};
+      }
+      // delete manifest files added for treeview
+      for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+        if (
+          "manifest.xlsx" in
+            sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
+              "files"
+            ] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+            "manifest.xlsx"
+          ]["forTreeview"]
+        ) {
+          delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
+            "files"
+          ]["manifest.xlsx"];
+        }
+      }
+
+      client.invoke(
+        "api_check_empty_files_folders",
+        sodaJSONObj,
+        (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            console.error(error);
+            $("#sidebarCollapse").prop("disabled", false);
+          } else {
+            log.info("Continue with curate");
+            var message = "";
+            error_files = res[0];
+            error_folders = res[1];
+            if (error_files.length > 0) {
+              var error_message_files =
+                backend_to_frontend_warning_message(error_files);
+              message += error_message_files;
+            }
+            if (error_folders.length > 0) {
+              var error_message_folders =
+                backend_to_frontend_warning_message(error_folders);
+              message += error_message_folders;
+            }
+            if (message) {
+              message += "Would you like to continue?";
+              message = "<div style='text-align: left'>" + message + "</div>";
+              Swal.fire({
+                icon: "warning",
+                html: message,
+                showCancelButton: true,
+                cancelButtonText: "No, I want to review my files",
+                focusCancel: true,
+                confirmButtonText: "Yes, Continue",
+                backdrop: "rgba(0,0,0, 0.4)",
+                reverseButtons: reverseSwalButtons,
+                heightAuto: false,
+                showClass: {
+                  popup: "animate__animated animate__zoomIn animate__faster",
+                },
+                hideClass: {
+                  popup: "animate__animated animate__zoomOut animate__faster",
+                },
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  guided_generate();
+                } else {
+                  $("#sidebarCollapse").prop("disabled", false);
+                }
+              });
+            } else {
+              guided_generate();
+            }
+          }
+        }
+      );
+    });
+  };
+
   $("#guided-generate-dataset-button").on("click", async function () {
     let selectedbfaccount = defaultBfAccount;
     let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
@@ -847,142 +964,6 @@ $(document).ready(() => {
       console.log(responseValues);
     }
   });
-
-  /*
-    if (sodaJSONObj["starting-point"]["type"] === "local") {
-      sodaJSONObj["starting-point"]["type"] = "new";
-    }
-
-    let dataset_name = "";
-    let dataset_destination = "";
-
-    if ("bf-dataset-selected" in sodaJSONObj) {
-      dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-      dataset_destination = "Pennsieve";
-    } else if ("generate-dataset" in sodaJSONObj) {
-      if ("destination" in sodaJSONObj["generate-dataset"]) {
-        let destination = sodaJSONObj["generate-dataset"]["destination"];
-        if (destination == "local") {
-          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-          dataset_destination = "Local";
-        }
-        if (destination == "bf") {
-          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-          dataset_destination = "Pennsieve";
-        }
-      }
-    }
-
-
-    if (dataset_destination == "Pennsieve") {
-      let supplementary_checks = await run_pre_flight_checks(false);
-      if (!supplementary_checks) {
-        $("#sidebarCollapse").prop("disabled", false);
-        return;
-      }
-    }
-
-    //  from here you can modify
-    document.getElementById("para-please-wait-new-curate").innerHTML =
-      "Please wait...";
-    document.getElementById(
-      "para-new-curate-progress-bar-error-status"
-    ).innerHTML = "";
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "";
-    document.getElementById("div-new-curate-progress").style.display = "none";
-
-    progressBarNewCurate.value = 0;
-
-    // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-    if ("files" in sodaJSONObj["dataset-structure"]) {
-      sodaJSONObj["dataset-structure"]["files"] = {};
-    }
-    // delete manifest files added for treeview
-    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-      if (
-        "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
-        ]["forTreeview"]
-      ) {
-        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
-          "files"
-        ]["manifest.xlsx"];
-      }
-    }
-
-    client.invoke(
-      "api_check_empty_files_folders",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          document.getElementById(
-            "para-new-curate-progress-bar-error-status"
-          ).innerHTML =
-            "<span style='color: red;'> Error: " + emessage + "</span>";
-          document.getElementById("para-please-wait-new-curate").innerHTML = "";
-          console.error(error);
-          $("#sidebarCollapse").prop("disabled", false);
-        } else {
-          document.getElementById("para-please-wait-new-curate").innerHTML =
-            "Please wait...";
-          log.info("Continue with curate");
-          var message = "";
-          error_files = res[0];
-          error_folders = res[1];
-
-          if (error_files.length > 0) {
-            var error_message_files =
-              backend_to_frontend_warning_message(error_files);
-            message += error_message_files;
-          }
-
-          if (error_folders.length > 0) {
-            var error_message_folders =
-              backend_to_frontend_warning_message(error_folders);
-            message += error_message_folders;
-          }
-
-          if (message) {
-            message += "Would you like to continue?";
-            message = "<div style='text-align: left'>" + message + "</div>";
-            Swal.fire({
-              icon: "warning",
-              html: message,
-              showCancelButton: true,
-              cancelButtonText: "No, I want to review my files",
-              focusCancel: true,
-              confirmButtonText: "Yes, Continue",
-              backdrop: "rgba(0,0,0, 0.4)",
-              reverseButtons: reverseSwalButtons,
-              heightAuto: false,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                guided_generate();
-              } else {
-                $("#sidebarCollapse").prop("disabled", false);
-                document.getElementById(
-                  "para-please-wait-new-curate"
-                ).innerHTML = "Return to make changes";
-                document.getElementById("div-generate-comeback").style.display =
-                  "flex";
-              }
-            });
-          } else {
-            guided_generate().then();
-          }
-        }
-      }
-    );*/
 
   $("#guided-save-banner-image").click((event) => {
     $("#guided-para-dataset-banner-image-status").html("");
@@ -1302,17 +1283,11 @@ $(document).ready(() => {
   });
 });
 
-function guided_generate() {
+const guided_generate = async () => {
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
-
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-    "Preparing files ...";
-  document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "block";
-  document.getElementById("div-generate-comeback").style.display = "none";
 
   if ("manifest-files" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["manifest-files"]) {
@@ -1392,13 +1367,6 @@ function guided_generate() {
         main_total_generate_dataset_size
       );
 
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Error",
-      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
-      //   folder_counter
-      // );
-
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -1414,8 +1382,6 @@ function guided_generate() {
         dataset_name,
         file_counter
       );
-
-      // electron.powerSaveBlocker.stop(prevent_sleep_id)
 
       client.invoke(
         "api_bf_dataset_account",
@@ -1499,20 +1465,6 @@ function guided_generate() {
       folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Success",
-      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
-      //   folder_counter
-      // );
-
-      // ipcRenderer.send(
-      //   "track-event",
-      //   "Success",
-      //   "Generate Dataset - Number of Folders",
-      //   folder_counter
-      // );
-
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -1528,25 +1480,7 @@ function guided_generate() {
         dataset_name,
         file_counter
       );
-
-      // electron.powerSaveBlocker.stop(prevent_sleep_id)
-
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
-          }
-        }
-      );
     }
-    document.getElementById("div-generate-comeback").style.display = "flex";
   });
 
   // Progress tracking function for main curate
@@ -1654,4 +1588,4 @@ function guided_generate() {
       }
     }
   }
-}
+};
