@@ -435,7 +435,8 @@ function checkValidRenameInput(
       }
     }
     var itemDivElements = document.getElementById("items").children;
-    renameFolder(this, organizeCurrentLocation, itemDivElements);
+    let organizeCurrentLocation = organizeDSglobalPath;
+    renameFolder(event, organizeCurrentLocation, itemDivElements);
     if (duplicate) {
       Swal.fire({
         icon: "error",
@@ -461,24 +462,10 @@ function renameFolder(
   var promptVar;
   var type; // renaming files or folders
   var newName;
-  var currentName = event1.parentElement.innerText;
+  var currentName =
+    event1.parentElement.getElementsByTagName("div")[0].innerText;
   var nameWithoutExtension;
   var highLevelFolderBool;
-  console.log(
-    "Parameters of renameFolder\n" +
-      event1.value +
-      "\nEVENT 1 END\n" +
-      organizeCurrentLocation.value +
-      "\norganizeCurrentLocation END\n" +
-      itemElement.length +
-      "\nitem element END\n" +
-      JSON.stringify(inputGlobal) +
-      "\niput global END\n" +
-      JSON.stringify(uiItem) +
-      "\nuiItem END\n" +
-      JSON.stringify(singleUIItem) +
-      "\nsingleUIItem END\n"
-  );
 
   double_extensions = [
     ".ome.tiff",
@@ -755,7 +742,7 @@ function selectAll(source) {
 function onBtnClicked(btnId, duplicateArray) {
   Swal.close();
   //creates the html for sweetalert
-  function createHTML(btnId, list) {
+  function createContent(btnId, list) {
     if (btnId === "replace" || btnId === "skip") {
       type = "checkbox";
     } else if (btnId === "rename") {
@@ -787,6 +774,7 @@ function onBtnClicked(btnId, duplicateArray) {
       para.className = "input-name";
       container.id = "container";
 
+      //design for checkbox
       if (type === "checkbox") {
         input.className = "checkbox-design";
         input.name = "checkbox";
@@ -798,6 +786,7 @@ function onBtnClicked(btnId, duplicateArray) {
         container.append(fieldContainer);
         selectAll.append(container);
       } else if (type === "text") {
+        //design for input fields
         input.className = "input-field-design";
         fieldContainer.className = "input-container";
 
@@ -810,11 +799,11 @@ function onBtnClicked(btnId, duplicateArray) {
       }
     }
     return tempFile;
+    //returns array of file names or folder names
   }
 
   //SKIP OPTION
   if (btnId === "skip") {
-    console.log(duplicateArray);
     var tempFile = [];
     var temp = duplicateArray.substring(1, duplicateArray.length - 1);
     temp = temp.split(",");
@@ -835,10 +824,15 @@ function onBtnClicked(btnId, duplicateArray) {
     selectAll.append(para2);
     selectAll.append(container);
 
-    createHTML(btnId, temp);
+    tempFile = createContent(btnId, temp);
+    if (tempFile[0].indexOf(".") === -1) {
+      var header = "Select which folders to skip";
+    } else {
+      header = "Select which files to skip";
+    }
 
     Swal.fire({
-      title: "Select which files to skip",
+      title: header,
       html: selectAll,
     }).then((result) => {
       if (result.isConfirmed) {
@@ -861,7 +855,6 @@ function onBtnClicked(btnId, duplicateArray) {
         for (let i = 0; i < checkboxes.length; i++) {
           if (fileName.includes(checkboxes[i].id)) {
             let index = fileName.indexOf(checkboxes[i].id);
-            console.log(index);
             fileName.splice(index, 1);
           }
         }
@@ -876,7 +869,8 @@ function onBtnClicked(btnId, duplicateArray) {
           }
         }
       }
-
+      //unless all files are skipped it will prompt again on what to do
+      //with duplicate files
       var listElements = showItemsAsListBootbox(fileName);
       newList = JSON.stringify(newList).replace(/"/g, "");
       if (fileName.length > 0) {
@@ -929,11 +923,15 @@ function onBtnClicked(btnId, duplicateArray) {
     temp = temp.split(",");
     container = document.createElement("div");
 
-    var tempFile = createHTML(btnId, temp);
-
+    var tempFile = createContent(btnId, temp);
+    if (tempFile[0].indexOf(".") === -1) {
+      var header = "Rename Folders";
+    } else {
+      header = "Rename Files";
+    }
     swal
       .fire({
-        title: "Rename Files",
+        title: header,
         confirmButtonText: "Save",
         allowOutsideClick: false,
         heightAuto: false,
@@ -947,114 +945,170 @@ function onBtnClicked(btnId, duplicateArray) {
           popup: "animate_animated animate_zoomout animate__faster",
         },
         html: container,
-        didOpen: () => {
-          firstinput = tempFile[0];
-          $(firstinput).focus();
-        },
         preConfirm: () => {
           //check the same name isn't being used
-          console.log(myPath);
-          var reNamedFiles = [];
+          var fileNames = [];
           var fileLocation = [];
           sameName = [];
+
           for (var i = 0; i < tempFile.length; i++) {
             let inputField = tempFile[i];
             document.getElementById(inputField).style.borderColor = "";
             extIndex = tempFile[i].lastIndexOf(".");
-            justFileName = tempFile[i].substring(0, extIndex);
-            let newName = document.getElementById(inputField).value;
-            console.log(
-              newName.concat(
-                tempFile[i].substring(extIndex, tempFile[i].length)
-              )
-            );
-            if (
-              myPath["files"].hasOwnProperty(
-                newName.concat(
-                  tempFile[i].substring(extIndex, tempFile[i].length)
-                )
-              )
-            ) {
-              document.getElementById(inputField).style.borderColor = "red";
-              document.getElementById(inputField).value = "";
-              document.getElementById(inputField).placeholder =
-                "Provide a new name";
-              console.log("they are the same");
-              sameName.push(true);
+            if (extIndex === -1) {
+              //if extIndex === -1 then we are working with a folder not file
+              var folder = true;
+              justFileName = tempFile[i];
+              let newName = document.getElementById(inputField).value;
+              if (myPath["folders"].hasOwnProperty(newName)) {
+                //checks if newName has already been used
+                document.getElementById(inputField).style.borderColor = "red";
+                document.getElementById(inputField).value = "";
+                document.getElementById(inputField).placeholder =
+                  "Provide a new name";
+                sameName.push(true);
+              } else {
+                //if all elements are false then all newNames are original
+                sameName.push(false);
+              }
+              if (
+                justFileName != newName &&
+                newName != "" &&
+                fileNames.includes(newName) === false
+              ) {
+                fileNames.push(newName);
+                fileLocation.push(temp[i]);
+              }
             } else {
-              sameName.push(false);
-            }
-            if (justFileName === newName || newName === "") {
-              document.getElementById(inputField).style.borderColor = "red";
-              document.getElementById(inputField).value = "";
-              document.getElementById(inputField).placeholder =
-                "Provide a new name";
-              console.log("they are the same");
-              sameName.push(true);
-            } else {
-              sameName.push(false);
-            }
-            if (
-              justFileName != newName &&
-              newName != "" &&
-              reNamedFiles.includes(newName) === false
-            ) {
-              reNamedFiles.push(
-                newName.concat(
-                  tempFile[i].substring(extIndex, tempFile[i].length)
+              //else we are working with a file
+              justFileName = tempFile[i].substring(0, extIndex);
+              let newName = document.getElementById(inputField).value;
+
+              if (
+                myPath["files"].hasOwnProperty(
+                  newName.concat(
+                    tempFile[i].substring(extIndex, tempFile[i].length)
+                  )
                 )
-              );
-              fileLocation.push(temp[i]);
+              ) {
+                document.getElementById(inputField).style.borderColor = "red";
+                document.getElementById(inputField).value = "";
+                document.getElementById(inputField).placeholder =
+                  "Provide a new name";
+                sameName.push(true);
+              } else {
+                sameName.push(false);
+              }
+              if (
+                justFileName != newName &&
+                newName != "" &&
+                fileNames.includes(newName) === false
+              ) {
+                fileNames.push(
+                  newName.concat(
+                    tempFile[i].substring(extIndex, tempFile[i].length)
+                  )
+                );
+                fileLocation.push(temp[i]);
+              }
             }
           }
-          console.log(reNamedFiles);
-          console.log(fileLocation);
-          console.log(sameName.includes(true) === true);
-          if (sameName.includes(true) === true) {
-            sameName = [];
-            i = 0;
-            return false;
-            $("swal2-confirm swal2-styled").removeAttr("disabled");
+          if (folder === true) {
+            if (sameName.includes(true) === true) {
+              sameName = [];
+              i = 0;
+              return false;
+              $("swal2-confirm swal2-styled").removeAttr("disabled");
+            } else {
+              //add files to json and ui
+              //update json action
+              for (let index = 0; index < temp.length; index++) {
+                myPath["folders"][fileNames[index]] = {
+                  files: myPath["folders"][tempFile[index]].files,
+                  folders: myPath["folders"][tempFile[index]].folders,
+                  path: myPath["folders"][tempFile[index]].path,
+                  type: "local",
+                  action: ["new", "renamed"],
+                };
+                listItems(myPath, "#items");
+                getInFolder(
+                  "#items",
+                  "#items",
+                  organizeDSglobalPath,
+                  datasetStructureJSONObj
+                );
+                hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+                hideMenu(
+                  "high-level-folder",
+                  menuFolder,
+                  menuHighLevelFolders,
+                  menuFile
+                );
+              }
+            }
           } else {
-            console.log("SUCCESS");
-            //add files to json and ui
+            //update file json
+            if (sameName.includes(true) === true) {
+              sameName = [];
+              i = 0;
+              return false;
+              $("swal2-confirm swal2-styled").removeAttr("disabled");
+            } else {
+              //update json action
+              for (let index = 0; index < temp.length; index++) {
+                myPath["files"][fileNames[index]] = {
+                  path: fileLocation[index],
+                  basename: fileNames[index],
+                  type: "local",
+                  description: "",
+                  "additional-metadata": "",
+                  action: ["new", "renamed"],
+                };
+                var appendString =
+                  '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+                  myPath["files"][fileNames[index]]["basename"] +
+                  "</div></div>";
 
-            for (let index = 0; index < temp.length; index++) {
-              myPath["files"][reNamedFiles[index]] = {
-                path: fileLocation[index],
-                basename: reNamedFiles[index],
-                type: "local",
-                description: "",
-                "additional-metadata": "",
-                action: ["new", "renamed"],
-              };
-              var appendString =
-                '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-                myPath["files"][reNamedFiles[index]]["basename"] +
-                "</div></div>";
-
-              $("#items").html(appendString);
-              listItems(myPath, "#items");
-              getInFolder(
-                "#items",
-                "#items",
-                organizeDSglobalPath,
-                datasetStructureJSONObj
-              );
+                $("#items").html(appendString);
+                listItems(myPath, "#items");
+                getInFolder(
+                  "#items",
+                  "#items",
+                  organizeDSglobalPath,
+                  datasetStructureJSONObj
+                );
+              }
             }
           }
         },
       })
       .then((result) => {
         if (result.isConfirmed) {
+          //folders are no clickable unless page is refreshed
+          //automated the refresh
+          var section = organizeDSglobalPath.value;
+          let lastSlash = section.indexOf("/") + 1;
+          section = section.substring(lastSlash, section.length - 1);
+          if (section.includes("/")) {
+            let lastSlash = section.lastIndexOf("/") + 1;
+            section = section.substring(lastSlash, section.length);
+          }
+          var back_button = document.getElementById("button-back");
+          back_button.click();
+          var folders = document
+            .getElementById("items")
+            .getElementsByClassName("folder_desc");
+          for (let i = 0; i < folders.length; i++) {
+            if (folders[i].innerText === section) {
+              folders[i].parentNode.dispatchEvent(new Event("dblclick"));
+            }
+          }
           Swal.fire("Succesfully imported and renamed!", "", "success");
         }
       });
   }
   if (btnId === "replace") {
-    //new prompt with list of files and input fields to rename files
-    //if left blank prompt with a list of the blank asking if want to skip files or replace old files
-    console.log("replace");
+    //new prompt with list of files/folders and input fields to rename files/folders
     var filtered = getGlobalPath(organizeDSglobalPath);
     var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     var tempFile = [];
@@ -1067,6 +1121,7 @@ function onBtnClicked(btnId, duplicateArray) {
     let selectAllCheckbox = document.createElement("input");
 
     para2.className = "selectAll-text";
+    selectAllCheckbox.style = "margin-right: 64px;";
     selectAllCheckbox.setAttribute("onclick", "selectAll(this);");
     selectAllCheckbox.type = "checkbox";
     selectAllCheckbox.className = "checkbox-design";
@@ -1077,11 +1132,16 @@ function onBtnClicked(btnId, duplicateArray) {
     selectAll.append(container);
 
     //loop through paths and get file name
-    var tempFile = createHTML(btnId, temp);
-    console.log(tempFile);
+    var tempFile = createContent(btnId, temp);
+
+    if (tempFile[0].indexOf(".") === -1) {
+      var header = "Select which folders to replace";
+    } else {
+      header = "Select which files to replace";
+    }
     var nodes = document.getElementsByClassName("folder_desc");
     Swal.fire({
-      title: "Select which files to replace",
+      title: header,
       html: selectAll,
     }).then((result) => {
       if (result.isConfirmed) {
@@ -1089,7 +1149,7 @@ function onBtnClicked(btnId, duplicateArray) {
         let checkboxes = container.querySelectorAll(
           "input[type=checkbox]:checked"
         );
-        var fileCheck = [];
+        let fileCheck = [];
         for (let i = 0; i < temp.length; i++) {
           let lastSlash = temp[i].lastIndexOf("\\") + 1;
           if (lastSlash === 0) {
@@ -1098,41 +1158,118 @@ function onBtnClicked(btnId, duplicateArray) {
           fileCheck.push(temp[i].substring(lastSlash, temp[i].length));
         }
         for (let i = 0; i < checkboxes.length; i++) {
-          console.log(checkboxes[i].id);
-          let removeExt = checkboxes[i].id.lastIndexOf(".");
-          let justName = checkboxes[i].id.substring(0, removeExt);
-          let ext = checkboxes[i].id.substring(
-            removeExt,
-            checkboxes[i].id.length
-          );
-          let index = fileCheck.indexOf(checkboxes[i].id);
-          let fileName = checkboxes[i].id;
-          delete myPath["files"][fileName];
-          myPath["files"][justName + ext] = {
-            path: temp[index],
-            basename: fileName,
-            type: "local",
-            description: "",
-            "additional-metadata": "",
-            action: ["new", "updated"],
-          };
-          console.log(nodes);
-          for (let j = 0; j < nodes.length; j++) {
-            if (nodes[j].innerText === fileName) {
-              console.log(nodes[j].parentNode);
-              nodes[j].parentNode.remove();
+          var removeExt = checkboxes[i].id.lastIndexOf(".");
+          if (removeExt === -1) {
+            let justName = checkboxes[i].id;
+            let index = fileCheck.indexOf(checkboxes[i].id);
+            let fileName = checkboxes[i].id;
+            myPath["folders"][justName] = {
+              files: myPath["folders"][tempFile[index]].files,
+              folders: myPath["folders"][tempFile[index]].folders,
+              path: temp[index],
+              type: "local",
+              action: ["new", "updated"],
+            };
+            for (let j = 0; j < nodes.length; j++) {
+              if (nodes[j].innerText === fileName) {
+                nodes[j].parentNode.remove();
+              }
             }
+            listItems(myPath, "#items");
+            getInFolder(
+              "#items",
+              "#items",
+              organizeDSglobalPath,
+              datasetStructureJSONObj
+            );
+          } else {
+            let justName = checkboxes[i].id.substring(0, removeExt);
+            let ext = checkboxes[i].id.substring(
+              removeExt,
+              checkboxes[i].id.length
+            );
+            let index = fileCheck.indexOf(checkboxes[i].id);
+            let fileName = checkboxes[i].id;
+            delete myPath["files"][fileName];
+            myPath["files"][justName + ext] = {
+              path: temp[index],
+              basename: fileName,
+              type: "local",
+              description: "",
+              "additional-metadata": "",
+              action: ["new", "updated"],
+            };
+            for (let j = 0; j < nodes.length; j++) {
+              if (nodes[j].innerText === fileName) {
+                nodes[j].parentNode.remove();
+              }
+            }
+            listItems(myPath, "#items");
+            getInFolder(
+              "#items",
+              "#items",
+              organizeDSglobalPath,
+              datasetStructureJSONObj
+            );
           }
-
-          console.log($("#items"));
-          listItems(myPath, "#items");
-          getInFolder(
-            "#items",
-            "#items",
-            organizeDSglobalPath,
-            datasetStructureJSONObj
-          );
         }
+      }
+      let section = organizeDSglobalPath.value;
+      let lastSlash = section.indexOf("/") + 1;
+      section = section.substring(lastSlash, section.length - 1);
+      if (section.includes("/")) {
+        let lastSlash = section.lastIndexOf("/") + 1;
+        section = section.substring(lastSlash, section.length);
+      }
+      let back_button = document.getElementById("button-back");
+      back_button.click();
+      let folders = document
+        .getElementById("items")
+        .getElementsByClassName("folder_desc");
+      for (let i = 0; i < folders.length; i++) {
+        if (folders[i].innerText === section) {
+          folders[i].parentNode.dispatchEvent(new Event("dblclick"));
+        }
+      }
+      //toast alert created with Notyf
+      let fileUpdated = new Notyf({
+        position: { x: "right", y: "bottom" },
+        ripple: true,
+        dismissible: true,
+        ripple: false,
+        types: [
+          {
+            type: "file_updated",
+            background: "#13716D",
+            icon: {
+              className: "fas fa-check-circle",
+              tagName: "i",
+              color: "white",
+            },
+            //duration: 3000,
+          },
+          {
+            type: "folder_updated",
+            background: "#13716D",
+            icon: {
+              className: "fas fa-check-circle",
+              tagName: "i",
+              color: "white",
+            },
+            //duration: 3000,
+          },
+        ],
+      });
+      if (removeExt === -1) {
+        fileUpdated.open({
+          type: "file_updated",
+          message: "Updated Folder(s)",
+        });
+      } else {
+        fileUpdated.open({
+          type: "file_updated",
+          message: "Updated File(s)",
+        });
       }
     });
     //then handle the selected checkboxes
@@ -1259,13 +1396,13 @@ function addFilesfunction(
   //
   //if (AllowedDuplicateFiles.length > 0) {
   //}
-  var test = [];
+  var baseName = [];
   for (let element in nonAllowedDuplicateFiles) {
     let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
     if (lastSlash === 0) {
       lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("/") + 1;
     }
-    test.push(
+    baseName.push(
       nonAllowedDuplicateFiles[element].substring(
         lastSlash,
         nonAllowedDuplicateFiles[element].length
@@ -1275,7 +1412,7 @@ function addFilesfunction(
   var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
 
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
-  var listElements = showItemsAsListBootbox(test);
+  var listElements = showItemsAsListBootbox(baseName);
   if (nonAllowedDuplicateFiles.length > 0) {
     Swal.fire({
       title: "Duplicate file(s) detected",

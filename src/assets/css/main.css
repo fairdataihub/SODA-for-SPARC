@@ -67,7 +67,7 @@ button:focus {
 
 #selectAll {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 @-o-keyframes fadeIt {
@@ -93,10 +93,22 @@ button:focus {
   }
 }
 
-.updated-file {
-  background-image: none !important;
-  -o-animation: fadeIt 3s ease-in-out;
-  animation: fadeIt 3s ease-in-out;
+.update-file:before {
+  opacity: 0.5;
+}
+
+.update-file:after {
+  content: "\f24d";
+  position: absolute;
+  top: 42px;
+  right: 24px;
+  color: var(--color-bg-plum);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .input-name {
@@ -107,10 +119,12 @@ button:focus {
 .selectAll-container {
   margin-top: 5px;
   margin-bottom: 0px;
+  margin-left: 38px;
 }
 
 .selectAll-checkbox {
   margin-left: 40px;
+  margin-right: 74px;
 }
 
 .input-field-design {
@@ -134,9 +148,10 @@ button:focus {
 
 .selectAll-text {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   margin: 0;
   margin: 10px;
+  margin-left: 38px;
 }
 
 .checkbox-container {
