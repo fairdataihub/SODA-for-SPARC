@@ -6169,7 +6169,7 @@ document
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
       "flex";
-    $("#sidebarCollapse").prop("disabled", true);
+    $("#sidebarCollapse").prop("disabled", false);
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
@@ -6341,6 +6341,16 @@ function initiate_generate() {
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
+  let statusBarContainer = document.getElementById("div-new-curate-progress");
+  var statusBarClone = statusBarContainer.cloneNode(true);
+  let navContainer = document.getElementById("nav-items");
+  statusBarClone.id ="status-bar-curate-progress";
+  navContainer.appendChild(statusBarClone);
+  let dissmisButton = document.createElement("button");
+  dissmisButton.type = "button";
+  dissmisButton.id = "dismiss-status-bar";
+  
+
 
   if ("manifest-files" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["manifest-files"]) {
