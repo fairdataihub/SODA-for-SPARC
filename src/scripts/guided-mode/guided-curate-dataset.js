@@ -603,6 +603,7 @@ $(document).ready(() => {
               message: `Dataset ${datasetName} was created successfully`,
             });
             log.info(`Created dataset successfully`);
+            guidedIncreaseCurateProgressBar(5);
             resolve(`Dataset ${datasetName} was created successfully`);
           }
         }
@@ -649,6 +650,8 @@ $(document).ready(() => {
               "Manage Dataset - Add/Edit Subtitle",
               defaultBfDataset
             );
+            guidedIncreaseCurateProgressBar(5);
+
             resolve(`Subtitle added to ${datasetName}`);
           }
         }
@@ -753,6 +756,7 @@ $(document).ready(() => {
               message: "User permission added",
             });
             log.info("Dataset permission added");
+            guidedIncreaseCurateProgressBar(5);
             resolve(
               `${userUUID} added as ${selectedRole} to ${datasetName} dataset`
             );
@@ -779,29 +783,25 @@ $(document).ready(() => {
     console.log(result.map((promise) => promise.status));
   };
 
-  const guided_add_description = async (bfAccount, bfDataset) => {
+  const guided_add_description = async (
+    bfAccount,
+    bfDataset,
+    studyPurpose,
+    dataCollection,
+    primaryConclusion
+  ) => {
     // get the text from the three boxes and store them in their own variables
     let requiredFields = [];
 
     // read and sanatize the input for spaces and reintroduced bolded keywords
-    let studyPurpose = $("#guided-ds-description-study-purpose").val().trim();
-    studyPurpose.replace("**Study Purpose:**", "");
     if (studyPurpose.length) {
       requiredFields.push("**Study Purpose:** " + studyPurpose + "\n");
     }
 
-    let dataCollection = $("#guided-ds-description-data-collection")
-      .val()
-      .trim();
-    dataCollection.replace("**Data Collection:**", "");
     if (dataCollection.length) {
       requiredFields.push("**Data Collection:** " + dataCollection + "\n");
     }
 
-    let primaryConclusion = $("#guided-ds-description-primary-conclusion")
-      .val()
-      .trim();
-    primaryConclusion.replace("**Primary Conclusion:**", "");
     if (primaryConclusion.length) {
       requiredFields.push(
         "**Primary Conclusion:** " + primaryConclusion + "\n"
@@ -809,40 +809,91 @@ $(document).ready(() => {
     }
 
     // validate the new markdown description the user created
-    let response = validateDescription(requiredFields.join(""));
+    requiredFields = requiredFields.join("");
+    console.log(requiredFields);
 
-    if (!response) {
+    return new Promise((resolve, reject) => {
+      client.invoke(
+        "api_bf_add_description",
+        bfAccount,
+        bfDataset,
+        requiredFields,
+        (error, res) => {
+          if (error) {
+            notyf.open({
+              duration: "5000",
+              type: "error",
+              message: "Failed to add description",
+            });
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: "Added description to dataset",
+            });
+            guidedIncreaseCurateProgressBar(5);
+
+            resolve(`Subtitle added to ${datasetName}`);
+          }
+        }
+      );
+    });
+  };
+
+  const addDescription = async (selectedBfDataset, userMarkdownInput) => {
+    // update the readme file
+    try {
+      await updateDatasetReadme(selectedBfDataset, completeReadme);
+    } catch (error) {
+      log.error(error);
+      console.error(error);
+      let emessage = userError(error);
+
       Swal.fire({
-        icon: "warning",
-        title: "This description does not follow SPARC guidelines.",
-        html: `
-        Your description should include all of the mandatory sections. Additionally, each section should be no longer than one paragraph.
-        <br> 
-        <br>
-        Are you sure you want to continue?`,
+        title: "Failed to add description!",
+        text: emessage,
+        icon: "error",
+        showConfirmButton: true,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        showCancelButton: true,
-        focusCancel: true,
-        confirmButtonText: "Continue",
-        cancelButtonText: "No, I want to edit my description",
-        reverseButtons: true,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then((result) => {
-        if (!result.isConfirmed) {
-          return;
-        }
-        // hide the warning message if it exists
-        addDescription(bfDataset, requiredFields.join("\n"));
       });
-    } else {
-      addDescription(bfDataset, requiredFields.join("\n"));
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Manage Dataset - Add/Edit Description",
+        selectedBfDataset
+      );
+      return;
     }
+
+    // alert the user the data was uploaded successfully
+    Swal.fire({
+      title: determineSwalSuccessMessage($("#button-add-description")),
+      icon: "success",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    }).then(
+      //check if subtitle text is empty and set Add/Edit button appropriately
+      !$("#ds-description-study-purpose").val() &&
+        !$("#ds-description-data-collection").val() &&
+        !$("#ds-description-primary-conclusion").val()
+        ? $("#button-add-description").html("Add description")
+        : $("#button-add-description").html("Edit description")
+    );
+
+    // alert analytics
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Manage Dataset - Add/Edit Description",
+      selectedBfDataset
+    );
   };
   //TODO TODO TODO
   /*const guided_add_license = async (bfAccount, bfDataset, license) => {
@@ -907,6 +958,13 @@ $(document).ready(() => {
               selectedbfaccount,
               guidedDatasetName,
               guidedUsers
+            ),
+            guided_add_description(
+              selectedbfaccount,
+              guidedDatasetName,
+              guidedStudyPurpose,
+              guidedDataCollection,
+              guidedPrimaryConclusion
             ),
           ];
           const result = await Promise.allSettled(promises);
