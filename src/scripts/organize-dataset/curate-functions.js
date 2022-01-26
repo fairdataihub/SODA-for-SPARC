@@ -1363,9 +1363,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       } else {
         showHideDropdownButtons("dataset", "show");
       }
-        $("body").removeClass("waiting");
-        $(".svg-change-current-account.dataset").css("display", "block");
-        $(".ui.active.green.inline.loader.small").css("display", "none");
+      $("body").removeClass("waiting");
+      $(".svg-change-current-account.dataset").css("display", "block");
+      $(".ui.active.green.inline.loader.small").css("display", "none");
       ipcRenderer(
         "track-event",
         "Succes",
