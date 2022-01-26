@@ -836,8 +836,8 @@ $(document).ready(() => {
       addDescription(bfDataset, requiredFields.join("\n"));
     }
   };
-
-  const guided_add_license = async (bfAccount, bfDataset, license) => {
+  //TODO TODO TODO
+  /*const guided_add_license = async (bfAccount, bfDataset, license) => {
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a user on a dataset");
       client.invoke(
@@ -871,7 +871,7 @@ $(document).ready(() => {
         }
       );
     });
-  };
+  };*/
 
   /*const guided_add_folders_files = async (
     bfAccount,
