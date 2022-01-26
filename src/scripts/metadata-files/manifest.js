@@ -125,16 +125,17 @@ async function generateManifest(action, type) {
           "Error",
           MetadataAnalyticsPrefix.MANIFEST,
           AnalyticsGranularity.ACTION,
-          MetadataAnalyticsPrefix.MANIFEST + " - Generate - Check Storage Space",
+          MetadataAnalyticsPrefix.MANIFEST +
+            " - Generate - Check Storage Space",
           Destinations.LOCAL
         );
-
       } else {
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.MANIFEST,
           AnalyticsGranularity.ACTION,
-          MetadataAnalyticsPrefix.MANIFEST + " - Generate - Check Storage Space",
+          MetadataAnalyticsPrefix.MANIFEST +
+            " - Generate - Check Storage Space",
           Destinations.LOCAL
         );
 
