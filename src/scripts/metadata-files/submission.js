@@ -452,7 +452,6 @@ const checkStorage = (id) => {
       "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
       1
     );
-
   });
 };
 const localSubmissionBtn = document.getElementById(
