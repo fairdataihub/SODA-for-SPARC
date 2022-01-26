@@ -618,44 +618,50 @@ async function generateSubmissionHelper(uploadBFBoolean) {
             html: emessage,
             title: "Failed to generate the submission file",
           });
-        logMetadataForAnalytics(
-          "Error",
-          MetadataAnalyticsPrefix.SUBMISSION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-      } else {
-        if (uploadBFBoolean) {
-          var successMessage =
-            "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+          logMetadataForAnalytics(
+            "Error",
+            MetadataAnalyticsPrefix.SUBMISSION,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+          );
         } else {
           if (uploadBFBoolean) {
             var successMessage =
               "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
           } else {
-            var successMessage =
-              "Successfully generated the submission.xlsx file at the specified location.";
+            if (uploadBFBoolean) {
+              var successMessage =
+                "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+            } else {
+              var successMessage =
+                "Successfully generated the submission.xlsx file at the specified location.";
+            }
+            Swal.fire({
+              title: successMessage,
+              icon: "success",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            logMetadataForAnalytics(
+              "Success",
+              MetadataAnalyticsPrefix.SUBMISSION,
+              AnalyticsGranularity.ALL_LEVELS,
+              "Generate",
+              uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+            );
+
+            // get the size of the uploaded file from the result
+            const size = res;
+
+            // log the size of the metadata file that was generated at varying levels of granularity
+            logMetadataSizeForAnalytics(
+              uploadBFBoolean,
+              "submission.xlsx",
+              size
+            );
           }
-        Swal.fire({
-          title: successMessage,
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        logMetadataForAnalytics(
-          "Success",
-          MetadataAnalyticsPrefix.SUBMISSION,
-          AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-        );
-
-        // get the size of the uploaded file from the result
-        const size = res;
-
-        // log the size of the metadata file that was generated at varying levels of granularity
-        logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
+        }
       }
     );
   }
