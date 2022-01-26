@@ -55,6 +55,7 @@ $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
     ".para-metadata-file-status"
   );
+
   $(metadataFileStatus).text("");
   $($(this).parents()[1]).find(".div-metadata-confirm").css("display", "none");
   $($(this).parents()[1]).find(".div-metadata-go-back").css("display", "flex");
@@ -90,11 +91,43 @@ function confirmMetadataFilePath(ev) {
   var metadataFileStatus = $($(ev).parents()[1]).find(
     ".para-metadata-file-status"
   );
+
   if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
     $(metadataFile).addClass("done");
+
+    // log the import to analytics
+    logCurationForAnalytics(
+      "Success",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      [
+        "Step 4",
+        "Import",
+        `${getMetadataFileNameFromStatus(metadataFileStatus)}`,
+        determineLocationFromStatus(metadataFileStatus)
+          ? Destinations.PENNSIEVE
+          : Destinations.LOCAL,
+      ],
+      determineDatasetLocation()
+    );
   } else {
     $(metadataFile).removeClass("done");
     $(metadataFileStatus).text("");
+    // log the import attempt to analytics
+    logCurationForAnalytics(
+      "Error",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      [
+        "Step 4",
+        "Import",
+        `${getMetadataFileNameFromStatus(metadataFileStatus)}`,
+        determineLocationFromStatus(metadataFileStatus)
+          ? Destinations.PENNSIEVE
+          : Destinations.LOCAL,
+      ],
+      determineDatasetLocation()
+    );
   }
 }
 // $(".button-individual-metadata.confirm").click(function() {
@@ -266,6 +299,16 @@ const progressFileParse = (ev) => {
       console.log(error);
       document.getElementById("para-progress-file-status").innerHTML =
         "<span style='color:red'>" + error + "</span>";
+
+      // log the error to analytics at varying levels of granularity
+      logMetadataForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ALL_LEVELS,
+        Actions.EXISTING,
+        Destinations.SAVED
+      );
+
       return {};
     }
   } else {
@@ -537,6 +580,15 @@ function loadProgressFile(ev) {
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+
+        // log the success at the action and action with destination granularity levels
+        logMetadataForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          Actions.EXISTING,
+          Destinations.SAVED
+        );
       }
     }, 1300);
   } else {
@@ -596,6 +648,15 @@ const verify_missing_files = (mode) => {
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+
+        // log the success at the action and action with destination granularith levels
+        logMetadataForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          Actions.EXISTING,
+          Destinations.SAVED
+        );
       } else if (mode === "new") {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
@@ -1261,16 +1322,50 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           showHideDropdownButtons("dataset", "show");
         }
 
-        // hide "Confirm" button if Current dataset under Getting started set to None
-        if ($("#current-bf-dataset").text() === "None") {
-          showHideDropdownButtons("dataset", "hide");
-        } else {
-          showHideDropdownButtons("dataset", "show");
+        defaultBfDataset = bfDataset;
+
+        // update the gloabl dataset id
+        for (const item of datasetList) {
+          let { name } = item;
+          let { id } = item;
+          if (name === bfDataset) {
+            defaultBfDatasetId = id;
+          }
         }
+
+        // log a map of datasetId to dataset name to analytics
+        // this will be used to help us track private datasets which are not trackable using a datasetId alone
+        ipcRenderer.send(
+          "track-event",
+          "Dataset ID to Dataset Name Map",
+          defaultBfDatasetId,
+          defaultBfDataset
+        );
+
+        // document.getElementById("ds-description").innerHTML = "";
+        refreshDatasetList();
+        $("#dataset-loaded-message").hide();
+
+        showHideDropdownButtons("dataset", "show");
+        // checkPrevDivForConfirmButton("dataset");
+      }
+
+      // hide "Confirm" button if Current dataset set to None
+      if ($("#current-bf-dataset-generate").text() === "None") {
+        showHideDropdownButtons("dataset", "hide");
+      } else {
+        showHideDropdownButtons("dataset", "show");
+      }
+
+      // hide "Confirm" button if Current dataset under Getting started set to None
+      if ($("#current-bf-dataset").text() === "None") {
+        showHideDropdownButtons("dataset", "hide");
+      } else {
+        showHideDropdownButtons("dataset", "show");
+      }
         $("body").removeClass("waiting");
         $(".svg-change-current-account.dataset").css("display", "block");
         $(".ui.active.green.inline.loader.small").css("display", "none");
-      }
       ipcRenderer(
         "track-event",
         "Succes",
@@ -1984,6 +2079,15 @@ function moveItemsHelper(item, destination, category) {
     "#items",
     organizeDSglobalPath,
     datasetStructureJSONObj
+  );
+
+  // log moving multiple files/folders successfully
+  logCurationForAnalytics(
+    "Success",
+    PrepareDatasetsAnalyticsPrefix.CURATE,
+    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+    ["Step 3", "Move", category === "files" ? "File" : "Folder"],
+    determineDatasetLocation()
   );
 }
 

@@ -421,6 +421,14 @@ function checkValidRenameInput(
         heightAuto: false,
       });
       newName = "";
+      // log the error
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Rename", "File"],
+        determineDatasetLocation()
+      );
     }
     //// if renaming a folder
   } else {
@@ -440,6 +448,15 @@ function checkValidRenameInput(
         heightAuto: false,
       });
       newName = "";
+
+      // log the error
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Rename", "Folder"],
+        determineDatasetLocation()
+      );
     }
   }
   return newName;
@@ -583,6 +600,15 @@ function renameFolder(
               popup: "animate__animated animate__fadeOutUp animate__faster",
             },
           });
+
+          // log the success
+          logCurationForAnalytics(
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Rename", promptVar],
+            determineDatasetLocation()
+          );
 
           /// assign new name to folder or file in the UI
           event1.parentElement.parentElement.innerText = returnedName;
@@ -748,6 +774,15 @@ function addFilesfunction(
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
+      // log the error
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Import", "File"],
+        determineDatasetLocation()
+      );
+
       break;
     } else {
       if (
@@ -824,6 +859,15 @@ function addFilesfunction(
         globalPathValue
       );
     }
+
+    // log the success
+    logCurationForAnalytics(
+      "Success",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "File"],
+      determineDatasetLocation()
+    );
   }
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
@@ -842,6 +886,15 @@ function addFilesfunction(
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
+
+    // log the user error
+    logCurationForAnalytics(
+      "Error",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "File"],
+      determineDatasetLocation()
+    );
   }
 }
 

@@ -79,11 +79,15 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
-          ipcRenderer.send(
-            "track-event",
+
+          logMetadataForAnalytics(
             "Error",
-            `Prepare Metadata - Create ${upperCaseLetters}`,
-            defaultBfDataset
+            upperCaseLetters === "CHANGES.txt"
+              ? MetadataAnalyticsPrefix.CHANGES
+              : MetadataAnalyticsPrefix.README,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            Destinations.PENNSIEVE
           );
         } else {
           Swal.fire({
@@ -92,11 +96,22 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
-          ipcRenderer.send(
-            "track-event",
+
+          logMetadataForAnalytics(
             "Success",
-            `Prepare Metadata - Create ${upperCaseLetters}`,
-            defaultBfDataset
+            upperCaseLetters === "CHANGES.txt"
+              ? MetadataAnalyticsPrefix.CHANGES
+              : MetadataAnalyticsPrefix.README,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            Destinations.PENNSIEVE
+          );
+
+          const size = res[0];
+          logMetadataSizeForAnalytics(
+            true,
+            upperCaseLetters === "CHANGES.txt" ? "CHANGES.txt" : "README.txt",
+            size
           );
         }
       }
@@ -166,11 +181,13 @@ $(document).ready(function () {
         document.getElementById(
           "existing-changes-file-destination"
         ).placeholder = filepath[0];
-        ipcRenderer.send(
-          "track-event",
+
+        logMetadataForAnalytics(
           "Success",
-          "Prepare Metadata - Continue with existing CHANGES.txt",
-          defaultBfAccount
+          MetadataAnalyticsPrefix.CHANGES,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          "Existing",
+          Destinations.PENNSIEVE
         );
         if (
           document.getElementById("existing-changes-file-destination")
@@ -201,11 +218,13 @@ $(document).ready(function () {
         document.getElementById(
           "existing-readme-file-destination"
         ).placeholder = filepath[0];
-        ipcRenderer.send(
-          "track-event",
+
+        logMetadataForAnalytics(
           "Success",
-          "Prepare Metadata - Continue with existing README.txt",
-          defaultBfAccount
+          MetadataAnalyticsPrefix.README,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          "Existing",
+          Destinations.LOCAL
         );
         if (
           document.getElementById("existing-readme-file-destination")
@@ -320,13 +339,23 @@ async function saveRCFile(type) {
           Swal.hideLoading();
         },
       });
+
+      logMetadataForAnalytics(
+        "Error",
+        type === "changes"
+          ? MetadataAnalyticsPrefix.CHANGES
+          : MetadataAnalyticsPrefix.README,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.LOCAL
+      );
     } else {
       if (type === "changes") {
         var newName = path.join(path.dirname(destinationPath), "CHANGES.txt");
       } else {
         var newName = path.join(path.dirname(destinationPath), "README.txt");
       }
-      fs.rename(destinationPath, newName, (err) => {
+      fs.rename(destinationPath, newName, async (err) => {
         if (err) {
           console.log(err);
           log.error(err);
@@ -340,6 +369,16 @@ async function saveRCFile(type) {
               Swal.hideLoading();
             },
           });
+
+          logMetadataForAnalytics(
+            "Error",
+            type === "changes"
+              ? MetadataAnalyticsPrefix.CHANGES
+              : MetadataAnalyticsPrefix.README,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            Destinations.LOCAL
+          );
         } else {
           Swal.fire({
             title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
@@ -351,6 +390,24 @@ async function saveRCFile(type) {
               Swal.hideLoading();
             },
           });
+
+          logMetadataForAnalytics(
+            "Success",
+            type === "changes"
+              ? MetadataAnalyticsPrefix.CHANGES
+              : MetadataAnalyticsPrefix.README,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            Destinations.LOCAL
+          );
+
+          // log the size of the metadata file that was generated at varying levels of granularity
+          let size = await getFileSizeInBytes(destinationPath);
+          logMetadataSizeForAnalytics(
+            false,
+            type === "changes" ? "changes.txt" : "readme.txt",
+            size
+          );
         }
       });
     }
@@ -483,7 +540,26 @@ const getRC = async (type) => {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        logMetadataForAnalytics(
+          "Error",
+          shortName === "changes"
+            ? MetadataAnalyticsPrefix.CHANGES
+            : MetadataAnalyticsPrefix.README,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.PENNSIEVE
+        );
       } else {
+        logMetadataForAnalytics(
+          "Success",
+          shortName === "changes"
+            ? MetadataAnalyticsPrefix.CHANGES
+            : MetadataAnalyticsPrefix.README,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          "Existing",
+          Destinations.PENNSIEVE
+        );
         if (res.trim() !== "") {
           $(`#textarea-create-${shortName}`).val(res.trim());
           Swal.fire({
@@ -529,6 +605,16 @@ function importExistingRCFile(type) {
       `Please select a path to your ${upperCaseLetter}.txt file`,
       "error"
     );
+
+    logMetadataForAnalytics(
+      "Error",
+      type === "changes"
+        ? MetadataAnalyticsPrefix.CHANGES
+        : MetadataAnalyticsPrefix.README,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
   } else {
     if (path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
       Swal.fire({
@@ -538,6 +624,16 @@ function importExistingRCFile(type) {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+
+      logMetadataForAnalytics(
+        "Error",
+        type === "changes"
+          ? MetadataAnalyticsPrefix.CHANGES
+          : MetadataAnalyticsPrefix.README,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
     } else {
       Swal.fire({
         title: `Loading an existing '${upperCaseLetter}.txt' file`,
@@ -571,6 +667,16 @@ function loadExistingRCFile(filepath, type) {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Prepare Metadata - ${type} - Existing - Local`,
+        "Local",
+        1
+      );
+
+      ipcRenderer.send("track-event", "Error", `Prepare Metadata - ${type}`);
     } else {
       // populate textarea
       $(`#textarea-create-${type}`).val(data);
@@ -585,6 +691,17 @@ function loadExistingRCFile(filepath, type) {
           Swal.hideLoading();
         },
       });
+
+      logMetadataForAnalytics(
+        "Success",
+        type === "changes"
+          ? MetadataAnalyticsPrefix.CHANGES
+          : MetadataAnalyticsPrefix.README,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        "Existing",
+        Destinations.LOCAL
+      );
+
       $(`#div-confirm-existing-${type}-import`).hide();
       $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
       $(`#button-fake-confirm-existing-${type}-file-load`).click();
