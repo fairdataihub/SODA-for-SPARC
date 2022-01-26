@@ -14,6 +14,14 @@ let current_progression_tab = $("#prepare-dataset-progression-tab");
 let current_sub_step = $("#guided-basic-description-tab");
 let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
+const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
+  $("#guided-progress-bar-new-curate").attr(
+    "value",
+    parseInt($("#guided-progress-bar-new-curate").attr("value")) +
+      percentToIncrease
+  );
+};
+
 const guidedSetDatasetName = (newDatasetName) => {
   datasetName = newDatasetName.val().trim();
   sodaJSONObj["digital-metadata"]["name"] = datasetName;
@@ -873,6 +881,74 @@ $(document).ready(() => {
     });
   };*/
 
+  const guidedPennsieveDatasetUpload = async () => {
+    let selectedbfaccount = defaultBfAccount;
+    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
+    let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+    let guidedPiOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
+    let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+    let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+    let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
+    let guidedDataCollection =
+      sodaJSONObj["digital-metadata"]["data-collection"];
+    let guidedPrimaryConclusion =
+      sodaJSONObj["digital-metadata"]["primary-conclusion"];
+
+    guided_create_dataset(selectedbfaccount, guidedDatasetName)
+      .then((data) => {
+        (async function () {
+          const promises = [
+            guided_add_subtitle(
+              selectedbfaccount,
+              guidedDatasetName,
+              guidedDatasetSubtitle
+            ),
+            guided_add_user_permissions(
+              selectedbfaccount,
+              guidedDatasetName,
+              guidedUsers
+            ),
+          ];
+          const result = await Promise.allSettled(promises);
+          console.log(result.map((promise) => promise.status));
+          //set pi owner after all other promises while we still have owner permission
+          return guided_add_PI_owner(
+            selectedbfaccount,
+            guidedDatasetName,
+            guidedPiOwner
+          );
+        })();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => console.log(error));
+    /*if (response[0] == "failed") {
+    } else if (response[0] == "success") {
+      let subtitleResponse = guided_add_subtitle(
+        selectedbfaccount,
+        guidedDatasetName,
+        guidedDatasetSubtitle
+      );
+      let piResponse = guided_add_PI_owner(
+        selectedbfaccount,
+        guidedDatasetName,
+        "N:user:b74d56f7-d028-401b-94ef-a580c4abd741"
+      );
+    let descriptionResponse = guided_add_description(
+    selectedbfaccount,
+    guidedDatasetName
+    );
+    let tagsResponse = guided_add_tags(selectedbfaccount, guidedDatasetName);
+    let responseValues = await Promise.all([
+       subtitleResponse,
+    piResponse descriptionResponse,
+     ]);
+    let datasetFilesFolders = guided_add_dataset_files_folders
+     console.log(responseValues);
+    }/*/
+  };
+
   /*const guided_add_folders_files = async (
     bfAccount,
     bfDataset,
@@ -991,71 +1067,9 @@ $(document).ready(() => {
   };*/
 
   $("#guided-generate-dataset-button").on("click", async function () {
-    let selectedbfaccount = defaultBfAccount;
-    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
-    let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
-    let guidedPiOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
-    let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-    let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
-    let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
-    let guidedDataCollection =
-      sodaJSONObj["digital-metadata"]["data-collection"];
-    let guidedPrimaryConclusion =
-      sodaJSONObj["digital-metadata"]["primary-conclusion"];
-
-    guided_create_dataset(selectedbfaccount, guidedDatasetName)
-      .then((data) => {
-        (async function () {
-          const promises = [
-            guided_add_subtitle(
-              selectedbfaccount,
-              guidedDatasetName,
-              guidedDatasetSubtitle
-            ),
-            guided_add_user_permissions(
-              selectedbfaccount,
-              guidedDatasetName,
-              guidedUsers
-            ),
-          ];
-          const result = await Promise.allSettled(promises);
-          console.log(result.map((promise) => promise.status));
-          //set pi owner after all other promises while we still have owner permission
-          return guided_add_PI_owner(
-            selectedbfaccount,
-            guidedDatasetName,
-            guidedPiOwner
-          );
-        })();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => console.log(error));
-    /*if (response[0] == "failed") {
-    } else if (response[0] == "success") {
-      let subtitleResponse = guided_add_subtitle(
-        selectedbfaccount,
-        guidedDatasetName,
-        guidedDatasetSubtitle
-      );
-      let piResponse = guided_add_PI_owner(
-        selectedbfaccount,
-        guidedDatasetName,
-        "N:user:b74d56f7-d028-401b-94ef-a580c4abd741"
-      );
-    let descriptionResponse = guided_add_description(
-    selectedbfaccount,
-    guidedDatasetName
-    );
-    let tagsResponse = guided_add_tags(selectedbfaccount, guidedDatasetName);
-    let responseValues = await Promise.all([
-       subtitleResponse,
-    piResponse descriptionResponse,
-     ]);
-    let datasetFilesFolders = guided_add_dataset_files_folders
-     console.log(responseValues);
-    }/*/
+    enableProgressButton();
+    $("#guided-next-button").click();
+    guidedPennsieveDatasetUpload();
   });
 
   $("#guided-save-banner-image").click((event) => {
