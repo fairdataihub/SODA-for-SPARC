@@ -435,13 +435,24 @@ const checkStorage = (id) => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Metadata - Generate - Check Storage Space",
+        "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+        1
+      );
     }
+
     ipcRenderer.send(
       "track-event",
-      "Error",
-      "Create metadata file locally",
-      "Free memory: " + freeMem + "\nMemory needed: " + threeMB
+      "Success",
+      "Prepare Metadata - Generate - Check Storage Space",
+      "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+      1
     );
+
   });
 };
 const localSubmissionBtn = document.getElementById(
