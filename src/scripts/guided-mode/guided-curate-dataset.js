@@ -844,93 +844,38 @@ $(document).ready(() => {
     });
   };
 
-  const addDescription = async (selectedBfDataset, userMarkdownInput) => {
-    // update the readme file
-    try {
-      await updateDatasetReadme(selectedBfDataset, completeReadme);
-    } catch (error) {
-      log.error(error);
-      console.error(error);
-      let emessage = userError(error);
-
-      Swal.fire({
-        title: "Failed to add description!",
-        text: emessage,
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Manage Dataset - Add/Edit Description",
-        selectedBfDataset
-      );
-      return;
-    }
-
-    // alert the user the data was uploaded successfully
-    Swal.fire({
-      title: determineSwalSuccessMessage($("#button-add-description")),
-      icon: "success",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    }).then(
-      //check if subtitle text is empty and set Add/Edit button appropriately
-      !$("#ds-description-study-purpose").val() &&
-        !$("#ds-description-data-collection").val() &&
-        !$("#ds-description-primary-conclusion").val()
-        ? $("#button-add-description").html("Add description")
-        : $("#button-add-description").html("Edit description")
-    );
-
-    // alert analytics
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Manage Dataset - Add/Edit Description",
-      selectedBfDataset
-    );
+  const guided_add_tags = async (bfAccount, bfDataset, tagsArray) => {
+    return new Promise((resolve, reject) => {});
   };
-  //TODO TODO TODO
-  /*const guided_add_license = async (bfAccount, bfDataset, license) => {
+
+  const guided_add_license = async (bfAccount, bfDataset, license) => {
     return new Promise((resolve, reject) => {
-      log.info("Adding a permission for a user on a dataset");
       client.invoke(
-        "api_bf_add_permission",
+        "api_bf_add_license",
         bfAccount,
-        datasetName,
-        userUUID,
-        selectedRole,
+        bfDataset,
+        license,
         (error, res) => {
           if (error) {
             notyf.open({
               duration: "5000",
               type: "error",
-              message: "Failed to add user permission",
+              message: "Failed to add license",
             });
-            log.error(error);
-            console.error(error);
-            let emessage = userError(error);
+
             reject(error);
           } else {
             notyf.open({
               duration: "5000",
               type: "success",
-              message: "User permission added",
+              message: "License successfully added to dataset",
             });
-            log.info("Dataset permission added");
-            resolve(
-              `${userUUID} added as ${selectedRole} to ${datasetName} dataset`
-            );
+            resolve(`Added ${license} to ${datasetName}`);
           }
         }
       );
     });
-  };*/
+  };
 
   const guidedPennsieveDatasetUpload = async () => {
     let selectedbfaccount = defaultBfAccount;
@@ -944,6 +889,7 @@ $(document).ready(() => {
       sodaJSONObj["digital-metadata"]["data-collection"];
     let guidedPrimaryConclusion =
       sodaJSONObj["digital-metadata"]["primary-conclusion"];
+    let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
 
     guided_create_dataset(selectedbfaccount, guidedDatasetName)
       .then((data) => {
@@ -966,6 +912,11 @@ $(document).ready(() => {
               guidedDataCollection,
               guidedPrimaryConclusion
             ),
+            guided_add_license(
+              selectedbfaccount,
+              guidedDatasetName,
+              guidedLicense
+            ),
           ];
           const result = await Promise.allSettled(promises);
           console.log(result.map((promise) => promise.status));
@@ -981,30 +932,6 @@ $(document).ready(() => {
         console.log(data);
       })
       .catch((error) => console.log(error));
-    /*if (response[0] == "failed") {
-    } else if (response[0] == "success") {
-      let subtitleResponse = guided_add_subtitle(
-        selectedbfaccount,
-        guidedDatasetName,
-        guidedDatasetSubtitle
-      );
-      let piResponse = guided_add_PI_owner(
-        selectedbfaccount,
-        guidedDatasetName,
-        "N:user:b74d56f7-d028-401b-94ef-a580c4abd741"
-      );
-    let descriptionResponse = guided_add_description(
-    selectedbfaccount,
-    guidedDatasetName
-    );
-    let tagsResponse = guided_add_tags(selectedbfaccount, guidedDatasetName);
-    let responseValues = await Promise.all([
-       subtitleResponse,
-    piResponse descriptionResponse,
-     ]);
-    let datasetFilesFolders = guided_add_dataset_files_folders
-     console.log(responseValues);
-    }/*/
   };
 
   /*const guided_add_folders_files = async (
