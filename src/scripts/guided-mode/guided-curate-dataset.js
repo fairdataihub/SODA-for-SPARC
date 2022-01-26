@@ -567,22 +567,20 @@ $(document).ready(() => {
 
   const guided_create_dataset = (bfAccount, datasetName) => {
     return new Promise((resolve, reject) => {
+      log.info(`Creating a new dataset with the name: ${datasetName}`);
       client.invoke(
         "api_bf_new_dataset_folder",
         datasetName,
         bfAccount,
         (error, res) => {
           if (error) {
+            notyf.open({
+              duration: "5000",
+              type: "error",
+              message: "Failed to create new datsaet",
+            });
             log.error(error);
             let emessage = userError(error);
-            Swal.fire({
-              title: `Failed to create a new dataset.`,
-              text: emessage,
-              showCancelButton: false,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              icon: "error",
-            });
             ipcRenderer.send(
               "track-event",
               "Error",
@@ -591,15 +589,10 @@ $(document).ready(() => {
             );
             reject(error);
           } else {
-            Swal.fire({
-              title: `Dataset ${datasetName} was created successfully`,
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              didOpen: () => {
-                Swal.hideLoading();
-              },
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: `Dataset ${datasetName} was created successfully`,
             });
             log.info(`Created dataset successfully`);
             resolve(`Dataset ${datasetName} was created successfully`);
@@ -620,18 +613,14 @@ $(document).ready(() => {
         datasetSubtitle,
         (error, res) => {
           if (error) {
+            notyf.open({
+              duration: "5000",
+              type: "error",
+              message: "Failed to add subtitle",
+            });
             log.error(error);
             console.error(error);
             let emessage = userError(error);
-
-            Swal.fire({
-              title: "Failed to add subtitle!",
-              text: emessage,
-              icon: "error",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
             ipcRenderer.send(
               "track-event",
               "Error",
@@ -640,14 +629,12 @@ $(document).ready(() => {
             );
             reject(error);
           } else {
-            log.info("Added subtitle to dataset");
-            Swal.fire({
-              title: "successfully added subtitle!",
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: "Added subtitle to dataset",
             });
+            log.info("Added subtitle to dataset");
             ipcRenderer.send(
               "track-event",
               "Success",
@@ -731,6 +718,59 @@ $(document).ready(() => {
     });
   };
 
+  const guided_add_user = (bfAccount, datasetName, userUUID, selectedRole) => {
+    return new Promise((resolve, reject) => {
+      log.info("Adding a permission for a user on a dataset");
+      client.invoke(
+        "api_bf_add_permission",
+        bfAccount,
+        datasetName,
+        userUUID,
+        selectedRole,
+        (error, res) => {
+          if (error) {
+            notyf.open({
+              duration: "5000",
+              type: "error",
+              message: "Failed to add user permission",
+            });
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: "User permission added",
+            });
+            log.info("Dataset permission added");
+            resolve(
+              `${userUUID} added as ${selectedRole} to ${datasetName} dataset`
+            );
+          }
+        }
+      );
+    });
+  };
+
+  const guided_add_user_permissions = async (
+    bfAccount,
+    datasetName,
+    userPermissionsArray
+  ) => {
+    const promises = userPermissionsArray.map((userPermission) => {
+      return guided_add_user(
+        bfAccount,
+        datasetName,
+        userPermission.UUID,
+        userPermission.permission
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    console.log(result.map((promise) => promise.status));
+  };
+
   const guided_add_description = async (bfAccount, bfDataset) => {
     // get the text from the three boxes and store them in their own variables
     let requiredFields = [];
@@ -795,6 +835,42 @@ $(document).ready(() => {
     } else {
       addDescription(bfDataset, requiredFields.join("\n"));
     }
+  };
+
+  const guided_add_license = async (bfAccount, bfDataset, license) => {
+    return new Promise((resolve, reject) => {
+      log.info("Adding a permission for a user on a dataset");
+      client.invoke(
+        "api_bf_add_permission",
+        bfAccount,
+        datasetName,
+        userUUID,
+        selectedRole,
+        (error, res) => {
+          if (error) {
+            notyf.open({
+              duration: "5000",
+              type: "error",
+              message: "Failed to add user permission",
+            });
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: "User permission added",
+            });
+            log.info("Dataset permission added");
+            resolve(
+              `${userUUID} added as ${selectedRole} to ${datasetName} dataset`
+            );
+          }
+        }
+      );
+    });
   };
 
   /*const guided_add_folders_files = async (
@@ -927,20 +1003,6 @@ $(document).ready(() => {
     let guidedPrimaryConclusion =
       sodaJSONObj["digital-metadata"]["primary-conclusion"];
 
-    log.info(`Creating a new dataset with the name: ${guidedDatasetName}`);
-    Swal.fire({
-      title: `Creating a new dataset named: ${guidedDatasetName}`,
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
     guided_create_dataset(selectedbfaccount, guidedDatasetName)
       .then((data) => {
         (async function () {
@@ -950,11 +1012,24 @@ $(document).ready(() => {
               guidedDatasetName,
               guidedDatasetSubtitle
             ),
+            guided_add_user_permissions(
+              selectedbfaccount,
+              guidedDatasetName,
+              guidedUsers
+            ),
           ];
           const result = await Promise.allSettled(promises);
           console.log(result.map((promise) => promise.status));
-          // ['fulfilled', 'rejected']
+          //set pi owner after all other promises while we still have owner permission
+          return guided_add_PI_owner(
+            selectedbfaccount,
+            guidedDatasetName,
+            guidedPiOwner
+          );
         })();
+      })
+      .then((data) => {
+        console.log(data);
       })
       .catch((error) => console.log(error));
     /*if (response[0] == "failed") {
@@ -1102,11 +1177,13 @@ $(document).ready(() => {
       )
         .val()
         .trim();
-      sodaJSONObj["digital-metadata"]["dataset-tags"] = Array.from(
-        guidedDatasetTagsTagify.getTagElms()
-      ).map((tag) => {
-        return tag.textContent;
-      });
+      datasetTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
+        (tag) => {
+          return tag.textContent;
+        }
+      );
+      $(".guidedDatasetTags").text(datasetTags.join("\r\n"));
+      sodaJSONObj["digital-metadata"]["dataset-tags"] = datasetTags;
     }
 
     if (current_sub_step.attr("id") == "guided-designate-permissions-tab") {
