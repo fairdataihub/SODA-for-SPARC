@@ -71,9 +71,12 @@ button[data-id="bf_list_roles_team"] {
 }
 
 button[data-id="bf_list_users_pi"],
-button[data-id="guided_bf_list_users_pi"] {
+button[data-id="guided_bf_list_users_pi"],
+button[data-id="guided_bf_list_users"],
+button[data-id="guided_bf_list_teams"] {
   border: 1px solid rgba(34, 36, 38, 0.15);
   border-radius: 7px;
+  height: 35px;
 }
 
 #pi_bootstrap_select_div > .dropdown.bootstrap-select {
