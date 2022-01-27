@@ -6154,6 +6154,7 @@ const divGenerateProgressBar = document.getElementById(
   "div-new-curate-meter-progress"
 );
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
+var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
 
 document
   .getElementById("button-generate")
@@ -6199,9 +6200,10 @@ document
 
     generateProgressBar.value = 0;
 
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "Please wait while we verify a few things...";
-
+    
+    progressStatus.innerHTML = "Please wait while we verify a few things...";
+    
+    statusText = "Please wait while we verify a few things...";
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
@@ -6216,7 +6218,7 @@ document
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
     ).innerHTML = "";
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+    progressStatus.innerHTML =
       "";
     document.getElementById("div-new-curate-progress").style.display = "none";
 
@@ -6260,6 +6262,7 @@ document
           log.info("Continue with curate");
           var message = "";
           error_files = res[0];
+          //bring duplicate outside
           error_folders = res[1];
 
           if (error_files.length > 0) {
@@ -6327,6 +6330,13 @@ const delete_imported_manifest = () => {
   }
 };
 
+function dismissStatus(id) {
+  console.log(id);
+  document.getElementById(id).style = "display: none;";
+  //document.getElementById("dismiss-status-bar").style = "display: none;";
+  console.log("dismissed");
+}
+
 let file_counter = 0;
 let folder_counter = 0;
 
@@ -6335,23 +6345,35 @@ function initiate_generate() {
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
-
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-    "Preparing files ...";
+  
+  progressStatus.innerHTML =
+  "Preparing files ...";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
-  let statusBarContainer = document.getElementById("div-new-curate-progress");
-  var statusBarClone = statusBarContainer.cloneNode(true);
-  let navContainer = document.getElementById("nav-items");
-  statusBarClone.id ="status-bar-curate-progress";
-  navContainer.appendChild(statusBarClone);
-  let dissmisButton = document.createElement("button");
-  dissmisButton.type = "button";
-  dissmisButton.id = "dismiss-status-bar";
   
+  let statusBarContainer = document.getElementById("div-new-curate-progress");
+  let navContainer = document.getElementById("nav-items");
+  var statusBarClone = statusBarContainer.cloneNode(true);
+  let statusText = statusBarClone.children[1];
+  let statusMeter = statusBarClone.getElementsByClassName("progresstrack")[0];
+  //let progressBar = statusBarClone.getElementsByClassName("progresstrack")[0];
+  //progressBar.id = "status-bar";
+  statusBarClone.id ="status-bar-curate-progress";
+  //statusBarClone.style = "color: black; padding: 15px;";
 
+  statusText.setAttribute("id", "nav-curate-progress-bar-status");
+  statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
+  let navbar = document.getElementById("main-nav");
+  navContainer.appendChild(statusBarClone);
+  if(navbar.classList.contains("active")) {
+    document.getElementById("sidebarCollapse").click();
+  }
 
+  //navContainer.appendChild(dissmisButton);
+  
+  
+  //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["manifest-files"]) {
       if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
@@ -6392,8 +6414,9 @@ function initiate_generate() {
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-      document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      progressStatus.innerHTML =
         "";
+      statusText.innerHTML = "";
       document.getElementById("div-new-curate-progress").style.display = "none";
       generateProgressBar.value = 0;
       log.error(error);
@@ -6640,7 +6663,6 @@ function initiate_generate() {
           }
         }
       );
-
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
@@ -6685,14 +6707,15 @@ function initiate_generate() {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
             generateProgressBar.value = 100;
-            document.getElementById(
-              "para-new-curate-progress-bar-status"
-            ).innerHTML = main_curate_status + smileyCan;
+            statusMeter.value = 100;
+            progressStatus.innerHTML = main_curate_status + smileyCan;
+            statusText.innerHTML = main_curate_status + smileyCan;
           } else {
             var value =
               (main_generated_dataset_size / main_total_generate_dataset_size) *
               100;
             generateProgressBar.value = value;
+            statusMeter.value = value;
             if (main_total_generate_dataset_size < displaySize) {
               var totalSizePrint =
                 main_total_generate_dataset_size.toFixed(2) + " B";
@@ -6723,7 +6746,11 @@ function initiate_generate() {
                 ).toFixed(2) + " GB";
             }
             var progressMessage = "";
+            var statusProgressMessage = "";
             progressMessage += main_curate_progress_message + "<br>";
+            statusProgressMessage += main_curate_progress_message + "<br>";
+            statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+            statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
             progressMessage +=
               "Progress: " +
               value.toFixed(2) +
@@ -6733,15 +6760,13 @@ function initiate_generate() {
               ") " +
               "<br>";
             progressMessage +=
-              "Elaspsed time: " + elapsed_time_formatted + "<br>";
-            document.getElementById(
-              "para-new-curate-progress-bar-status"
-            ).innerHTML = progressMessage;
+              "Elapsed time: " + elapsed_time_formatted + "<br>";
+            progressStatus.innerHTML = progressMessage;
+            statusText.innerHTML = statusProgressMessage;
           }
         } else {
-          document.getElementById(
-            "para-new-curate-progress-bar-status"
-          ).innerHTML =
+          statusText.innerHTML = main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
+          progressStatus.innerHTML =
             main_curate_progress_message +
             "<br>" +
             "Elapsed time: " +
@@ -6783,6 +6808,9 @@ const show_curation_shortcut = () => {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
   }).then((result) => {
+    dismissStatus("status-bar-curate-progress");
+    let statusBarContainer = document.getElementById("status-bar-curate-progress");
+    statusBarContainer.remove();
     if (result.isConfirmed) {
       $("#disseminate_dataset_tab").click();
       $("#share_curation_team_btn").click();

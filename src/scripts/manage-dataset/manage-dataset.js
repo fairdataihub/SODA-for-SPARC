@@ -2350,7 +2350,25 @@ $("#button-submit-dataset").click(async () => {
   $("#para-please-wait-manage-dataset").html(
     "Please wait while we verify a few things..."
   );
+  let progressSubmit = document.getElementById("div-progress-submit");
+  let navContainer = document.getElementById("nav-items");
+  let progressError = document.getElementById("para-progress-bar-error-status");
+  
+  var progressClone = progressSubmit.cloneNode(true);
+  let cloneMeter = progressClone.children[1];
+  let cloneStatus = progressClone.children[3];
+  console.log(cloneStatus);
+  var navError = progressError.cloneNode(true);
 
+  console.log(progressSubmit);
+  
+  progressClone.style = "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
+  cloneMeter.setAttribute("id", "clone-progress-bar-upload-bf");
+  cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
+  progressClone.setAttribute("id", "nav-progress-submit");
+  navContainer.appendChild(progressClone);
+
+  //console.log(cloneStatus);
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
@@ -2362,6 +2380,7 @@ $("#button-submit-dataset").click(async () => {
   $("#para-progress-bar-error-status").html("");
 
   progressBarUploadBf.value = 0;
+  cloneMeter.value = 0;
 
   $("#button-submit-dataset").prop("disabled", true);
   $("#selected-local-dataset-submit").prop("disabled", true);
@@ -2387,12 +2406,24 @@ $("#button-submit-dataset").click(async () => {
 
         $("#para-please-wait-manage-dataset").html("");
         $("#para-progress-bar-status").html("");
+        cloneStatus.innerHTML = "";
         $("#div-progress-submit").css("display", "none");
-        $("#para-progress-bar-error-status").html(
+        //progressClone.remove();
+        /*$("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
-        );
+        );*/
+        Swal.fire({
+          icon: "error",
+          title: "There was an issue uploading your dataset",
+          html: emessage,
+        }).then((result) => {
+          if(result.isConfirmed) {
+            progressClone.remove()
+          }
+        })
 
         progressBarUploadBf.value = 0;
+        cloneMeter.value = 0;
 
         err = true;
         log.error(error);
@@ -2561,13 +2592,16 @@ $("#button-submit-dataset").click(async () => {
 
           if (res[0].includes("Success: COMPLETED!")) {
             progressBarUploadBf.value = 100;
+            cloneMeter.value = 100;
 
             $("#para-please-wait-manage-dataset").html("");
             $("#para-progress-bar-status").html(res[0] + smileyCan);
+            cloneStatus.innerHTML = res[0] + smileyCan;
           } else {
             var value = (uploadedFileSize / totalFileSize) * 100;
 
             progressBarUploadBf.value = value;
+            cloneMeter.value = value;
 
             if (totalFileSize < displaySize) {
               var totalSizePrint = totalFileSize.toFixed(2) + " B";
@@ -2591,6 +2625,7 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
+            cloneStatus.innerHTML = res[0] + "<br>Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
                 "Progress: " +
@@ -2617,6 +2652,30 @@ $("#button-submit-dataset").click(async () => {
 
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
+        var uploadComplete = new Notyf({
+          position: {x: "right", y: "bottom"},
+          ripple: true,
+          dismissible: true,
+          ripple: false,
+          types: [
+            {
+              type: "success",
+              background: "#13716D",
+              icon: {
+                className: "fas fa-check-circle",
+                tagName: "i",
+                color: "white",
+              },
+              duration: 1000,
+            }
+          ]
+        })
+        uploadComplete.open({
+          type: "success",
+          message: "Upload to Pennsieve completed",
+        });
+        dismissStatus(progressClone.id);
+        progressClone.remove();
       }
     }
   }
