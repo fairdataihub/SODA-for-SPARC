@@ -6339,6 +6339,24 @@ function dismissStatus(id) {
 
 let file_counter = 0;
 let folder_counter = 0;
+var uploadComplete = new Notyf({
+  position: { x: "right", y: "bottom" },
+  ripple: true,
+  dismissible: true,
+  ripple: false,
+  types: [
+    {
+      type: "success",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 4000,
+    },
+  ],
+});
 
 function initiate_generate() {
   // Initiate curation by calling Python function
@@ -6363,6 +6381,7 @@ function initiate_generate() {
 
   statusText.setAttribute("id", "nav-curate-progress-bar-status");
   statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
+  statusMeter.className = "nav-status-bar"
   let navbar = document.getElementById("main-nav");
   navContainer.appendChild(statusBarClone);
   if (navbar.classList.contains("active")) {
@@ -6412,6 +6431,13 @@ function initiate_generate() {
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+      Swal.fire({
+        icon: "error",
+        title: "An error occured",
+        html: emessage,
+      }).then((result) => {
+        statusBarClone.remove();
+      })
       progressStatus.innerHTML = "";
       statusText.innerHTML = "";
       document.getElementById("div-new-curate-progress").style.display = "none";
@@ -6748,8 +6774,6 @@ function initiate_generate() {
             statusProgressMessage += main_curate_progress_message + "<br>";
             statusProgressMessage +=
               "Progress: " + value.toFixed(2) + "%" + "<br>";
-            statusProgressMessage +=
-              "Elapsed time: " + elapsed_time_formatted + "<br>";
             progressMessage +=
               "Progress: " +
               value.toFixed(2) +
@@ -6802,6 +6826,7 @@ const show_curation_shortcut = () => {
     confirmButtonText: "Yes, I want to share it",
     heightAuto: false,
     icon: "success",
+    allowOutsideClick: false,
     reverseButtons: reverseSwalButtons,
     showCancelButton: true,
     text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
@@ -6813,10 +6838,15 @@ const show_curation_shortcut = () => {
     },
   }).then((result) => {
     dismissStatus("status-bar-curate-progress");
+    uploadComplete.open({
+      type: "success",
+      message: "Upload to Pennsieve completed",
+    })
     let statusBarContainer = document.getElementById(
       "status-bar-curate-progress"
     );
     statusBarContainer.remove();
+    
     if (result.isConfirmed) {
       $("#disseminate_dataset_tab").click();
       $("#share_curation_team_btn").click();

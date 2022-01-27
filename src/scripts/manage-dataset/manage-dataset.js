@@ -2355,6 +2355,8 @@ $("#button-submit-dataset").click(async () => {
   let progressError = document.getElementById("para-progress-bar-error-status");
 
   var progressClone = progressSubmit.cloneNode(true);
+  let cloneHeader = progressClone.children[0];
+  cloneHeader.style = "margin: 0;";
   let cloneMeter = progressClone.children[1];
   let cloneStatus = progressClone.children[3];
   console.log(cloneStatus);
@@ -2365,9 +2367,17 @@ $("#button-submit-dataset").click(async () => {
   progressClone.style =
     "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
   cloneMeter.setAttribute("id", "clone-progress-bar-upload-bf");
+  cloneMeter.className = "nav-status-bar";
   cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
+  cloneStatus.style = "overflow-x: hidden;";
   progressClone.setAttribute("id", "nav-progress-submit");
   navContainer.appendChild(progressClone);
+  cloneStatus.innerHTML = "";
+  document.getElementById("para-progress-bar-status").innerHTML = "";
+  let navbar = document.getElementById("main-nav");
+  if (navbar.classList.contains("active")) {
+    document.getElementById("sidebarCollapse").click();
+  }
 
   //console.log(cloneStatus);
   let supplementary_checks = await run_pre_flight_checks(false);
@@ -2390,6 +2400,7 @@ $("#button-submit-dataset").click(async () => {
 
   var err = false;
   var completionStatus = "Solving";
+  var success_upload = true;
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
 
@@ -2413,16 +2424,15 @@ $("#button-submit-dataset").click(async () => {
         /*$("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );*/
+        success_upload = false;
         Swal.fire({
           icon: "error",
           title: "There was an issue uploading your dataset",
           html: emessage,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            progressClone.remove();
-          }
+          allowOutsideClick: false,
         });
 
+        progressClone.remove();
         progressBarUploadBf.value = 0;
         cloneMeter.value = 0;
 
@@ -2626,8 +2636,9 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
+            console.log(res[0]);
             cloneStatus.innerHTML =
-              res[0] + "<br>Progress: " + value.toFixed(2) + "%";
+              res[0] + "Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
                 "Progress: " +
@@ -2647,6 +2658,14 @@ $("#button-submit-dataset").click(async () => {
       if (countDone > 1) {
         log.info("Done submit track");
         console.log("Done submit track");
+        if(success_upload === true) {
+          uploadComplete.open({
+            type: "success",
+            message: "Upload to Pennsieve completed",
+          });
+          dismissStatus(progressClone.id);
+          progressClone.remove();
+        }
 
         clearInterval(timerProgress);
 
@@ -2654,30 +2673,6 @@ $("#button-submit-dataset").click(async () => {
 
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
-        var uploadComplete = new Notyf({
-          position: { x: "right", y: "bottom" },
-          ripple: true,
-          dismissible: true,
-          ripple: false,
-          types: [
-            {
-              type: "success",
-              background: "#13716D",
-              icon: {
-                className: "fas fa-check-circle",
-                tagName: "i",
-                color: "white",
-              },
-              duration: 1000,
-            },
-          ],
-        });
-        uploadComplete.open({
-          type: "success",
-          message: "Upload to Pennsieve completed",
-        });
-        dismissStatus(progressClone.id);
-        progressClone.remove();
       }
     }
   }
