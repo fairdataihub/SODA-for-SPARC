@@ -2658,7 +2658,7 @@ $("#button-submit-dataset").click(async () => {
       if (countDone > 1) {
         log.info("Done submit track");
         console.log("Done submit track");
-        if(success_upload === true) {
+        if (success_upload === true) {
           uploadComplete.open({
             type: "success",
             message: "Upload to Pennsieve completed",

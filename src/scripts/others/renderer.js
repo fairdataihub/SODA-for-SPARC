@@ -6382,7 +6382,7 @@ function initiate_generate() {
 
   statusText.setAttribute("id", "nav-curate-progress-bar-status");
   statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
-  statusMeter.className = "nav-status-bar"
+  statusMeter.className = "nav-status-bar";
   let navbar = document.getElementById("main-nav");
   navContainer.appendChild(statusBarClone);
   if (navbar.classList.contains("active")) {
@@ -6438,7 +6438,7 @@ function initiate_generate() {
         html: emessage,
       }).then((result) => {
         statusBarClone.remove();
-      })
+      });
       progressStatus.innerHTML = "";
       statusText.innerHTML = "";
       document.getElementById("div-new-curate-progress").style.display = "none";
@@ -6840,12 +6840,12 @@ const show_curation_shortcut = () => {
     uploadComplete.open({
       type: "success",
       message: "Upload to Pennsieve completed",
-    })
+    });
     let statusBarContainer = document.getElementById(
       "status-bar-curate-progress"
     );
     statusBarContainer.remove();
-    
+
     if (result.isConfirmed) {
       $("#disseminate_dataset_tab").click();
       $("#share_curation_team_btn").click();
