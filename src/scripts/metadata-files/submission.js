@@ -443,6 +443,9 @@ const checkStorage = (id) => {
         "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
         1
       );
+
+      // stop execution to avoid logging a success case for the storage space check
+      return 
     }
 
     ipcRenderer.send(
