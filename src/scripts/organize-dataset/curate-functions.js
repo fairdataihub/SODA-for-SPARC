@@ -268,18 +268,38 @@ const checkAvailableSpace = () => {
               popup: "animate__animated animate__zoomOut animate__faster",
             },
           });
-          ipcRenderer.send(
-            "track-event",
+
+          logCurationForAnalytics(
             "Error",
-            "Not enough local storage to generate dataset"
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_WITH_DESTINATION,
+            ["Step 6", "Check Storage Space", determineDatasetLocation()],
+            determineDatasetLocation()
           );
+
+          // return to avoid logging that the user passed the storage space check
+          return
         }
+
+        logCurationForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_WITH_DESTINATION,
+          ["Step 6", "Check Storage Space", determineDatasetLocation()],
+          determineDatasetLocation()
+        );
       }
     });
   });
 };
-const btn = document.getElementById("btn-confirm-local-destination");
-btn.addEventListener("click", checkAvailableSpace, false);
+const btnConfirmLocalDatasetGeneration = document.getElementById(
+  "btn-confirm-local-destination"
+);
+btnConfirmLocalDatasetGeneration.addEventListener(
+  "click",
+  checkAvailableSpace,
+  false
+);
 
 ////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 const progressFileDropdown = document.getElementById("progress-files-dropdown");
