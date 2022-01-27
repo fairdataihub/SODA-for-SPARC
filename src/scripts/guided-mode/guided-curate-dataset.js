@@ -170,8 +170,18 @@ $(document).ready(() => {
     };
     guidedAddTeamPermission(newTeamPermissionObj);
   });
+  function makeid(length) {
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
 
-  $("#guided-dataset-name-input").val("test 2");
+  $("#guided-dataset-name-input").val("test " + makeid(5));
   $(guidedJstreePreview).jstree({
     core: {
       check_callback: true,
@@ -574,6 +584,8 @@ $(document).ready(() => {
   };
 
   const guided_create_dataset = (bfAccount, datasetName) => {
+    console.log(bfAccount);
+    console.log(datasetName);
     return new Promise((resolve, reject) => {
       log.info(`Creating a new dataset with the name: ${datasetName}`);
       client.invoke(
@@ -604,7 +616,7 @@ $(document).ready(() => {
             });
             log.info(`Created dataset successfully`);
             guidedIncreaseCurateProgressBar(5);
-            console.log(res);
+            console.log("added dataset + " + res);
             resolve(res);
           }
         }
@@ -613,7 +625,11 @@ $(document).ready(() => {
   };
 
   const guided_add_subtitle = (bfAccount, datasetName, datasetSubtitle) => {
+    console.log(bfAccount);
+    console.log(datasetName);
+    console.log(datasetSubtitle);
     return new Promise((resolve, reject) => {
+      console.log("adding subtitle");
       log.info("Adding subtitle to dataset");
       log.info(datasetSubtitle);
       client.invoke(
@@ -652,6 +668,7 @@ $(document).ready(() => {
               defaultBfDataset
             );
             guidedIncreaseCurateProgressBar(5);
+            console.log("added subtitle + " + res);
 
             resolve(`Subtitle added to ${datasetName}`);
           }
@@ -661,6 +678,9 @@ $(document).ready(() => {
   };
 
   const guided_add_PI_owner = async (bfAccount, bfDataset, datasetPiOwner) => {
+    console.log(bfAccount);
+    console.log(bfDataset);
+    console.log(datasetPiOwner);
     return new Promise((resolve) => {
       log.info("Changing PI Owner of datset");
 
@@ -731,6 +751,11 @@ $(document).ready(() => {
   };
 
   const guided_add_user = (bfAccount, datasetName, userUUID, selectedRole) => {
+    console.log(bfAccount);
+    console.log(datasetName);
+    console.log(userUUID);
+    console.log(selectedRole);
+
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a user on a dataset");
       client.invoke(
@@ -758,6 +783,8 @@ $(document).ready(() => {
             });
             log.info("Dataset permission added");
             guidedIncreaseCurateProgressBar(5);
+            console.log("permission added + " + res);
+
             resolve(
               `${userUUID} added as ${selectedRole} to ${datasetName} dataset`
             );
@@ -791,6 +818,12 @@ $(document).ready(() => {
     dataCollection,
     primaryConclusion
   ) => {
+    console.log(bfAccount);
+    console.log(bfDataset);
+    console.log(studyPurpose);
+    console.log(dataCollection);
+    console.log(primaryConclusion);
+
     // get the text from the three boxes and store them in their own variables
     let requiredFields = [];
 
@@ -838,7 +871,7 @@ $(document).ready(() => {
               message: "Added description to dataset",
             });
             guidedIncreaseCurateProgressBar(5);
-
+            console.log("added descr + " + res);
             resolve(`Subtitle added to ${datasetName}`);
           }
         }
@@ -850,6 +883,7 @@ $(document).ready(() => {
     // Add tags to dataset
     try {
       await update_dataset_tags(bfDataset, tagsArray);
+      console.log("added tags");
     } catch (e) {
       // log the error
       log.error(e);
@@ -870,6 +904,9 @@ $(document).ready(() => {
   };
 
   const guided_add_license = async (bfAccount, bfDataset, license) => {
+    console.log(bfAccount);
+    console.log(bfDataset);
+    console.log(license);
     return new Promise((resolve, reject) => {
       client.invoke(
         "api_bf_add_license",
@@ -891,6 +928,7 @@ $(document).ready(() => {
               type: "success",
               message: "License successfully added to dataset",
             });
+            console.log("added license + " + res);
             resolve(`Added ${license} to ${datasetName}`);
           }
         }
@@ -899,7 +937,7 @@ $(document).ready(() => {
   };
 
   const guidedPennsieveDatasetUpload = async () => {
-    let selectedbfaccount = defaultBfAccount;
+    let guidedBfAccount = defaultBfAccount;
     let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     let guidedPiOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
@@ -910,18 +948,36 @@ $(document).ready(() => {
       sodaJSONObj["digital-metadata"]["data-collection"];
     let guidedPrimaryConclusion =
       sodaJSONObj["digital-metadata"]["primary-conclusion"];
-    let guidedTags = ["digital-metadata"]["dataset-tags"];
+    let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
 
-    guided_create_dataset(selectedbfaccount, guidedDatasetName)
+    guided_create_dataset(guidedBfAccount, guidedDatasetName)
       .then((data /*from create dataset*/) => {
         (async function () {
           const promises = [
+            guided_add_subtitle(
+              guidedBfAccount,
+              guidedDatasetName,
+              guidedDatasetSubtitle
+            ),
+            guided_add_license(
+              guidedBfAccount,
+              guidedDatasetName,
+              guidedLicense
+            ),
             guided_add_user_permissions(
-              selectedbfaccount,
+              guidedBfAccount,
               guidedDatasetName,
               guidedUsers
             ),
+            guided_add_description(
+              guidedBfAccount,
+              guidedDatasetName,
+              guidedStudyPurpose,
+              guidedDataCollection,
+              guidedPrimaryConclusion
+            ),
+            guided_add_tags(guidedBfAccount, guidedDatasetName, guidedTags),
           ];
           const result = await Promise.allSettled(promises);
           console.log(result.map((promise) => promise.status));
@@ -931,7 +987,7 @@ $(document).ready(() => {
       .then((data /*from digital metadata chain*/) => {
         if (guidedPiOwner) {
           guided_add_PI_owner(
-            selectedbfaccount,
+            guidedBfAccount,
             guidedDatasetName,
             guidedPiOwner
           );
