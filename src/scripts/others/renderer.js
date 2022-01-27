@@ -6154,7 +6154,9 @@ const divGenerateProgressBar = document.getElementById(
   "div-new-curate-meter-progress"
 );
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
-var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
+var progressStatus = document.getElementById(
+  "para-new-curate-progress-bar-status"
+);
 
 document
   .getElementById("button-generate")
@@ -6200,9 +6202,8 @@ document
 
     generateProgressBar.value = 0;
 
-    
     progressStatus.innerHTML = "Please wait while we verify a few things...";
-    
+
     statusText = "Please wait while we verify a few things...";
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
@@ -6218,8 +6219,7 @@ document
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
     ).innerHTML = "";
-    progressStatus.innerHTML =
-      "";
+    progressStatus.innerHTML = "";
     document.getElementById("div-new-curate-progress").style.display = "none";
 
     progressBarNewCurate.value = 0;
@@ -6345,13 +6345,12 @@ function initiate_generate() {
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
-  
-  progressStatus.innerHTML =
-  "Preparing files ...";
+
+  progressStatus.innerHTML = "Preparing files ...";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
-  
+
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   let navContainer = document.getElementById("nav-items");
   var statusBarClone = statusBarContainer.cloneNode(true);
@@ -6359,20 +6358,19 @@ function initiate_generate() {
   let statusMeter = statusBarClone.getElementsByClassName("progresstrack")[0];
   //let progressBar = statusBarClone.getElementsByClassName("progresstrack")[0];
   //progressBar.id = "status-bar";
-  statusBarClone.id ="status-bar-curate-progress";
+  statusBarClone.id = "status-bar-curate-progress";
   //statusBarClone.style = "color: black; padding: 15px;";
 
   statusText.setAttribute("id", "nav-curate-progress-bar-status");
   statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
   let navbar = document.getElementById("main-nav");
   navContainer.appendChild(statusBarClone);
-  if(navbar.classList.contains("active")) {
+  if (navbar.classList.contains("active")) {
     document.getElementById("sidebarCollapse").click();
   }
 
   //navContainer.appendChild(dissmisButton);
-  
-  
+
   //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["manifest-files"]) {
@@ -6414,8 +6412,7 @@ function initiate_generate() {
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-      progressStatus.innerHTML =
-        "";
+      progressStatus.innerHTML = "";
       statusText.innerHTML = "";
       document.getElementById("div-new-curate-progress").style.display = "none";
       generateProgressBar.value = 0;
@@ -6749,8 +6746,10 @@ function initiate_generate() {
             var statusProgressMessage = "";
             progressMessage += main_curate_progress_message + "<br>";
             statusProgressMessage += main_curate_progress_message + "<br>";
-            statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
-            statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+            statusProgressMessage +=
+              "Progress: " + value.toFixed(2) + "%" + "<br>";
+            statusProgressMessage +=
+              "Elapsed time: " + elapsed_time_formatted + "<br>";
             progressMessage +=
               "Progress: " +
               value.toFixed(2) +
@@ -6765,7 +6764,12 @@ function initiate_generate() {
             statusText.innerHTML = statusProgressMessage;
           }
         } else {
-          statusText.innerHTML = main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
+          statusText.innerHTML =
+            main_curate_progress_message +
+            "<br>" +
+            "Elapsed time: " +
+            elapsed_time_formatted +
+            "<br>";
           progressStatus.innerHTML =
             main_curate_progress_message +
             "<br>" +
@@ -6809,7 +6813,9 @@ const show_curation_shortcut = () => {
     },
   }).then((result) => {
     dismissStatus("status-bar-curate-progress");
-    let statusBarContainer = document.getElementById("status-bar-curate-progress");
+    let statusBarContainer = document.getElementById(
+      "status-bar-curate-progress"
+    );
     statusBarContainer.remove();
     if (result.isConfirmed) {
       $("#disseminate_dataset_tab").click();

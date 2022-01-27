@@ -2353,7 +2353,7 @@ $("#button-submit-dataset").click(async () => {
   let progressSubmit = document.getElementById("div-progress-submit");
   let navContainer = document.getElementById("nav-items");
   let progressError = document.getElementById("para-progress-bar-error-status");
-  
+
   var progressClone = progressSubmit.cloneNode(true);
   let cloneMeter = progressClone.children[1];
   let cloneStatus = progressClone.children[3];
@@ -2361,8 +2361,9 @@ $("#button-submit-dataset").click(async () => {
   var navError = progressError.cloneNode(true);
 
   console.log(progressSubmit);
-  
-  progressClone.style = "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
+
+  progressClone.style =
+    "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
   cloneMeter.setAttribute("id", "clone-progress-bar-upload-bf");
   cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
   progressClone.setAttribute("id", "nav-progress-submit");
@@ -2417,10 +2418,10 @@ $("#button-submit-dataset").click(async () => {
           title: "There was an issue uploading your dataset",
           html: emessage,
         }).then((result) => {
-          if(result.isConfirmed) {
-            progressClone.remove()
+          if (result.isConfirmed) {
+            progressClone.remove();
           }
-        })
+        });
 
         progressBarUploadBf.value = 0;
         cloneMeter.value = 0;
@@ -2625,7 +2626,8 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
-            cloneStatus.innerHTML = res[0] + "<br>Progress: " + value.toFixed(2) + "%";
+            cloneStatus.innerHTML =
+              res[0] + "<br>Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
                 "Progress: " +
@@ -2653,7 +2655,7 @@ $("#button-submit-dataset").click(async () => {
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
         var uploadComplete = new Notyf({
-          position: {x: "right", y: "bottom"},
+          position: { x: "right", y: "bottom" },
           ripple: true,
           dismissible: true,
           ripple: false,
@@ -2667,9 +2669,9 @@ $("#button-submit-dataset").click(async () => {
                 color: "white",
               },
               duration: 1000,
-            }
-          ]
-        })
+            },
+          ],
+        });
         uploadComplete.open({
           type: "success",
           message: "Upload to Pennsieve completed",

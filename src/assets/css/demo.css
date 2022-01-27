@@ -799,7 +799,7 @@ table.table-save-metadata {
   position: absolute;
   bottom: 0px;
   width: 100%;
-  color: black; 
+  color: black;
   padding: 15px;
 }
 
@@ -822,13 +822,13 @@ table.table-save-metadata {
 
 #nav-progress-bar-new-curate[value]::-webkit-progress-value {
   background-image: -webkit-linear-gradient(
-    -45deg,
-    transparent 33%,
-    rgba(0, 0, 0, 0.1) 33%,
-    rgba(0, 0, 0, 0.1) 66%,
-    transparent 66%
-  ),
-  -webkit-linear-gradient(left, hsl(256, 44%, 36%), hsl(226, 92%, 74%));
+      -45deg,
+      transparent 33%,
+      rgba(0, 0, 0, 0.1) 33%,
+      rgba(0, 0, 0, 0.1) 66%,
+      transparent 66%
+    ),
+    -webkit-linear-gradient(left, hsl(256, 44%, 36%), hsl(226, 92%, 74%));
   border-radius: 2px;
   background-size: 35px 25px, 100% 100%, 100% 100%;
 }
