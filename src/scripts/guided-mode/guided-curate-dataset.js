@@ -604,7 +604,8 @@ $(document).ready(() => {
             });
             log.info(`Created dataset successfully`);
             guidedIncreaseCurateProgressBar(5);
-            resolve(`Dataset ${datasetName} was created successfully`);
+            console.log(res);
+            resolve(res);
           }
         }
       );
@@ -916,29 +917,11 @@ $(document).ready(() => {
       .then((data /*from create dataset*/) => {
         (async function () {
           const promises = [
-            guided_add_subtitle(
-              selectedbfaccount,
-              guidedDatasetName,
-              guidedDatasetSubtitle
-            ),
             guided_add_user_permissions(
               selectedbfaccount,
               guidedDatasetName,
               guidedUsers
             ),
-            guided_add_description(
-              selectedbfaccount,
-              guidedDatasetName,
-              guidedStudyPurpose,
-              guidedDataCollection,
-              guidedPrimaryConclusion
-            ),
-            guided_add_license(
-              selectedbfaccount,
-              guidedDatasetName,
-              guidedLicense
-            ),
-            guided_add_tags(selectedbfaccount, guidedDatasetName, guidedTags),
           ];
           const result = await Promise.allSettled(promises);
           console.log(result.map((promise) => promise.status));
