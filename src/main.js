@@ -30,30 +30,53 @@ const PY_MODULE = "api"; // without .py suffix
 let pyProc = null;
 let pyPort = null;
 
-const guessPackaged = () => {
-  const fullPath = path.join(__dirname, PY_DIST_FOLDER);
+// flask setup environment variables
+const PY_FLASK_DIST_FOLDER = "pyflaskdist";
+const PY_FLASK_FOLDER = "pyflask";
+const PY_FLASK_MODULE = "api";
+
+let pyFlaskProc = null;
+let pyFlaskPort = null;
+
+// check for pydist or pyflaskdist
+const guessPackaged = (pythonDistributableFolder) => {
+  const fullPath = path.join(__dirname, pythonDistributableFolder);
   return require("fs").existsSync(fullPath);
 };
 
-const getScriptPath = () => {
+// get path for either pysoda or pyflask
+const getScriptPath = (
+  pythonFolder,
+  pythonDistributableFolder,
+  pythonModule
+) => {
   if (!guessPackaged()) {
-    return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
+    return path.join(__dirname, pythonFolder, pythonModule + ".py");
   }
   if (process.platform === "win32") {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
+    return path.join(__dirname, pythonDistributableFolder, pythonModule, pythonModule + ".exe");
   }
 
-  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
+  return path.join(__dirname, pythonDistributableFolder, pythonModule, pythonModule);
 };
 
-const selectPort = () => {
-  pyPort = 4242;
-  return pyPort;
+// use pysoda's port or pyflask's port
+// @param {boolean} isPysoda  - if true then setting port for pysoda server else setting port for pyflask server
+const selectPort = (isPySoda) => {
+  return isPySoda ? ("4242") : ("5000");
 };
 
-const createPyProc = () => {
-  let script = getScriptPath();
-  let port = "" + selectPort();
+// @param {boolean} startPySoda  - if true then start the pysoda server else start the pyflask server
+const createPyProc = (startPySoda) => {
+  let script;
+  if(startPySoda) {
+    script = getScriptPath(PY_FOLDER, PY_DIST_FOLDER, PY_MODULE);
+  } else {
+    script = getScriptPath(PY_FLASK_FOLDER, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE)
+  }
+  let port = "" + selectPort(startPySoda);
+
+  console.log("The port is: ", port)
 
   log.info(script);
   if (require("fs").existsSync(script)) {
@@ -63,33 +86,69 @@ const createPyProc = () => {
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc = require("child_process").execFile(script, [port], {
-      stdio: "ignore",
-    });
+    if (startPySoda) {
+      pyProc = require("child_process").execFile(script, [port], {
+        stdio: "ignore",
+      });
+    } else {
+      pyFlaskProc = require("child_process").execFile(script, [port], {
+        stdio: "ignore",
+      });
+    }
   } else {
     log.info("spawn");
-    pyProc = require("child_process").spawn("python", [script, port], {
-      stdio: "ignore",
-    });
+    if (startPySoda) {
+      pyProc = require("child_process").spawn("python", [script, port], {
+        stdio: "ignore",
+      });
+    } else {
+      pyFlaskProc = require("child_process").spawn("python", [script, port], {
+        stdio: "ignore",
+      });
+    }
   }
 
-  log.info(pyProc);
-  if (pyProc != null) {
-    console.log("child process success on port " + port);
-    log.info("child process success on port " + port);
+  if (startPySoda) {
+    log.info(pyProc);
+    if (pyProc != null) {
+      console.log("child process success on port " + port);
+      log.info("child process success on port " + port);
+    } else {
+      console.error("child process failed to start on port" + port);
+    }
   } else {
-    console.error("child process failed to start on port" + port);
+    log.info(pyFlaskProc);
+    if (pyFlaskProc != null) {
+      console.log("child process success on port " + port);
+      log.info("child process success on port " + port);
+    } else {
+      console.error("child process failed to start on port" + port);
+    }
   }
 };
 
-const exitPyProc = () => {
-  pyProc.kill();
-  pyProc = null;
-  pyPort = null;
+// @param isPySoda {boolean} - Either a pysoda or pyflask server
+const exitPyProc = (isPySoda) => {
+  if(isPySoda){
+    pyProc.kill()
+    pyProc = null 
+    pyPort = null 
+  } else {
+    pyFlaskProc.kill()
+    pyFlaskProc = null 
+    pyFlaskPort = null 
+  }
 };
 
-app.on("ready", createPyProc);
-app.on("will-quit", exitPyProc);
+app.on("ready", () => {
+  createPyProc(true)
+  createPyProc(false)
+});
+
+app.on("will-quit", () => {
+  exitPyProc(true)
+  exitPyProc(false)
+});
 
 /*************************************************************
  * Main app window
