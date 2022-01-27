@@ -830,6 +830,7 @@ $(document).ready(() => {
             let emessage = userError(error);
             reject(error);
           } else {
+            console.log(res);
             notyf.open({
               duration: "5000",
               type: "success",
@@ -845,7 +846,26 @@ $(document).ready(() => {
   };
 
   const guided_add_tags = async (bfAccount, bfDataset, tagsArray) => {
-    return new Promise((resolve, reject) => {});
+    // Add tags to dataset
+    try {
+      await update_dataset_tags(bfDataset, tagsArray);
+    } catch (e) {
+      // log the error
+      log.error(e);
+      console.error(e);
+      // alert the user of the error
+      Swal.fire({
+        title: "Failed to edit your dataset tags!",
+        icon: "error",
+        text: e.message,
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      // halt execution
+      return;
+    }
   };
 
   const guided_add_license = async (bfAccount, bfDataset, license) => {
@@ -889,10 +909,11 @@ $(document).ready(() => {
       sodaJSONObj["digital-metadata"]["data-collection"];
     let guidedPrimaryConclusion =
       sodaJSONObj["digital-metadata"]["primary-conclusion"];
+    let guidedTags = ["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
 
     guided_create_dataset(selectedbfaccount, guidedDatasetName)
-      .then((data) => {
+      .then((data /*from create dataset*/) => {
         (async function () {
           const promises = [
             guided_add_subtitle(
@@ -917,19 +938,24 @@ $(document).ready(() => {
               guidedDatasetName,
               guidedLicense
             ),
+            guided_add_tags(selectedbfaccount, guidedDatasetName, guidedTags),
           ];
           const result = await Promise.allSettled(promises);
           console.log(result.map((promise) => promise.status));
-          //set pi owner after all other promises while we still have owner permission
-          return guided_add_PI_owner(
+          return result;
+        })();
+      })
+      .then((data /*from digital metadata chain*/) => {
+        if (guidedPiOwner) {
+          guided_add_PI_owner(
             selectedbfaccount,
             guidedDatasetName,
             guidedPiOwner
           );
-        })();
-      })
-      .then((data) => {
-        console.log(data);
+          guidedIncreaseCurateProgressBar(100);
+        } else {
+          guidedIncreaseCurateProgressBar(100);
+        }
       })
       .catch((error) => console.log(error));
   };
