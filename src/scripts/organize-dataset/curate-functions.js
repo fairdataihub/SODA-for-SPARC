@@ -278,7 +278,7 @@ const checkAvailableSpace = () => {
           );
 
           // return to avoid logging that the user passed the storage space check
-          return
+          return;
         }
 
         logCurationForAnalytics(
