@@ -445,7 +445,7 @@ const checkStorage = (id) => {
       );
 
       // stop execution to avoid logging a success case for the storage space check
-      return 
+      return;
     }
 
     ipcRenderer.send(
