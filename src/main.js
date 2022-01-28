@@ -27,9 +27,6 @@ const PY_DIST_FOLDER = "pysodadist";
 const PY_FOLDER = "pysoda";
 const PY_MODULE = "api"; // without .py suffix
 
-let pyProc = null;
-let pyPort = null;
-
 const PysodaConfiguration = {
   distributionFolder: PY_DIST_FOLDER,
   folder: PY_FOLDER,
@@ -42,9 +39,6 @@ const PysodaConfiguration = {
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "pyflask";
 const PY_FLASK_MODULE = "api";
-
-let pyFlaskProc = null;
-let pyFlaskPort = null;
 
 const pyFlaskConfiguration = {
   distributionFolder: PY_FLASK_DIST_FOLDER,
