@@ -69,11 +69,11 @@ const getScriptPath = (serverConfiguration) => {
 };
 
 
-// @param {boolean} startPySoda  - if true then start the pysoda server else start the pyflask server
+// @param [{object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
 const createPyProc = (serverConfiguration) => {
   let script = getScriptPath(serverConfiguration);
 
-  const { distributionFolder, folder, module, port } = serverConfiguration;
+  const { distributionFolder, port } = serverConfiguration;
 
   log.info(script);
   if (require("fs").existsSync(script)) {
@@ -110,7 +110,7 @@ const createPyProc = (serverConfiguration) => {
     }
 };
 
-// @param isPySoda {boolean} - Either a pysoda or pyflask server
+// @param [{object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
 const exitPyProc = (serverConfiguration) => {
     serverConfiguration.process.kill();
     serverConfiguration.process = null;
