@@ -6360,9 +6360,6 @@ var uploadComplete = new Notyf({
 });
 
 //const remote = require("electron").remote;
-const BrowserWindow = remote.BrowserWindow;
-console.log(BrowserWindow.getAllWindows());
-let mainWindow = BrowserWindow.getFocusedWindow();
 //child.setPosition(position[0], position[1]);
 
 function initiate_generate() {
@@ -6389,41 +6386,8 @@ function initiate_generate() {
   statusText.setAttribute("id", "nav-curate-progress-bar-status");
   statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
   statusMeter.className = "nav-status-bar";
-  let navbar = document.getElementById("main-nav");
-  navContainer.appendChild(statusBarClone);
-  if (navbar.classList.contains("active")) {
-    document.getElementById("sidebarCollapse").click();
-  }
-  let position = mainWindow.getPosition();
-  console.log(position);
-  const modalOptions = {
-    x: position[0],
-    y: position[1],
-    width: 300,
-    height: 250,
-    center: true,
-    frame: false,
-    show: true,
-    icon: __dirname + "/assets/menu-icon/soda_icon.png",
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
-    },
-    // modal: true,
-    parent: mainWindow,
-    closable: true,
-  };
-  let child = new BrowserWindow(modalOptions);
-  child.loadURL("https://github.com");
-  child.once("ready-to-show", () => {
-    child.show();
-  });
+  document.body.appendChild(statusBarClone);
 
-  mainWindow.on("move", function () {
-    position = mainWindow.getPosition();
-    console.log(position);
-    child.setPosition(position[0], position[1]);
-  });
   //navContainer.appendChild(dissmisButton);
 
   //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
