@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<template class="task-template">
+  <section
+    id="validate_dataset-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div
+      class="main-tabs show"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
+      <header class="section-header">
+        <div
+          style="
+            display: inline-flex;
+            align-items: center;
+            flex-direction: row;
+            width: 94.5%;
+            padding-right: 20px;
+            margin-bottom: 50px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Validate Dataset</h2>
+            <a
+              target="_blank"
+              href="https://github.com/bvhpatel/SODA/wiki/Share-with-curation-team"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </header>
+
+      <div id="validate_dataset-tab" style="overflow-y: auto; height: 70%">
+        <div
+          class="individual-question validate_dataset show"
+          id="validate_dataset-question-1"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Select a dataset:
+              </label>
+              <div class="field" style="margin: auto; width: 500px">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current account:
+                        </h5>
+                        <h5 class="card-right bf-account-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="svg-change-current-account bi bi-pencil-fill"
+                      onclick="openDropdownPrompt('bf')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Account details:
+                        </h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current dataset:
+                        </h5>
+                        <h5 class="card-right bf-dataset-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                    <div
+                      class="ui active green inline loader small"
+                      style="display: none"
+                    ></div>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    onclick="transitionFreeFormMode(this, 'validate_dataset-question-1', 'validate_dataset-tab', 'delete', 'individual-question validate_dataset')"
+                    data-next="validate_dataset-question-2"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="validate_dataset-question-2"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <!-- <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+              ></label> -->
+              <div
+                id="div-confirm-validate_dataset"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0 auto;
+                "
+              >
+                <div style="display: flex; justify-content: space-between">
+                  <button
+                    id="validate_dataset_bttn"
+                    class="btn_animated md"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 160px;
+                      height: 40px;
+                      border: none !important;
+                      font-size: 15px;
+                      text-align: center;
+                    "
+                    onclick="transitionFreeFormMode(this, 'validate_dataset-question-2', 'validate_dataset-tab', '', 'individual-question validate_dataset')"
+                    data-next="validate_dataset-question-3"
+                  >
+                    Run dataset validator
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="validate_dataset-question-3"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                  "
+                >
+                  <p
+                    id="dataset_validator_status"
+                    style="margin-top: 10px; text-align: center"
+                  ></p>
+                  <br />
+                  <div
+                    id="dataset_validator_spinner"
+                    class="spinner validate_dataset"
+                    style="display: none"
+                  >
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                  </div>
+                </div>
+
+                <div id="validation_error_accordion" class="ui accordion"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-div">
+        <div style="display: flex; flex-direction: row; width: 120px">
+          <button
+            type="button"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
