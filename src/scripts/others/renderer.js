@@ -8228,7 +8228,7 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
   // get the permissions object
   const { role } = await permissionsResponse.json();
-
+  console.log(role);
   // return the permissions
   return role;
 };

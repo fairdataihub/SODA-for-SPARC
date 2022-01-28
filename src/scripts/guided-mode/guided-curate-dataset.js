@@ -582,6 +582,51 @@ $(document).ready(() => {
       block: "center",
     });
   };
+  //********************************************************************************************************
+  //FETCH FUNCTIONS//
+  //fetch
+  const create_dataset = async (
+    dataset_name,
+    dataset_subtitle,
+    dataset_tags
+  ) => {
+    // get the access token so the user can access the Pennsieve api
+    let jwt = await get_access_token();
+
+    const options = {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
+      body: JSON.stringify({
+        name: dataset_name,
+        description: "description test",
+        tags: ["test 1", "test 3"],
+      }),
+    };
+
+    const response = await fetch("https://api.pennsieve.io/datasets/", options);
+
+    if (!response.ok) {
+      const message = `An error has occured: ${response.status}`;
+      throw new Error(message);
+    }
+
+    const createDatasetResponseJson = response.json();
+    console.log(createDatasetResponseJson);
+    return createDatasetResponseJson;
+  };
+
+  //const add_dataset_permission = async();
+
+  //********************************************************************************************************
+
+  $("#chucktesta").on("click", () => {
+    //create_dataset("dsname", "dssub", "dstags");
+    guidedPennsieveDatasetUpload();
+  });
 
   const guided_create_dataset = (bfAccount, datasetName) => {
     console.log(bfAccount);
@@ -811,6 +856,19 @@ $(document).ready(() => {
     console.log(result.map((promise) => promise.status));
   };
 
+  const buildReadMeString = (
+    studyPurpose,
+    dataCollection,
+    primaryConclusion
+  ) => {
+    let requiredFields = [];
+    requiredFields.push("**Study Purpose:** " + studyPurpose + "\n");
+    requiredFields.push("**Data Collection:** " + dataCollection + "\n");
+    requiredFields.push("**Primary Conclusion:** " + primaryConclusion + "\n");
+    requiredFields = requiredFields.join("");
+    return requiredFields;
+  };
+
   const guided_add_description = async (
     bfAccount,
     bfDataset,
@@ -935,32 +993,45 @@ $(document).ready(() => {
     });
   };
 
+  const addPennsieveMetadata = async (
+    datasetName,
+    datasetTags,
+    datasetReadme
+  ) => {
+    const promises = [
+      updateDatasetReadme(datasetName, datasetReadme),
+      update_dataset_tags(datasetName, datasetTags),
+    ];
+    const result = await Promise.allSettled(promises);
+    console.log(result.map((promise) => promise.status));
+    return result;
+  };
+
   const guidedPennsieveDatasetUpload = async () => {
     let guidedBfAccount = defaultBfAccount;
-    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
-    let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
-    let guidedPiOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
-    let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-    let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+    let guidedDatasetName = "test 2323" + makeid(5); //sodaJSONObj["digital-metadata"]["name"];
+    //let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+    //let guidedPiOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
+    //let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+    //let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
       sodaJSONObj["digital-metadata"]["data-collection"];
     let guidedPrimaryConclusion =
       sodaJSONObj["digital-metadata"]["primary-conclusion"];
+    let guidedReadMe = buildReadMeString(
+      guidedStudyPurpose,
+      guidedDataCollection,
+      guidedPrimaryConclusion
+    );
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-    let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
-    console.log(guidedBfAccount);
-    console.log(guidedDatasetName);
+    //let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
 
-    console.log(guidedDatasetSubtitle);
-    console.log(guidedPiOwner);
-    console.log(guidedUsers);
-    console.log(guidedStudyPurpose);
-    console.log(guidedStudyPurpose);
-    console.log(guidedDataCollection);
-    console.log(guidedPrimaryConclusion);
-    console.log(guidedTags);
-    console.log(guidedLicense);
+    create_dataset(guidedDatasetName, "dssub", "dstags")
+      .then((data) => {
+        addPennsieveMetadata(guidedDatasetName, guidedTags, guidedReadMe);
+      })
+      .catch((error) => console.log(error));
   };
 
   /*const guided_add_folders_files = async (
