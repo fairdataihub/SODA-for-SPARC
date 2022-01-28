@@ -588,7 +588,8 @@ $(document).ready(() => {
   const create_dataset = async (
     dataset_name,
     dataset_subtitle,
-    dataset_tags
+    dataset_tags,
+    dataset_license
   ) => {
     // get the access token so the user can access the Pennsieve api
     let jwt = await get_access_token();
@@ -604,6 +605,7 @@ $(document).ready(() => {
         name: dataset_name,
         description: "description test",
         tags: ["test 1", "test 3"],
+        license: dataset_license,
       }),
     };
 
@@ -617,6 +619,20 @@ $(document).ready(() => {
     const createDatasetResponseJson = response.json();
     console.log(createDatasetResponseJson);
     return createDatasetResponseJson;
+  };
+
+  const addPennsieveMetadata = async (
+    datasetName,
+    datasetTags,
+    datasetReadme
+  ) => {
+    const promises = [
+      updateDatasetReadme(datasetName, datasetReadme),
+      update_dataset_tags(datasetName, datasetTags),
+    ];
+    const result = await Promise.allSettled(promises);
+    console.log(result.map((promise) => promise.status));
+    return result;
   };
 
   //const add_dataset_permission = async();
@@ -993,20 +1009,6 @@ $(document).ready(() => {
     });
   };
 
-  const addPennsieveMetadata = async (
-    datasetName,
-    datasetTags,
-    datasetReadme
-  ) => {
-    const promises = [
-      updateDatasetReadme(datasetName, datasetReadme),
-      update_dataset_tags(datasetName, datasetTags),
-    ];
-    const result = await Promise.allSettled(promises);
-    console.log(result.map((promise) => promise.status));
-    return result;
-  };
-
   const guidedPennsieveDatasetUpload = async () => {
     let guidedBfAccount = defaultBfAccount;
     let guidedDatasetName = "test 2323" + makeid(5); //sodaJSONObj["digital-metadata"]["name"];
@@ -1025,9 +1027,9 @@ $(document).ready(() => {
       guidedPrimaryConclusion
     );
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-    //let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
+    let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
 
-    create_dataset(guidedDatasetName, "dssub", "dstags")
+    create_dataset(guidedDatasetName, "dssub", "dstags", guidedLicense)
       .then((data) => {
         addPennsieveMetadata(guidedDatasetName, guidedTags, guidedReadMe);
       })
