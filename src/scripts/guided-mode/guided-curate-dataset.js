@@ -851,7 +851,7 @@ $(document).ready(() => {
         "api_bf_add_description",
         bfAccount,
         bfDataset,
-        requiredFields,
+        "foo",
         (error, res) => {
           if (error) {
             notyf.open({
@@ -920,7 +920,6 @@ $(document).ready(() => {
               type: "error",
               message: "Failed to add license",
             });
-
             reject(error);
           } else {
             notyf.open({
@@ -950,53 +949,18 @@ $(document).ready(() => {
       sodaJSONObj["digital-metadata"]["primary-conclusion"];
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
+    console.log(guidedBfAccount);
+    console.log(guidedDatasetName);
 
-    guided_create_dataset(guidedBfAccount, guidedDatasetName)
-      .then((data /*from create dataset*/) => {
-        (async function () {
-          const promises = [
-            guided_add_subtitle(
-              guidedBfAccount,
-              guidedDatasetName,
-              guidedDatasetSubtitle
-            ),
-            guided_add_license(
-              guidedBfAccount,
-              guidedDatasetName,
-              guidedLicense
-            ),
-            guided_add_user_permissions(
-              guidedBfAccount,
-              guidedDatasetName,
-              guidedUsers
-            ),
-            guided_add_description(
-              guidedBfAccount,
-              guidedDatasetName,
-              guidedStudyPurpose,
-              guidedDataCollection,
-              guidedPrimaryConclusion
-            ),
-            guided_add_tags(guidedBfAccount, guidedDatasetName, guidedTags),
-          ];
-          const result = await Promise.allSettled(promises);
-          console.log(result.map((promise) => promise.status));
-          return result;
-        })();
-      })
-      .then((data /*from digital metadata chain*/) => {
-        if (guidedPiOwner) {
-          guided_add_PI_owner(
-            guidedBfAccount,
-            guidedDatasetName,
-            guidedPiOwner
-          );
-          guidedIncreaseCurateProgressBar(100);
-        } else {
-          guidedIncreaseCurateProgressBar(100);
-        }
-      })
-      .catch((error) => console.log(error));
+    console.log(guidedDatasetSubtitle);
+    console.log(guidedPiOwner);
+    console.log(guidedUsers);
+    console.log(guidedStudyPurpose);
+    console.log(guidedStudyPurpose);
+    console.log(guidedDataCollection);
+    console.log(guidedPrimaryConclusion);
+    console.log(guidedTags);
+    console.log(guidedLicense);
   };
 
   /*const guided_add_folders_files = async (
