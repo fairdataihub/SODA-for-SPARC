@@ -9019,6 +9019,261 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
 
 
 // Test calls for the validator 
-const valDatasetPipeline = () => {
-  
-}
+
+// let validation_report_template = `
+//   <div class="title active">
+//     <i class="dropdown icon"></i>
+//       What is a dog?
+//   </div>
+//   <div class="content active">
+//     <p class="visible" style="display: block !important;">A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.</p>
+//   </div>`;
+
+// const create_validation_report = (error_report) => {
+//   // let accordion_elements = ` <div class="title active"> `;
+//   let accordion_elements = "";
+//   let elements = Object.keys(error_report).length;
+
+//   if ((elements = 0)) {
+//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> No errors found  </div> <div class="content active"> - </div>`;
+//   } else if (elements == 1) {
+//     let key = Object.keys(error_report)[0];
+//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
+//     if ("messages" in error_report[key]) {
+//       for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//         accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//       }
+//     }
+//     accordion_elements += `</div>`;
+//   } else {
+//     let keys = Object.keys(error_report);
+//     for (key_index in keys) {
+//       key = keys[key_index];
+//       if (key == keys[0]) {
+//         accordion_elements += `<div class="title active"> <i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
+//         if ("messages" in error_report[key]) {
+//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//           }
+//         }
+//         accordion_elements += `</div> `;
+//       } else {
+//         accordion_elements += `<div class="title"><i class="dropdown icon"></i> ${key} </div> <div class="content"> `;
+//         if ("messages" in error_report[key]) {
+//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//           }
+//         }
+//         accordion_elements += `</div>`;
+//       }
+//     }
+//     accordion_elements += `</div>`;
+//   }
+//   $("#validation_error_accordion").html(accordion_elements);
+//   // $("#validation_error_accordion").accordion();
+// };
+
+const create_validation_report = (error_report) => {
+  // let accordion_elements = ` <div class="title active"> `;
+  let accordion_elements = "";
+  let elements = Object.keys(error_report).length;
+
+  if ((elements = 0)) {
+    accordion_elements += `<ul> <li>No errors found </li> </ul>`;
+  } else if (elements == 1) {
+    let key = Object.keys(error_report)[0];
+    accordion_elements += `<ul> `;
+    if ("messages" in error_report[key]) {
+      for (let i = 0; i < error_report[key]["messages"].length; i++) {
+        accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </li>`;
+      }
+    }
+    accordion_elements += `</ul>`;
+  } else {
+    let keys = Object.keys(error_report);
+    for (key_index in keys) {
+      key = keys[key_index];
+      if (key == keys[0]) {
+        accordion_elements += `<ul> `;
+        if ("messages" in error_report[key]) {
+          for (let i = 0; i < error_report[key]["messages"].length; i++) {
+            accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </p> </li>`;
+          }
+        }
+        accordion_elements += `</ul> `;
+      } else {
+        accordion_elements += `<ul> `;
+        if ("messages" in error_report[key]) {
+          for (let i = 0; i < error_report[key]["messages"].length; i++) {
+            accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </p></li>`;
+          }
+        }
+        accordion_elements += `</ul>`;
+      }
+    }
+    // accordion_elements += `</div>`;
+  }
+  $("#validation_error_accordion").html(accordion_elements);
+  // $("#validation_error_accordion").accordion();
+};
+
+$("#validate_dataset_bttn").on("click", () => {
+  setTimeout(() => {
+    log.info("validating dataset");
+    log.info(bfDatasetSubtitle.value);
+
+    // let validation_client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 3000000 });
+    // validation_client.connect("tcp://127.0.0.1:4242");
+
+    $("#dataset_validator_status").text(
+      "Please wait while we retrieve the dataset..."
+    );
+    $("#dataset_validator_spinner").show();
+
+    let selectedBfAccount = defaultBfAccount;
+    let selectedBfDataset = defaultBfDataset;
+
+    // datasetList.forEach((item) => {
+    //   if (item.name == defaultBfDataset) {
+    //     selectedBfDataset = item.id;
+    //   }
+    // });
+
+    temp_object = {
+      "bf-account-selected": {
+        "account-name": selectedBfAccount,
+      },
+      "bf-dataset-selected": {
+        "dataset-name": selectedBfDataset,
+      },
+    };
+
+    client.invoke(
+      "api_ps_retrieve_dataset",
+      temp_object,
+      async (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          // var emessage = userError(error);
+          $("#dataset_validator_spinner").hide();
+          $("#dataset_validator_status").html(
+            `<span style='color: red;'> ${error}</span>`
+          );
+          // ipcRenderer.send(
+          //   "track-event",
+          //   "Error",
+          //   "Validate Dataset",
+          //   defaultBfDataset
+          // );
+        } else {
+          console.log(res);
+          $("#dataset_validator_status").text(
+            "Please wait while we validate the dataset..."
+          );
+
+          let validation_client = new zerorpc.Client({
+            timeout: 300000,
+            heartbeatInterval: 10000,
+          });
+          validation_client.connect("tcp://127.0.0.1:4242");
+
+          validation_client.invoke("echo", "server ready", (error, res) => {
+            if (error || res !== "server ready") {
+              log.error(error);
+              console.error(error);
+            } else {
+              console.log("Connected to validation backend successfully");
+              log.info("Connected to validation backend successfully");
+
+              validation_client.invoke(
+                "api_val_dataset_pipeline",
+                selectedBfAccount,
+                selectedBfDataset,
+                (error, res) => {
+                  if (error) {
+                    log.error(error);
+                    console.error(error);
+                    // var emessage = userError(error);
+                    $("#dataset_validator_spinner").hide();
+                    $("#dataset_validator_status").html(
+                      `<span style='color: red;'> ${error}</span>`
+                    );
+                    // ipcRenderer.send(
+                    //   "track-event",
+                    //   "Error",
+                    //   "Validate Dataset",
+                    //   defaultBfDataset
+                    // );
+                  } else {
+                    console.log(res);
+
+                    // log.info("Validation succesful");
+                    create_validation_report(res);
+                    $("#dataset_validator_status").html("");
+                    $("#dataset_validator_spinner").hide();
+                    // ipcRenderer.send(
+                    //   "track-event",
+                    //   "Success",
+                    //   "Validate Dataset",
+                    //   defaultBfDataset
+                    // );
+                  }
+                }
+              );
+            }
+          });
+
+
+          // console.log(res)
+          // log.info("Validation succesful");
+          // create_validation_report(res);
+          // $("#dataset_validator_status").html("");
+          // $("#dataset_validator_spinner").hide();
+          // ipcRenderer.send(
+          //   "track-event",
+          //   "Success",
+          //   "Validate Dataset",
+          //   defaultBfDataset
+          // );
+        }
+      }
+    );
+
+    // validation_client.invoke(
+    //   "api_validate_dataset_pipeline",
+    //   selectedBfAccount,
+    //   selectedBfDataset,
+    //   (error, res) => {
+    //     if (error) {
+    //       log.error(error);
+    //       console.error(error);
+    //       // var emessage = userError(error);
+    //       $("#dataset_validator_spinner").hide();
+    //       $("#dataset_validator_status").html(
+    //         `<span style='color: red;'> ${error}</span>`
+    //       );
+    //       ipcRenderer.send(
+    //         "track-event",
+    //         "Error",
+    //         "Validate Dataset",
+    //         defaultBfDataset
+    //       );
+    //     } else {
+    //       console.log(res);
+    //       log.info("Validation succesful");
+    //       create_validation_report(res);
+    //       $("#dataset_validator_status").html("");
+    //       $("#dataset_validator_spinner").hide();
+    //       ipcRenderer.send(
+    //         "track-event",
+    //         "Success",
+    //         "Validate Dataset",
+    //         defaultBfDataset
+    //       );
+    //     }
+    //   }
+    // );
+  }, delayAnimation);
+});
+
