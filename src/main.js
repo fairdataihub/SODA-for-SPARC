@@ -59,7 +59,6 @@ const getScriptPath = (serverConfiguration) => {
   const { distributionFolder, folder, module } = serverConfiguration;
 
   if (!guessPackaged(distributionFolder)) {
-    console.log("Dir name is: ", path.join(__dirname, folder, module + ".py"));
     return path.join(__dirname, folder, module + ".py");
   }
   if (process.platform === "win32") {
@@ -75,7 +74,6 @@ const createPyProc = (serverConfiguration) => {
   let script = getScriptPath(serverConfiguration);
 
   const { distributionFolder, folder, module, port } = serverConfiguration;
-  console.log("The port is: ", port);
 
   log.info(script);
   if (require("fs").existsSync(script)) {
@@ -84,7 +82,6 @@ const createPyProc = (serverConfiguration) => {
     log.info("file does not exist");
   }
   if (guessPackaged(distributionFolder)) {
-    console.log("Package exists");
     log.info("execFile");
     serverConfiguration.process = require("child_process").execFile(
       script,
@@ -95,7 +92,6 @@ const createPyProc = (serverConfiguration) => {
     );
   } else {
     log.info("spawn");
-    console.log("Package not guessed");
     serverConfiguration.process = require("child_process").spawn(
       "python",
       [script, port],
