@@ -40,8 +40,10 @@ let pyFlaskPort = null;
 
 // check for pydist or pyflaskdist
 const guessPackaged = (pythonDistributableFolder) => {
-  const fullPath = path.join(__dirname, pythonDistributableFolder);
-  return require("fs").existsSync(fullPath);
+  if (typeof pythonDistributableFolder == "string") {
+    const fullPath = path.join(__dirname, pythonDistributableFolder);
+    return require("fs").existsSync(fullPath);
+  }
 };
 
 // get path for either pysoda or pyflask
@@ -50,33 +52,60 @@ const getScriptPath = (
   pythonDistributableFolder,
   pythonModule
 ) => {
-  if (!guessPackaged()) {
+  if (!guessPackaged(pythonDistributableFolder)) {
+    console.log(
+      "Dir name is: ",
+      path.join(__dirname, pythonFolder, pythonModule + ".py")
+    );
     return path.join(__dirname, pythonFolder, pythonModule + ".py");
   }
   if (process.platform === "win32") {
-    return path.join(__dirname, pythonDistributableFolder, pythonModule, pythonModule + ".exe");
+    console.log(
+      "Realy pysodadist: ",
+      path.join(
+        __dirname,
+        pythonDistributableFolder,
+        pythonModule,
+        pythonModule + ".exe"
+      )
+    );
+    return path.join(
+      __dirname,
+      pythonDistributableFolder,
+      pythonModule,
+      pythonModule + ".exe"
+    );
   }
 
-  return path.join(__dirname, pythonDistributableFolder, pythonModule, pythonModule);
+  return path.join(
+    __dirname,
+    pythonDistributableFolder,
+    pythonModule,
+    pythonModule
+  );
 };
 
 // use pysoda's port or pyflask's port
 // @param {boolean} isPysoda  - if true then setting port for pysoda server else setting port for pyflask server
 const selectPort = (isPySoda) => {
-  return isPySoda ? ("4242") : ("5000");
+  return isPySoda ? "4242" : "5000";
 };
 
 // @param {boolean} startPySoda  - if true then start the pysoda server else start the pyflask server
 const createPyProc = (startPySoda) => {
   let script;
-  if(startPySoda) {
+  if (startPySoda) {
     script = getScriptPath(PY_FOLDER, PY_DIST_FOLDER, PY_MODULE);
   } else {
-    script = getScriptPath(PY_FLASK_FOLDER, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE)
+    script = getScriptPath(
+      PY_FLASK_FOLDER,
+      PY_FLASK_DIST_FOLDER,
+      PY_FLASK_MODULE
+    );
   }
   let port = "" + selectPort(startPySoda);
 
-  console.log("The port is: ", port)
+  console.log("The port is: ", port);
 
   log.info(script);
   if (require("fs").existsSync(script)) {
@@ -129,25 +158,25 @@ const createPyProc = (startPySoda) => {
 
 // @param isPySoda {boolean} - Either a pysoda or pyflask server
 const exitPyProc = (isPySoda) => {
-  if(isPySoda){
-    pyProc.kill()
-    pyProc = null 
-    pyPort = null 
+  if (isPySoda) {
+    pyProc.kill();
+    pyProc = null;
+    pyPort = null;
   } else {
-    pyFlaskProc.kill()
-    pyFlaskProc = null 
-    pyFlaskPort = null 
+    pyFlaskProc.kill();
+    pyFlaskProc = null;
+    pyFlaskPort = null;
   }
 };
 
 app.on("ready", () => {
-  createPyProc(true)
-  createPyProc(false)
+  createPyProc(true);
+  createPyProc(false);
 });
 
 app.on("will-quit", () => {
-  exitPyProc(true)
-  exitPyProc(false)
+  exitPyProc(true);
+  exitPyProc(false);
 });
 
 /*************************************************************
