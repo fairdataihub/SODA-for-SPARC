@@ -101,20 +101,20 @@ const createPyProc = (serverConfiguration) => {
     );
   }
 
-    log.info(serverConfiguration.process);
-    if (serverConfiguration.process != null) {
-      console.log("child process success on port " + port);
-      log.info("child process success on port " + port);
-    } else {
-      console.error("child process failed to start on port" + port);
-    }
+  log.info(serverConfiguration.process);
+  if (serverConfiguration.process != null) {
+    console.log("child process success on port " + port);
+    log.info("child process success on port " + port);
+  } else {
+    console.error("child process failed to start on port" + port);
+  }
 };
 
 // @param [{object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
 const exitPyProc = (serverConfiguration) => {
-    serverConfiguration.process.kill();
-    serverConfiguration.process = null;
-    serverConfiguration.port = null;
+  serverConfiguration.process.kill();
+  serverConfiguration.process = null;
+  serverConfiguration.port = null;
 };
 
 app.on("ready", () => {
