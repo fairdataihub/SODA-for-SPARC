@@ -60,7 +60,6 @@ const getScriptPath = (
     return path.join(__dirname, pythonFolder, pythonModule + ".py");
   }
   if (process.platform === "win32") {
-<<<<<<< HEAD
     console.log(
       "Realy pysodadist: ",
       path.join(
@@ -70,8 +69,6 @@ const getScriptPath = (
         pythonModule + ".exe"
       )
     );
-=======
->>>>>>> 9505fd261ebba12e141614b8fca76f87900d38f9
     return path.join(
       __dirname,
       pythonDistributableFolder,
