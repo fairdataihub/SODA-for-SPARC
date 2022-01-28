@@ -1389,7 +1389,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       ipcRenderer.send(
         "track-event",
         "Succes",
-        "User has succesfully chosen a dataset",
+        "User has successfully chosen a dataset",
         defaultBfDataset
       );
     }, 10);
