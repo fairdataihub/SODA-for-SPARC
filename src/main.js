@@ -69,7 +69,7 @@ const getScriptPath = (serverConfiguration) => {
 };
 
 
-// @param [{object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
+// @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
 const createPyProc = (serverConfiguration) => {
   let script = getScriptPath(serverConfiguration);
 
@@ -110,7 +110,7 @@ const createPyProc = (serverConfiguration) => {
   }
 };
 
-// @param [{object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
+// @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
 const exitPyProc = (serverConfiguration) => {
   serverConfiguration.process.kill();
   serverConfiguration.process = null;
