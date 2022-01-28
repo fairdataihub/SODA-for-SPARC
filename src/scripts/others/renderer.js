@@ -9015,10 +9015,7 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   return metadataFiles;
 };
 
-
-
-
-// Test calls for the validator 
+// Test calls for the validator
 
 // let validation_report_template = `
 //   <div class="title active">
@@ -9224,7 +9221,6 @@ $("#validate_dataset_bttn").on("click", () => {
             }
           });
 
-
           // console.log(res)
           // log.info("Validation succesful");
           // create_validation_report(res);
@@ -9276,4 +9272,3 @@ $("#validate_dataset_bttn").on("click", () => {
     // );
   }, delayAnimation);
 });
-
