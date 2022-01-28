@@ -28,6 +28,7 @@ function handleSectionTrigger(event) {
   event.target.classList.add("is-selected");
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
+
   document.getElementById(sectionId).classList.add("is-shown");
 
   let showSidebarSections = [
