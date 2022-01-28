@@ -68,7 +68,6 @@ const getScriptPath = (serverConfiguration) => {
   return path.join(__dirname, distributionFolder, module, module);
 };
 
-
 // @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
 const createPyProc = (serverConfiguration) => {
   let script = getScriptPath(serverConfiguration);
