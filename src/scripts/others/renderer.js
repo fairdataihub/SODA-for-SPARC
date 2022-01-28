@@ -6359,6 +6359,12 @@ var uploadComplete = new Notyf({
   ],
 });
 
+//const remote = require("electron").remote;
+const BrowserWindow = remote.BrowserWindow;
+console.log(BrowserWindow.getAllWindows());
+let mainWindow = BrowserWindow.getFocusedWindow();
+//child.setPosition(position[0], position[1]);
+
 function initiate_generate() {
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
@@ -6388,7 +6394,36 @@ function initiate_generate() {
   if (navbar.classList.contains("active")) {
     document.getElementById("sidebarCollapse").click();
   }
+  let position = mainWindow.getPosition();
+  console.log(position);
+  const modalOptions = {
+    x: position[0],
+    y: position[1],
+    width: 300,
+    height: 250,
+    center: true,
+    frame: false,
+    show: true,
+    icon: __dirname + "/assets/menu-icon/soda_icon.png",
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+    },
+    // modal: true,
+    parent: mainWindow,
+    closable: true,
+  };
+  let child = new BrowserWindow(modalOptions);
+  child.loadURL("https://github.com");
+  child.once("ready-to-show", () => {
+    child.show();
+  });
 
+  mainWindow.on("move", function () {
+    position = mainWindow.getPosition();
+    console.log(position);
+    child.setPosition(position[0], position[1]);
+  });
   //navContainer.appendChild(dissmisButton);
 
   //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
