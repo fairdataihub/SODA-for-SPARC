@@ -113,7 +113,8 @@ const createPyProc = (startPySoda) => {
   } else {
     log.info("file does not exist");
   }
-  if (guessPackaged()) {
+  if (guessPackaged(startPySoda ? PY_DIST_FOLDER : PY_FLASK_DIST_FOLDER)) {
+    console.log("Package exists")
     log.info("execFile");
     if (startPySoda) {
       pyProc = require("child_process").execFile(script, [port], {
@@ -126,6 +127,7 @@ const createPyProc = (startPySoda) => {
     }
   } else {
     log.info("spawn");
+    console.log("Package not guessed")
     if (startPySoda) {
       pyProc = require("child_process").spawn("python", [script, port], {
         stdio: "ignore",
