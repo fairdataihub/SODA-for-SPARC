@@ -69,15 +69,6 @@ const getScriptPath = (serverConfiguration) => {
   return path.join(__dirname, distributionFolder, module, module);
 };
 
-// use pysoda's port or pyflask's port
-// @param {boolean} isPysoda  - if true then setting port for pysoda server else setting port for pyflask server
-const selectPort = (serverName) => {
-  if (serverName === PY_FOLDER) {
-    return "4242";
-  }
-
-  return "5000";
-};
 
 // @param {boolean} startPySoda  - if true then start the pysoda server else start the pyflask server
 const createPyProc = (serverConfiguration) => {
