@@ -9014,3 +9014,11 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
+
+
+
+
+// Test calls for the validator 
+const valDatasetPipeline = () => {
+  
+}
