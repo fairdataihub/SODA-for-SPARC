@@ -603,8 +603,8 @@ $(document).ready(() => {
       },
       body: JSON.stringify({
         name: dataset_name,
-        description: "description test",
-        tags: ["test 1", "test 3"],
+        description: dataset_subtitle,
+        tags: dataset_tags,
         license: dataset_license,
       }),
     };
@@ -622,16 +622,16 @@ $(document).ready(() => {
   };
 
   const addPennsieveMetadata = async (
+    bfAccount,
     datasetName,
-    datasetTags,
-    datasetReadme
+    datasetReadme,
+    userPermissions
   ) => {
     const promises = [
       updateDatasetReadme(datasetName, datasetReadme),
-      update_dataset_tags(datasetName, datasetTags),
+      guided_add_user_permissions(bfAccount, datasetName, userPermissions),
     ];
     const result = await Promise.allSettled(promises);
-    console.log(result.map((promise) => promise.status));
     return result;
   };
 
@@ -1011,10 +1011,10 @@ $(document).ready(() => {
 
   const guidedPennsieveDatasetUpload = async () => {
     let guidedBfAccount = defaultBfAccount;
-    let guidedDatasetName = "test 2323" + makeid(5); //sodaJSONObj["digital-metadata"]["name"];
-    //let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
+    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
+    let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     //let guidedPiOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
-    //let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+    let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
     //let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
@@ -1029,9 +1029,19 @@ $(document).ready(() => {
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
 
-    create_dataset(guidedDatasetName, "dssub", "dstags", guidedLicense)
+    create_dataset(
+      guidedDatasetName,
+      guidedDatasetSubtitle,
+      guidedTags,
+      guidedLicense
+    )
       .then((data) => {
-        addPennsieveMetadata(guidedDatasetName, guidedTags, guidedReadMe);
+        addPennsieveMetadata(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedReadMe,
+          guidedUsers
+        );
       })
       .catch((error) => console.log(error));
   };
