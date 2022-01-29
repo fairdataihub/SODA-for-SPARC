@@ -106,6 +106,7 @@
 
 .guided--progression-tab-triangle::before {
   content: "";
+  z-index: 1;
   background-color: white;
   width: 10px;
   height: 10px;
