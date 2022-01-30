@@ -118,6 +118,9 @@
   right: -6px;
   margin-top: -5px;
 }
+.selected-tab:before {
+  background-color: whitesmoke;
+}
 
 .guided--progression-tab-content {
   display: flex;
