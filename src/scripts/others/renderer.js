@@ -9125,9 +9125,6 @@ $("#validate_dataset_bttn").on("click", async () => {
   log.info("validating dataset");
   log.info(bfDatasetSubtitle.value);
 
-  // let validation_client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 3000000 });
-  // validation_client.connect("tcp://127.0.0.1:4242");
-
   $("#dataset_validator_status").text(
     "Please wait while we retrieve the dataset..."
   );
@@ -9135,12 +9132,6 @@ $("#validate_dataset_bttn").on("click", async () => {
 
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
-
-  // datasetList.forEach((item) => {
-  //   if (item.name == defaultBfDataset) {
-  //     selectedBfDataset = item.id;
-  //   }
-  // });
 
   temp_object = {
     "bf-account-selected": {
@@ -9151,139 +9142,58 @@ $("#validate_dataset_bttn").on("click", async () => {
     },
   };
 
-  const datasetResponse = await axiosInstance("api_ps_retrieve_dataset", {
-    params: {
-      obj: JSON.stringify(temp_object),
-    },
-    responseType: "json",
-    method: "get",
-  });
+  let datasetResponse;
 
-  console.log("The axios response is: ", datasetResponse);
+  try {
+    datasetResponse = await axiosInstance("api_ps_retrieve_dataset", {
+      params: {
+        obj: JSON.stringify(temp_object),
+      },
+      responseType: "json",
+      method: "get",
+    });
+  } catch (err) {
+    log.error(error);
+    console.error(error);
+    $("#dataset_validator_spinner").hide();
+    $("#dataset_validator_status").html(
+      `<span style='color: red;'> ${error}</span>`
+    );
+  }
 
-  // client.invoke(
-  //   "api_ps_retrieve_dataset",
-  //   temp_object,
-  //   async (error, res) => {
-  //     if (error) {
-  //       log.error(error);
-  //       console.error(error);
-  //       // var emessage = userError(error);
-  //       $("#dataset_validator_spinner").hide();
-  //       $("#dataset_validator_status").html(
-  //         `<span style='color: red;'> ${error}</span>`
-  //       );
-  //       // ipcRenderer.send(
-  //       //   "track-event",
-  //       //   "Error",
-  //       //   "Validate Dataset",
-  //       //   defaultBfDataset
-  //       // );
-  //     } else {
-  //       console.log(res);
-  //       $("#dataset_validator_status").text(
-  //         "Please wait while we validate the dataset..."
-  //       );
+  console.log(res);
+  $("#dataset_validator_status").text(
+    "Please wait while we validate the dataset..."
+  );
 
-  //       let validation_client = new zerorpc.Client({
-  //         timeout: 300000,
-  //         heartbeatInterval: 10000,
-  //       });
-  //       validation_client.connect("tcp://127.0.0.1:4242");
+  try {
+    datasetResponse = axiosInstance("api_validate_dataset_pipeline", {
+      params: {
+        selectedBfAccount,
+        selectedBfDataset,
+      },
+      responseType: "json",
+      method: "get",
+    });
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    // var emessage = userError(error);
+    $("#dataset_validator_spinner").hide();
+    $("#dataset_validator_status").html(
+      `<span style='color: red;'> ${error}</span>`
+    );
+    // ipcRenderer.send(
+    //   "track-event",
+    //   "Error",
+    //   "Validate Dataset",
+    //   defaultBfDataset
+    // );
+  }
 
-  //       validation_client.invoke("echo", "server ready", (error, res) => {
-  //         if (error || res !== "server ready") {
-  //           log.error(error);
-  //           console.error(error);
-  //         } else {
-  //           console.log("Connected to validation backend successfully");
-  //           log.info("Connected to validation backend successfully");
+  console.log(datasetResponse);
 
-  //           validation_client.invoke(
-  //             "api_val_dataset_pipeline",
-  //             selectedBfAccount,
-  //             selectedBfDataset,
-  //             (error, res) => {
-  //               if (error) {
-  //                 log.error(error);
-  //                 console.error(error);
-  //                 // var emessage = userError(error);
-  //                 $("#dataset_validator_spinner").hide();
-  //                 $("#dataset_validator_status").html(
-  //                   `<span style='color: red;'> ${error}</span>`
-  //                 );
-  //                 // ipcRenderer.send(
-  //                 //   "track-event",
-  //                 //   "Error",
-  //                 //   "Validate Dataset",
-  //                 //   defaultBfDataset
-  //                 // );
-  //               } else {
-  //                 console.log(res);
-
-  //                 // log.info("Validation succesful");
-  //                 create_validation_report(res);
-  //                 $("#dataset_validator_status").html("");
-  //                 $("#dataset_validator_spinner").hide();
-  //                 // ipcRenderer.send(
-  //                 //   "track-event",
-  //                 //   "Success",
-  //                 //   "Validate Dataset",
-  //                 //   defaultBfDataset
-  //                 // );
-  //               }
-  //             }
-  //           );
-  //         }
-  //       });
-
-  //       // console.log(res)
-  //       // log.info("Validation succesful");
-  //       // create_validation_report(res);
-  //       // $("#dataset_validator_status").html("");
-  //       // $("#dataset_validator_spinner").hide();
-  //       // ipcRenderer.send(
-  //       //   "track-event",
-  //       //   "Success",
-  //       //   "Validate Dataset",
-  //       //   defaultBfDataset
-  //       // );
-  //     }
-  //   }
-  // );
-
-  // validation_client.invoke(
-  //   "api_validate_dataset_pipeline",
-  //   selectedBfAccount,
-  //   selectedBfDataset,
-  //   (error, res) => {
-  //     if (error) {
-  //       log.error(error);
-  //       console.error(error);
-  //       // var emessage = userError(error);
-  //       $("#dataset_validator_spinner").hide();
-  //       $("#dataset_validator_status").html(
-  //         `<span style='color: red;'> ${error}</span>`
-  //       );
-  //       ipcRenderer.send(
-  //         "track-event",
-  //         "Error",
-  //         "Validate Dataset",
-  //         defaultBfDataset
-  //       );
-  //     } else {
-  //       console.log(res);
-  //       log.info("Validation succesful");
-  //       create_validation_report(res);
-  //       $("#dataset_validator_status").html("");
-  //       $("#dataset_validator_spinner").hide();
-  //       ipcRenderer.send(
-  //         "track-event",
-  //         "Success",
-  //         "Validate Dataset",
-  //         defaultBfDataset
-  //       );
-  //     }
-  //   }
-  // );
+  create_validation_report(res);
+  $("#dataset_validator_status").html("");
+  $("#dataset_validator_spinner").hide();
 });

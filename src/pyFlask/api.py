@@ -11,14 +11,14 @@ def hello_world():
 def api_ps_retrieve_dataset():
     obj = request.args.get("obj")
 
-    print(obj)
+    parsedObj = json.loads(obj)
 
-    account = obj["bf-account-selected"]
-    print(account)
+    account = parsedObj["bf-account-selected"]
+    
     return jsonify("Retrieved dataset")
 
 
-@app.route("/api_val_dataset_pipeline")
+@app.route("/api_validate_dataset_pipeline")
 def api_val_dataset_pipeline():
     return jsonify("Dataset pipeline completed")
 
