@@ -558,10 +558,7 @@ $(document).ready(() => {
   });
 
   $("#pennsieve-account-confirm-button").on("click", () => {
-    sodaJSONObj["generate-dataset"]["destination"] = "bf";
-    sodaJSONObj["generate-dataset"]["dataset-name"] = $(
-      "#guided-confirm-dataset-name"
-    ).val();
+    sodaJSONObj["generate-dataset"]["starting-point"] = "bf";
     sodaJSONObj["bf-account-selected"]["account-name"] =
       $("#guided-bf-account").text();
     enableProgressButton();
@@ -569,6 +566,12 @@ $(document).ready(() => {
   });
 
   $("#guided-dataset-name-confirm-button").on("click", () => {
+    sodaJSONObj["bf-dataset-selected"] = {};
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $(
+      "#guided-confirm-dataset-name"
+    )
+      .text()
+      .trim();
     enableProgressButton();
     $("#guided-next-button").click();
   });
@@ -640,11 +643,6 @@ $(document).ready(() => {
   //const add_dataset_permission = async();
 
   //********************************************************************************************************
-
-  $("#chucktesta").on("click", () => {
-    //create_dataset("dsname", "dssub", "dstags");
-    guidedPennsieveDatasetUpload();
-  });
 
   const guided_create_dataset = (bfAccount, datasetName) => {
     console.log(bfAccount);
@@ -1052,42 +1050,21 @@ $(document).ready(() => {
   };
 
   const guidedUpdateJSONStructureGenerate = () => {
-    let starting_point = sodaJSONObj["starting-point"]["type"];
-    if (starting_point == "bf") {
-      sodaJSONObj["generate-dataset"] = {
-        destination: "bf",
-        "generate-option": "existing-bf",
-      };
-    }
+    sodaJSONObj["generate-dataset"] = {
+      destination: "bf",
+      "generate-option": "existing-bf",
+    };
   };
 
   const guided_add_folders_files = async () => {
     console.log(sodaJSONObj);
-    if (sodaJSONObj["starting-point"]["type"] === "local") {
-      sodaJSONObj["starting-point"]["type"] = "new";
-    }
+    sodaJSONObj["starting-point"]["type"] = "bf";
     let dataset_name = "";
     let dataset_destination = "";
     if ("bf-dataset-selected" in sodaJSONObj) {
       dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
       dataset_destination = "Pennsieve";
-    } else if ("generate-dataset" in sodaJSONObj) {
-      if ("destination" in sodaJSONObj["generate-dataset"]) {
-        let destination = sodaJSONObj["generate-dataset"]["destination"];
-        if (destination == "local") {
-          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-          dataset_destination = "Local";
-        }
-        if (destination == "bf") {
-          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-          dataset_destination = "Pennsieve";
-        }
-      }
     }
-    /*
-    generateProgressBar.value = 0;
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "Please wait while we verify a few things...";*/
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
@@ -1095,6 +1072,17 @@ $(document).ready(() => {
         return;
       }
     }
+    //  from here you can modify
+    document.getElementById("para-please-wait-new-curate").innerHTML =
+      "Please wait...";
+    document.getElementById(
+      "para-new-curate-progress-bar-error-status"
+    ).innerHTML = "";
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
+    progressBarNewCurate.value = 0;
+    generateProgressBar.value = 0;
 
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in sodaJSONObj["dataset-structure"]) {
@@ -1178,6 +1166,7 @@ $(document).ready(() => {
               }
             });
           } else {
+            console.log(sodaJSONObj);
             initiate_generate();
           }
         }
@@ -1277,10 +1266,10 @@ $(document).ready(() => {
 
       //set starting point to local for now for curate new dataset until new dataset functionality implemented
       if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-        sodaJSONObj["starting-point"]["type"] = "local";
+        sodaJSONObj["starting-point"]["type"] = "bf";
       }
       if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-        sodaJSONObj["starting-point"]["type"] = "local";
+        sodaJSONObj["starting-point"]["type"] = "bf";
       }
       datasetStructureJSONObj = { folders: {}, files: {} };
       sodaJSONObj["metadata"] = {};
@@ -1523,6 +1512,7 @@ const guided_generate = async () => {
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
+    console.log(dataset_name);
   } else if ("generate-dataset" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
@@ -1536,6 +1526,7 @@ const guided_generate = async () => {
       }
     }
   }
+  console.log(dataset_name);
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 

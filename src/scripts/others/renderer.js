@@ -6331,7 +6331,6 @@ document
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                console.log("Continue");
                 initiate_generate();
               } else {
                 console.log("Stop");
