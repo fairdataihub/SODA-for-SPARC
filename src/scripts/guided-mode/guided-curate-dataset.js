@@ -25,7 +25,6 @@ const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
 const guidedSetDatasetName = (newDatasetName) => {
   datasetName = newDatasetName.val().trim();
   sodaJSONObj["digital-metadata"]["name"] = datasetName;
-
   $(".guidedDatasetName").text(datasetName);
   //defaultBfDataset = datasetName;
 };
@@ -560,6 +559,9 @@ $(document).ready(() => {
 
   $("#pennsieve-account-confirm-button").on("click", () => {
     sodaJSONObj["generate-dataset"]["destination"] = "bf";
+    sodaJSONObj["generate-dataset"]["dataset-name"] = $(
+      "#guided-confirm-dataset-name"
+    ).val();
     sodaJSONObj["bf-account-selected"]["account-name"] =
       $("#guided-bf-account").text();
     enableProgressButton();
@@ -1029,6 +1031,8 @@ $(document).ready(() => {
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
 
+    guidedUpdateJSONStructureGenerate();
+
     create_dataset(
       guidedDatasetName,
       guidedDatasetSubtitle,
@@ -1036,132 +1040,150 @@ $(document).ready(() => {
       guidedLicense
     )
       .then((data) => {
+        guided_add_folders_files(); /*
         addPennsieveMetadata(
           guidedBfAccount,
           guidedDatasetName,
           guidedReadMe,
           guidedUsers
-        );
+        );*/
       })
       .catch((error) => console.log(error));
   };
 
-  /*const guided_add_folders_files = async (
-    bfAccount,
-    bfDataset,
-    datasetPiOwner
-  ) => {
-    return new Promise((resolve) => {
-      if (sodaJSONObj["starting-point"]["type"] === "local") {
-        sodaJSONObj["starting-point"]["type"] = "new";
-      }
+  const guidedUpdateJSONStructureGenerate = () => {
+    let starting_point = sodaJSONObj["starting-point"]["type"];
+    if (starting_point == "bf") {
+      sodaJSONObj["generate-dataset"] = {
+        destination: "bf",
+        "generate-option": "existing-bf",
+      };
+    }
+  };
 
-      let dataset_name = "";
-      let dataset_destination = "";
-
-      if ("bf-dataset-selected" in sodaJSONObj) {
-        dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      } else if ("generate-dataset" in sodaJSONObj) {
-        if ("destination" in sodaJSONObj["generate-dataset"]) {
-          let destination = sodaJSONObj["generate-dataset"]["destination"];
-          if (destination == "local") {
-            dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-            dataset_destination = "Local";
-          }
-          if (destination == "bf") {
-            dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-            dataset_destination = "Pennsieve";
-          }
+  const guided_add_folders_files = async () => {
+    console.log(sodaJSONObj);
+    if (sodaJSONObj["starting-point"]["type"] === "local") {
+      sodaJSONObj["starting-point"]["type"] = "new";
+    }
+    let dataset_name = "";
+    let dataset_destination = "";
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      dataset_destination = "Pennsieve";
+    } else if ("generate-dataset" in sodaJSONObj) {
+      if ("destination" in sodaJSONObj["generate-dataset"]) {
+        let destination = sodaJSONObj["generate-dataset"]["destination"];
+        if (destination == "local") {
+          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+          dataset_destination = "Local";
+        }
+        if (destination == "bf") {
+          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+          dataset_destination = "Pennsieve";
         }
       }
+    }
+    /*
+    generateProgressBar.value = 0;
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "Please wait while we verify a few things...";*/
+    if (dataset_destination == "Pennsieve") {
+      let supplementary_checks = await run_pre_flight_checks(false);
+      if (!supplementary_checks) {
+        $("#sidebarCollapse").prop("disabled", false);
+        return;
+      }
+    }
 
-      if (dataset_destination == "Pennsieve") {
-        let supplementary_checks = await run_pre_flight_checks(false);
-        if (!supplementary_checks) {
+    // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+    if ("files" in sodaJSONObj["dataset-structure"]) {
+      sodaJSONObj["dataset-structure"]["files"] = {};
+    }
+    // delete manifest files added for treeview
+    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+      if (
+        "manifest.xlsx" in
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+          "manifest.xlsx"
+        ]["forTreeview"]
+      ) {
+        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
+          "files"
+        ]["manifest.xlsx"];
+      }
+    }
+    client.invoke(
+      "api_check_empty_files_folders",
+      sodaJSONObj,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          document.getElementById(
+            "para-new-curate-progress-bar-error-status"
+          ).innerHTML =
+            "<span style='color: red;'> Error: " + emessage + "</span>";
+          document.getElementById("para-please-wait-new-curate").innerHTML = "";
+          console.error(error);
           $("#sidebarCollapse").prop("disabled", false);
-          return;
-        }
-      }
-
-      // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-      if ("files" in sodaJSONObj["dataset-structure"]) {
-        sodaJSONObj["dataset-structure"]["files"] = {};
-      }
-      // delete manifest files added for treeview
-      for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-        if (
-          "manifest.xlsx" in
-            sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
-              "files"
-            ] &&
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-            "manifest.xlsx"
-          ]["forTreeview"]
-        ) {
-          delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
-            "files"
-          ]["manifest.xlsx"];
-        }
-      }
-
-      client.invoke(
-        "api_check_empty_files_folders",
-        sodaJSONObj,
-        (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            console.error(error);
-            $("#sidebarCollapse").prop("disabled", false);
+        } else {
+          document.getElementById("para-please-wait-new-curate").innerHTML =
+            "Please wait...";
+          log.info("Continue with curate");
+          var message = "";
+          error_files = res[0];
+          error_folders = res[1];
+          if (error_files.length > 0) {
+            var error_message_files =
+              backend_to_frontend_warning_message(error_files);
+            message += error_message_files;
+          }
+          if (error_folders.length > 0) {
+            var error_message_folders =
+              backend_to_frontend_warning_message(error_folders);
+            message += error_message_folders;
+          }
+          if (message) {
+            message += "Would you like to continue?";
+            message = "<div style='text-align: left'>" + message + "</div>";
+            Swal.fire({
+              icon: "warning",
+              html: message,
+              showCancelButton: true,
+              cancelButtonText: "No, I want to review my files",
+              focusCancel: true,
+              confirmButtonText: "Yes, Continue",
+              backdrop: "rgba(0,0,0, 0.4)",
+              reverseButtons: reverseSwalButtons,
+              heightAuto: false,
+              showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+              },
+              hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                console.log("Continue");
+                initiate_generate();
+              } else {
+                console.log("Stop");
+                $("#sidebarCollapse").prop("disabled", false);
+                document.getElementById(
+                  "para-please-wait-new-curate"
+                ).innerHTML = "Return to make changes";
+                document.getElementById("div-generate-comeback").style.display =
+                  "flex";
+              }
+            });
           } else {
-            log.info("Continue with curate");
-            var message = "";
-            error_files = res[0];
-            error_folders = res[1];
-            if (error_files.length > 0) {
-              var error_message_files =
-                backend_to_frontend_warning_message(error_files);
-              message += error_message_files;
-            }
-            if (error_folders.length > 0) {
-              var error_message_folders =
-                backend_to_frontend_warning_message(error_folders);
-              message += error_message_folders;
-            }
-            if (message) {
-              message += "Would you like to continue?";
-              message = "<div style='text-align: left'>" + message + "</div>";
-              Swal.fire({
-                icon: "warning",
-                html: message,
-                showCancelButton: true,
-                cancelButtonText: "No, I want to review my files",
-                focusCancel: true,
-                confirmButtonText: "Yes, Continue",
-                backdrop: "rgba(0,0,0, 0.4)",
-                reverseButtons: reverseSwalButtons,
-                heightAuto: false,
-                showClass: {
-                  popup: "animate__animated animate__zoomIn animate__faster",
-                },
-                hideClass: {
-                  popup: "animate__animated animate__zoomOut animate__faster",
-                },
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  guided_generate();
-                } else {
-                  $("#sidebarCollapse").prop("disabled", false);
-                }
-              });
-            } else {
-              guided_generate();
-            }
+            initiate_generate();
           }
         }
-      );
-    });
-  };*/
+      }
+    );
+  };
 
   $("#guided-generate-dataset-button").on("click", async function () {
     enableProgressButton();
