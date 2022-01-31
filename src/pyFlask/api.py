@@ -1,6 +1,6 @@
+from validator import validate_dataset_pipeline
 from flask import Flask, jsonify, request, json
 import base64
-from validator import validate_dataset_pipeline
 from organize_datasets import ps_retrieve_dataset
 
 app = Flask(__name__)

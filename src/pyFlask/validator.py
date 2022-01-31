@@ -2,8 +2,8 @@
 # from gevent import monkey; monkey.patch_all(ssl=False)
 from sparcur.paths import Path as SparCurPath
 from sparcur.utils import PennsieveId
-from sparcur.simple.retrieve import main as retrieve
 from sparcur.simple.validate import main as validate
+from sparcur.simple.retrieve import main as retrieve
 from configparser import ConfigParser
 import gevent
 import os
@@ -29,6 +29,8 @@ def get_home_directory(folder):
 local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
 sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
 parent_folder = SparCurPath(local_sparc_dataset_location).expanduser()
+
+
 
 # for gevent
 local_dataset_folder_path = ""
@@ -153,7 +155,7 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     if not os.path.exists(parent_folder):
         parent_folder.mkdir(parents = True, exist_ok = True)
 
-    local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+    # local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
     
 
     # def temp_retrieve_function(sparc_dataset, organization, parent_folder):
