@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Bug fixes: 
 
-- Fixed issue where files uploads to Pennsieve would sometimes fail because of an uncleared Pennsieve Client file upload queue.
+- Fixed issue where file uploads to Pennsieve would sometimes fail because of an uncleared Pennsieve Client file upload queue.
 
 ### Feature additions: 
 
