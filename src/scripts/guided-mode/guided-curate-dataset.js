@@ -1241,6 +1241,7 @@ $(document).ready(() => {
       console.log(imagePath);
       if (image_file_size < 5 * 1024 * 1024) {
         guidedCroppedBannerImagePath = imagePath;
+        $("#guided-banner-image-modal").modal("hide");
       } else {
         $("#guided-para-dataset-banner-image-status").html(
           "<span style='color: red;'> " +
