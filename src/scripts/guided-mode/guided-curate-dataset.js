@@ -1038,13 +1038,15 @@ $(document).ready(() => {
       guidedLicense
     )
       .then((data) => {
-        guided_add_folders_files(); /*
         addPennsieveMetadata(
           guidedBfAccount,
           guidedDatasetName,
           guidedReadMe,
           guidedUsers
-        );*/
+        );
+      })
+      .then((data) => {
+        guided_add_folders_files();
       })
       .catch((error) => console.log(error));
   };
