@@ -3062,6 +3062,9 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 list_upload_manifest_files.append([[manifestpath], item])
                 main_total_generate_dataset_size += getsize(manifestpath)
 
+        # clear the pennsieve queue
+        clear_queue()
+
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
@@ -3086,7 +3089,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             # total_size += file_size
             # progress_percentage_array[-1]["output-stream"] = progress_percentage
             # progress_percentage_array[-1].pop('completed-size', None)
-            clear_queue()
+            
 
             ## check if agent is running in the background
             agent_running()
