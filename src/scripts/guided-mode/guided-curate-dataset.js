@@ -391,6 +391,7 @@ $(document).ready(() => {
 
   // Action when user click on "Import image" button for banner image
   $("#guided-button-import-banner-image").click(() => {
+    $("#guided-para-dataset-banner-image-status").html("");
     ipcRenderer.send("guided-open-file-dialog-import-banner-image");
   });
 
@@ -410,11 +411,8 @@ $(document).ready(() => {
       );
       let conversion_success = true;
       imageExtension = path[0].split(".").pop();
-      console.log(path);
 
       if (imageExtension.toLowerCase() == "tiff") {
-        alert("tiff");
-        $("body").addClass("waiting");
         Swal.fire({
           title: "Image conversion in progress!",
           html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
@@ -464,23 +462,20 @@ $(document).ready(() => {
                         .resize(1024, 1024)
                         .write(converted_image_file, () => {
                           document.getElementById(
-                            "guided-div-img-container-holder"
+                            "div-img-container-holder"
                           ).style.display = "none";
                           document.getElementById(
-                            "guided-div-img-container"
+                            "div-img-container"
                           ).style.display = "block";
 
-                          $("#guided-para-path-image").html(image_path);
-                          bfViewImportedImage.src = converted_image_file;
+                          $("#para-path-image").html(image_path);
+                          guidedBfViewImportedImage.src = converted_image_file;
                           myCropper.destroy();
                           myCropper = new Cropper(
-                            bfViewImportedImage,
+                            guidedBfViewImportedImage,
                             cropOptions
                           );
-                          $("#guided-save-banner-image").css(
-                            "visibility",
-                            "visible"
-                          );
+                          $("#save-banner-image").css("visibility", "visible");
                           $("body").removeClass("waiting");
                         });
                     })
@@ -503,11 +498,11 @@ $(document).ready(() => {
                 console.log("file conversion complete");
                 image_path = converted_image_file;
                 imageExtension = "jpg";
-                $("#guided-para-path-image").html(image_path);
-                bfViewImportedImage.src = image_path;
+                $("#para-path-image").html(image_path);
+                guidedBfViewImportedImage.src = image_path;
                 myCropper.destroy();
-                myCropper = new Cropper(bfViewImportedImage, cropOptions);
-                $("#guided-save-banner-image").css("visibility", "visible");
+                myCropper = new Cropper(guidedBfViewImportedImage, cropOptions);
+                $("#save-banner-image").css("visibility", "visible");
               }
             });
           })
@@ -529,7 +524,6 @@ $(document).ready(() => {
           Swal.close();
         }
       } else {
-        alert("not tiff");
         document.getElementById(
           "guided-div-img-container-holder"
         ).style.display = "none";
@@ -537,17 +531,19 @@ $(document).ready(() => {
           "block";
 
         $("#guided-para-path-image").html(image_path);
-        bfViewImportedImage.src = image_path;
+        guidedBfViewImportedImage.src = image_path;
         myCropper.destroy();
-        myCropper = new Cropper(bfViewImportedImage, cropOptions);
+        myCropper = new Cropper(guidedBfViewImportedImage, cropOptions);
 
         $("#guided-save-banner-image").css("visibility", "visible");
+        console.log("done");
+        console.log(image_path);
       }
     } else {
-      if ($("#guided-para-current-banner-img").text() === "None") {
-        $("#guided-save-banner-image").css("visibility", "hidden");
+      if ($("#para-current-banner-img").text() === "None") {
+        $("#save-banner-image").css("visibility", "hidden");
       } else {
-        $("#guided-save-banner-image").css("visibility", "visible");
+        $("#save-banner-image").css("visibility", "visible");
       }
     }
   });
@@ -1182,9 +1178,108 @@ $(document).ready(() => {
     guidedPennsieveDatasetUpload();
   });
 
+  const guidedSaveBannerImage = () => {
+    $("#guided-para-dataset-banner-image-status").html("Please wait...");
+    //Save cropped image locally and check size
+    let imageFolder = path.join(homeDirectory, "SODA", "banner-image");
+    let imageType = "";
+
+    if (!fs.existsSync(imageFolder)) {
+      fs.mkdirSync(imageFolder, { recursive: true });
+    }
+
+    if (imageExtension == "png") {
+      imageType = "image/png";
+    } else {
+      imageType = "image/jpeg";
+    }
+
+    let imagePath = path.join(
+      imageFolder,
+      "banner-image-SODA." + imageExtension
+    );
+    let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
+    console.log(croppedImageDataURI);
+
+    imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
+      let image_file_size = fs.statSync(imagePath)["size"];
+
+      /*if (image_file_size < 5 * 1024 * 1024) {
+        let selectedBfAccount = defaultBfAccount;
+        let selectedBfDataset = defaultBfDataset;
+
+        client.invoke(
+          "api_bf_add_banner_image",
+          selectedBfAccount,
+          selectedBfDataset,
+          imagePath,
+          (error, res) => {
+            if (error) {
+              log.error(error);
+              console.error(error);
+              let emessage = userError(error);
+
+              $("#para-dataset-banner-image-status").html(
+                "<span style='color: red;'> " + emessage + "</span>"
+              );
+
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+                defaultBfDatasetId
+              );
+            } else {
+              $("#para-dataset-banner-image-status").html(res);
+
+              showCurrentBannerImage();
+
+              $("#edit_banner_image_modal").modal("hide");
+
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+                defaultBfDatasetId
+              );
+
+              // track the size for all dataset banner uploads
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+                  " - Size",
+                "Size",
+                image_file_size
+              );
+
+              // track the size for the given dataset
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
+                  " - Size",
+                defaultBfDatasetId,
+                image_file_size
+              );
+
+              // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
+              showPrePublishingStatus();
+            }
+          }
+        );
+      } else {
+        $("#para-dataset-banner-image-status").html(
+          "<span style='color: red;'> " +
+            "Final image size must be less than 5 MB" +
+            "</span>"
+        );
+      }*/
+    });
+  };
   $("#guided-save-banner-image").click((event) => {
     $("#guided-para-dataset-banner-image-status").html("");
-    if (bfViewImportedImage.src.length > 0) {
+    if (guidedBfViewImportedImage.src.length > 0) {
       if (formBannerHeight.value > 511) {
         Swal.fire({
           icon: "warning",
@@ -1222,11 +1317,11 @@ $(document).ready(() => {
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                uploadBannerImage();
+                guidedSaveBannerImage();
               }
             });
           } else {
-            uploadBannerImage();
+            guidedSaveBannerImage();
           }
         });
       } else {

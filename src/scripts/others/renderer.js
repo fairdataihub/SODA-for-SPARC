@@ -767,6 +767,10 @@ const bfDatasetSubtitleCharCount = document.querySelector(
 const bfCurrentBannerImg = document.getElementById("current-banner-img");
 
 const bfViewImportedImage = document.querySelector("#image-banner");
+const guidedBfViewImportedImage = document.querySelector(
+  "#guided-image-banner"
+);
+
 const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
 const datasetBannerImageStatus = document.querySelector(
   "#para-dataset-banner-image-status"
