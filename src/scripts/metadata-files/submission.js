@@ -199,11 +199,14 @@ function openDDDimport() {
           if (filepath != null) {
             document.getElementById("input-milestone-select").placeholder =
               filepath[0];
+
+            // log the successful attempt to import a data deliverables document from the user's computer
             ipcRenderer.send(
               "track-event",
               "Success",
-              "Prepare Metadata - Add DDD",
-              defaultBfAccount
+              "Prepare Metadata - submission - import-DDD",
+              "Data Deliverables Document",
+              1
             );
           }
         }
@@ -331,12 +334,7 @@ $(document).ready(function () {
         document.getElementById(
           "existing-submission-file-destination"
         ).placeholder = filepath[0];
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Continue with existing submission.xlsx",
-          defaultBfAccount
-        );
+
         if (
           document.getElementById("existing-submission-file-destination")
             .placeholder !== "Browse here"
@@ -408,6 +406,141 @@ $(document).ready(function () {
   });
 });
 
+//Function is used for when user is creating Metadata files locally
+//At most the metadata files should be no bigger than 3MB
+//Function checks the selected storage device to ensure at least 3MB are available
+const checkStorage = (id) => {
+  console.log(id);
+  console.log("function ran");
+  var location = id;
+  var threeMB = 3145728;
+  //console.log(location);
+  checkDiskSpace(location).then((diskSpace) => {
+    freeMem = diskSpace.free;
+    //console.log(freeMem + "\nfree me in bytes");
+    //console.log(threeMB + "\nthree mb comparison");
+    if (freeMem < threeMB) {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "OK",
+        heightAuto: false,
+        icon: "warning",
+        showCancelButton: false,
+        title: "Not enough space",
+        text: "Please free up at least 3MB",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Metadata - Generate - Check Storage Space",
+        "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+        1
+      );
+
+      // stop execution to avoid logging a success case for the storage space check
+      return;
+    }
+
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Metadata - Generate - Check Storage Space",
+      "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+      1
+    );
+  });
+};
+const localSubmissionBtn = document.getElementById(
+  "btn-confirm-local-submission-destination"
+);
+const localDDBtn = document.getElementById("btn-confirm-local-dd-destination");
+const localSubjectsBtn = document.getElementById(
+  "btn-confirm-local-subjects-destination"
+);
+const localSamplesBtn = document.getElementById(
+  "btn-confirm-local-samples-destination"
+);
+const localChangesBtn = document.getElementById(
+  "btn-confirm-local-changes-destination"
+);
+const localReadmeBtn = document.getElementById(
+  "btn-confirm-local-readme-destination"
+);
+//event listeners for each button since each one uses a different ID
+localSubmissionBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-submission-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localDDBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-dd-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localSubjectsBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-subjects-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localSamplesBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-samples-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localChangesBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-changes-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localReadmeBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-readme-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+
 async function generateSubmissionHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
@@ -443,91 +576,108 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     if (!continueProgress) {
       return;
     }
-  }
-  Swal.fire({
-    title: "Generating the submission.xlsx file",
-    html: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {});
-  var awardRes = $("#submission-sparc-award").val();
-  var dateRes = $("#submission-completion-date").val();
-  var milestonesRes = $("#selected-milestone-1").val();
-  let milestoneValue = [{ value: "" }];
-  if (milestonesRes !== "") {
-    milestoneValue = JSON.parse(milestonesRes);
-  }
-  var json_arr = [];
-  json_arr.push({
-    award: awardRes,
-    date: dateRes,
-    milestone: milestoneValue[0].value,
-  });
-  if (milestoneValue.length > 0) {
-    for (var index = 1; index < milestoneValue.length; index++) {
-      json_arr.push({
-        award: "",
-        date: "",
-        milestone: milestoneValue[index].value,
-      });
+    Swal.fire({
+      title: "Generating the submission.xlsx file",
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    }).then((result) => {});
+    var awardRes = $("#submission-sparc-award").val();
+    var dateRes = $("#submission-completion-date").val();
+    var milestonesRes = $("#selected-milestone-1").val();
+    let milestoneValue = [{ value: "" }];
+    if (milestonesRes !== "") {
+      milestoneValue = JSON.parse(milestonesRes);
     }
-  }
-  json_str = JSON.stringify(json_arr);
-  client.invoke(
-    "api_save_submission_file",
-    uploadBFBoolean,
-    defaultBfAccount,
-    $("#bf_dataset_load_submission").text().trim(),
-    submissionDestinationPath,
-    json_str,
-    (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          icon: "error",
-          html: emessage,
-          title: "Failed to generate the submission file",
+    var json_arr = [];
+    json_arr.push({
+      award: awardRes,
+      date: dateRes,
+      milestone: milestoneValue[0].value,
+    });
+    if (milestoneValue.length > 0) {
+      for (var index = 1; index < milestoneValue.length; index++) {
+        json_arr.push({
+          award: "",
+          date: "",
+          milestone: milestoneValue[index].value,
         });
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Prepare Metadata - Create Submission",
-          defaultBfDataset
-        );
-      } else {
-        if (uploadBFBoolean) {
-          var successMessage =
-            "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
-        } else {
-          var successMessage =
-            "Successfully generated the submission.xlsx file at the specified location.";
-        }
-        Swal.fire({
-          title: successMessage,
-          icon: "success",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Create Submission",
-          defaultBfDataset
-        );
       }
     }
-  );
+    json_str = JSON.stringify(json_arr);
+    client.invoke(
+      "api_save_submission_file",
+      uploadBFBoolean,
+      defaultBfAccount,
+      $("#bf_dataset_load_submission").text().trim(),
+      submissionDestinationPath,
+      json_str,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "error",
+            html: emessage,
+            title: "Failed to generate the submission file",
+          });
+          logMetadataForAnalytics(
+            "Error",
+            MetadataAnalyticsPrefix.SUBMISSION,
+            AnalyticsGranularity.ALL_LEVELS,
+            "Generate",
+            uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+          );
+        } else {
+          if (uploadBFBoolean) {
+            var successMessage =
+              "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+          } else {
+            if (uploadBFBoolean) {
+              var successMessage =
+                "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+            } else {
+              var successMessage =
+                "Successfully generated the submission.xlsx file at the specified location.";
+            }
+            Swal.fire({
+              title: successMessage,
+              icon: "success",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            logMetadataForAnalytics(
+              "Success",
+              MetadataAnalyticsPrefix.SUBMISSION,
+              AnalyticsGranularity.ALL_LEVELS,
+              "Generate",
+              uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+            );
+
+            // get the size of the uploaded file from the result
+            const size = res;
+
+            // log the size of the metadata file that was generated at varying levels of granularity
+            logMetadataSizeForAnalytics(
+              uploadBFBoolean,
+              "submission.xlsx",
+              size
+            );
+          }
+        }
+      }
+    );
+  }
 }
 
 $("#submission-completion-date").change(function () {
@@ -650,6 +800,14 @@ function importExistingSubmissionFile(type) {
       `Please select a path to your submission.xlsx file`,
       "error"
     );
+
+    logMetadataForAnalytics(
+      "Error",
+      MetadataAnalyticsPrefix.SUBMISSION,
+      AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
   } else {
     if (path.parse(filePath).base !== "submission.xlsx") {
       Swal.fire({
@@ -659,6 +817,14 @@ function importExistingSubmissionFile(type) {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SUBMISSION,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
     } else {
       Swal.fire({
         title: `Loading an existing submission.xlsx file`,
@@ -690,6 +856,13 @@ function loadExistingSubmissionFile(filepath) {
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
       });
+      logMetadataForAnalytics(
+        "Error",
+        MetadataAnalyticsPrefix.SUBMISSION,
+        AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
     } else {
       loadSubmissionFileToUI(res, "local");
     }
@@ -735,6 +908,15 @@ function loadSubmissionFileToUI(data, type) {
       Swal.hideLoading();
     },
   });
+
+  logMetadataForAnalytics(
+    "Success",
+    MetadataAnalyticsPrefix.SUBMISSION,
+    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+    "Existing",
+    type === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
+  );
+
   if (type === "local") {
     $("#div-confirm-existing-submission-import").hide();
     $($("#div-confirm-existing-submission-import button")[0]).hide();
@@ -779,6 +961,13 @@ function checkBFImportSubmission() {
           icon: "error",
           html: emessage,
         });
+        logMetadataForAnalytics(
+          "Error",
+          MetadataAnalyticsPrefix.SUBMISSION,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.PENNSIEVE
+        );
       } else {
         loadSubmissionFileToUI(res, "bf");
       }

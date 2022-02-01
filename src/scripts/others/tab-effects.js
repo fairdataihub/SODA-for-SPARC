@@ -934,6 +934,15 @@ async function transitionSubQuestions(
   category
 ) {
   if (currentDiv === "Question-getting-started-1") {
+    // log the start of a new curation process from scratch
+    // logCurationForAnalytics(
+    //   "Success",
+    //   PrepareDatasetsAnalyticsPrefix.CURATE,
+    //   AnalyticsGranularity.ACTION,
+    //   ["New"],
+    //   "Local",
+    //   true
+    // );
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
@@ -1543,7 +1552,6 @@ async function transitionSubQuestionsButton(
     var result;
     try {
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
-      console.log("Logged in like 1543 of tab-effects: ", res);
       result = [true, res];
     } catch (err) {
       result = [false, err];
@@ -1572,6 +1580,17 @@ async function transitionSubQuestionsButton(
       sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
       $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       $("body").removeClass("waiting");
+
+      // // log the error to analytics
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION,
+        ["Existing"],
+        "Pennsieve",
+        false
+      );
+
       return;
     } else {
       if (result[1][2].length > 0) {
@@ -1616,6 +1635,15 @@ async function transitionSubQuestionsButton(
               "Please continue below."
             );
             showHideDropdownButtons("dataset", "show");
+            // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
+            logCurationForAnalytics(
+              "Success",
+              PrepareDatasetsAnalyticsPrefix.CURATE,
+              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              ["Existing"],
+              "Pennsieve",
+              false
+            );
           } else {
             exitCurate();
           }
@@ -1634,6 +1662,17 @@ async function transitionSubQuestionsButton(
           "Please continue below."
         );
         showHideDropdownButtons("dataset", "show");
+
+        // log the successful Pennsieve import to analytics
+
+        logCurationForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          ["Existing"],
+          "Pennsieve",
+          false
+        );
         // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       }
     }
@@ -1729,6 +1768,7 @@ async function transitionSubQuestionsButton(
           "local-path": "",
         },
       };
+
       // this should run after a folder is selected
       reset_ui();
 
