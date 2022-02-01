@@ -3086,9 +3086,11 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             # total_size += file_size
             # progress_percentage_array[-1]["output-stream"] = progress_percentage
             # progress_percentage_array[-1].pop('completed-size', None)
+            clear_queue()
 
             ## check if agent is running in the background
             agent_running()
+            
 
             # upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
@@ -3242,6 +3244,8 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
 
 
 def main_curate_function(soda_json_structure):
+
+    
 
     global main_curate_status
     global main_curate_progress_message
