@@ -6,8 +6,6 @@ let guidedTeamPermissions = [];
 const guidedDatasetSubtitle_char_count = document.getElementById(
   "guided-subtitle-char-count"
 );
-const create_dataset_button = $("#guided-create-empty-dataset");
-let current_selected_folder = $("#code-card");
 
 //main nav variables
 let current_progression_tab = $("#prepare-dataset-progression-tab");
@@ -33,6 +31,10 @@ const guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
   datasetSubtitle = newDatasetSubtitle.val().trim();
   sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
   $(".guidedDatasetSubtitle").text(datasetSubtitle);
+};
+
+const guidedSetBannerImage = (croppedImagePath) => {
+  sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
@@ -473,7 +475,7 @@ $(document).ready(() => {
                           myCropper.destroy();
                           myCropper = new Cropper(
                             guidedBfViewImportedImage,
-                            cropOptions
+                            guidedCropOptions
                           );
                           $("#save-banner-image").css("visibility", "visible");
                           $("body").removeClass("waiting");
@@ -501,7 +503,10 @@ $(document).ready(() => {
                 $("#para-path-image").html(image_path);
                 guidedBfViewImportedImage.src = image_path;
                 myCropper.destroy();
-                myCropper = new Cropper(guidedBfViewImportedImage, cropOptions);
+                myCropper = new Cropper(
+                  guidedBfViewImportedImage,
+                  guidedCropOptions
+                );
                 $("#save-banner-image").css("visibility", "visible");
               }
             });
@@ -533,11 +538,9 @@ $(document).ready(() => {
         $("#guided-para-path-image").html(image_path);
         guidedBfViewImportedImage.src = image_path;
         myCropper.destroy();
-        myCropper = new Cropper(guidedBfViewImportedImage, cropOptions);
+        myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
 
         $("#guided-save-banner-image").css("visibility", "visible");
-        console.log("done");
-        console.log(image_path);
       }
     } else {
       if ($("#para-current-banner-img").text() === "None") {
@@ -1178,6 +1181,9 @@ $(document).ready(() => {
     guidedPennsieveDatasetUpload();
   });
 
+  //Temp var used by guidedSaveBannerImage to hold the cropped image path
+  //until it is passed into the sodaJSONObj
+  let guidedCroppedBannerImagePath = "";
   const guidedSaveBannerImage = () => {
     $("#guided-para-dataset-banner-image-status").html("Please wait...");
     //Save cropped image locally and check size
@@ -1203,84 +1209,25 @@ $(document).ready(() => {
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
       let image_file_size = fs.statSync(imagePath)["size"];
-
-      /*if (image_file_size < 5 * 1024 * 1024) {
-        let selectedBfAccount = defaultBfAccount;
-        let selectedBfDataset = defaultBfDataset;
-
-        client.invoke(
-          "api_bf_add_banner_image",
-          selectedBfAccount,
-          selectedBfDataset,
-          imagePath,
-          (error, res) => {
-            if (error) {
-              log.error(error);
-              console.error(error);
-              let emessage = userError(error);
-
-              $("#para-dataset-banner-image-status").html(
-                "<span style='color: red;'> " + emessage + "</span>"
-              );
-
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-                defaultBfDatasetId
-              );
-            } else {
-              $("#para-dataset-banner-image-status").html(res);
-
-              showCurrentBannerImage();
-
-              $("#edit_banner_image_modal").modal("hide");
-
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-                defaultBfDatasetId
-              );
-
-              // track the size for all dataset banner uploads
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                  " - Size",
-                "Size",
-                image_file_size
-              );
-
-              // track the size for the given dataset
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                  " - Size",
-                defaultBfDatasetId,
-                image_file_size
-              );
-
-              // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-              showPrePublishingStatus();
-            }
-          }
-        );
+      console.log(image_file_size);
+      console.log(imagePath);
+      if (image_file_size < 5 * 1024 * 1024) {
+        guidedCroppedBannerImagePath = imagePath;
+        alert("banner image set");
       } else {
-        $("#para-dataset-banner-image-status").html(
+        $("#guided-para-dataset-banner-image-status").html(
           "<span style='color: red;'> " +
             "Final image size must be less than 5 MB" +
             "</span>"
         );
-      }*/
+      }
     });
   };
+
   $("#guided-save-banner-image").click((event) => {
     $("#guided-para-dataset-banner-image-status").html("");
     if (guidedBfViewImportedImage.src.length > 0) {
-      if (formBannerHeight.value > 511) {
+      if (guidedFormBannerHeight.value > 511) {
         Swal.fire({
           icon: "warning",
           text: `As per NIH guidelines, banner image must not display animals or graphic/bloody tissues. Do you confirm that?`,
@@ -1298,10 +1245,10 @@ $(document).ready(() => {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
         }).then((result) => {
-          if (formBannerHeight.value < 1024) {
+          if (guidedFormBannerHeight.value < 1024) {
             Swal.fire({
               icon: "warning",
-              text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
+              text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${guidedFormBannerHeight.value} px. Would you like to continue?`,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
@@ -1378,6 +1325,12 @@ $(document).ready(() => {
         .trim();
       guidedSetDatasetName($("#guided-dataset-name-input"));
       guidedSetDatasetSubtitle($("#guided-dataset-subtitle-input"));
+
+      //Check if cropped image path is empty, and if not, store the path to the sodaJSONObj
+      if (guidedCroppedBannerImagePath) {
+        guidedSetBannerImage(guidedCroppedBannerImagePath);
+        console.log(guidedCroppedBannerImagePath);
+      }
     }
 
     if (current_sub_step.attr("id") == "add-edit-description-tags-tab") {

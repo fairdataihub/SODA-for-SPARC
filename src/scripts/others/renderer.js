@@ -776,6 +776,9 @@ const datasetBannerImageStatus = document.querySelector(
   "#para-dataset-banner-image-status"
 );
 const formBannerHeight = document.getElementById("form-banner-height");
+const guidedFormBannerHeight = document.getElementById(
+  "guided-form-banner-height"
+);
 const currentDatasetLicense = document.querySelector(
   "#para-dataset-license-current"
 );
@@ -3077,6 +3080,41 @@ var cropOptions = {
     }
 
     // formBannerWidth.value = Math.round(data.width)
+  },
+};
+const guidedCropOptions = {
+  aspectRatio: 1,
+  movable: false,
+  // Enable to rotate the image
+  rotatable: false,
+  // Enable to scale the image
+  scalable: false,
+  // Enable to zoom the image
+  zoomable: false,
+  // Enable to zoom the image by dragging touch
+  zoomOnTouch: false,
+  // Enable to zoom the image by wheeling mouse
+  zoomOnWheel: false,
+  // preview: '.preview',
+  viewMode: 1,
+  responsive: true,
+  crop: function (event) {
+    var data = event.detail;
+    let image_height = Math.round(data.height);
+
+    guidedFormBannerHeight.value = image_height;
+
+    if (image_height < 512 || image_height > 2048) {
+      $("#guided-save-banner-image").prop("disabled", true);
+      $("#guided-form-banner-height").css("color", "red");
+      $("#guided-form-banner-height").css("border", "1px solid red");
+      $(".crop-image-text").css("color", "red");
+    } else {
+      $("#guided-save-banner-image").prop("disabled", false);
+      $("#guided-form-banner-height").css("color", "black");
+      $("#guided-form-banner-height").css("border", "1px solid black");
+      $(".crop-image-text").css("color", "black");
+    }
   },
 };
 
