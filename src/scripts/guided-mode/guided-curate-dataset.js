@@ -891,12 +891,6 @@ $(document).ready(() => {
     dataCollection,
     primaryConclusion
   ) => {
-    console.log(bfAccount);
-    console.log(bfDataset);
-    console.log(studyPurpose);
-    console.log(dataCollection);
-    console.log(primaryConclusion);
-
     // get the text from the three boxes and store them in their own variables
     let requiredFields = [];
 
@@ -952,7 +946,7 @@ $(document).ready(() => {
     });
   };
 
-  const guided_add_tags = async (bfAccount, bfDataset, tagsArray) => {
+  const guided_add_tags = async (bfDataset, tagsArray) => {
     // Add tags to dataset
     try {
       await update_dataset_tags(bfDataset, tagsArray);
@@ -977,9 +971,6 @@ $(document).ready(() => {
   };
 
   const guided_add_license = async (bfAccount, bfDataset, license) => {
-    console.log(bfAccount);
-    console.log(bfDataset);
-    console.log(license);
     return new Promise((resolve, reject) => {
       client.invoke(
         "api_bf_add_license",
@@ -1027,6 +1018,7 @@ $(document).ready(() => {
     );
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
+    let guidedImagePath = sodaJSONObj["digital-metadata"]["banner-image-path"];
 
     guidedUpdateJSONStructureGenerate();
 
@@ -1213,7 +1205,6 @@ $(document).ready(() => {
       console.log(imagePath);
       if (image_file_size < 5 * 1024 * 1024) {
         guidedCroppedBannerImagePath = imagePath;
-        alert("banner image set");
       } else {
         $("#guided-para-dataset-banner-image-status").html(
           "<span style='color: red;'> " +
