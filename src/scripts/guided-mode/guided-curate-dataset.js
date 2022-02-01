@@ -1,5 +1,6 @@
 /////////////////////////////////////////////////////////
 //////////          Shared variables          ///////////
+
 /////////////////////////////////////////////////////////
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
@@ -628,10 +629,12 @@ $(document).ready(() => {
   const addPennsieveMetadata = async (
     bfAccount,
     datasetName,
+    pathToCroppedBannerImage,
     datasetReadme,
     userPermissions
   ) => {
     const promises = [
+      guided_add_banner_image(bfAccount, datasetName, pathToCroppedBannerImage),
       updateDatasetReadme(datasetName, datasetReadme),
       guided_add_user_permissions(bfAccount, datasetName, userPermissions),
     ];
@@ -810,12 +813,44 @@ $(document).ready(() => {
     });
   };
 
-  const guided_add_user = (bfAccount, datasetName, userUUID, selectedRole) => {
-    console.log(bfAccount);
-    console.log(datasetName);
-    console.log(userUUID);
-    console.log(selectedRole);
+  const guided_add_banner_image = (
+    bfAccount,
+    datasetName,
+    pathToCroppedImage
+  ) => {
+    return new Promise((resolve, reject) => {
+      client.invoke(
+        "api_bf_add_banner_image",
+        bfAccount,
+        datasetName,
+        pathToCroppedImage,
+        (error, res) => {
+          if (error) {
+            notyf.open({
+              duration: "5000",
+              type: "error",
+              message: "Failed to add banner image",
+            });
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: "Banner Image added",
+            });
+            guidedIncreaseCurateProgressBar(5);
+            console.log("Banner image added + " + res);
+            resolve(`Banner image added` + res);
+          }
+        }
+      );
+    });
+  };
 
+  const guided_add_user = (bfAccount, datasetName, userUUID, selectedRole) => {
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a user on a dataset");
       client.invoke(
@@ -1032,6 +1067,7 @@ $(document).ready(() => {
         addPennsieveMetadata(
           guidedBfAccount,
           guidedDatasetName,
+          guidedImagePath,
           guidedReadMe,
           guidedUsers
         );
