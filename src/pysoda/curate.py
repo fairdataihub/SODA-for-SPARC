@@ -3086,7 +3086,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             # total_size += file_size
             # progress_percentage_array[-1]["output-stream"] = progress_percentage
             # progress_percentage_array[-1].pop('completed-size', None)
-
+            clear_queue()
             ## check if agent is running in the background
             agent_running()
 
