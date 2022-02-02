@@ -1,7 +1,26 @@
-from validator import validate_dataset_pipeline
+#from validator import validate_dataset_pipeline
 from flask import Flask, jsonify, request, json
-import base64
-from organize_datasets import ps_retrieve_dataset
+from os.path import expanduser
+#from organize_datasets import ps_retrieve_dataset
+
+from sparcur.config import auth
+from sparcur.simple.utils import backend_pennsieve
+# project_id = auth.get('remote-organization')
+PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
+root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
+datasets = list(root.children)
+
+print(datasets)
+
+from sparcur.simple.validate import main as validate
+from pathlib import Path
+userpath = expanduser("~")
+
+path = Path(userpath +  "\\Desktop\\Pennsieve-dataset-46-version-1\\files")
+print(path)
+
+blob = validate(path)
+
 
 app = Flask(__name__)
 

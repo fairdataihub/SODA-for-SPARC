@@ -2,8 +2,8 @@
 # from gevent import monkey; monkey.patch_all(ssl=False)
 from sparcur.paths import Path as SparCurPath
 from sparcur.utils import PennsieveId
-from sparcur.simple.validate import main as validate
-from sparcur.simple.retrieve import main as retrieve
+#from sparcur.simple.validate import main as validate
+# from sparcur.simple.retrieve import main as retrieve
 from configparser import ConfigParser
 import gevent
 import os
@@ -183,7 +183,7 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     #     raise e
 
     validation_json = {}
-    validation_json = validate(local_dataset_folder_path)
+    # validation_json = validate(local_dataset_folder_path)
 
 
     # def temp_validate_function(local_dataset_folder_path):
@@ -283,7 +283,7 @@ def val_dataset_pipeline(ps_account, ps_dataset):
     validation_json = {}
     def temp_validate_function(local_dataset_folder):
         global validation_json
-        validation_json = validate(local_dataset_folder)
+        # validation_json = validate(local_dataset_folder)
 
     # local_dataset_folder_path = r"/home/dev/files/sparc-datasets/2f4afec4-6e4d-4c20-b913-8e115fc8631b/Acute effects of gastric electrical stimulation (GES) settings on neural activity accessed with functional magnetic resonance maging (fMRI) in rats"
     gev = []
