@@ -6149,22 +6149,16 @@ ipcRenderer.on(
     if (filepath.length > 0) {
       if (filepath != null) {
         sodaJSONObj["starting-point"]["local-path"] = "";
-        //EVENTUALLY CHANGE LOCATION WHERE STARTING POINT IS SET
         sodaJSONObj["starting-point"]["type"] = "local";
-        $("#guided-input-destination-getting-started-locally").attr(
-          "placeholder",
-          filepath[0]
+        $("#guided-input-destination-getting-started-locally").html(
+          "Select a new dataset location"
         );
+        $(".guidedDatasetPath").text(filepath[0]);
         if (
           sodaJSONObj["starting-point"]["type"] === "local" &&
           sodaJSONObj["starting-point"]["local-path"] == ""
         ) {
-          valid_dataset = verify_sparc_folder(
-            $("#guided-input-destination-getting-started-locally").attr(
-              "placeholder"
-            )
-          );
-          console.log(valid_dataset);
+          valid_dataset = verify_sparc_folder($("#guided-dataset-path").text());
           if (valid_dataset == true) {
             var action = "";
             irregularFolderArray = [];
@@ -6196,8 +6190,7 @@ ipcRenderer.on(
                 } else if (result.isDenied) {
                   action = "remove";
                 } else {
-                  $("#guided-input-destination-getting-started-locally").attr(
-                    "placeholder",
+                  $("#guided-input-destination-getting-started-locally").html(
                     "Browse here"
                   );
                   sodaJSONObj["starting-point"]["local-path"] = "";
@@ -6206,30 +6199,23 @@ ipcRenderer.on(
                 }
                 sodaJSONObj["starting-point"]["local-path"] = filepath[0];
 
-                let root_folder_path = $(
-                  "#guided-input-destination-getting-started-locally"
-                ).attr("placeholder");
+                let root_folder_path = $("#guided-dataset-path").text();
 
                 create_json_object(action, sodaJSONObj, root_folder_path);
                 datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
                 populate_existing_folders(datasetStructureJSONObj);
                 populate_existing_metadata(sodaJSONObj);
                 enableProgressButton();
-                console.log(sodaJSONObj);
-                console.log(datasetStructureJSONObj);
               });
             } else {
               action = "";
-              let root_folder_path = $(
-                "#guided-input-destination-getting-started-locally"
-              ).attr("placeholder");
+              let root_folder_path = $("#guided-dataset-path").text();
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               create_json_object(action, sodaJSONObj, root_folder_path);
               datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
               populate_existing_folders(datasetStructureJSONObj);
               populate_existing_metadata(sodaJSONObj);
-              console.log(sodaJSONObj);
-              console.log(datasetStructureJSONObj);
+
               enableProgressButton();
             }
           } else {
@@ -6254,9 +6240,10 @@ ipcRenderer.on(
             }).then((result) => {
               if (result.isConfirmed) {
               } else {
-                document.getElementById(
-                  "input-destination-getting-started-locally"
-                ).placeholder = "Browse here";
+                $("#guided-input-destination-getting-started-locally").html(
+                  "Browse here"
+                );
+                $(".guidedDatasetPath").text("");
                 sodaJSONObj["starting-point"]["local-path"] = "";
                 $("#para-continue-location-dataset-getting-started").text("");
               }

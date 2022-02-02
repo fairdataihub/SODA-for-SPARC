@@ -51,26 +51,21 @@
   width: 100%;
   height: 38px;
   border-radius: 4px;
-  padding-left: 12px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  font-size: 18px;
+  padding: 10px 12px;
+  font-size: 16px;
   font-weight: normal;
-  border: 1px solid rgb(137, 151, 155);
+  border: 1px solid var(--color-border);
   transition: border-color 150ms ease-in-out 0s;
   outline: none;
   color: rgb(33, 49, 60);
   background-color: rgb(255, 255, 255);
-  padding-right: 12px;
 }
 
 .guided--text-area {
-  height: 12em;
-  min-height: 8em;
-  max-height: 24em;
+  height: 5em;
 }
 .guided--input:hover {
-  box-shadow: rgb(231 238 236) 0px 0px 0px 1px;
+  box-shadow: rgb(231 238 236) 0px 0px 0px 2px;
 }
 .guided--input:focus {
   outline: 0;

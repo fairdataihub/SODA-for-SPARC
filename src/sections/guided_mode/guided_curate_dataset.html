@@ -13,7 +13,10 @@
       <header class="guided--header">
         <div class="guided--progression-tab-container">
           <div
-            class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+            class="
+              guided--progression-tab guided--progression-tab-triangle
+              selected-tab
+            "
             id="prepare-dataset-progression-tab"
           >
             <div class="guided--progression-tab-content">
@@ -93,7 +96,12 @@
               </h1>
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card checked"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    checked
+                  "
                   id="guided-curate-new-dataset-card"
                   data-enable-next-button="true"
                 >
@@ -122,7 +130,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-curate-existing-local-dataset-card"
                   data-enable-next-button="true"
                 >
@@ -148,7 +161,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-curate-existing-Pennsieve-dataset-card"
                   data-enable-next-button="true"
                 >
@@ -218,13 +236,14 @@
                     name="guided-dataset-subtitle"
                     placeholder="Enter datset subtitle here"
                     id="guided-dataset-subtitle-input"
+                    style="height: 7.5em; padding-bottom: 20px"
                   ></textarea>
                   <p>
                     <span
                       id="guided-subtitle-char-count"
                       style="
                         position: relative;
-                        bottom: 30px;
+                        bottom: 20px;
                         color: rgb(117, 107, 107);
                       "
                     >
@@ -257,7 +276,12 @@
                   "
                 >
                   <div
-                    class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+                    class="
+                      modal-dialog
+                      modal-dialog-centered
+                      modal-lg
+                      modal-dialog-scrollable
+                    "
                     role="document"
                   >
                     <div class="modal-content">
@@ -418,6 +442,29 @@
           </div>
 
           <div id="guided-folder-importation-tab" class="guided--panel hidden">
+            <div class="guided--container-data-display">
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-info-type-container">
+                  <h5 class="guided--dataset-info-type">
+                    Local dataset location:
+                  </h5>
+                </div>
+                <div
+                  class="
+                    guided--dataset-info-content-container
+                    guided-change-dataset-name
+                  "
+                >
+                  <h5
+                    class="guided--dataset-info-content guidedDatasetPath"
+                    id="guided-dataset-path"
+                  >
+                    None
+                  </h5>
+                  <i class="far fa-edit jump-back" style="color: #000"></i>
+                </div>
+              </div>
+            </div>
             <div class="guided--question show" id="guided_dataset_name_div">
               <label class="guided--text-sub-step"
                 >What is the location of the dataset?
@@ -434,14 +481,13 @@
                 class="field"
                 style="display: flex; justify-content: center; width: 100%"
               >
-                <input
-                  class="form-control"
-                  style="cursor: pointer; width: 440px !important"
+                <button
                   id="guided-input-destination-getting-started-locally"
-                  type="text"
-                  readonly
-                  placeholder="Browse here"
-                />
+                  class="btn_animated"
+                  style="width: 210px; border: none !important"
+                >
+                  Browse here
+                </button>
               </div>
               <p
                 class="hidden"
@@ -471,7 +517,10 @@
                   </h5>
                 </div>
                 <div
-                  class="guided--dataset-info-content-container guided-change-dataset-name"
+                  class="
+                    guided--dataset-info-content-container
+                    guided-change-dataset-name
+                  "
                 >
                   <h5 class="guided--dataset-info-content guidedDatasetOwner">
                     None
@@ -553,7 +602,10 @@
                   </h5>
                 </div>
                 <div
-                  class="guided--container-dataset-info guidedDatasetUserPermissions"
+                  class="
+                    guided--container-dataset-info
+                    guidedDatasetUserPermissions
+                  "
                   id="guided-dataset-user-permissions"
                 ></div>
               </div>
@@ -564,7 +616,10 @@
                   </h5>
                 </div>
                 <div
-                  class="guided--container-dataset-info guidedDatasetTeamPermissions"
+                  class="
+                    guided--container-dataset-info
+                    guidedDatasetTeamPermissions
+                  "
                 ></div>
               </div>
             </div>
@@ -734,20 +789,9 @@
               <h1 class="guided--text-sub-step">
                 Enter your descriptions in the section below
               </h1>
-              <div
-                class="ui styled accordion"
-                id="guided-dd-accordion"
-                style="width: 100% !important; max-width: 1000px !important"
-              >
-                <div
-                  class="title active"
-                  style="background: var(--color-bg-light-green-button)"
-                >
-                  <i class="dropdown icon"></i>
-                  Study Purpose
-                  <span style="font-style: italic; opacity: 0.8"
-                    >(Mandatory)</span
-                  >
+              <div class="guided--question">
+                <label class="guided--form-label"
+                  >Study purpose:
                   <i
                     class="fas fa-info-circle popover-tooltip"
                     data-content="Enter a paragraph that explains the purpose of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
@@ -757,95 +801,22 @@
                     data-trigger="hover"
                     style="margin-left: 5px; color: black"
                   ></i>
-                </div>
-                <div class="content active">
-                  <div
-                    style="
-                      display: block;
-                      width: 90%;
-                      margin: 0px auto;
-                      font-size: 13px;
-                      opacity: 1;
-                    "
-                  >
-                    <div>
-                      <div
-                        class="div-dd-info subjects"
-                        style="flex-direction: column"
-                      >
-                        <div class="demo-controls-body" style="width: 100%">
-                          <div
-                            class="ui input modified"
-                            id="guided-ds-study-purpose-container"
-                            style="display: flex; flex-direction: column"
-                          >
-                            <textarea
-                              class="guided--text-data-description"
-                              type="text"
-                              id="guided-ds-description-study-purpose"
-                              placeholder="Enter your study purpose here..."
-                              style="
-                                font-size: 14px;
-                                width: 100%;
-                                margin: 10px 0px;
-                                overflow-wrap: break-word;
-                              "
-                              rows="4"
-                            ></textarea>
-                            <div
-                              class="isa_warning"
-                              id="guided-ds-isa-warning"
-                              style="
-                                font-size: 14px;
-                                width: 100%;
-                                margin: 10px 0px;
-                                flex-direction: column;
-                                display: none;
-                              "
-                            >
-                              <button
-                                class="close-btn"
-                                title="close"
-                                id="guided-ds-close-btn"
-                              >
-                                <span>X</span>
-                              </button>
-                              <span
-                                style="margin-bottom: 10px; padding-left: 10px"
-                              >
-                                <strong>
-                                  Warning: It seems there is text in your
-                                  description that does not follow SPARC
-                                  Guidelines. Barring special circumstances, all
-                                  text should be in Study Purpose, Data
-                                  Collection, or Primary conclusion sections.
-                                  The non-conforming text has been placed in the
-                                  above section. Please reorganize the text by
-                                  placing it into the appropriate section(s).
-                                  <br />
-                                  <a
-                                    href="https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-description"
-                                    >Learn more.</a
-                                  >
-                                </strong>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="title"
-                  style="background: var(--color-bg-light-green-button)"
-                >
-                  <i class="dropdown icon"></i>
-                  Data Collection
-                  <span style="font-style: italic; opacity: 0.8"
-                    >(Mandatory)</span
-                  >
+                </label>
+                <textarea
+                  class="
+                    guided--input
+                    guided--text-area
+                    guided--text-data-description
+                  "
+                  type="text"
+                  name="guided-study-purpose"
+                  placeholder="Enter your study purpose here"
+                  id="guided-ds-description-study-purpose"
+                ></textarea>
+              </div>
+              <div class="guided--question">
+                <label class="guided--form-label"
+                  >Data collection:
                   <i
                     class="fas fa-info-circle popover-tooltip"
                     data-content="Enter a paragraph that explains the method you used for data collection below. We will enter the title for this section to your readme for you. Refrain from using markdown."
@@ -855,53 +826,22 @@
                     data-trigger="hover"
                     style="margin-left: 5px; color: black"
                   ></i>
-                </div>
-                <div class="content">
-                  <div
-                    style="
-                      display: block;
-                      width: 90%;
-                      margin: 0px auto;
-                      font-size: 13px;
-                      opacity: 0;
-                    "
-                  >
-                    <div>
-                      <div
-                        class="div-dd-info subjects"
-                        style="flex-direction: column"
-                      >
-                        <div class="demo-controls-body" style="width: 100%">
-                          <div class="ui input modified">
-                            <textarea
-                              class="guided--text-data-description"
-                              type="text"
-                              id="guided-ds-description-data-collection"
-                              placeholder="Enter you data collection methods here..."
-                              style="
-                                font-size: 14px;
-                                width: 100%;
-                                margin: 15px 15px;
-                                overflow-wrap: break-word;
-                              "
-                              rows="4"
-                            ></textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="title"
-                  style="background: var(--color-bg-light-green-button)"
-                >
-                  <i class="dropdown icon"></i>
-                  Primary Conclusion
-                  <span style="font-style: italic; opacity: 0.8"
-                    >(Mandatory)</span
-                  >
+                </label>
+                <textarea
+                  class="
+                    guided--input
+                    guided--text-area
+                    guided--text-data-description
+                  "
+                  type="text"
+                  name="guided-data-collection"
+                  placeholder="Enter your data collection here"
+                  id="guided-ds-description-data-collection"
+                ></textarea>
+              </div>
+              <div class="guided--question">
+                <label class="guided--form-label"
+                  >Primary conclusion:
                   <i
                     class="fas fa-info-circle popover-tooltip"
                     data-content="Enter a paragraph that explains the primary conclusion of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
@@ -911,43 +851,18 @@
                     data-trigger="hover"
                     style="margin-left: 5px; color: black"
                   ></i>
-                </div>
-                <div class="content">
-                  <div
-                    style="
-                      display: block;
-                      width: 90%;
-                      margin: 0px auto;
-                      font-size: 13px;
-                      opacity: 0;
-                    "
-                  >
-                    <div>
-                      <div
-                        class="div-dd-info subjects"
-                        style="flex-direction: column"
-                      >
-                        <div class="demo-controls-body" style="width: 100%">
-                          <div class="ui input modified">
-                            <textarea
-                              class="guided--text-data-description"
-                              type="text"
-                              id="guided-ds-description-primary-conclusion"
-                              placeholder="Enter your primary conclusion here..."
-                              style="
-                                font-size: 14px;
-                                width: 100%;
-                                margin: 15px 15px;
-                                overflow-wrap: break-word;
-                              "
-                              rows="4"
-                            ></textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                </label>
+                <textarea
+                  class="
+                    guided--input
+                    guided--text-area
+                    guided--text-data-description
+                  "
+                  type="text"
+                  name="guided-primary-conclusion"
+                  placeholder="Enter your primary conclusion here"
+                  id="guided-ds-description-primary-conclusion"
+                ></textarea>
               </div>
             </div>
             <div class="guided--question show">
@@ -966,16 +881,7 @@
                 name="guided-tags"
                 value=""
                 autofocus
-              /><button
-                class="ui positive button guided--button"
-                id="guided-button-add-dataset-tags"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 120px !important;
-                "
-              >
-                Add tags
-              </button>
+              />
             </div>
           </div>
           <div id="guided-assign-license-tab" class="guided--panel hidden">
@@ -1038,7 +944,12 @@
               </h1>
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-new-submission-card"
                   data-enable-next-button="true"
                 >
@@ -1067,7 +978,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-continue-existing-submission-card"
                 >
                   <div class="card-head"></div>
@@ -1196,7 +1112,13 @@
               </h1>
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected guided--card-large"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                    guided--card-large
+                  "
                   id="guided-generate-new-description-card"
                   data-enable-next-button="true"
                 >
@@ -1221,7 +1143,13 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected guided--card-large"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                    guided--card-large
+                  "
                   id="guided-continue-existing-description-card"
                 >
                   <div class="card-head"></div>
@@ -1942,7 +1870,12 @@
               </h1>
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-start-new-readme-card"
                   data-enable-next-button="true"
                 >
@@ -1967,7 +1900,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-continue-existing-readme-card"
                 >
                   <div class="card-head"></div>
@@ -2034,7 +1972,12 @@
               </h1>
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-start-new-changes-card"
                   data-enable-next-button="true"
                 >
@@ -2059,7 +2002,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-continue-existing-changes-card"
                 >
                   <div class="card-head"></div>
@@ -2140,7 +2088,12 @@
 
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-local-card"
                   data-enable-next-button="true"
                 >
@@ -2151,7 +2104,12 @@
                   </div>
                 </div>
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-pennsieve-card"
                 >
                   <div class="card-head"></div>
@@ -2216,7 +2174,12 @@
                             None
                           </h5>
                           <i
-                            class="far fa-edit jump-back guided-change-dataset-name"
+                            class="
+                              far
+                              fa-edit
+                              jump-back
+                              guided-change-dataset-name
+                            "
                             style="color: #000"
                           ></i>
                         </div>
@@ -2229,13 +2192,21 @@
                         </div>
                         <div class="guided--dataset-info-content-container">
                           <h5
-                            class="guided--dataset-info-content guidedBfAccountDetails"
+                            class="
+                              guided--dataset-info-content
+                              guidedBfAccountDetails
+                            "
                             id="guided-account-details"
                           >
                             None
                           </h5>
                           <i
-                            class="far fa-edit jump-back guided-change-dataset-name"
+                            class="
+                              far
+                              fa-edit
+                              jump-back
+                              guided-change-dataset-name
+                            "
                             style="color: #000"
                           ></i>
                         </div>
@@ -2305,7 +2276,12 @@
 
               <div class="guided--card-container">
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-new-card"
                   data-enable-next-button="true"
                 >
@@ -2335,7 +2311,12 @@
                 </div>
 
                 <div
-                  class="option-card radio-button guided--generate-location-card non-selected"
+                  class="
+                    option-card
+                    radio-button
+                    guided--generate-location-card
+                    non-selected
+                  "
                   id="guided-generate-dataset-existing-card"
                   data-enable-next-button="true"
                 >
@@ -2384,16 +2365,27 @@
                           </h5>
                         </div>
                         <div
-                          class="guided--dataset-info-content-container guided-change-dataset-name"
+                          class="
+                            guided--dataset-info-content-container
+                            guided-change-dataset-name
+                          "
                         >
                           <h5
                             id="guided-confirm-dataset-name"
-                            class="guided--dataset-info-content guidedDatasetName"
+                            class="
+                              guided--dataset-info-content
+                              guidedDatasetName
+                            "
                           >
                             None
                           </h5>
                           <i
-                            class="far fa-edit jump-back guided-change-dataset-name"
+                            class="
+                              far
+                              fa-edit
+                              jump-back
+                              guided-change-dataset-name
+                            "
                             style="color: #000"
                           ></i>
                         </div>
@@ -2463,7 +2455,11 @@
                                 </h5>
                               </div>
                               <svg
-                                class="svg-change-current-account dataset bi bi-pencil-fill"
+                                class="
+                                  svg-change-current-account
+                                  dataset
+                                  bi bi-pencil-fill
+                                "
                                 onclick="openDropdownPrompt(this, 'dataset')"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="18"
@@ -2685,7 +2681,10 @@
                   </h5>
                 </div>
                 <div
-                  class="guided--container-dataset-info guidedDatasetUserPermissions"
+                  class="
+                    guided--container-dataset-info
+                    guidedDatasetUserPermissions
+                  "
                 ></div>
               </div>
               <div class="guided--card-dataset-info">
@@ -2695,7 +2694,10 @@
                   </h5>
                 </div>
                 <div
-                  class="guided--container-dataset-info guidedDatasetTeamPermissions"
+                  class="
+                    guided--container-dataset-info
+                    guidedDatasetTeamPermissions
+                  "
                 ></div>
               </div>
               <div class="guided--card-dataset-info">
