@@ -200,73 +200,46 @@
                     id="guided-dataset-name-input"
                   />
                 </div>
-                <form
-                  class="ui form guided--form"
-                  style="width: 600px !important"
-                >
-                  <div class="field guided--field">
-                    <label class="guided--form-label"
-                      >Dataset name:
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative."
-                        rel="popover"
-                        data-html="true"
-                        data-placement="right"
-                        data-trigger="hover"
-                      ></i
-                    ></label>
-                    <input
-                      type="text"
-                      name="guided-dataset-name"
-                      placeholder="Enter dataset name here"
-                      id="guided-dataset-name-input"
-                    />
-                    <p
-                      style="color: red"
-                      id="guided-dataset-name-input-warning-message"
-                    ></p>
-                  </div>
-                  <div class="field guided--field">
-                    <label class="guided--form-label"
-                      >Dataset subtitle:
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published."
-                        rel="popover"
-                        data-html="true"
-                        data-placement="right"
-                        data-trigger="hover"
-                      ></i
-                    ></label>
-                    <textarea
-                      type="text"
-                      name="guided-dataset-subtitle"
-                      placeholder="Enter datset subtitle here"
-                      id="guided-dataset-subtitle-input"
-                    ></textarea>
-                    <p>
-                      <span
-                        id="guided-subtitle-char-count"
-                        style="
-                          position: absolute;
-                          bottom: 10px;
-                          right: 15px;
-                          color: rgb(117, 107, 107);
-                        "
-                      >
-                        256 characters left
-                      </span>
-                    </p>
-                  </div>
-                </form>
+                <div class="guided--question">
+                  <label class="guided--form-label"
+                    >Dataset subtitle:
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published."
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i
+                  ></label>
+                  <textarea
+                    class="guided--input guided--text-area"
+                    type="text"
+                    name="guided-dataset-subtitle"
+                    placeholder="Enter datset subtitle here"
+                    id="guided-dataset-subtitle-input"
+                  ></textarea>
+                  <p>
+                    <span
+                      id="guided-subtitle-char-count"
+                      style="
+                        position: relative;
+                        bottom: 30px;
+                        color: rgb(117, 107, 107);
+                      "
+                    >
+                      256 characters left
+                    </span>
+                  </p>
+                </div>
+
                 <button
                   class="ui positive button"
                   id="guided-button-add-banner-image"
                   style="
                     background-color: var(--color-light-green) !important;
                     width: 120px !important;
-                    margin: 20px !important;
+                    margin: 10px !important;
                   "
                 >
                   Add banner image
