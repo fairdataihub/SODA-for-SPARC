@@ -51,6 +51,17 @@ const removeUserPermission = (userParentElement) => {
   userParentElement.remove();
 };
 
+const removeTeamPermission = (teamParentElement) => {
+  teamStringToRemove = teamParentElement.data("team-string");
+  console.log(teamStringToRemove);
+  console.log(teamParentElement);
+  console.log(guidedTeamPermissions);
+  guidedTeamPermissions = guidedTeamPermissions.filter(
+    (teamPermission) => teamPermission.teamString != teamStringToRemove
+  );
+  teamParentElement.remove();
+};
+
 const guidedAddUserPermission = (newUserPermissionObj) => {
   //append created user to permissions array
   guidedUserPermissions.push(newUserPermissionObj);
@@ -89,11 +100,21 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
 };
 
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
+  //append created team obj to array
   guidedTeamPermissions.push(newTeamPermissionObj);
+
   const newTeamPermissionElement = $("<div>", {
     class: "guided--dataset-info-content-container",
     style: "width: 100%",
   });
+  newTeamPermissionElement.attr(
+    "data-team-string",
+    newTeamPermissionObj.teamString
+  );
+  newTeamPermissionElement.attr(
+    "data-team-permission",
+    newTeamPermissionObj.permission
+  );
   newTeamPermissionElement.append(
     $("<h5>", {
       class: "guided--dataset-info-content",
@@ -107,7 +128,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
     $("<i>", {
       class: "fas fa-user-times guided-delete-permission-team",
       style: "color: red",
-      onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
+      onclick: `removeTeamPermission($(this).closest(".guided--dataset-info-content-container"))`,
     })
   );
   $(".guidedDatasetTeamPermissions").append(newTeamPermissionElement);
