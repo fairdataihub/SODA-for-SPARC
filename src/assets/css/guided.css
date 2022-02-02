@@ -49,21 +49,24 @@
 
 .guided--input {
   width: 100%;
-  color: rgb(36, 35, 42);
-  font-size: 16px;
-  line-height: 20px;
-  min-height: 28px;
+  height: 36px;
   border-radius: 4px;
-  padding: 8px 16px;
-  border: 2px solid transparent;
-  box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px, rgb(0 0 0 / 24%) 0px 1px 2px;
-  background: rgb(251, 251, 251);
-  transition: all 0.1s ease 0s;
-}
-
-.guided--input:focus {
+  padding-left: 12px;
+  font-size: 14px;
+  font-weight: normal;
+  border: 1px solid rgb(137, 151, 155);
+  transition: border-color 150ms ease-in-out 0s;
   outline: none;
-  border: 1px solid var(--color-light-green);
+  color: rgb(33, 49, 60);
+  background-color: rgb(255, 255, 255);
+  padding-right: 12px;
+}
+.guided--input:hover {
+  box-shadow: rgb(231 238 236) 0px 0px 0px 1px;
+}
+.guided--input:focus {
+  outline: 0;
+  box-shadow: var(--color-light-green) 0px 0px 0px 1px;
 }
 
 .guided--progression-tab-container {
@@ -94,7 +97,7 @@
   width: 30px;
   margin: 5px;
   border-radius: 50%;
-  border: 1px solid var(--color-light-green);
+  border: 1px solid;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -592,6 +595,10 @@
   background-color: var(--color-light-green);
 }
 .guided--form-label {
+  width: 100%;
+  margin: 0 0 0.28571429rem 0;
+  color: black;
+  font-weight: 700;
   font-size: 1.2em !important;
 }
 .guided--card-large {
