@@ -43,6 +43,14 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
   sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwnerObj.UUID;
 };
 
+const removeUserPermission = (userParentElement) => {
+  userStringToRemove = userParentElement.data("user-string");
+  guidedUserPermissions = guidedUserPermissions.filter(
+    (userPermission) => userPermission.userString != userStringToRemove
+  );
+  userParentElement.remove();
+};
+
 const guidedAddUserPermission = (newUserPermissionObj) => {
   //append created user to permissions array
   guidedUserPermissions.push(newUserPermissionObj);
@@ -57,7 +65,6 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
     "data-user-string",
     newUserPermissionObj.userString
   );
-  newUserPermissionElement.attr("data-uuid", newUserPermissionObj.UUID);
   newUserPermissionElement.attr(
     "data-user-permission",
     newUserPermissionObj.permission
@@ -73,9 +80,9 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   );
   newUserPermissionElement.append(
     $("<i>", {
-      class: "fas fa-user-times guided-delete-permission",
+      class: "fas fa-user-times guided-delete-permission-user",
       style: "color: red",
-      onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
+      onclick: `removeUserPermission($(this).closest(".guided--dataset-info-content-container"))`,
     })
   );
   $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
@@ -98,7 +105,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   );
   newTeamPermissionElement.append(
     $("<i>", {
-      class: "fas fa-user-times guided-delete-permission",
+      class: "fas fa-user-times guided-delete-permission-team",
       style: "color: red",
       onclick: `$(this).closest(".guided--dataset-info-content-container").remove()`,
     })
