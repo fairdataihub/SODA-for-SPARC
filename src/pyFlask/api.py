@@ -10,16 +10,22 @@ PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aa
 root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
 datasets = list(root.children)
 
-print(datasets)
+# print(datasets)
 
 from sparcur.simple.validate import main as validate
 from pathlib import Path
 userpath = expanduser("~")
 
-path = Path(userpath +  "\\Desktop\\Pennsieve-dataset-46-version-1\\files")
+path = Path(userpath +  "\\Desktop\\Pennsieve-dataset-206-version-1\\files")
 print(path)
 
 blob = validate(path)
+
+
+# For some use cases you will need access to the SciCrunch production SciGraph endpoint. 
+# Register for an account and get an api key. Edit config.yaml and update the 
+# scigraph-api-key: path: entry to point to scicrunch api name-of-user-or-name-for-the-key. 
+# Edit secrets.yaml and add the api key to (-> scicrunch api name-of-user-or-name-for-the-key).
 
 
 app = Flask(__name__)
@@ -27,7 +33,6 @@ app = Flask(__name__)
 @app.route("/")
 def hello_world():
     return jsonify("Hello world")
-
 @app.route("/api_ps_retrieve_dataset")
 def api_ps_retrieve_dataset():
     # ps_retrieve_dataset()
