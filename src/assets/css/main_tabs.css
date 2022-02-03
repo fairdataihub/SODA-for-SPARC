@@ -192,6 +192,29 @@
   margin-top: 1em;
 }
 
+.disabled-generate-button {
+  background: #f6f6f6;
+  margin: 5px;
+  width: 120px;
+  height: 40px;
+  font-size: 15px;
+  border: none !important;
+  border-radius: 8px;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+}
+
+.disabled-animated-div {
+  padding-top: 10px;
+  background: #f6f6f6;
+  color: #4d4a4a;
+  width: inherit;
+  height: inherit;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 #returnButton {
   margin-left: 34px;
   border-radius: 5px;

@@ -6372,6 +6372,7 @@ function initiate_generate() {
   document.getElementById("div-generate-comeback").style.display = "none";
 
   let organizeDataset = document.getElementById("organize_dataset_btn");
+  let uploadLocally = document.getElementById("upload_local_dataset_btn");
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
   let navContainer = document.getElementById("nav-items");
@@ -6384,9 +6385,12 @@ function initiate_generate() {
   statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
   statusMeter.className = "nav-status-bar";
   statusBarClone.appendChild(returnButton);
+  uploadLocally.disabled = true;
   organizeDataset.disabled = true;
   organizeDataset.className = "disabled-content-button";
+  uploadLocally.className = "disabled-content-button";
   organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
+  uploadLocally.style = "background-color: #f6f6f6; border: #fff;";
 
   returnButton.type = "button";
   returnButton.id = "returnButton";
@@ -6396,9 +6400,6 @@ function initiate_generate() {
     organizeDataset.disabled = false;
     organizeDataset.className = "content-button is-selected";
     organizeDataset.style = "background-color: #fff";
-    if (organizeDataset.hasAttribute("disabled", "false")) {
-      console.log("true");
-    }
     organizeDataset.click();
     let button = document.getElementById("button-generate");
     $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
@@ -6462,6 +6463,9 @@ function initiate_generate() {
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+      uploadLocally.disabled = false;
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
       Swal.fire({
         icon: "error",
         title: "An error occured",
@@ -6472,9 +6476,6 @@ function initiate_generate() {
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
           organizeDataset.style = "background-color: #fff";
-          if (organizeDataset.hasAttribute("disabled", "false")) {
-            console.log("true");
-          }
           organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
@@ -6767,6 +6768,11 @@ function initiate_generate() {
         ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
         log.error(error);
         organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
         Swal.fire({
           icon: "error",
           title: "An error occured",
@@ -6777,6 +6783,12 @@ function initiate_generate() {
             document.getElementById("organize_dataset_btn").click();
             let button = document.getElementById("button-generate");
             $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+            document.getElementById("prevBtn").style.display = "none";
+            document.getElementById("start-over-btn").style.display = "none";
+            document.getElementById("div-vertical-progress-bar").style.display =
+              "none";
+            document.getElementById("div-generate-comeback").style.display =
+              "none";
             document.getElementById(
               "generate-dataset-progress-tab"
             ).style.display = "flex";
@@ -6878,11 +6890,13 @@ function initiate_generate() {
       if (countDone > 1) {
         log.info("Done curate track");
         statusBarClone.remove();
-        organizeDataset.setAttribute("disabled", "false");
-        organizeDataset.className = "content-button is-selected";
-        organizeDataset.style = "background-color: #fff";
         if (successful === true) {
           organizeDataset.disabled = false;
+          organizeDataset.className = "content-button is-selected";
+          organizeDataset.style = "background-color: #fff";
+          uploadLocally.disabled = false;
+          uploadLocally.className = "content-button is-selected";
+          uploadLocally.style = "background-color: #fff";
           uploadComplete.open({
             type: "success",
             message: "Dataset created successfully",

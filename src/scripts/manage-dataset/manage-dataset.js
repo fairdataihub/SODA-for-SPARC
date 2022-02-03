@@ -2361,6 +2361,8 @@ $("#button-submit-dataset").click(async () => {
   let cloneMeter = progressClone.children[1];
   let cloneStatus = progressClone.children[2];
   var navError = progressError.cloneNode(true);
+  let organizeDatasetButton = document.getElementById("button-generate");
+  let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
 
   progressClone.style =
     "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
@@ -2379,6 +2381,10 @@ $("#button-submit-dataset").click(async () => {
     returnPage.click();
   };
   progressClone.appendChild(returnButton);
+  organizeDatasetButton.disabled = true;
+  organizeDatasetButton.className = "disabled-generate-button";
+  organizeDatasetButton.style = "background-color: #f6f6f6";
+  organzieDatasetButtonDiv.className = "disabled-animated-div";
 
   //console.log(cloneStatus);
   let supplementary_checks = await run_pre_flight_checks(false);
@@ -2436,6 +2442,11 @@ $("#button-submit-dataset").click(async () => {
         document.getElementById("para-progress-bar-error-status").innerHTML =
           emessage;
         success_upload = false;
+        organizeDatasetButton.disabled = false;
+        organizeDatasetButton.className = "btn_animated generate-btn";
+        organizeDatasetButton.style =
+          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
         Swal.fire({
           icon: "error",
           title: "There was an issue uploading your dataset",
@@ -2596,6 +2607,11 @@ $("#button-submit-dataset").click(async () => {
             ` - Progress track`,
           defaultBfDatasetId
         );
+        organizeDatasetButton.disabled = false;
+        organizeDatasetButton.className = "btn_animated generate-btn";
+        organizeDatasetButton.style =
+          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
 
         $("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
@@ -2684,6 +2700,11 @@ $("#button-submit-dataset").click(async () => {
         log.info("Done submit track");
         console.log("Done submit track");
         if (success_upload === true) {
+          organizeDatasetButton.disabled = false;
+          organizeDatasetButton.className = "btn_animated generate-btn";
+          organizeDatasetButton.style =
+            "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+          organzieDatasetButtonDiv.className = "btn_animated-inside";
           uploadComplete.open({
             type: "success",
             message: "Upload to Pennsieve completed",
