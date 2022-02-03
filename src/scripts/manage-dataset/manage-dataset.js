@@ -2356,28 +2356,29 @@ $("#button-submit-dataset").click(async () => {
 
   var progressClone = progressSubmit.cloneNode(true);
   let cloneHeader = progressClone.children[0];
+  progressClone.children[2].remove();
   cloneHeader.style = "margin: 0;";
   let cloneMeter = progressClone.children[1];
-  let cloneStatus = progressClone.children[3];
-  console.log(cloneStatus);
+  let cloneStatus = progressClone.children[2];
   var navError = progressError.cloneNode(true);
-
-  console.log(progressSubmit);
 
   progressClone.style =
     "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
   cloneMeter.setAttribute("id", "clone-progress-bar-upload-bf");
   cloneMeter.className = "nav-status-bar";
   cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
-  cloneStatus.style = "overflow-x: hidden;";
+  cloneStatus.style =
+    "overflow-x: hidden; margin-bottom: 3px; margin-top: 5px;";
   progressClone.setAttribute("id", "nav-progress-submit");
-  navContainer.appendChild(progressClone);
-  cloneStatus.innerHTML = "";
-  document.getElementById("para-progress-bar-status").innerHTML = "";
-  let navbar = document.getElementById("main-nav");
-  if (navbar.classList.contains("active")) {
-    document.getElementById("sidebarCollapse").click();
-  }
+  let returnButton = document.createElement("button");
+  returnButton.type = "button";
+  returnButton.id = "returnButton";
+  returnButton.innerHTML = "Return to progress";
+  let returnPage = document.getElementById("upload_local_dataset_btn");
+  returnButton.onclick = function () {
+    returnPage.click();
+  };
+  progressClone.appendChild(returnButton);
 
   //console.log(cloneStatus);
   let supplementary_checks = await run_pre_flight_checks(false);
@@ -2406,7 +2407,13 @@ $("#button-submit-dataset").click(async () => {
 
   log.info("Files selected for upload:");
   logFilesForUpload(pathSubmitDataset.placeholder);
-
+  navContainer.appendChild(progressClone);
+  cloneStatus.innerHTML = "Please wait...";
+  document.getElementById("para-progress-bar-status").innerHTML = "";
+  let navbar = document.getElementById("main-nav");
+  if (navbar.classList.contains("active")) {
+    document.getElementById("sidebarCollapse").click();
+  }
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2424,15 +2431,24 @@ $("#button-submit-dataset").click(async () => {
         /*$("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );*/
+        document.getElementById("para-progress-bar-error-status").style =
+          "color: red";
+        document.getElementById("para-progress-bar-error-status").innerHTML =
+          emessage;
         success_upload = false;
         Swal.fire({
           icon: "error",
           title: "There was an issue uploading your dataset",
           html: emessage,
           allowOutsideClick: false,
+        }).then((result) => {
+          progressClone.remove();
+          if (result.isConfirmed) {
+            returnPage.click();
+          }
         });
 
-        progressClone.remove();
+        //progressClone.remove();
         progressBarUploadBf.value = 0;
         cloneMeter.value = 0;
 
@@ -2584,6 +2600,16 @@ $("#button-submit-dataset").click(async () => {
         $("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );
+        Swal.fire({
+          icon: "error",
+          title: "An error occured",
+          html: "Please return to progress page to see full error",
+        }).then((result) => {
+          progressClone.remove();
+          if (result.isConfirmed) {
+            returnPage.click();
+          }
+        });
       } else {
         ipcRenderer.send(
           "track-event",
@@ -2636,9 +2662,8 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
-            console.log(res[0]);
-            cloneStatus.innerHTML =
-              res[0] + "Progress: " + value.toFixed(2) + "%";
+            //console.log(res[0]);
+            cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
                 "Progress: " +
