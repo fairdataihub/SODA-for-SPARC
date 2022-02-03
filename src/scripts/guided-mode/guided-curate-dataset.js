@@ -48,18 +48,19 @@ const removeUserPermission = (userParentElement) => {
   guidedUserPermissions = guidedUserPermissions.filter(
     (userPermission) => userPermission.userString != userStringToRemove
   );
-  userParentElement.remove();
+  $(".guidedDatasetUserPermissions")
+    .children(`[data-user-string='${userStringToRemove}']`)
+    .remove();
 };
 
 const removeTeamPermission = (teamParentElement) => {
   teamStringToRemove = teamParentElement.data("team-string");
-  console.log(teamStringToRemove);
-  console.log(teamParentElement);
-  console.log(guidedTeamPermissions);
   guidedTeamPermissions = guidedTeamPermissions.filter(
     (teamPermission) => teamPermission.teamString != teamStringToRemove
   );
-  teamParentElement.remove();
+  $(".guidedDatasetTeamPermissions")
+    .children(`[data-team-string='${teamStringToRemove}']`)
+    .remove();
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
@@ -1340,6 +1341,26 @@ $(document).ready(() => {
           "Please import an image first" +
           "</span>"
       );
+    }
+  });
+  //back button click handler
+  $("#guided-back-button").on("click", () => {
+    //if (current_sub_step.attr("id") == "guided-basic-description-tab") {
+    //}
+    if (current_sub_step.prev().attr("id") !== undefined) {
+      current_sub_step.hide();
+      current_sub_step = current_sub_step.prev();
+      current_sub_step_capsule.css("background-color", "#ddd");
+      current_sub_step_capsule = current_sub_step_capsule.prev();
+      current_sub_step_capsule.css(
+        "background-color",
+        "var(--color-light-green)"
+      );
+      current_sub_step.css("display", "flex");
+    } else {
+      //go to next tab
+      current_progression_tab = current_progression_tab.prev();
+      current_progression_tab.click();
     }
   });
 
