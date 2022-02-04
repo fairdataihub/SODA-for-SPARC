@@ -1,32 +1,23 @@
-#from validator import validate_dataset_pipeline
+import werkzeug
+from validator import val_dataset_local_pipeline
 from flask import Flask, jsonify, request, json
+import os.path as path
 from os.path import expanduser
 #from organize_datasets import ps_retrieve_dataset
-
+from sparcur.simple.validate import main as validate
+from pathlib import Path
 from sparcur.config import auth
 from sparcur.simple.utils import backend_pennsieve
 # project_id = auth.get('remote-organization')
-PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
-root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
-datasets = list(root.children)
-
-# print(datasets)
-
-from sparcur.simple.validate import main as validate
-from pathlib import Path
 userpath = expanduser("~")
 
-path = Path(userpath +  "\\Desktop\\Pennsieve-dataset-206-version-1\\files")
-print(path)
+#PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
+#root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
+#datasets = list(root.children)
+ds_location = Path(userpath +  "\\Desktop\\Pennsieve-dataset-206-version-1\\files")
+print(ds_location)
 
-blob = validate(path)
-
-
-# For some use cases you will need access to the SciCrunch production SciGraph endpoint. 
-# Register for an account and get an api key. Edit config.yaml and update the 
-# scigraph-api-key: path: entry to point to scicrunch api name-of-user-or-name-for-the-key. 
-# Edit secrets.yaml and add the api key to (-> scicrunch api name-of-user-or-name-for-the-key).
-
+#blob = validate(path)
 
 app = Flask(__name__)
 
@@ -47,9 +38,24 @@ def api_ps_retrieve_dataset():
 
 
 @app.route("/api_validate_dataset_pipeline")
+@app.errorhandler(werkzeug.exceptions.BadRequest)
 def api_validate_dataset_pipeline():
-    # validate_dataset_pipeline()
-    return jsonify("Dataset pipeline completed")
+    print("In the route")
+    # get the account and dataset information
+    ds_path = request.args.get("dataset-path")
+    joined_path = path.join(userpath, ds_path.strip())
+    norm_ds_path = Path(joined_path)
+
+    # validate the dataset
+    validation_result = None 
+    try:
+        validation_result = val_dataset_local_pipeline(norm_ds_path)
+    except:
+        return "Directory does not exist!", 400
+    
+    print(validation_result)
+    
+    return jsonify("Dataset has been validated!")
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000)

@@ -2,7 +2,7 @@
 # from gevent import monkey; monkey.patch_all(ssl=False)
 from sparcur.paths import Path as SparCurPath
 from sparcur.utils import PennsieveId
-#from sparcur.simple.validate import main as validate
+from sparcur.simple.validate import main as validate
 # from sparcur.simple.retrieve import main as retrieve
 from configparser import ConfigParser
 import gevent
@@ -24,11 +24,25 @@ def get_home_directory(folder):
     elif sys.platform == "linux":
         return str(Path.home()) + "/.config/" + folder
     elif sys.platform == "darwin":
-        return str(Path.home()) + "/AppData/Local/" + folder
+        return str(Path.home()) + "/AppData/Local/" + folder 
+
+# validate a local dataset at the target directory 
+def val_dataset_local_pipeline(ds_path):
+    # validate the dataset
+    try:
+        validation_object = validate(ds_path)
+    except Exception as e:
+        print(e)
+        pass
+    # return the results 
+    return validation_object
 
 local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
 sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
 parent_folder = SparCurPath(local_sparc_dataset_location).expanduser()
+
+
+
 
 
 
@@ -183,7 +197,7 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     #     raise e
 
     validation_json = {}
-    # validation_json = validate(local_dataset_folder_path)
+    validation_json = validate(local_dataset_folder_path)
 
 
     # def temp_validate_function(local_dataset_folder_path):
@@ -271,6 +285,12 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     #     return str(local_dataset_folder_path)
     # except Exception as e:
     #     raise e
+
+
+
+
+
+
 
 
 
