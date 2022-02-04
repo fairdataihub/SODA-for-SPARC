@@ -1,18 +1,22 @@
-/////////////////////////////////////////////////////////
-//////////          Shared variables          ///////////
-
-/////////////////////////////////////////////////////////
+//Temp variables used for data storage until put into sodaJSONObj on next button press
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
-const guidedDatasetSubtitle_char_count = document.getElementById(
-  "guided-subtitle-char-count"
-);
 
-//main nav variables
+//main nav variables initialized to first tabs/pages of guided mode
 let current_progression_tab = $("#prepare-dataset-progression-tab");
 let current_sub_step = $("#guided-basic-description-tab");
 let current_sub_step_capsule = $("#guided-basic-description-capsule");
+//nav functions
+const enableProgressButton = () => {
+  $("#guided-next-button").prop("disabled", false);
+};
+const disableProgressButton = () => {
+  $("#guided-next-button").prop("disabled", true);
+};
 
+/////////////////////////////////////////////////////////
+/////////////       Util functions      /////////////////
+/////////////////////////////////////////////////////////
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
     "value",
@@ -20,47 +24,31 @@ const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
       percentToIncrease
   );
 };
+$("#guided-dataset-name-input").val("test " + makeid(5));
 
-const guidedSetDatasetName = (newDatasetName) => {
+/////////////////////////////////////////////////////////
+//////////       GUIDED OBJECT ACCESSORS       //////////
+/////////////////////////////////////////////////////////
+const setGuidedDatasetName = (newDatasetName) => {
   datasetName = newDatasetName.val().trim();
   sodaJSONObj["digital-metadata"]["name"] = datasetName;
   $(".guidedDatasetName").text(datasetName);
   //defaultBfDataset = datasetName;
 };
 
-const guidedSetDatasetSubtitle = (newDatasetSubtitle) => {
+const setGuidedDatasetSubtitle = (newDatasetSubtitle) => {
   datasetSubtitle = newDatasetSubtitle.val().trim();
   sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
   $(".guidedDatasetSubtitle").text(datasetSubtitle);
 };
 
-const guidedSetBannerImage = (croppedImagePath) => {
+const setGuidedBannerImage = (croppedImagePath) => {
   sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
   $(".guidedDatasetOwner").text(newPiOwnerObj.PiOwnerString);
   sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwnerObj.UUID;
-};
-
-const removeUserPermission = (userParentElement) => {
-  userStringToRemove = userParentElement.data("user-string");
-  guidedUserPermissions = guidedUserPermissions.filter(
-    (userPermission) => userPermission.userString != userStringToRemove
-  );
-  $(".guidedDatasetUserPermissions")
-    .children(`[data-user-string='${userStringToRemove}']`)
-    .remove();
-};
-
-const removeTeamPermission = (teamParentElement) => {
-  teamStringToRemove = teamParentElement.data("team-string");
-  guidedTeamPermissions = guidedTeamPermissions.filter(
-    (teamPermission) => teamPermission.teamString != teamStringToRemove
-  );
-  $(".guidedDatasetTeamPermissions")
-    .children(`[data-team-string='${teamStringToRemove}']`)
-    .remove();
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
@@ -99,6 +87,15 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   );
   $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
 };
+const removeUserPermission = (userParentElement) => {
+  userStringToRemove = userParentElement.data("user-string");
+  guidedUserPermissions = guidedUserPermissions.filter(
+    (userPermission) => userPermission.userString != userStringToRemove
+  );
+  $(".guidedDatasetUserPermissions")
+    .children(`[data-user-string='${userStringToRemove}']`)
+    .remove();
+};
 
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
   //append created team obj to array
@@ -134,22 +131,19 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   );
   $(".guidedDatasetTeamPermissions").append(newTeamPermissionElement);
 };
+const removeTeamPermission = (teamParentElement) => {
+  teamStringToRemove = teamParentElement.data("team-string");
+  guidedTeamPermissions = guidedTeamPermissions.filter(
+    (teamPermission) => teamPermission.teamString != teamStringToRemove
+  );
+  $(".guidedDatasetTeamPermissions")
+    .children(`[data-team-string='${teamStringToRemove}']`)
+    .remove();
+};
 
 setGuidedLicense = (newLicense) => {
   $(".guidedBfLicense").text(newLicense);
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
-};
-
-var guidedJstreePreview = document.getElementById(
-  "guided-div-dataset-tree-preview"
-);
-
-//nav functions
-const enableProgressButton = () => {
-  $("#guided-next-button").prop("disabled", false);
-};
-const disableProgressButton = () => {
-  $("#guided-next-button").prop("disabled", true);
 };
 
 /////////////////////////////////////////////////////////
@@ -212,7 +206,12 @@ $(document).ready(() => {
     return result;
   }
 
-  $("#guided-dataset-name-input").val("test " + makeid(5));
+  /////////////////////////////////////////////////////////
+  //////////       GUIDED jsTree FUNCTIONS       //////////
+  /////////////////////////////////////////////////////////
+  var guidedJstreePreview = document.getElementById(
+    "guided-div-dataset-tree-preview"
+  );
   $(guidedJstreePreview).jstree({
     core: {
       check_callback: true,
@@ -276,15 +275,12 @@ $(document).ready(() => {
       },
     },
   });
-
   $(guidedJstreePreview).on("open_node.jstree", function (event, data) {
     data.instance.set_type(data.node, "folder open");
   });
-
   $(guidedJstreePreview).on("close_node.jstree", function (event, data) {
     data.instance.set_type(data.node, "folder closed");
   });
-
   function guidedShowTreePreview(new_dataset_name) {
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
     if (manifestFileCheck.checked) {
@@ -308,7 +304,9 @@ $(document).ready(() => {
       guidedJsTreePreviewData;
     $(guidedJstreePreview).jstree(true).refresh();
   }
-
+  /////////////////////////////////////////////////////////
+  /////////  PENNSIEVE METADATA BUTTON HANDLERS   /////////
+  /////////////////////////////////////////////////////////
   $("#guided-button-add-permission-pi").on("click", function () {
     const newPiOwner = {
       PiOwnerString: $("#guided_bf_list_users_pi option:selected")
@@ -426,6 +424,9 @@ $(document).ready(() => {
     $("#guided-para-dataset-banner-image-status").html("");
     ipcRenderer.send("guided-open-file-dialog-import-banner-image");
   });
+  /////////////////////////////////////////////////////////
+  //////////    GUIDED IPC RENDERER LISTENERS    //////////
+  /////////////////////////////////////////////////////////
 
   ipcRenderer.on("guided-selected-banner-image", async (event, path) => {
     console.log(path);
@@ -581,7 +582,6 @@ $(document).ready(() => {
     }
   });
 
-  //ipcRenderer event handlers
   $("#guided-input-destination-getting-started-locally").on("click", () => {
     ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
   });
@@ -1400,12 +1400,12 @@ $(document).ready(() => {
       )
         .val()
         .trim();
-      guidedSetDatasetName($("#guided-dataset-name-input"));
-      guidedSetDatasetSubtitle($("#guided-dataset-subtitle-input"));
+      setGuidedDatasetName($("#guided-dataset-name-input"));
+      setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
 
       //Check if cropped image path is empty, and if not, store the path to the sodaJSONObj
       if (guidedCroppedBannerImagePath) {
-        guidedSetBannerImage(guidedCroppedBannerImagePath);
+        setGuidedBannerImage(guidedCroppedBannerImagePath);
         console.log(guidedCroppedBannerImagePath);
       }
     }
@@ -1926,3 +1926,7 @@ const guided_generate = async () => {
     }
   }
 };
+
+const guidedDatasetSubtitle_char_count = document.getElementById(
+  "guided-subtitle-char-count"
+);
