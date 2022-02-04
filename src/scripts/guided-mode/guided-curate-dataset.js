@@ -24,6 +24,16 @@ const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
       percentToIncrease
   );
 };
+function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 $("#guided-dataset-name-input").val("test " + makeid(5));
 
 /////////////////////////////////////////////////////////
@@ -195,16 +205,6 @@ $(document).ready(() => {
     };
     guidedAddTeamPermission(newTeamPermissionObj);
   });
-  function makeid(length) {
-    var result = "";
-    var characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  }
 
   /////////////////////////////////////////////////////////
   //////////       GUIDED jsTree FUNCTIONS       //////////
@@ -770,9 +770,6 @@ $(document).ready(() => {
   };
 
   const guided_add_PI_owner = async (bfAccount, bfDataset, datasetPiOwner) => {
-    console.log(bfAccount);
-    console.log(bfDataset);
-    console.log(datasetPiOwner);
     return new Promise((resolve) => {
       log.info("Changing PI Owner of datset");
 
