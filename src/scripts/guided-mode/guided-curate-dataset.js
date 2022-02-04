@@ -3,9 +3,7 @@ let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
 
 //main nav variables initialized to first tabs/pages of guided mode
-let current_progression_tab = $("#prepare-dataset-progression-tab");
-let current_sub_step = $("#guided-basic-description-tab");
-let current_sub_step_capsule = $("#guided-basic-description-capsule");
+
 //nav functions
 const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
@@ -374,28 +372,7 @@ $(document).ready(() => {
     $("#guided-button-add-license").attr("disabled");
     enableProgressButton();
   });
-  //Handles high-level progress and their respective panels opening and closing,
-  //as well as updates current tabs/capsule state
-  $(".guided--progression-tab").on("click", function () {
-    const selectedTab = $(this);
-    selectedTab.siblings().removeClass("selected-tab");
-    selectedTab.addClass("selected-tab");
 
-    const tabPanelId = selectedTab
-      .attr("id")
-      .replace("progression-tab", "parent-tab");
-    if (tabPanelId == "prepare-pennsieve-metadata-parent-tab") {
-      $(".selectpicker").selectpicker("refresh");
-    }
-    const tabPanel = $("#" + tabPanelId);
-    current_sub_step = tabPanel.children(".guided--panel").first();
-    current_sub_step_capsule = tabPanel
-      .children(".guided--capsule-container")
-      .children()
-      .first();
-    tabPanel.siblings().hide();
-    tabPanel.show();
-  });
   //card click hanndler that displays the card's panel using the card's id prefix
   //e.g. clicking a card with id "foo-bar-card" will display the panel with the id "foo-bar-panel"
   $(".guided--card-container > div").on("click", function () {
@@ -1340,32 +1317,11 @@ $(document).ready(() => {
       );
     }
   });
-  //back button click handler
-  $("#guided-back-button").on("click", () => {
-    //if (current_sub_step.attr("id") == "guided-basic-description-tab") {
-    //}
-    if (current_sub_step.prev().attr("id") !== undefined) {
-      current_sub_step.hide();
-      current_sub_step = current_sub_step.prev();
-      current_sub_step_capsule.css("background-color", "#ddd");
-      current_sub_step_capsule = current_sub_step_capsule.prev();
-      current_sub_step_capsule.css(
-        "background-color",
-        "var(--color-light-green)"
-      );
-      current_sub_step.css("display", "flex");
-    } else {
-      //go to next tab
-      current_progression_tab = current_progression_tab.prev();
-      current_progression_tab.click();
-    }
-  });
-
+  let current_progression_tab = $("#prepare-dataset-progression-tab");
+  let current_sub_step = $("#guided-basic-description-tab");
+  let current_sub_step_capsule = $("#guided-basic-description-capsule");
   //next button click handler
   $("#guided-next-button").on("click", () => {
-    //individual sub step processes
-
-    //1st: create guided mode sodaObj, append properties per user input
     if (current_sub_step.attr("id") == "guided-basic-description-tab") {
       $(".guidedDatasetName").text($("#guided-dataset-name-input").val());
       $(".guidedDatasetSubtitle").text(
@@ -1405,6 +1361,7 @@ $(document).ready(() => {
         setGuidedBannerImage(guidedCroppedBannerImagePath);
         console.log(guidedCroppedBannerImagePath);
       }
+      $("#guided-back-button").css("visibility", "visible");
     }
 
     if (current_sub_step.attr("id") == "add-edit-description-tags-tab") {
@@ -1472,6 +1429,8 @@ $(document).ready(() => {
       if ($("#guided-generate-dataset-pennsieve-card").hasClass("checked")) {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
+
+      $("#guided-next-button").css("visibility", "hidden");
     }
 
     if (current_sub_step.attr("id") == "add-edit-tags-tab") {
@@ -1498,21 +1457,72 @@ $(document).ready(() => {
       current_sub_step.css("display", "flex");
     } else {
       //go to next tab
+      current_progression_tab.removeClass("selected-tab");
       current_progression_tab = current_progression_tab.next();
-      console.log(current_progression_tab.attr("id"));
-      console.log(current_progression_tab.first(".guided--panel").attr("id"));
-      console.log(current_progression_tab.first(".guided--capsule").attr("id"));
-      current_progression_tab.click();
+      current_progression_tab.addClass("selected-tab");
+      const tabPanelId = current_progression_tab
+        .attr("id")
+        .replace("progression-tab", "parent-tab");
+      if (tabPanelId == "prepare-pennsieve-metadata-parent-tab") {
+        $(".selectpicker").selectpicker("refresh");
+      }
+      const tabPanel = $("#" + tabPanelId);
+      current_sub_step = tabPanel.children(".guided--panel").first();
+      current_sub_step_capsule = tabPanel
+        .children(".guided--capsule-container")
+        .children()
+        .first();
+      tabPanel.siblings().hide();
+      tabPanel.show();
     }
     //disableProgressButton();
     console.log(sodaJSONObj);
-    console.log(current_sub_step.attr("id"));
-    console.log(current_progression_tab.attr("id"));
 
     if (current_sub_step.attr("id") == "guided-create-readme-metadata-tab") {
       guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"]);
     }
   });
+
+  //back button click handler
+  $("#guided-back-button").on("click", () => {
+    if (current_sub_step.attr("id") == "guided-folder-importation-tab") {
+      $("#guided-back-button").css("visibility", "hidden");
+    }
+    if (
+      current_sub_step.attr("id") ==
+      "guided-dataset-generation-confirmation-tab"
+    ) {
+      $("#guided-next-button").css("visibility", "visible");
+    }
+    //handle case where current page is first in its section
+    if (!current_sub_step.prev().hasClass("guided--capsule-container")) {
+      current_sub_step.hide();
+      current_sub_step = current_sub_step.prev();
+      current_sub_step_capsule.css("background-color", "#ddd");
+      current_sub_step_capsule = current_sub_step_capsule.prev();
+      current_sub_step_capsule.css(
+        "background-color",
+        "var(--color-light-green)"
+      );
+      current_sub_step.css("display", "flex");
+    } else {
+      current_progression_tab.removeClass("selected-tab");
+      current_progression_tab = current_progression_tab.prev();
+      current_progression_tab.addClass("selected-tab");
+      const tabPanelId = current_progression_tab
+        .attr("id")
+        .replace("progression-tab", "parent-tab");
+      const tabPanel = $("#" + tabPanelId);
+      current_sub_step = tabPanel.children(".guided--panel").last();
+      current_sub_step_capsule = tabPanel
+        .children(".guided--capsule-container")
+        .children()
+        .last();
+      tabPanel.siblings().hide();
+      tabPanel.show();
+    }
+  });
+
   const goToTabOnStart = (tabIsd) => {
     $("#guided_mode_view").click();
     $("#guided_create_new_bf_dataset_btn").click();
