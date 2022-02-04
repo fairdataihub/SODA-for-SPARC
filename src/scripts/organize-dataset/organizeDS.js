@@ -605,15 +605,6 @@ function renameFolder(
             },
           });
 
-          // log the success
-          logCurationForAnalytics(
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 3", "Rename", promptVar],
-            determineDatasetLocation()
-          );
-
           /// assign new name to folder or file in the UI
           event1.parentElement.parentElement.innerText = returnedName;
           /// get location of current file or folder in JSON obj
@@ -623,6 +614,7 @@ function renameFolder(
           storedValue = myPath[type][currentName];
           delete myPath[type][currentName];
           myPath[type][returnedName] = storedValue;
+          myPath[type][returnedName]["basename"] = returnedName;
           if ("action" in myPath[type][returnedName]) {
             if (!myPath[type][returnedName]["action"].includes("renamed")) {
               myPath[type][returnedName]["action"].push("renamed");
@@ -638,6 +630,15 @@ function renameFolder(
             uiItem,
             organizeCurrentLocation,
             inputGlobal
+          );
+
+          // log the success
+          logCurationForAnalytics(
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Rename", promptVar],
+            determineDatasetLocation()
           );
         }
       }
@@ -917,9 +918,23 @@ function onBtnClicked(btnId, duplicateArray) {
       //with duplicate files
       var listElements = showItemsAsListBootbox(fileName);
       newList = JSON.stringify(newList).replace(/"/g, "");
+      let titleSwal = "";
+      let htmlSwal = "";
+      let html_word = "";
+      if (tempFile[0].indexOf(".") != -1) {
+        titleSwal = "Duplicate file(s) detected";
+        htmlSwal =
+          "Files with the following names are already in the the current folder: ";
+        html_word = "Files";
+      } else {
+        titleSwal = "Duplicate folder(s) detected";
+        htmlSwal =
+          "Folders with the following names are already in the current folder: ";
+        html_word = "Folders";
+      }
       if (fileName.length > 0) {
         Swal.fire({
-          title: "Duplicate file(s) detected",
+          title: titleSwal,
           icon: "warning",
           showConfirmButton: false,
           allowOutsideClick: false,
@@ -935,15 +950,15 @@ function onBtnClicked(btnId, duplicateArray) {
           html:
             `
           <div class="caption">
-            <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
+            <p>${htmlSwal}<p><ul style="text-align: start;">${listElements}</ul></p></p>
           </div>  
-          <div class="button-container">
+          <div class="swal-button-container">
             <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
             newList +
-            `')">Skip Files</button>
+            `')">Skip ${html_word}</button>
             <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '` +
             newList +
-            `')">Replace Existing Files</button>
+            `')">Replace Existing ${html_word}</button>
             <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '` +
             newList +
             `')">Import Duplicates</button>
@@ -951,7 +966,7 @@ function onBtnClicked(btnId, duplicateArray) {
             </div>`,
         });
       } else {
-        if (tempFile[0].indexOf(".") === -1) {
+        if (tempFile[0].indexOf(".") != -1) {
           toastUpdate.open({
             type: "file_updated",
             message: "Skipped File(s)",
@@ -1204,6 +1219,7 @@ function onBtnClicked(btnId, duplicateArray) {
     Swal.fire({
       title: header,
       html: selectAll,
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         let container = document.getElementById("container");
@@ -1358,9 +1374,29 @@ function addFilesfunction(
             var nonAllowedDuplicate = false;
             //if file already exist in json
             if (fileName === currentLocation["files"][objectKey]["path"]) {
+              console.log(fileName);
+              if (
+                currentLocation["files"][objectKey]["action"].includes(
+                  "renamed"
+                ) === false
+              ) {
+                nonAllowedDuplicateFiles.push(fileName);
+                nonAllowedDuplicate = true;
+                break;
+              }
+            }
+            console.log(path.parse(fileName).base);
+            console.log(fileName in currentLocation["files"]);
+            if (path.parse(fileName).base in currentLocation["files"]) {
               nonAllowedDuplicateFiles.push(fileName);
               nonAllowedDuplicate = true;
               break;
+            } else {
+              var fileBaseName = path.basename(fileName);
+              regularFiles[fileBaseName] = {
+                path: fileName,
+                basename: fileBaseName,
+              };
             }
           }
         }
@@ -1369,22 +1405,8 @@ function addFilesfunction(
           //there was a duplicate with the same name but different path
           //prompt user if they want to allow duplicate
           var j = 1;
-          var fileBaseName = path.basename(fileName);
           var originalFileNameWithoutExt = path.parse(fileBaseName).name;
           var fileNameWithoutExt = originalFileNameWithoutExt;
-
-          while (
-            fileBaseName in uiFilesWithoutExtension ||
-            fileBaseName in regularFiles
-          ) {
-            fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-            fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
-            j++;
-          }
-          regularFiles[fileBaseName] = {
-            path: fileName,
-            basename: fileBaseName,
-          };
         }
       }
     }
@@ -1392,6 +1414,8 @@ function addFilesfunction(
 
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
+  console.log(nonAllowedDuplicateFiles);
+  console.log(regularFiles);
   if (Object.keys(regularFiles).length > 0) {
     for (var element in regularFiles) {
       currentLocation["files"][regularFiles[element]["basename"]] = {
@@ -1424,19 +1448,9 @@ function addFilesfunction(
       );
     }
 
-    // log the success
-    logCurationForAnalytics(
-      "Success",
-      PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      ["Step 3", "Import", "File"],
-      determineDatasetLocation()
-    );
+    console.log("Does anything happen past here?");
   }
   //add sweetalert here before non duplicate files pop
-  //
-  //if (AllowedDuplicateFiles.length > 0) {
-  //}
   var baseName = [];
   for (let element in nonAllowedDuplicateFiles) {
     let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
@@ -1454,9 +1468,27 @@ function addFilesfunction(
 
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
   var listElements = showItemsAsListBootbox(baseName);
+  console.log(baseName);
+  let titleSwal = "";
+  let htmlSwal = "";
+  let html_word = "";
+  if (baseName.length != 0) {
+    if (baseName[0].indexOf(".") != -1) {
+      titleSwal = "Duplicate file(s) detected";
+      htmlSwal =
+        "Files with the following names are already in the the current folder: ";
+      html_word = "Files";
+    } else {
+      titleSwal = "Duplicate folder(s) detected";
+      htmlSwal =
+        "Folders with the following names are already in the current folder: ";
+      html_word = "Folders";
+    }
+  }
+
   if (nonAllowedDuplicateFiles.length > 0) {
     Swal.fire({
-      title: "Duplicate file(s) detected",
+      title: titleSwal,
       icon: "warning",
       showConfirmButton: false,
       allowOutsideClick: false,
@@ -1472,21 +1504,21 @@ function addFilesfunction(
       html:
         `
       <div class="caption">
-        <p>Files with the following names are already in the current folder: <p><ul style="text-align:start;">${listElements}</ul></p></p>
+        <p>${htmlSwal}<p><ul style="text-align:start;">${listElements}</ul></p></p>
       </div>  
-      <div class="button-container">
+      <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
         list +
-        `')">Skip Files</button>
-        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing Files</button>
+        `')">Skip ${html_word}</button>
+        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing ${html_word}</button>
         <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
         <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
         </div>`,
     });
 
-    // log the user error
+    // log the success
     logCurationForAnalytics(
-      "Error",
+      "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE,
       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       ["Step 3", "Import", "File"],
