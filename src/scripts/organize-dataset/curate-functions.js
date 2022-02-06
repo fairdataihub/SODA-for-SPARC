@@ -1386,10 +1386,10 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-      ipcRenderer(
+      ipcRenderer.send(
         "track-event",
         "Succes",
-        "User has succesfully chosen a dataset",
+        "User has successfully chosen a dataset",
         defaultBfDataset
       );
     }, 10);
