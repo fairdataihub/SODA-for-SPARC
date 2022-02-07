@@ -66,7 +66,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   /*create user permissions element and append to all elements
       with guidedDatasetUserPermissions class.*/
   const newUserPermissionElement = $("<div>", {
-    class: "guided--dataset-content-container",
+    class: "guided--dataset-info-content-container",
     style: "width: 100%",
   });
   newUserPermissionElement.attr(
@@ -79,7 +79,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   );
   newUserPermissionElement.append(
     $("<h5>", {
-      class: "guided--dataset-content",
+      class: "guided--dataset-info-content",
       text:
         $("#guided_bf_list_users option:selected").text().trim() +
         " : " +
@@ -90,7 +90,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
     $("<i>", {
       class: "fas fa-user-times guided-delete-permission-user",
       style: "color: red",
-      onclick: `removeUserPermission($(this).closest(".guided--dataset-content-container"))`,
+      onclick: `removeUserPermission($(this).closest(".guided--dataset-info-content-container"))`,
     })
   );
   $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
@@ -110,7 +110,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   guidedTeamPermissions.push(newTeamPermissionObj);
 
   const newTeamPermissionElement = $("<div>", {
-    class: "guided--dataset-content-container",
+    class: "guided--dataset-info-content-container",
     style: "width: 100%",
   });
   newTeamPermissionElement.attr(
@@ -123,7 +123,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   );
   newTeamPermissionElement.append(
     $("<h5>", {
-      class: "guided--dataset-content",
+      class: "guided--dataset-info-content",
       text:
         $("#guided_bf_list_teams option:selected").text().trim() +
         " : " +
@@ -134,7 +134,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
     $("<i>", {
       class: "fas fa-user-times guided-delete-permission-team",
       style: "color: red",
-      onclick: `removeTeamPermission($(this).closest(".guided--dataset-content-container"))`,
+      onclick: `removeTeamPermission($(this).closest(".guided--dataset-info-content-container"))`,
     })
   );
   $(".guidedDatasetTeamPermissions").append(newTeamPermissionElement);
@@ -1317,9 +1317,7 @@ $(document).ready(() => {
       );
     }
   });
-  let current_progression_tab = $("#prepare-dataset-progression-tab");
-  let current_sub_step = $("#guided-basic-description-tab");
-  let current_sub_step_capsule = $("#guided-basic-description-capsule");
+
   //next button click handler
   $("#guided-next-button").on("click", () => {
     if (current_sub_step.attr("id") == "guided-basic-description-tab") {
@@ -1522,21 +1520,16 @@ $(document).ready(() => {
       tabPanel.show();
     }
   });
+  let current_progression_tab = $("#prepare-dataset-progression-tab");
+  let current_sub_step = $("#guided-basic-description-tab");
+  let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
-  const goToTabOnStart = (tabIsd) => {
-    $("#guided_mode_view").click();
-    $("#guided_create_new_bf_dataset_btn").click();
-    $("#guided-dataset-name-input").val("test 2");
-    $("#guided-dataset-subtitle-input").val("lkjasdf");
-    enableProgressButton();
-    for (var i = 1; i <= 100; i++) {
-      if (current_sub_step.attr("id") != tabIsd) {
-        $("#guided-next-button").click();
-      }
-    }
+  const traverseToTab = (targetElementId) => {
+    let targetElement = $(`#${targetElementId}`);
+    console.log(current_progression_tab);
+    console.log(targetElement.parent());
   };
-  //goToTabOnStart("guided-designate-pi-owner-tab");
-
+  traverseToTab("guided-basic-description-tab");
   //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(
     "guided-tagify-submission-milestone-tags"
