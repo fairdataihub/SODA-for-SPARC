@@ -1472,7 +1472,7 @@ function addFilesfunction(
       AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       ["Step 3", "Import", "File"],
       determineDatasetLocation()
-     )
+    );
 
     console.log("Does anything happen past here?");
   }
@@ -1541,7 +1541,6 @@ function addFilesfunction(
         <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
         </div>`,
     });
-
 
     // log the success
     logCurationForAnalytics(
