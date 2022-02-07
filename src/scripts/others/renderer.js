@@ -4227,6 +4227,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               menuHighLevelFolders,
               menuFile
             );
+            console.log(myPath);
           }
         }
       }
@@ -4713,6 +4714,8 @@ function addFoldersfunction(
 ) {
   var uiFolders = {};
   var importedFolders = {};
+  var duplicateFolders = [];
+  var folderPath = [];
 
   if (JSON.stringify(currentLocation["folders"]) !== "{}") {
     for (var folder in currentLocation["folders"]) {
@@ -4763,53 +4766,90 @@ function addFoldersfunction(
           renamedFolderName in uiFolders ||
           renamedFolderName in importedFolders
         ) {
+          //if there is a duplicate folder
+          //we push the folder name and folder path into their appropriate array
+          duplicateFolders.push(renamedFolderName);
+          folderPath.push(folderArray[i]);
           renamedFolderName = `${originalFolderName} (${j})`;
           j++;
         }
-        importedFolders[renamedFolderName] = {
+        var listElements = showItemsAsListBootbox(duplicateFolders);
+        var list = JSON.stringify(folderPath).replace(/"/g, "");
+        if (duplicateFolders.length > 0) {
+          Swal.fire({
+            title: "Duplicate folder(s) detected",
+            icon: "warning",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            showCloseButton: true,
+            customClass: "wide-swal-auto",
+            backdrop: "rgba(0, 0, 0, 0.4)",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate_animated animate_zoomout animate__faster",
+            },
+            html:
+              `
+            <div class="caption">
+              <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
+            </div>  
+            <div class="swal-button-container">
+              <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+              list +
+              `')">Skip Folders</button>
+              <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing Folders</button>
+              <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
+              <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+              </div>`,
+          });
+        }
+        importedFolders[originalFolderName] = {
           path: folderArray[i],
           "original-basename": originalFolderName,
         };
       }
     }
-
-    if (Object.keys(importedFolders).length > 0) {
-      for (var element in importedFolders) {
-        currentLocation["folders"][element] = {
-          type: "local",
-          path: importedFolders[element]["path"],
-          folders: {},
-          files: {},
-          action: ["new"],
-        };
-        populateJSONObjFolder(
-          action,
-          currentLocation["folders"][element],
-          importedFolders[element]["path"]
-        );
-        // check if a folder has to be renamed due to duplicate reason
-        if (element !== importedFolders[element]["original-basename"]) {
-          currentLocation["folders"][element]["action"].push("renamed");
+    if (folderPath.length === 0) {
+      if (Object.keys(importedFolders).length > 0) {
+        for (var element in importedFolders) {
+          currentLocation["folders"][element] = {
+            type: "local",
+            path: importedFolders[element]["path"],
+            folders: {},
+            files: {},
+            action: ["new"],
+          };
+          populateJSONObjFolder(
+            action,
+            currentLocation["folders"][element],
+            importedFolders[element]["path"]
+          );
+          // check if a folder has to be renamed due to duplicate reason
+          if (element !== importedFolders[element]["original-basename"]) {
+            currentLocation["folders"][element]["action"].push("renamed");
+          }
+          var appendString =
+            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+            element +
+            "</div></div>";
+          $("#items").html(appendString);
+          listItems(currentLocation, "#items");
+          getInFolder(
+            ".single-item",
+            "#items",
+            organizeDSglobalPath,
+            datasetStructureJSONObj
+          );
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+          hideMenu(
+            "high-level-folder",
+            menuFolder,
+            menuHighLevelFolders,
+            menuFile
+          );
         }
-        var appendString =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-          element +
-          "</div></div>";
-        $("#items").html(appendString);
-        listItems(currentLocation, "#items");
-        getInFolder(
-          ".single-item",
-          "#items",
-          organizeDSglobalPath,
-          datasetStructureJSONObj
-        );
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-        hideMenu(
-          "high-level-folder",
-          menuFolder,
-          menuHighLevelFolders,
-          menuFile
-        );
       }
 
       // log the success
@@ -4859,7 +4899,10 @@ function drop(ev) {
   }
   for (var i = 0; i < ev.dataTransfer.files.length; i++) {
     var ele = ev.dataTransfer.files[i].path;
-    detectIrregularFolders(path.basename(ele), ele);
+    if (path.basename(ele).indexOf(".") === -1) {
+      console.log(path.basename(ele));
+      detectIrregularFolders(path.basename(ele), ele);
+    }
   }
   var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   if (irregularFolderArray.length > 0) {
@@ -4928,6 +4971,8 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
+  var folderPath = [];
+  var duplicateFolders = [];
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
@@ -5021,6 +5066,8 @@ function dropHelper(
             renamedFolderName in uiFolders ||
             renamedFolderName in importedFolders
           ) {
+            duplicateFolders.push(renamedFolderName);
+            folderPath.push(itemPath);
             renamedFolderName = `${originalFolderName} (${j})`;
             j++;
           }
@@ -5032,22 +5079,81 @@ function dropHelper(
       }
     }
   }
-  if (nonAllowedDuplicateFiles.length > 0) {
-    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
+  var listElements = showItemsAsListBootbox(duplicateFolders);
+  var list = JSON.stringify(folderPath).replace(/"/g, "");
+  if (duplicateFolders.length > 0) {
     Swal.fire({
+      title: "Duplicate folder(s) detected",
       icon: "warning",
-      html:
-        "The following files are already imported into the current location of your dataset: <p><ul>" +
-        listElements +
-        "</ul></p>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      showCloseButton: true,
+      customClass: "wide-swal-auto",
+      backdrop: "rgba(0, 0, 0, 0.4)",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate_animated animate_zoomout animate__faster",
       },
+      html:
+        `
+      <div class="caption">
+        <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
+      </div>  
+      <div class="swal-button-container">
+        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+        list +
+        `')">Skip Folders</button>
+        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing Folders</button>
+        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+        </div>`,
+    });
+  }
+  let baseName = [];
+  if (nonAllowedDuplicateFiles.length > 0) {
+    for (let element in nonAllowedDuplicateFiles) {
+      let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
+      if (lastSlash === 0) {
+        lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("/") + 1;
+      }
+      baseName.push(
+        nonAllowedDuplicateFiles[element].substring(
+          lastSlash,
+          nonAllowedDuplicateFiles[element].length
+        )
+      );
+    }
+    var listElements = showItemsAsListBootbox(baseName);
+    var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+    Swal.fire({
+      title: "Duplicate file(s) detected",
+      icon: "warning",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      showCloseButton: true,
+      customClass: "wide-swal-auto",
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate_animated animate_zoomout animate__faster",
+      },
+      html:
+        `
+      <div class="caption">
+        <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
+      </div>  
+      <div class="swal-button-container">
+        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+        list +
+        `')">Skip Files</button>
+        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing Files</button>
+        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+        </div>`,
     });
   }
   // // now append to UI files and folders
@@ -5085,47 +5191,54 @@ function dropHelper(
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
   }
-  if (Object.keys(importedFolders).length > 0) {
-    for (var element in importedFolders) {
-      myPath["folders"][element] = {
-        type: "local",
-        path: importedFolders[element]["path"],
-        folders: {},
-        files: {},
-        action: ["new"],
-      };
-      // append "renamed" to "action" key if file is auto-renamed by UI
-      var originalName = path.parse(myPath["folders"][element]["path"]).name;
-      let placeholderString =
-        '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
-        element +
-        "... </div></div>";
-      $(placeholderString).appendTo(ev2);
-      // await listItems(myPath, "#items");
-      listItems(myPath, "#items");
-      if (element !== originalName) {
-        myPath["folders"][element]["action"].push("renamed");
+  if (folderPath.length === 0) {
+    if (Object.keys(importedFolders).length > 0) {
+      for (var element in importedFolders) {
+        myPath["folders"][element] = {
+          type: "local",
+          path: importedFolders[element]["path"],
+          folders: {},
+          files: {},
+          action: ["new"],
+        };
+        // append "renamed" to "action" key if file is auto-renamed by UI
+        var originalName = path.parse(myPath["folders"][element]["path"]).name;
+        let placeholderString =
+          '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
+          element +
+          "... </div></div>";
+        $(placeholderString).appendTo(ev2);
+        // await listItems(myPath, "#items");
+        listItems(myPath, "#items");
+        if (element !== originalName) {
+          myPath["folders"][element]["action"].push("renamed");
+        }
+        populateJSONObjFolder(
+          action,
+          myPath["folders"][element],
+          importedFolders[element]["path"]
+        );
+        var appendString =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+          element +
+          "</div></div>";
+        $("#placeholder_element").remove();
+        $(appendString).appendTo(ev2);
+        listItems(myPath, "#items");
+        getInFolder(
+          ".single-item",
+          "#items",
+          organizeDSglobalPath,
+          datasetStructureJSONObj
+        );
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+        hideMenu(
+          "high-level-folder",
+          menuFolder,
+          menuHighLevelFolders,
+          menuFile
+        );
       }
-      populateJSONObjFolder(
-        action,
-        myPath["folders"][element],
-        importedFolders[element]["path"]
-      );
-      var appendString =
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-        element +
-        "</div></div>";
-      $("#placeholder_element").remove();
-      $(appendString).appendTo(ev2);
-      listItems(myPath, "#items");
-      getInFolder(
-        ".single-item",
-        "#items",
-        organizeDSglobalPath,
-        datasetStructureJSONObj
-      );
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
   }
   $("body").removeClass("waiting");
@@ -5626,15 +5739,28 @@ function listItems(jsonObj, uiItem) {
       }
     }
 
-    appendString =
-      appendString +
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-      emptyFolder +
-      '"></h1><div class="folder_desc' +
-      cloud_item +
-      '">' +
-      item +
-      "</div></div>";
+    if (sortedObj["folders"][item]["action"].includes("updated")) {
+      cloud_item = " update-file";
+      appendString =
+        appendString +
+        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+        emptyFolder +
+        '"></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    } else {
+      appendString =
+        appendString +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+        emptyFolder +
+        '"></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    }
   }
   for (var item in sortedObj["files"]) {
     // not the auto-generated manifest
@@ -5707,18 +5833,36 @@ function listItems(jsonObj, uiItem) {
         cloud_item = " local_file_deleted";
       }
     }
-
-    appendString =
-      appendString +
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-      extension +
-      '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-      cloud_item +
-      '">' +
-      item +
-      "</div></div>";
+    if (
+      sortedObj["files"][item]["type"] == "local" &&
+      sortedObj["files"][item]["action"].includes("updated")
+    ) {
+      cloud_item = " update-file";
+      if (deleted_file) {
+        cloud_item = "pennsieve_file_deleted";
+      }
+      appendString =
+        appendString +
+        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+        extension +
+        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    } else {
+      appendString =
+        appendString +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+        extension +
+        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    }
   }
-
+  //console.log(appendString);
   $(uiItem).empty();
   $(uiItem).html(appendString);
 
@@ -6211,7 +6355,7 @@ document
       }
     }
 
-    //  from here you can modify
+    // from here you can modify
     document.getElementById("para-please-wait-new-curate").innerHTML =
       "Please wait...";
     document.getElementById(
