@@ -173,9 +173,24 @@ function checkAirtableStatus(keyword) {
               log.error(err);
               console.log(err);
               $("#current-airtable-account").html("None");
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Prepare Metadata - Add Airtable account - Check Airtable status",
+                "Airtable",
+                1
+              );
+
               airtableRes = [false, ""];
               return airtableRes;
             } else {
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Prepare Metadata - Add Airtable account - Check Airtable status",
+                "Airtable",
+                1
+              );
               $("#current-airtable-account").text(airKeyName);
               var awardSet = new Set(sparcAwards);
               var resultArray = [...awardSet];
@@ -789,7 +804,7 @@ async function generateDDFile(uploadBFBoolean) {
     json_str_study,
     json_str_con,
     json_str_related_info,
-    (error, res) => {
+    async (error, res) => {
       if (error) {
         var emessage = userError(error);
         log.error(error);
@@ -801,11 +816,14 @@ async function generateDDFile(uploadBFBoolean) {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        ipcRenderer.send(
-          "track-event",
+
+        // log the failure to generate the description file to analytics at this step in the Generation process
+        logMetadataForAnalytics(
           "Error",
-          "Prepare Metadata - Create dataset_description",
-          defaultBfDataset
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
         );
       } else {
         if (uploadBFBoolean) {
@@ -815,17 +833,29 @@ async function generateDDFile(uploadBFBoolean) {
           var successMessage =
             "Successfully generated the dataset_description.xlsx file at the specified location.";
         }
+
         Swal.fire({
           title: successMessage,
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        ipcRenderer.send(
-          "track-event",
+
+        // log the successful attempt to generate the description file in analytics at this step in the Generation process
+        logMetadataForAnalytics(
           "Success",
-          "Prepare Metadata - Create dataset_description",
-          defaultBfDataset
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+        );
+
+        // log the size of the metadata file that was generated at varying levels of granularity
+        const size = res;
+        logMetadataSizeForAnalytics(
+          uploadBFBoolean,
+          "dataset_description.xlsx",
+          size
         );
       }
     }
@@ -1858,7 +1888,7 @@ function showAddAirtableAccountSweetalert(keyword) {
     reverseButtons: reverseSwalButtons,
     customClass: "swal-wide",
     footer:
-      "<a href='https://fairdataihub.org/sodaforsparc/docs/prepare-metadata/Connect-your-Airtable-account-with-SODA' target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
+      "<a href='https://docs.sodaforsparc.io/docs/prepare-metadata/connect-your-airtable-account-with-soda' target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
     },
@@ -2128,7 +2158,8 @@ function addAirtableAccountInsideSweetalert(keyword) {
               "track-event",
               "Success",
               "Prepare Metadata - Add Airtable account",
-              defaultBfAccount
+              "Airtable",
+              1
             );
           } else if (res.statusCode === 403) {
             $("#current-airtable-account").html("None");
@@ -2149,7 +2180,8 @@ function addAirtableAccountInsideSweetalert(keyword) {
               "track-event",
               "Error",
               "Prepare Metadata - Add Airtable account",
-              defaultBfAccount
+              "Airtable",
+              1
             );
             Swal.fire({
               icon: "error",
@@ -2169,7 +2201,8 @@ function addAirtableAccountInsideSweetalert(keyword) {
               "track-event",
               "Error",
               "Prepare Metadata - Add Airtable account",
-              defaultBfAccount
+              "Airtable",
+              1
             );
             Swal.fire({
               icon: "error",
@@ -2256,8 +2289,26 @@ function checkBFImportDD() {
           icon: "error",
           html: emessage,
         });
+
+        // log the error to analytics at all levels of granularity
+        logMetadataForAnalytics(
+          "Error",
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.PENNSIEVE
+        );
       } else {
         loadDDFileToUI(res, "bf");
+
+        // log the import action success to analytics
+        logMetadataForAnalytics(
+          "Success",
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          "Existing",
+          Destinations.PENNSIEVE
+        );
       }
     }
   );
@@ -2285,8 +2336,25 @@ function loadDDfileDataframe(filePath) {
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
         });
+
+        // log the import action failure to analytics
+        logMetadataForAnalytics(
+          "Error",
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.LOCAL
+        );
       } else {
         loadDDFileToUI(res, "local");
+        // log the import action success to analytics
+        logMetadataForAnalytics(
+          "Success",
+          MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          "Existing",
+          Destinations.LOCAL
+        );
       }
     }
   );
