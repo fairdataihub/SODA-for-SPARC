@@ -1332,33 +1332,31 @@ function addFilesfunction(
   singleUIItem,
   globalPathValue
 ) {
+  // check for duplicate or files with the same name
+  var nonAllowedDuplicateFiles = [];
+  var regularFiles = {};
+  var uiFilesWithoutExtension = {};
 
+  for (var file in currentLocation["files"]) {
+    uiFilesWithoutExtension[path.parse(file).base] = 1;
+    //use uiFilesWithoutExtension to compare names
+    //if names and path are the same it is nonallowed
+    //if just name is the same
+  }
+  //gets files already placed and puts into json
 
-   // check for duplicate or files with the same name
-   var nonAllowedDuplicateFiles = [];
-   var regularFiles = {};
-   var uiFilesWithoutExtension = {};
- 
-   for (var file in currentLocation["files"]) {
-     uiFilesWithoutExtension[path.parse(file).base] = 1;
-     //use uiFilesWithoutExtension to compare names
-     //if names and path are the same it is nonallowed
-     //if just name is the same
-   }
-   //gets files already placed and puts into json
- 
-   for (var i = 0; i < fileArray.length; i++) {
-     var fileName = fileArray[i];
-     // check if dataset structure level is at high level folder
-     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-     if (slashCount === 1) {
-       Swal.fire({
-         icon: "error",
-         html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-         heightAuto: false,
-         backdrop: "rgba(0,0,0, 0.4)",
-       });
-       // log the error
+  for (var i = 0; i < fileArray.length; i++) {
+    var fileName = fileArray[i];
+    // check if dataset structure level is at high level folder
+    var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+    if (slashCount === 1) {
+      Swal.fire({
+        icon: "error",
+        html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+      // log the error
       logCurationForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
@@ -1366,63 +1364,63 @@ function addFilesfunction(
         ["Step 3", "Import", "File"],
         determineDatasetLocation()
       );
-       break;
-     } else {
-       if (
-         JSON.stringify(currentLocation["files"]) === "{}" &&
-         JSON.stringify(regularFiles) === "{}"
-       ) {
-         //regular files object key with path, and basename
-         regularFiles[path.parse(fileName).base] = {
-           path: fileName,
-           basename: path.parse(fileName).base,
-         };
-       } else {
-        var fileBaseName; 
-         for (var objectKey in currentLocation["files"]) {
-           //tries finding duplicates with the same path
-           if (objectKey !== undefined) {
-             var nonAllowedDuplicate = false;
-             //if file already exist in json
-             if (fileName === currentLocation["files"][objectKey]["path"]) {
-               console.log(fileName);
-               if (
-                 currentLocation["files"][objectKey]["action"].includes(
-                   "renamed"
-                 ) === false
-               ) {
-                 nonAllowedDuplicateFiles.push(fileName);
-                 nonAllowedDuplicate = true;
-                 break;
-               }
-             }
-             console.log(path.parse(fileName).base);
-             console.log(fileName in currentLocation["files"]);
-             if (path.parse(fileName).base in currentLocation["files"]) {
-               nonAllowedDuplicateFiles.push(fileName);
-               nonAllowedDuplicate = true;
-               break;
-             } else {
-               fileBaseName = path.basename(fileName);
-               regularFiles[fileBaseName] = {
-                 path: fileName,
-                 basename: fileBaseName,
-               };
-             }
-           }
-         }
- 
-         if (!nonAllowedDuplicate) {
-           //there was a duplicate with the same name but different path
-           //prompt user if they want to allow duplicate
-           var j = 1;
-           console.log(fileBaseName)
-           var originalFileNameWithoutExt = path.parse(fileBaseName).name;
-           var fileNameWithoutExt = originalFileNameWithoutExt;
-         }
-       }
-     }
-   }
+      break;
+    } else {
+      if (
+        JSON.stringify(currentLocation["files"]) === "{}" &&
+        JSON.stringify(regularFiles) === "{}"
+      ) {
+        //regular files object key with path, and basename
+        regularFiles[path.parse(fileName).base] = {
+          path: fileName,
+          basename: path.parse(fileName).base,
+        };
+      } else {
+        var fileBaseName;
+        for (var objectKey in currentLocation["files"]) {
+          //tries finding duplicates with the same path
+          if (objectKey !== undefined) {
+            var nonAllowedDuplicate = false;
+            //if file already exist in json
+            if (fileName === currentLocation["files"][objectKey]["path"]) {
+              console.log(fileName);
+              if (
+                currentLocation["files"][objectKey]["action"].includes(
+                  "renamed"
+                ) === false
+              ) {
+                nonAllowedDuplicateFiles.push(fileName);
+                nonAllowedDuplicate = true;
+                break;
+              }
+            }
+            console.log(path.parse(fileName).base);
+            console.log(fileName in currentLocation["files"]);
+            if (path.parse(fileName).base in currentLocation["files"]) {
+              nonAllowedDuplicateFiles.push(fileName);
+              nonAllowedDuplicate = true;
+              break;
+            } else {
+              fileBaseName = path.basename(fileName);
+              regularFiles[fileBaseName] = {
+                path: fileName,
+                basename: fileBaseName,
+              };
+            }
+          }
+        }
+
+        if (!nonAllowedDuplicate) {
+          //there was a duplicate with the same name but different path
+          //prompt user if they want to allow duplicate
+          var j = 1;
+          console.log(fileBaseName);
+          var originalFileNameWithoutExt = path.parse(fileBaseName).name;
+          var fileNameWithoutExt = originalFileNameWithoutExt;
+        }
+      }
+    }
+  }
 
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
