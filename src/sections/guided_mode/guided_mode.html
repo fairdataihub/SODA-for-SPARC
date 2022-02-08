@@ -3,219 +3,229 @@
   <section
     id="guided_mode-section"
     class="section js-section u-category-windows"
-    style="padding-left: 30px; overflow-y: hidden"
+    style="padding-left: 15px; overflow-y: hidden"
   >
-    <header class="section-header">
-      <div
-        style="
-          display: inline-flex;
-          align-items: center;
-          flex-direction: row;
-          width: 94.5%;
-          padding-right: 20px;
-          margin-bottom: 30px;
-        "
-      >
-        <div
-          style="
-            width: 100%;
-            border-bottom: 3px solid #b80d49;
-            margin-bottom: -5px;
-          "
-        >
-          <div class="need-help-div">
-            <h2>Guided mode</h2>
-          </div>
-        </div>
-      </div>
-    </header>
     <div
       class="main-tabs show"
       id="guided-mode-tab"
       style="display: flex; height: 100%; overflow-y: hidden"
     >
-      <div id="guided-mode-container" class="guided--container flex">
-        <div class="guided--progress-container">
-          <button
-            style="margin-top: 5px; margin-bottom: 40px"
-            class="content-button"
-            id="guided_create_new_bf_dataset_btn"
-            data-section="guided_curate_new_dataset"
+      <header class="guided--header">
+        <div class="guided--progression-tab-container">
+          <div
+            class="
+              guided--progression-tab guided--progression-tab-triangle
+              selected-tab
+            "
+            id="prepare-dataset-progression-tab"
           >
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 46 52"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M17.8065 28.7678H2.54378C1.86913 28.7678 1.22211 29.0624 0.745056 29.5868C0.268004 30.1112 0 30.8224 0 31.564V48.3413C0 49.0829 0.268004 49.7941 0.745056 50.3185C1.22211 50.8429 1.86913 51.1375 2.54378 51.1375H17.8065C18.4811 51.1375 19.1281 50.8429 19.6052 50.3185C20.0822 49.7941 20.3502 49.0829 20.3502 48.3413V31.564C20.3502 30.8224 20.0822 30.1112 19.6052 29.5868C19.1281 29.0624 18.4811 28.7678 17.8065 28.7678ZM15.2627 45.5451H5.08756V34.3602H15.2627V45.5451Z"
-                fill="#565E6B"
-                stroke-width="10"
-              />
-              <path
-                d=" M43.2442 0.805664H27.9816C27.3069 0.805664 26.6599 1.10026 26.1828 1.62466C25.7058 2.14905 25.4378 2.86027 25.4378 3.60188V20.3792C25.4378 21.1208 25.7058 21.832 26.1828 22.3564C26.6599 22.8808 27.3069 23.1754 27.9816 23.1754H43.2442C43.9189 23.1754 44.5659 22.8808 45.043 22.3564C45.52 21.832 45.788 21.1208 45.788 20.3792V3.60188C45.788 2.86027 45.52 2.14905 45.043 1.62466C44.5659 1.10026 43.9189 0.805664 43.2442 0.805664ZM40.7005 17.5829H30.5253V6.39809H40.7005V17.5829Z"
-                fill="#565E6B"
-                stroke-width="10"
-              />
-              <path
-                d=" M43.2442 37.1564H38.1567V31.564C38.1567 30.8224 37.8887 30.1112 37.4116 29.5868C36.9346 29.0624 36.2876 28.7678 35.6129 28.7678C34.9383 28.7678 34.2912 29.0624 33.8142 29.5868C33.3371 30.1112 33.0691 30.8224 33.0691 31.564V37.1564H27.9816C27.3069 37.1564 26.6599 37.451 26.1828 37.9754C25.7058 38.4998 25.4378 39.211 25.4378 39.9526C25.4378 40.6942 25.7058 41.4055 26.1828 41.9299C26.6599 42.4543 27.3069 42.7489 27.9816 42.7489H33.0691V48.3413C33.0691 49.0829 33.3371 49.7941 33.8142 50.3185C34.2912 50.8429 34.9383 51.1375 35.6129 51.1375C36.2876 51.1375 36.9346 50.8429 37.4116 50.3185C37.8887 49.7941 38.1567 49.0829 38.1567 48.3413V42.7489H43.2442C43.9189 42.7489 44.5659 42.4543 45.043 41.9299C45.52 41.4055 45.788 40.6942 45.788 39.9526C45.788 39.211 45.52 38.4998 45.043 37.9754C44.5659 37.451 43.9189 37.1564 43.2442 37.1564Z "
-                fill="#13716D"
-                stroke-width="10"
-              />
-              <path
-                d="M17.8065 0.805664H2.54378C1.86913 0.805664 1.22211 1.10026 0.745056 1.62466C0.268004 2.14905 0 2.86027 0 3.60188V20.3792C0 21.1208 0.268004 21.832 0.745056 22.3564C1.22211 22.8808 1.86913 23.1754 2.54378 23.1754H17.8065C18.4811 23.1754 19.1281 22.8808 19.6052 22.3564C20.0822 21.832 20.3502 21.1208 20.3502 20.3792V3.60188C20.3502 2.86027 20.0822 2.14905 19.6052 1.62466C19.1281 1.10026 18.4811 0.805664 17.8065 0.805664ZM15.2627 17.5829H5.08756V6.39809H15.2627V17.5829Z"
-                fill="#565E6B"
-              />
-            </svg>
-            <h2>Curate a new dataset</h2>
-          </button>
+            <div class="guided--progression-tab-content">
+              <span class="dot">1</span>
+              <div class="guided--progression-tab-labels">
+                <h1 class="guided--progression-tab-label-main">
+                  Specify data files
+                </h1>
+                <h2 class="guided--progression-tab-label-sub">
+                  Dataset description
+                </h2>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="guided--prompt-centered">
-          <label class="guided--prompt-text"
-            >Continue curating a previously started dataset:</label
-          >
-        </div>
+      </header>
 
-        <div class="guided--datasets-container">
-          <div class="guided--dataset-card">
-            <div class="guided--container-dataset-card-center">
-              <img
-                src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-                alt="tree"
-                style="height: 60px; width: 60px"
-              />
-              <div class="guided--dataset-card-title">
-                <h1 class="guided--text-dataset-card">Dataset A</h1>
-                <h2 class="guided--text-dataset-card-sub">
-                  Dataset A subtitle
-                </h2>
-              </div>
-            </div>
-            <div class="guided--dataset-card-body">
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">Jon R</h1>
-                <h2 class="guided--text-dataset-card-sub">Owner</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">259 GB</h1>
-                <h2 class="guided--text-dataset-card-sub">Size</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">Jan. 27, 2021</h1>
-                <h2 class="guided--text-dataset-card-sub">Last modified</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">In progress</h1>
-                <h2 class="guided--text-dataset-card-sub">Curation status</h2>
-              </div>
-            </div>
-            <div class="guided--container-dataset-card-center">
-              <button
-                class="ui positive button guided--button-footer"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 160px !important;
-                  margin: 10px;
-                "
+      <div class="guided--body">
+        <div
+          id="prepare-pennsieve-metadata-parent-tab"
+          class="guided--parent-tab"
+        >
+          <div class="guided--panel">
+            <button
+              style="margin-top: 5px; margin-bottom: 40px"
+              class="content-button"
+              id="guided_create_new_bf_dataset_btn"
+              data-section="guided_curate_new_dataset"
+            >
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 46 52"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                Continue curation
-              </button>
-            </div>
-            <!--<div class="overlay"><div class="text">Hello World!</div></div>-->
-          </div>
-          <div class="guided--dataset-card">
-            <div class="guided--container-dataset-card-center">
-              <img
-                src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-                alt="tree"
-                style="height: 60px; width: 60px"
-              />
-              <div class="guided--dataset-card-title">
-                <h1 class="guided--text-dataset-card">Dataset B</h1>
-                <h2 class="guided--text-dataset-card-sub">
-                  Dataset B subtitle
-                </h2>
-              </div>
-            </div>
-            <div class="guided--dataset-card-body">
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">Jon R</h1>
-                <h2 class="guided--text-dataset-card-sub">Owner</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">259 GB</h1>
-                <h2 class="guided--text-dataset-card-sub">Size</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">Jan. 27, 2021</h1>
-                <h2 class="guided--text-dataset-card-sub">Last modified</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">In progress</h1>
-                <h2 class="guided--text-dataset-card-sub">Curation status</h2>
-              </div>
-            </div>
-            <div class="guided--container-dataset-card-center">
-              <button
-                class="ui positive button guided--button-footer"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 160px !important;
-                  margin: 10px;
-                "
+                <path
+                  d="M17.8065 28.7678H2.54378C1.86913 28.7678 1.22211 29.0624 0.745056 29.5868C0.268004 30.1112 0 30.8224 0 31.564V48.3413C0 49.0829 0.268004 49.7941 0.745056 50.3185C1.22211 50.8429 1.86913 51.1375 2.54378 51.1375H17.8065C18.4811 51.1375 19.1281 50.8429 19.6052 50.3185C20.0822 49.7941 20.3502 49.0829 20.3502 48.3413V31.564C20.3502 30.8224 20.0822 30.1112 19.6052 29.5868C19.1281 29.0624 18.4811 28.7678 17.8065 28.7678ZM15.2627 45.5451H5.08756V34.3602H15.2627V45.5451Z"
+                  fill="#565E6B"
+                  stroke-width="10"
+                />
+                <path
+                  d=" M43.2442 0.805664H27.9816C27.3069 0.805664 26.6599 1.10026 26.1828 1.62466C25.7058 2.14905 25.4378 2.86027 25.4378 3.60188V20.3792C25.4378 21.1208 25.7058 21.832 26.1828 22.3564C26.6599 22.8808 27.3069 23.1754 27.9816 23.1754H43.2442C43.9189 23.1754 44.5659 22.8808 45.043 22.3564C45.52 21.832 45.788 21.1208 45.788 20.3792V3.60188C45.788 2.86027 45.52 2.14905 45.043 1.62466C44.5659 1.10026 43.9189 0.805664 43.2442 0.805664ZM40.7005 17.5829H30.5253V6.39809H40.7005V17.5829Z"
+                  fill="#565E6B"
+                  stroke-width="10"
+                />
+                <path
+                  d=" M43.2442 37.1564H38.1567V31.564C38.1567 30.8224 37.8887 30.1112 37.4116 29.5868C36.9346 29.0624 36.2876 28.7678 35.6129 28.7678C34.9383 28.7678 34.2912 29.0624 33.8142 29.5868C33.3371 30.1112 33.0691 30.8224 33.0691 31.564V37.1564H27.9816C27.3069 37.1564 26.6599 37.451 26.1828 37.9754C25.7058 38.4998 25.4378 39.211 25.4378 39.9526C25.4378 40.6942 25.7058 41.4055 26.1828 41.9299C26.6599 42.4543 27.3069 42.7489 27.9816 42.7489H33.0691V48.3413C33.0691 49.0829 33.3371 49.7941 33.8142 50.3185C34.2912 50.8429 34.9383 51.1375 35.6129 51.1375C36.2876 51.1375 36.9346 50.8429 37.4116 50.3185C37.8887 49.7941 38.1567 49.0829 38.1567 48.3413V42.7489H43.2442C43.9189 42.7489 44.5659 42.4543 45.043 41.9299C45.52 41.4055 45.788 40.6942 45.788 39.9526C45.788 39.211 45.52 38.4998 45.043 37.9754C44.5659 37.451 43.9189 37.1564 43.2442 37.1564Z "
+                  fill="#13716D"
+                  stroke-width="10"
+                />
+                <path
+                  d="M17.8065 0.805664H2.54378C1.86913 0.805664 1.22211 1.10026 0.745056 1.62466C0.268004 2.14905 0 2.86027 0 3.60188V20.3792C0 21.1208 0.268004 21.832 0.745056 22.3564C1.22211 22.8808 1.86913 23.1754 2.54378 23.1754H17.8065C18.4811 23.1754 19.1281 22.8808 19.6052 22.3564C20.0822 21.832 20.3502 21.1208 20.3502 20.3792V3.60188C20.3502 2.86027 20.0822 2.14905 19.6052 1.62466C19.1281 1.10026 18.4811 0.805664 17.8065 0.805664ZM15.2627 17.5829H5.08756V6.39809H15.2627V17.5829Z"
+                  fill="#565E6B"
+                />
+              </svg>
+              <h2>Curate a new dataset</h2>
+            </button>
+            <div class="guided--prompt-centered">
+              <label class="guided--prompt-text"
+                >Continue curating a previously started dataset:</label
               >
-                Continue curation
-              </button>
             </div>
-            <!--<div class="overlay"><div class="text">Hello World!</div></div>-->
-          </div>
-          <div class="guided--dataset-card">
-            <div class="guided--container-dataset-card-center">
-              <img
-                src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-                alt="tree"
-                style="height: 60px; width: 60px"
-              />
-              <div class="guided--dataset-card-title">
-                <h1 class="guided--text-dataset-card">Dataset C</h1>
-                <h2 class="guided--text-dataset-card-sub">
-                  Dataset C subtitle
-                </h2>
+            <div class="guided--datasets-container">
+              <div class="guided--dataset-card">
+                <div class="guided--container-dataset-card-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+                    alt="tree"
+                    style="height: 60px; width: 60px"
+                  />
+                  <div class="guided--dataset-card-title">
+                    <h1 class="guided--text-dataset-card">Dataset A</h1>
+                    <h2 class="guided--text-dataset-card-sub">
+                      Dataset A subtitle
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--dataset-card-body">
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jon R</h1>
+                    <h2 class="guided--text-dataset-card-sub">Owner</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">259 GB</h1>
+                    <h2 class="guided--text-dataset-card-sub">Size</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jan. 27, 2021</h1>
+                    <h2 class="guided--text-dataset-card-sub">Last modified</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">In progress</h1>
+                    <h2 class="guided--text-dataset-card-sub">
+                      Curation status
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--container-dataset-card-center">
+                  <button
+                    class="ui positive button guided--button-footer"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      width: 160px !important;
+                      margin: 10px;
+                    "
+                  >
+                    Continue curation
+                  </button>
+                </div>
+                <!--<div class="overlay"><div class="text">Hello World!</div></div>-->
+              </div>
+              <div class="guided--dataset-card">
+                <div class="guided--container-dataset-card-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+                    alt="tree"
+                    style="height: 60px; width: 60px"
+                  />
+                  <div class="guided--dataset-card-title">
+                    <h1 class="guided--text-dataset-card">Dataset B</h1>
+                    <h2 class="guided--text-dataset-card-sub">
+                      Dataset B subtitle
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--dataset-card-body">
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jon R</h1>
+                    <h2 class="guided--text-dataset-card-sub">Owner</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">259 GB</h1>
+                    <h2 class="guided--text-dataset-card-sub">Size</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jan. 27, 2021</h1>
+                    <h2 class="guided--text-dataset-card-sub">Last modified</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">In progress</h1>
+                    <h2 class="guided--text-dataset-card-sub">
+                      Curation status
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--container-dataset-card-center">
+                  <button
+                    class="ui positive button guided--button-footer"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      width: 160px !important;
+                      margin: 10px;
+                    "
+                  >
+                    Continue curation
+                  </button>
+                </div>
+                <!--<div class="overlay"><div class="text">Hello World!</div></div>-->
+              </div>
+              <div class="guided--dataset-card">
+                <div class="guided--container-dataset-card-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+                    alt="tree"
+                    style="height: 60px; width: 60px"
+                  />
+                  <div class="guided--dataset-card-title">
+                    <h1 class="guided--text-dataset-card">Dataset C</h1>
+                    <h2 class="guided--text-dataset-card-sub">
+                      Dataset C subtitle
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--dataset-card-body">
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jon R</h1>
+                    <h2 class="guided--text-dataset-card-sub">Owner</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">259 GB</h1>
+                    <h2 class="guided--text-dataset-card-sub">Size</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jan. 27, 2021</h1>
+                    <h2 class="guided--text-dataset-card-sub">Last modified</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">In progress</h1>
+                    <h2 class="guided--text-dataset-card-sub">
+                      Curation status
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--container-dataset-card-center">
+                  <button
+                    class="ui positive button guided--button-footer"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      width: 160px !important;
+                      margin: 10px;
+                    "
+                  >
+                    Continue curation
+                  </button>
+                </div>
+                <!--<div class="overlay"><div class="text">Hello World!</div></div>-->
               </div>
             </div>
-            <div class="guided--dataset-card-body">
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">Jon R</h1>
-                <h2 class="guided--text-dataset-card-sub">Owner</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">259 GB</h1>
-                <h2 class="guided--text-dataset-card-sub">Size</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">Jan. 27, 2021</h1>
-                <h2 class="guided--text-dataset-card-sub">Last modified</h2>
-              </div>
-              <div class="guided--dataset-card-item">
-                <h1 class="guided--text-dataset-card">In progress</h1>
-                <h2 class="guided--text-dataset-card-sub">Curation status</h2>
-              </div>
-            </div>
-            <div class="guided--container-dataset-card-center">
-              <button
-                class="ui positive button guided--button-footer"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 160px !important;
-                  margin: 10px;
-                "
-              >
-                Continue curation
-              </button>
-            </div>
-            <!--<div class="overlay"><div class="text">Hello World!</div></div>-->
           </div>
         </div>
       </div>
