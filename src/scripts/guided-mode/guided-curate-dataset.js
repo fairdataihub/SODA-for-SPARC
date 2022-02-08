@@ -66,7 +66,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   /*create user permissions element and append to all elements
       with guidedDatasetUserPermissions class.*/
   const newUserPermissionElement = $("<div>", {
-    class: "guided--dataset-info-content-container",
+    class: "guided--dataset-content-container",
     style: "width: 100%",
   });
   newUserPermissionElement.attr(
@@ -79,7 +79,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   );
   newUserPermissionElement.append(
     $("<h5>", {
-      class: "guided--dataset-info-content",
+      class: "guided--dataset-content",
       text:
         $("#guided_bf_list_users option:selected").text().trim() +
         " : " +
@@ -90,7 +90,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
     $("<i>", {
       class: "fas fa-user-times guided-delete-permission-user",
       style: "color: red",
-      onclick: `removeUserPermission($(this).closest(".guided--dataset-info-content-container"))`,
+      onclick: `removeUserPermission($(this).closest(".guided--dataset-content-container"))`,
     })
   );
   $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
@@ -110,7 +110,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   guidedTeamPermissions.push(newTeamPermissionObj);
 
   const newTeamPermissionElement = $("<div>", {
-    class: "guided--dataset-info-content-container",
+    class: "guided--dataset-content-container",
     style: "width: 100%",
   });
   newTeamPermissionElement.attr(
@@ -123,7 +123,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   );
   newTeamPermissionElement.append(
     $("<h5>", {
-      class: "guided--dataset-info-content",
+      class: "guided--dataset-content",
       text:
         $("#guided_bf_list_teams option:selected").text().trim() +
         " : " +
@@ -134,7 +134,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
     $("<i>", {
       class: "fas fa-user-times guided-delete-permission-team",
       style: "color: red",
-      onclick: `removeTeamPermission($(this).closest(".guided--dataset-info-content-container"))`,
+      onclick: `removeTeamPermission($(this).closest(".guided--dataset-content-container"))`,
     })
   );
   $(".guidedDatasetTeamPermissions").append(newTeamPermissionElement);
@@ -1041,9 +1041,7 @@ $(document).ready(() => {
     let guidedBfAccount = defaultBfAccount;
     let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
-    //let guidedPiOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
     let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-    //let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
       sodaJSONObj["digital-metadata"]["data-collection"];
@@ -1391,7 +1389,7 @@ $(document).ready(() => {
       sodaJSONObj["digital-metadata"]["user-permissions"] =
         guidedUserPermissions;
       sodaJSONObj["digital-metadata"]["team-permissions"] =
-        guidedUserPermissions;
+        guidedTeamPermissions;
     }
 
     if (current_sub_step.attr("id") == "guided-dataset-generation-tab") {

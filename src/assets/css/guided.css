@@ -376,7 +376,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   padding: 0px 15px;
@@ -395,42 +395,28 @@
 }
 
 .guided--dataset-card {
-  margin: 44px;
-  background-color: transparent;
-  width: 300px;
-  height: 300px;
-  perspective: 1000px;
-}
-
-.guided--dataset-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-
-.guided--dataset-card:hover .guided--dataset-card-inner {
-  transform: rotateY(180deg);
-}
-
-.guided--dataset-card-front,
-.guided--dataset-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+  width: 30%;
+  border: none;
+  border-radius: 5px;
   box-shadow: 0px 0px 10px #d5d5d5;
+  margin: 5px;
+  padding: 5px;
 }
-
-.guided--dataset-card-front {
+.guided--dataset-card-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 5px;
 }
-
-.guided--dataset-card-back {
-  transform: rotateY(180deg);
+.guided--dataset-card-head {
+  display: flex;
+  flex-direction: row;
+}
+.guided--dataset-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 200px;
 }
 
 .grow {
@@ -504,11 +490,6 @@
   flex-direction: column;
 }
 
-.guided--option-card {
-  height: 170px;
-  width: 150px;
-}
-
 .guided--folder-card-container {
   width: 600px;
   display: flex;
@@ -516,48 +497,6 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-}
-
-.guided--card-head {
-  padding-top: 0;
-  font-size: 11px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-
-.guided--card-head h2 {
-  color: #000;
-  font-size: 14px;
-  padding-top: 5px;
-}
-
-.guided--card-head i {
-  color: orange;
-  opacity: 0.7;
-  font-size: 19px;
-  margin: 5px;
-}
-
-.guided--container-modify {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 450px;
-  box-shadow: 0px 0px 10px #d5d5d5;
-  padding: 15px 25px;
-  border-radius: 5px;
-}
-
-.guided--container-metadata {
-  width: 60%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
 }
 
 .guided--capsule-container {
