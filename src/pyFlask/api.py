@@ -21,14 +21,6 @@ class DequeEncoder(JSONEncoder):
           return list(obj)
        return JSONEncoder.default(self, obj)
 
-#PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
-#root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
-#datasets = list(root.children)
-# ds_location = Path(userpath +  "\\Desktop\\Pennsieve-dataset-206-version-1\\files")
-# print(ds_location)
-
-#blob = validate(path)
-
 app = Flask(__name__)
 
 @app.route("/")
