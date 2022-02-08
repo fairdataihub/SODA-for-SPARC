@@ -58,6 +58,7 @@ $(document).ready(function () {
     core: {
       check_callback: true,
       data: {},
+      dblclick_toggle: false,
     },
     plugins: ["types"],
     types: {
@@ -1097,7 +1098,7 @@ function loadDSTreePreviewManifest(datasetStructure) {
   addManifestFilesForTreeView();
   showTreeViewPreviewManifestEdits(
     false,
-    false,
+    true,
     false,
     "My_dataset_structure",
     jstreePreviewManifest,
@@ -1119,10 +1120,8 @@ function showTreeViewPreviewManifestEdits(
     "folder",
     "",
     true,
-    selectedBoolean,
-    disabledBoolean,
-    "",
-    "preview"
+    true,
+    false,
   );
   $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
   $(previewDiv).jstree(true).refresh();
@@ -1136,8 +1135,6 @@ function createChildNodeManifest(
   openedState,
   selectedState,
   disabledState,
-  selectedOriginalLocation,
-  viewOptions
 ) {
   /*
     oldFormatNode: node in the format under "dataset-structure" key in SODA object
@@ -1145,9 +1142,8 @@ function createChildNodeManifest(
     type: "folder" or "file"
     ext: track ext of files to match with the right CSS icons
     openedState, selectedState: states of a jstree node
-    selectedOriginalLocation: current folder of selected items
     */
-  selectedOriginalLocation = "";
+
   var newFormatNode = {
     text: nodeName,
     state: {
@@ -1160,78 +1156,71 @@ function createChildNodeManifest(
   };
   if (oldFormatNode) {
     for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-      if (key === selectedOriginalLocation) {
-        newFormatNode.state.selected = true;
-        newFormatNode.state.opened = true;
-        var new_node = createChildNodeManifest(
-          value,
-          key,
-          "folder",
-          "",
-          true,
-          true,
-          true,
-          selectedOriginalLocation,
-          viewOptions
-        );
-      } else {
-        var new_node = createChildNodeManifest(
-          value,
-          key,
-          "folder",
-          "",
-          false,
-          false,
-          false,
-          selectedOriginalLocation,
-          viewOptions
-        );
+      let disabled = true;
+      let opened = false;
+      let selected = false;
+      if (highLevelFolders.includes(nodeName) || nodeName === "My_dataset_structure") {
+        opened = true;
+        selected = true;
+        disabled = false;
       }
+      newFormatNode.state.selected = selected;
+      newFormatNode.state.opened = opened;
+      newFormatNode.state.disabled = disabled;
+      var new_node = createChildNodeManifest(
+        value,
+        key,
+        "folder",
+        "",
+        opened,
+        selected,
+        disabled,
+      );
       newFormatNode["children"].push(new_node);
       newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
     }
-  }
-  if ("files" in oldFormatNode) {
-    if (oldFormatNode["files"] != undefined) {
-      for (var [key, value] of Object.entries(oldFormatNode["files"])) {
-        if (key !== undefined || value !== undefined) {
-          if (
-            [
-              ".png",
-              ".PNG",
-              ".xls",
-              ".xlsx",
-              ".pdf",
-              ".txt",
-              ".jpeg",
-              ".JPEG",
-              ".csv",
-              ".CSV",
-              ".DOC",
-              ".DOCX",
-              ".doc",
-              ".docx",
-            ].includes(path.parse(key).ext)
-          ) {
-            nodeType = "file " + path.parse(key).ext.slice(1);
-          } else {
-            nodeType = "file other";
+    if ("files" in oldFormatNode) {
+      if (oldFormatNode["files"] != undefined) {
+        for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+          if (key !== undefined || value !== undefined) {
+            if (
+              [
+                ".png",
+                ".PNG",
+                ".xls",
+                ".xlsx",
+                ".pdf",
+                ".txt",
+                ".jpeg",
+                ".JPEG",
+                ".csv",
+                ".CSV",
+                ".DOC",
+                ".DOCX",
+                ".doc",
+                ".docx",
+              ].includes(path.parse(key).ext)
+            ) {
+              nodeType = "file " + path.parse(key).ext.slice(1);
+            } else {
+              nodeType = "file other";
+            }
+            if (key === "manifest.xlsx") {
+              var new_node = {
+                text: key,
+                state: { disabled: false },
+                type: nodeType,
+              };
+            } else {
+              var new_node = {
+                text: key,
+                state: { disabled: true },
+                type: nodeType,
+              };
+            }
+            newFormatNode["children"].push(new_node);
+            newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
           }
-          if (key === "manifest.xlsx") {
-            var new_node = {
-              text: key,
-              state: { disabled: false },
-              type: nodeType,
-            };
-          } else {
-            var new_node = {
-              text: key,
-              state: { disabled: true },
-              type: nodeType,
-            };
-          }
-          newFormatNode["children"].push(new_node);
-          newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
         }
       }
     }
