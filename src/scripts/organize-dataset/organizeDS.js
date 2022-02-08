@@ -742,6 +742,14 @@ function checkSubArrayBool(parentArray, childArray) {
   return bool;
 }
 
+function animate_updatedFiles() {
+  let updated_docs = document.getElementsByClassName("update-file");
+
+  for (let i = 0; i < updated_docs.length; i++) {
+    $(updated_docs[i].parentElement).addClass("backgroundAnimate");
+  }
+}
+
 function showItemsAsListBootbox(arrayOfItems) {
   var htmlElement = "";
   let i = 0;
@@ -1308,6 +1316,10 @@ function onBtnClicked(btnId, duplicateArray) {
           folders[i].parentNode.dispatchEvent(new Event("dblclick"));
         }
       }
+
+      animate_updatedFiles();
+
+      //add glowing effect here after page is refreshed
       if (removeExt === -1) {
         toastUpdate.open({
           type: "file_updated",
