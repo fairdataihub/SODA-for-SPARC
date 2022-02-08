@@ -496,6 +496,7 @@ def return_new_path_replace(topath):
     else:
         return topath
 
+
 def time_format(elapsed_time):
     mins, secs = divmod(elapsed_time, 60)
     hours, mins = divmod(mins, 60)
