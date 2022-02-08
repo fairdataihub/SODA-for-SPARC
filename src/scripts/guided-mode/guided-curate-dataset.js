@@ -3,6 +3,9 @@ let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
 
 //main nav variables initialized to first tabs/pages of guided mode
+let current_progression_tab = $("#prepare-dataset-progression-tab");
+let current_sub_step = $("#guided-basic-description-tab");
+let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
 //nav functions
 const enableProgressButton = () => {
@@ -1518,9 +1521,6 @@ $(document).ready(() => {
       tabPanel.show();
     }
   });
-  let current_progression_tab = $("#prepare-dataset-progression-tab");
-  let current_sub_step = $("#guided-basic-description-tab");
-  let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
   const traverseToTab = (targetElementId) => {
     let targetElement = $(`#${targetElementId}`);
