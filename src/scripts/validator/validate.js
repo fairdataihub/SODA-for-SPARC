@@ -60,16 +60,11 @@ document
      validationResponse = await axiosInstance(
       `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
     );
-<<<<<<< HEAD
     } catch(err) {
       handleAxiosValidationErrors(err)
       return 
     }
     let validationErrors = validationResponse.data
-=======
-
-    let validationErrors = validationResponse.data;
->>>>>>> 5918119861db5a4246ce3f6f5cd741d60e70ebae
 
     Swal.fire({
       title: `Your dataset has been successfully validated`,
