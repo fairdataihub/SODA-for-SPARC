@@ -17,6 +17,49 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
         let validationPathInput = evt.target 
 
         // set the input's placeholder value to the local dataset path
-        validationPathInput.setAttribute("placeholder", folderPath)
+        validationPathInput.value = folderPath
     })
 })
+
+
+// start dataset validation 
+document.querySelector("#run_validator_btn").addEventListener("click", async (evt) => {
+    // grab the local dataset path from the input's placeholder attribute
+    let datasetPath = document.querySelector("#validate-local-dataset-path").value
+
+    const axiosInstance = axios.create({
+        baseURL: "http://127.0.0.1:5000/",
+        timeout: 0,
+      });
+
+      Swal.fire({
+        title: `Validating your dataset`,
+        html: "Please wait...",
+        // timer: 5000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+    // send path to the validator endpoint
+    let validationResult = await axiosInstance(`api_validate_dataset_pipeline?dataset-path=${datasetPath}`)
+
+    Swal.fire({
+        title: `Your dataset has been successfully validated`,
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true
+      });
+
+    // for now place all of the errors into the page
+    console.log(validationResult.data)
+})
+

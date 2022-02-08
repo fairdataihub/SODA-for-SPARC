@@ -50,9 +50,9 @@
                   <div
                     class="option-card radio-button"
                     id="validate_dataset-1-local"
-                    data-current="Question-validate_dataset-1"
-                    data-next="Question-validate_dataset-2"
-                    onclick="transitionFreeFormMode(this, 'validate_dataset-1-local', 'validate_dataset-tab', '', 'individual-question ')"
+                    data-current="validate_dataset-question-1"
+                    data-next="validate_dataset-question-2"
+                    onclick="transitionFreeFormMode(this, 'validate_dataset-question-1', 'validate_dataset-tab', '', 'individual-question ')"
                     style="
                       max-width: 180px;
                       height: 220px !important;
@@ -214,7 +214,11 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset bi bi-pencil-fill"
+                      class="
+                        svg-change-current-account
+                        dataset
+                        bi bi-pencil-fill
+                      "
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
@@ -268,7 +272,7 @@
 
         <div
           class="individual-question validate_dataset"
-          id="Question-validate_dataset-2"
+          id="validate_dataset-question-2"
           style="height: auto"
         >
           <div class="ui form">
@@ -276,14 +280,52 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Where is the existing dataset located?</label
               >
-              <input
-                class="form-control"
-                style="width: 450px !important"
-                id="validate-local-dataset-path"
-                type="text"
-                readonly=""
-                placeholder="Browse here"
-              />
+              <div
+                class="field"
+                style="
+                  margin: 15px auto;
+                  display: flex;
+                  justify-content: center;
+                "
+              >
+                <input
+                  class="form-control"
+                  style="width: 450px !important"
+                  id="validate-local-dataset-path"
+                  type="text"
+                  readonly=""
+                  placeholder="Browse here"
+                />
+              </div>
+
+              <div
+                class="field"
+                style="
+                  margin: 15px auto;
+                  display: flex;
+                  justify-content: center;
+                "
+              >
+                <button
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: rgb(255, 255, 255);
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                  onclick="transitionFreeFormMode(this, 'validate_dataset-question-2', 'validate_dataset-tab', '', 'individual-question validate_dataset')"
+                  data-next="validate_dataset-question-3"
+                  data-current="validate_dataset-question-2"
+                >
+                  Confirm
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -295,14 +337,6 @@
         >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
-              <!-- <label
-                style="
-                  font-size: 17px;
-                  color: var(--color-bg-plum);
-                  width: 100%;
-                  text-align: center;
-                "
-              ></label> -->
               <div
                 id="div-confirm-validate_dataset"
                 style="
@@ -315,7 +349,7 @@
               >
                 <div style="display: flex; justify-content: space-between">
                   <button
-                    id="validate_dataset_bttn"
+                    id="run_validator_btn"
                     class="btn_animated md"
                     style="
                       cursor: pointer;
@@ -327,8 +361,8 @@
                       font-size: 15px;
                       text-align: center;
                     "
-                    onclick="transitionFreeFormMode(this, 'validate_dataset-question-2', 'validate_dataset-tab', '', 'individual-question validate_dataset')"
-                    data-next="validate_dataset-question-3"
+                    onclick="transitionFreeFormMode(this, 'validate_dataset-question-3', 'validate_dataset-tab', '', 'individual-question validate_dataset')"
+                    data-next="validate_dataset-question-4"
                   >
                     Run dataset validator
                   </button>
@@ -340,7 +374,7 @@
 
         <div
           class="individual-question validate_dataset"
-          id="validate_dataset-question-3"
+          id="validate_dataset-question-4"
           style="height: auto"
         >
           <div class="ui form" style="width: 450px">
@@ -385,6 +419,64 @@
 
                 <div id="validation_error_accordion" class="ui accordion"></div>
               </div>
+
+              <table class="ui celled padded table">
+                <thead>
+                  <tr>
+                    <th>Message</th>
+                    <th>Solution</th>
+                    <th>Fix Here</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="single line">Power Output</td>
+                    <td>
+                      <div
+                        class="ui yellow rating"
+                        data-rating="3"
+                        data-max-rating="3"
+                      ></div>
+                    </td>
+                    <td class="right aligned">
+                      80% <br />
+                      <a href="#">18 studies</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="single line">Weight</td>
+                    <td>
+                      <div
+                        class="ui yellow rating"
+                        data-rating="3"
+                        data-max-rating="3"
+                      ></div>
+                    </td>
+                    <td class="right aligned">
+                      100% <br />
+                      <a href="#">65 studies</a>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th colspan="5">
+                      <div class="ui right floated pagination menu">
+                        <a class="icon item">
+                          <i class="left chevron icon"></i>
+                        </a>
+                        <a class="item">1</a>
+                        <a class="item">2</a>
+                        <a class="item">3</a>
+                        <a class="item">4</a>
+                        <a class="icon item">
+                          <i class="right chevron icon"></i>
+                        </a>
+                      </div>
+                    </th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
         </div>

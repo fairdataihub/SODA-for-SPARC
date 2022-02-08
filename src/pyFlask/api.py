@@ -10,6 +10,16 @@ from sparcur.config import auth
 from sparcur.simple.utils import backend_pennsieve
 # project_id = auth.get('remote-organization')
 userpath = expanduser("~")
+from pprint import pprint
+
+from json import JSONEncoder
+from collections import deque
+
+class DequeEncoder(JSONEncoder):
+    def default(self, obj):
+       if isinstance(obj, deque):
+          return list(obj)
+       return JSONEncoder.default(self, obj)
 
 #PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
 #root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
@@ -50,13 +60,15 @@ def api_validate_dataset_pipeline():
     # validate the dataset
     validation_result = None 
     try:
+        # validate and get dictionary back
         validation_result = val_dataset_local_pipeline(norm_ds_path)
     except:
         return "Critical validation error!", 400
     
-    print(validation_result)
-    
-    return jsonify("Dataset has been validated!")
+    errors = validation_result.get('errors')
+
+    # for now encode the dequeue object as a list
+    return json.dumps(errors, cls=DequeEncoder)
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000)
