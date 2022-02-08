@@ -3590,6 +3590,8 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
             s = os.path.join(src, item)
             d = os.path.join(dst, item)
             if os.path.isdir(s):
+                if os.path.exists(d):
+                    shutil.rmtree(d)
                 shutil.copytree(s, d, symlinks, ignore)
             else:
                 shutil.copy2(s, d)
