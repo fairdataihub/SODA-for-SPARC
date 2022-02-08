@@ -1414,8 +1414,6 @@ function addFilesfunction(
 
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
-  console.log(nonAllowedDuplicateFiles);
-  console.log(regularFiles);
   if (Object.keys(regularFiles).length > 0) {
     for (var element in regularFiles) {
       currentLocation["files"][regularFiles[element]["basename"]] = {
@@ -1446,9 +1444,15 @@ function addFilesfunction(
         organizeCurrentLocation,
         globalPathValue
       );
+      // log the successful import
+      logCurationForAnalytics(
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Import", "File"],
+        determineDatasetLocation()
+      );
     }
-
-    console.log("Does anything happen past here?");
   }
   //add sweetalert here before non duplicate files pop
   var baseName = [];
@@ -1468,7 +1472,6 @@ function addFilesfunction(
 
   //alert giving a list of files + path that cannot be copied bc theyre duplicates
   var listElements = showItemsAsListBootbox(baseName);
-  console.log(baseName);
   let titleSwal = "";
   let htmlSwal = "";
   let html_word = "";
@@ -1515,15 +1518,6 @@ function addFilesfunction(
         <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
         </div>`,
     });
-
-    // log the success
-    logCurationForAnalytics(
-      "Success",
-      PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      ["Step 3", "Import", "File"],
-      determineDatasetLocation()
-    );
   }
 }
 
