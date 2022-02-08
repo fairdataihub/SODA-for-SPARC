@@ -27,7 +27,10 @@ $(document).ready(function () {
           ).placeholder = "Browse here";
           localDatasetFolderPath = "";
           $("#div-confirm-manifest-local-folder-dataset").hide();
-          $("#Question-prepare-manifest-2").nextAll().removeClass("show").removeClass("prev")
+          $("#Question-prepare-manifest-2")
+            .nextAll()
+            .removeClass("show")
+            .removeClass("prev");
         }
       } else {
         document.getElementById(
@@ -35,7 +38,10 @@ $(document).ready(function () {
         ).placeholder = "Browse here";
         localDatasetFolderPath = "";
         $("#div-confirm-manifest-local-folder-dataset").hide();
-        $("#Question-prepare-manifest-2").nextAll().removeClass("show").removeClass("prev")
+        $("#Question-prepare-manifest-2")
+          .nextAll()
+          .removeClass("show")
+          .removeClass("prev");
       }
     }
   );
@@ -46,7 +52,10 @@ $(document).ready(function () {
     } else {
       $("#div-check-bf-create-manifest").css("display", "none");
     }
-    $("#Question-prepare-manifest-3").nextAll().removeClass("show").removeClass("prev")
+    $("#Question-prepare-manifest-3")
+      .nextAll()
+      .removeClass("show")
+      .removeClass("prev");
   });
 
   $(jstreePreviewManifest).on("open_node.jstree", function (event, data) {
@@ -947,7 +956,10 @@ function validateSPARCdataset() {
       ).placeholder = "Browse here";
       $("#div-confirm-manifest-local-folder-dataset").hide();
       localDatasetFolderPath = "";
-      $("#Question-prepare-manifest-2").nextAll().removeClass("show").removeClass("prev")
+      $("#Question-prepare-manifest-2")
+        .nextAll()
+        .removeClass("show")
+        .removeClass("prev");
       return false;
     });
   }
@@ -1171,12 +1183,12 @@ function createManifestLocally(editBoolean, originalDataset) {
           manifestFolderPath = res;
           loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
           // move to the next question with a Fake confirm button
-        //// else: create locally for the purpose of generating of manifest files locally
+          //// else: create locally for the purpose of generating of manifest files locally
         } else {
           // SODA Manifest Files folder
           let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
           // Move manifest files to the local dataset
-          moveManifestFiles(dir, originalDataset)
+          moveManifestFiles(dir, originalDataset);
           //////////// Tracking analytics /////////////
           // log the manifest file creation to analytics
           logMetadataForAnalytics(
