@@ -605,6 +605,15 @@ function renameFolder(
             },
           });
 
+          // log the success
+          logCurationForAnalytics(
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Rename", promptVar],
+            determineDatasetLocation()
+          );
+
           /// assign new name to folder or file in the UI
           event1.parentElement.parentElement.innerText = returnedName;
           /// get location of current file or folder in JSON obj
@@ -1356,6 +1365,14 @@ function addFilesfunction(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+      // log the error
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 3", "Import", "File"],
+        determineDatasetLocation()
+      );
       break;
     } else {
       if (

@@ -729,7 +729,8 @@ def bf_new_dataset_folder(datasetname, accountname):
         if datasetname in dataset_list:
             raise Exception("Error: Dataset name already exists")
         else:
-            bf.create_dataset(datasetname)
+            d = bf.create_dataset(datasetname)
+            return d.id
 
     except Exception as e:
         raise e
