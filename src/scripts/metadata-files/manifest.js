@@ -312,7 +312,6 @@ async function generateManifest(action, type, manifestEditBoolean) {
     showConfirmButton: false,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
     },
@@ -512,13 +511,11 @@ function initiate_generate_manifest_local(originalDataset) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  });
   // SODA Manifest Files folder
-  path.join(homeDirectory, "SODA", "METADATA");
   let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
   // Move manifest files to the local dataset
   moveManifestFiles(dir, originalDataset)
-
   // reset sodaJSONObj
   sodaJSONObj = {
     "starting-point": { type: "" },
@@ -560,11 +557,10 @@ function initiate_generate_manifest_bf() {
     showConfirmButton: false,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  });
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -696,6 +692,15 @@ function initiate_generate_manifest_bf() {
         res[1]
       );
 
+      // delete temp SODA Manifest Files folder in user's SODA folder
+      let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
+      removeDir(dir)
+
+      sodaJSONObj = {
+        "starting-point": { type: "" },
+        "dataset-structure": {},
+        "metadata-files": {},
+      };
       Swal.fire({
         title:
           "Successfully generated manifest files at the specified location!",
@@ -708,16 +713,6 @@ function initiate_generate_manifest_bf() {
         },
       });
 
-      // delete temp SODA Manifest Files folder in user's SODA folder
-      let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
-      removeDir(dir)
-
-      sodaJSONObj = {
-        "starting-point": { type: "" },
-        "dataset-structure": {},
-        "metadata-files": {},
-      };
-
       resetManifest(true)
     }
   });
@@ -725,9 +720,9 @@ function initiate_generate_manifest_bf() {
 
 function moveManifestFiles(sourceFolder, destinationFolder) {
   fs.readdir(sourceFolder, (err, folders) => {
-    if (err)
+    if (err) {
       console.log(err);
-    else {
+    } else {
       folders.forEach(function(folder) {
         let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
         let destinationManifest = path.join(destinationFolder, folder, "manifest.xlsx");
@@ -782,7 +777,10 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
-
+    $("#Question-prepare-manifest-4").removeClass("show");
+    $("#Question-prepare-manifest-3").removeClass("prev");
+    $("#bf_dataset_create_manifest").text("None");
+    defaultBfDataset = "Select dataset";
     // log the Generate action without the destination
     logMetadataForAnalytics(
       "Error",
@@ -826,7 +824,10 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
           Swal.hideLoading();
         },
       }).then((result) => {});
-
+      $("#Question-prepare-manifest-4").removeClass("show");
+      $("#Question-prepare-manifest-3").removeClass("prev");
+      $("#bf_dataset_create_manifest").text("None");
+      defaultBfDataset = "Select dataset";
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.MANIFEST,
@@ -852,6 +853,10 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
           Swal.hideLoading();
         },
       }).then((result) => {});
+      $("#Question-prepare-manifest-4").removeClass("show");
+      $("#Question-prepare-manifest-3").removeClass("prev");
+      $("#bf_dataset_create_manifest").text("None");
+      defaultBfDataset = "Select dataset";
       // log the error to analytics
       logMetadataForAnalytics(
         "Error",
@@ -918,12 +923,17 @@ function validateSPARCdataset() {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
+      didOpen: () => {
+        Swal.hideLoading();
+      },
     }).then((result) => {
       document.getElementById(
         "input-manifest-local-folder-dataset"
       ).placeholder = "Browse here";
       $("#div-confirm-manifest-local-folder-dataset").hide();
       localDatasetFolderPath = "";
+      $("#Question-prepare-manifest-4").removeClass("show");
+      $("#Question-prepare-manifest-2").removeClass("prev");
       return false;
     });
   }
@@ -947,31 +957,53 @@ function resetManifest(skip_permission) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     }).then((result) => {
-      if (!result.isConfirmed) {
+      if (result.isConfirmed) {
+        // 1. remove Prev and Show from all individual-question except for the first one
+        // 2. empty all input, textarea, select, para-elements
+        $("#Question-prepare-manifest-1").removeClass("prev");
+        $("#Question-prepare-manifest-1").nextAll().removeClass("show");
+        $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
+        $("#Question-prepare-manifest-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+        $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop(
+          "checked",
+          false
+        );
+        $("#input-manifest-local-folder-dataset").attr(
+          "placeholder",
+          "Browse here"
+        );
+        $("#div-confirm-manifest-local-folder-dataset").hide();
+        let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
+        removeDir(dir)
+      } else {
         return;
       }
     });
+  } else {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $("#Question-prepare-manifest-1").removeClass("prev");
+    $("#Question-prepare-manifest-1").nextAll().removeClass("show");
+    $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
+    $("#Question-prepare-manifest-1 .option-card")
+    .removeClass("checked")
+    .removeClass("disabled")
+    .removeClass("non-selected");
+    $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop(
+      "checked",
+      false
+    );
+    $("#input-manifest-local-folder-dataset").attr(
+      "placeholder",
+      "Browse here"
+    );
+    $("#div-confirm-manifest-local-folder-dataset").hide();
+    let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
+    removeDir(dir)
   }
-  // 1. remove Prev and Show from all individual-question except for the first one
-  // 2. empty all input, textarea, select, para-elements
-  $("#Question-prepare-manifest-1").removeClass("prev");
-  $("#Question-prepare-manifest-1").nextAll().removeClass("show");
-  $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
-  $("#Question-prepare-manifest-1 .option-card")
-  .removeClass("checked")
-  .removeClass("disabled")
-  .removeClass("non-selected");
-  $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop(
-    "checked",
-    false
-  );
-  $("#input-manifest-local-folder-dataset").attr(
-    "placeholder",
-    "Browse here"
-  );
-  $("#div-confirm-manifest-local-folder-dataset").hide();
-  let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
-  removeDir(dir)
 }
 
 // check for empty sub-folders before continuing to generate manifest files
@@ -1003,6 +1035,18 @@ function checkEmptySubFolders(datasetStructure) {
 // Parameter: dataset structure object
 // Return: manifest file folder path
 async function generateManifestFolderLocallyForEdit() {
+  // Show loading popup
+  Swal.fire({
+    title: `Generating manifest files for edits`,
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
   var type = "local";
   if (
     $('input[name="generate-manifest-1"]:checked').prop("id") ===
@@ -1043,6 +1087,7 @@ async function generateManifestFolderLocallyForEdit() {
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
         heightAuto: false,
+        showConfirmButton: true,
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
@@ -1075,12 +1120,33 @@ function createManifestLocally() {
         var emessage = userError(error);
         log.error(error);
         console.error(error);
+        Swal.fire({
+          title: "Failed to edit the manifest files.",
+          html: emessage,
+          heightAuto: false,
+          showConfirmButton: true,
+          icon: "error",
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        }).then((result) => {});
       } else {
+        Swal.fire({
+          title: "Generated successfully! Please select a manifest file to edit.",
+          heightAuto: false,
+          showConfirmButton: true,
+          icon: "success",
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        }).then((result) => {});
+        $("#Question-prepare-manifest-4").removeClass("show prev");
         manifestFolderPath = res;
         loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
         // move to the next question with a Fake confirm button
         $("#preview-manifest-fake-confirm").click();
-
       }
     }
   );
