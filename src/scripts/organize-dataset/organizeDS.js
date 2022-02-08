@@ -640,15 +640,6 @@ function renameFolder(
             organizeCurrentLocation,
             inputGlobal
           );
-
-          // log the success
-          logCurationForAnalytics(
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 3", "Rename", promptVar],
-            determineDatasetLocation()
-          );
         }
       }
     });
@@ -1391,7 +1382,6 @@ function addFilesfunction(
             var nonAllowedDuplicate = false;
             //if file already exist in json
             if (fileName === currentLocation["files"][objectKey]["path"]) {
-              console.log(fileName);
               if (
                 currentLocation["files"][objectKey]["action"].includes(
                   "renamed"
@@ -1402,8 +1392,6 @@ function addFilesfunction(
                 break;
               }
             }
-            console.log(path.parse(fileName).base);
-            console.log(fileName in currentLocation["files"]);
             if (path.parse(fileName).base in currentLocation["files"]) {
               nonAllowedDuplicateFiles.push(fileName);
               nonAllowedDuplicate = true;
