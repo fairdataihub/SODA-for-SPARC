@@ -59,7 +59,7 @@ document
       `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
     );
 
-    let validationErrors = validationResponse.data
+    let validationErrors = validationResponse.data;
 
     Swal.fire({
       title: `Your dataset has been successfully validated`,
