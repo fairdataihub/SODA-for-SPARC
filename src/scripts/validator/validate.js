@@ -55,12 +55,17 @@ document
     });
 
     // send path to the validator endpoint
-    let validationResult = await axiosInstance(
+    let validationResponse = await axiosInstance(
       `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
     );
 
+    let validationErrors = validationResponse.data
+
     Swal.fire({
       title: `Your dataset has been successfully validated`,
+      text: validationErrors.length
+        ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
+        : `Your dataset is valid according to SPAR guidelines.`,
       allowEscapeKey: true,
       allowOutsideClick: false,
       heightAuto: false,
@@ -69,9 +74,10 @@ document
       showConfirmButton: true,
     });
 
-    // for now place all of the errors into the page
-    console.log(validationResult.data);
-    displayValidationErrors(validationResult.data);
+    if (validationErrors.length) {
+      // for now place all of the errors into the page
+      displayValidationErrors(validationErrors);
+    }
   });
 
 const displayValidationErrors = (errors) => {
