@@ -1335,15 +1335,6 @@ function addFilesfunction(
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
-  var uiFilesWithoutExtension = {};
-
-  for (var file in currentLocation["files"]) {
-    uiFilesWithoutExtension[path.parse(file).base] = 1;
-    //use uiFilesWithoutExtension to compare names
-    //if names and path are the same it is nonallowed
-    //if just name is the same
-  }
-  //gets files already placed and puts into json
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
@@ -1376,50 +1367,126 @@ function addFilesfunction(
           basename: path.parse(fileName).base,
         };
       } else {
-        var fileBaseName;
-        for (var objectKey in currentLocation["files"]) {
+        //check file name in key of regular files (search for duplicate)
+        if (path.parse(fileName).base in regularFiles) {
+          nonAllowedDuplicateFiles.push(fileName);
+          nonAllowedDuplicate = true;
+          continue;
+        } else {
+          //search for duplicate in currentlocation[files]
+          if (path.parse(fileName).base in currentLocation["files"]) {
+            nonAllowedDuplicateFiles.push(fileName);
+            nonAllowedDuplicate = true;
+            continue;
+          } else {
+            //not in there or regular files so store?
+            regularFiles[path.parse(fileName).base] = {
+              path: fileName,
+              basename: path.parse(fileName).base,
+            };
+          }
+        }
+        for (const objectKey in currentLocation["files"]) {
           //tries finding duplicates with the same path
-          if (objectKey !== undefined) {
+          if (objectKey != undefined) {
             var nonAllowedDuplicate = false;
             //if file already exist in json
             if (fileName === currentLocation["files"][objectKey]["path"]) {
-              console.log(fileName);
               if (
                 currentLocation["files"][objectKey]["action"].includes(
                   "renamed"
                 ) === false
               ) {
+                //same path and has not been renamed
                 nonAllowedDuplicateFiles.push(fileName);
                 nonAllowedDuplicate = true;
-                break;
+                continue;
               }
-            }
-            console.log(path.parse(fileName).base);
-            console.log(fileName in currentLocation["files"]);
-            if (path.parse(fileName).base in currentLocation["files"]) {
-              nonAllowedDuplicateFiles.push(fileName);
-              nonAllowedDuplicate = true;
-              break;
             } else {
-              fileBaseName = path.basename(fileName);
-              regularFiles[fileBaseName] = {
-                path: fileName,
-                basename: fileBaseName,
-              };
+              //file path and object key path arent the same
+              //check if the file name are the same
+              //if so consider it as a duplicate
+              if (path.parse(fileName).base === objectKey) {
+                nonAllowedDuplicateFiles.push(fileName);
+                nonAllowedDuplicate = true;
+                continue;
+              } else {
+                //store in regular files
+                regularFiles[path.parse(fileName).base] = {
+                  path: fileName,
+                  basename: path.parse(fileName).base,
+                };
+              }
             }
           }
         }
-
-        if (!nonAllowedDuplicate) {
-          //there was a duplicate with the same name but different path
-          //prompt user if they want to allow duplicate
-          var j = 1;
-          console.log(fileBaseName);
-          var originalFileNameWithoutExt = path.parse(fileBaseName).name;
-          var fileNameWithoutExt = originalFileNameWithoutExt;
-        }
       }
     }
+  }
+
+  if (nonAllowedDuplicateFiles.length > 0) {
+    //add sweetalert here before non duplicate files pop
+    var baseName = [];
+    for (let element in nonAllowedDuplicateFiles) {
+      let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
+      if (lastSlash === 0) {
+        lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("/") + 1;
+      }
+      baseName.push(
+        nonAllowedDuplicateFiles[element].substring(
+          lastSlash,
+          nonAllowedDuplicateFiles[element].length
+        )
+      );
+    }
+    var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+
+    //alert giving a list of files + path that cannot be copied bc theyre duplicates
+    var listElements = showItemsAsListBootbox(baseName);
+    let titleSwal = "";
+    let htmlSwal = "";
+    let html_word = "";
+    if (baseName.length != 0) {
+      if (baseName[0].indexOf(".") != -1) {
+        titleSwal = "Duplicate file(s) detected";
+        htmlSwal =
+          "Files with the following names are already in the the current folder: ";
+        html_word = "Files";
+      } else {
+        titleSwal = "Duplicate folder(s) detected";
+        htmlSwal =
+          "Folders with the following names are already in the current folder: ";
+        html_word = "Folders";
+      }
+    }
+    Swal.fire({
+      title: titleSwal,
+      icon: "warning",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      showCloseButton: true,
+      customClass: "wide-swal-auto",
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate_animated animate_zoomout animate__faster",
+      },
+      html:
+        `
+      <div class="caption">
+        <p>${htmlSwal}<p><ul style="text-align:start;">${listElements}</ul></p></p>
+      </div>  
+      <div class="swal-button-container">
+        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+        list +
+        `')">Skip ${html_word}</button>
+        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing ${html_word}</button>
+        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+        </div>`,
+    });
   }
 
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
@@ -1463,71 +1530,6 @@ function addFilesfunction(
         determineDatasetLocation()
       );
     }
-  }
-  //add sweetalert here before non duplicate files pop
-  var baseName = [];
-  for (let element in nonAllowedDuplicateFiles) {
-    let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
-    if (lastSlash === 0) {
-      lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("/") + 1;
-    }
-    baseName.push(
-      nonAllowedDuplicateFiles[element].substring(
-        lastSlash,
-        nonAllowedDuplicateFiles[element].length
-      )
-    );
-  }
-  var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
-
-  //alert giving a list of files + path that cannot be copied bc theyre duplicates
-  var listElements = showItemsAsListBootbox(baseName);
-  let titleSwal = "";
-  let htmlSwal = "";
-  let html_word = "";
-  if (baseName.length != 0) {
-    if (baseName[0].indexOf(".") != -1) {
-      titleSwal = "Duplicate file(s) detected";
-      htmlSwal =
-        "Files with the following names are already in the the current folder: ";
-      html_word = "Files";
-    } else {
-      titleSwal = "Duplicate folder(s) detected";
-      htmlSwal =
-        "Folders with the following names are already in the current folder: ";
-      html_word = "Folders";
-    }
-  }
-
-  if (nonAllowedDuplicateFiles.length > 0) {
-    Swal.fire({
-      title: titleSwal,
-      icon: "warning",
-      showConfirmButton: false,
-      allowOutsideClick: false,
-      showCloseButton: true,
-      customClass: "wide-swal-auto",
-      backdrop: "rgba(0, 0, 0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster",
-      },
-      html:
-        `
-      <div class="caption">
-        <p>${htmlSwal}<p><ul style="text-align:start;">${listElements}</ul></p></p>
-      </div>  
-      <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
-        list +
-        `')">Skip ${html_word}</button>
-        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing ${html_word}</button>
-        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
-        </div>`,
-    });
   }
 }
 
