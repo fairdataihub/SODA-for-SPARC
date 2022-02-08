@@ -772,10 +772,10 @@ function selectAll(source) {
   }
 }
 
-function onBtnClicked(btnId, duplicateArray) {
+function handleDuplicateImports(btnId, duplicateArray) {
   Swal.close();
   //creates the html for sweetalert
-  function createContent(btnId, list) {
+  function createSwalDuplicateContent(btnId, list) {
     if (btnId === "replace" || btnId === "skip") {
       type = "checkbox";
     } else if (btnId === "rename") {
@@ -877,7 +877,7 @@ function onBtnClicked(btnId, duplicateArray) {
     selectAll.append(para2);
     selectAll.append(container);
 
-    tempFile = createContent(btnId, temp);
+    tempFile = createSwalDuplicateContent(btnId, temp);
     if (tempFile[0].indexOf(".") === -1) {
       var header = "Select which folders to skip";
     } else {
@@ -961,16 +961,16 @@ function onBtnClicked(btnId, duplicateArray) {
             <p>${htmlSwal}<p><ul style="text-align: start;">${listElements}</ul></p></p>
           </div>  
           <div class="swal-button-container">
-            <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+            <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
             newList +
             `')">Skip ${html_word}</button>
-            <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '` +
+            <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
             newList +
             `')">Replace Existing ${html_word}</button>
-            <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '` +
+            <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
             newList +
             `')">Import Duplicates</button>
-            <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+            <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
             </div>`,
         });
       } else {
@@ -1002,7 +1002,7 @@ function onBtnClicked(btnId, duplicateArray) {
     temp = temp.split(",");
     container = document.createElement("div");
 
-    var tempFile = createContent(btnId, temp);
+    var tempFile = createSwalDuplicateContent(btnId, temp);
     if (tempFile[0].indexOf(".") === -1) {
       var header = "Rename Folders";
     } else {
@@ -1216,7 +1216,7 @@ function onBtnClicked(btnId, duplicateArray) {
     selectAll.append(container);
 
     //loop through paths and get file name
-    var tempFile = createContent(btnId, temp);
+    var tempFile = createSwalDuplicateContent(btnId, temp);
 
     if (tempFile[0].indexOf(".") === -1) {
       var header = "Select which folders to replace";
@@ -1491,12 +1491,12 @@ function addFilesfunction(
         <p>${htmlSwal}<p><ul style="text-align:start;">${listElements}</ul></p></p>
       </div>  
       <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
         `')">Skip ${html_word}</button>
-        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing ${html_word}</button>
-        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing ${html_word}</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
         </div>`,
     });
   }
