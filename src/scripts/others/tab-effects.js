@@ -1290,7 +1290,11 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
 };
 
 // Create the dataset structure for sodaJSONObj (similar to create_json_object but includes manifest files in json structure)
-const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_path) => {
+const create_json_object_include_manifest = (
+  action,
+  sodaJSONObj,
+  root_folder_path
+) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
