@@ -156,8 +156,8 @@ $(document).ready(function () {
       jsonManifest = excelToJson({
         sourceFile: selectedManifestFilePath,
         columnToKey: {
-        '*': '{{columnHeader}}'
-      }
+          "*": "{{columnHeader}}",
+        },
       })["Sheet1"];
 
       Swal.fire({
@@ -181,12 +181,9 @@ $(document).ready(function () {
         jsonManifest = JSON.stringify(table1.getJson());
         // fs.writeFileSync(jsonManifestFilePath, updatedManifestObj);
         // convert manifest.json to existing manifest.xlsx file
-        convertJSONToXlsx(
-          JSON.parse(jsonManifest),
-          selectedManifestFilePath
-        );
+        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
       });
-      loadManifestFileEdits(jsonManifest)
+      loadManifestFileEdits(jsonManifest);
     }
   });
 });
@@ -421,11 +418,15 @@ async function generateManifest(action, type, manifestEditBoolean) {
   } else {
     // Case 2: bf dataset
     if (manifestEditBoolean) {
-      generateAfterEdits()
+      generateAfterEdits();
     } else {
       sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
       sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
-      extractBFDatasetForManifestFile(false, defaultBfAccount, defaultBfDataset);
+      extractBFDatasetForManifestFile(
+        false,
+        defaultBfAccount,
+        defaultBfDataset
+      );
     }
   }
 }
@@ -513,9 +514,9 @@ function initiate_generate_manifest_local(originalDataset) {
     },
   });
   // SODA Manifest Files folder
-  let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
+  let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
   // Move manifest files to the local dataset
-  moveManifestFiles(dir, originalDataset)
+  moveManifestFiles(dir, originalDataset);
   // reset sodaJSONObj
   sodaJSONObj = {
     "starting-point": { type: "" },
@@ -544,7 +545,7 @@ function initiate_generate_manifest_local(originalDataset) {
     Destinations.LOCAL
   );
 
-  resetManifest(true)
+  resetManifest(true);
 }
 
 function initiate_generate_manifest_bf() {
@@ -691,8 +692,8 @@ function initiate_generate_manifest_bf() {
       );
 
       // delete temp SODA Manifest Files folder in user's SODA folder
-      let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
-      removeDir(dir)
+      let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+      removeDir(dir);
 
       sodaJSONObj = {
         "starting-point": { type: "" },
@@ -711,7 +712,7 @@ function initiate_generate_manifest_bf() {
         },
       });
 
-      resetManifest(true)
+      resetManifest(true);
     }
   });
 }
@@ -721,7 +722,7 @@ function moveManifestFiles(sourceFolder, destinationFolder) {
     if (err) {
       console.log(err);
     } else {
-      folders.forEach(function(folder) {
+      folders.forEach(function (folder) {
         let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
         let destinationManifest = path.join(
           destinationFolder,
@@ -761,7 +762,11 @@ const removeDir = function (pathdir) {
   }
 };
 
-async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset) {
+async function extractBFDatasetForManifestFile(
+  editBoolean,
+  bfaccount,
+  bfdataset
+) {
   var result;
   try {
     var res = await bf_request_and_populate_dataset(sodaJSONObj);
@@ -871,9 +876,9 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
     }
   }
   if (!editBoolean) {
-    generateManifestOnPennsieve()
+    generateManifestOnPennsieve();
   } else {
-    createManifestLocally()
+    createManifestLocally();
   }
 }
 
@@ -966,9 +971,9 @@ function resetManifest(skip_permission) {
         $("#Question-prepare-manifest-1").nextAll().removeClass("show");
         $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
         $("#Question-prepare-manifest-1 .option-card")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
+          .removeClass("checked")
+          .removeClass("disabled")
+          .removeClass("non-selected");
         $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop(
           "checked",
           false
@@ -978,8 +983,8 @@ function resetManifest(skip_permission) {
           "Browse here"
         );
         $("#div-confirm-manifest-local-folder-dataset").hide();
-        let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
-        removeDir(dir)
+        let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+        removeDir(dir);
       } else {
         return;
       }
@@ -991,9 +996,9 @@ function resetManifest(skip_permission) {
     $("#Question-prepare-manifest-1").nextAll().removeClass("show");
     $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
     $("#Question-prepare-manifest-1 .option-card")
-    .removeClass("checked")
-    .removeClass("disabled")
-    .removeClass("non-selected");
+      .removeClass("checked")
+      .removeClass("disabled")
+      .removeClass("non-selected");
     $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop(
       "checked",
       false
@@ -1003,8 +1008,8 @@ function resetManifest(skip_permission) {
       "Browse here"
     );
     $("#div-confirm-manifest-local-folder-dataset").hide();
-    let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
-    removeDir(dir)
+    let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+    removeDir(dir);
   }
 }
 
@@ -1098,7 +1103,7 @@ async function generateManifestFolderLocallyForEdit() {
       }).then((result) => {});
       return;
     }
-    createManifestLocally()
+    createManifestLocally();
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
@@ -1135,7 +1140,8 @@ function createManifestLocally() {
         }).then((result) => {});
       } else {
         Swal.fire({
-          title: "Generated successfully! Please select a manifest file to edit.",
+          title:
+            "Generated successfully! Please select a manifest file to edit.",
           heightAuto: false,
           showConfirmButton: true,
           icon: "success",
@@ -1189,7 +1195,7 @@ function showTreeViewPreviewManifestEdits(
     "",
     true,
     true,
-    false,
+    false
   );
   $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
   $(previewDiv).jstree(true).refresh();
@@ -1202,7 +1208,7 @@ function createChildNodeManifest(
   ext,
   openedState,
   selectedState,
-  disabledState,
+  disabledState
 ) {
   /*
     oldFormatNode: node in the format under "dataset-structure" key in SODA object
@@ -1227,7 +1233,10 @@ function createChildNodeManifest(
       let disabled = true;
       let opened = false;
       let selected = false;
-      if (highLevelFolders.includes(nodeName) || nodeName === "My_dataset_structure") {
+      if (
+        highLevelFolders.includes(nodeName) ||
+        nodeName === "My_dataset_structure"
+      ) {
         opened = true;
         selected = true;
         disabled = false;
@@ -1242,7 +1251,7 @@ function createChildNodeManifest(
         "",
         opened,
         selected,
-        disabled,
+        disabled
       );
       newFormatNode["children"].push(new_node);
       newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
@@ -1287,7 +1296,9 @@ function createChildNodeManifest(
               };
             }
             newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
+            newFormatNode["children"].sort((a, b) =>
+              a.text > b.text ? 1 : -1
+            );
           }
         }
       }
@@ -1377,5 +1388,5 @@ function generateAfterEdits() {
     "generate-option": "new",
   };
   // 3. generate on Pennsieve: call the function
-  initiate_generate_manifest_bf()
+  initiate_generate_manifest_bf();
 }
