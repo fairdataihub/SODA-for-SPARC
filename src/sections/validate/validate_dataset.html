@@ -378,106 +378,75 @@
           style="height: auto"
         >
           <div class="ui form" style="width: 450px">
-            <div class="grouped fields">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
+            <!-- <div class="field">
                 <div
                   style="
                     display: flex;
                     flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <p
-                    id="dataset_validator_status"
-                    style="margin-top: 10px; text-align: center"
-                  ></p>
-                  <br />
                   <div
-                    id="dataset_validator_spinner"
-                    class="spinner validate_dataset"
-                    style="display: none"
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                      align-items: center;
+                    "
                   >
-                    <div class="rect1"></div>
-                    <div class="rect2"></div>
-                    <div class="rect3"></div>
-                    <div class="rect4"></div>
-                    <div class="rect5"></div>
+                    <p
+                      id="dataset_validator_status"
+                      style="margin-top: 10px; text-align: center"
+                    ></p>
+                    <br />
+                    <div
+                      id="dataset_validator_spinner"
+                      class="spinner validate_dataset"
+                      style="display: none"
+                    >
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
                   </div>
+
+                  <div
+                    id="validation_error_accordion"
+                    class="ui accordion"
+                  ></div>
                 </div>
+              </div> -->
 
-                <div id="validation_error_accordion" class="ui accordion"></div>
-              </div>
-
-              <table class="ui celled padded table">
-                <thead>
-                  <tr>
-                    <th>Message</th>
-                    <th>Solution</th>
-                    <th>Fix Here</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="single line">Power Output</td>
-                    <td>
-                      <div
-                        class="ui yellow rating"
-                        data-rating="3"
-                        data-max-rating="3"
-                      ></div>
-                    </td>
-                    <td class="right aligned">
-                      80% <br />
-                      <a href="#">18 studies</a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="single line">Weight</td>
-                    <td>
-                      <div
-                        class="ui yellow rating"
-                        data-rating="3"
-                        data-max-rating="3"
-                      ></div>
-                    </td>
-                    <td class="right aligned">
-                      100% <br />
-                      <a href="#">65 studies</a>
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th colspan="5">
-                      <div class="ui right floated pagination menu">
-                        <a class="icon item">
-                          <i class="left chevron icon"></i>
-                        </a>
-                        <a class="item">1</a>
-                        <a class="item">2</a>
-                        <a class="item">3</a>
-                        <a class="item">4</a>
-                        <a class="icon item">
-                          <i class="right chevron icon"></i>
-                        </a>
-                      </div>
-                    </th>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Validation Errors
+            </label>
+            <i
+              class="fas fa-info-circle popover-tooltip"
+              data-content="Your dataset does not conform to SPARC guidelines. View the table to understand each non-conforming element. Use the link in each row to navigate to the part of SODA where you can fix the error. "
+              rel="popover"
+              data-html="true"
+              data-placement="right"
+              data-trigger="hover"
+              data-original-title=""
+              title=""
+            ></i>
+            <table class="ui celled padded table">
+              <thead>
+                <tr>
+                  <th>Message</th>
+                  <th>Solution</th>
+                  <th>Fix Here</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
       </div>
