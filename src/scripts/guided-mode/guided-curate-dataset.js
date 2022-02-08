@@ -642,10 +642,12 @@ $(document).ready(() => {
     datasetReadme,
     userPermissions
   ) => {
+    console.log(datasetReadme);
     const promises = [
       guided_add_banner_image(bfAccount, datasetName, pathToCroppedBannerImage),
       updateDatasetReadme(datasetName, datasetReadme),
       guided_add_user_permissions(bfAccount, datasetName, userPermissions),
+      guided_add_description(bfAccount, datasetName),
     ];
     const result = await Promise.allSettled(promises);
     return result;
