@@ -70,50 +70,55 @@ document
     });
 
     // for now place all of the errors into the page
-    console.log(validationResult.data)
-    displayValidationErrors(validationResult.data)
-})
+    console.log(validationResult.data);
+    displayValidationErrors(validationResult.data);
+  });
 
+const displayValidationErrors = (errors) => {
+  // get the table body
+  let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
-const displayValidationErrors = (errors => {
-  // get the table body 
-  let tableBody = document.querySelector("#validate_dataset-question-4 tbody")
+  for (const error of errors) {
+    let { message, validator } = error;
 
-  for(const error of errors) {
-    let {message, validator} = error
-
-    // add message and validator to the display 
-    addValidationErrorToTable(tableBody, message, validator)
-
+    // add message and validator to the display
+    addValidationErrorToTable(tableBody, message, validator);
   }
-})
+};
 
 // adds a single validation error to the errors display
-const addValidationErrorToTable = (tableBody, errorMessage, validatorStatement) => {
+const addValidationErrorToTable = (
+  tableBody,
+  errorMessage,
+  validatorStatement
+) => {
   // create a row
-  let row = document.createElement('tr')
+  let row = document.createElement("tr");
 
-  // create three table data elements 
-  let tableDataList = [document.createElement('td'), document.createElement('td'), document.createElement('td')]
+  // create three table data elements
+  let tableDataList = [
+    document.createElement("td"),
+    document.createElement("td"),
+    document.createElement("td"),
+  ];
 
   /// add the message to the first td
-  let div = document.createElement('div')
-  div.style = "width: 354px; overflow-wrap: break-word; text-align: left;"
-  div.textContent = errorMessage
-  tableDataList[0].appendChild(div)
+  let div = document.createElement("div");
+  div.style = "width: 354px; overflow-wrap: break-word; text-align: left;";
+  div.textContent = errorMessage;
+  tableDataList[0].appendChild(div);
 
-  // add the validator statement to the second td 
-  tableDataList[1].textContent = validatorStatement
+  // add the validator statement to the second td
+  tableDataList[1].textContent = validatorStatement;
 
   // add a dummy link to the last td
-  tableDataList[2].textContent = "Dummy Link" 
+  tableDataList[2].textContent = "Dummy Link";
 
   // add table data to the row
-  row.appendChild(tableDataList[0])
-  row.appendChild(tableDataList[1])
-  row.appendChild(tableDataList[2])
+  row.appendChild(tableDataList[0]);
+  row.appendChild(tableDataList[1]);
+  row.appendChild(tableDataList[2]);
 
   // append the row to the table body
-  tableBody.appendChild(row)
-}
-
+  tableBody.appendChild(row);
+};
