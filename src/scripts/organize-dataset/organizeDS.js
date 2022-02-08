@@ -1521,15 +1521,15 @@ function addFilesfunction(
         organizeCurrentLocation,
         globalPathValue
       );
-      // log the successful import
-      logCurationForAnalytics(
-        "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 3", "Import", "File"],
-        determineDatasetLocation()
-      );
     }
+    // log the successful import
+    logCurationForAnalytics(
+      "Success",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "File"],
+      determineDatasetLocation()
+    );
   }
 }
 
