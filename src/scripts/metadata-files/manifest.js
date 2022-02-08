@@ -728,7 +728,8 @@ function moveManifestFiles(sourceFolder, destinationFolder) {
       };
 
       Swal.fire({
-        title: "Successfully generated manifest files at the specified location!",
+        title:
+          "Successfully generated manifest files at the specified location!",
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
@@ -885,7 +886,7 @@ async function extractBFDatasetForManifestFile(
   if (!editBoolean) {
     generateManifestOnPennsieve();
   } else {
-    createManifestLocally(editBoolean, "")
+    createManifestLocally(editBoolean, "");
   }
 }
 
@@ -1111,7 +1112,7 @@ async function generateManifestFolderLocallyForEdit() {
       }).then((result) => {});
       return;
     }
-    createManifestLocally(true, "")
+    createManifestLocally(true, "");
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
@@ -1124,7 +1125,7 @@ function createManifestLocally(editBoolean, originalDataset) {
   // generateManifestHelper();
   sodaJSONObj["manifest-files"]["local-destination"] = path.join(
     homeDirectory,
-    "SODA",
+    "SODA"
   );
   client.invoke(
     "api_generate_manifest_file_locally",
@@ -1153,7 +1154,8 @@ function createManifestLocally(editBoolean, originalDataset) {
       } else {
         if (editBoolean) {
           Swal.fire({
-            title: "Generated successfully! Please select a manifest file to edit.",
+            title:
+              "Generated successfully! Please select a manifest file to edit.",
             heightAuto: false,
             showConfirmButton: true,
             icon: "success",
@@ -1172,7 +1174,7 @@ function createManifestLocally(editBoolean, originalDataset) {
         //// else: create locally for the purpose of generating of manifest files locally
         } else {
           // SODA Manifest Files folder
-          let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files")
+          let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
           // Move manifest files to the local dataset
           moveManifestFiles(dir, originalDataset)
           //////////// Tracking analytics /////////////
