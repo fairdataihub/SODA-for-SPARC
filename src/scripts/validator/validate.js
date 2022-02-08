@@ -1,4 +1,4 @@
-// Prupose: The front end logic for the Validate Dataset section
+// Purpose: The front end logic for the Validate Dataset section
 
 const {
   handleAxiosValidationErrors,
@@ -136,3 +136,19 @@ const addValidationErrorToTable = (
   // append the row to the table body
   tableBody.appendChild(row);
 };
+
+
+/*
+*******************************************************************************************************************
+// Presentation logic regarding transitioning from one question to another and/or resetting state upon user action 
+*******************************************************************************************************************
+*/
+
+
+// as part of the transition from 
+const transitionToValidateQuestionThree = () => {
+ // hide the confirm button 
+ let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn")
+
+ confirmDatasetBtn.style.visibility = "hidden"
+}

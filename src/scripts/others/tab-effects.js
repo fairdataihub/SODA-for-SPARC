@@ -1862,6 +1862,9 @@ async function transitionFreeFormMode(
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
       break;
+    case "validate_dataset-question-2": 
+      transitionToValidateQuestionThree()
+      break;
   }
 
   if (!continueProgressRC) {
