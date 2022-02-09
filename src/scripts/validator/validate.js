@@ -204,4 +204,9 @@ const transitionToValidateQuestionTwo = () => {
   );
 
   confirmDatasetBtn.parentElement.style.display = "flex"
+
+  // confirm that the input holding the local dataset path's placeholder is reset
+  let input = document.querySelector("#validate-local-dataset-path")
+  input.setAttribute("placeholder", "Browse here")
+  input.value = ""
 }
