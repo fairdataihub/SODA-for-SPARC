@@ -1375,7 +1375,7 @@ $(document).ready(() => {
       if (guidedCroppedBannerImagePath) {
         setGuidedBannerImage(guidedCroppedBannerImagePath);
       } else {
-        setGuidedBannerImage("/src/assets/img/logo-can1024-grey-circle.png");
+        setGuidedBannerImage("");
       }
       $("#guided-back-button").css("visibility", "visible");
     }
