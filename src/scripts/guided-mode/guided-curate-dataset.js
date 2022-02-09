@@ -773,36 +773,22 @@ $(document).ready(() => {
               "Manage Dataset - Change PI Owner",
               bfDataset
             );
-
             log.error(error);
             console.error(error);
             let emessage = userError(error);
-
-            Swal.fire({
-              title: "Failed to change PI permission!",
-              text: emessage,
-              icon: "error",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
             reject(error);
           } else {
             log.info("Changed PI Owner of datset");
-
             ipcRenderer.send(
               "track-event",
               "Success",
               "Manage Dataset - Change PI Owner",
               bfDataset
             );
-            Swal.fire({
-              title: "Successfully changed PI Owner of dataset",
-              text: res,
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: "Changed PI Owner",
             });
             resolve(res);
           }
@@ -1084,11 +1070,11 @@ $(document).ready(() => {
       guidedDataCollection,
       guidedPrimaryConclusion
     );
-    console.log(guidedReadMe);
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
     let guidedBannerImagePath =
       sodaJSONObj["digital-metadata"]["banner-image-path"];
+    console.log(guidedPIOwner);
 
     guidedUpdateJSONStructureGenerate();
 
@@ -1098,7 +1084,7 @@ $(document).ready(() => {
       guidedTags,
       guidedLicense
     )
-      .then(
+      .then((res) => {
         addPennsieveMetadata(
           guidedBfAccount,
           guidedDatasetName,
@@ -1106,15 +1092,13 @@ $(document).ready(() => {
           guidedReadMe,
           guidedUsers,
           guidedTeams
-        )
-      )
-      .then(
-        guided_add_description(guidedBfAccount, guidedDatasetName, guidedReadMe)
-      )
+        );
+      })
       .then(guided_add_folders_files())
-      .then(
-        guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner)
-      )
+      /*
+      .then((res) => {
+        guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
+      })*/
       .catch((error) => {
         console.log(error);
         Swal.fire({
