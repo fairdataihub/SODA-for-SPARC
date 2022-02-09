@@ -1093,7 +1093,7 @@ $(document).ready(() => {
       .then(
         guided_add_description(guidedBfAccount, guidedDatasetName, guidedReadMe)
       )
-      .then(guided_add_folders_files())
+      .then(guided_main_curate())
       /*
       .then((res) => {
         guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
@@ -1117,7 +1117,382 @@ $(document).ready(() => {
     };
   };
 
-  const guided_add_folders_files = async () => {
+  function guided_initiate_generate() {
+    // Initiate curation by calling Python function
+    let manifest_files_requested = false;
+    var main_curate_status = "Solving";
+    var main_total_generate_dataset_size;
+
+    if ("manifest-files" in sodaJSONObj) {
+      if ("destination" in sodaJSONObj["manifest-files"]) {
+        if (
+          sodaJSONObj["manifest-files"]["destination"] === "generate-dataset"
+        ) {
+          manifest_files_requested = true;
+          delete_imported_manifest();
+        }
+      }
+    }
+
+    let dataset_name = "";
+    let dataset_destination = "";
+
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      dataset_destination = "Pennsieve";
+    } else if ("generate-dataset" in sodaJSONObj) {
+      if ("destination" in sodaJSONObj["generate-dataset"]) {
+        let destination = sodaJSONObj["generate-dataset"]["destination"];
+        if (destination == "local") {
+          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+          dataset_destination = "Local";
+        }
+        if (destination == "bf") {
+          dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+          dataset_destination = "Pennsieve";
+        }
+      }
+    }
+
+    client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
+      if (error) {
+        $("#sidebarCollapse").prop("disabled", false);
+        var emessage = userError(error);
+        $("#guided-progress-bar-new-curate").attr("value", 0);
+        log.error(error);
+        console.error(error);
+        logCurationForAnalytics(
+          "Error",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.PREFIX,
+          [],
+          determineDatasetLocation()
+        );
+        logCurationForAnalytics(
+          "Error",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          ["Step 7", "Generate", "dataset", `${dataset_destination}`],
+          determineDatasetLocation()
+        );
+
+        file_counter = 0;
+        folder_counter = 0;
+        get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+          "Size",
+          main_total_generate_dataset_size
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+          main_total_generate_dataset_size
+        );
+
+        // get dataset id if available
+        let datasetLocation = determineDatasetLocation();
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
+          main_total_generate_dataset_size
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+          "Number of Files",
+          file_counter
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
+          file_counter
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
+          file_counter
+        );
+        //refresh dropdowns user has access too
+        client.invoke(
+          "api_bf_dataset_account",
+          defaultBfAccount,
+          (error, result) => {
+            if (error) {
+              log.error(error);
+              console.log(error);
+              var emessage = error;
+            } else {
+              datasetList = [];
+              datasetList = result;
+            }
+          }
+        );
+      } else {
+        main_total_generate_dataset_size = res[1];
+        $("#sidebarCollapse").prop("disabled", false);
+        log.info("Completed curate function");
+        if (manifest_files_requested) {
+          let high_level_folder_num = 0;
+          if ("dataset-structure" in sodaJSONObj) {
+            if ("folders" in sodaJSONObj["dataset-structure"]) {
+              for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+                high_level_folder_num += 1;
+              }
+            }
+          }
+
+          // get dataset id if available
+          let datasetLocation = determineDatasetLocation();
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest",
+            datasetLocation === "Pennsieve"
+              ? defaultBfDatasetId
+              : datasetLocation,
+            high_level_folder_num
+          );
+
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            `Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest - ${dataset_destination}`,
+            datasetLocation === "Pennsieve"
+              ? defaultBfDatasetId
+              : datasetLocation,
+            high_level_folder_num
+          );
+        }
+
+        file_counter = 0;
+        folder_counter = 0;
+        get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+
+        logCurationForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.PREFIX,
+          [],
+          determineDatasetLocation()
+        );
+
+        // for tracking the total size of all datasets ever created on SODA
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+          "Size",
+          main_total_generate_dataset_size
+        );
+
+        logCurationForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
+          determineDatasetLocation()
+        );
+
+        let datasetLocation = determineDatasetLocation();
+        // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
+          main_total_generate_dataset_size
+        );
+
+        // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
+          main_total_generate_dataset_size
+        );
+
+        // track amount of files for all datasets
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+          "Number of Files",
+          file_counter
+        );
+
+        // track amount of files for datasets by ID or Local
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
+          file_counter
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
+          datasetLocation === "Pennsieve"
+            ? defaultBfDatasetId
+            : datasetLocation,
+          file_counter
+        );
+
+        client.invoke(
+          "api_bf_dataset_account",
+          defaultBfAccount,
+          (error, result) => {
+            if (error) {
+              log.error(error);
+              console.log(error);
+              var emessage = error;
+            } else {
+              datasetList = [];
+              datasetList = result;
+            }
+          }
+        );
+      }
+    });
+
+    // Progress tracking function for main curate
+    var countDone = 0;
+    var timerProgress = setInterval(main_progressfunction, 1000);
+    function main_progressfunction() {
+      client.invoke("api_main_curate_function_progress", (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          document.getElementById(
+            "para-new-curate-progress-bar-error-status"
+          ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+          log.error(error);
+          console.error(error);
+        } else {
+          main_curate_status = res[0];
+          var start_generate = res[1];
+          var main_curate_progress_message = res[2];
+          main_total_generate_dataset_size = res[3];
+          var main_generated_dataset_size = res[4];
+          var elapsed_time_formatted = res[5];
+
+          //console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
+
+          if (start_generate === 1) {
+            divGenerateProgressBar.style.display = "block";
+            if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+              generateProgressBar.value = 100;
+              document.getElementById(
+                "para-new-curate-progress-bar-status"
+              ).innerHTML = main_curate_status + smileyCan;
+            } else {
+              var value =
+                (main_generated_dataset_size /
+                  main_total_generate_dataset_size) *
+                100;
+              generateProgressBar.value = value;
+              if (main_total_generate_dataset_size < displaySize) {
+                var totalSizePrint =
+                  main_total_generate_dataset_size.toFixed(2) + " B";
+              } else if (
+                main_total_generate_dataset_size <
+                displaySize * displaySize
+              ) {
+                var totalSizePrint =
+                  (main_total_generate_dataset_size / displaySize).toFixed(2) +
+                  " KB";
+              } else if (
+                main_total_generate_dataset_size <
+                displaySize * displaySize * displaySize
+              ) {
+                var totalSizePrint =
+                  (
+                    main_total_generate_dataset_size /
+                    displaySize /
+                    displaySize
+                  ).toFixed(2) + " MB";
+              } else {
+                var totalSizePrint =
+                  (
+                    main_total_generate_dataset_size /
+                    displaySize /
+                    displaySize /
+                    displaySize
+                  ).toFixed(2) + " GB";
+              }
+              var progressMessage = "";
+              progressMessage += main_curate_progress_message + "<br>";
+              progressMessage +=
+                "Progress: " +
+                value.toFixed(2) +
+                "%" +
+                " (total size: " +
+                totalSizePrint +
+                ") " +
+                "<br>";
+              progressMessage +=
+                "Elaspsed time: " + elapsed_time_formatted + "<br>";
+              document.getElementById(
+                "para-new-curate-progress-bar-status"
+              ).innerHTML = progressMessage;
+            }
+          } else {
+            document.getElementById(
+              "para-new-curate-progress-bar-status"
+            ).innerHTML =
+              main_curate_progress_message +
+              "<br>" +
+              "Elapsed time: " +
+              elapsed_time_formatted +
+              "<br>";
+          }
+        }
+      });
+
+      if (main_curate_status === "Done") {
+        $("#sidebarCollapse").prop("disabled", false);
+        countDone++;
+        if (countDone > 1) {
+          log.info("Done curate track");
+          // then show the sidebar again
+          // forceActionSidebar("show");
+          clearInterval(timerProgress);
+          // electron.powerSaveBlocker.stop(prevent_sleep_id)
+        }
+      }
+    }
+  }
+
+  const guided_main_curate = async () => {
     console.log(sodaJSONObj);
     sodaJSONObj["starting-point"]["type"] = "bf";
     let dataset_name = "";
@@ -1133,18 +1508,6 @@ $(document).ready(() => {
         return;
       }
     }
-    //  from here you can modify
-    document.getElementById("para-please-wait-new-curate").innerHTML =
-      "Please wait...";
-    document.getElementById(
-      "para-new-curate-progress-bar-error-status"
-    ).innerHTML = "";
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "";
-    document.getElementById("div-new-curate-progress").style.display = "none";
-    progressBarNewCurate.value = 0;
-    generateProgressBar.value = 0;
-
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in sodaJSONObj["dataset-structure"]) {
       sodaJSONObj["dataset-structure"]["files"] = {};
@@ -1169,17 +1532,10 @@ $(document).ready(() => {
       (error, res) => {
         if (error) {
           var emessage = userError(error);
-          document.getElementById(
-            "para-new-curate-progress-bar-error-status"
-          ).innerHTML =
-            "<span style='color: red;'> Error: " + emessage + "</span>";
-          document.getElementById("para-please-wait-new-curate").innerHTML = "";
           console.error(error);
           $("#sidebarCollapse").prop("disabled", false);
           reject(error);
         } else {
-          document.getElementById("para-please-wait-new-curate").innerHTML =
-            "Please wait...";
           log.info("Continue with curate");
           var message = "";
           error_files = res[0];
@@ -1215,21 +1571,13 @@ $(document).ready(() => {
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                console.log("Continue");
-                initiate_generate();
+                guided_initiate_generate();
               } else {
-                console.log("Stop");
                 $("#sidebarCollapse").prop("disabled", false);
-                document.getElementById(
-                  "para-please-wait-new-curate"
-                ).innerHTML = "Return to make changes";
-                document.getElementById("div-generate-comeback").style.display =
-                  "flex";
               }
             });
           } else {
-            console.log(sodaJSONObj);
-            initiate_generate();
+            guided_initiate_generate();
           }
         }
       }
