@@ -1177,6 +1177,7 @@ $(document).ready(() => {
           document.getElementById("para-please-wait-new-curate").innerHTML = "";
           console.error(error);
           $("#sidebarCollapse").prop("disabled", false);
+          reject(error);
         } else {
           document.getElementById("para-please-wait-new-curate").innerHTML =
             "Please wait...";
