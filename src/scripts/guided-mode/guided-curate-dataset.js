@@ -647,12 +647,10 @@ $(document).ready(() => {
     bfAccount,
     datasetName,
     pathToCroppedBannerImage,
-    readMe,
     userPermissions,
     teamPermissions
   ) => {
     const promises = [
-      guided_add_description(bfAccount, datasetName, readMe),
       guided_add_user_permissions(bfAccount, datasetName, userPermissions),
       guided_add_team_permissions(bfAccount, datasetName, teamPermissions),
       guided_add_banner_image(bfAccount, datasetName, pathToCroppedBannerImage),
@@ -1074,7 +1072,6 @@ $(document).ready(() => {
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
     let guidedBannerImagePath =
       sodaJSONObj["digital-metadata"]["banner-image-path"];
-    console.log(guidedPIOwner);
 
     guidedUpdateJSONStructureGenerate();
 
@@ -1089,11 +1086,13 @@ $(document).ready(() => {
           guidedBfAccount,
           guidedDatasetName,
           guidedBannerImagePath,
-          guidedReadMe,
           guidedUsers,
           guidedTeams
         );
       })
+      .then(
+        guided_add_description(guidedBfAccount, guidedDatasetName, guidedReadMe)
+      )
       .then(guided_add_folders_files())
       /*
       .then((res) => {
