@@ -23,24 +23,24 @@ document
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         timerProgressBar: false,
-      })
+      });
 
       // user doesn't want to clear their results and reset
       if (!userReply) {
-        return
+        return;
       }
 
       // hide question 3
-      document.querySelector("#validate_dataset-question-3").style.visibility = "hidden"
+      document.querySelector("#validate_dataset-question-3").style.visibility =
+        "hidden";
 
-      // show confirm button found under the input 
+      // show confirm button found under the input
       let confirmDatasetBtn = document.querySelector(
         "#validator-confirm-local-dataset-btn"
       );
 
       // set the field display property to none to remove the field margings
       confirmDatasetBtn.parentElement.style.display = "block";
-
     }
 
     // open folder select dialog
@@ -99,8 +99,9 @@ document
         `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
       );
     } catch (err) {
-      // hide the validation errors table 
-      document.querySelector("#validation-errors-container").style.visiility = "hidden"
+      // hide the validation errors table
+      document.querySelector("#validation-errors-container").style.visiility =
+        "hidden";
 
       // display message to user
       return handleAxiosValidationErrors(err);
@@ -120,15 +121,14 @@ document
       showConfirmButton: true,
     });
 
-    if (!validationErrors.length) return
-
+    if (!validationErrors.length) return;
 
     // for now place all of the errors into the page
     displayValidationErrors(validationErrors);
 
-    // show the validation errors table 
-    document.querySelector("#validation-errors-container").style.visiility = "visible"
-
+    // show the validation errors table
+    document.querySelector("#validation-errors-container").style.visiility =
+      "visible";
   });
 
 const displayValidationErrors = (errors) => {
