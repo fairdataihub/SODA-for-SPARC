@@ -627,12 +627,20 @@ $(document).ready(() => {
 
     if (!response.ok) {
       const message = `An error has occured: ${response.status}`;
+      Swal.fire({
+        icon: "error",
+        text: `An error has occured: ${response.status}`,
+        confirmButtonText: "OK",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
       throw new Error(message);
     }
 
     const createDatasetResponseJson = response.json();
     console.log(createDatasetResponseJson);
     return createDatasetResponseJson;
+    alert("I didn't throw");
   };
 
   const addPennsieveMetadata = async (
@@ -643,10 +651,9 @@ $(document).ready(() => {
     userPermissions
   ) => {
     const promises = [
-      guided_add_banner_image(bfAccount, datasetName, pathToCroppedBannerImage),
       updateDatasetReadme(datasetName, datasetReadme),
       guided_add_user_permissions(bfAccount, datasetName, userPermissions),
-      guided_add_description(bfAccount, datasetName),
+      guided_add_banner_image(bfAccount, datasetName, pathToCroppedBannerImage),
     ];
     const result = await Promise.allSettled(promises);
     return result;
@@ -1058,7 +1065,8 @@ $(document).ready(() => {
     );
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
-    let guidedImagePath = sodaJSONObj["digital-metadata"]["banner-image-path"];
+    let guidedBannerImagePath =
+      sodaJSONObj["digital-metadata"]["banner-image-path"];
 
     guidedUpdateJSONStructureGenerate();
 
@@ -1068,19 +1076,26 @@ $(document).ready(() => {
       guidedTags,
       guidedLicense
     )
-      .then((data) => {
+      .then(
         addPennsieveMetadata(
           guidedBfAccount,
           guidedDatasetName,
-          guidedImagePath,
+          guidedBannerImagePath,
           guidedReadMe,
           guidedUsers
-        );
-      })
-      .then((data) => {
-        guided_add_folders_files();
-      })
-      .catch((error) => console.log(error));
+        )
+      )
+      .then(guided_add_folders_files())
+      .catch((error) => {
+        console.log(error);
+        Swal.fire({
+          icon: "error",
+          text: error,
+          confirmButtonText: "OK",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      });
   };
 
   const guidedUpdateJSONStructureGenerate = () => {
@@ -1359,7 +1374,8 @@ $(document).ready(() => {
       //Check if cropped image path is empty, and if not, store the path to the sodaJSONObj
       if (guidedCroppedBannerImagePath) {
         setGuidedBannerImage(guidedCroppedBannerImagePath);
-        console.log(guidedCroppedBannerImagePath);
+      } else {
+        setGuidedBannerImage("/src/assets/img/logo-can1024-grey-circle.png");
       }
       $("#guided-back-button").css("visibility", "visible");
     }
