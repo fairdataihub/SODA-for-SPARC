@@ -8,11 +8,12 @@ const {
 document
   .querySelector("#validate-local-dataset-path")
   .addEventListener("click", (evt) => {
+    // check if the validator error results table is visible
+    let validatorErrors = document.querySelectorAll(
+      "#validate_dataset-question-4 tbody tr"
+    );
 
-    // check if the validator error results table is visible 
-    let validatorErrors = document.querySelectorAll("#validate_dataset-question-4 tbody tr")
-
-    console.log("Validator errors: ", validatorErrors.length)
+    console.log("Validator errors: ", validatorErrors.length);
 
     // open folder select dialog
     ipcRenderer.send("open-folder-dialog-validate-local-dataset");
@@ -156,8 +157,8 @@ const transitionToValidateQuestionThree = () => {
     "#validator-confirm-local-dataset-btn"
   );
 
- confirmDatasetBtn.style.visibility = "hidden"
+  confirmDatasetBtn.style.visibility = "hidden";
 
- // set the field display property to none to remove the field margings 
- confirmDatasetBtn.parentElement.style.display = "none"
-}
+  // set the field display property to none to remove the field margings
+  confirmDatasetBtn.parentElement.style.display = "none";
+};
