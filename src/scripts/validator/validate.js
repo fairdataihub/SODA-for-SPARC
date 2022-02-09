@@ -7,13 +7,41 @@ const {
 // open folder selection dialog so the user can choose which local dataset they would like to validate
 document
   .querySelector("#validate-local-dataset-path")
-  .addEventListener("click", (evt) => {
+  .addEventListener("click", async (evt) => {
     // check if the validator error results table is visible
     let validatorErrors = document.querySelectorAll(
       "#validate_dataset-question-4 tbody tr"
     );
 
     console.log("Validator errors: ", validatorErrors.length);
+
+    if (validatorErrors.length) {
+      let userReply = await Swal.fire({
+        title: `This will clear your dataset validation results. Are you sure you want to continue?`,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+      })
+
+      // user doesn't want to clear their results and reset
+      if (!userReply) {
+        return
+      }
+
+      // hide question 3
+      document.querySelector("#validate_dataset-question-3").style.visibility = "hidden"
+
+      // show confirm button found under the input 
+      let confirmDatasetBtn = document.querySelector(
+        "#validator-confirm-local-dataset-btn"
+      );
+
+      // set the field display property to none to remove the field margings
+      confirmDatasetBtn.parentElement.style.display = "block";
+
+    }
 
     // open folder select dialog
     ipcRenderer.send("open-folder-dialog-validate-local-dataset");
@@ -54,7 +82,6 @@ document
     Swal.fire({
       title: `Validating your dataset`,
       html: "Please wait...",
-      // timer: 5000,
       allowEscapeKey: false,
       allowOutsideClick: false,
       heightAuto: false,
@@ -72,6 +99,10 @@ document
         `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
       );
     } catch (err) {
+      // hide the validation errors table 
+      document.querySelector("#validation-errors-container").style.visiility = "hidden"
+
+      // display message to user
       return handleAxiosValidationErrors(err);
     }
     let validationErrors = validationResponse.data;
@@ -89,10 +120,15 @@ document
       showConfirmButton: true,
     });
 
-    if (validationErrors.length) {
-      // for now place all of the errors into the page
-      displayValidationErrors(validationErrors);
-    }
+    if (!validationErrors.length) return
+
+
+    // for now place all of the errors into the page
+    displayValidationErrors(validationErrors);
+
+    // show the validation errors table 
+    document.querySelector("#validation-errors-container").style.visiility = "visible"
+
   });
 
 const displayValidationErrors = (errors) => {
@@ -156,8 +192,6 @@ const transitionToValidateQuestionThree = () => {
   let confirmDatasetBtn = document.querySelector(
     "#validator-confirm-local-dataset-btn"
   );
-
-  confirmDatasetBtn.style.visibility = "hidden";
 
   // set the field display property to none to remove the field margings
   confirmDatasetBtn.parentElement.style.display = "none";
