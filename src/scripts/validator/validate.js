@@ -196,3 +196,12 @@ const transitionToValidateQuestionThree = () => {
   // set the field display property to none to remove the field margings
   confirmDatasetBtn.parentElement.style.display = "none";
 };
+
+const transitionToValidateQuestionTwo = () => {
+  // show the confirm button if it was hidden 
+  let confirmDatasetBtn = document.querySelector(
+    "#validator-confirm-local-dataset-btn"
+  );
+
+  confirmDatasetBtn.parentElement.style.display = "flex"
+}
