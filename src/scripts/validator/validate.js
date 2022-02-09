@@ -143,18 +143,18 @@ const addValidationErrorToTable = (
   tableBody.appendChild(row);
 };
 
-
 /*
 *******************************************************************************************************************
 // Presentation logic regarding transitioning from one question to another and/or resetting state upon user action 
 *******************************************************************************************************************
 */
 
-
-// as part of the transition from 
+// as part of the transition from
 const transitionToValidateQuestionThree = () => {
- // hide the confirm button 
- let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn")
+  // hide the confirm button
+  let confirmDatasetBtn = document.querySelector(
+    "#validator-confirm-local-dataset-btn"
+  );
 
  confirmDatasetBtn.style.visibility = "hidden"
 
