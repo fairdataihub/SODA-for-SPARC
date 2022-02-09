@@ -647,12 +647,12 @@ $(document).ready(() => {
     bfAccount,
     datasetName,
     pathToCroppedBannerImage,
-    datasetReadme,
+    readMe,
     userPermissions,
     teamPermissions
   ) => {
     const promises = [
-      updateDatasetReadme(datasetName, datasetReadme),
+      guided_add_description(bfAccount, datasetName, readMe),
       guided_add_user_permissions(bfAccount, datasetName, userPermissions),
       guided_add_team_permissions(bfAccount, datasetName, teamPermissions),
       guided_add_banner_image(bfAccount, datasetName, pathToCroppedBannerImage),
@@ -998,41 +998,13 @@ $(document).ready(() => {
     return requiredFields;
   };
 
-  const guided_add_description = async (
-    bfAccount,
-    bfDataset,
-    studyPurpose,
-    dataCollection,
-    primaryConclusion
-  ) => {
-    // get the text from the three boxes and store them in their own variables
-    let requiredFields = [];
-
-    // read and sanatize the input for spaces and reintroduced bolded keywords
-    if (studyPurpose.length) {
-      requiredFields.push("**Study Purpose:** " + studyPurpose + "\n");
-    }
-
-    if (dataCollection.length) {
-      requiredFields.push("**Data Collection:** " + dataCollection + "\n");
-    }
-
-    if (primaryConclusion.length) {
-      requiredFields.push(
-        "**Primary Conclusion:** " + primaryConclusion + "\n"
-      );
-    }
-
-    // validate the new markdown description the user created
-    requiredFields = requiredFields.join("");
-    console.log(requiredFields);
-
+  const guided_add_description = async (bfAccount, bfDataset, readMe) => {
     return new Promise((resolve, reject) => {
       client.invoke(
         "api_bf_add_description",
         bfAccount,
         bfDataset,
-        "foo",
+        readMe,
         (error, res) => {
           if (error) {
             notyf.open({
@@ -1053,7 +1025,7 @@ $(document).ready(() => {
             });
             guidedIncreaseCurateProgressBar(5);
             console.log("added descr + " + res);
-            resolve(`Subtitle added to ${datasetName}`);
+            resolve(`Description added to ${datasetName}`);
           }
         }
       );
@@ -1129,6 +1101,7 @@ $(document).ready(() => {
       guidedDataCollection,
       guidedPrimaryConclusion
     );
+    console.log(guidedReadMe);
     let guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     let guidedLicense = sodaJSONObj["digital-metadata"]["license"];
     let guidedBannerImagePath =
