@@ -66,11 +66,11 @@
                       <div class="folder-checkbox">
                         <input
                           class="folder-input-check"
-                          name="submission-1"
+                          name="validate-1-Local"
                           type="radio"
-                          id="submission-1-B"
+                          id="validate-1-Local"
                         />
-                        <label for="submission-1-B"></label>
+                        <label for="validate-1-Local"></label>
                       </div>
                     </div>
                     <div class="card-body">
@@ -96,7 +96,7 @@
                 <div style="margin: 15px 0">
                   <div
                     class="option-card radio-button"
-                    data-current="Question-prepare-submission-1"
+                    data-current="Question-prepare-submission-1-local"
                     data-next="Question-prepare-submission-3"
                     onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', '', 'individual-question prepare-submission')"
                     style="
@@ -136,7 +136,9 @@
           style="height: auto"
         >
           <div class="ui form">
-            <div class="grouped fields">
+            
+            <!--Validating a local dataset-->
+            <div class="grouped fields" id="validate_dataset-question-1-local-container">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Where is the local dataset located?</label
               >
@@ -176,6 +178,119 @@
                 >
                   Confirm
                 </button>
+              </div>
+            </div>
+
+            <!--Selecting a Pennsieve dataset-->
+            <!--Shown when user transitions to this question by clicking the Pennsieve dataset radio card-->
+            <div class="grouped fields" id="pennsieve-question-2-container">
+              <label style="font-size: 17px; color: var(--color-bg-plum)">Which Pennsieve dataset is the submission.xlsx located at?
+              </label>
+              <div class="field" style="margin: 0 auto !important; width: 500px !important">
+                <div style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  ">
+                  <div style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    ">
+                    <div class="card-container prepare-submission">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                          Current account:
+                        </h5>
+                        <div class="change-current-account" onclick="openDropdownPrompt(null, 'bf')">
+                          <h5 class="card-right bf-account-span">SODA-Pennsieve</h5>
+  
+                          <svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    ">
+                    <div class="card-container prepare-submission">
+                      <div>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                          Account details:
+                        </h5>
+                        <h5 class="card-right bf-account-details-span">User email: cmarroquin@calmi2.org<br>Organization: SPARC Consortium</h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    ">
+                    <div class="card-container prepare-submission">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                          Current dataset:
+                        </h5>
+                        <div class="change-current-account" onclick="openDropdownPrompt(null, 'dataset')">
+                          <h5 id="bf_dataset_load_submission" class="card-right bf-dataset-span">
+                            None
+                          </h5>
+  
+                          <svg class="svg-change-current-account dataset bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ui active green inline loader small" style="display: none"></div>
+                  </div>
+                </div>
+                <div style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  " id="div-check-bf-import-submission">
+                  <button onclick="checkBFImportSubmission()" style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    ">
+                    Confirm
+                  </button>
+                  <button onclick="transitionFreeFormMode(this, 'Question-prepare-submission-5', 'create_submission-tab', '', 'individual-question prepare-submission')" data-next="Question-prepare-submission-2" id="button-fake-confirm-existing-bf-submission-file-load" style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                      display: none;
+                    ">
+                    Fake Confirm
+                  </button>
+                </div>
               </div>
             </div>
           </div>

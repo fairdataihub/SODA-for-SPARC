@@ -4,6 +4,13 @@ const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
 
+
+document.querySelector("#validate_dataset-1-local").addEventListener("click", () => {
+  console.log("Event emitted")
+  // check the input 
+  document.querySelector("#validate-1-Local").checked = true
+})
+
 // open folder selection dialog so the user can choose which local dataset they would like to validate
 document
   .querySelector("#validate-local-dataset-path")
@@ -193,20 +200,46 @@ const transitionToValidateQuestionThree = () => {
     "#validator-confirm-local-dataset-btn"
   );
 
-  // set the field display property to none to remove the field margings
+  // set the field display property to none to remove the margins
   confirmDatasetBtn.parentElement.style.display = "none";
 };
 
-const transitionToValidateQuestionTwo = () => {
-  // show the confirm button if it was hidden
-  let confirmDatasetBtn = document.querySelector(
-    "#validator-confirm-local-dataset-btn"
-  );
+const transitionToValidateQuestionTwo = async () => {
+  // hide both local and pennsieve sections 
+  let pennsieveSection = document.querySelector("#pennsieve-question-2-container")
+  pennsieveSection.style = "display: none !important;"
 
-  confirmDatasetBtn.parentElement.style.display = "flex"
 
-  // confirm that the input holding the local dataset path's placeholder is reset
-  let input = document.querySelector("#validate-local-dataset-path")
-  input.setAttribute("placeholder", "Browse here")
-  input.value = ""
+  let localSection = document.querySelector("#validate_dataset-question-1-local-container")
+  localSection.style = "display: none !important";
+
+  // allow time for the check box to get checked
+  await wait(300)
+
+  // check if the local validation option has been checked 
+  let localDatasetCard = document.querySelector("#validate-1-Local")
+  let validatingLocalDataset = localDatasetCard.checked
+
+  // perform the transition for a local dataset 
+  if (validatingLocalDataset) {
+
+    // show local section
+    localSection.style = "display: flex;"
+
+    // show the confirm button if it was hidden
+    let confirmDatasetBtn = document.querySelector(
+      "#validator-confirm-local-dataset-btn"
+    );
+
+    confirmDatasetBtn.parentElement.style.display = "flex"
+
+    // confirm that the input holding the local dataset path's placeholder is reset
+    let input = document.querySelector("#validate-local-dataset-path")
+    input.setAttribute("placeholder", "Browse here")
+    input.value = ""
+
+    return
+  }
+
+  // transition for pennsieve dataset 
 }
