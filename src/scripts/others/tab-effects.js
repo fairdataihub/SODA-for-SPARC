@@ -1865,9 +1865,9 @@ async function transitionFreeFormMode(
     case "validate_dataset-question-2":
       transitionToValidateQuestionThree();
       break;
-    case "validate_dataset-question-1": 
-    transitionToValidateQuestionTwo()
-    break;
+    case "validate_dataset-question-1":
+      transitionToValidateQuestionTwo();
+      break;
   }
 
   if (!continueProgressRC) {
