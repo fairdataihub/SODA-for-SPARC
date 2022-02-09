@@ -707,9 +707,6 @@ $(document).ready(() => {
   };
 
   const guided_add_subtitle = (bfAccount, datasetName, datasetSubtitle) => {
-    console.log(bfAccount);
-    console.log(datasetName);
-    console.log(datasetSubtitle);
     return new Promise((resolve, reject) => {
       console.log("adding subtitle");
       log.info("Adding subtitle to dataset");
@@ -762,21 +759,6 @@ $(document).ready(() => {
   const guided_add_PI_owner = async (bfAccount, bfDataset, datasetPiOwner) => {
     return new Promise((resolve) => {
       log.info("Changing PI Owner of datset");
-
-      Swal.fire({
-        title: "Changing PI Owner of dataset",
-        html: "Please wait...",
-        // timer: 5000,
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
       client.invoke(
         "api_bf_add_permission",
         bfAccount,
@@ -804,7 +786,7 @@ $(document).ready(() => {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
-            resolve(["failed", error]);
+            reject(error);
           } else {
             log.info("Changed PI Owner of datset");
 
@@ -822,7 +804,7 @@ $(document).ready(() => {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
-            resolve(["success", res]);
+            resolve(res);
           }
         }
       );
@@ -1090,6 +1072,7 @@ $(document).ready(() => {
     let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+    let guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
     let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
@@ -1125,7 +1108,13 @@ $(document).ready(() => {
           guidedTeams
         )
       )
+      .then(
+        guided_add_description(guidedBfAccount, guidedDatasetName, guidedReadMe)
+      )
       .then(guided_add_folders_files())
+      .then(
+        guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner)
+      )
       .catch((error) => {
         console.log(error);
         Swal.fire({
