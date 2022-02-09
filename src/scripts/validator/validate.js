@@ -198,10 +198,10 @@ const transitionToValidateQuestionThree = () => {
 };
 
 const transitionToValidateQuestionTwo = () => {
-  // show the confirm button if it was hidden 
+  // show the confirm button if it was hidden
   let confirmDatasetBtn = document.querySelector(
     "#validator-confirm-local-dataset-btn"
   );
 
-  confirmDatasetBtn.parentElement.style.display = "flex"
-}
+  confirmDatasetBtn.parentElement.style.display = "flex";
+};
