@@ -642,7 +642,6 @@ $(document).ready(() => {
     datasetReadme,
     userPermissions
   ) => {
-    console.log(datasetReadme);
     const promises = [
       guided_add_banner_image(bfAccount, datasetName, pathToCroppedBannerImage),
       updateDatasetReadme(datasetName, datasetReadme),
@@ -1524,12 +1523,23 @@ $(document).ready(() => {
     }
   });
 
+  $(".guided--form-label").on("click", () => {
+    traverseToTab("guided-designate-permissions-tab");
+  });
   const traverseToTab = (targetElementId) => {
     let targetElement = $(`#${targetElementId}`);
-    console.log(current_progression_tab);
+    console.log(current_sub_step.parent());
+    console.log(targetElement.parent());
+    if (
+      current_sub_step.parent().attr("id") === targetElement.parent().attr("id")
+    ) {
+      current_sub_step.hide();
+      current_sub_step = targetElement;
+      current_sub_step.show();
+    }
+    targetElement.show();
     console.log(targetElement.parent());
   };
-  traverseToTab("guided-basic-description-tab");
   //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(
     "guided-tagify-submission-milestone-tags"
