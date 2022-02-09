@@ -111,6 +111,7 @@ const removeUserPermission = (userParentElement) => {
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
   //append created team obj to array
   guidedTeamPermissions.push(newTeamPermissionObj);
+  console.log(newTeamPermissionObj);
 
   const newTeamPermissionElement = $("<div>", {
     class: "guided--dataset-content-container",
@@ -200,8 +201,7 @@ $(document).ready(() => {
 
   $("#guided-button-add-permission-team").on("click", function () {
     const newTeamPermissionObj = {
-      teamString: $("#guided_bf_list_teams option:selected").text().trim(),
-      UUID: $("#guided_bf_list_teams").val().trim(),
+      teamString: $("#guided_bf_list_teams").val().trim(),
       permission: $("#select-permission-list-4").val(),
     };
     guidedAddTeamPermission(newTeamPermissionObj);
@@ -648,11 +648,13 @@ $(document).ready(() => {
     datasetName,
     pathToCroppedBannerImage,
     datasetReadme,
-    userPermissions
+    userPermissions,
+    teamPermissions
   ) => {
     const promises = [
       updateDatasetReadme(datasetName, datasetReadme),
       guided_add_user_permissions(bfAccount, datasetName, userPermissions),
+      guided_add_team_permissions(bfAccount, datasetName, teamPermissions),
       guided_add_banner_image(bfAccount, datasetName, pathToCroppedBannerImage),
     ];
     const result = await Promise.allSettled(promises);
@@ -903,6 +905,50 @@ $(document).ready(() => {
     });
   };
 
+  const guided_add_team = (
+    bfAccount,
+    datasetName,
+    teamString,
+    selectedRole
+  ) => {
+    return new Promise((resolve, reject) => {
+      log.info("Adding a permission for a team on a dataset");
+      client.invoke(
+        "api_bf_add_permission_team",
+        bfAccount,
+        datasetName,
+        teamString,
+        selectedRole,
+        (error, res) => {
+          if (error) {
+            notyf.open({
+              duration: "5000",
+              type: "error",
+              message: "Failed to add team permission",
+            });
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: "Team permission added",
+            });
+            log.info("Dataset permission added");
+            guidedIncreaseCurateProgressBar(5);
+            console.log("permission added + " + res);
+
+            resolve(
+              `${teamString} added as ${selectedRole} to ${datasetName} dataset`
+            );
+          }
+        }
+      );
+    });
+  };
+
   const guided_add_user_permissions = async (
     bfAccount,
     datasetName,
@@ -917,6 +963,25 @@ $(document).ready(() => {
       );
     });
     const result = await Promise.allSettled(promises);
+    console.log(result.map((promise) => promise.status));
+  };
+
+  const guided_add_team_permissions = async (
+    bfAccount,
+    datasetName,
+    teamPermissionsArray
+  ) => {
+    console.log(teamPermissionsArray);
+    const promises = teamPermissionsArray.map((teamPermission) => {
+      return guided_add_team(
+        bfAccount,
+        datasetName,
+        teamPermission.teamString,
+        teamPermission.permission
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    console.log(result);
     console.log(result.map((promise) => promise.status));
   };
 
@@ -1053,6 +1118,7 @@ $(document).ready(() => {
     let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     let guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     let guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+    let guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
     let guidedStudyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
     let guidedDataCollection =
       sodaJSONObj["digital-metadata"]["data-collection"];
@@ -1082,7 +1148,8 @@ $(document).ready(() => {
           guidedDatasetName,
           guidedBannerImagePath,
           guidedReadMe,
-          guidedUsers
+          guidedUsers,
+          guidedTeams
         )
       )
       .then(guided_add_folders_files())
