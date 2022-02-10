@@ -237,9 +237,9 @@ const transitionToValidateQuestionTwo = async () => {
     let input = document.querySelector("#validate-local-dataset-path")
     input.setAttribute("placeholder", "Browse here")
     input.value = ""
-
-    return
+  } else {
+    console.log("Should be in the sjhasdkh")
+     // transition for pennsieve dataset 
+     pennsieveSection.style = "display: flex;"
   }
-
-  // transition for pennsieve dataset 
 }
