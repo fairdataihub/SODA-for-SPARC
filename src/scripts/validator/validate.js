@@ -237,12 +237,12 @@ const transitionToValidateQuestionTwo = async () => {
     confirmDatasetBtn.parentElement.style.display = "flex";
 
     // confirm that the input holding the local dataset path's placeholder is reset
-    let input = document.querySelector("#validate-local-dataset-path")
-    input.setAttribute("placeholder", "Browse here")
-    input.value = ""
+    let input = document.querySelector("#validate-local-dataset-path");
+    input.setAttribute("placeholder", "Browse here");
+    input.value = "";
   } else {
-    console.log("Should be in the sjhasdkh")
-     // transition for pennsieve dataset 
-     pennsieveSection.style = "display: flex;"
+    console.log("Should be in the sjhasdkh");
+    // transition for pennsieve dataset
+    pennsieveSection.style = "display: flex;";
   }
-}
+};
