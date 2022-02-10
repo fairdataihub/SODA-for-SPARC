@@ -25,6 +25,9 @@ const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
       percentToIncrease
   );
 };
+const setGuidedProgressBarValue = (value) => {
+  $("#guided-progress-bar-new-curate").attr("value", value);
+};
 function makeid(length) {
   var result = "";
   var characters =
@@ -1392,9 +1395,6 @@ $(document).ready(() => {
       client.invoke("api_main_curate_function_progress", (error, res) => {
         if (error) {
           var emessage = userError(error);
-          document.getElementById(
-            "para-new-curate-progress-bar-error-status"
-          ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
           log.error(error);
           console.error(error);
         } else {
@@ -1405,21 +1405,16 @@ $(document).ready(() => {
           var main_generated_dataset_size = res[4];
           var elapsed_time_formatted = res[5];
 
-          //console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
-
           if (start_generate === 1) {
-            divGenerateProgressBar.style.display = "block";
+            $("#guided-progress-bar-new-curate").css("display", "block");
             if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-              generateProgressBar.value = 100;
-              document.getElementById(
-                "para-new-curate-progress-bar-status"
-              ).innerHTML = main_curate_status + smileyCan;
+              setGuidedProgressBarValue(100);
             } else {
               var value =
                 (main_generated_dataset_size /
                   main_total_generate_dataset_size) *
                 100;
-              generateProgressBar.value = value;
+              setGuidedProgressBarValue(value);
               if (main_total_generate_dataset_size < displaySize) {
                 var totalSizePrint =
                   main_total_generate_dataset_size.toFixed(2) + " B";
