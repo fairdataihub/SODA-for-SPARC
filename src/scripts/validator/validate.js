@@ -158,7 +158,7 @@ const validateLocalDataset = async () => {
     title: `Your dataset has been successfully validated`,
     text: validationErrors.length
       ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
-      : `Your dataset is valid according to SPAR guidelines.`,
+      : `Your dataset is valid according to SPARC guidelines.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
     heightAuto: false,
@@ -185,7 +185,18 @@ const validatePennsieveDataset = async () => {
     "#bf_dataset_load_validator"
   ).textContent;
 
-  console.log(axiosValidatorClient);
+  Swal.fire({
+    title: `Validating your dataset`,
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
   let validationResponse;
 
@@ -203,7 +214,18 @@ const validatePennsieveDataset = async () => {
     return handleAxiosValidationErrors(err);
   }
 
-  console.log(validationResponse);
+  Swal.fire({
+    title: `Your dataset has been successfully validated`,
+    text: validationResponse.data.length
+      ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
+      : `Your dataset is valid according to SPARC guidelines.`,
+    allowEscapeKey: true,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    showConfirmButton: true,
+  });
 
   // check if there are validation errors
   if (!validationErrorsOccurred(validationResponse.data)) {
