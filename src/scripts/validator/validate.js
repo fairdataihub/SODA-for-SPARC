@@ -4,8 +4,7 @@ const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
 
-
-// check the local dataset input 
+// check the local dataset input
 document
   .querySelector("#validate_dataset-1-local")
   .addEventListener("click", () => {
@@ -16,20 +15,17 @@ document
     document.querySelector("#validate-1-Pennsieve").checked = false;
   });
 
-
-  // check the pennsieve dataset input 
-  document
+// check the pennsieve dataset input
+document
   .querySelector("#validate_dataset-1-pennsieve")
   .addEventListener("click", () => {
     console.log("Event emitted");
     // check the input
     document.querySelector("#validate-1-Pennsieve").checked = true;
 
-    // uncheck the other card's input 
+    // uncheck the other card's input
     document.querySelector("#validate-1-Local").checked = false;
   });
-
-
 
 // open folder selection dialog so the user can choose which local dataset they would like to validate
 document
@@ -241,7 +237,7 @@ const transitionToValidateQuestionTwo = async () => {
   let localDatasetCard = document.querySelector("#validate-1-Local");
   let validatingLocalDataset = localDatasetCard.checked;
 
-  console.log("Validation is: ", validatingLocalDataset)
+  console.log("Validation is: ", validatingLocalDataset);
 
   // perform the transition for a local dataset
   if (validatingLocalDataset) {
@@ -260,12 +256,10 @@ const transitionToValidateQuestionTwo = async () => {
     input.setAttribute("placeholder", "Browse here");
     input.value = "";
   } else {
-    console.log("Stuff is happening")
+    console.log("Stuff is happening");
 
-
-    // hide the local dataset section 
+    // hide the local dataset section
     localSection.style = "display: none !important;";
-
 
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
