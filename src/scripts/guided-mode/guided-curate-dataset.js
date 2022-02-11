@@ -1580,7 +1580,7 @@ $(document).ready(() => {
   };
 
   //dataset metadata functions
-  const guidedSaveSubmissionMetadata = () => {
+  const guidedSaveAwardAndMilestoneInformation = () => {
     awardRes = $("#guided-submission-sparc-award").val();
     dateRes = $("#guided-submission-completion-date").val();
     milestonesRes = Array.from(guidedSubmissionTagsTagify.getTagElms()).map(
@@ -1602,13 +1602,44 @@ $(document).ready(() => {
         title: "Incomplete information",
       });
     } else {
-      sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["sparcAward"] =
         awardRes;
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
         milestonesRes;
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["completionDate"] =
         dateRes;
+    }
+  };
+  const guidedSaveDatasetInformation = () => {
+    let dsType = $("#guided-ds-type").val();
+    if (dsType == "") {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: "Please fill in all of the required fields.",
+        title: "Incomplete information",
+      });
+    } else {
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["type"] = dsType;
+    }
+  };
+  const guidedSaveParticipantInformation = () => {
+    let numSubjects = $("#guided-ds-samples-no").val();
+    let numSamples = $("#guided-ds-samples-no").val();
+    if (numSubjects.length == 0 || numSamples.length == 0) {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: "Please fill in all of the required fields.",
+        title: "Incomplete information",
+      });
+    } else {
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] =
+        numSubjects;
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] =
+        numSamples;
     }
   };
 
@@ -1751,6 +1782,10 @@ $(document).ready(() => {
       }
       datasetStructureJSONObj = { folders: {}, files: {} };
       sodaJSONObj["dataset-metadata"] = {};
+      sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+      sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
+      sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
+      sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
       sodaJSONObj["digital-metadata"] = {};
       sodaJSONObj["generate-dataset"]["dataset-name"] = $(
         "#guided-dataset-name-input"
@@ -1852,7 +1887,14 @@ $(document).ready(() => {
     if (
       current_sub_step.attr("id") == "guided-create-submission-metadata-tab"
     ) {
-      guidedSaveSubmissionMetadata();
+      guidedSaveAwardAndMilestoneInformation();
+    }
+
+    if (
+      current_sub_step.attr("id") == "guided-create-description-metadata-tab"
+    ) {
+      guidedSaveDatasetInformation();
+      guidedSaveParticipantInformation();
     }
 
     //if more tabs in parent tab, go to next tab and update capsule
