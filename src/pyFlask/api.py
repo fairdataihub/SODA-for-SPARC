@@ -41,8 +41,11 @@ def hello_world():
 
 
 @app.route("/api_validate_pennsieve_dataset")
-def api_ps_retrieve_dataset():    
-    return jsonify([])
+def api_ps_retrieve_dataset():
+    for i in range(0, 100000): 
+        pass
+    
+    return jsonify([{"message": "sahahshas", "validator": "required"}])
 
 
 @app.route("/api_validate_dataset_pipeline")

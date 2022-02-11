@@ -110,8 +110,6 @@ document
     let localDatasetCard = document.querySelector("#validate-1-Local");
     let validatingLocalDataset = localDatasetCard.checked;
 
-    console.log("Running validator: ", validatingLocalDataset);
-
     if (validatingLocalDataset) {
       await validateLocalDataset();
     } else {
@@ -175,7 +173,7 @@ const validateLocalDataset = async () => {
   displayValidationErrors(validationResponse.data);
 
   // show the validation errors to the user
-  document.querySelector("#validation-errors-container").style.visiility =
+  document.querySelector("#validation-errors-container").style.visibility =
     "visible";
 };
 
@@ -220,7 +218,7 @@ const validatePennsieveDataset = async () => {
       ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
       : `Your dataset is valid according to SPARC guidelines.`,
     allowEscapeKey: true,
-    allowOutsideClick: false,
+    allowOutsideClick: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     timerProgressBar: false,
@@ -236,11 +234,12 @@ const validatePennsieveDataset = async () => {
   displayValidationErrors(validationResponse.data);
 
   // show the validation errors to the user
-  document.querySelector("#validation-errors-container").style.visiility =
+  document.querySelector("#validation-errors-container").style.visibility =
     "visible";
 };
 
 const displayValidationErrors = (errors) => {
+  console.log(errors)
   // get the table body
   let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
@@ -287,6 +286,8 @@ const addValidationErrorToTable = (
 
   // append the row to the table body
   tableBody.appendChild(row);
+
+  console.log(row)
 };
 
 const validationErrorsOccurred = (validationResult) =>
