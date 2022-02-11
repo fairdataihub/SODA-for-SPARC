@@ -4,6 +4,24 @@ const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
 
+let axiosValidatorClient;
+
+const  waitForAxios = () => {
+  if(typeof axios !== "undefined"){
+      //variable exists, do what you want
+    axiosValidatorClient = axios.create({
+      baseURL: "http://127.0.0.1:5000/",
+      timeout: 0,
+    });
+  }
+  else{
+      setTimeout(waitForAxios, 1000);
+  }
+}
+
+waitForAxios()
+
+
 // check the local dataset input
 document
   .querySelector("#validate_dataset-1-local")
@@ -90,67 +108,117 @@ document
 document
   .querySelector("#run_validator_btn")
   .addEventListener("click", async (evt) => {
-    // grab the local dataset path from the input's placeholder attribute
-    let datasetPath = document.querySelector(
-      "#validate-local-dataset-path"
-    ).value;
 
-    const axiosInstance = axios.create({
-      baseURL: "http://127.0.0.1:5000/",
-      timeout: 0,
-    });
+    // check if validating a local or pennsieve dataset 
+    let localDatasetCard = document.querySelector("#validate-1-Local");
+    let validatingLocalDataset = localDatasetCard.checked;
 
-    Swal.fire({
-      title: `Validating your dataset`,
-      html: "Please wait...",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    console.log("Running validator: ", validatingLocalDataset)
 
-    let validationResponse;
-    try {
-      // send the dataset path to the validator endpoint
-      validationResponse = await axiosInstance(
-        `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
-      );
-    } catch (err) {
-      // hide the validation errors table
-      document.querySelector("#validation-errors-container").style.visiility =
-        "hidden";
-
-      // display message to user
-      return handleAxiosValidationErrors(err);
+    if (validatingLocalDataset) {
+      await validateLocalDataset()
+    } else {
+      console.log("Here")
+      await validatePennsieveDataset()
     }
-    let validationErrors = validationResponse.data;
-
-    Swal.fire({
-      title: `Your dataset has been successfully validated`,
-      text: validationErrors.length
-        ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
-        : `Your dataset is valid according to SPAR guidelines.`,
-      allowEscapeKey: true,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-    });
-
-    if (!validationErrors.length) return;
-
-    // for now place all of the errors into the page
-    displayValidationErrors(validationErrors);
-
-    // show the validation errors table
-    document.querySelector("#validation-errors-container").style.visiility =
-      "visible";
   });
+
+
+const validateLocalDataset = async () => {
+  // grab the local dataset path from the input's placeholder attribute
+  let datasetPath = document.querySelector(
+    "#validate-local-dataset-path"
+  ).value;
+
+
+  Swal.fire({
+    title: `Validating your dataset`,
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  let validationResponse;
+  try {
+    // send the dataset path to the validator endpoint
+    validationResponse = await axiosValidatorClient(
+      `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
+    );
+  } catch (err) {
+    // hide the validation errors table
+    document.querySelector("#validation-errors-container").style.visiility =
+      "hidden";
+
+    // display message to user
+    return handleAxiosValidationErrors(err);
+  }
+
+  Swal.fire({
+    title: `Your dataset has been successfully validated`,
+    text: validationErrors.length
+      ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
+      : `Your dataset is valid according to SPAR guidelines.`,
+    allowEscapeKey: true,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    showConfirmButton: true,
+  });
+
+
+  if (!validationErrorsOccurred(validationResponse.data)) {
+    return
+  }
+
+  // display errors onto the page
+  displayValidationErrors(validationResponse.data);
+
+  // show the validation errors to the user
+  document.querySelector("#validation-errors-container").style.visiility =
+    "visible";
+}
+
+const validatePennsieveDataset = async () => {
+  // get the dataset name from the dataset selection card
+  let datasetName = document.querySelector("#bf_dataset_load_validator").textContent
+
+  console.log(axiosValidatorClient)
+
+  let validationResponse; 
+
+  try {
+    // request validation for the current pennsieve dataset 
+    validationResponse = await axiosValidatorClient(`/api_validate_pennsieve_dataset?dataset-name=${datasetName}`)
+  } catch (err) {
+    // hide the validation errors table
+    document.querySelector("#validation-errors-container").style.visiility =
+      "hidden";
+
+    // display error message to user
+    return handleAxiosValidationErrors(err);
+  }
+
+  console.log(validationResponse)
+
+  // check if there are validation errors 
+  if (!validationErrorsOccurred(validationResponse.data)) {
+    return
+  }
+
+  // display errors onto the page
+  displayValidationErrors(validationResponse.data);
+
+  // show the validation errors to the user
+  document.querySelector("#validation-errors-container").style.visiility =
+    "visible";
+}
 
 const displayValidationErrors = (errors) => {
   // get the table body
@@ -200,6 +268,8 @@ const addValidationErrorToTable = (
   // append the row to the table body
   tableBody.appendChild(row);
 };
+
+const validationErrorsOccurred = (validationResult) => validationResult.length ? true : false
 
 /*
 *******************************************************************************************************************
@@ -277,4 +347,4 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   }
 })
 
-questionTwoDatasetSelectionObserver.observe(document.querySelector("#bf_dataset_load_validator"), {childList: true})
+questionTwoDatasetSelectionObserver.observe(document.querySelector("#bf_dataset_load_validator"), { childList: true })

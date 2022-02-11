@@ -325,7 +325,7 @@
                   id="div-check-bf-import-validator"
                 >
                   <button
-                    onclick="checkBFImportSubmission()"
+                    onclick="transitionFreeFormMode(this, 'validate_dataset-question-2', 'validate_dataset-tab', '', 'individual-question validate_dataset')"
                     style="
                       cursor: pointer;
                       border-radius: 8px;
@@ -338,28 +338,10 @@
                       border: none;
                       font-size: 13px;
                     "
+                     data-next="validate_dataset-question-3"
+                     data-current="validate_dataset-question-2"
                   >
                     Confirm
-                  </button>
-                  <button
-                    onclick="transitionFreeFormMode(this, 'Question-prepare-submission-5', 'create_submission-tab', '', 'individual-question prepare-submission')"
-                    data-next="Question-prepare-submission-2"
-                    id="button-fake-confirm-existing-bf-submission-file-load"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 10px auto;
-                      width: 100px;
-                      height: 30px;
-                      background: var(--color-light-green);
-                      color: #fff;
-                      font-weight: 600;
-                      border: none;
-                      font-size: 13px;
-                      display: none;
-                    "
-                  >
-                    Fake Confirm
                   </button>
                 </div>
               </div>

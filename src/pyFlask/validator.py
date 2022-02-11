@@ -3,7 +3,7 @@
 from sparcur.paths import Path as SparCurPath
 from sparcur.utils import PennsieveId
 from sparcur.simple.validate import main as validate
-# from sparcur.simple.retrieve import main as retrieve
+from sparcur.simple.retrieve import main as retrieve
 from configparser import ConfigParser
 import gevent
 import os

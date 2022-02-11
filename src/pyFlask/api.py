@@ -3,7 +3,7 @@ from validator import val_dataset_local_pipeline
 from flask import Flask, jsonify, request, json
 import os.path as path
 from os.path import expanduser
-#from organize_datasets import ps_retrieve_dataset
+# from organize_datasets import ps_retrieve_dataset
 from sparcur.simple.validate import main as validate
 from pathlib import Path
 from sparcur.config import auth
@@ -11,6 +11,18 @@ from sparcur.simple.utils import backend_pennsieve
 # project_id = auth.get('remote-organization')
 userpath = expanduser("~")
 from pprint import pprint
+
+
+
+
+
+# from sparcur.config import auth
+# from sparcur.simple.utils import backend_pennsieve
+# project_id = auth.get('remote-organization')
+# PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
+# root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
+# datasets = list(root.children)
+
 
 from json import JSONEncoder
 from collections import deque
@@ -26,17 +38,11 @@ app = Flask(__name__)
 @app.route("/")
 def hello_world():
     return jsonify("Hello world")
-@app.route("/api_ps_retrieve_dataset")
-def api_ps_retrieve_dataset():
-    # ps_retrieve_dataset()
-    obj = request.args.get("obj")
 
-    parsedObj = json.loads(obj)
 
-    account = parsedObj["bf-account-selected"]
-    
-    
-    return jsonify("Retrieved dataset")
+@app.route("/api_validate_pennsieve_dataset")
+def api_ps_retrieve_dataset():    
+    return jsonify([])
 
 
 @app.route("/api_validate_dataset_pipeline")
