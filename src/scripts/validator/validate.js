@@ -239,7 +239,7 @@ const validatePennsieveDataset = async () => {
 };
 
 const displayValidationErrors = (errors) => {
-  console.log(errors)
+  console.log(errors);
   // get the table body
   let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
@@ -287,7 +287,7 @@ const addValidationErrorToTable = (
   // append the row to the table body
   tableBody.appendChild(row);
 
-  console.log(row)
+  console.log(row);
 };
 
 const validationErrorsOccurred = (validationResult) =>
