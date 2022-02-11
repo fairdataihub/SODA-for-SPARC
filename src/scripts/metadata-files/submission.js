@@ -248,48 +248,23 @@ function onboardingSubmission() {
 }
 
 // generateSubmissionFile function takes all the values from the preview card's spans
-// **Includes guided-mode logic**
-function generateSubmissionFile(curationMode) {
-  var awardRes = "";
-  var dateRes = "";
-  var milestoneRes = "";
+function generateSubmissionFile() {
+  var awardRes = $("#submission-sparc-award").val();
+  var dateRes = $("#submission-completion-date").val();
+  var milestonesRes = $("#selected-milestone-1").val();
   let milestoneValue = [""];
-  // guided-mode submission file generation
-  if (curationMode == "guided") {
-    awardRes = $("#guided-submission-sparc-award").val();
-    dateRes = $("#guided-submission-completion-date").val();
-    milestonesRes = "foo";
-    if (milestonesRes !== "") {
-      milestoneValue = JSON.parse(milestonesRes);
-    }
-    if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please fill in all of the required fields.",
-        title: "Incomplete information",
-      });
-    }
+  if (milestonesRes !== "") {
+    milestoneValue = JSON.parse(milestonesRes);
   }
-  // free-form-mode submission file generation
-  if (curationMode == "free-form") {
-    awardRes = $("#submission-sparc-award").val();
-    dateRes = $("#submission-completion-date").val();
-    milestonesRes = $("#selected-milestone-1").val();
-    if (milestonesRes !== "") {
-      milestoneValue = JSON.parse(milestonesRes);
-    }
-    if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please fill in all of the required fields.",
-        title: "Incomplete information",
-      });
-      return "empty";
-    }
+  if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please fill in all of the required fields.",
+      title: "Incomplete information",
+    });
+    return "empty";
   }
 }
 

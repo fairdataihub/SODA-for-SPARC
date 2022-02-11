@@ -1579,6 +1579,39 @@ $(document).ready(() => {
     );
   };
 
+  //dataset metadata functions
+  const guidedSaveSubmissionMetadata = () => {
+    awardRes = $("#guided-submission-sparc-award").val();
+    dateRes = $("#guided-submission-completion-date").val();
+    milestonesRes = Array.from(guidedSubmissionTagsTagify.getTagElms()).map(
+      (tag) => {
+        return tag.textContent;
+      }
+    );
+    if (
+      awardRes === "" ||
+      dateRes === "Select" ||
+      milestonesRes === undefined ||
+      milestonesRes.length == 0
+    ) {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: "Please fill in all of the required fields.",
+        title: "Incomplete information",
+      });
+    } else {
+      sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["sparcAward"] =
+        awardRes;
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
+        milestonesRes;
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completionDate"] =
+        dateRes;
+    }
+  };
+
   $("#guided-generate-dataset-button").on("click", async function () {
     enableProgressButton();
     $("#guided-next-button").click();
@@ -1816,6 +1849,12 @@ $(document).ready(() => {
       guidedTags.length > 0 ? enableProgressButton() : disableProgressButton();
     }
 
+    if (
+      current_sub_step.attr("id") == "guided-create-submission-metadata-tab"
+    ) {
+      guidedSaveSubmissionMetadata();
+    }
+
     //if more tabs in parent tab, go to next tab and update capsule
     if (current_sub_step.next().attr("id") !== undefined) {
       current_sub_step.hide();
@@ -1951,7 +1990,16 @@ $(document).ready(() => {
   var guidedSubmissionTagsInput = document.getElementById(
     "guided-tagify-submission-milestone-tags"
   );
-  guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput);
+  guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
+    duplicates: false,
+    delimiters: null,
+    dropdown: {
+      classname: "color-blue",
+      maxItems: Infinity,
+      enabled: 0,
+      closeOnSelect: true,
+    },
+  });
   const guidedDatasetKeywordsInput =
     document.getElementById("guided-ds-keywords");
   const guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeywordsInput, {

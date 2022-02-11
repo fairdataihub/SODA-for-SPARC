@@ -1833,7 +1833,7 @@ async function transitionFreeFormMode(
       continueProgressSubmission = await switchMetadataSubmissionQuestion();
       break;
     case "Generate-submission":
-      var res = generateSubmissionFile("free-form");
+      var res = generateSubmissionFile();
       if (res === "empty") {
         return;
       }
