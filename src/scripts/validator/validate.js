@@ -6,21 +6,19 @@ const {
 
 let axiosValidatorClient;
 
-const  waitForAxios = () => {
-  if(typeof axios !== "undefined"){
-      //variable exists, do what you want
+const waitForAxios = () => {
+  if (typeof axios !== "undefined") {
+    //variable exists, do what you want
     axiosValidatorClient = axios.create({
       baseURL: "http://127.0.0.1:5000/",
       timeout: 0,
     });
+  } else {
+    setTimeout(waitForAxios, 1000);
   }
-  else{
-      setTimeout(waitForAxios, 1000);
-  }
-}
+};
 
-waitForAxios()
-
+waitForAxios();
 
 // check the local dataset input
 document
@@ -108,28 +106,25 @@ document
 document
   .querySelector("#run_validator_btn")
   .addEventListener("click", async (evt) => {
-
-    // check if validating a local or pennsieve dataset 
+    // check if validating a local or pennsieve dataset
     let localDatasetCard = document.querySelector("#validate-1-Local");
     let validatingLocalDataset = localDatasetCard.checked;
 
-    console.log("Running validator: ", validatingLocalDataset)
+    console.log("Running validator: ", validatingLocalDataset);
 
     if (validatingLocalDataset) {
-      await validateLocalDataset()
+      await validateLocalDataset();
     } else {
-      console.log("Here")
-      await validatePennsieveDataset()
+      console.log("Here");
+      await validatePennsieveDataset();
     }
   });
-
 
 const validateLocalDataset = async () => {
   // grab the local dataset path from the input's placeholder attribute
   let datasetPath = document.querySelector(
     "#validate-local-dataset-path"
   ).value;
-
 
   Swal.fire({
     title: `Validating your dataset`,
@@ -172,9 +167,8 @@ const validateLocalDataset = async () => {
     showConfirmButton: true,
   });
 
-
   if (!validationErrorsOccurred(validationResponse.data)) {
-    return
+    return;
   }
 
   // display errors onto the page
@@ -183,19 +177,23 @@ const validateLocalDataset = async () => {
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visiility =
     "visible";
-}
+};
 
 const validatePennsieveDataset = async () => {
   // get the dataset name from the dataset selection card
-  let datasetName = document.querySelector("#bf_dataset_load_validator").textContent
+  let datasetName = document.querySelector(
+    "#bf_dataset_load_validator"
+  ).textContent;
 
-  console.log(axiosValidatorClient)
+  console.log(axiosValidatorClient);
 
-  let validationResponse; 
+  let validationResponse;
 
   try {
-    // request validation for the current pennsieve dataset 
-    validationResponse = await axiosValidatorClient(`/api_validate_pennsieve_dataset?dataset-name=${datasetName}`)
+    // request validation for the current pennsieve dataset
+    validationResponse = await axiosValidatorClient(
+      `/api_validate_pennsieve_dataset?dataset-name=${datasetName}`
+    );
   } catch (err) {
     // hide the validation errors table
     document.querySelector("#validation-errors-container").style.visiility =
@@ -205,11 +203,11 @@ const validatePennsieveDataset = async () => {
     return handleAxiosValidationErrors(err);
   }
 
-  console.log(validationResponse)
+  console.log(validationResponse);
 
-  // check if there are validation errors 
+  // check if there are validation errors
   if (!validationErrorsOccurred(validationResponse.data)) {
-    return
+    return;
   }
 
   // display errors onto the page
@@ -218,7 +216,7 @@ const validatePennsieveDataset = async () => {
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visiility =
     "visible";
-}
+};
 
 const displayValidationErrors = (errors) => {
   // get the table body
@@ -269,7 +267,8 @@ const addValidationErrorToTable = (
   tableBody.appendChild(row);
 };
 
-const validationErrorsOccurred = (validationResult) => validationResult.length ? true : false
+const validationErrorsOccurred = (validationResult) =>
+  validationResult.length ? true : false;
 
 /*
 *******************************************************************************************************************
@@ -347,4 +346,7 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   }
 });
 
-questionTwoDatasetSelectionObserver.observe(document.querySelector("#bf_dataset_load_validator"), { childList: true })
+questionTwoDatasetSelectionObserver.observe(
+  document.querySelector("#bf_dataset_load_validator"),
+  { childList: true }
+);
