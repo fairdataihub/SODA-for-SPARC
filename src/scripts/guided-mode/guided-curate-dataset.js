@@ -1717,7 +1717,7 @@ $(document).ready(() => {
         sodaJSONObj["starting-point"]["type"] = "bf";
       }
       datasetStructureJSONObj = { folders: {}, files: {} };
-      sodaJSONObj["metadata"] = {};
+      sodaJSONObj["dataset-metadata"] = {};
       sodaJSONObj["digital-metadata"] = {};
       sodaJSONObj["generate-dataset"]["dataset-name"] = $(
         "#guided-dataset-name-input"
