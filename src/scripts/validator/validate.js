@@ -4,13 +4,32 @@ const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
 
+
+// check the local dataset input 
 document
   .querySelector("#validate_dataset-1-local")
   .addEventListener("click", () => {
     console.log("Event emitted");
     // check the input
     document.querySelector("#validate-1-Local").checked = true;
+
+    document.querySelector("#validate-1-Pennsieve").checked = false;
   });
+
+
+  // check the pennsieve dataset input 
+  document
+  .querySelector("#validate_dataset-1-pennsieve")
+  .addEventListener("click", () => {
+    console.log("Event emitted");
+    // check the input
+    document.querySelector("#validate-1-Pennsieve").checked = true;
+
+    // uncheck the other card's input 
+    document.querySelector("#validate-1-Local").checked = false;
+  });
+
+
 
 // open folder selection dialog so the user can choose which local dataset they would like to validate
 document
@@ -20,8 +39,6 @@ document
     let validatorErrors = document.querySelectorAll(
       "#validate_dataset-question-4 tbody tr"
     );
-
-    console.log("Validator errors: ", validatorErrors.length);
 
     if (validatorErrors.length) {
       let userReply = await Swal.fire({
@@ -224,6 +241,8 @@ const transitionToValidateQuestionTwo = async () => {
   let localDatasetCard = document.querySelector("#validate-1-Local");
   let validatingLocalDataset = localDatasetCard.checked;
 
+  console.log("Validation is: ", validatingLocalDataset)
+
   // perform the transition for a local dataset
   if (validatingLocalDataset) {
     // show local section
@@ -241,7 +260,13 @@ const transitionToValidateQuestionTwo = async () => {
     input.setAttribute("placeholder", "Browse here");
     input.value = "";
   } else {
-    console.log("Should be in the sjhasdkh");
+    console.log("Stuff is happening")
+
+
+    // hide the local dataset section 
+    localSection.style = "display: none !important;";
+
+
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
   }
