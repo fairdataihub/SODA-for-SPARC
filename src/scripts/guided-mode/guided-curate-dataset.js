@@ -1894,23 +1894,58 @@ $(document).ready(() => {
       tabPanel.show();
     }
   });
+  const getParentTabsProgressionTab = (parentTabElement) => {
+    progressionTabId = parentTabElement
+      .attr("id")
+      .replace("parent-tab", "progression-tab");
+    console.log(progressionTabId);
+    return $(`#${progressionTabId}`);
+  };
+  const getParentTabsCapsule = (parentTabElement) => {
+    console.log(parentTabElement);
+    parentTabCapsuleId = parentTabElement.attr("id").replace("tab", "capsule");
+    console.log(parentTabCapsuleId);
+    return $(`#${parentTabCapsuleId}`);
+  };
 
-  $(".guided--form-label").on("click", () => {
-    traverseToTab("guided-designate-permissions-tab");
-  });
   const traverseToTab = (targetElementId) => {
     let targetElement = $(`#${targetElementId}`);
-    console.log(current_sub_step.parent());
-    console.log(targetElement.parent());
+    //Check to see if target element has the same parent as current sub step
     if (
       current_sub_step.parent().attr("id") === targetElement.parent().attr("id")
     ) {
       current_sub_step.hide();
+      current_sub_step_capsule.css("background-color", "#ddd");
       current_sub_step = targetElement;
+      current_sub_step_capsule = getParentTabsCapsule(current_sub_step);
       current_sub_step.show();
+      current_sub_step_capsule.css(
+        "background-color",
+        "var(--color-light-green)"
+      );
+    } else {
+      current_progression_tab.removeClass("selected-tab");
+      current_sub_step.hide();
+      current_sub_step.parent().hide();
+      current_sub_step_capsule.css("background-color", "#ddd");
+      getParentTabsProgressionTab(current_sub_step.parent()).removeClass(
+        "selected-tab"
+      );
+      current_sub_step = targetElement;
+      current_progression_tab = getParentTabsProgressionTab(
+        current_sub_step.parent()
+      );
+      current_progression_tab.addClass("selected-tab");
+      current_sub_step_capsule = getParentTabsCapsule(current_sub_step);
+      current_sub_step.siblings().addClass("hidden");
+      current_sub_step.removeClass("hidden");
+      current_sub_step.css("display", "flex");
+      current_sub_step_capsule.css(
+        "background-color",
+        "var(--color-light-green"
+      );
+      current_sub_step_capsule.siblings().css("background-color", "#ddd");
     }
-    targetElement.show();
-    console.log(targetElement.parent());
   };
   //TAGIFY initializations
   var guidedSubmissionTagsInput = document.getElementById(
