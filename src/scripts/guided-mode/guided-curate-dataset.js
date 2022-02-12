@@ -1581,19 +1581,14 @@ $(document).ready(() => {
 
   //dataset metadata functions
   const guidedSaveAwardAndMilestoneInformation = () => {
-    awardRes = $("#guided-submission-sparc-award").val();
-    dateRes = $("#guided-submission-completion-date").val();
-    milestonesRes = Array.from(guidedSubmissionTagsTagify.getTagElms()).map(
+    let award = $("#guided-submission-sparc-award").val();
+    let date = $("#guided-submission-completion-date").val();
+    let milestones = Array.from(guidedSubmissionTagsTagify.getTagElms()).map(
       (tag) => {
         return tag.textContent;
       }
     );
-    if (
-      awardRes === "" ||
-      dateRes === "Select" ||
-      milestonesRes === undefined ||
-      milestonesRes.length == 0
-    ) {
+    if (award === "" || date === "Select" || milestones.length == 0) {
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
@@ -1603,11 +1598,11 @@ $(document).ready(() => {
       });
     } else {
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["sparcAward"] =
-        awardRes;
+        award;
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
-        milestonesRes;
+        milestones;
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["completionDate"] =
-        dateRes;
+        date;
     }
   };
   const guidedSaveDatasetInformation = () => {
@@ -1617,7 +1612,7 @@ $(document).ready(() => {
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
-        text: "Please fill in all of the required fields.",
+        text: "Please fill in all of the required award and milestone fields.",
         title: "Incomplete information",
       });
     } else {
@@ -1632,7 +1627,7 @@ $(document).ready(() => {
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
-        text: "Please fill in all of the required fields.",
+        text: "Please fill in all of the required participant information fields.",
         title: "Incomplete information",
       });
     } else {
@@ -1640,6 +1635,56 @@ $(document).ready(() => {
         numSubjects;
       sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] =
         numSamples;
+    }
+  };
+  const getTagsFromTagifyElement = (tagifyElement) => {
+    return Array.from(guidedStudyOrganSystemsTagify.getTagElms()).map((tag) => {
+      return tag.textContent;
+    });
+  };
+  const guidedSaveStudyInformation = () => {
+    let studyOrganSystems = getTagsFromTagifyElement(
+      guidedStudyOrganSystemsTagify
+    );
+    let studyApproaches = getTagsFromTagifyElement(guidedStudyApproachTagify);
+    let studyTechniques = getTagsFromTagifyElement(guidedStudyTechniquesTagify);
+    let studyPurpose = $("#guided-ds-study-purpose").val();
+    let studyDataCollection = $("#guided-ds-study-data-collection").val();
+    let studyPrimaryConclusion = $("#guided-ds-study-primary-conclusion").val();
+
+    if (
+      studyOrganSystems.length === 0 ||
+      studyApproaches.length === 0 ||
+      studyTechniques.length == 0 ||
+      studyPurpose.length == 0 ||
+      studyDataCollection.length == 0 ||
+      studyPrimaryConclusion.length == 0
+    ) {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: "Please fill in all of the study information fields.",
+        title: "Incomplete information",
+      });
+    } else {
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "studyOrganSystems"
+      ] = studyOrganSystems;
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "studyApproaches"
+      ] = studyApproaches;
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "studyTechniques"
+      ] = studyTechniques;
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["studyPurpose"] =
+        studyPurpose;
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "studyDataCollection"
+      ] = studyDataCollection;
+      sodaJSONObj["dataset-metadata"]["description-metadata"][
+        "studyPrimaryConclusion"
+      ] = studyPrimaryConclusion;
     }
   };
 
@@ -1895,6 +1940,7 @@ $(document).ready(() => {
     ) {
       guidedSaveDatasetInformation();
       guidedSaveParticipantInformation();
+      guidedSaveStudyInformation();
     }
 
     //if more tabs in parent tab, go to next tab and update capsule
@@ -2028,7 +2074,7 @@ $(document).ready(() => {
       current_sub_step_capsule.siblings().css("background-color", "#ddd");
     }
   };
-  //TAGIFY initializations
+  //tagify initializations
   var guidedSubmissionTagsInput = document.getElementById(
     "guided-tagify-submission-milestone-tags"
   );
@@ -2054,6 +2100,52 @@ $(document).ready(() => {
     guidedOtherFundingSourcesInput,
     { duplicates: false }
   );
+  const guidedStudyOrganSystemsInput = document.getElementById(
+    "guided-ds-study-organ-system"
+  );
+  const guidedStudyOrganSystemsTagify = new Tagify(
+    guidedStudyOrganSystemsInput,
+    {
+      whitelist: [
+        "autonomic ganglion",
+        "brain",
+        "colon",
+        "heart",
+        "intestine",
+        "kidney",
+        "large intestine",
+        "liver",
+        "lower urinary tract",
+        "lung",
+        "nervous system",
+        "pancreas",
+        "peripheral nervous system",
+        "small intestine",
+        "spinal cord",
+        "spleen",
+        "stomach",
+        "sympathetic nervous system",
+        "urinary bladder",
+      ],
+      duplicates: false,
+      dropdown: {
+        enabled: 0,
+        closeOnSelect: true,
+      },
+    }
+  );
+  const guidedStudyApproachInput = document.getElementById(
+    "guided-ds-study-approach"
+  );
+  const guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, {
+    duplicates: false,
+  });
+  const guidedStudyTechniquesInput = document.getElementById(
+    "guided-ds-study-technique"
+  );
+  const guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, {
+    duplicates: false,
+  });
 
   $("#guided-submission-completion-date").change(function () {
     const text = $("#guided-submission-completion-date").val();
