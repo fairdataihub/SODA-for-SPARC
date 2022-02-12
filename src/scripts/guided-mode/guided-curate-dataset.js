@@ -1583,11 +1583,7 @@ $(document).ready(() => {
   const guidedSaveAwardAndMilestoneInformation = () => {
     let award = $("#guided-submission-sparc-award").val();
     let date = $("#guided-submission-completion-date").val();
-    let milestones = Array.from(guidedSubmissionTagsTagify.getTagElms()).map(
-      (tag) => {
-        return tag.textContent;
-      }
-    );
+    let milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
     if (award === "" || date === "Select" || milestones.length == 0) {
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
@@ -1865,11 +1861,7 @@ $(document).ready(() => {
       )
         .val()
         .trim();
-      datasetTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
-        (tag) => {
-          return tag.textContent;
-        }
-      );
+      let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
       $(".guidedDatasetTags").text(datasetTags.join("\r\n"));
       sodaJSONObj["digital-metadata"]["dataset-tags"] = datasetTags;
     }
