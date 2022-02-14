@@ -1299,9 +1299,23 @@ function loadContributorInfofromAirtable(award) {
   }
 }
 
-function addContributortoTableDD(name, contactStatus) {
-  var conTable = document.getElementById("contributor-table-dd");
-  document.getElementById("div-contributor-table-dd").style.display = "block";
+function addContributortoTableDD(name, contactStatus, curationMode) {
+  let contable;
+  let rowModificationIcons;
+  if (curationMode === "free-form") {
+    conTable = document.getElementById("contributor-table-dd");
+    document.getElementById("div-contributor-table-dd").style.display = "block";
+    rowModificationIcons =
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this, \"free-form\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
+  }
+  if (curationMode === "guided") {
+    conTable = document.getElementById("guided-contributor-table-dd");
+    document.getElementById("guided-div-contributor-table-dd").style.display =
+      "block";
+    rowModificationIcons =
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this, \"guided\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
+  }
+
   var rowcount = conTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
@@ -1321,32 +1335,7 @@ function addContributortoTableDD(name, contactStatus) {
     conName +
     "</td><td class='contributor-table-row'>" +
     conContactPerson +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-}
-function guidedAddContributortoTableDD(name, contactStatus) {
-  var conTable = document.getElementById("guided-contributor-table-dd");
-  document.getElementById("guided-div-contributor-table-dd").style.display =
-    "block";
-  var rowcount = conTable.rows.length;
-  /// append row to table from the bottom
-  var rowIndex = rowcount;
-  var currentRow = conTable.rows[conTable.rows.length - 1];
-  // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
-  var indexNumber = rowIndex;
-
-  var conName = name;
-  var conContactPerson = contactStatus;
-  var row = (conTable.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-con" +
-    newRowIndex +
-    "' class='row-protocol'><td class='contributor-table-row'>" +
-    indexNumber +
-    "</td><td>" +
-    conName +
-    "</td><td class='contributor-table-row'>" +
-    conContactPerson +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    rowModificationIcons);
 }
 
 var contributorElement =
@@ -1540,18 +1529,18 @@ function showContributorSweetalert(key, curationMode) {
   }).then((result) => {
     if (result.isConfirmed) {
       if (curationMode === "free-form") {
-        addContributortoTableDD(result.value[0], result.value[1]);
+        addContributortoTableDD(result.value[0], result.value[1], "free-form");
         // memorize Affiliation info for next time as suggestions
         memorizeAffiliationInfo(affiliationSuggestions);
       }
       if (curationMode === "guided") {
-        guidedAddContributortoTableDD(result.value[0], result.value[1]);
+        addContributortoTableDD(result.value[0], result.value[1], "guided");
       }
     }
   });
 }
 
-function delete_current_con_id(ev) {
+function delete_current_con_id(ev, curationMode) {
   Swal.fire({
     title: "Are you sure you want to delete this contributor?",
     showCancelButton: true,
@@ -1568,7 +1557,16 @@ function delete_current_con_id(ev) {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("contributor-table-dd"));
+      let contributorTable;
+      if (curationMode === "free-form") {
+        contributorTable = document.getElementById("contributor-table-dd");
+      }
+      if (curationMode === "guided") {
+        contributorTable = document.getElementById(
+          "guided-contributor-table-dd"
+        );
+      }
+      updateIndexForTable(contributorTable);
       // 2. Delete from JSON
       var contributorName = $(currentRow)[0].cells[1].innerText;
       for (var i = 0; i < contributorArray.length; i++) {
@@ -2520,7 +2518,7 @@ function loadContributorsToTable(array) {
       } else {
         contact = "No";
       }
-      addContributortoTableDD(myCurrentCon.conName, contact);
+      addContributortoTableDD(myCurrentCon.conName, contact, "free-form");
     }
   }
 }

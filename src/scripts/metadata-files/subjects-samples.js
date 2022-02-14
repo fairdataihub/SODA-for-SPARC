@@ -1314,7 +1314,9 @@ async function copy_current_sample_id(ev) {
 }
 
 function updateIndexForTable(table) {
+  console.log(table);
   // disable table to prevent further row-moving action before the updateIndexForTable finishes
+
   if (table === document.getElementById("table-subjects")) {
     $("#table-subjects").css("pointer-events", "none");
   } else if (table === document.getElementById("table-samples")) {
@@ -1328,6 +1330,7 @@ function updateIndexForTable(table) {
   }
   if (rowcount === 1) {
     table.style.display = "none";
+    console.log(table);
     if (table === document.getElementById("table-subjects")) {
       $("#button-generate-subjects").css("display", "none");
     } else if (table === document.getElementById("table-samples")) {

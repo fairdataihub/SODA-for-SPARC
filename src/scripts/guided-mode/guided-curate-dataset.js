@@ -1585,31 +1585,6 @@ $(document).ready(() => {
   };
 
   //dataset metadata functions
-  function guidedAddContributortoTableDD(name, contactStatus) {
-    var conTable = document.getElementById("guided-contributor-table-dd");
-    document.getElementById("guided-div-contributor-table-dd").style.display =
-      "block";
-    var rowcount = conTable.rows.length;
-    /// append row to table from the bottom
-    var rowIndex = rowcount;
-    var currentRow = conTable.rows[conTable.rows.length - 1];
-    // check for unique row id in case users delete old rows and append new rows (same IDs!)
-    var newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
-    var indexNumber = rowIndex;
-
-    var conName = name;
-    var conContactPerson = contactStatus;
-    var row = (conTable.insertRow(rowIndex).outerHTML =
-      "<tr id='row-current-con" +
-      newRowIndex +
-      "' class='row-protocol'><td class='contributor-table-row'>" +
-      indexNumber +
-      "</td><td>" +
-      conName +
-      "</td><td class='contributor-table-row'>" +
-      conContactPerson +
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-  }
   const guidedSaveAwardAndMilestoneInformation = () => {
     let award = $("#guided-submission-sparc-award").val();
     let date = $("#guided-submission-completion-date").val();
