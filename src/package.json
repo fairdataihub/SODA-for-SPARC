@@ -98,6 +98,7 @@
     "jquery": "^3.6.0",
     "jstree": "^3.3.11",
     "jsuites": "^4.9.33",
+    "mv": "^2.1.1",
     "node-localstorage": "^2.1.6",
     "notyf": "^3.9.0",
     "pdfkit": "^0.11.0",

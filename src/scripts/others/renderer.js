@@ -6785,11 +6785,13 @@ const get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
     for (let file in dataset_folders["files"]) {
       file_counter += 1;
+      console.log(file)
     }
   }
   if ("folders" in dataset_folders) {
     for (let folder in dataset_folders["folders"]) {
       folder_counter += 1;
+      console.log(file)
       get_num_files_and_folders(dataset_folders["folders"][folder]);
     }
   }
