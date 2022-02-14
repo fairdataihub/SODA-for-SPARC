@@ -1323,6 +1323,31 @@ function addContributortoTableDD(name, contactStatus) {
     conContactPerson +
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
+function guidedAddContributortoTableDD(name, contactStatus) {
+  var conTable = document.getElementById("guided-contributor-table-dd");
+  document.getElementById("guided-div-contributor-table-dd").style.display =
+    "block";
+  var rowcount = conTable.rows.length;
+  /// append row to table from the bottom
+  var rowIndex = rowcount;
+  var currentRow = conTable.rows[conTable.rows.length - 1];
+  // check for unique row id in case users delete old rows and append new rows (same IDs!)
+  var newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
+  var indexNumber = rowIndex;
+
+  var conName = name;
+  var conContactPerson = contactStatus;
+  var row = (conTable.insertRow(rowIndex).outerHTML =
+    "<tr id='row-current-con" +
+    newRowIndex +
+    "' class='row-protocol'><td class='contributor-table-row'>" +
+    indexNumber +
+    "</td><td>" +
+    conName +
+    "</td><td class='contributor-table-row'>" +
+    conContactPerson +
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+}
 
 var contributorElement =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
@@ -1333,13 +1358,14 @@ var contributorElementRaw =
 var contributorArray = [];
 var affiliationSuggestions = [];
 
-function showContributorSweetalert(key) {
+//Curation  passed in should be "free-form" for free-form mode or "guided" for guided-mode
+function showContributorSweetalert(key, curationMode) {
   var currentContributortagify;
   var currentAffliationtagify;
   if (key === false) {
     if (Object.keys(globalContributorNameObject).length !== 0) {
       var footer =
-        "<a style='text-decoration: none !important' onclick='showContributorSweetalert(\"pass\")' target='_blank'>I want to add a contributor not listed above</a>";
+        "<a style='text-decoration: none !important' onclick='showContributorSweetalert(\"pass\", \"guided\")' target='_blank'>I want to add a contributor not listed above</a>";
       var element = contributorElement;
     } else {
       var footer = "";
@@ -1461,9 +1487,21 @@ function showContributorSweetalert(key) {
       ) {
         Swal.showValidationMessage(`Please fill in all required fields!`);
       } else {
+        var contributorTable;
+        if (curationMode === "free-form") {
+          var contributorTable = document.getElementById(
+            "contributor-table-dd"
+          );
+        }
+        if (curationMode === "guided") {
+          var contributorTable = document.getElementById(
+            "guided-contributor-table-dd"
+          );
+        }
         var duplicateConName = checkDuplicateContributorName(
           firstName,
-          lastName
+          lastName,
+          contributorTable
         );
         if (!duplicateConName) {
           if ($("#ds-contact-person").prop("checked")) {
@@ -1501,9 +1539,14 @@ function showContributorSweetalert(key) {
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      addContributortoTableDD(result.value[0], result.value[1]);
-      // memorize Affiliation info for next time as suggestions
-      memorizeAffiliationInfo(affiliationSuggestions);
+      if (curationMode === "free-form") {
+        addContributortoTableDD(result.value[0], result.value[1]);
+        // memorize Affiliation info for next time as suggestions
+        memorizeAffiliationInfo(affiliationSuggestions);
+      }
+      if (curationMode === "guided") {
+        guidedAddContributortoTableDD(result.value[0], result.value[1]);
+      }
     }
   });
 }
@@ -1797,13 +1840,14 @@ function checkAtLeastOneContactPerson() {
   return contactPersonExists;
 }
 
-function checkDuplicateContributorName(first, last) {
-  var allConTable = document.getElementById("contributor-table-dd");
+function checkDuplicateContributorName(first, last, contributorsTable) {
+  var contributorsTable;
+
   var duplicate = false;
   var name = last + ", " + first;
-  var rowcount = allConTable.rows.length;
+  var rowcount = contributorsTable.rows.length;
   for (var i = 1; i < rowcount; i++) {
-    var currentContributorName = allConTable.rows[i].cells[1].innerText;
+    var currentContributorName = contributorsTable.rows[i].cells[1].innerText;
     if (currentContributorName === name) {
       duplicate = true;
       break;

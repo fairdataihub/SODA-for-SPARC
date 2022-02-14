@@ -39,6 +39,11 @@ function makeid(length) {
   return result;
 }
 $("#guided-dataset-name-input").val("test " + makeid(5));
+const getTagsFromTagifyElement = (tagifyElement) => {
+  return Array.from(tagifyElement.getTagElms()).map((tag) => {
+    return tag.textContent;
+  });
+};
 
 /////////////////////////////////////////////////////////
 //////////       GUIDED OBJECT ACCESSORS       //////////
@@ -1580,18 +1585,43 @@ $(document).ready(() => {
   };
 
   //dataset metadata functions
+  function guidedAddContributortoTableDD(name, contactStatus) {
+    var conTable = document.getElementById("guided-contributor-table-dd");
+    document.getElementById("guided-div-contributor-table-dd").style.display =
+      "block";
+    var rowcount = conTable.rows.length;
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+    var currentRow = conTable.rows[conTable.rows.length - 1];
+    // check for unique row id in case users delete old rows and append new rows (same IDs!)
+    var newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
+    var indexNumber = rowIndex;
+
+    var conName = name;
+    var conContactPerson = contactStatus;
+    var row = (conTable.insertRow(rowIndex).outerHTML =
+      "<tr id='row-current-con" +
+      newRowIndex +
+      "' class='row-protocol'><td class='contributor-table-row'>" +
+      indexNumber +
+      "</td><td>" +
+      conName +
+      "</td><td class='contributor-table-row'>" +
+      conContactPerson +
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  }
   const guidedSaveAwardAndMilestoneInformation = () => {
     let award = $("#guided-submission-sparc-award").val();
     let date = $("#guided-submission-completion-date").val();
     let milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
     if (award === "" || date === "Select" || milestones.length == 0) {
-      Swal.fire({
+      /*Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
         text: "Please fill in all of the required fields.",
         title: "Incomplete information",
-      });
+      });*/
     } else {
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["sparcAward"] =
         award;
@@ -1604,13 +1634,13 @@ $(document).ready(() => {
   const guidedSaveDatasetInformation = () => {
     let dsType = $("#guided-ds-type").val();
     if (dsType == "") {
-      Swal.fire({
+      /*Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
         text: "Please fill in all of the required award and milestone fields.",
         title: "Incomplete information",
-      });
+      });*/
     } else {
       sodaJSONObj["dataset-metadata"]["description-metadata"]["type"] = dsType;
     }
@@ -1619,13 +1649,13 @@ $(document).ready(() => {
     let numSubjects = $("#guided-ds-samples-no").val();
     let numSamples = $("#guided-ds-samples-no").val();
     if (numSubjects.length == 0 || numSamples.length == 0) {
-      Swal.fire({
+      /*Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
         text: "Please fill in all of the required participant information fields.",
         title: "Incomplete information",
-      });
+      });*/
     } else {
       sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] =
         numSubjects;
@@ -1633,11 +1663,7 @@ $(document).ready(() => {
         numSamples;
     }
   };
-  const getTagsFromTagifyElement = (tagifyElement) => {
-    return Array.from(guidedStudyOrganSystemsTagify.getTagElms()).map((tag) => {
-      return tag.textContent;
-    });
-  };
+
   const guidedSaveStudyInformation = () => {
     let studyOrganSystems = getTagsFromTagifyElement(
       guidedStudyOrganSystemsTagify
@@ -1656,13 +1682,13 @@ $(document).ready(() => {
       studyDataCollection.length == 0 ||
       studyPrimaryConclusion.length == 0
     ) {
-      Swal.fire({
+      /*Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
         text: "Please fill in all of the study information fields.",
         title: "Incomplete information",
-      });
+      });*/
     } else {
       sodaJSONObj["dataset-metadata"]["description-metadata"][
         "studyOrganSystems"
@@ -1682,6 +1708,11 @@ $(document).ready(() => {
         "studyPrimaryConclusion"
       ] = studyPrimaryConclusion;
     }
+  };
+
+  //Award & Contributor Information functions
+  const guidedSaveAwardAndContrinbutorInformation = () => {
+    sparcAwardNumber = $("#guided-ds-description-award-input").val();
   };
 
   $("#guided-generate-dataset-button").on("click", async function () {
@@ -1933,6 +1964,7 @@ $(document).ready(() => {
       guidedSaveDatasetInformation();
       guidedSaveParticipantInformation();
       guidedSaveStudyInformation();
+      guidedSaveAwardAndContrinbutorInformation();
     }
 
     //if more tabs in parent tab, go to next tab and update capsule
