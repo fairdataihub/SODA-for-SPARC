@@ -1198,7 +1198,8 @@ function createManifestLocally(editBoolean, originalDataset) {
             title:
               "Generated successfully! Please select a manifest file to edit.",
             heightAuto: false,
-            showConfirmButton: true,
+            showConfirmButton: false,
+            timer: 800,
             icon: "success",
             backdrop: "rgba(0,0,0, 0.4)",
             didOpen: () => {
@@ -1208,7 +1209,6 @@ function createManifestLocally(editBoolean, originalDataset) {
           $("#preview-manifest-fake-confirm").click();
           $("#Question-prepare-manifest-4").removeClass("show");
           $("#Question-prepare-manifest-4").removeClass("prev");
-          // $("#bf_dataset_create_manifest").text("None");
           manifestFolderPath = res;
           loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
           // move to the next question with a Fake confirm button
