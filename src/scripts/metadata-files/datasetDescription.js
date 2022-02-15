@@ -946,7 +946,7 @@ function combineLinksSections() {
 }
 
 // add protocol function for DD file
-async function addProtocol() {
+async function addProtocol(curationMode) {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
     html:
@@ -997,7 +997,13 @@ async function addProtocol() {
     },
   });
   if (values) {
-    addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
+    addProtocolLinktoTableDD(
+      values[0],
+      values[1],
+      values[2],
+      values[3],
+      curationMode
+    );
   }
 }
 
@@ -1015,11 +1021,27 @@ function addProtocolLinktoTableDD(
   protocolLink,
   protocolType,
   protocolRelation,
-  protocolDesc
+  protocolDesc,
+  curationMode
 ) {
-  var protocolTable = document.getElementById("protocol-link-table-dd");
-  protocolTable.style.display = "block";
-  document.getElementById("div-protocol-link-table-dd").style.display = "block";
+  let protocolTable;
+  let rowModificationIcons;
+  if (curationMode === "free-form") {
+    protocolTable = document.getElementById("protocol-link-table-dd");
+    protocolTable.style.display = "block";
+    document.getElementById("div-protocol-link-table-dd").style.display =
+      "block";
+    rowModificationIcons =
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this, \"free-form\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
+  }
+  if (curationMode === "guided") {
+    protocolTable = document.getElementById("guided-protocol-link-table-dd");
+    protocolTable.style.display = "block";
+    document.getElementById("guided-div-protocol-link-table-dd").style.display =
+      "block";
+    rowModificationIcons =
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this, \"guided\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
+  }
   var rowcount = protocolTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
@@ -1042,7 +1064,7 @@ function addProtocolLinktoTableDD(
     protocolRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     protocolDesc +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    rowModificationIcons);
 }
 
 function addAdditionalLinktoTableDD(
@@ -1052,7 +1074,6 @@ function addAdditionalLinktoTableDD(
   description,
   curationMode
 ) {
-  console.log(curationMode);
   let linkTable;
   let rowModificationIcons;
   if (curationMode === "free-form") {
@@ -1070,7 +1091,6 @@ function addAdditionalLinktoTableDD(
     rowModificationIcons =
       "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this, \"guided\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
   }
-  console.log(linkTable);
   var rowcount = linkTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;

@@ -2086,12 +2086,12 @@ $(document).ready(() => {
       enabled: 0,
       closeOnSelect: true,
     },
-  });
+  }); /*
   const guidedDatasetKeywordsInput =
     document.getElementById("guided-ds-keywords");
   const guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeywordsInput, {
     duplicates: false,
-  });
+  });*/
   const guidedOtherFundingSourcesInput = document.getElementById(
     "guided-ds-other-funding"
   );

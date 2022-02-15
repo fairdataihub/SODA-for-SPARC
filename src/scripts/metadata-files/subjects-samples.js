@@ -780,7 +780,7 @@ async function edit_current_protocol_id(ev) {
     },
   });
 
-  if (value) {
+  if (values) {
     $(currentRow)[0].cells[1].innerHTML =
       "<a href='" + values[0] + "' target='_blank'>" + values[0] + "</a>";
     $(currentRow)[0].cells[2].innerHTML = values[1];
@@ -1211,7 +1211,7 @@ function delete_current_protocol_id(ev, curationMode) {
         );
       }
 
-      updateIndexForTable(document.getElementById("protocol-link-table-dd"));
+      updateIndexForTable(protocolLinkTable);
     }
   });
 }
@@ -2991,24 +2991,13 @@ async function addAdditionalLink(curationMode) {
     },
   });
   if (values) {
-    if (curationMode === "free-form") {
-      addAdditionalLinktoTableDD(
-        values[0],
-        values[1],
-        values[2],
-        values[3],
-        "free-form"
-      );
-    }
-    if (curationMode === "guided") {
-      addAdditionalLinktoTableDD(
-        values[0],
-        values[1],
-        values[2],
-        values[3],
-        "guided"
-      );
-    }
+    addAdditionalLinktoTableDD(
+      values[0],
+      values[1],
+      values[2],
+      values[3],
+      curationMode
+    );
   }
 }
 
