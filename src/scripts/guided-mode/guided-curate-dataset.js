@@ -1585,11 +1585,11 @@ $(document).ready(() => {
   };
 
   //dataset metadata functions
-  const guidedSaveAwardAndMilestoneInformation = () => {
+  const guidedSaveSubmissionFile = () => {
     let award = $("#guided-submission-sparc-award").val();
     let date = $("#guided-submission-completion-date").val();
     let milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
-    if (award === "" || date === "Select" || milestones.length == 0) {
+    if (award === "" || date === null || milestones.length == 0) {
       /*Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
@@ -1598,14 +1598,52 @@ $(document).ready(() => {
         title: "Incomplete information",
       });*/
     } else {
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["sparcAward"] =
-        award;
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
-        milestones;
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completionDate"] =
-        date;
+      var json_arr = [];
+      json_arr.push({
+        award: award,
+        date: date,
+        milestone: milestones[0],
+      });
+      if (milestones.length > 0) {
+        for (var index = 1; index < milestones.length; index++) {
+          json_arr.push({
+            award: "",
+            date: "",
+            milestone: milestones[index],
+          });
+        }
+      }
+      json_str = JSON.stringify(json_arr);
+      client.invoke(
+        "api_save_submission_file",
+        false,
+        "None",
+        "None",
+        path.join($("#guided-dataset-path").text().trim(), "submission.xlsx"),
+        json_str,
+        (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              icon: "error",
+              html: emessage,
+              title: "Failed to generate the submission file",
+            });
+          } else {
+            $("#guided-generate-submission-file").text("Edit submission file");
+          }
+        }
+      );
     }
   };
+  $("#guided-generate-submission-file").on("click", () => {
+    guidedSaveSubmissionFile();
+  });
+
   const guidedSaveDatasetInformation = () => {
     let dsType = $("#guided-ds-type").val();
     if (dsType == "") {
@@ -1930,7 +1968,6 @@ $(document).ready(() => {
     if (
       current_sub_step.attr("id") == "guided-create-submission-metadata-tab"
     ) {
-      guidedSaveAwardAndMilestoneInformation();
     }
 
     if (
