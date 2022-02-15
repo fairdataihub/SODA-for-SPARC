@@ -1045,10 +1045,32 @@ function addProtocolLinktoTableDD(
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
-function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
-  var linkTable = document.getElementById("other-link-table-dd");
-  linkTable.style.display = "block";
-  document.getElementById("div-other-link-table-dd").style.display = "block";
+function addAdditionalLinktoTableDD(
+  link,
+  linkType,
+  linkRelation,
+  description,
+  curationMode
+) {
+  console.log(curationMode);
+  let linkTable;
+  let rowModificationIcons;
+  if (curationMode === "free-form") {
+    linkTable = document.getElementById("other-link-table-dd");
+    linkTable.style.display = "block";
+    document.getElementById("div-other-link-table-dd").style.display = "block";
+    rowModificationIcons =
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this, \"free-form\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
+  }
+  if (curationMode === "guided") {
+    linkTable = document.getElementById("guided-other-link-table-dd");
+    linkTable.style.display = "block";
+    document.getElementById("guided-div-other-link-table-dd").style.display =
+      "block";
+    rowModificationIcons =
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this, \"guided\")'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
+  }
+  console.log(linkTable);
   var rowcount = linkTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
@@ -1059,6 +1081,7 @@ function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
     rowIndex
   );
   var indexNumber = rowIndex;
+
   var row = (linkTable.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-other" +
     newRowIndex +
@@ -1074,7 +1097,7 @@ function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
     linkRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     description +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    rowModificationIcons);
 }
 
 async function helpSPARCAward(filetype) {

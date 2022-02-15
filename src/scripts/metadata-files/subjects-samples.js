@@ -731,7 +731,6 @@ function edit_current_sample_id(ev) {
   var sampleID = $(currentRow)[0].cells[2].innerText;
   loadSampleInformation(ev, subjectID, sampleID);
 }
-
 async function edit_current_protocol_id(ev) {
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
@@ -780,6 +779,7 @@ async function edit_current_protocol_id(ev) {
       ];
     },
   });
+
   if (value) {
     $(currentRow)[0].cells[1].innerHTML =
       "<a href='" + values[0] + "' target='_blank'>" + values[0] + "</a>";
@@ -1184,7 +1184,7 @@ function delete_current_sample_id(ev) {
   });
 }
 
-function delete_current_protocol_id(ev) {
+function delete_current_protocol_id(ev, curationMode) {
   Swal.fire({
     title: "Are you sure you want to delete this protocol?",
     showCancelButton: true,
@@ -1201,12 +1201,22 @@ function delete_current_protocol_id(ev) {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
+      let protocolLinkTable;
+      if (curationMode === "free-form") {
+        protocolLinkTable = document.getElementById("protocol-link-table-dd");
+      }
+      if (curationMode === "guided") {
+        protocolLinkTable = document.getElementById(
+          "guided-protocol-link-table-dd"
+        );
+      }
+
       updateIndexForTable(document.getElementById("protocol-link-table-dd"));
     }
   });
 }
 
-function delete_current_additional_link_id(ev) {
+function delete_current_additional_link_id(ev, curationMode) {
   Swal.fire({
     title: "Are you sure you want to delete this link?",
     showCancelButton: true,
@@ -1223,7 +1233,14 @@ function delete_current_additional_link_id(ev) {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("other-link-table-dd"));
+      if (curationMode === "free-form") {
+        updateIndexForTable(document.getElementById("other-link-table-dd"));
+      }
+      if (curationMode === "guided") {
+        updateIndexForTable(
+          document.getElementById("guided-other-link-table-dd")
+        );
+      }
     }
   });
 }
@@ -1344,9 +1361,24 @@ function updateIndexForTable(table) {
       document.getElementById("protocol-link-table-dd").style.display = "none";
       document.getElementById("div-protocol-link-table-dd").style.display =
         "none";
+    } else if (
+      table === document.getElementById("guided-protocol-link-table-dd")
+    ) {
+      document.getElementById("guided-protocol-link-table-dd").style.display =
+        "none";
+      document.getElementById(
+        "guided-div-protocol-link-table-dd"
+      ).style.display = "none";
     } else if (table === document.getElementById("other-link-table-dd")) {
       document.getElementById("other-link-table-dd").style.display = "none";
       document.getElementById("div-other-link-table-dd").style.display = "none";
+    } else if (
+      table === document.getElementById("guided-other-link-table-dd")
+    ) {
+      document.getElementById("guided-other-link-table-dd").style.display =
+        "none";
+      document.getElementById("guided-div-other-link-table-dd").style.display =
+        "none";
     }
   }
   $("#table-subjects").css("pointer-events", "auto");
@@ -2639,7 +2671,8 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
               formValues[0],
               formValues[1],
               formValues[2],
-              formValues[3]
+              formValues[3],
+              "free-form"
             );
           }
         }
@@ -2877,7 +2910,8 @@ async function showProtocolCredentials(email, filetype) {
           formValue[0],
           formValue[1],
           formValue[2],
-          formValue[3]
+          formValue[3],
+          "free-form"
         );
       }
     }
@@ -2905,7 +2939,7 @@ function loadExistingProtocolInfo() {
   return [protocolExists, protocolTokenContent["email"]];
 }
 
-async function addAdditionalLink() {
+async function addAdditionalLink(curationMode) {
   const { value: values } = await Swal.fire({
     title: "Add additional link",
     html:
@@ -2957,7 +2991,24 @@ async function addAdditionalLink() {
     },
   });
   if (values) {
-    addAdditionalLinktoTableDD(values[0], values[1], values[2], values[3]);
+    if (curationMode === "free-form") {
+      addAdditionalLinktoTableDD(
+        values[0],
+        values[1],
+        values[2],
+        values[3],
+        "free-form"
+      );
+    }
+    if (curationMode === "guided") {
+      addAdditionalLinktoTableDD(
+        values[0],
+        values[1],
+        values[2],
+        values[3],
+        "guided"
+      );
+    }
   }
 }
 
