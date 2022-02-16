@@ -1243,25 +1243,27 @@ function handleDuplicateImports(btnId, duplicateArray) {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
         console.log(confirm_button);
-        var select_all = document.getElementById("container").parentElement.children[0].children[0];
+        var select_all =
+          document.getElementById("container").parentElement.children[0]
+            .children[0];
         console.log(select_all);
         var container = document.getElementById("container");
         let check_boxes = container.querySelectorAll("input[type=checkbox]");
         console.log(check_boxes);
-        check_boxes.forEach(function(element) {
-          element.addEventListener('change', function() {
-            if(this.checked) {
+        check_boxes.forEach(function (element) {
+          element.addEventListener("change", function () {
+            if (this.checked) {
               confirm_button[0].disabled = false;
               console.log("one is chcked");
             } else {
               let one_checked = false;
-              for(let i = 0; i < check_boxes.length; i++) {
-                if(check_boxes[i].checked) {
+              for (let i = 0; i < check_boxes.length; i++) {
+                if (check_boxes[i].checked) {
                   one_checked = true;
                   break;
                 }
               }
-              if(one_checked === true) {
+              if (one_checked === true) {
                 console.log("one should still be checked");
                 confirm_button[0].disabled = false;
               } else {
@@ -1271,15 +1273,15 @@ function handleDuplicateImports(btnId, duplicateArray) {
               }
             }
           });
-        })
-        select_all.addEventListener('change', function() {
-          if(this.checked) {
+        });
+        select_all.addEventListener("change", function () {
+          if (this.checked) {
             confirm_button[0].disabled = false;
             console.log("select all was checked");
           } else {
             confirm_button[0].disabled = true;
           }
-        })
+        });
       },
     }).then((result) => {
       if (result.isConfirmed) {
