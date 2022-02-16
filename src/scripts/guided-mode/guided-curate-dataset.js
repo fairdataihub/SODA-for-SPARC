@@ -2053,10 +2053,12 @@ $(document).ready(() => {
     if (
       current_sub_step.attr("id") == "guided-create-description-metadata-tab"
     ) {
-      guidedSaveDatasetInformation();
-      guidedSaveParticipantInformation();
-      guidedSaveStudyInformation();
-      guidedSaveAwardAndContrinbutorInformation();
+      let a = getGuidedDatasetInformation();
+      let b = getGuidedDatasetStudyInformation();
+      let c = getGuidedDatasetContributorInformation();
+      console.log(a);
+      console.log(b);
+      console.log(c);
     }
 
     //if more tabs in parent tab, go to next tab and update capsule
