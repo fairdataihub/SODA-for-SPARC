@@ -430,7 +430,10 @@ async function generateManifest(action, type, manifestEditBoolean) {
     // if (manifestEditBoolean) {
     //
     // }
-    initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
+    initiate_generate_manifest_local(
+      manifestEditBoolean,
+      localDatasetFolderPath
+    );
   } else {
     // Case 2: bf dataset
     if (manifestEditBoolean) {
@@ -531,7 +534,10 @@ function updateJSONStructureManifestGenerate() {
   }
 }
 
-async function initiate_generate_manifest_local(manifestEditBoolean, originalDataset) {
+async function initiate_generate_manifest_local(
+  manifestEditBoolean,
+  originalDataset
+) {
   Swal.fire({
     title: "Generating the manifest.xlsx file(s)",
     text: "Please wait...",
@@ -563,7 +569,7 @@ async function initiate_generate_manifest_local(manifestEditBoolean, originalDat
 
       Swal.fire({
         title:
-        "Successfully generated manifest files at the specified location!",
+          "Successfully generated manifest files at the specified location!",
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
@@ -582,7 +588,6 @@ async function initiate_generate_manifest_local(manifestEditBoolean, originalDat
         Destinations.LOCAL
       );
     }
-
   }
 }
 
@@ -771,17 +776,17 @@ function moveManifestFiles(sourceFolder, destinationFolder) {
             folder,
             "manifest.xlsx"
           );
-          const mv = require('mv');
-          mv(sourceManifest, destinationManifest, function(err) {
-             if (err) {
-                throw err
+          const mv = require("mv");
+          mv(sourceManifest, destinationManifest, function (err) {
+            if (err) {
+              throw err;
             }
           });
         });
-        resolve(true)
+        resolve(true);
       }
     });
-  })
+  });
 }
 
 const removeDir = function (pathdir) {
@@ -1233,7 +1238,7 @@ function createManifestLocally(editBoolean, originalDataset) {
 
             Swal.fire({
               title:
-              "Successfully generated manifest files at the specified location!",
+                "Successfully generated manifest files at the specified location!",
               icon: "success",
               showConfirmButton: true,
               heightAuto: false,
