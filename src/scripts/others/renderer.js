@@ -4799,12 +4799,12 @@ function addFoldersfunction(
               <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
             </div>  
             <div class="swal-button-container">
-              <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+              <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
               list +
               `')">Skip Folders</button>
-              <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing Folders</button>
-              <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
-              <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+              <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Folders</button>
+              <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
+              <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
               </div>`,
           });
         }
@@ -5110,12 +5110,12 @@ function dropHelper(
         <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
       </div>  
       <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
         `')">Skip Folders</button>
-        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing Folders</button>
-        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Folders</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
         </div>`,
     });
   }
@@ -5155,12 +5155,12 @@ function dropHelper(
         <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
       </div>  
       <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
         `')">Skip Files</button>
-        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing Files</button>
-        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Files</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
         </div>`,
     });
   }
