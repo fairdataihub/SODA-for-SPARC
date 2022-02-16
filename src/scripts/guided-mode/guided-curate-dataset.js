@@ -1708,7 +1708,32 @@ $(document).ready(() => {
       "study collection title": studyCollectionTitle,
     };
   };
-  const getGuidedDatasetContributorInformation = () => {};
+  const getGuidedDatasetContributorInformation = () => {
+    var funding = document.getElementById(
+      "guided-ds-description-award-input"
+    ).value;
+    var acknowledgment = document.getElementById(
+      "guided-ds-description-acknowledgments"
+    ).value;
+
+    var fundingArray = [];
+    if (funding === "") {
+      fundingArray = [""];
+    } else {
+      fundingArray = [funding];
+    }
+    /// other funding sources
+    var otherFunding = getTagsFromTagifyElement("guided-ds-other-funding");
+    for (var i = 0; i < otherFunding.length; i++) {
+      fundingArray.push(otherFunding[i]);
+    }
+
+    var contributorInfo = {};
+    contributorInfo["funding"] = fundingArray;
+    contributorInfo["acknowledgment"] = acknowledgment;
+    contributorInfo["contributors"] = contributorArray;
+    return contributorInfo;
+  };
   const guidedCombineLinkSections = () => {
     //var relatedInfoArr = combineLinksSections();
   };
