@@ -752,7 +752,6 @@ async function generateDDFile(uploadBFBoolean) {
   var contributorObj = grabConInfoEntries();
   // grab related information (protocols and additional links)
   var relatedInfoArr = combineLinksSections();
-
   //// process obtained values to pass to an array ///
   ///////////////////////////////////////////////////
 
@@ -785,10 +784,18 @@ async function generateDDFile(uploadBFBoolean) {
   studyInfoValueObject["study approach"] = studyApproachesArr;
 
   ///////////// stringify JSON objects //////////////////////
+  console.log(datasetInfoValueObj);
+  console.log(studyInfoValueObject);
+  console.log(contributorObj);
+  console.log(relatedInfoArr);
   json_str_ds = JSON.stringify(datasetInfoValueObj);
   json_str_study = JSON.stringify(studyInfoValueObject);
   json_str_con = JSON.stringify(contributorObj);
   json_str_related_info = JSON.stringify(relatedInfoArr);
+  console.log(json_str_con);
+  console.log(json_str_study);
+  console.log(json_str_con);
+  console.log(json_str_related_info);
 
   /// get current, selected Pennsieve account
   var bfaccountname = $("#current-bf-account").text();
@@ -863,23 +870,6 @@ async function generateDDFile(uploadBFBoolean) {
 }
 
 ///// Functions to grab each piece of info to generate the dd file
-
-// dataset info
-function grabDSInfoEntries() {
-  var name = document.getElementById("ds-name").value;
-  var description = document.getElementById("ds-description").value;
-  var keywordArray = keywordTagify.value;
-  var samplesNo = document.getElementById("ds-samples-no").value;
-  var subjectsNo = document.getElementById("ds-subjects-no").value;
-
-  return {
-    name: name,
-    description: description,
-    keywords: keywordArray,
-    "number of samples": samplesNo,
-    "number of subjects": subjectsNo,
-  };
-}
 
 // contributor info
 function grabConInfoEntries() {

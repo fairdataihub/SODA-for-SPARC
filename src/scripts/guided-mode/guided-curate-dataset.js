@@ -1658,6 +1658,30 @@ $(document).ready(() => {
       sodaJSONObj["dataset-metadata"]["description-metadata"]["type"] = dsType;
     }
   };
+
+  const getGuidedDatasetInformation = () => {
+    var name = sodaJSONObj["digital-metadata"]["name"];
+    var description = sodaJSONObj["digital-metadata"]["subtitle"];
+    var type = $("#guided-ds-type").val();
+    /*var keywordArray = keywordTagify.value;*/
+    var samplesNo = document.getElementById("guided-ds-samples-no").value;
+    var subjectsNo = document.getElementById("guided-ds-subjects-no").value;
+
+    return {
+      name: name,
+      description: description,
+      type: type,
+      keywords: keywordArray,
+      "number of samples": samplesNo,
+      "number of subjects": subjectsNo,
+    };
+  };
+  const getGuidedDatasetStudyInformation = () => {};
+  const getGuidedDatasetContributorInformation = () => {};
+  const guidedCombineLinkSections = () => {
+    //var relatedInfoArr = combineLinksSections();
+  };
+
   const guidedSaveParticipantInformation = () => {
     let numSubjects = $("#guided-ds-samples-no").val();
     let numSamples = $("#guided-ds-samples-no").val();
