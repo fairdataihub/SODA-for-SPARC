@@ -1663,7 +1663,8 @@ $(document).ready(() => {
     var name = sodaJSONObj["digital-metadata"]["name"];
     var description = sodaJSONObj["digital-metadata"]["subtitle"];
     var type = $("#guided-ds-type").val();
-    /*var keywordArray = keywordTagify.value;*/
+    var keywordArray = keywordTagify.value;
+    sodaJSONObj["digital-metadata"]["dataset-tags"];
     var samplesNo = document.getElementById("guided-ds-samples-no").value;
     var subjectsNo = document.getElementById("guided-ds-subjects-no").value;
 
@@ -1676,7 +1677,37 @@ $(document).ready(() => {
       "number of subjects": subjectsNo,
     };
   };
-  const getGuidedDatasetStudyInformation = () => {};
+  const getGuidedDatasetStudyInformation = () => {
+    var studyOrganSystemTags = getTagsFromTagifyElement(
+      "guided-ds-study-organ-system"
+    );
+    var studyApproachTags = getTagsFromTagifyElement(
+      "guided-ds-study-approach"
+    );
+    var studyTechniqueTags = getTagsFromTagifyElement(
+      "guided-ds-study-technique"
+    );
+    var studyPurpose = document.getElementById("guided-ds-study-purpose").value;
+    var studyDataCollection = document.getElementById(
+      "guided-ds-study-data-collection"
+    ).value;
+    var studyPrimaryConclusion = document.getElementById(
+      "guided-ds-study-primary-conclusion"
+    ).value;
+    var studyCollectionTitle = document.getElementById(
+      "guided-ds-study-collection-title"
+    ).value;
+
+    return {
+      "study organ system": studyOrganSystemTags,
+      "study approach": studyApproachTags,
+      "study technique": studyTechniqueTags,
+      "study purpose": studyPurpose,
+      "study data collection": studyDataCollection,
+      "study primary conclusion": studyPrimaryConclusion,
+      "study collection title": studyCollectionTitle,
+    };
+  };
   const getGuidedDatasetContributorInformation = () => {};
   const guidedCombineLinkSections = () => {
     //var relatedInfoArr = combineLinksSections();
