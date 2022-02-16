@@ -372,9 +372,9 @@ async function generateManifest(action, type, manifestEditBoolean) {
         sodaJSONObj["starting-point"]["type"] = "local";
         // if users would like to edit manifest files before generating them
         if (manifestEditBoolean) {
-          localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr(
-            "placeholder"
-          );
+          localDatasetFolderPath = $(
+            "#input-manifest-local-folder-dataset"
+          ).attr("placeholder");
         }
         create_json_object(action, sodaJSONObj, localDatasetFolderPath);
         datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
@@ -472,7 +472,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
           localDatasetFolderPath
         );
       }
-    })
+    });
   } else {
     // Case 2: bf dataset
     if (manifestEditBoolean) {
