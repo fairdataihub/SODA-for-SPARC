@@ -497,6 +497,36 @@ button[data-id="bf_list_users_pi"] {
   -webkit-transition: all 0.25s linear;
 }
 
+@-o-keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #85ceff;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+@keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #85ceff;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+.backgroundAnimate {
+  background-image: none !important;
+  -o-animation: fadeIt 3s ease-in-out;
+  animation: fadeIt 3s ease-in-out;
+}
+
 .ds-selected {
   border: #c0c0c0;
   background-color: #eeeaea;

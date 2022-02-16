@@ -4227,7 +4227,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               menuHighLevelFolders,
               menuFile
             );
-            console.log(myPath);
           }
         }
       }
@@ -4722,7 +4721,6 @@ function addFoldersfunction(
       uiFolders[folder] = 1;
     }
   }
-
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     Swal.fire({
@@ -4749,6 +4747,22 @@ function addFoldersfunction(
       var originalFolderName = path.basename(folderArray[i]);
       var renamedFolderName = originalFolderName;
 
+      if (originalFolderName in currentLocation["folders"]) {
+        //folder matches object key
+        folderPath.push(folderArray[i]);
+        duplicateFolders.push(originalFolderName);
+      } else {
+        if (originalFolderName in importedFolders) {
+          folderPath.push(folderArray[i]);
+          duplicateFolders.push(originalFolderName);
+        } else {
+          importedFolders[originalFolderName] = {
+            path: folderArray[i],
+            "original-basename": originalFolderName,
+          };
+        }
+      }
+
       if (nonallowedFolderArray.includes(folderArray[i])) {
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
@@ -4762,17 +4776,6 @@ function addFoldersfunction(
           };
         }
       } else {
-        while (
-          renamedFolderName in uiFolders ||
-          renamedFolderName in importedFolders
-        ) {
-          //if there is a duplicate folder
-          //we push the folder name and folder path into their appropriate array
-          duplicateFolders.push(renamedFolderName);
-          folderPath.push(folderArray[i]);
-          renamedFolderName = `${originalFolderName} (${j})`;
-          j++;
-        }
         var listElements = showItemsAsListBootbox(duplicateFolders);
         var list = JSON.stringify(folderPath).replace(/"/g, "");
         if (duplicateFolders.length > 0) {
@@ -4805,51 +4808,46 @@ function addFoldersfunction(
               </div>`,
           });
         }
-        importedFolders[originalFolderName] = {
-          path: folderArray[i],
-          "original-basename": originalFolderName,
-        };
       }
     }
-    if (folderPath.length === 0) {
-      if (Object.keys(importedFolders).length > 0) {
-        for (var element in importedFolders) {
-          currentLocation["folders"][element] = {
-            type: "local",
-            path: importedFolders[element]["path"],
-            folders: {},
-            files: {},
-            action: ["new"],
-          };
-          populateJSONObjFolder(
-            action,
-            currentLocation["folders"][element],
-            importedFolders[element]["path"]
-          );
-          // check if a folder has to be renamed due to duplicate reason
-          if (element !== importedFolders[element]["original-basename"]) {
-            currentLocation["folders"][element]["action"].push("renamed");
-          }
-          var appendString =
-            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-            element +
-            "</div></div>";
-          $("#items").html(appendString);
-          listItems(currentLocation, "#items");
-          getInFolder(
-            ".single-item",
-            "#items",
-            organizeDSglobalPath,
-            datasetStructureJSONObj
-          );
-          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-          hideMenu(
-            "high-level-folder",
-            menuFolder,
-            menuHighLevelFolders,
-            menuFile
-          );
+
+    if (Object.keys(importedFolders).length > 0) {
+      for (var element in importedFolders) {
+        currentLocation["folders"][element] = {
+          type: "local",
+          path: importedFolders[element]["path"],
+          folders: {},
+          files: {},
+          action: ["new"],
+        };
+        populateJSONObjFolder(
+          action,
+          currentLocation["folders"][element],
+          importedFolders[element]["path"]
+        );
+        // check if a folder has to be renamed due to duplicate reason
+        if (element !== importedFolders[element]["original-basename"]) {
+          currentLocation["folders"][element]["action"].push("renamed");
         }
+        var appendString =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+          element +
+          "</div></div>";
+        $("#items").html(appendString);
+        listItems(currentLocation, "#items");
+        getInFolder(
+          ".single-item",
+          "#items",
+          organizeDSglobalPath,
+          datasetStructureJSONObj
+        );
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+        hideMenu(
+          "high-level-folder",
+          menuFolder,
+          menuHighLevelFolders,
+          menuFile
+        );
       }
 
       // log the success
@@ -4900,7 +4898,6 @@ function drop(ev) {
   for (var i = 0; i < ev.dataTransfer.files.length; i++) {
     var ele = ev.dataTransfer.files[i].path;
     if (path.basename(ele).indexOf(".") === -1) {
-      console.log(path.basename(ele));
       detectIrregularFolders(path.basename(ele), ele);
     }
   }
@@ -4988,6 +4985,7 @@ function dropHelper(
     }
     /// check for File duplicate
     if (statsObj.isFile()) {
+      var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
         Swal.fire({
@@ -5007,30 +5005,36 @@ function dropHelper(
             basename: path.parse(itemPath).base,
           };
         } else {
-          for (var objectKey in myPath["files"]) {
-            if (objectKey !== undefined) {
-              var nonAllowedDuplicate = false;
-              if (itemPath === myPath["files"][objectKey]["path"]) {
-                nonAllowedDuplicateFiles.push(itemPath);
-                nonAllowedDuplicate = true;
-                break;
+          //check if fileName is in to-be-imported object keys
+          if (originalFileName in importedFiles) {
+            nonAllowedDuplicate = true;
+            nonAllowedDuplicateFiles.push(itemPath);
+            continue;
+          } else {
+            //check if filename is in already-imported object keys
+            if (originalFileName in myPath["files"]) {
+              nonAllowedDuplicate = true;
+              nonAllowedDuplicateFiles.push(itemPath);
+              continue;
+            } else {
+              for (var objectKey in myPath["files"]) {
+                if (objectKey !== undefined) {
+                  var nonAllowedDuplicate = false;
+                  //just checking if paths are the same
+                  if (itemPath === myPath["files"][objectKey]["path"]) {
+                    nonAllowedDuplicateFiles.push(itemPath);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //in neither so write
+                    importedFiles[originalFileName] = {
+                      path: itemPath,
+                      basename: originalFileName,
+                    };
+                  }
+                }
               }
             }
-          }
-          if (!nonAllowedDuplicate) {
-            var j = 1;
-            var fileBaseName = itemName;
-            var originalFileNameWithoutExt = path.parse(fileBaseName).name;
-            var fileNameWithoutExt = originalFileNameWithoutExt;
-            while (fileBaseName in uiFiles || fileBaseName in importedFiles) {
-              fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-              fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
-              j++;
-            }
-            importedFiles[fileBaseName] = {
-              path: itemPath,
-              basename: fileBaseName,
-            };
           }
         }
       }
@@ -5062,19 +5066,23 @@ function dropHelper(
             };
           }
         } else {
-          while (
-            renamedFolderName in uiFolders ||
-            renamedFolderName in importedFolders
-          ) {
-            duplicateFolders.push(renamedFolderName);
+          if (itemName in myPath["folders"]) {
+            //folder is already imported
+            duplicateFolders.push(itemName);
             folderPath.push(itemPath);
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
+          } else {
+            if (itemName in importedFolders) {
+              //folder is already in to-be-imported list
+              duplicateFolders.push(itemName);
+              folderPath.push(itemPath);
+            } else {
+              //folder is in neither so write
+              importedFolders[renamedFolderName] = {
+                path: itemPath,
+                "original-basename": originalFolderName,
+              };
+            }
           }
-          importedFolders[renamedFolderName] = {
-            path: itemPath,
-            "original-basename": originalFolderName,
-          };
         }
       }
     }
@@ -5191,54 +5199,47 @@ function dropHelper(
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
   }
-  if (folderPath.length === 0) {
-    if (Object.keys(importedFolders).length > 0) {
-      for (var element in importedFolders) {
-        myPath["folders"][element] = {
-          type: "local",
-          path: importedFolders[element]["path"],
-          folders: {},
-          files: {},
-          action: ["new"],
-        };
-        // append "renamed" to "action" key if file is auto-renamed by UI
-        var originalName = path.parse(myPath["folders"][element]["path"]).name;
-        let placeholderString =
-          '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
-          element +
-          "... </div></div>";
-        $(placeholderString).appendTo(ev2);
-        // await listItems(myPath, "#items");
-        listItems(myPath, "#items");
-        if (element !== originalName) {
-          myPath["folders"][element]["action"].push("renamed");
-        }
-        populateJSONObjFolder(
-          action,
-          myPath["folders"][element],
-          importedFolders[element]["path"]
-        );
-        var appendString =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-          element +
-          "</div></div>";
-        $("#placeholder_element").remove();
-        $(appendString).appendTo(ev2);
-        listItems(myPath, "#items");
-        getInFolder(
-          ".single-item",
-          "#items",
-          organizeDSglobalPath,
-          datasetStructureJSONObj
-        );
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-        hideMenu(
-          "high-level-folder",
-          menuFolder,
-          menuHighLevelFolders,
-          menuFile
-        );
+  if (Object.keys(importedFolders).length > 0) {
+    for (var element in importedFolders) {
+      myPath["folders"][element] = {
+        type: "local",
+        path: importedFolders[element]["path"],
+        folders: {},
+        files: {},
+        action: ["new"],
+      };
+      // append "renamed" to "action" key if file is auto-renamed by UI
+      var originalName = path.parse(myPath["folders"][element]["path"]).name;
+      let placeholderString =
+        '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
+        element +
+        "... </div></div>";
+      $(placeholderString).appendTo(ev2);
+      // await listItems(myPath, "#items");
+      listItems(myPath, "#items");
+      if (element !== originalName) {
+        myPath["folders"][element]["action"].push("renamed");
       }
+      populateJSONObjFolder(
+        action,
+        myPath["folders"][element],
+        importedFolders[element]["path"]
+      );
+      var appendString =
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        element +
+        "</div></div>";
+      $("#placeholder_element").remove();
+      $(appendString).appendTo(ev2);
+      listItems(myPath, "#items");
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
   }
   $("body").removeClass("waiting");
@@ -6442,7 +6443,6 @@ document
               if (result.isConfirmed) {
                 initiate_generate();
               } else {
-                console.log("Stop");
                 $("#sidebarCollapse").prop("disabled", false);
                 document.getElementById(
                   "para-please-wait-new-curate"
