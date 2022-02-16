@@ -1590,13 +1590,13 @@ $(document).ready(() => {
     let date = $("#guided-submission-completion-date").val();
     let milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
     if (award === "" || date === null || milestones.length == 0) {
-      /*Swal.fire({
+      Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
         text: "Please fill in all of the required fields.",
         title: "Incomplete information",
-      });*/
+      });
     } else {
       var json_arr = [];
       json_arr.push({
