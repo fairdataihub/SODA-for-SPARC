@@ -1237,9 +1237,53 @@ function handleDuplicateImports(btnId, duplicateArray) {
       title: header,
       html: selectAll,
       allowOutsideClick: false,
+      cancelButtonText: "Cancel",
+      showCancelButton: true,
+      didOpen: () => {
+        var confirm_button = document.getElementsByClassName("swal2-confirm");
+        confirm_button[0].disabled = true;
+        console.log(confirm_button);
+        var select_all = document.getElementById("container").parentElement.children[0].children[0];
+        console.log(select_all);
+        var container = document.getElementById("container");
+        let check_boxes = container.querySelectorAll("input[type=checkbox]");
+        console.log(check_boxes);
+        check_boxes.forEach(function(element) {
+          element.addEventListener('change', function() {
+            if(this.checked) {
+              confirm_button[0].disabled = false;
+              console.log("one is chcked");
+            } else {
+              let one_checked = false;
+              for(let i = 0; i < check_boxes.length; i++) {
+                if(check_boxes[i].checked) {
+                  one_checked = true;
+                  break;
+                }
+              }
+              if(one_checked === true) {
+                console.log("one should still be checked");
+                confirm_button[0].disabled = false;
+              } else {
+                console.log("none are checked");
+                confirm_button[0].disabled = true;
+                select_all.checked = false;
+              }
+            }
+          });
+        })
+        select_all.addEventListener('change', function() {
+          if(this.checked) {
+            confirm_button[0].disabled = false;
+            console.log("select all was checked");
+          } else {
+            confirm_button[0].disabled = true;
+          }
+        })
+      },
     }).then((result) => {
       if (result.isConfirmed) {
-        let container = document.getElementById("container");
+        container = document.getElementById("container");
         var checkboxes = container.querySelectorAll(
           "input[type=checkbox]:checked"
         );
