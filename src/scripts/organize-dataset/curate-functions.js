@@ -1262,6 +1262,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
           didOpen: () => {
             $("#div-permission-list-2").css("display", "block");
             $(".ui.active.green.inline.loader.small").css("display", "none");
+            datasetPermissionDiv.style.display = "block";
             $("#curatebfdatasetlist").attr("disabled", false);
             $(datasetPermissionDiv)
               .find("#div-filter-datasets-progress-2")
