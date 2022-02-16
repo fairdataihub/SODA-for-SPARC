@@ -1645,76 +1645,64 @@ $(document).ready(() => {
   });
 
   const guidedSaveDescriptionFile = () => {
-    var datasetInfoValueObj = getGuidedDatasetInformation();
-    var studyInfoValueObject = getGuidedDatasetStudyInformation();
-    var contributorObj = getGuidedDatasetContributorInformation();
-    var relatedInfoArr = guidedCombineLinkSections();
+    let datasetInfoValueObj = getGuidedDatasetInformation();
+    let studyInfoValueObject = getGuidedDatasetStudyInformation();
+    let contributorObj = getGuidedDatasetContributorInformation();
+    let relatedInfoArr = guidedCombineLinkSections();
 
-    console.log(datasetInfoValueObj);
-    console.log(studyInfoValueObject);
-    console.log(contributorObj);
-    console.log(relatedInfoArr);
-    json_str_ds = JSON.stringify(datasetInfoValueObj);
-    json_str_study = JSON.stringify(studyInfoValueObject);
-    json_str_con = JSON.stringify(contributorObj);
-    json_str_related_info = JSON.stringify(relatedInfoArr);
-    console.log(json_str_con);
-    console.log(json_str_study);
-    console.log(json_str_con);
-    console.log(json_str_related_info);
+    let json_str_ds = JSON.stringify(datasetInfoValueObj);
+    let json_str_study = JSON.stringify(studyInfoValueObject);
+    let json_str_con = JSON.stringify(contributorObj);
+    let json_str_related_info = JSON.stringify(relatedInfoArr);
 
-    client.invoke(
-      "api_save_ds_description_file",
-      "false",
-      "None",
-      "None",
-      path.join($("#guided-dataset-path").text().trim(), "description.xlsx"),
-      json_str_ds,
-      json_str_study,
-      json_str_con,
-      json_str_related_info,
-      async (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            title: "Failed to generate the dataset_description file",
-            html: emessage,
-            icon: "warning",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        } else {
-          Swal.fire({
-            title: successMessage,
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        }
-      }
+    let descriptionFileDestination = path.join(
+      $("#guided-dataset-path").text().trim(),
+      "description.xlsx"
     );
-  };
-  $("#guided-generate-description-file").on("click", () => {
-    guidedSaveDescriptionFile();
-  });
-
-  const guidedSaveDatasetInformation = () => {
-    let dsType = $("#guided-ds-type").val();
-    if (dsType == "") {
-      /*Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
+    if ($("#guided-dataset-path").text().trim() == "") {
+      Swal.fire({
+        title: "Please select a destination folder",
+        icon: "warning",
         heightAuto: false,
-        icon: "error",
-        text: "Please fill in all of the required award and milestone fields.",
-        title: "Incomplete information",
-      });*/
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     } else {
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["type"] = dsType;
+      client.invoke(
+        "api_save_ds_description_file",
+        false,
+        "None",
+        "None",
+        descriptionFileDestination,
+        json_str_ds,
+        json_str_study,
+        json_str_con,
+        json_str_related_info,
+        async (error, res) => {
+          if (error) {
+            var emessage = userError(error);
+            log.error(error);
+            console.error(error);
+            Swal.fire({
+              title: "Failed to generate the dataset_description file",
+              html: emessage,
+              icon: "warning",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+          } else {
+            let successMessage =
+              "Successfully generated the dataset_description.xlsx file at the specified location.";
+            Swal.fire({
+              title: successMessage,
+              icon: "success",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+          }
+        }
+      );
     }
   };
-
   const getGuidedDatasetInformation = () => {
     var name = sodaJSONObj["digital-metadata"]["name"];
     var description = sodaJSONObj["digital-metadata"]["subtitle"];
@@ -1790,7 +1778,6 @@ $(document).ready(() => {
     contributorInfo["contributors"] = contributorArray;
     return contributorInfo;
   };
-
   const getGuidedAdditionalLinkSection = () => {
     var table = document.getElementById("guided-other-link-table-dd");
     var rowcountLink = table.rows.length;
@@ -1806,7 +1793,6 @@ $(document).ready(() => {
     }
     return additionalLinkInfo;
   };
-
   const getGuidedProtocolSection = () => {
     var table = document.getElementById("guided-protocol-link-table-dd");
     var rowcountLink = table.rows.length;
@@ -1828,6 +1814,9 @@ $(document).ready(() => {
     protocolLinks.push.apply(protocolLinks, otherLinks);
     return protocolLinks;
   };
+  $("#guided-generate-description-file").on("click", () => {
+    guidedSaveDescriptionFile();
+  });
 
   const guidedSaveParticipantInformation = () => {
     let numSubjects = $("#guided-ds-samples-no").val();
@@ -2061,21 +2050,19 @@ $(document).ready(() => {
     }
 
     if (current_sub_step.attr("id") == "add-edit-description-tags-tab") {
-      sodaJSONObj["digital-metadata"]["study-purpose"] = $(
-        "#guided-ds-description-study-purpose"
-      )
+      let studyPurpose = $("#guided-ds-description-study-purpose").val().trim();
+      let dataCollection = $("#guided-ds-description-data-collection")
         .val()
         .trim();
-      sodaJSONObj["digital-metadata"]["data-collection"] = $(
-        "#guided-ds-description-data-collection"
-      )
+      let primaryConclusion = $("#guided-ds-description-primary-conclusion")
         .val()
         .trim();
-      sodaJSONObj["digital-metadata"]["primary-conclusion"] = $(
-        "#guided-ds-description-primary-conclusion"
-      )
-        .val()
-        .trim();
+      sodaJSONObj["digital-metadata"]["study-purpose"] = studyPurpose;
+      sodaJSONObj["digital-metadata"]["data-collection"] = dataCollection;
+      sodaJSONObj["digital-metadata"]["primary-conclusion"] = primaryConclusion;
+      $("#guided-textarea-create-readme").text(
+        buildReadMeString(studyPurpose, dataCollection, primaryConclusion)
+      );
       let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
       $(".guidedDatasetTags").text(datasetTags.join("\r\n"));
       sodaJSONObj["digital-metadata"]["dataset-tags"] = datasetTags;
