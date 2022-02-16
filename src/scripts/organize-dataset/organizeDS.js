@@ -860,7 +860,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
           tagName: "i",
           color: "white",
         },
-      }
+      },
     ],
   });
 
@@ -1243,7 +1243,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
         var checkboxes = container.querySelectorAll(
           "input[type=checkbox]:checked"
         );
-        if(checkboxes.length > 0) {
+        if (checkboxes.length > 0) {
           console.log(checkboxes);
           let fileCheck = [];
           for (let i = 0; i < temp.length; i++) {
@@ -1280,7 +1280,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 datasetStructureJSONObj
               );
             } else {
-  
               let justName = checkboxes[i].id.substring(0, removeExt);
               let ext = checkboxes[i].id.substring(
                 removeExt,
@@ -1329,9 +1328,9 @@ function handleDuplicateImports(btnId, duplicateArray) {
               folders[i].parentNode.dispatchEvent(new Event("dblclick"));
             }
           }
-    
+
           animate_updatedFiles();
-    
+
           //add glowing effect here after page is refreshed
           if (removeExt === -1) {
             toastUpdate.open({
@@ -1351,9 +1350,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             message: "No selection was made",
           });
         }
-
       }
-
     });
     //then handle the selected checkboxes
   }
