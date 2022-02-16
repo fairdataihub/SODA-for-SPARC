@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Feature additions:
 
-- A stand-alone manifest file generation feature has been added. For this feature, users can now generate manifest files for their datasets stored locally or on Pennsieve.       
+- A stand-alone manifest file generation feature has been added. For this feature, users can now generate manifest files for their datasets stored locally or on Pennsieve.
 
 ### Bug fixes:
 
