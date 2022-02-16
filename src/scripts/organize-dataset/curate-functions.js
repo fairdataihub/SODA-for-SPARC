@@ -1,3 +1,5 @@
+const checkDiskSpace = require("check-disk-space").default;
+
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
@@ -193,6 +195,111 @@ function dropHandler(ev, paraElement, metadataFile) {
     }
   }
 }
+
+const checkAvailableSpace = () => {
+  const roundToHundredth = (value) => {
+    return Number(parseFloat(value.toFixed(2)));
+  };
+  let location = document
+    .getElementById("input-destination-generate-dataset-locally")
+    .getAttribute("placeholder");
+
+  checkDiskSpace(location).then((diskSpace) => {
+    let freeMemory = diskSpace.free; //returns in bytes
+    let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
+
+    client.invoke("api_check_JSON_size", sodaJSONObj, (error, res) => {
+      if (error) {
+        console.error(error);
+      } else {
+        let tempFolderSize = res;
+        let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
+        let warningText =
+          "Please free up " +
+          roundToHundredth(folderSizeMB) +
+          "MB " +
+          "or consider uploading directly to Pennsieve.";
+        //console.log(res);
+        //console.log(freeMemoryMB + "\n free mem in mb");
+        //console.log(folderSizeMB + "\n folder size in mb");
+
+        //converted to MB/GB/TB for user readability
+        if (folderSizeMB > 1000) {
+          //if bigger than a gb then convert to that
+          folderSizeMB = roundToHundredth(folderSizeMB / 1024);
+          freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
+          warningText =
+            "Please free up " +
+            roundToHundredth(folderSizeMB) +
+            "GB " +
+            "or consider uploading directly to Pennsieve.";
+          //if bigger than a tb then convert to that
+          if (folderSizeMB > 1000) {
+            folderSizeMB = roundToHundredth(folderSizeMB / 1024);
+            freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
+            warningText =
+              "Please free up " +
+              roundToHundredth(folderSizeMB) +
+              "TB " +
+              "or consider uploading directly to Pennsieve.";
+          }
+        }
+
+        //comparison is done in bytes
+        if (freeMemory < tempFolderSize) {
+          $("#div-confirm-destination-locally button").hide();
+          $("#Question-generate-dataset-choose-ds-name").css("display", "none");
+          document.getElementById(
+            "input-destination-generate-dataset-locally"
+          ).placeholder = "Browse here";
+
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "OK",
+            heightAuto: false,
+            icon: "warning",
+            showCancelButton: false,
+            title: "Not enough space in storage device",
+            text: warningText,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          });
+
+          logCurationForAnalytics(
+            "Error",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_WITH_DESTINATION,
+            ["Step 6", "Check Storage Space", determineDatasetLocation()],
+            determineDatasetLocation()
+          );
+
+          // return to avoid logging that the user passed the storage space check
+          return;
+        }
+
+        logCurationForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_WITH_DESTINATION,
+          ["Step 6", "Check Storage Space", determineDatasetLocation()],
+          determineDatasetLocation()
+        );
+      }
+    });
+  });
+};
+const btnConfirmLocalDatasetGeneration = document.getElementById(
+  "btn-confirm-local-destination"
+);
+btnConfirmLocalDatasetGeneration.addEventListener(
+  "click",
+  checkAvailableSpace,
+  false
+);
 
 ////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 const progressFileDropdown = document.getElementById("progress-files-dropdown");
@@ -974,7 +1081,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       });
     }
   } else if (dropdown === "dataset") {
-    dropdownEventID = ev.id;
+    if (ev != null) {
+      dropdownEventID = ev.id;
+    }
     $(".svg-change-current-account.dataset").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
@@ -1018,61 +1127,152 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       //$(".selectpicker").selectpicker("refresh");
       //$("#bf-dataset-select-div").hide();
 
-      const { value: bfDS } = await Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Confirm",
-        focusCancel: true,
-        focusConfirm: false,
-        heightAuto: false,
-        allowOutsideClick: false,
-        allowEscapeKey: true,
-        html: datasetPermissionDiv,
-        reverseButtons: reverseSwalButtons,
-        showCloseButton: true,
-        showCancelButton: true,
-        title:
-          "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
-        showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster",
-        },
-        hideClass: {
-          popup:
-            "animate__animated animate__fadeOutUp animate__faster animate_fastest",
-        },
-        willOpen: () => {
-          $("#curatebfdatasetlist").selectpicker("hide");
-          $("#curatebfdatasetlist").selectpicker("refresh");
-          $("#bf-dataset-select-div").hide();
-        },
-        didOpen: () => {
-          $(".ui.active.green.inline.loader.small").css("display", "none");
-        },
-        preConfirm: () => {
-          $("body").addClass("waiting");
-
-          $(datasetPermissionDiv)
-            .find("#div-filter-datasets-progress-2")
-            .css("display", "block");
-          $("#curatebfdatasetlist").selectpicker("hide");
-          $("#curatebfdatasetlist").selectpicker("refresh");
-          $("#bf-dataset-select-div").hide();
-
-          bfDataset = $("#curatebfdatasetlist").val();
-
-          if (!bfDataset) {
-            Swal.showValidationMessage("Please select a dataset!");
-
+      var accountPresent = await check_api_key();
+      if (accountPresent === false) {
+        //If there is no API key pair, warning will pop up allowing user to sign in
+        await Swal.fire({
+          icon: "warning",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Yes",
+          showCancelButton: true,
+          reverseButtons: reverseSwalButtons,
+          cancelButtonText: "I'll do it later",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await openDropdownPrompt(this, "bf");
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
+          } else {
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
+          }
+        });
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Selecting dataset",
+          "User has not connected their Pennsieve account with SODA",
+          1
+        );
+      } else {
+        //account is signed in but no datasets have been fetched or created
+        //invoke dataset request to ensure no datasets have been created
+        if (datasetList.length === 0) {
+          const fetchData = new Promise((resolve, reject) => {
+            client.invoke(
+              "api_bf_dataset_account",
+              defaultBfAccount,
+              (error, result) => {
+                if (error) {
+                  log.error(error);
+                  console.log(error);
+                  var emessage = error;
+                  reject(emessage);
+                } else {
+                  datasetList = [];
+                  datasetList = result;
+                  refreshDatasetList();
+                  resolve();
+                }
+              }
+            );
+          });
+        }
+        //after request check length again
+        //if 0 then no datasets have been created
+        if (datasetList.length === 0) {
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: "Cancel",
+            confirmButtonText: "Create new dataset",
+            focusCancel: false,
+            focusConfirm: true,
+            showCloseButton: true,
+            showCancelButton: true,
+            heightAuto: false,
+            allowOutsideClick: false,
+            allowEscapeKey: true,
+            title:
+              "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
+            html: "It appears that your don't have any datasets on Pennsieve with owner or manage permission.<br><br>Please create one to get started.",
+            showClass: {
+              popup: "animate__animated animate__fadeInDown animate__faster",
+            },
+            hideClass: {
+              popup:
+                "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+            },
+            didOpen: () => {
+              $(".ui.active.green.inline.loader.small").css("display", "none");
+              $(".svg-change-current-account.dataset").css("display", "block");
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $("#create_new_bf_dataset_btn").click();
+            }
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Selecting dataset",
+            "User has not created any datasets",
+            1
+          );
+        }
+      }
+      //datasets do exist so display popup with dataset options
+      //else datasets have been created
+      if (datasetList.length > 0) {
+        const { value: bfDS } = await Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          cancelButtonText: "Cancel",
+          confirmButtonText: "Confirm",
+          focusCancel: true,
+          focusConfirm: false,
+          heightAuto: false,
+          allowOutsideClick: false,
+          allowEscapeKey: true,
+          html: datasetPermissionDiv,
+          reverseButtons: reverseSwalButtons,
+          showCloseButton: true,
+          showCancelButton: true,
+          title:
+            "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown animate__faster",
+          },
+          hideClass: {
+            popup:
+              "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+          },
+          willOpen: () => {
+            $("#curatebfdatasetlist").selectpicker("hide");
+            $("#curatebfdatasetlist").selectpicker("refresh");
+            $("#bf-dataset-select-div").hide();
+          },
+          didOpen: () => {
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $("#curatebfdatasetlist").attr("disabled", false);
             $(datasetPermissionDiv)
               .find("#div-filter-datasets-progress-2")
               .css("display", "none");
-            $("#curatebfdatasetlist").selectpicker("show");
             $("#curatebfdatasetlist").selectpicker("refresh");
+            $("#curatebfdatasetlist").selectpicker("show");
             $("#bf-dataset-select-div").show();
 
-            return undefined;
-          } else {
-            if (bfDataset === "Select dataset") {
+            bfDataset = $("#curatebfdatasetlist").val();
+          },
+          preConfirm: () => {
+            bfDataset = $("#curatebfdatasetlist").val();
+            if (!bfDataset) {
               Swal.showValidationMessage("Please select a dataset!");
 
               $(datasetPermissionDiv)
@@ -1084,40 +1284,66 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
 
               return undefined;
             } else {
-              return bfDataset;
+              if (bfDataset === "Select dataset") {
+                Swal.showValidationMessage("Please select a dataset!");
+
+                $(datasetPermissionDiv)
+                  .find("#div-filter-datasets-progress-2")
+                  .css("display", "none");
+                $("#curatebfdatasetlist").selectpicker("show");
+                $("#curatebfdatasetlist").selectpicker("refresh");
+                $("#bf-dataset-select-div").show();
+
+                return undefined;
+              } else {
+                return bfDataset;
+              }
             }
+          },
+        });
+
+        // check return value
+        if (bfDS) {
+          if (show_timer) {
+            Swal.fire({
+              allowEscapeKey: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: false,
+              title: "Loading your dataset details...",
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
           }
-        },
-      });
 
-      // check return value
-      if (bfDS) {
-        if (show_timer) {
-          Swal.fire({
-            allowEscapeKey: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: false,
-            title: "Loading your dataset details...",
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          });
-        }
+          if (dropdownEventID === "dd-select-pennsieve-dataset") {
+            $("#ds-name").val(bfDataset);
+            $("body").removeClass("waiting");
+            $(".svg-change-current-account.dataset").css("display", "block");
+            dropdownEventID = "";
+            return;
+          }
+          $("#current-bf-dataset").text(bfDataset);
+          $("#current-bf-dataset-generate").text(bfDataset);
+          $(".bf-dataset-span").html(bfDataset);
+          confirm_click_function();
 
-        if (dropdownEventID === "dd-select-pennsieve-dataset") {
-          $("#ds-name").val(bfDataset);
-          $("body").removeClass("waiting");
-          $(".svg-change-current-account.dataset").css("display", "block");
-          dropdownEventID = "";
-          return;
+          defaultBfDataset = bfDataset;
+          // document.getElementById("ds-description").innerHTML = "";
+          refreshDatasetList();
+          $("#dataset-loaded-message").hide();
+
+          showHideDropdownButtons("dataset", "show");
+          // checkPrevDivForConfirmButton("dataset");
         }
-        $("#current-bf-dataset").text(bfDataset);
-        $("#current-bf-dataset-generate").text(bfDataset);
-        $(".bf-dataset-span").html(bfDataset);
-        confirm_click_function();
+        if ($("#current-bf-dataset-generate").text() === "None") {
+          showHideDropdownButtons("dataset", "hide");
+        } else {
+          showHideDropdownButtons("dataset", "show");
+        }
 
         defaultBfDataset = bfDataset;
 
@@ -1163,6 +1389,13 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Selecting dataset",
+        defaultBfDatasetId,
+        1
+      );
     }, 10);
   }
 }

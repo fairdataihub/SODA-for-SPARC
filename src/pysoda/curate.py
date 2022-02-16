@@ -1650,6 +1650,59 @@ def create_high_level_manifest_files(soda_json_structure):
 #     except Exception as e:
 #         raise e
 
+# This function is called to check size of files
+# that will be created locally on a user's device
+def check_JSON_size(jsonStructure):
+    global total_dataset_size
+    total_dataset_size = 0
+
+    try:
+
+        def recursive_dataset_scan(folder):
+            global total_dataset_size
+
+            if "files" in folder.keys():
+                for file_key, file in folder["files"].items():
+                    if not "deleted" in file["action"]:
+                        file_type = file["type"]
+                        if file_type == "local":
+                            file_path = file["path"]
+                            if isfile(file_path):
+                                total_dataset_size += getsize(file_path)
+
+            if "folders" in folder.keys():
+                for folder_key, folder in folder["folders"].items():
+                    recursive_dataset_scan(folder)
+
+        # scan dataset structure
+        dataset_structure = jsonStructure["dataset-structure"]
+        folderSection = dataset_structure["folders"]
+        # gets keys like code, primary, source and their content...
+        for keys, contents in folderSection.items():
+            recursive_dataset_scan(contents)
+
+        if "metadata-files" in jsonStructure.keys():
+            metadata_files = jsonStructure["metadata-files"]
+            for file_key, file in metadata_files.items():
+                if file["type"] == "local":
+                    metadata_path = file["path"]
+                    if isfile(metadata_path):
+                        if "new" in file["action"]:
+                            total_dataset_size += getsize(metadata_path)
+
+        if "manifest-files" in jsonStructure.keys():
+            manifest_files_structure = create_high_level_manifest_files(jsonStructure)
+            for key in manifest_files_structure.keys():
+                manifestpath = manifest_files_structure[key]
+                if isfile(manifestpath):
+                    total_dataset_size += getsize(manifestpath)
+
+        # total_dataset_size = total_dataset_size/(1024**2)
+        # returns in bytes
+        return total_dataset_size
+    except Exception as e:
+        raise e
+
 
 def generate_dataset_locally(soda_json_structure):
 
@@ -3082,6 +3135,9 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 # upload new manifest files
                 list_upload_manifest_files.append([[manifestpath], item])
                 main_total_generate_dataset_size += getsize(manifestpath)
+
+        # clear the pennsieve queue
+        clear_queue()
 
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
