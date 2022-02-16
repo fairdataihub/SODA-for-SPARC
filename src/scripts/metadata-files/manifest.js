@@ -263,9 +263,9 @@ function loadManifestFileEdits(jsondata) {
         readOnly: false,
       },
     ],
-    contextMenu: function(obj, x, y, e) {
-         return []
-     }
+    contextMenu: function (obj, x, y, e) {
+      return [];
+    },
   });
 }
 
@@ -1204,8 +1204,7 @@ function createManifestLocally(editBoolean, originalDataset) {
       } else {
         if (editBoolean) {
           Swal.fire({
-            title:
-            "Successfully generated!",
+            title: "Successfully generated!",
             heightAuto: false,
             showConfirmButton: false,
             timer: 800,
