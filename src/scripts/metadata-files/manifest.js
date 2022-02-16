@@ -131,6 +131,7 @@ $(document).ready(function () {
     },
   });
   var jsonManifest = {};
+
   $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
     if (data.node.text === "manifest.xlsx") {
       // Show loading popup
@@ -262,6 +263,9 @@ function loadManifestFileEdits(jsondata) {
         readOnly: false,
       },
     ],
+    contextMenu: function(obj, x, y, e) {
+         return []
+     }
   });
 }
 
@@ -1196,7 +1200,7 @@ function createManifestLocally(editBoolean, originalDataset) {
         if (editBoolean) {
           Swal.fire({
             title:
-              "Generated successfully! Please select a manifest file to edit.",
+            "Successfully generated!",
             heightAuto: false,
             showConfirmButton: false,
             timer: 800,
