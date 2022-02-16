@@ -1644,6 +1644,62 @@ $(document).ready(() => {
     guidedSaveSubmissionFile();
   });
 
+  const guidedSaveDescriptionFile = () => {
+    var datasetInfoValueObj = getGuidedDatasetInformation();
+    var studyInfoValueObject = getGuidedDatasetStudyInformation();
+    var contributorObj = getGuidedDatasetContributorInformation();
+    var relatedInfoArr = guidedCombineLinkSections();
+
+    console.log(datasetInfoValueObj);
+    console.log(studyInfoValueObject);
+    console.log(contributorObj);
+    console.log(relatedInfoArr);
+    json_str_ds = JSON.stringify(datasetInfoValueObj);
+    json_str_study = JSON.stringify(studyInfoValueObject);
+    json_str_con = JSON.stringify(contributorObj);
+    json_str_related_info = JSON.stringify(relatedInfoArr);
+    console.log(json_str_con);
+    console.log(json_str_study);
+    console.log(json_str_con);
+    console.log(json_str_related_info);
+
+    client.invoke(
+      "api_save_ds_description_file",
+      "false",
+      "None",
+      "None",
+      path.join($("#guided-dataset-path").text().trim(), "description.xlsx"),
+      json_str_ds,
+      json_str_study,
+      json_str_con,
+      json_str_related_info,
+      async (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            title: "Failed to generate the dataset_description file",
+            html: emessage,
+            icon: "warning",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        } else {
+          Swal.fire({
+            title: successMessage,
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        }
+      }
+    );
+  };
+  $("#guided-generate-description-file").on("click", () => {
+    guidedSaveDescriptionFile();
+  });
+
   const guidedSaveDatasetInformation = () => {
     let dsType = $("#guided-ds-type").val();
     if (dsType == "") {
@@ -1679,13 +1735,11 @@ $(document).ready(() => {
   };
   const getGuidedDatasetStudyInformation = () => {
     var studyOrganSystemTags = getTagsFromTagifyElement(
-      "guided-ds-study-organ-system"
+      guidedStudyOrganSystemsTagify
     );
-    var studyApproachTags = getTagsFromTagifyElement(
-      "guided-ds-study-approach"
-    );
+    var studyApproachTags = getTagsFromTagifyElement(guidedStudyApproachTagify);
     var studyTechniqueTags = getTagsFromTagifyElement(
-      "guided-ds-study-technique"
+      guidedStudyTechniquesTagify
     );
     var studyPurpose = document.getElementById("guided-ds-study-purpose").value;
     var studyDataCollection = document.getElementById(
@@ -1723,7 +1777,9 @@ $(document).ready(() => {
       fundingArray = [funding];
     }
     /// other funding sources
-    var otherFunding = getTagsFromTagifyElement("guided-ds-other-funding");
+    var otherFunding = getTagsFromTagifyElement(
+      guidedOtherFundingsourcesTagify
+    );
     for (var i = 0; i < otherFunding.length; i++) {
       fundingArray.push(otherFunding[i]);
     }
@@ -1734,8 +1790,43 @@ $(document).ready(() => {
     contributorInfo["contributors"] = contributorArray;
     return contributorInfo;
   };
+
+  const getGuidedAdditionalLinkSection = () => {
+    var table = document.getElementById("guided-other-link-table-dd");
+    var rowcountLink = table.rows.length;
+    var additionalLinkInfo = [];
+    for (i = 1; i < rowcountLink; i++) {
+      var additionalLink = {
+        link: table.rows[i].cells[1].innerText,
+        type: table.rows[i].cells[2].innerText,
+        relation: table.rows[i].cells[3].innerText,
+        description: table.rows[i].cells[4].innerText,
+      };
+      additionalLinkInfo.push(additionalLink);
+    }
+    return additionalLinkInfo;
+  };
+
+  const getGuidedProtocolSection = () => {
+    var table = document.getElementById("guided-protocol-link-table-dd");
+    var rowcountLink = table.rows.length;
+    var protocolLinkInfo = [];
+    for (i = 1; i < rowcountLink; i++) {
+      var protocol = {
+        link: table.rows[i].cells[1].innerText,
+        type: table.rows[i].cells[2].innerText,
+        relation: table.rows[i].cells[3].innerText,
+        description: table.rows[i].cells[4].innerText,
+      };
+      protocolLinkInfo.push(protocol);
+    }
+    return protocolLinkInfo;
+  };
   const guidedCombineLinkSections = () => {
-    //var relatedInfoArr = combineLinksSections();
+    var protocolLinks = getGuidedProtocolSection();
+    var otherLinks = getGuidedAdditionalLinkSection();
+    protocolLinks.push.apply(protocolLinks, otherLinks);
+    return protocolLinks;
   };
 
   const guidedSaveParticipantInformation = () => {
@@ -2059,6 +2150,7 @@ $(document).ready(() => {
       console.log(a);
       console.log(b);
       console.log(c);
+      console.log(guidedCombineLinkSections());
     }
 
     //if more tabs in parent tab, go to next tab and update capsule
