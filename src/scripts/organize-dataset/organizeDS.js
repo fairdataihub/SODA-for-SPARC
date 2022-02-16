@@ -1242,46 +1242,37 @@ function handleDuplicateImports(btnId, duplicateArray) {
       didOpen: () => {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
-        console.log(confirm_button);
-        var select_all =
-          document.getElementById("container").parentElement.children[0]
-            .children[0];
-        console.log(select_all);
+        var select_all = document.getElementById("container").parentElement.children[0].children[0];
         var container = document.getElementById("container");
         let check_boxes = container.querySelectorAll("input[type=checkbox]");
-        console.log(check_boxes);
-        check_boxes.forEach(function (element) {
-          element.addEventListener("change", function () {
-            if (this.checked) {
+        check_boxes.forEach(function(element) {
+          element.addEventListener('change', function() {
+            if(this.checked) {
               confirm_button[0].disabled = false;
-              console.log("one is chcked");
             } else {
               let one_checked = false;
-              for (let i = 0; i < check_boxes.length; i++) {
-                if (check_boxes[i].checked) {
+              for(let i = 0; i < check_boxes.length; i++) {
+                if(check_boxes[i].checked) {
                   one_checked = true;
                   break;
                 }
               }
-              if (one_checked === true) {
-                console.log("one should still be checked");
+              if(one_checked === true) {
                 confirm_button[0].disabled = false;
               } else {
-                console.log("none are checked");
                 confirm_button[0].disabled = true;
                 select_all.checked = false;
               }
             }
           });
-        });
-        select_all.addEventListener("change", function () {
-          if (this.checked) {
+        })
+        select_all.addEventListener('change', function() {
+          if(this.checked) {
             confirm_button[0].disabled = false;
-            console.log("select all was checked");
           } else {
             confirm_button[0].disabled = true;
           }
-        });
+        })
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -1290,7 +1281,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
           "input[type=checkbox]:checked"
         );
         if (checkboxes.length > 0) {
-          console.log(checkboxes);
           let fileCheck = [];
           for (let i = 0; i < temp.length; i++) {
             let lastSlash = temp[i].lastIndexOf("\\") + 1;
@@ -1300,7 +1290,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
             fileCheck.push(temp[i].substring(lastSlash, temp[i].length));
           }
           for (let i = 0; i < checkboxes.length; i++) {
-            console.log(checkboxes);
             var removeExt = checkboxes[i].id.lastIndexOf(".");
             if (removeExt === -1) {
               let justName = checkboxes[i].id;
@@ -1331,7 +1320,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 removeExt,
                 checkboxes[i].id.length
               );
-              console.log(checkboxes);
               let index = fileCheck.indexOf(checkboxes[i].id);
               let fileName = checkboxes[i].id;
               delete myPath["files"][fileName];
@@ -1390,7 +1378,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
             });
           }
         } else {
-          console.log("no selection was made");
           toastUpdate.open({
             type: "no_selection",
             message: "No selection was made",
