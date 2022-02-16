@@ -852,6 +852,15 @@ function handleDuplicateImports(btnId, duplicateArray) {
         },
         //duration: 3000,
       },
+      {
+        type: "no_selection",
+        background: "#B80D49",
+        icon: {
+          className: "fas fa-times-circle",
+          tagName: "i",
+          color: "white",
+        },
+      }
     ],
   });
 
@@ -1231,106 +1240,120 @@ function handleDuplicateImports(btnId, duplicateArray) {
     }).then((result) => {
       if (result.isConfirmed) {
         let container = document.getElementById("container");
-        let checkboxes = container.querySelectorAll(
+        var checkboxes = container.querySelectorAll(
           "input[type=checkbox]:checked"
         );
-        let fileCheck = [];
-        for (let i = 0; i < temp.length; i++) {
-          let lastSlash = temp[i].lastIndexOf("\\") + 1;
-          if (lastSlash === 0) {
-            lastSlash = temp[i].lastIndexOf("/") + 1;
+        if(checkboxes.length > 0) {
+          console.log(checkboxes);
+          let fileCheck = [];
+          for (let i = 0; i < temp.length; i++) {
+            let lastSlash = temp[i].lastIndexOf("\\") + 1;
+            if (lastSlash === 0) {
+              lastSlash = temp[i].lastIndexOf("/") + 1;
+            }
+            fileCheck.push(temp[i].substring(lastSlash, temp[i].length));
           }
-          fileCheck.push(temp[i].substring(lastSlash, temp[i].length));
-        }
-        for (let i = 0; i < checkboxes.length; i++) {
-          var removeExt = checkboxes[i].id.lastIndexOf(".");
+          for (let i = 0; i < checkboxes.length; i++) {
+            console.log(checkboxes);
+            var removeExt = checkboxes[i].id.lastIndexOf(".");
+            if (removeExt === -1) {
+              let justName = checkboxes[i].id;
+              let index = fileCheck.indexOf(checkboxes[i].id);
+              let fileName = checkboxes[i].id;
+              myPath["folders"][justName] = {
+                files: myPath["folders"][tempFile[index]].files,
+                folders: myPath["folders"][tempFile[index]].folders,
+                path: temp[index],
+                type: "local",
+                action: ["new", "updated"],
+              };
+              for (let j = 0; j < nodes.length; j++) {
+                if (nodes[j].innerText === fileName) {
+                  nodes[j].parentNode.remove();
+                }
+              }
+              listItems(myPath, "#items");
+              getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                datasetStructureJSONObj
+              );
+            } else {
+  
+              let justName = checkboxes[i].id.substring(0, removeExt);
+              let ext = checkboxes[i].id.substring(
+                removeExt,
+                checkboxes[i].id.length
+              );
+              console.log(checkboxes);
+              let index = fileCheck.indexOf(checkboxes[i].id);
+              let fileName = checkboxes[i].id;
+              delete myPath["files"][fileName];
+              myPath["files"][justName + ext] = {
+                path: temp[index],
+                basename: fileName,
+                type: "local",
+                description: "",
+                "additional-metadata": "",
+                action: ["new", "updated"],
+              };
+              for (let j = 0; j < nodes.length; j++) {
+                if (nodes[j].innerText === fileName) {
+                  nodes[j].parentNode.remove();
+                }
+              }
+              listItems(myPath, "#items");
+              getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                datasetStructureJSONObj
+              );
+            }
+          }
+          let section = organizeDSglobalPath.value;
+          let lastSlash = section.indexOf("/") + 1;
+          section = section.substring(lastSlash, section.length - 1);
+          if (section.includes("/")) {
+            let lastSlash = section.lastIndexOf("/") + 1;
+            section = section.substring(lastSlash, section.length);
+          }
+          let back_button = document.getElementById("button-back");
+          back_button.click();
+          let folders = document
+            .getElementById("items")
+            .getElementsByClassName("folder_desc");
+          for (let i = 0; i < folders.length; i++) {
+            if (folders[i].innerText === section) {
+              folders[i].parentNode.dispatchEvent(new Event("dblclick"));
+            }
+          }
+    
+          animate_updatedFiles();
+    
+          //add glowing effect here after page is refreshed
           if (removeExt === -1) {
-            let justName = checkboxes[i].id;
-            let index = fileCheck.indexOf(checkboxes[i].id);
-            let fileName = checkboxes[i].id;
-            myPath["folders"][justName] = {
-              files: myPath["folders"][tempFile[index]].files,
-              folders: myPath["folders"][tempFile[index]].folders,
-              path: temp[index],
-              type: "local",
-              action: ["new", "updated"],
-            };
-            for (let j = 0; j < nodes.length; j++) {
-              if (nodes[j].innerText === fileName) {
-                nodes[j].parentNode.remove();
-              }
-            }
-            listItems(myPath, "#items");
-            getInFolder(
-              "#items",
-              "#items",
-              organizeDSglobalPath,
-              datasetStructureJSONObj
-            );
+            toastUpdate.open({
+              type: "file_updated",
+              message: "Updated Folder(s)",
+            });
           } else {
-            let justName = checkboxes[i].id.substring(0, removeExt);
-            let ext = checkboxes[i].id.substring(
-              removeExt,
-              checkboxes[i].id.length
-            );
-            let index = fileCheck.indexOf(checkboxes[i].id);
-            let fileName = checkboxes[i].id;
-            delete myPath["files"][fileName];
-            myPath["files"][justName + ext] = {
-              path: temp[index],
-              basename: fileName,
-              type: "local",
-              description: "",
-              "additional-metadata": "",
-              action: ["new", "updated"],
-            };
-            for (let j = 0; j < nodes.length; j++) {
-              if (nodes[j].innerText === fileName) {
-                nodes[j].parentNode.remove();
-              }
-            }
-            listItems(myPath, "#items");
-            getInFolder(
-              "#items",
-              "#items",
-              organizeDSglobalPath,
-              datasetStructureJSONObj
-            );
+            toastUpdate.open({
+              type: "file_updated",
+              message: "Updated File(s)",
+            });
           }
+        } else {
+          console.log("no selection was made");
+          toastUpdate.open({
+            type: "no_selection",
+            message: "No selection was made",
+          });
         }
-      }
-      let section = organizeDSglobalPath.value;
-      let lastSlash = section.indexOf("/") + 1;
-      section = section.substring(lastSlash, section.length - 1);
-      if (section.includes("/")) {
-        let lastSlash = section.lastIndexOf("/") + 1;
-        section = section.substring(lastSlash, section.length);
-      }
-      let back_button = document.getElementById("button-back");
-      back_button.click();
-      let folders = document
-        .getElementById("items")
-        .getElementsByClassName("folder_desc");
-      for (let i = 0; i < folders.length; i++) {
-        if (folders[i].innerText === section) {
-          folders[i].parentNode.dispatchEvent(new Event("dblclick"));
-        }
+
       }
 
-      animate_updatedFiles();
-
-      //add glowing effect here after page is refreshed
-      if (removeExt === -1) {
-        toastUpdate.open({
-          type: "file_updated",
-          message: "Updated Folder(s)",
-        });
-      } else {
-        toastUpdate.open({
-          type: "file_updated",
-          message: "Updated File(s)",
-        });
-      }
     });
     //then handle the selected checkboxes
   }
