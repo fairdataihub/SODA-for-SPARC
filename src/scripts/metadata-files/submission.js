@@ -410,8 +410,6 @@ $(document).ready(function () {
 //At most the metadata files should be no bigger than 3MB
 //Function checks the selected storage device to ensure at least 3MB are available
 const checkStorage = (id) => {
-  console.log(id);
-  console.log("function ran");
   var location = id;
   var threeMB = 3145728;
   //console.log(location);
