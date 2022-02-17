@@ -818,7 +818,6 @@ function showParentSwal(duplicateArray) {
     hideClass: {
       popup: "animate_animated animate_zoomout animate__faster",
     },
-    heightAuto: false,
     html:
       `
     <div class="caption">
@@ -969,15 +968,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
       html: selectAll,
       focusConfirm: false,
       showCancelButton: true,
-      title: header,
-      backdrop: "rgba(0, 0, 0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster",
-      },
-      heightAuto: false,
       didOpen: () => {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
@@ -1066,7 +1056,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
       }
       if (!result.isConfirmed) {
         showParentSwal(duplicateArray);
-        return
       }
       //unless all files are skipped it will prompt again on what to do
       //with duplicate files
@@ -1102,7 +1091,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
           hideClass: {
             popup: "animate_animated animate_zoomout animate__faster",
           },
-          heightAuto: false,
           html:
             `
           <div class="caption">
@@ -1462,14 +1450,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
       allowOutsideClick: false,
       cancelButtonText: "Cancel",
       showCancelButton: true,
-      backdrop: "rgba(0, 0, 0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster",
-      },
-      heightAuto: false,
       didOpen: () => {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
@@ -1788,7 +1768,6 @@ function addFilesfunction(
       hideClass: {
         popup: "animate_animated animate_zoomout animate__faster",
       },
-      heightAuto: false,
       html:
         `
       <div class="caption">
