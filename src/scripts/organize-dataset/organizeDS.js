@@ -811,13 +811,14 @@ function showParentSwal(duplicateArray) {
     allowOutsideClick: false,
     showCloseButton: true,
     customClass: "wide-swal-auto",
-    backdrop: "rgba(0, 0, 0, 0.4)",
+    reverseButtons: reverseSwalButtons,
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: "animate_animated animate_zoomout animate__faster",
+      popup: "animate__animated animate__zoomOut animate__faster",
     },
+    heightAuto: false,
     html:
       `
     <div class="caption">
@@ -968,6 +969,14 @@ function handleDuplicateImports(btnId, duplicateArray) {
       html: selectAll,
       focusConfirm: false,
       showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      heightAuto: false,
       didOpen: () => {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
@@ -1084,13 +1093,14 @@ function handleDuplicateImports(btnId, duplicateArray) {
           allowOutsideClick: false,
           showCloseButton: true,
           customClass: "wide-swal-auto",
-          backdrop: "rgba(0, 0, 0, 0.4)",
+          reverseButtons: reverseSwalButtons,
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: "animate_animated animate_zoomout animate__faster",
+            popup: "animate__animated animate__zoomOut animate__faster",
           },
+          heightAuto: false,
           html:
             `
           <div class="caption">
@@ -1150,7 +1160,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
         confirmButtonText: "Save",
         allowOutsideClick: false,
         focusConfirm: false,
-        heightAuto: false,
         customClass: "wide-swal",
         showCloseButton: true,
         showCancelButton: true,
@@ -1161,6 +1170,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
         hideClass: {
           popup: "animate_animated animate_zoomout animate__faster",
         },
+        heightAuto: false,
         html: container,
         didOpen: () => {
           var confirm_button = document.getElementsByClassName("swal2-confirm");
@@ -1209,7 +1219,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function (element) {});
+                    input_fields.forEach(function (element) { });
                     confirm_button[0].disabled = false;
                   }
                 }
@@ -1450,6 +1460,14 @@ function handleDuplicateImports(btnId, duplicateArray) {
       allowOutsideClick: false,
       cancelButtonText: "Cancel",
       showCancelButton: true,
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate_animated animate_zoomout animate__faster",
+      },
+      heightAuto: false,
       didOpen: () => {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
@@ -1761,13 +1779,14 @@ function addFilesfunction(
       allowOutsideClick: false,
       showCloseButton: true,
       customClass: "wide-swal-auto",
-      backdrop: "rgba(0, 0, 0, 0.4)",
+      reverseButtons: reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster",
+        popup: "animate__animated animate__zoomOut animate__faster",
       },
+      heightAuto: false,
       html:
         `
       <div class="caption">
