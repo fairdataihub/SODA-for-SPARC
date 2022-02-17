@@ -18,6 +18,56 @@ const disableProgressButton = () => {
 /////////////////////////////////////////////////////////
 /////////////       Util functions      /////////////////
 /////////////////////////////////////////////////////////
+const saveGuidedProgress = (guidedProgressFileName) => {
+  //create a Guided-Progress folder if one does not yet exist
+  //Destination: HOMEDIR/SODA/Guided-Progress
+  try {
+    fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+    console.log("Guided-Progress folder created if didn't exist");
+  } catch (error) {
+    log.error(error);
+    console.log(error);
+  }
+  var guidedFilePath = path.join(
+    guidedProgressFilePath,
+    guidedProgressFileName + ".json"
+  ); /*
+  // record all information listed in SODA JSON Object before saving
+  updateJSONObjectProgress();
+  // delete sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view
+  if ("files" in sodaJSONObj["dataset-structure"]) {
+    sodaJSONObj["dataset-structure"]["files"] = {};
+  }
+  // delete manifest files added for treeview
+  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+    if (
+      "manifest.xlsx" in
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ]["forTreeview"] === true
+    ) {
+      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ];
+    }
+  }
+  fs.writeFileSync(guidedFilePath, JSON.stringify(sodaJSONObj));
+
+  Swal.fire({
+    icon: "success",
+    text: "Successfully saved progress!",
+    showConfirmButton: "OK",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+  });*/
+};
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
     "value",
@@ -400,6 +450,10 @@ $(document).ready(() => {
     const tabPanel = $("#" + tabPanelId);
     tabPanel.siblings().hide();
     tabPanel.css("display", "flex");
+  });
+
+  $("#guided-progress-save-testa").on("click", () => {
+    saveGuidedProgress();
   });
 
   // function for importing a banner image if one already exists

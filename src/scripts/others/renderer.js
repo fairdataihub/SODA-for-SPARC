@@ -899,6 +899,11 @@ var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
+var guidedProgressFilePath = path.join(
+  homeDirectory,
+  "Soda",
+  "Guided-Progress"
+);
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 
 // initiate Tagify input fields for Dataset description file
