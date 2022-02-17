@@ -51,12 +51,15 @@ def api_ps_retrieve_dataset():
 @app.route("/api_validate_dataset_pipeline")
 @app.errorhandler(werkzeug.exceptions.BadRequest)
 def api_validate_dataset_pipeline():
+    print("In the validator")
     # get the dataset relative path
     ds_path = request.args.get("dataset-path")
     # convert the path to absolute from user's home directory
     joined_path = path.join(userpath, ds_path.strip())
     # convert to Path object for Validator to function properly
     norm_ds_path = Path(joined_path)
+
+    print(norm_ds_path)
 
     # validate the dataset
     validation_result = None 
@@ -72,5 +75,5 @@ def api_validate_dataset_pipeline():
     return json.dumps(errors, cls=DequeEncoder)
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000)
+    app.run(host="127.0.0.1", port=5001)
     # app.run(host="127.0.0.1", port=7632, debug=True)
