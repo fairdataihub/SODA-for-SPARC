@@ -31,9 +31,7 @@ const saveGuidedProgress = (guidedProgressFileName) => {
   var guidedFilePath = path.join(
     guidedProgressFilePath,
     guidedProgressFileName + ".json"
-  ); /*
-  // record all information listed in SODA JSON Object before saving
-  updateJSONObjectProgress();
+  );
   // delete sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view
   if ("files" in sodaJSONObj["dataset-structure"]) {
     sodaJSONObj["dataset-structure"]["files"] = {};
@@ -52,7 +50,7 @@ const saveGuidedProgress = (guidedProgressFileName) => {
       ];
     }
   }
-  fs.writeFileSync(guidedFilePath, JSON.stringify(sodaJSONObj));
+  fs.writeFileSync(guidedFilePath, JSON.stringify(sodaJSONObj, null, 2));
 
   Swal.fire({
     icon: "success",
@@ -66,7 +64,7 @@ const saveGuidedProgress = (guidedProgressFileName) => {
     hideClass: {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
-  });*/
+  });
 };
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
@@ -453,7 +451,8 @@ $(document).ready(() => {
   });
 
   $("#guided-progress-save-testa").on("click", () => {
-    saveGuidedProgress();
+    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
+    saveGuidedProgress(guidedDatasetName);
   });
 
   // function for importing a banner image if one already exists
