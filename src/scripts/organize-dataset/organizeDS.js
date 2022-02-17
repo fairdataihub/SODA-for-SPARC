@@ -802,10 +802,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
       input.setAttribute("required", "");
 
       input.id = tempFile[i];
-      if(extIndex != -1) {
+      if (extIndex != -1) {
         input.placeholder = justFileName;
       } else {
-        input.placeholder = input.id
+        input.placeholder = input.id;
       }
       para.style = "margin: 0; margin: 10px;";
       para.className = "input-name";
@@ -1045,8 +1045,8 @@ function handleDuplicateImports(btnId, duplicateArray) {
           var container = document.getElementById("container");
           let input_fields = container.querySelectorAll("input[type=text]");
           let fileExt = input_fields[0].id.lastIndexOf(".");
-          var keyCheck; 
-          if(fileExt === -1) {
+          var keyCheck;
+          if (fileExt === -1) {
             //working with a folder
             keyCheck = myPath["folders"];
           } else {
@@ -1055,44 +1055,61 @@ function handleDuplicateImports(btnId, duplicateArray) {
           }
 
           confirm_button[0].disabled = true;
-          input_fields.forEach(function(element) {
-            element.addEventListener('input', function() {
-              if(fileExt != -1) {
-                let first_ext = element.id.lastIndexOf(".")
-                let extType = element.id.substring(first_ext, element.id.length)
-                if(element.value === "" || keyCheck.hasOwnProperty(element.value + extType)) {
+          input_fields.forEach(function (element) {
+            element.addEventListener("input", function () {
+              if (fileExt != -1) {
+                let first_ext = element.id.lastIndexOf(".");
+                let extType = element.id.substring(
+                  first_ext,
+                  element.id.length
+                );
+                if (
+                  element.value === "" ||
+                  keyCheck.hasOwnProperty(element.value + extType)
+                ) {
                   confirm_button[0].disabled = true;
                 } else {
                   let one_input = false;
-                  for(let i = 0; i < input_fields.length; i++) {
+                  for (let i = 0; i < input_fields.length; i++) {
                     let file_Ext = input_fields[i].id.lastIndexOf(".");
-                    extType = input_fields[i].id.substring(file_Ext, input_fields[i].id.length);
-                    if(input_fields[i].value === "" || keyCheck.hasOwnProperty(input_fields[i].value + extType)) {
+                    extType = input_fields[i].id.substring(
+                      file_Ext,
+                      input_fields[i].id.length
+                    );
+                    if (
+                      input_fields[i].value === "" ||
+                      keyCheck.hasOwnProperty(input_fields[i].value + extType)
+                    ) {
                       one_input = true;
                       break;
                     }
                   }
-                  if(one_input === true) {
+                  if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function(element) {
-                    })
+                    input_fields.forEach(function (element) {});
                     confirm_button[0].disabled = false;
                   }
                 }
               } else {
                 //working with folders
-                if(element.value === "" || keyCheck.hasOwnProperty(element.value)) {
+                if (
+                  element.value === "" ||
+                  keyCheck.hasOwnProperty(element.value)
+                ) {
                   confirm_button[0].disabled = true;
                 } else {
                   let one_input = false;
-                  for(let i = 0; i < input_fields.length; i++) {
-                    if(input_fields[i].value === "" || keyCheck.hasOwnProperty(element.value)) {
+                  for (let i = 0; i < input_fields.length; i++) {
+                    if (
+                      input_fields[i].value === "" ||
+                      keyCheck.hasOwnProperty(element.value)
+                    ) {
                       one_input = true;
                       break;
                     }
                   }
-                  if(one_input === true) {
+                  if (one_input === true) {
                     confirm_button[0].disabed = true;
                   } else {
                     confirm_button[0].disabled = false;
@@ -1100,7 +1117,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 }
               }
             });
-          })
+          });
         },
         preConfirm: () => {
           //check the same name isn't being used
