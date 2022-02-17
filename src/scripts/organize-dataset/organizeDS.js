@@ -1219,7 +1219,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function (element) { });
+                    input_fields.forEach(function (element) {});
                     confirm_button[0].disabled = false;
                   }
                 }
