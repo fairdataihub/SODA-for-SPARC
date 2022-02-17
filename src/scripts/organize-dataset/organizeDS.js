@@ -1062,7 +1062,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
       }
       if (!result.isConfirmed) {
         showParentSwal(duplicateArray);
-        return
+        return;
       }
       //unless all files are skipped it will prompt again on what to do
       //with duplicate files
@@ -1214,7 +1214,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function (element) { });
+                    input_fields.forEach(function (element) {});
                     confirm_button[0].disabled = false;
                   }
                 }
