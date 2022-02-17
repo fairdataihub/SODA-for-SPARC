@@ -1633,6 +1633,18 @@ body.swal2-shown > [aria-hidden="true"] {
   overflow: auto !important;
 }
 
+#div-dataset-tree-preview-manifest .jstree-container-ul.jstree-children {
+  text-align: left;
+}
+
+#div-dataset-tree-preview-manifest {
+  margin: 0 auto;
+}
+
+.jstree-anchor.jstree-disabled:link {
+  color: gray !important;
+}
+
 .popover-tooltip.subjects-form {
   padding: 0;
   font-size: 16px;
@@ -1667,6 +1679,14 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .swal-content-additional-link #swal2-content label {
   font-weight: 600;
+}
+
+.swal-large {
+  overflow-x: scroll;
+}
+
+#div-manifest-edit td.readonly {
+  color: #000;
 }
 
 .tagify.form-container-input-bf {

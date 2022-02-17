@@ -1085,6 +1085,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       dropdownEventID = ev.id;
     }
     $(".svg-change-current-account.dataset").css("display", "none");
+    $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
     setTimeout(async function () {
@@ -1259,6 +1260,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             $("#bf-dataset-select-div").hide();
           },
           didOpen: () => {
+            $("#div-permission-list-2").css("display", "block");
             $(".ui.active.green.inline.loader.small").css("display", "none");
             datasetPermissionDiv.style.display = "block";
             $("#curatebfdatasetlist").attr("disabled", false);
@@ -1478,7 +1480,7 @@ function checkPrevDivForConfirmButton(category) {
 const updateDatasetList = (bfaccount) => {
   var filteredDatasets = [];
 
-  $("#div-filter-datasets-progress-2").css("display", "block");
+  $("#div-filter-datasets-progress-2").css("display", "none");
 
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Search here...", "Select dataset");
@@ -1643,8 +1645,7 @@ function create_child_node(
     children: [],
     type: type + ext,
   };
-  if (viewOptions === "moveItems") {
-  } else {
+  if (viewOptions !== "moveItems") {
     selectedOriginalLocation = "";
   }
   if (oldFormatNode) {
@@ -2242,27 +2243,35 @@ $(jstreePreview).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-function showTreeViewPreview(new_dataset_name) {
-  datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
-  if (manifestFileCheck.checked) {
-    addManifestFilesForTreeView();
-  } else {
-    revertManifestForTreeView();
+function showTreeViewPreview(
+  disabledBoolean,
+  selectedBoolean,
+  manifestFileBoolean,
+  new_dataset_name,
+  previewDiv,
+  datasetStructure
+) {
+  if (manifestFileBoolean) {
+    if (manifestFileCheck.checked) {
+      addManifestFilesForTreeView();
+    } else {
+      revertManifestForTreeView();
+    }
   }
 
-  var jsTreePreviewData = create_child_node(
-    datasetStructureJSONObj,
+  var jsTreePreviewDataManifest = create_child_node(
+    datasetStructure,
     new_dataset_name,
     "folder",
     "",
     true,
-    false,
-    false,
+    selectedBoolean,
+    disabledBoolean,
     "",
     "preview"
   );
-  $(jstreePreview).jstree(true).settings.core.data = jsTreePreviewData;
-  $(jstreePreview).jstree(true).refresh();
+  $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
+  $(previewDiv).jstree(true).refresh();
 }
 
 // if checked

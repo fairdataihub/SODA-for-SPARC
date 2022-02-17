@@ -869,7 +869,11 @@ function handleDuplicateImports(btnId, duplicateArray) {
       input.setAttribute("required", "");
 
       input.id = tempFile[i];
-      input.placeholder = justFileName;
+      if (extIndex != -1) {
+        input.placeholder = justFileName;
+      } else {
+        input.placeholder = input.id;
+      }
       para.style = "margin: 0; margin: 10px;";
       para.className = "input-name";
       container.id = "container";
@@ -1066,23 +1070,24 @@ function handleDuplicateImports(btnId, duplicateArray) {
       }
       //unless all files are skipped it will prompt again on what to do
       //with duplicate files
-      var listElements = showItemsAsListBootbox(fileName);
-      newList = JSON.stringify(newList).replace(/"/g, "");
-      let titleSwal = "";
-      let htmlSwal = "";
-      let html_word = "";
-      if (tempFile[0].indexOf(".") != -1) {
-        titleSwal = "Duplicate file(s) detected";
-        htmlSwal =
-          "Files with the following names are already in the the current folder: ";
-        html_word = "Files";
-      } else {
-        titleSwal = "Duplicate folder(s) detected";
-        htmlSwal =
-          "Folders with the following names are already in the current folder: ";
-        html_word = "Folders";
-      }
+
       if (fileName.length > 0) {
+        var listElements = showItemsAsListBootbox(fileName);
+        newList = JSON.stringify(newList).replace(/"/g, "");
+        let titleSwal = "";
+        let htmlSwal = "";
+        let html_word = "";
+        if (tempFile[0].indexOf(".") != -1) {
+          titleSwal = "Duplicate file(s) detected";
+          htmlSwal =
+            "Files with the following names are already in the the current folder: ";
+          html_word = "Files";
+        } else {
+          titleSwal = "Duplicate folder(s) detected";
+          htmlSwal =
+            "Folders with the following names are already in the current folder: ";
+          html_word = "Folders";
+        }
         Swal.fire({
           title: titleSwal,
           icon: "warning",
@@ -1156,9 +1161,11 @@ function handleDuplicateImports(btnId, duplicateArray) {
         title: header,
         confirmButtonText: "Save",
         allowOutsideClick: false,
+        focusConfirm: false,
         heightAuto: false,
         customClass: "wide-swal",
         showCloseButton: true,
+        showCancelButton: true,
         backdrop: "rgba(0, 0, 0, 0.4)",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -1214,7 +1221,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function (element) { });
+                    input_fields.forEach(function (element) {});
                     confirm_button[0].disabled = false;
                   }
                 }
@@ -1411,6 +1418,9 @@ function handleDuplicateImports(btnId, duplicateArray) {
             message: "Succesfully Imported and Renamed!",
           });
         }
+        if (!result.isConfirmed) {
+          showParentSwal(duplicateArray);
+        }
       });
   }
   if (btnId === "replace") {
@@ -1463,20 +1473,29 @@ function handleDuplicateImports(btnId, duplicateArray) {
       didOpen: () => {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
-        console.log(confirm_button);
         var select_all =
           document.getElementById("container").parentElement.children[0]
             .children[0];
-        console.log(select_all);
         var container = document.getElementById("container");
-        let check_boxes = container.querySelectorAll("input[type=checkbox]");
-        console.log(check_boxes);
+        var check_boxes = container.querySelectorAll("input[type=checkbox]");
+        let checkedCount = 0;
         check_boxes.forEach(function (element) {
           element.addEventListener("change", function () {
             if (this.checked) {
+              checkedCount += 1;
+              if (checkedCount === check_boxes.length) {
+                select_all.checked = true;
+              } else {
+                select_all.checked = false;
+              }
               confirm_button[0].disabled = false;
-              console.log("one is chcked");
             } else {
+              checkedCount -= 1;
+              if (checkedCount === check_boxes.length) {
+                select_all.checked = true;
+              } else {
+                select_all.checked = false;
+              }
               let one_checked = false;
               for (let i = 0; i < check_boxes.length; i++) {
                 if (check_boxes[i].checked) {
@@ -1485,10 +1504,8 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 }
               }
               if (one_checked === true) {
-                console.log("one should still be checked");
                 confirm_button[0].disabled = false;
               } else {
-                console.log("none are checked");
                 confirm_button[0].disabled = true;
                 select_all.checked = false;
               }
@@ -1496,9 +1513,9 @@ function handleDuplicateImports(btnId, duplicateArray) {
           });
         });
         select_all.addEventListener("change", function () {
+          var check_boxes = container.querySelectorAll("input[type=checkbox]");
           if (this.checked) {
             confirm_button[0].disabled = false;
-            console.log("select all was checked");
           } else {
             confirm_button[0].disabled = true;
           }
@@ -1511,7 +1528,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
           "input[type=checkbox]:checked"
         );
         if (checkboxes.length > 0) {
-          console.log(checkboxes);
           let fileCheck = [];
           for (let i = 0; i < temp.length; i++) {
             let lastSlash = temp[i].lastIndexOf("\\") + 1;
@@ -1521,7 +1537,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
             fileCheck.push(temp[i].substring(lastSlash, temp[i].length));
           }
           for (let i = 0; i < checkboxes.length; i++) {
-            console.log(checkboxes);
             var removeExt = checkboxes[i].id.lastIndexOf(".");
             if (removeExt === -1) {
               let justName = checkboxes[i].id;
@@ -1552,7 +1567,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 removeExt,
                 checkboxes[i].id.length
               );
-              console.log(checkboxes);
               let index = fileCheck.indexOf(checkboxes[i].id);
               let fileName = checkboxes[i].id;
               delete myPath["files"][fileName];
@@ -1611,12 +1625,14 @@ function handleDuplicateImports(btnId, duplicateArray) {
             });
           }
         } else {
-          console.log("no selection was made");
           toastUpdate.open({
             type: "no_selection",
             message: "No selection was made",
           });
         }
+      }
+      if (!result.isConfirmed) {
+        showParentSwal(duplicateArray);
       }
     });
     //then handle the selected checkboxes

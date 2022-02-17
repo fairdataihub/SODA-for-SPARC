@@ -5,6 +5,29 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.5.3.0 - 2022-02-16
+
+### Feature additions:
+
+- A stand-alone manifest file generation feature has been added. For this feature, users can now generate manifest files for their datasets stored locally or on Pennsieve.
+- When importing files/folders duplicates will now prompt user if they would like to skip, replace, or rename them accordingly.
+
+### Bug fixes:
+
+### Known Issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+
+## v.5.2.1 - 2022-02-01
+
+### Bug fixes:
+
+- Fixed issue where file uploads to Pennsieve would sometimes fail because of an uncleared Pennsieve Client file upload queue.
+
+### Known Issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+
 ## v.5.2.0 - 2022-01-18
 
 ### Bug fixes:

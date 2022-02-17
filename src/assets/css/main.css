@@ -109,6 +109,15 @@ button:focus {
   margin-right: 10px;
   margin-left: 10px;
   align-self: center;
+  text-align: center;
+}
+
+.jexcel_container {
+  margin-right: 20px;
+}
+
+.checkbox-design:focus {
+  outline: none;
 }
 
 .input-container {
@@ -149,7 +158,6 @@ button:focus {
   max-height: 300px;
   overflow: overlay;
   margin: 5px;
-  text-align-last: center;
 }
 
 .rename-btn {

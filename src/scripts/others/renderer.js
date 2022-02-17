@@ -36,6 +36,7 @@ const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
+const excel4node = require("excel4node");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -7366,6 +7367,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
 
     client.invoke(
       "api_generate_manifest_file_locally",
+      "",
       temp_sodaJSONObj,
       (error, res) => {
         if (error) {
