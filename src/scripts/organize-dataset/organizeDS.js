@@ -981,7 +981,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
           element.addEventListener("change", function () {
             if (this.checked) {
               checkedCount += 1;
-              if(checkedCount === check_boxes.length) {
+              if (checkedCount === check_boxes.length) {
                 select_all.checked = true;
               } else {
                 select_all.checked = false;
@@ -989,7 +989,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
               confirm_button[0].disabled = false;
             } else {
               checkedCount -= 1;
-              if(checkedCount === check_boxes.length) {
+              if (checkedCount === check_boxes.length) {
                 select_all.checked = true;
               } else {
                 select_all.checked = false;
@@ -1054,7 +1054,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
           }
         }
       }
-      if(!result.isConfirmed) {
+      if (!result.isConfirmed) {
         showParentSwal(duplicateArray);
       }
       //unless all files are skipped it will prompt again on what to do
@@ -1406,7 +1406,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             message: "Succesfully Imported and Renamed!",
           });
         }
-        if(!result.isConfirmed) {
+        if (!result.isConfirmed) {
           showParentSwal(duplicateArray);
         }
       });
@@ -1463,7 +1463,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
           element.addEventListener("change", function () {
             if (this.checked) {
               checkedCount += 1;
-              if(checkedCount === check_boxes.length) {
+              if (checkedCount === check_boxes.length) {
                 select_all.checked = true;
               } else {
                 select_all.checked = false;
@@ -1471,7 +1471,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
               confirm_button[0].disabled = false;
             } else {
               checkedCount -= 1;
-              if(checkedCount === check_boxes.length) {
+              if (checkedCount === check_boxes.length) {
                 select_all.checked = true;
               } else {
                 select_all.checked = false;
@@ -1611,7 +1611,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
           });
         }
       }
-      if(!result.isConfirmed) {
+      if (!result.isConfirmed) {
         showParentSwal(duplicateArray);
       }
     });
