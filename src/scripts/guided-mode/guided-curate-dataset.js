@@ -1643,6 +1643,116 @@ $(document).ready(() => {
   $("#guided-generate-submission-file").on("click", () => {
     guidedSaveSubmissionFile();
   });
+  function guidedGenerateRCFilesHelper(type) {
+    var textValue = $(`#guided-textarea-create-${type}`).val().trim();
+    if (textValue === "") {
+      Swal.fire({
+        title: "Incomplete information",
+        text: "Plase fill in the textarea.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error",
+        showCancelButton: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      return "empty";
+    }
+  }
+  async function guidedSaveRCFile(type) {
+    var result = guidedGenerateRCFilesHelper(type);
+    if (result === "empty") {
+      return;
+    }
+    var { value: continueProgress } = await Swal.fire({
+      title: `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+    let data = $(`#guided-textarea-create-${type}`).val().trim();
+    let destinationPath;
+    if (type === "changes") {
+      destinationPath = path.join(
+        $("#guided-dataset-path").text().trim(),
+        "CHANGES.xlsx"
+      );
+    } else {
+      destinationPath = path.join(
+        $("#guided-dataset-path").text().trim(),
+        "README.xlsx"
+      );
+    }
+    fs.writeFile(destinationPath, data, (err) => {
+      if (err) {
+        console.log(err);
+        log.error(err);
+        var emessage = userError(error);
+        Swal.fire({
+          title: `Failed to generate the existing ${type}.txt file`,
+          html: emessage,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "error",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        });
+      } else {
+        if (type === "changes") {
+          var newName = path.join(path.dirname(destinationPath), "CHANGES.txt");
+        } else {
+          var newName = path.join(path.dirname(destinationPath), "README.txt");
+        }
+        fs.rename(destinationPath, newName, async (err) => {
+          if (err) {
+            console.log(err);
+            log.error(err);
+            Swal.fire({
+              title: `Failed to generate the ${type}.txt file`,
+              html: err,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              icon: "error",
+              didOpen: () => {
+                Swal.hideLoading();
+              },
+            });
+          } else {
+            Swal.fire({
+              title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
+              icon: "success",
+              showConfirmButton: true,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              didOpen: () => {
+                Swal.hideLoading();
+              },
+            });
+          }
+        });
+      }
+    });
+  }
+  $("#guided-generate-readme-file").on("click", () => {
+    guidedSaveRCFile("readme");
+  });
+  $("#guided-generate-changes-file").on("click", () => {
+    guidedSaveRCFile("changes");
+  });
 
   const guidedSaveDescriptionFile = () => {
     let datasetInfoValueObj = getGuidedDatasetInformation();
