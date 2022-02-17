@@ -1065,6 +1065,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
       }
       if (!result.isConfirmed) {
         showParentSwal(duplicateArray);
+        return 
       }
       //unless all files are skipped it will prompt again on what to do
       //with duplicate files
