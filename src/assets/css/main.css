@@ -112,6 +112,14 @@ button:focus {
   text-align: center;
 }
 
+.jexcel_container {
+  margin-right: 20px;
+}
+
+.checkbox-design:focus {
+  outline: none;
+}
+
 .input-container {
   display: flex;
   justify-content: flex-end;
