@@ -1583,6 +1583,10 @@ $(document).ready(() => {
       }
     );
   };
+  $("#guided-add-subject-button").on("click", () => {
+    $("#guided-subjects-intro").hide();
+    $("#guided-add-subject-div").show();
+  });
 
   //dataset metadata functions
   const guidedSaveSubmissionFile = () => {
