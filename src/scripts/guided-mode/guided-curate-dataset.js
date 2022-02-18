@@ -450,11 +450,6 @@ $(document).ready(() => {
     tabPanel.css("display", "flex");
   });
 
-  $("#guided-progress-save-testa").on("click", () => {
-    let guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
-    saveGuidedProgress(guidedDatasetName);
-  });
-
   // function for importing a banner image if one already exists
   $("#guided-button-add-banner-image").click(async () => {
     $("#guided-banner-image-modal").modal("show");
@@ -2326,6 +2321,8 @@ $(document).ready(() => {
 
     //Mark page as completed in JSONObj so we know what pages to load when loading local saves
     sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
+    //Save progress onto local storage with the dataset name as the key
+    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
 
   //back button click handler
