@@ -1402,7 +1402,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
           }
           toastUpdate.open({
             type: "file_updated",
-            message: "Succesfully Imported and Renamed!",
+            message: "Successfully Imported and Renamed!",
           });
         }
         if (!result.isConfirmed) {
