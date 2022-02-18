@@ -325,7 +325,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
@@ -356,8 +356,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
           "Error",
           MetadataAnalyticsPrefix.MANIFEST,
           AnalyticsGranularity.ACTION,
-          MetadataAnalyticsPrefix.MANIFEST +
-            " - Generate - Check Storage Space",
+          " - Generate - Check Storage Space",
           Destinations.LOCAL
         );
       } else {
@@ -365,8 +364,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
           "Success",
           MetadataAnalyticsPrefix.MANIFEST,
           AnalyticsGranularity.ACTION,
-          MetadataAnalyticsPrefix.MANIFEST +
-            " - Generate - Check Storage Space",
+          " - Generate - Check Storage Space",
           Destinations.LOCAL
         );
         sodaJSONObj["starting-point"]["type"] = "local";
@@ -399,7 +397,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -427,7 +425,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -454,7 +452,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -922,7 +920,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -952,7 +950,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1005,7 +1003,7 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then((result) => { });
       return false;
     } else {
       return true;
@@ -1198,7 +1196,7 @@ async function generateManifestFolderLocallyForEdit() {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       return;
     }
     createManifestLocally(true, "");
@@ -1235,7 +1233,7 @@ function createManifestLocally(editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
         $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1252,7 +1250,7 @@ function createManifestLocally(editBoolean, originalDataset) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           $("#preview-manifest-fake-confirm").click();
           $("#Question-prepare-manifest-4").removeClass("show");
           $("#Question-prepare-manifest-4").removeClass("prev");
