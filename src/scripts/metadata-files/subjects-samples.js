@@ -594,7 +594,6 @@ function populateRRID(strain, type) {
             );
           }
         } else {
-          console.log(returnRes);
           $("#bootbox-" + type + "-strain").val(strain);
           $("#btn-confirm-strain").removeClass("confirm-disabled");
           $("#bootbox-" + type + "-strain").css("display", "block");

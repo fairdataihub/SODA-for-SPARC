@@ -1516,7 +1516,6 @@ $("#edit_banner_image_button").click(async () => {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
           log.error(`An error happened: ${img_src}`);
-          console.log(`An error happened: ${img_src}`);
           Swal.fire({
             icon: "error",
             text: "An error occurred when importing the image. Please try again later.",
@@ -1536,7 +1535,6 @@ $("#edit_banner_image_button").click(async () => {
         }
       } else {
         log.error(`An error happened: ${img_src}`);
-        console.log(`An error happened: ${img_src}`);
 
         Swal.fire({
           icon: "error",
@@ -1557,7 +1555,6 @@ $("#edit_banner_image_button").click(async () => {
       }
     } else {
       log.error(`An error happened: ${img_src}`);
-      console.log(`An error happened: ${img_src}`);
 
       Swal.fire({
         icon: "error",
@@ -1813,7 +1810,6 @@ $(document).ready(() => {
                 let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
                 if (fileSizeInMegabytes > 5) {
-                  console.log("File size too large. Resizing image");
 
                   fs.unlinkSync(converted_image_file);
 
@@ -1850,13 +1846,11 @@ $(document).ready(() => {
                     let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
                     if (fileSizeInMegabytes > 5) {
-                      console.log("File size is too big", fileSizeInMegabytes);
                       conversion_success = false;
                       // SHOW ERROR
                     }
                   }
                 }
-                console.log("file conversion complete");
                 image_path = converted_image_file;
                 imageExtension = "jpg";
                 $("#para-path-image").html(image_path);

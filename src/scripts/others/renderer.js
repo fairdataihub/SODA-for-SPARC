@@ -4374,7 +4374,6 @@ const pasteFromClipboard = (event, target_element) => {
       "i"
     );
     // "/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
-    console.log(regex.test(key), key, regex);
     if (regex.test(key)) {
       $(`#${target_element}`).val(key);
     } else {
@@ -5616,8 +5615,6 @@ const select_items_ctrl = (items, event, isDragging) => {
 };
 
 const select_items = (items, event, isDragging) => {
-  //console.log(event_list);
-
   let selected_class = "";
 
   items.forEach((event_item) => {
@@ -5864,7 +5861,6 @@ function listItems(jsonObj, uiItem) {
         "</div></div>";
     }
   }
-  //console.log(appendString);
   $(uiItem).empty();
   $(uiItem).html(appendString);
 
@@ -6504,7 +6500,6 @@ function initiate_generate() {
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
-    // console.log(sodaJSONObj["bf-dataset-selected"])
   } else if ("generate-dataset" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
@@ -6813,8 +6808,6 @@ function initiate_generate() {
         main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
-
-        //console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
 
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";

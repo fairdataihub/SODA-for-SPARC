@@ -219,9 +219,6 @@ const checkAvailableSpace = () => {
           roundToHundredth(folderSizeMB) +
           "MB " +
           "or consider uploading directly to Pennsieve.";
-        //console.log(res);
-        //console.log(freeMemoryMB + "\n free mem in mb");
-        //console.log(folderSizeMB + "\n folder size in mb");
 
         //converted to MB/GB/TB for user readability
         if (folderSizeMB > 1000) {

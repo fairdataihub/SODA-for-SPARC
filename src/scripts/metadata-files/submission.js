@@ -412,11 +412,8 @@ $(document).ready(function () {
 const checkStorage = (id) => {
   var location = id;
   var threeMB = 3145728;
-  //console.log(location);
   checkDiskSpace(location).then((diskSpace) => {
     freeMem = diskSpace.free;
-    //console.log(freeMem + "\nfree me in bytes");
-    //console.log(threeMB + "\nthree mb comparison");
     if (freeMem < threeMB) {
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
@@ -554,7 +551,6 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
     });
-    console.log("Continue value is: ", continueProgress);
     if (!continueProgress) {
       return;
     }
