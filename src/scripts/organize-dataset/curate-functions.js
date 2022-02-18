@@ -312,6 +312,7 @@ const progressFileParse = (ev) => {
     var filePath = path.join(progressFilePath, fileName);
     try {
       var content = fs.readFileSync(filePath);
+      console.log(content);
       contentJson = JSON.parse(content);
       return contentJson;
     } catch (error) {

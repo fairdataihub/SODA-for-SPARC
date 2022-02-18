@@ -2325,6 +2325,24 @@ $(document).ready(() => {
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
 
+  const readdirAsync = async (path) => {
+    return new Promise(function (resolve, reject) {
+      fs.readdir(path, function (error, result) {
+        if (error) {
+          reject(error);
+        } else {
+          console.log(result);
+          resolve(result);
+        }
+      });
+    });
+  };
+  $("#testat").on("click", async () => {
+    const guidedSavedProgressFiles = await readdirAsync(
+      guidedProgressFilePath2
+    );
+    console.log(guidedSavedProgressFiles);
+  });
   //back button click handler
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = current_sub_step.attr("id");
