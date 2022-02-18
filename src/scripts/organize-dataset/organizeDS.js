@@ -1120,18 +1120,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
             <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
             </div>`,
         });
-      } else {
-        if (tempFile[0].indexOf(".") != -1) {
-          toastUpdate.open({
-            type: "file_updated",
-            message: "Skipped File(s)",
-          });
-        } else {
-          toastUpdate.open({
-            type: "file_updated",
-            message: "Skipped Folder(s)",
-          });
-        }
       }
     });
   }
