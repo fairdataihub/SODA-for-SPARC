@@ -2325,23 +2325,46 @@ $(document).ready(() => {
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
 
-  const readdirAsync = async (path) => {
-    return new Promise(function (resolve, reject) {
-      fs.readdir(path, function (error, result) {
+  const readDirAsync = async (path) => {
+    return new Promise((resolve, reject) => {
+      fs.readdir(path, (error, result) => {
         if (error) {
-          reject(error);
+          throw new Error(error);
         } else {
-          console.log(result);
           resolve(result);
         }
       });
     });
   };
-  $("#testat").on("click", async () => {
-    const guidedSavedProgressFiles = await readdirAsync(
-      guidedProgressFilePath2
+  const readFileAsync = async (path) => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(path, "utf-8", (error, result) => {
+        if (error) {
+          throw new Error(error);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  };
+
+  const getProgressFileData = async (progressFiles) => {
+    return Promise.all(
+      progressFiles.map((progressFile) => {
+        let progressFilePath = path.join(guidedProgressFilePath, progressFile);
+        return readFileAsync(progressFilePath);
+      })
     );
-    console.log(guidedSavedProgressFiles);
+  };
+
+  $("#testat").on("click", async () => {
+    const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+    if (guidedSavedProgressFiles.length > 0) {
+      const data = await getProgressFileData(guidedSavedProgressFiles);
+      console.log(data);
+    } else {
+      alert("no local progress found");
+    }
   });
   //back button click handler
   $("#guided-back-button").on("click", () => {
