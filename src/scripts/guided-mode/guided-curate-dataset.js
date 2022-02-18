@@ -2342,7 +2342,7 @@ $(document).ready(() => {
         if (error) {
           throw new Error(error);
         } else {
-          resolve(result);
+          resolve(JSON.parse(result));
         }
       });
     });
@@ -2357,11 +2357,26 @@ $(document).ready(() => {
     );
   };
 
+  const renderProgressCards = (progressFileJSONdata) => {
+    let cardContainer = document.getElementsByClassName(
+      "guided--datasets-container"
+    )[0];
+    let fragment = document.createDocumentFragment();
+    progressFileJSONdata.forEach((progressFile) => {
+      let header = document.createElement("h1");
+      header.textContent = progressFile["digital-metadata"]["name"];
+      fragment.appendChild(header);
+    });
+    cardContainer.appendChild(fragment);
+  };
+
   $("#testat").on("click", async () => {
     const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
     if (guidedSavedProgressFiles.length > 0) {
-      const data = await getProgressFileData(guidedSavedProgressFiles);
-      console.log(data);
+      const progressFileData = await getProgressFileData(
+        guidedSavedProgressFiles
+      );
+      renderProgressCards(progressFileData);
     } else {
       alert("no local progress found");
     }
