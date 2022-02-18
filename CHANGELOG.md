@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When importing files/folders duplicates will now prompt user if they would like to skip, replace, or rename them accordingly.
 
 ### Bug fixes:
-- Fixed issue wherein Submission.xlsx files are not uploaded to Pennsieve in the Prepare Metadata section. 
+
+- Fixed issue wherein Submission.xlsx files are not uploaded to Pennsieve in the Prepare Metadata section.
 - Fixed issue that prevented dataset_description.xlsx protocols from being editable within the Prepare Metadata section.
 
 ### Known Issues:
