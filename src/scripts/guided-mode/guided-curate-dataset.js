@@ -629,6 +629,7 @@ $(document).ready(() => {
 
   $("#pennsieve-account-confirm-button").on("click", () => {
     sodaJSONObj["generate-dataset"]["starting-point"] = "bf";
+    sodaJSONObj["bf-account-selected"] = {};
     sodaJSONObj["bf-account-selected"]["account-name"] =
       $("#guided-bf-account").text();
     enableProgressButton();
@@ -2170,15 +2171,6 @@ $(document).ready(() => {
   //next button click handler
   $("#guided-next-button").on("click", () => {
     if (current_sub_step.attr("id") == "guided-basic-description-tab") {
-      $(".guidedDatasetName").text($("#guided-dataset-name-input").val());
-      $(".guidedDatasetSubtitle").text(
-        $("guided-dataset-subtitle-input").val()
-      );
-      $(".guidedDatasetSubtitle").text(
-        $("#guided-dataset-subtitle-input").val()
-      );
-      sodaJSONObj["bf-account-selected"] = {};
-      sodaJSONObj["mode"] = "guided";
       sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
       sodaJSONObj["generate-dataset"] = {};
       sodaJSONObj["manifest-files"] = {};
