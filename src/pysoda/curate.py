@@ -476,6 +476,27 @@ def return_new_path(topath):
         return topath
 
 
+def return_new_path_replace(topath):
+    """
+    This function checks if a folder already exists and in such cases,
+    replace the existing folder (this is the opposite situation to the function return_new_path)
+
+    Args:
+        topath: path where the folder is supposed to be created (string)
+    Returns:
+        topath: new folder name based on the availability in destination folder (string)
+    """
+
+    if exists(topath):
+        i = 1
+        while True:
+            if not exists(topath + " (" + str(i) + ")"):
+                return topath + " (" + str(i) + ")"
+            i += 1
+    else:
+        return topath
+
+
 def time_format(elapsed_time):
     mins, secs = divmod(elapsed_time, 60)
     hours, mins = divmod(mins, 60)
@@ -1628,6 +1649,59 @@ def create_high_level_manifest_files(soda_json_structure):
 
 #     except Exception as e:
 #         raise e
+
+# This function is called to check size of files
+# that will be created locally on a user's device
+def check_JSON_size(jsonStructure):
+    global total_dataset_size
+    total_dataset_size = 0
+
+    try:
+
+        def recursive_dataset_scan(folder):
+            global total_dataset_size
+
+            if "files" in folder.keys():
+                for file_key, file in folder["files"].items():
+                    if not "deleted" in file["action"]:
+                        file_type = file["type"]
+                        if file_type == "local":
+                            file_path = file["path"]
+                            if isfile(file_path):
+                                total_dataset_size += getsize(file_path)
+
+            if "folders" in folder.keys():
+                for folder_key, folder in folder["folders"].items():
+                    recursive_dataset_scan(folder)
+
+        # scan dataset structure
+        dataset_structure = jsonStructure["dataset-structure"]
+        folderSection = dataset_structure["folders"]
+        # gets keys like code, primary, source and their content...
+        for keys, contents in folderSection.items():
+            recursive_dataset_scan(contents)
+
+        if "metadata-files" in jsonStructure.keys():
+            metadata_files = jsonStructure["metadata-files"]
+            for file_key, file in metadata_files.items():
+                if file["type"] == "local":
+                    metadata_path = file["path"]
+                    if isfile(metadata_path):
+                        if "new" in file["action"]:
+                            total_dataset_size += getsize(metadata_path)
+
+        if "manifest-files" in jsonStructure.keys():
+            manifest_files_structure = create_high_level_manifest_files(jsonStructure)
+            for key in manifest_files_structure.keys():
+                manifestpath = manifest_files_structure[key]
+                if isfile(manifestpath):
+                    total_dataset_size += getsize(manifestpath)
+
+        # total_dataset_size = total_dataset_size/(1024**2)
+        # returns in bytes
+        return total_dataset_size
+    except Exception as e:
+        raise e
 
 
 def generate_dataset_locally(soda_json_structure):
@@ -3546,7 +3620,7 @@ def preview_dataset(soda_json_structure):
         raise e
 
 
-def generate_manifest_file_locally(soda_json_structure):
+def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     """
     Function to generate manifest files locally
     """
@@ -3573,6 +3647,8 @@ def generate_manifest_file_locally(soda_json_structure):
             s = os.path.join(src, item)
             d = os.path.join(dst, item)
             if os.path.isdir(s):
+                if os.path.exists(d):
+                    shutil.rmtree(d)
                 shutil.copytree(s, d, symlinks, ignore)
             else:
                 shutil.copy2(s, d)
@@ -3583,9 +3659,19 @@ def generate_manifest_file_locally(soda_json_structure):
 
     recursive_item_path_create(dataset_structure, [])
     create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
-    manifest_destination = return_new_path(
-        os.path.join(manifest_destination, "SODA Manifest Files")
-    )
+
+    if generate_purpose == "edit-manifest":
+        manifest_destination = os.path.join(manifest_destination, "SODA Manifest Files")
+
+    else:
+        manifest_destination = return_new_path(
+            os.path.join(manifest_destination, "SODA Manifest Files")
+        )
+
     copytree(manifest_folder_path, manifest_destination)
+
+    if generate_purpose == "edit-manifest":
+        return manifest_destination
+
     open_file(manifest_destination)
     return "success"

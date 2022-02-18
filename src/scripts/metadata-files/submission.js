@@ -406,6 +406,136 @@ $(document).ready(function () {
   });
 });
 
+//Function is used for when user is creating Metadata files locally
+//At most the metadata files should be no bigger than 3MB
+//Function checks the selected storage device to ensure at least 3MB are available
+const checkStorage = (id) => {
+  var location = id;
+  var threeMB = 3145728;
+  checkDiskSpace(location).then((diskSpace) => {
+    freeMem = diskSpace.free;
+    if (freeMem < threeMB) {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "OK",
+        heightAuto: false,
+        icon: "warning",
+        showCancelButton: false,
+        title: "Not enough space",
+        text: "Please free up at least 3MB",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Prepare Metadata - Generate - Check Storage Space",
+        "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+        1
+      );
+
+      // stop execution to avoid logging a success case for the storage space check
+      return;
+    }
+
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Metadata - Generate - Check Storage Space",
+      "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+      1
+    );
+  });
+};
+const localSubmissionBtn = document.getElementById(
+  "btn-confirm-local-submission-destination"
+);
+const localDDBtn = document.getElementById("btn-confirm-local-dd-destination");
+const localSubjectsBtn = document.getElementById(
+  "btn-confirm-local-subjects-destination"
+);
+const localSamplesBtn = document.getElementById(
+  "btn-confirm-local-samples-destination"
+);
+const localChangesBtn = document.getElementById(
+  "btn-confirm-local-changes-destination"
+);
+const localReadmeBtn = document.getElementById(
+  "btn-confirm-local-readme-destination"
+);
+//event listeners for each button since each one uses a different ID
+localSubmissionBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-submission-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localDDBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-dd-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localSubjectsBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-subjects-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localSamplesBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-samples-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localChangesBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-changes-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+localReadmeBtn.addEventListener(
+  "click",
+  function () {
+    checkStorage(
+      document
+        .getElementById("input-destination-generate-readme-locally")
+        .getAttribute("placeholder")
+    );
+  },
+  false
+);
+
 async function generateSubmissionHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
     var { value: continueProgress } = await Swal.fire({
@@ -442,6 +572,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       return;
     }
   }
+
   Swal.fire({
     title: "Generating the submission.xlsx file",
     html: "Please wait...",
@@ -450,11 +581,11 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     showConfirmButton: false,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  });
+
   var awardRes = $("#submission-sparc-award").val();
   var dateRes = $("#submission-completion-date").val();
   var milestonesRes = $("#selected-milestone-1").val();
@@ -497,7 +628,6 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           html: emessage,
           title: "Failed to generate the submission file",
         });
-
         logMetadataForAnalytics(
           "Error",
           MetadataAnalyticsPrefix.SUBMISSION,
@@ -518,7 +648,10 @@ async function generateSubmissionHelper(uploadBFBoolean) {
           icon: "success",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Ok",
+          allowOutsideClick: true,
         });
+
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.SUBMISSION,

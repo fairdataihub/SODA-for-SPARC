@@ -7,6 +7,209 @@ button:focus {
   outline: none;
 }
 
+.wide-swal {
+  width: auto !important;
+  height: auto !important;
+  justify-content: space-between;
+  display: block;
+}
+
+.checkbox-design {
+  -webkit-appearance: none;
+  margin: 0;
+  appearance: none;
+  background-color: #fff;
+  font: inherit;
+  color: currentColor;
+  width: 1.15em;
+  height: 1.15em;
+  border: 0.15em solid currentColor;
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+  align-self: center;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.checkbox-design::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  background-color: var(--color-light-green);
+}
+
+.checkbox-design:checked::before {
+  transform: scale(1);
+}
+
+.skip-btn {
+  margin-right: 15px;
+  background-color: #fff;
+  border: solid 1px var(--color-light-green);
+  color: var(--color-light-green);
+  border-radius: 8px;
+}
+
+.skip-btn:hover {
+  background-color: var(--color-light-green);
+  color: #fff;
+}
+
+.replace-btn {
+  background-color: var(--color-bg-plum);
+  color: white;
+  border-radius: 8px;
+}
+
+#selectAll {
+  display: flex;
+  justify-content: space-between;
+}
+
+.update-file:before {
+  opacity: 0.5;
+}
+
+.update-file:after {
+  content: "\f24d";
+  position: absolute;
+  top: 42px;
+  right: 24px;
+  color: var(--color-bg-plum);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.input-name {
+  color: black;
+  align-self: center;
+}
+
+.selectAll-container {
+  margin-top: 5px;
+  margin-bottom: 0px;
+  margin-left: 38px;
+}
+
+.selectAll-checkbox {
+  margin-left: 40px;
+  margin-right: 74px;
+}
+
+.input-field-design {
+  margin-bottom: 1px;
+  margin-right: 10px;
+  margin-left: 10px;
+  align-self: center;
+  text-align: center;
+}
+
+.jexcel_container {
+  margin-right: 20px;
+}
+
+.checkbox-design:focus {
+  outline: none;
+}
+
+.input-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 60px;
+  margin-left: 25px;
+  align-items: start;
+  border-radius: 8px;
+  background-color: #f7f7f7;
+}
+
+.selectAll-text {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  margin: 10px;
+  margin-left: 38px;
+}
+
+.checkbox-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 60px;
+  margin-left: 25px;
+  border-radius: 8px;
+}
+
+.checkbox-container:hover {
+  background-color: #f7f7f7;
+}
+
+#container {
+  max-height: 300px;
+  overflow: overlay;
+  margin: 5px;
+}
+
+.rename-btn {
+  margin-left: 15px;
+  background-color: var(--color-light-green);
+  color: white;
+  border-radius: 8px;
+}
+
+.cancel-btn {
+  margin-left: 100px;
+  background-color: #757575;
+  color: white;
+  border-radius: 8px;
+}
+
+.wide-swal-auto {
+  width: auto !important;
+  height: auto !important;
+  display: block;
+}
+
+.swal-button-container {
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+  margin-top: 5px;
+}
+
+.caption {
+  max-height: 250px;
+  overflow-y: overlay;
+}
+
+.rename-input {
+  outline: none !important;
+  border-width: 0 0 1px !important;
+  border-color: gray !important;
+  box-shadow: none !important;
+  border-radius: 0px !important;
+}
+
+.rename-input:focus {
+  outline: none !important;
+  border-width: 0 0 2px !important;
+  border-color: #13716d !important;
+}
+
+.rename-input::-webkit-input-placeholder {
+  color: rgb(139, 139, 139);
+}
+
 .container-fluid {
   width: 100%;
   height: 85%;
@@ -300,6 +503,36 @@ button[data-id="bf_list_users_pi"] {
   background-color: #eeeaea;
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
+}
+
+@-o-keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #85ceff;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+@keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #85ceff;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+.backgroundAnimate {
+  background-image: none !important;
+  -o-animation: fadeIt 3s ease-in-out;
+  animation: fadeIt 3s ease-in-out;
 }
 
 .ds-selected {

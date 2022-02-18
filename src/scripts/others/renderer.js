@@ -33,8 +33,10 @@ const selectpicker = require("bootstrap-select");
 const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
+const diskCheck = require("check-disk-space").default;
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
+const excel4node = require("excel4node");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -394,7 +396,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
-            openDropdownPrompt("bf");
+            await openDropdownPrompt(null, "bf");
             resolve(false);
           } else {
             resolve(true);
@@ -4372,7 +4374,6 @@ const pasteFromClipboard = (event, target_element) => {
       "i"
     );
     // "/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i";
-    console.log(regex.test(key), key, regex);
     if (regex.test(key)) {
       $(`#${target_element}`).val(key);
     } else {
@@ -4712,13 +4713,14 @@ function addFoldersfunction(
 ) {
   var uiFolders = {};
   var importedFolders = {};
+  var duplicateFolders = [];
+  var folderPath = [];
 
   if (JSON.stringify(currentLocation["folders"]) !== "{}") {
     for (var folder in currentLocation["folders"]) {
       uiFolders[folder] = 1;
     }
   }
-
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     Swal.fire({
@@ -4745,6 +4747,22 @@ function addFoldersfunction(
       var originalFolderName = path.basename(folderArray[i]);
       var renamedFolderName = originalFolderName;
 
+      if (originalFolderName in currentLocation["folders"]) {
+        //folder matches object key
+        folderPath.push(folderArray[i]);
+        duplicateFolders.push(originalFolderName);
+      } else {
+        if (originalFolderName in importedFolders) {
+          folderPath.push(folderArray[i]);
+          duplicateFolders.push(originalFolderName);
+        } else {
+          importedFolders[originalFolderName] = {
+            path: folderArray[i],
+            "original-basename": originalFolderName,
+          };
+        }
+      }
+
       if (nonallowedFolderArray.includes(folderArray[i])) {
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
@@ -4758,17 +4776,38 @@ function addFoldersfunction(
           };
         }
       } else {
-        while (
-          renamedFolderName in uiFolders ||
-          renamedFolderName in importedFolders
-        ) {
-          renamedFolderName = `${originalFolderName} (${j})`;
-          j++;
+        var listElements = showItemsAsListBootbox(duplicateFolders);
+        var list = JSON.stringify(folderPath).replace(/"/g, "");
+        if (duplicateFolders.length > 0) {
+          Swal.fire({
+            title: "Duplicate folder(s) detected",
+            icon: "warning",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            showCloseButton: true,
+            customClass: "wide-swal-auto",
+            backdrop: "rgba(0, 0, 0, 0.4)",
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate_animated animate_zoomout animate__faster",
+            },
+            html:
+              `
+            <div class="caption">
+              <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
+            </div>  
+            <div class="swal-button-container">
+              <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
+              list +
+              `')">Skip Folders</button>
+              <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Folders</button>
+              <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
+              <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+              </div>`,
+          });
         }
-        importedFolders[renamedFolderName] = {
-          path: folderArray[i],
-          "original-basename": originalFolderName,
-        };
       }
     }
 
@@ -4858,7 +4897,9 @@ function drop(ev) {
   }
   for (var i = 0; i < ev.dataTransfer.files.length; i++) {
     var ele = ev.dataTransfer.files[i].path;
-    detectIrregularFolders(path.basename(ele), ele);
+    if (path.basename(ele).indexOf(".") === -1) {
+      detectIrregularFolders(path.basename(ele), ele);
+    }
   }
   var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   if (irregularFolderArray.length > 0) {
@@ -4927,6 +4968,8 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
+  var folderPath = [];
+  var duplicateFolders = [];
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
@@ -4942,6 +4985,7 @@ function dropHelper(
     }
     /// check for File duplicate
     if (statsObj.isFile()) {
+      var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
         Swal.fire({
@@ -4961,30 +5005,36 @@ function dropHelper(
             basename: path.parse(itemPath).base,
           };
         } else {
-          for (var objectKey in myPath["files"]) {
-            if (objectKey !== undefined) {
-              var nonAllowedDuplicate = false;
-              if (itemPath === myPath["files"][objectKey]["path"]) {
-                nonAllowedDuplicateFiles.push(itemPath);
-                nonAllowedDuplicate = true;
-                break;
+          //check if fileName is in to-be-imported object keys
+          if (originalFileName in importedFiles) {
+            nonAllowedDuplicate = true;
+            nonAllowedDuplicateFiles.push(itemPath);
+            continue;
+          } else {
+            //check if filename is in already-imported object keys
+            if (originalFileName in myPath["files"]) {
+              nonAllowedDuplicate = true;
+              nonAllowedDuplicateFiles.push(itemPath);
+              continue;
+            } else {
+              for (var objectKey in myPath["files"]) {
+                if (objectKey !== undefined) {
+                  var nonAllowedDuplicate = false;
+                  //just checking if paths are the same
+                  if (itemPath === myPath["files"][objectKey]["path"]) {
+                    nonAllowedDuplicateFiles.push(itemPath);
+                    nonAllowedDuplicate = true;
+                    continue;
+                  } else {
+                    //in neither so write
+                    importedFiles[originalFileName] = {
+                      path: itemPath,
+                      basename: originalFileName,
+                    };
+                  }
+                }
               }
             }
-          }
-          if (!nonAllowedDuplicate) {
-            var j = 1;
-            var fileBaseName = itemName;
-            var originalFileNameWithoutExt = path.parse(fileBaseName).name;
-            var fileNameWithoutExt = originalFileNameWithoutExt;
-            while (fileBaseName in uiFiles || fileBaseName in importedFiles) {
-              fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-              fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
-              j++;
-            }
-            importedFiles[fileBaseName] = {
-              path: itemPath,
-              basename: fileBaseName,
-            };
           }
         }
       }
@@ -5016,37 +5066,102 @@ function dropHelper(
             };
           }
         } else {
-          while (
-            renamedFolderName in uiFolders ||
-            renamedFolderName in importedFolders
-          ) {
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
+          if (itemName in myPath["folders"]) {
+            //folder is already imported
+            duplicateFolders.push(itemName);
+            folderPath.push(itemPath);
+          } else {
+            if (itemName in importedFolders) {
+              //folder is already in to-be-imported list
+              duplicateFolders.push(itemName);
+              folderPath.push(itemPath);
+            } else {
+              //folder is in neither so write
+              importedFolders[renamedFolderName] = {
+                path: itemPath,
+                "original-basename": originalFolderName,
+              };
+            }
           }
-          importedFolders[renamedFolderName] = {
-            path: itemPath,
-            "original-basename": originalFolderName,
-          };
         }
       }
     }
   }
-  if (nonAllowedDuplicateFiles.length > 0) {
-    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
+  var listElements = showItemsAsListBootbox(duplicateFolders);
+  var list = JSON.stringify(folderPath).replace(/"/g, "");
+  if (duplicateFolders.length > 0) {
     Swal.fire({
+      title: "Duplicate folder(s) detected",
       icon: "warning",
-      html:
-        "The following files are already imported into the current location of your dataset: <p><ul>" +
-        listElements +
-        "</ul></p>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      showCloseButton: true,
+      customClass: "wide-swal-auto",
+      backdrop: "rgba(0, 0, 0, 0.4)",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate_animated animate_zoomout animate__faster",
       },
+      html:
+        `
+      <div class="caption">
+        <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
+      </div>  
+      <div class="swal-button-container">
+        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
+        list +
+        `')">Skip Folders</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Folders</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+        </div>`,
+    });
+  }
+  let baseName = [];
+  if (nonAllowedDuplicateFiles.length > 0) {
+    for (let element in nonAllowedDuplicateFiles) {
+      let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
+      if (lastSlash === 0) {
+        lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("/") + 1;
+      }
+      baseName.push(
+        nonAllowedDuplicateFiles[element].substring(
+          lastSlash,
+          nonAllowedDuplicateFiles[element].length
+        )
+      );
+    }
+    var listElements = showItemsAsListBootbox(baseName);
+    var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+    Swal.fire({
+      title: "Duplicate file(s) detected",
+      icon: "warning",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      showCloseButton: true,
+      customClass: "wide-swal-auto",
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate_animated animate_zoomout animate__faster",
+      },
+      html:
+        `
+      <div class="caption">
+        <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
+      </div>  
+      <div class="swal-button-container">
+        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
+        list +
+        `')">Skip Files</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Files</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+        </div>`,
     });
   }
   // // now append to UI files and folders
@@ -5500,8 +5615,6 @@ const select_items_ctrl = (items, event, isDragging) => {
 };
 
 const select_items = (items, event, isDragging) => {
-  //console.log(event_list);
-
   let selected_class = "";
 
   items.forEach((event_item) => {
@@ -5625,15 +5738,28 @@ function listItems(jsonObj, uiItem) {
       }
     }
 
-    appendString =
-      appendString +
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-      emptyFolder +
-      '"></h1><div class="folder_desc' +
-      cloud_item +
-      '">' +
-      item +
-      "</div></div>";
+    if (sortedObj["folders"][item]["action"].includes("updated")) {
+      cloud_item = " update-file";
+      appendString =
+        appendString +
+        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+        emptyFolder +
+        '"></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    } else {
+      appendString =
+        appendString +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+        emptyFolder +
+        '"></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    }
   }
   for (var item in sortedObj["files"]) {
     // not the auto-generated manifest
@@ -5706,18 +5832,35 @@ function listItems(jsonObj, uiItem) {
         cloud_item = " local_file_deleted";
       }
     }
-
-    appendString =
-      appendString +
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-      extension +
-      '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-      cloud_item +
-      '">' +
-      item +
-      "</div></div>";
+    if (
+      sortedObj["files"][item]["type"] == "local" &&
+      sortedObj["files"][item]["action"].includes("updated")
+    ) {
+      cloud_item = " update-file";
+      if (deleted_file) {
+        cloud_item = "pennsieve_file_deleted";
+      }
+      appendString =
+        appendString +
+        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+        extension +
+        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    } else {
+      appendString =
+        appendString +
+        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+        extension +
+        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+    }
   }
-
   $(uiItem).empty();
   $(uiItem).html(appendString);
 
@@ -6210,7 +6353,7 @@ document
       }
     }
 
-    //  from here you can modify
+    // from here you can modify
     document.getElementById("para-please-wait-new-curate").innerHTML =
       "Please wait...";
     document.getElementById(
@@ -6297,7 +6440,6 @@ document
               if (result.isConfirmed) {
                 initiate_generate();
               } else {
-                console.log("Stop");
                 $("#sidebarCollapse").prop("disabled", false);
                 document.getElementById(
                   "para-please-wait-new-curate"
@@ -6358,7 +6500,6 @@ function initiate_generate() {
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
-    // console.log(sodaJSONObj["bf-dataset-selected"])
   } else if ("generate-dataset" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
@@ -6477,7 +6618,6 @@ function initiate_generate() {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
-      console.log("Completed curate function");
       if (manifest_files_requested) {
         let high_level_folder_num = 0;
         if ("dataset-structure" in sodaJSONObj) {
@@ -6669,8 +6809,6 @@ function initiate_generate() {
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
 
-        //console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
-
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
@@ -6746,7 +6884,6 @@ function initiate_generate() {
       countDone++;
       if (countDone > 1) {
         log.info("Done curate track");
-        console.log("Done curate track");
         // then show the sidebar again
         // forceActionSidebar("show");
         clearInterval(timerProgress);
@@ -7223,6 +7360,7 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
 
     client.invoke(
       "api_generate_manifest_file_locally",
+      "",
       temp_sodaJSONObj,
       (error, res) => {
         if (error) {
