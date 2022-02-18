@@ -1810,7 +1810,6 @@ $(document).ready(() => {
                 let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
                 if (fileSizeInMegabytes > 5) {
-
                   fs.unlinkSync(converted_image_file);
 
                   await Jimp.read(original_image_path)
