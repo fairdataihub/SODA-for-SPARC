@@ -12,10 +12,6 @@ from sparcur.simple.utils import backend_pennsieve
 userpath = expanduser("~")
 from pprint import pprint
 
-
-
-
-
 # from sparcur.config import auth
 # from sparcur.simple.utils import backend_pennsieve
 # project_id = auth.get('remote-organization')
