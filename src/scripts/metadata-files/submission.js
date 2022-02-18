@@ -554,7 +554,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       cancelButtonText: "Cancel",
       confirmButtonText: "Yes",
     });
-    console.log("Continue value is: ", continueProgress)
+    console.log("Continue value is: ", continueProgress);
     if (!continueProgress) {
       return;
     }
@@ -588,8 +588,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  })
-
+  });
 
   var awardRes = $("#submission-sparc-award").val();
   var dateRes = $("#submission-completion-date").val();
@@ -669,11 +668,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
         const size = res;
 
         // log the size of the metadata file that was generated at varying levels of granularity
-        logMetadataSizeForAnalytics(
-          uploadBFBoolean,
-          "submission.xlsx",
-          size
-        );
+        logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
       }
     }
   );
@@ -756,7 +751,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 function showExistingSubmissionFile(type) {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !==
-    "Browse here" &&
+      "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
   ) {
     Swal.fire({
@@ -836,7 +831,7 @@ function importExistingSubmissionFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -942,7 +937,7 @@ function checkBFImportSubmission() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   client.invoke(
     "api_import_bf_metadata_file",
     "submission.xlsx",
