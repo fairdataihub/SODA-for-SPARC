@@ -21,6 +21,7 @@ const disableProgressButton = () => {
 const saveGuidedProgress = (guidedProgressFileName) => {
   //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
+  sodaJSONObj["last-modified"] = new Date().toLocaleDateString();
   try {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
     console.log("Guided-Progress folder created if didn't exist");
@@ -51,20 +52,6 @@ const saveGuidedProgress = (guidedProgressFileName) => {
     }
   }
   fs.writeFileSync(guidedFilePath, JSON.stringify(sodaJSONObj, null, 2));
-
-  Swal.fire({
-    icon: "success",
-    text: "Successfully saved progress!",
-    showConfirmButton: "OK",
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-  });
 };
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
@@ -2183,6 +2170,7 @@ $(document).ready(() => {
       sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
       sodaJSONObj["digital-metadata"] = {};
       sodaJSONObj["completed-tabs"] = [];
+      sodaJSONObj["last-modified"] = "";
 
       //set starting point to local for now for curate new dataset until new dataset functionality implemented
       if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
@@ -2361,13 +2349,57 @@ $(document).ready(() => {
     let cardContainer = document.getElementsByClassName(
       "guided--datasets-container"
     )[0];
-    let fragment = document.createDocumentFragment();
-    progressFileJSONdata.forEach((progressFile) => {
-      let header = document.createElement("h1");
-      header.textContent = progressFile["digital-metadata"]["name"];
-      fragment.appendChild(header);
+    const progressCards = progressFileJSONdata.map((progressFile) => {
+      return `
+         <div class="guided--dataset-card">
+                <div class="guided--container-dataset-card-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+                    alt="tree"
+                    style="height: 60px; width: 60px"
+                  />
+                  <div class="guided--dataset-card-title">
+                    <h1 class="guided--text-dataset-card">Dataset A</h1>
+                    <h2 class="guided--text-dataset-card-sub">
+                      Dataset A subtitle
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--dataset-card-body">
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jon R</h1>
+                    <h2 class="guided--text-dataset-card-sub">Owner</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">259 GB</h1>
+                    <h2 class="guided--text-dataset-card-sub">Size</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jan. 27, 2021</h1>
+                    <h2 class="guided--text-dataset-card-sub">Last modified</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">In progress</h1>
+                    <h2 class="guided--text-dataset-card-sub"> 
+                      Curation status
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--container-dataset-card-center">
+                  <button
+                    class="ui positive button guided--button-footer"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      width: 160px !important;
+                      margin: 10px;
+                    "
+                  >
+                    Continue curation
+                  </button>
+                </div>
+              </div>`;
     });
-    cardContainer.appendChild(fragment);
+    cardContainer.innerHTML = progressCards.join("\n");
   };
 
   $("#testat").on("click", async () => {
