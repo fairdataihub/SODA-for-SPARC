@@ -88,10 +88,8 @@ const getProgressFileData = async (progressFiles) => {
 const renderProgressCards = (progressFileJSONdata) => {
   let cardContainer = document.getElementById("resume-curation-container");
   const progressCards = progressFileJSONdata.map((progressFile) => {
-    console.log(progressFile["digital-metadata"]["banner-image-path"]);
     let progressFileImage =
-      progressFile["digital-metadata"]["banner-image-path"];
-    console.log(progressFileImage);
+      progressFile["digital-metadata"]["banner-image-path"] || "";
 
     if (progressFileImage === "") {
       progressFileImage = `
@@ -110,7 +108,6 @@ const renderProgressCards = (progressFileJSONdata) => {
           />
         `;
     }
-    console.log(progressFileImage);
     const progressFileName = progressFile["digital-metadata"]["name"] || "";
     const progressFileSubtitle =
       progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
@@ -166,6 +163,12 @@ const renderProgressCards = (progressFileJSONdata) => {
   cardContainer.innerHTML = progressCards.join("\n");
 };
 const guidedLoadSavedProgressFiles = async () => {
+  //Check if Guided-Progress folder exists. If not, create it.
+  if (!fs.existsSync(guidedProgressFilePath)) {
+    fs.mkdirSync(guidedProgressFilePath);
+  }
+  //Read Get files in Guided-Progress folder, then render progress resumption cards
+  //on first page of guided mode
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   if (guidedSavedProgressFiles.length > 0) {
     const progressFileData = await getProgressFileData(
@@ -173,7 +176,7 @@ const guidedLoadSavedProgressFiles = async () => {
     );
     renderProgressCards(progressFileData);
   } else {
-    alert("no local progress found");
+    console.log("No guided save files found");
   }
 };
 
@@ -2176,7 +2179,7 @@ $(document).ready(() => {
     //Save cropped image locally and check size
     let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
     let imageType = "";
-    let datasetName = sodaJSONObj["digital-metadta"]["name"];
+    let datasetName = sodaJSONObj["digital-metadata"]["name"];
 
     if (!fs.existsSync(imageFolder)) {
       fs.mkdirSync(imageFolder, { recursive: true });
@@ -2193,7 +2196,6 @@ $(document).ready(() => {
       datasetName + "-banner-image." + imageExtension
     );
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
-    console.log(croppedImageDataURI);
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
       let image_file_size = fs.statSync(imagePath)["size"];
@@ -2276,7 +2278,7 @@ $(document).ready(() => {
   });
 
   //next button click handler
-  $("#guided-next-button").on("click", () => {
+  $("#guided-next-button").on("click", async () => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = current_sub_step.attr("id");
 
@@ -2304,13 +2306,24 @@ $(document).ready(() => {
       setGuidedDatasetName($("#guided-dataset-name-input"));
       setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
 
+      //Get initial dataset creator's user information and set OG PI owner to initial creator
+      let user = await getUserInformation();
+      const newPiOwner = {
+        PiOwnerString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+        UUID: user["id"],
+        permission: "owner",
+      };
+      setGuidedDatasetPiOwner(newPiOwner);
+
+      $("#guided-back-button").css("visibility", "visible");
+    }
+    if (pageBeingLeftID === "guided-banner-image-addition-tab") {
       //Check if cropped image path is empty, and if not, store the path to the sodaJSONObj
       if (guidedCroppedBannerImagePath) {
         setGuidedBannerImage(guidedCroppedBannerImagePath);
       } else {
         setGuidedBannerImage("");
       }
-      $("#guided-back-button").css("visibility", "visible");
     }
     if (pageBeingLeftID === "guided-folder-importation-tab") {
     }
