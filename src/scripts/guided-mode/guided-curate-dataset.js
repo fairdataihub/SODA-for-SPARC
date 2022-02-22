@@ -88,9 +88,11 @@ const getProgressFileData = async (progressFiles) => {
 const renderProgressCards = (progressFileJSONdata) => {
   let cardContainer = document.getElementById("resume-curation-container");
   const progressCards = progressFileJSONdata.map((progressFile) => {
-    console.log(progressFile);
+    console.log(progressFile["digital-metadata"]["banner-image-path"]);
     let progressFileImage =
       progressFile["digital-metadata"]["banner-image-path"];
+    console.log(progressFileImage);
+
     if (progressFileImage === "") {
       progressFileImage = `
           <img
@@ -108,11 +110,12 @@ const renderProgressCards = (progressFileJSONdata) => {
           />
         `;
     }
-    let progressFileName = progressFile["digital-metadata"]["name"] || "";
-    let progressFileSubtitle =
-      progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
-
     console.log(progressFileImage);
+    const progressFileName = progressFile["digital-metadata"]["name"] || "";
+    const progressFileSubtitle =
+      progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
+    const progressFileLastModified = progressFile["last-modified"];
+
     return `
          <div class="guided--dataset-card">
                 <div class="guided--container-dataset-card-center">  
@@ -135,7 +138,7 @@ const renderProgressCards = (progressFileJSONdata) => {
                   </div>
                   <div class="guided--dataset-card-item">
                     <h1 class="guided--text-dataset-card">
-                      ${progressFile["last-modified"]}
+                      ${progressFileLastModified}
                     </h1>
                     <h2 class="guided--text-dataset-card-sub">Last modified</h2>
                   </div>
@@ -2171,8 +2174,9 @@ $(document).ready(() => {
   const guidedSaveBannerImage = () => {
     $("#guided-para-dataset-banner-image-status").html("Please wait...");
     //Save cropped image locally and check size
-    let imageFolder = path.join(homeDirectory, "SODA", "banner-image");
+    let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
     let imageType = "";
+    let datasetName = sodaJSONObj["digital-metadta"]["name"];
 
     if (!fs.existsSync(imageFolder)) {
       fs.mkdirSync(imageFolder, { recursive: true });
@@ -2186,7 +2190,7 @@ $(document).ready(() => {
 
     let imagePath = path.join(
       imageFolder,
-      "banner-image-SODA." + imageExtension
+      datasetName + "-banner-image." + imageExtension
     );
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
     console.log(croppedImageDataURI);
