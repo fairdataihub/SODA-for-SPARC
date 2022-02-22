@@ -45,7 +45,7 @@ const pyFlaskConfiguration = {
   folder: PY_FLASK_FOLDER,
   module: PY_FLASK_MODULE,
   process: null,
-  port: "5000",
+  port: "5001",
 };
 
 // check for pydist or pyflaskdist
@@ -72,6 +72,8 @@ const getScriptPath = (serverConfiguration) => {
 const createPyProc = (serverConfiguration) => {
   let script = getScriptPath(serverConfiguration);
 
+  console.log("Executing this proc: ", script)
+
   const { distributionFolder, port } = serverConfiguration;
 
   log.info(script);
@@ -80,6 +82,7 @@ const createPyProc = (serverConfiguration) => {
   } else {
     log.info("file does not exist");
   }
+
   if (guessPackaged(distributionFolder)) {
     log.info("execFile");
     serverConfiguration.process = require("child_process").execFile(
