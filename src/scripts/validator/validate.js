@@ -35,7 +35,6 @@ document
 document
   .querySelector("#validate_dataset-1-pennsieve")
   .addEventListener("click", () => {
-    console.log("Event emitted");
     // check the input
     document.querySelector("#validate-1-Pennsieve").checked = true;
 
@@ -311,6 +310,31 @@ const transitionToValidateQuestionThree = () => {
 };
 
 const transitionToValidateQuestionTwo = async () => {
+  // check if there is already validation progress 
+  let validationErrorsTable = document.querySelector("#validation-errors-container tbody")
+  if (validationErrorsTable.childElementCount > 0) {
+    // ask the user to confirm they want to reset their validation progress 
+    let resetValidationResult = await Swal.fire({
+      icon: "warning",
+      text: "This will reset your current validation results. Do you wish to continue?",
+      heightAuto: false,
+      showCancelButton: true,
+      cancelButtonText: "No",
+      focusCancel: true,
+      confirmButtonText: "Yes",
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    })
+
+    if(!resetValidationResult) return 
+  }
+
   // hide both local and pennsieve sections
   let pennsieveSection = document.querySelector(
     "#pennsieve-question-2-container"
@@ -329,8 +353,6 @@ const transitionToValidateQuestionTwo = async () => {
   let localDatasetCard = document.querySelector("#validate-1-Local");
   let validatingLocalDataset = localDatasetCard.checked;
 
-  console.log("Validation is: ", validatingLocalDataset);
-
   // perform the transition for a local dataset
   if (validatingLocalDataset) {
     // show local section
@@ -348,8 +370,6 @@ const transitionToValidateQuestionTwo = async () => {
     input.setAttribute("placeholder", "Browse here");
     input.value = "";
   } else {
-    console.log("Stuff is happening");
-
     // hide the local dataset section
     localSection.style = "display: none !important;";
 
