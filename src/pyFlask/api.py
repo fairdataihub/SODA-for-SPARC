@@ -1,7 +1,7 @@
 import werkzeug
 from validator import val_dataset_local_pipeline
 from flask import Flask, jsonify, request, json
-import os.path as path
+import os.path
 from os.path import expanduser
 # from organize_datasets import ps_retrieve_dataset
 from sparcur.simple.validate import main as validate
@@ -47,21 +47,32 @@ def api_ps_retrieve_dataset():
 @app.route("/api_validate_dataset_pipeline")
 @app.errorhandler(werkzeug.exceptions.BadRequest)
 def api_validate_dataset_pipeline():
-    print("In the validator")
     # get the dataset relative path
     ds_path = request.args.get("dataset-path")
     # convert the path to absolute from user's home directory
-    joined_path = path.join(userpath, ds_path.strip())
+    joined_path = os.path.join(userpath, ds_path.strip())
     # convert to Path object for Validator to function properly
     norm_ds_path = Path(joined_path)
 
     print(norm_ds_path)
 
+    path = Path(userpath +  "\\Documents\\Pennsieve-dataset-114-version-2\\files")
+
+    blob = validate(path)
+
+    errors = blob.get('errors')
+
+    return json.dumps(errors, cls=DequeEncoder)
+
+    # return json.dumps(validate(path), cls=DequeEncoder)
+
+    
+
     # validate the dataset
     validation_result = None 
     try:
         # validate and get dictionary back
-        validation_result = val_dataset_local_pipeline(norm_ds_path)
+        validation_result = val_dataset_local_pipeline(path)
     except:
         return "Critical validation error!", 400
     

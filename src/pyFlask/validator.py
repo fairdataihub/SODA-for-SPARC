@@ -32,7 +32,7 @@ def val_dataset_local_pipeline(ds_path):
     try:
         validation_object = validate(ds_path)
     except Exception as e:
-        print(e)
+        print("Error is: ", e)
         pass
     # return the results 
     return validation_object
