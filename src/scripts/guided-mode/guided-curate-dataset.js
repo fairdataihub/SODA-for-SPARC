@@ -88,6 +88,7 @@ const getProgressFileData = async (progressFiles) => {
 const renderProgressCards = (progressFileJSONdata) => {
   let cardContainer = document.getElementById("resume-curation-container");
   const progressCards = progressFileJSONdata.map((progressFile) => {
+    console.log(progressFile);
     let progressFileImage =
       progressFile["digital-metadata"]["banner-image-path"] || "";
 
@@ -111,6 +112,8 @@ const renderProgressCards = (progressFileJSONdata) => {
     const progressFileName = progressFile["digital-metadata"]["name"] || "";
     const progressFileSubtitle =
       progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
+    let progressFileOwnerName =
+      progressFile["digital-metadata"]["pi-owner-name"];
     const progressFileLastModified = progressFile["last-modified"];
 
     return `
@@ -126,11 +129,11 @@ const renderProgressCards = (progressFileJSONdata) => {
                 </div>
                 <div class="guided--dataset-card-body">
                   <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">Jon R</h1>
+                    <h1 class="guided--text-dataset-card">${progressFileOwnerName}</h1>
                     <h2 class="guided--text-dataset-card-sub">Owner</h2>
                   </div>
                   <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">259 GB</h1>
+                    <h1 class="guided--text-dataset-card">0 GB</h1>
                     <h2 class="guided--text-dataset-card-sub">Size</h2>
                   </div>
                   <div class="guided--dataset-card-item">
@@ -230,6 +233,8 @@ const setGuidedBannerImage = (croppedImagePath) => {
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
   $(".guidedDatasetOwner").text(newPiOwnerObj.PiOwnerString);
   sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwnerObj.UUID;
+  sodaJSONObj["digital-metadata"]["pi-owner-name"] =
+    newPiOwnerObj.name || "foo bar";
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
@@ -2312,6 +2317,7 @@ $(document).ready(() => {
         PiOwnerString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
         UUID: user["id"],
         permission: "owner",
+        name: `${user["firstName"]} ${user["lastName"]}`,
       };
       setGuidedDatasetPiOwner(newPiOwner);
 
