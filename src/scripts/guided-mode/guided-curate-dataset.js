@@ -484,12 +484,17 @@ $(document).ready(() => {
   /////////  PENNSIEVE METADATA BUTTON HANDLERS   /////////
   /////////////////////////////////////////////////////////
   $("#guided-button-add-permission-pi").on("click", function () {
+    let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
+      .text()
+      .trim();
+    let PIUUID = $("#guided_bf_list_users_pi").val().trim();
+    // gets the text before the email address from the selected dropdown
+    let PiName = PiOwnerString.split("(")[0];
     const newPiOwner = {
-      PiOwnerString: $("#guided_bf_list_users_pi option:selected")
-        .text()
-        .trim(),
-      UUID: $("#guided_bf_list_users_pi").val().trim(),
+      PiOwnerString: PiOwnerString,
+      UUID: PIUUID,
       permission: "owner",
+      name: PiName,
     };
     setGuidedDatasetPiOwner(newPiOwner);
   });
