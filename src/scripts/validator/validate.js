@@ -24,7 +24,6 @@ waitForAxios();
 document
   .querySelector("#validate_dataset-1-local")
   .addEventListener("click", () => {
-    console.log("Event emitted");
     // check the input
     document.querySelector("#validate-1-Local").checked = true;
 
@@ -310,32 +309,9 @@ const transitionToValidateQuestionThree = () => {
 };
 
 const transitionToValidateQuestionTwo = async () => {
-  // check if there is already validation progress
-  let validationErrorsTable = document.querySelector(
-    "#validation-errors-container tbody"
-  );
-  if (validationErrorsTable.childElementCount > 0) {
-    // ask the user to confirm they want to reset their validation progress
-    let resetValidationResult = await Swal.fire({
-      icon: "warning",
-      text: "This will reset your current validation results. Do you wish to continue?",
-      heightAuto: false,
-      showCancelButton: true,
-      cancelButtonText: "No",
-      focusCancel: true,
-      confirmButtonText: "Yes",
-      backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
+  let userWantsToReset = await userWantsToResetValidation()
 
-    if (!resetValidationResult) return;
-  }
+  if(userWantsToReset === false) return userWantsToReset 
 
   // hide both local and pennsieve sections
   let pennsieveSection = document.querySelector(
@@ -395,3 +371,42 @@ questionTwoDatasetSelectionObserver.observe(
   document.querySelector("#bf_dataset_load_validator"),
   { childList: true }
 );
+
+// verifies if the user wants to reset any current validation table results to run the validator on a different validation track 
+// (local vs pennsieve) or to choose another dataset to validate 
+const userWantsToResetValidation = async () => {
+  // get validation table body 
+  let validationErrorsTable = document.querySelector(
+    "#validation-errors-container tbody"
+  );
+
+  // check if there are any validation results
+  if (validationErrorsTable.childElementCount > 0) {
+    // ask the user to confirm they want to reset their validation progress
+    let resetValidationResult = await Swal.fire({
+      icon: "warning",
+      text: "This will reset your current validation results. Do you wish to continue?",
+      heightAuto: false,
+      showCancelButton: true,
+      cancelButtonText: "No",
+      focusCancel: true,
+      confirmButtonText: "Yes",
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // user does not want to reset 
+    if (!resetValidationResult.isConfirmed) {
+      return false
+    }
+  }
+
+  // user wants to reset 
+  return true
+}
