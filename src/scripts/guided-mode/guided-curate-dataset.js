@@ -53,6 +53,127 @@ const saveGuidedProgress = (guidedProgressFileName) => {
   }
   fs.writeFileSync(guidedFilePath, JSON.stringify(sodaJSONObj, null, 2));
 };
+const readDirAsync = async (path) => {
+  return new Promise((resolve, reject) => {
+    fs.readdir(path, (error, result) => {
+      if (error) {
+        throw new Error(error);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
+const readFileAsync = async (path) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, "utf-8", (error, result) => {
+      if (error) {
+        throw new Error(error);
+      } else {
+        resolve(JSON.parse(result));
+      }
+    });
+  });
+};
+
+const getProgressFileData = async (progressFiles) => {
+  return Promise.all(
+    progressFiles.map((progressFile) => {
+      let progressFilePath = path.join(guidedProgressFilePath, progressFile);
+      return readFileAsync(progressFilePath);
+    })
+  );
+};
+
+const renderProgressCards = (progressFileJSONdata) => {
+  let cardContainer = document.getElementById("resume-curation-container");
+  const progressCards = progressFileJSONdata.map((progressFile) => {
+    console.log(progressFile);
+    let progressFileImage =
+      progressFile["digital-metadata"]["banner-image-path"];
+    if (progressFileImage === "") {
+      progressFileImage = `
+          <img
+            src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+            alt="Dataset banner image placeholder"
+            style="height: 60px; width: 60px"
+          />
+        `;
+    } else {
+      progressFileImage = `
+          <img
+            src='${progressFileImage}'
+            alt="Dataset banner image"
+            style="height: 60px; width: 60px"
+          />
+        `;
+    }
+    let progressFileName = progressFile["digital-metadata"]["name"] || "";
+    let progressFileSubtitle =
+      progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
+
+    console.log(progressFileImage);
+    return `
+         <div class="guided--dataset-card">
+                <div class="guided--container-dataset-card-center">  
+                ${progressFileImage}     
+                  <div class="guided--dataset-card-title">
+                    <h1 class="guided--text-dataset-card">${progressFileName}</h1>
+                    <h2 class="guided--text-dataset-card-sub">
+                      ${progressFileSubtitle}
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--dataset-card-body">
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">Jon R</h1>
+                    <h2 class="guided--text-dataset-card-sub">Owner</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">259 GB</h1>
+                    <h2 class="guided--text-dataset-card-sub">Size</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">
+                      ${progressFile["last-modified"]}
+                    </h1>
+                    <h2 class="guided--text-dataset-card-sub">Last modified</h2>
+                  </div>
+                  <div class="guided--dataset-card-item">
+                    <h1 class="guided--text-dataset-card">In progress</h1>
+                    <h2 class="guided--text-dataset-card-sub"> 
+                      Curation status
+                    </h2>
+                  </div>
+                </div>
+                <div class="guided--container-dataset-card-center">
+                  <button
+                    class="ui positive button guided--button-footer"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      width: 160px !important;
+                      margin: 10px;
+                    "
+                  >
+                    Continue curation
+                  </button>
+                </div>
+              </div>`;
+  });
+  cardContainer.innerHTML = progressCards.join("\n");
+};
+const guidedLoadSavedProgressFiles = async () => {
+  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+  if (guidedSavedProgressFiles.length > 0) {
+    const progressFileData = await getProgressFileData(
+      guidedSavedProgressFiles
+    );
+    renderProgressCards(progressFileData);
+  } else {
+    alert("no local progress found");
+  }
+};
+
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
     "value",
@@ -2313,105 +2434,8 @@ $(document).ready(() => {
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
 
-  const readDirAsync = async (path) => {
-    return new Promise((resolve, reject) => {
-      fs.readdir(path, (error, result) => {
-        if (error) {
-          throw new Error(error);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  };
-  const readFileAsync = async (path) => {
-    return new Promise((resolve, reject) => {
-      fs.readFile(path, "utf-8", (error, result) => {
-        if (error) {
-          throw new Error(error);
-        } else {
-          resolve(JSON.parse(result));
-        }
-      });
-    });
-  };
-
-  const getProgressFileData = async (progressFiles) => {
-    return Promise.all(
-      progressFiles.map((progressFile) => {
-        let progressFilePath = path.join(guidedProgressFilePath, progressFile);
-        return readFileAsync(progressFilePath);
-      })
-    );
-  };
-
-  const renderProgressCards = (progressFileJSONdata) => {
-    let cardContainer = document.getElementsByClassName(
-      "guided--datasets-container"
-    )[0];
-    const progressCards = progressFileJSONdata.map((progressFile) => {
-      return `
-         <div class="guided--dataset-card">
-                <div class="guided--container-dataset-card-center">
-                  <img
-                    src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-                    alt="tree"
-                    style="height: 60px; width: 60px"
-                  />
-                  <div class="guided--dataset-card-title">
-                    <h1 class="guided--text-dataset-card">Dataset A</h1>
-                    <h2 class="guided--text-dataset-card-sub">
-                      Dataset A subtitle
-                    </h2>
-                  </div>
-                </div>
-                <div class="guided--dataset-card-body">
-                  <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">Jon R</h1>
-                    <h2 class="guided--text-dataset-card-sub">Owner</h2>
-                  </div>
-                  <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">259 GB</h1>
-                    <h2 class="guided--text-dataset-card-sub">Size</h2>
-                  </div>
-                  <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">Jan. 27, 2021</h1>
-                    <h2 class="guided--text-dataset-card-sub">Last modified</h2>
-                  </div>
-                  <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">In progress</h1>
-                    <h2 class="guided--text-dataset-card-sub"> 
-                      Curation status
-                    </h2>
-                  </div>
-                </div>
-                <div class="guided--container-dataset-card-center">
-                  <button
-                    class="ui positive button guided--button-footer"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 160px !important;
-                      margin: 10px;
-                    "
-                  >
-                    Continue curation
-                  </button>
-                </div>
-              </div>`;
-    });
-    cardContainer.innerHTML = progressCards.join("\n");
-  };
-
   $("#testat").on("click", async () => {
-    const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-    if (guidedSavedProgressFiles.length > 0) {
-      const progressFileData = await getProgressFileData(
-        guidedSavedProgressFiles
-      );
-      renderProgressCards(progressFileData);
-    } else {
-      alert("no local progress found");
-    }
+    guidedLoadSavedProgressFiles();
   });
   //back button click handler
   $("#guided-back-button").on("click", () => {
