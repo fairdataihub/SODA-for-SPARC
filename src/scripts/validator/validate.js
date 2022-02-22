@@ -310,10 +310,12 @@ const transitionToValidateQuestionThree = () => {
 };
 
 const transitionToValidateQuestionTwo = async () => {
-  // check if there is already validation progress 
-  let validationErrorsTable = document.querySelector("#validation-errors-container tbody")
+  // check if there is already validation progress
+  let validationErrorsTable = document.querySelector(
+    "#validation-errors-container tbody"
+  );
   if (validationErrorsTable.childElementCount > 0) {
-    // ask the user to confirm they want to reset their validation progress 
+    // ask the user to confirm they want to reset their validation progress
     let resetValidationResult = await Swal.fire({
       icon: "warning",
       text: "This will reset your current validation results. Do you wish to continue?",
@@ -330,9 +332,9 @@ const transitionToValidateQuestionTwo = async () => {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    })
+    });
 
-    if(!resetValidationResult) return 
+    if (!resetValidationResult) return;
   }
 
   // hide both local and pennsieve sections
