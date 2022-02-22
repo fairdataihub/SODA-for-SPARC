@@ -154,7 +154,7 @@ const validateLocalDataset = async () => {
 
   Swal.fire({
     title: `Your dataset has been successfully validated`,
-    text: validationErrors.length
+    text: validationResponse.data.length
       ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
       : `Your dataset is valid according to SPARC guidelines.`,
     allowEscapeKey: true,
