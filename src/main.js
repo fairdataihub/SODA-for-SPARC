@@ -72,7 +72,7 @@ const getScriptPath = (serverConfiguration) => {
 const createPyProc = (serverConfiguration) => {
   let script = getScriptPath(serverConfiguration);
 
-  console.log("Executing this proc: ", script)
+  console.log("Executing this proc: ", script);
 
   const { distributionFolder, port } = serverConfiguration;
 
