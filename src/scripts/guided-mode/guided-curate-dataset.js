@@ -2532,50 +2532,39 @@ $(document).ready(() => {
     console.log(progressionTabId);
     return $(`#${progressionTabId}`);
   };
-  const getParentTabsCapsule = (parentTabElement) => {
-    console.log(parentTabElement);
-    parentTabCapsuleId = parentTabElement.attr("id").replace("tab", "capsule");
-    console.log(parentTabCapsuleId);
-    return $(`#${parentTabCapsuleId}`);
+
+  $("#traverse").on("click", () => {
+    traverseToTab("guided-create-subjects-metadata-tab");
+  });
+
+  const setActiveCapsule = (pageIdToActivate) => {
+    $(".guided--progression-tab").removeClass("selected-tab");
+    let targetProgressionTab = "";
   };
 
   const traverseToTab = (targetElementId) => {
+    let currentParentTab = current_sub_step.parent();
     let targetElement = $(`#${targetElementId}`);
+    let targetElementParentTab = targetElement.parent();
+    console.log(targetElement.attr("id"));
+    let targetElementCapsuleID = targetElementId.replace("tab", "capsule");
+    let targetElementCapsule = $(`#${targetElementCapsuleID}`);
+
+    //Set all capsules to grey and set capsule of page being traversed to green
+    $(".guided--capsule").css("background-color", "#ddd");
+    targetElementCapsule.css("background-color", "var(--color-light-green)");
+
     //Check to see if target element has the same parent as current sub step
-    if (
-      current_sub_step.parent().attr("id") === targetElement.parent().attr("id")
-    ) {
+    if (currentParentTab.attr("id") === targetElementParentTab.attr("id")) {
       current_sub_step.hide();
-      current_sub_step_capsule.css("background-color", "#ddd");
       current_sub_step = targetElement;
-      current_sub_step_capsule = getParentTabsCapsule(current_sub_step);
       current_sub_step.show();
-      current_sub_step_capsule.css(
-        "background-color",
-        "var(--color-light-green)"
-      );
     } else {
-      current_progression_tab.removeClass("selected-tab");
       current_sub_step.hide();
-      current_sub_step.parent().hide();
-      current_sub_step_capsule.css("background-color", "#ddd");
-      getParentTabsProgressionTab(current_sub_step.parent()).removeClass(
-        "selected-tab"
-      );
+      currentParentTab.hide();
+      targetElementParentTab.show();
       current_sub_step = targetElement;
-      current_progression_tab = getParentTabsProgressionTab(
-        current_sub_step.parent()
-      );
-      current_progression_tab.addClass("selected-tab");
-      current_sub_step_capsule = getParentTabsCapsule(current_sub_step);
-      current_sub_step.siblings().addClass("hidden");
-      current_sub_step.removeClass("hidden");
       current_sub_step.css("display", "flex");
-      current_sub_step_capsule.css(
-        "background-color",
-        "var(--color-light-green"
-      );
-      current_sub_step_capsule.siblings().css("background-color", "#ddd");
     }
   };
   //tagify initializations
