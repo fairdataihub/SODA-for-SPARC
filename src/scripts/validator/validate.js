@@ -298,7 +298,11 @@ const validationErrorsOccurred = (validationResult) =>
 */
 
 // as part of the transition from
-const transitionToValidateQuestionThree = () => {
+const transitionToValidateQuestionThree = async () => {
+  let userWantsToReset = await userWantsToResetValidation();
+
+  if (userWantsToReset === false) return userWantsToReset;
+
   // hide the confirm button
   let confirmDatasetBtn = document.querySelector(
     "#validator-confirm-local-dataset-btn"
@@ -306,6 +310,8 @@ const transitionToValidateQuestionThree = () => {
 
   // set the field display property to none to remove the margins
   confirmDatasetBtn.parentElement.style.display = "none";
+
+  return true;
 };
 
 const transitionToValidateQuestionTwo = async () => {
@@ -354,6 +360,8 @@ const transitionToValidateQuestionTwo = async () => {
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
   }
+
+  return true;
 };
 
 // observer the selected dataset label in the dataset selection card in question 2

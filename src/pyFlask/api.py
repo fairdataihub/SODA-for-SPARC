@@ -54,6 +54,11 @@ def api_validate_dataset_pipeline():
     # convert to Path object for Validator to function properly
     norm_ds_path = Path(joined_path)
 
+    for i in range(0, 1000000): 
+        pass
+
+    return jsonify([{"message": "sahahshas", "validator": "required"}])
+
     print(norm_ds_path)
 
     path = Path(userpath +  "\\Documents\\Pennsieve-dataset-114-version-2\\files")

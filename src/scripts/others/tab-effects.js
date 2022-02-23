@@ -1865,10 +1865,11 @@ async function transitionFreeFormMode(
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
       break;
     case "validate_dataset-question-2":
-      transitionToValidateQuestionThree();
+      continueProgressValidateDataset =
+        await transitionToValidateQuestionThree();
       break;
     case "validate_dataset-question-1":
-      transitionToValidateQuestionTwo();
+      continueProgressValidateDataset = await transitionToValidateQuestionTwo();
       break;
   }
 
@@ -1897,6 +1898,7 @@ async function transitionFreeFormMode(
   }
 
   if (!continueProgressValidateDataset) {
+    console.log("Not going to continue with this");
     return;
   }
   // add "non-selected" to current option-card so users cannot keep selecting it
