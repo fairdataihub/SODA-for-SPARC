@@ -470,6 +470,10 @@ const resetOptionCards = (optionCard) => {
   document.querySelector("#validate_dataset-1-local").classList.add("checked");
 
   // uncheck the selected option card
-  document.querySelector("#validate_dataset-1-pennsieve .folder-checkbox input").checked = false  // this is the 
-  document.querySelector("#validate_dataset-1-pennsieve").classList.add("non-selected")
-}
+  document.querySelector(
+    "#validate_dataset-1-pennsieve .folder-checkbox input"
+  ).checked = false; // this is the
+  document
+    .querySelector("#validate_dataset-1-pennsieve")
+    .classList.add("non-selected");
+};
