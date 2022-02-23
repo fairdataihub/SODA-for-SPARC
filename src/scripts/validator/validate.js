@@ -470,12 +470,6 @@ const resetOptionCards = (optionCard) => {
   document.querySelector("#validate_dataset-1-local").classList.add("checked")
 
   // uncheck the selected option card
-  let elem = document.querySelector("#validate-1-Pennsieve").checked = false 
-  console.log("THe element is checked still: ", elem)
-
-  elem.classList.remove("checked")
-
-  console.log("CHecked state should be gone now: ", elem)
+  document.querySelector("#validate_dataset-1-pennsieve .folder-checkbox input").checked = false  // this is the 
   document.querySelector("#validate_dataset-1-pennsieve").classList.add("non-selected")
- 
 }
