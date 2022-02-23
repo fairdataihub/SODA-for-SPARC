@@ -23,7 +23,7 @@ waitForAxios();
 // check the local dataset input
 document
   .querySelector("#validate_dataset-1-local")
-  .addEventListener("click", () => {
+  .addEventListener("click", (e) => {
     // check the input
     document.querySelector("#validate-1-Local").checked = true;
 
@@ -317,7 +317,10 @@ const transitionToValidateQuestionThree = async () => {
 const transitionToValidateQuestionTwo = async () => {
   let userWantsToReset = await userWantsToResetValidation();
 
-  if (userWantsToReset === false) return userWantsToReset;
+  if (!userWantsToReset) {
+    resetSelectedOptionCard()
+    return false;
+  }
 
   // hide both local and pennsieve sections
   let pennsieveSection = document.querySelector(
@@ -332,6 +335,11 @@ const transitionToValidateQuestionTwo = async () => {
 
   // allow time for the check box to get checked
   await wait(300);
+
+  // let check = $("#validate_dataset-1-local.option-card").prop("checked")
+
+  console.log(check)
+
 
   // check if the local validation option has been checked
   let localDatasetCard = document.querySelector("#validate-1-Local");
@@ -364,7 +372,7 @@ const transitionToValidateQuestionTwo = async () => {
   return true;
 };
 
-// observer the selected dataset label in the dataset selection card in question 2
+// observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   console.log("Mutation");
   if ($("#bf_dataset_load_validator").text().trim() !== "None") {
@@ -375,6 +383,7 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   }
 });
 
+// begin observing the dataset label inn question 2 
 questionTwoDatasetSelectionObserver.observe(
   document.querySelector("#bf_dataset_load_validator"),
   { childList: true }
@@ -418,3 +427,11 @@ const userWantsToResetValidation = async () => {
   // user wants to reset
   return true;
 };
+
+
+
+const resetSelectedOptionCard = (optionCard) => {
+  // recheck the deselected option card 
+
+  // uncheck the selected option card
+}
