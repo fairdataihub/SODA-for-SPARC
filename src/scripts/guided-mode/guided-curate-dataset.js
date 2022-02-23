@@ -76,13 +76,22 @@ const readFileAsync = async (path) => {
   });
 };
 
-const getProgressFileData = async (progressFiles) => {
+const getAllProgressFileData = async (progressFiles) => {
   return Promise.all(
     progressFiles.map((progressFile) => {
       let progressFilePath = path.join(guidedProgressFilePath, progressFile);
       return readFileAsync(progressFilePath);
     })
   );
+};
+
+const getProgressFileData = async (progressFile) => {
+  let progressFilePath = path.join(
+    guidedProgressFilePath,
+    progressFile + ".json"
+  );
+  console.log(progressFilePath);
+  return readFileAsync(progressFilePath);
 };
 
 const renderProgressCards = (progressFileJSONdata) => {
@@ -121,7 +130,7 @@ const renderProgressCards = (progressFileJSONdata) => {
                 <div class="guided--container-dataset-card-center">  
                 ${progressFileImage}     
                   <div class="guided--dataset-card-title">
-                    <h1 class="guided--text-dataset-card">${progressFileName}</h1>
+                    <h1 class="guided--text-dataset-card progress-file-name">${progressFileName}</h1>
                     <h2 class="guided--text-dataset-card-sub">
                       ${progressFileSubtitle}
                     </h2>
@@ -157,6 +166,7 @@ const renderProgressCards = (progressFileJSONdata) => {
                       width: 160px !important;
                       margin: 10px;
                     "
+                    onClick="guidedResumeProgress($(this))"
                   >
                     Continue curation
                   </button>
@@ -170,17 +180,28 @@ const guidedLoadSavedProgressFiles = async () => {
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath);
   }
-  //Read Get files in Guided-Progress folder, then render progress resumption cards
-  //on first page of guided mode
+  //Get files in Guided-Progress folder
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+  //render progress resumption cards from progress file array on first page of guided mode
   if (guidedSavedProgressFiles.length > 0) {
-    const progressFileData = await getProgressFileData(
+    const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
     );
+    console.log(progressFileData);
     renderProgressCards(progressFileData);
   } else {
     console.log("No guided save files found");
   }
+};
+const guidedResumeProgress = async (resumeProgressButton) => {
+  const datasetNameToResume = resumeProgressButton
+    .parent()
+    .siblings()
+    .find($(".progress-file-name"))
+    .html();
+  const foo = await getProgressFileData(datasetNameToResume);
+  console.log(foo);
+  const datasetResumeJsonObj = "asf";
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -487,12 +508,13 @@ $(document).ready(() => {
     let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
       .text()
       .trim();
-    let PIUUID = $("#guided_bf_list_users_pi").val().trim();
     // gets the text before the email address from the selected dropdown
     let PiName = PiOwnerString.split("(")[0];
+    let PiUUID = $("#guided_bf_list_users_pi").val().trim();
+
     const newPiOwner = {
       PiOwnerString: PiOwnerString,
-      UUID: PIUUID,
+      UUID: PiUUID,
       permission: "owner",
       name: PiName,
     };
