@@ -460,19 +460,20 @@ const userWantsToResetValidation = async () => {
   return true;
 };
 
-// Deselect the active option card and reselect the previously active option card 
-// Input: 
-//   targetOptionCard: HTMLElement 
+// Deselect the active option card and reselect the previously active option card
+// Input:
+//   targetOptionCard: HTMLElement
 const undoOptionCardSelection = (activeOptionCard) => {
-
   // reactivate the previously active option card
-  let previousOptionCard = document.querySelector("#validate_dataset-section .option-card.non-selected")
+  let previousOptionCard = document.querySelector(
+    "#validate_dataset-section .option-card.non-selected"
+  );
   previousOptionCard.classList.remove("non-selected");
-  previousOptionCard.classList.add("checked")
-  previousOptionCard.querySelector(".folder-checkbox input").checked = true 
+  previousOptionCard.classList.add("checked");
+  previousOptionCard.querySelector(".folder-checkbox input").checked = true;
 
   // uncheck the selected option card and set it to a non-selected state
   activeOptionCard.querySelector(".folder-checkbox input").checked = false;
-  activeOptionCard.classList.add("non-selected")
-  activeOptionCard.classList.remove("checked")
+  activeOptionCard.classList.add("non-selected");
+  activeOptionCard.classList.remove("checked");
 };
