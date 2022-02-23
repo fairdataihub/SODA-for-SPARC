@@ -4,6 +4,13 @@ const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
 
+
+/*
+*******************************************************************************************************************
+// Setup for Axios client that talks to the validator 
+*******************************************************************************************************************
+*/
+
 let axiosValidatorClient;
 
 const waitForAxios = () => {
@@ -20,101 +27,12 @@ const waitForAxios = () => {
 
 waitForAxios();
 
-// check the local dataset input
-document
-  .querySelector("#validate_dataset-1-local")
-  .addEventListener("click", (e) => {
-    // check the input
-    document.querySelector("#validate-1-Local").checked = true;
 
-    document.querySelector("#validate-1-Pennsieve").checked = false;
-  });
-
-// check the pennsieve dataset input
-document
-  .querySelector("#validate_dataset-1-pennsieve")
-  .addEventListener("click", () => {
-    // check the input
-    document.querySelector("#validate-1-Pennsieve").checked = true;
-
-    // uncheck the other card's input
-    document.querySelector("#validate-1-Local").checked = false;
-  });
-
-// open folder selection dialog so the user can choose which local dataset they would like to validate
-document
-  .querySelector("#validate-local-dataset-path")
-  .addEventListener("click", async (evt) => {
-    // check if the validator error results table is visible
-    let validatorErrors = document.querySelectorAll(
-      "#validate_dataset-question-4 tbody tr"
-    );
-
-    if (validatorErrors.length) {
-      let userReply = await Swal.fire({
-        title: `This will clear your dataset validation results. Are you sure you want to continue?`,
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-      });
-
-      // user doesn't want to clear their results and reset
-      if (!userReply) {
-        return;
-      }
-
-      // hide question 3
-      document.querySelector("#validate_dataset-question-3").style.visibility =
-        "hidden";
-
-      // show confirm button found under the input
-      let confirmDatasetBtn = document.querySelector(
-        "#validator-confirm-local-dataset-btn"
-      );
-
-      // set the field display property to none to remove the field margings
-      confirmDatasetBtn.parentElement.style.display = "block";
-    }
-
-    // open folder select dialog
-    ipcRenderer.send("open-folder-dialog-validate-local-dataset");
-
-    // listen for user's folder path
-    ipcRenderer.on(
-      "selected-validate-local-dataset",
-      (evtSender, folderPaths) => {
-        // check if a folder was not selected
-        if (!folderPaths.length) return;
-
-        // get the folder path
-        let folderPath = folderPaths[0];
-
-        // get the clicked input
-        let validationPathInput = evt.target;
-
-        // set the input's placeholder value to the local dataset path
-        validationPathInput.value = folderPath;
-      }
-    );
-  });
-
-// start dataset validation
-document
-  .querySelector("#run_validator_btn")
-  .addEventListener("click", async (evt) => {
-    // check if validating a local or pennsieve dataset
-    let localDatasetCard = document.querySelector("#validate-1-Local");
-    let validatingLocalDataset = localDatasetCard.checked;
-
-    if (validatingLocalDataset) {
-      await validateLocalDataset();
-    } else {
-      console.log("Here");
-      await validatePennsieveDataset();
-    }
-  });
+/*
+*******************************************************************************************************************
+// Logic for talking to the validator
+*******************************************************************************************************************
+*/
 
 const validateLocalDataset = async () => {
   // grab the local dataset path from the input's placeholder attribute
@@ -236,6 +154,14 @@ const validatePennsieveDataset = async () => {
     "visible";
 };
 
+
+
+/*
+*******************************************************************************************************************
+// Displaying validation errors 
+*******************************************************************************************************************
+*/
+
 const displayValidationErrors = (errors) => {
   console.log(errors);
   // get the table body
@@ -291,41 +217,20 @@ const addValidationErrorToTable = (
 const validationErrorsOccurred = (validationResult) =>
   validationResult.length ? true : false;
 
+
 /*
 *******************************************************************************************************************
 // Presentation logic regarding transitioning from one question to another and/or resetting state upon user action 
 *******************************************************************************************************************
 */
 
-// as part of the transition from
-const transitionToValidateQuestionThree = async () => {
-  let userWantsToReset = await userWantsToResetValidation();
-
-  if (userWantsToReset === false) return userWantsToReset;
-
-  // hide the confirm button
-  let confirmDatasetBtn = document.querySelector(
-    "#validator-confirm-local-dataset-btn"
-  );
-
-  // set the field display property to none to remove the margins
-  confirmDatasetBtn.parentElement.style.display = "none";
-
-  return true;
-};
-
+// Presentation logic for transitioning from question one to question two 
 const transitionToValidateQuestionTwo = async () => {
-  let userWantsToReset = await userWantsToResetValidation();
-
-  if (!userWantsToReset) {
-    resetSelectedOptionCard()
-    return false;
-  }
-
   // hide both local and pennsieve sections
   let pennsieveSection = document.querySelector(
     "#pennsieve-question-2-container"
   );
+
   pennsieveSection.style = "display: none !important;";
 
   let localSection = document.querySelector(
@@ -335,11 +240,6 @@ const transitionToValidateQuestionTwo = async () => {
 
   // allow time for the check box to get checked
   await wait(300);
-
-  // let check = $("#validate_dataset-1-local.option-card").prop("checked")
-
-  console.log(check)
-
 
   // check if the local validation option has been checked
   let localDatasetCard = document.querySelector("#validate-1-Local");
@@ -371,6 +271,142 @@ const transitionToValidateQuestionTwo = async () => {
 
   return true;
 };
+
+// Presentation logic for transitioning from question 2 to question 3 
+const transitionToValidateQuestionThree = async () => {
+  let userWantsToReset = await userWantsToResetValidation();
+
+  if (userWantsToReset === false) return userWantsToReset;
+
+  // hide the confirm button
+  let confirmDatasetBtn = document.querySelector(
+    "#validator-confirm-local-dataset-btn"
+  );
+
+  // set the field display property to none to remove the margins
+  confirmDatasetBtn.parentElement.style.display = "none";
+
+  return true;
+};
+
+// check the local dataset input
+document
+  .querySelector("#validate_dataset-1-local")
+  .addEventListener("click", async (e) => {
+    // if there is validation work done check if the user wants to reset progress
+    let userWantsToReset = await userWantsToResetValidation();
+    if (!userWantsToReset) {
+      // deselect local option card and reselect pennsieve option card
+      resetOptionCards(this)
+      // user does not want to reset 
+      return
+    }
+
+    // transition to the next question - uses transitionToValidateQuestionTwo
+    transitionFreeFormMode(
+      document.querySelector("#validate_dataset-1-local"),
+      'validate_dataset-question-1', 'validate_dataset-tab', '', 'individual-question '
+    );
+
+    // check the input
+    document.querySelector("#validate-1-Local").checked = true;
+
+    document.querySelector("#validate-1-Pennsieve").checked = false;
+  });
+
+// check the pennsieve dataset input
+document
+  .querySelector("#validate_dataset-1-pennsieve")
+  .addEventListener("click", async (e) => {
+    // if there is validation work done check if the user wants to reset progress
+    let userWantsToReset = await userWantsToResetValidation();
+    if (!userWantsToReset) {
+      resetOptionCards(this)
+      // user does not want to reset 
+      return
+    }
+
+    // check the input
+    document.querySelector("#validate-1-Pennsieve").checked = true;
+
+    // uncheck the other card's input
+    document.querySelector("#validate-1-Local").checked = false;
+  });
+
+// open folder selection dialog so the user can choose which local dataset they would like to validate
+document
+  .querySelector("#validate-local-dataset-path")
+  .addEventListener("click", async (evt) => {
+    // check if the validator error results table is visible
+    let validatorErrors = document.querySelectorAll(
+      "#validate_dataset-question-4 tbody tr"
+    );
+
+    if (validatorErrors.length) {
+      let userReply = await Swal.fire({
+        title: `This will clear your dataset validation results. Are you sure you want to continue?`,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+      });
+
+      // user doesn't want to clear their results and reset
+      if (!userReply) {
+        return;
+      }
+
+      // hide question 3
+      document.querySelector("#validate_dataset-question-3").style.visibility =
+        "hidden";
+
+      // show confirm button found under the input
+      let confirmDatasetBtn = document.querySelector(
+        "#validator-confirm-local-dataset-btn"
+      );
+
+      // set the field display property to none to remove the field margings
+      confirmDatasetBtn.parentElement.style.display = "block";
+    }
+
+    // open folder select dialog
+    ipcRenderer.send("open-folder-dialog-validate-local-dataset");
+
+    // listen for user's folder path
+    ipcRenderer.on(
+      "selected-validate-local-dataset",
+      (evtSender, folderPaths) => {
+        // check if a folder was not selected
+        if (!folderPaths.length) return;
+
+        // get the folder path
+        let folderPath = folderPaths[0];
+
+        // get the clicked input
+        let validationPathInput = evt.target;
+
+        // set the input's placeholder value to the local dataset path
+        validationPathInput.value = folderPath;
+      }
+    );
+  });
+
+// start dataset validation
+document
+  .querySelector("#run_validator_btn")
+  .addEventListener("click", async (evt) => {
+    // check if validating a local or pennsieve dataset
+    let localDatasetCard = document.querySelector("#validate-1-Local");
+    let validatingLocalDataset = localDatasetCard.checked;
+
+    if (validatingLocalDataset) {
+      await validateLocalDataset();
+    } else {
+      console.log("Here");
+      await validatePennsieveDataset();
+    }
+  });
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
@@ -428,10 +464,18 @@ const userWantsToResetValidation = async () => {
   return true;
 };
 
-
-
-const resetSelectedOptionCard = (optionCard) => {
+const resetOptionCards = (optionCard) => {
   // recheck the deselected option card 
+  document.querySelector("#validate_dataset-1-local").classList.remove("non-selected")
+  document.querySelector("#validate_dataset-1-local").classList.add("checked")
 
   // uncheck the selected option card
+  let elem = document.querySelector("#validate-1-Pennsieve").checked = false 
+  console.log("THe element is checked still: ", elem)
+
+  elem.classList.remove("checked")
+
+  console.log("CHecked state should be gone now: ", elem)
+  document.querySelector("#validate_dataset-1-pennsieve").classList.add("non-selected")
+ 
 }
