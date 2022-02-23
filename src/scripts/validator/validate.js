@@ -292,7 +292,7 @@ document
     let userWantsToReset = await userWantsToResetValidation();
     if (!userWantsToReset) {
       // deselect local option card and reselect pennsieve option card
-      resetOptionCards(this);
+      undoOptionCardSelection(this);
       // user does not want to reset
       return;
     }
@@ -315,11 +315,11 @@ document
 // check the pennsieve dataset input
 document
   .querySelector("#validate_dataset-1-pennsieve")
-  .addEventListener("click", async (e) => {
+  .addEventListener("click", async function () {
     // if there is validation work done check if the user wants to reset progress
     let userWantsToReset = await userWantsToResetValidation();
     if (!userWantsToReset) {
-      resetOptionCards(this);
+      undoOptionCardSelection(this);
       // user does not want to reset
       return;
     }
@@ -401,14 +401,12 @@ document
     if (validatingLocalDataset) {
       await validateLocalDataset();
     } else {
-      console.log("Here");
       await validatePennsieveDataset();
     }
   });
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
-  console.log("Mutation");
   if ($("#bf_dataset_load_validator").text().trim() !== "None") {
     $("#div-check-bf-import-validator").css("display", "flex");
     $($("#div-check-bf-import-validator").children()[0]).show();
@@ -462,18 +460,19 @@ const userWantsToResetValidation = async () => {
   return true;
 };
 
-const resetOptionCards = (optionCard) => {
-  // recheck the deselected option card
-  document
-    .querySelector("#validate_dataset-1-local")
-    .classList.remove("non-selected");
-  document.querySelector("#validate_dataset-1-local").classList.add("checked");
+// Deselect the active option card and reselect the previously active option card 
+// Input: 
+//   targetOptionCard: HTMLElement 
+const undoOptionCardSelection = (activeOptionCard) => {
 
-  // uncheck the selected option card
-  document.querySelector(
-    "#validate_dataset-1-pennsieve .folder-checkbox input"
-  ).checked = false; // this is the
-  document
-    .querySelector("#validate_dataset-1-pennsieve")
-    .classList.add("non-selected");
+  // reactivate the previously active option card
+  let previousOptionCard = document.querySelector("#validate_dataset-section .option-card.non-selected")
+  previousOptionCard.classList.remove("non-selected");
+  previousOptionCard.classList.add("checked")
+  previousOptionCard.querySelector(".folder-checkbox input").checked = true 
+
+  // uncheck the selected option card and set it to a non-selected state
+  activeOptionCard.querySelector(".folder-checkbox input").checked = false;
+  activeOptionCard.classList.add("non-selected")
+  activeOptionCard.classList.remove("checked")
 };

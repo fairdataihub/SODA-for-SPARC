@@ -7926,8 +7926,6 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-get_access_token().then((res) => console.log(res));
-
 /*
 ******************************************************
 ******************************************************
