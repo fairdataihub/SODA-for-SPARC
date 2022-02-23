@@ -309,9 +309,9 @@ const transitionToValidateQuestionThree = () => {
 };
 
 const transitionToValidateQuestionTwo = async () => {
-  let userWantsToReset = await userWantsToResetValidation()
+  let userWantsToReset = await userWantsToResetValidation();
 
-  if(userWantsToReset === false) return userWantsToReset 
+  if (userWantsToReset === false) return userWantsToReset;
 
   // hide both local and pennsieve sections
   let pennsieveSection = document.querySelector(
@@ -372,10 +372,10 @@ questionTwoDatasetSelectionObserver.observe(
   { childList: true }
 );
 
-// verifies if the user wants to reset any current validation table results to run the validator on a different validation track 
-// (local vs pennsieve) or to choose another dataset to validate 
+// verifies if the user wants to reset any current validation table results to run the validator on a different validation track
+// (local vs pennsieve) or to choose another dataset to validate
 const userWantsToResetValidation = async () => {
-  // get validation table body 
+  // get validation table body
   let validationErrorsTable = document.querySelector(
     "#validation-errors-container tbody"
   );
@@ -401,12 +401,12 @@ const userWantsToResetValidation = async () => {
       },
     });
 
-    // user does not want to reset 
+    // user does not want to reset
     if (!resetValidationResult.isConfirmed) {
-      return false
+      return false;
     }
   }
 
-  // user wants to reset 
-  return true
-}
+  // user wants to reset
+  return true;
+};

@@ -1792,7 +1792,7 @@ async function transitionFreeFormMode(
 
   let continueProgressGenerateManifest = true;
 
-  let continueProgressValidateDataset = true 
+  let continueProgressValidateDataset = true;
 
   const dataCurrent = $(ev).attr("data-current");
 
@@ -1896,8 +1896,8 @@ async function transitionFreeFormMode(
     return;
   }
 
-  if(!continueProgressValidateDataset) {
-    return 
+  if (!continueProgressValidateDataset) {
+    return;
   }
   // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
