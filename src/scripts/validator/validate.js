@@ -4,7 +4,6 @@ const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
 
-
 /*
 *******************************************************************************************************************
 // Setup for Axios client that talks to the validator 
@@ -26,7 +25,6 @@ const waitForAxios = () => {
 };
 
 waitForAxios();
-
 
 /*
 *******************************************************************************************************************
@@ -154,8 +152,6 @@ const validatePennsieveDataset = async () => {
     "visible";
 };
 
-
-
 /*
 *******************************************************************************************************************
 // Displaying validation errors 
@@ -217,14 +213,13 @@ const addValidationErrorToTable = (
 const validationErrorsOccurred = (validationResult) =>
   validationResult.length ? true : false;
 
-
 /*
 *******************************************************************************************************************
 // Presentation logic regarding transitioning from one question to another and/or resetting state upon user action 
 *******************************************************************************************************************
 */
 
-// Presentation logic for transitioning from question one to question two 
+// Presentation logic for transitioning from question one to question two
 const transitionToValidateQuestionTwo = async () => {
   // hide both local and pennsieve sections
   let pennsieveSection = document.querySelector(
@@ -272,7 +267,7 @@ const transitionToValidateQuestionTwo = async () => {
   return true;
 };
 
-// Presentation logic for transitioning from question 2 to question 3 
+// Presentation logic for transitioning from question 2 to question 3
 const transitionToValidateQuestionThree = async () => {
   let userWantsToReset = await userWantsToResetValidation();
 
@@ -297,15 +292,18 @@ document
     let userWantsToReset = await userWantsToResetValidation();
     if (!userWantsToReset) {
       // deselect local option card and reselect pennsieve option card
-      resetOptionCards(this)
-      // user does not want to reset 
-      return
+      resetOptionCards(this);
+      // user does not want to reset
+      return;
     }
 
     // transition to the next question - uses transitionToValidateQuestionTwo
     transitionFreeFormMode(
       document.querySelector("#validate_dataset-1-local"),
-      'validate_dataset-question-1', 'validate_dataset-tab', '', 'individual-question '
+      "validate_dataset-question-1",
+      "validate_dataset-tab",
+      "",
+      "individual-question "
     );
 
     // check the input
@@ -321,9 +319,9 @@ document
     // if there is validation work done check if the user wants to reset progress
     let userWantsToReset = await userWantsToResetValidation();
     if (!userWantsToReset) {
-      resetOptionCards(this)
-      // user does not want to reset 
-      return
+      resetOptionCards(this);
+      // user does not want to reset
+      return;
     }
 
     // check the input
@@ -419,7 +417,7 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   }
 });
 
-// begin observing the dataset label inn question 2 
+// begin observing the dataset label inn question 2
 questionTwoDatasetSelectionObserver.observe(
   document.querySelector("#bf_dataset_load_validator"),
   { childList: true }
@@ -465,9 +463,11 @@ const userWantsToResetValidation = async () => {
 };
 
 const resetOptionCards = (optionCard) => {
-  // recheck the deselected option card 
-  document.querySelector("#validate_dataset-1-local").classList.remove("non-selected")
-  document.querySelector("#validate_dataset-1-local").classList.add("checked")
+  // recheck the deselected option card
+  document
+    .querySelector("#validate_dataset-1-local")
+    .classList.remove("non-selected");
+  document.querySelector("#validate_dataset-1-local").classList.add("checked");
 
   // uncheck the selected option card
   document.querySelector("#validate_dataset-1-pennsieve .folder-checkbox input").checked = false  // this is the 
