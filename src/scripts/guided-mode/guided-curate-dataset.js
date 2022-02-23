@@ -193,14 +193,61 @@ const guidedLoadSavedProgressFiles = async () => {
     console.log("No guided save files found");
   }
 };
+const traverseToTab = (targetElementId) => {
+  let currentParentTab = current_sub_step.parent();
+  let targetElement = $(`#${targetElementId}`);
+  let targetElementParentTab = targetElement.parent();
+  console.log(targetElement.attr("id"));
+  let targetElementCapsuleID = targetElementId.replace("tab", "capsule");
+  let targetElementCapsule = $(`#${targetElementCapsuleID}`);
+
+  //Set all capsules to grey and set capsule of page being traversed to green
+  $(".guided--capsule").removeClass("active");
+  targetElementCapsule.addClass("active");
+
+  //Check to see if target element has the same parent as current sub step
+  if (currentParentTab.attr("id") === targetElementParentTab.attr("id")) {
+    current_sub_step.hide();
+    current_sub_step = targetElement;
+    current_sub_step.show();
+  } else {
+    current_sub_step.hide();
+    currentParentTab.hide();
+    targetElementParentTab.show();
+    current_sub_step = targetElement;
+    current_sub_step.css("display", "flex");
+    console.log(current_sub_step);
+  }
+};
 //populates user inputs from the completed-tabs array, and returns the last page
 //that the user completed
-const populatePagesFromPreviousCompletedTabs = (jsonObjToResume) => {
+const populateGuidedModePages = (jsonObjToResume) => {
   let completedTabs = jsonObjToResume["completed-tabs"];
   let lastCompletedTab = "none";
+
   if (completedTabs.includes("guided-basic-description-tab")) {
-    $("#guided-dataset-name-input").val();
+    let datasetName = jsonObjToResume["digital-metadata"]["name"];
+    let datasetSubtitle = jsonObjToResume["digital-metadata"]["subtitle"];
+    $("#guided-dataset-name-input").val(datasetName);
+    $("#guided-dataset-subtitle-input").val(datasetSubtitle);
+    lastCompletedTab = "guided-basic-description-tab";
   }
+  if (completedTabs.includes("guided-banner-image-addition-tab")) {
+    // CURRENTLY NO UI UPDATES ON THIS TAB
+    console.log("contains banner image");
+    lastCompletedTab = "guided-banner-image-addition-tab";
+  }
+  if (completedTabs.includes("guided-folder-importation-tab")) {
+    let datasetName = jsonObjToResume["digital-metadata"]["name"];
+    let datasetSubtitle = jsonObjToResume["digital-metadata"]["subtitle"];
+    $("#guided-dataset-name-input").val(datasetName);
+    $("#guided-dataset-subtitle-input").val(datasetSubtitle);
+    lastCompletedTab = "guided-folder-importation-tab";
+  }
+
+  $("#guided_create_new_bf_dataset_btn").click();
+  traverseToTab(lastCompletedTab);
+  $("#guided-next-button").click();
 };
 const guidedResumeProgress = async (resumeProgressButton) => {
   const datasetNameToResume = resumeProgressButton
@@ -209,8 +256,8 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     .find($(".progress-file-name"))
     .html();
   const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
-  populatePagesFromPreviousCompletedTabs(datasetResumeJsonObj);
-  console.log(datasetResumeJsonObj);
+  sodaJSONObj = datasetResumeJsonObj;
+  populateGuidedModePages(sodaJSONObj);
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
