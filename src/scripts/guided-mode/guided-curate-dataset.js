@@ -193,15 +193,24 @@ const guidedLoadSavedProgressFiles = async () => {
     console.log("No guided save files found");
   }
 };
+//populates user inputs from the completed-tabs array, and returns the last page
+//that the user completed
+const populatePagesFromPreviousCompletedTabs = (jsonObjToResume) => {
+  let completedTabs = jsonObjToResume["completed-tabs"];
+  let lastCompletedTab = "none";
+  if (completedTabs.includes("guided-basic-description-tab")) {
+    $("#guided-dataset-name-input").val();
+  }
+};
 const guidedResumeProgress = async (resumeProgressButton) => {
   const datasetNameToResume = resumeProgressButton
     .parent()
     .siblings()
     .find($(".progress-file-name"))
     .html();
-  const foo = await getProgressFileData(datasetNameToResume);
-  console.log(foo);
-  const datasetResumeJsonObj = "asf";
+  const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+  populatePagesFromPreviousCompletedTabs(datasetResumeJsonObj);
+  console.log(datasetResumeJsonObj);
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -2532,10 +2541,6 @@ $(document).ready(() => {
     console.log(progressionTabId);
     return $(`#${progressionTabId}`);
   };
-
-  $("#traverse").on("click", () => {
-    traverseToTab("guided-create-subjects-metadata-tab");
-  });
 
   const setActiveCapsule = (pageIdToActivate) => {
     $(".guided--progression-tab").removeClass("selected-tab");
