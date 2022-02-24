@@ -180,8 +180,20 @@ const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("tab", "capsule");
   let targetCapsule = $(`#${targetCapsuleID}`);
-  console.log(targetCapsule.attr("id"));
   targetCapsule.addClass("active");
+};
+
+setActiveProgressionTab = (targetPageID) => {
+  $(".guided--progression-tab").removeClass("selected-tab");
+  let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
+  console.log(targetPageParentID);
+  let targetProgressionTabID = targetPageParentID.replace(
+    "parent-tab",
+    "progression-tab"
+  );
+  console.log(targetProgressionTabID);
+  let targetProgressionTab = $(`#${targetProgressionTabID}`);
+  targetProgressionTab.addClass("selected-tab");
 };
 
 const guidedLoadSavedProgressFiles = async () => {
@@ -209,6 +221,7 @@ const traverseToTab = (targetPageID) => {
 
   //Set all capsules to grey and set capsule of page being traversed to green
   setActiveCapsule(targetPageID);
+  setActiveProgressionTab(targetPageID);
 
   //Check to see if target element has the same parent as current sub step
   if (currentParentTab.attr("id") === targetPageParentTab.attr("id")) {
@@ -2504,11 +2517,11 @@ $(document).ready(() => {
     if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
       guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"]);
     }
-
+    //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to next tab and update capsule
-    const targetPage = current_sub_step.next();
+    let targetPage = current_sub_step.next();
     if (targetPage.attr("id") !== undefined) {
-      const targetPageID = targetPage.attr("id");
+      let targetPageID = targetPage.attr("id");
       traverseToTab(targetPageID);
     } else {
       traverseToTab("guided-designate-pi-owner-tab");
