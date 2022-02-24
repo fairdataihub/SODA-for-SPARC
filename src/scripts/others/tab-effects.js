@@ -1783,7 +1783,6 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
-  console.log("Called");
   let continueProgressRC = true;
   let continueProgressDD = true;
 
@@ -1902,6 +1901,8 @@ async function transitionFreeFormMode(
     console.log("Not going to continue with this");
     return;
   }
+
+  console.log("Continuing with transition");
   // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);

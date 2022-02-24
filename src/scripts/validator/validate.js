@@ -347,6 +347,7 @@ document
   });
 
 // open folder selection dialog so the user can choose which local dataset they would like to validate
+// also handles a user selecting a dataset when there are already validation results on the screen
 document
   .querySelector("#validate-local-dataset-path")
   .addEventListener("click", async (evt) => {
@@ -383,7 +384,6 @@ document
       );
       confirmDatasetBtn.parentElement.style.display = "flex";
     } else {
-      console.log("hfghffgh");
       // hide question 3
       document.querySelector("#validate_dataset-question-3").style.visibility =
         "hidden";
@@ -417,6 +417,23 @@ document
         validationPathInput.value = folderPath;
       }
     );
+  });
+
+document
+  .querySelector("#validator-confirm-local-dataset-btn")
+  .addEventListener("click", async function () {
+    // transition to question 4
+    transitionFreeFormMode(
+      this,
+      "validate_dataset-question-2",
+      "validate_dataset-tab",
+      "",
+      "individual-question validate_dataset"
+    );
+
+    // set question 3's visibility to visible
+    document.querySelector("#validate_dataset-question-3").style.visibility =
+      "visible";
   });
 
 // start dataset validation
