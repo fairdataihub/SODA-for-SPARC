@@ -2,10 +2,8 @@
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
 
-//main nav variables initialized to first tabs/pages of guided mode
-let current_progression_tab = $("#prepare-dataset-progression-tab");
+//main nav variables initialized to first page of guided mode
 let current_sub_step = $("#guided-basic-description-tab");
-let current_sub_step_capsule = $("#guided-basic-description-capsule");
 
 //nav functions
 const enableProgressButton = () => {
@@ -215,6 +213,13 @@ const guidedLoadSavedProgressFiles = async () => {
   }
 };
 const traverseToTab = (targetPageID) => {
+  if (
+    targetPageID === "guided-designate-pi-owner-tab" ||
+    "guided-designate-permissions-tab"
+  ) {
+    //Refresh select pickers so items can be selected
+    $(".selectpicker").selectpicker("refresh");
+  }
   let currentParentTab = current_sub_step.parent();
   let targetPage = $(`#${targetPageID}`);
   let targetPageParentTab = targetPage.parent();
@@ -234,18 +239,19 @@ const traverseToTab = (targetPageID) => {
     targetPageParentTab.show();
     current_sub_step = targetPage;
     current_sub_step.css("display", "flex");
-    console.log(current_sub_step);
   }
 };
 //populates user inputs from the completed-tabs array, and returns the last page
 //that the user completed
-const populateGuidedModePages = (jsonObjToResume) => {
-  let completedTabs = jsonObjToResume["completed-tabs"];
+const populateGuidedModePages = (loadedJSONObj) => {
+  let completedTabs = loadedJSONObj["completed-tabs"];
+  //variable that keeps track if last completed page. Once this function is finished populating the UI,
+  //the last completed page is rendered and next button clicked
   let lastCompletedTab = "none";
 
   if (completedTabs.includes("guided-basic-description-tab")) {
-    let datasetName = jsonObjToResume["digital-metadata"]["name"];
-    let datasetSubtitle = jsonObjToResume["digital-metadata"]["subtitle"];
+    let datasetName = loadedJSONObj["digital-metadata"]["name"];
+    let datasetSubtitle = loadedJSONObj["digital-metadata"]["subtitle"];
     $("#guided-dataset-name-input").val(datasetName);
     $("#guided-dataset-subtitle-input").val(datasetSubtitle);
     lastCompletedTab = "guided-basic-description-tab";
@@ -256,17 +262,23 @@ const populateGuidedModePages = (jsonObjToResume) => {
     lastCompletedTab = "guided-banner-image-addition-tab";
   }
   if (completedTabs.includes("guided-folder-importation-tab")) {
-    let datasetName = jsonObjToResume["digital-metadata"]["name"];
-    let datasetSubtitle = jsonObjToResume["digital-metadata"]["subtitle"];
+    let datasetName = loadedJSONObj["digital-metadata"]["name"];
+    let datasetSubtitle = loadedJSONObj["digital-metadata"]["subtitle"];
     $("#guided-dataset-name-input").val(datasetName);
     $("#guided-dataset-subtitle-input").val(datasetSubtitle);
     lastCompletedTab = "guided-folder-importation-tab";
+  }
+  if (completedTabs.includes("guided-designate-pi-owner-tab")) {
+    //Refresh select pickers so items can be selected
+    $(".selectpicker").selectpicker("refresh");
+    lastCompletedTab = "guided-designate-pi-owner-tab";
   }
 
   $("#guided_create_new_bf_dataset_btn").click();
   traverseToTab(lastCompletedTab);
   $("#guided-next-button").click();
 };
+//Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (resumeProgressButton) => {
   const datasetNameToResume = resumeProgressButton
     .parent()
@@ -917,7 +929,6 @@ $(document).ready(() => {
     const createDatasetResponseJson = response.json();
     console.log(createDatasetResponseJson);
     return createDatasetResponseJson;
-    alert("I didn't throw");
   };
 
   const addPennsieveMetadata = async (
@@ -2539,6 +2550,7 @@ $(document).ready(() => {
 
     //Mark page as completed in JSONObj so we know what pages to load when loading local saves
     //(if it hasn't already been marked complete)
+
     if (!sodaJSONObj["completed-tabs"].includes(pageBeingLeftID)) {
       sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
     }
@@ -2557,7 +2569,6 @@ $(document).ready(() => {
     //NAVIGATE TO PREV PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to prev tab and update capsule/progression tab
     let targetPage = current_sub_step.prev();
-    console.log(targetPage);
     if (!targetPage.hasClass("guided--capsule-container")) {
       let targetPageID = targetPage.attr("id");
       traverseToTab(targetPageID);
