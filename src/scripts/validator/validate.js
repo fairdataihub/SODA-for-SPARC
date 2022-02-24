@@ -467,6 +467,34 @@ questionTwoDatasetSelectionObserver.observe(
   { childList: true }
 );
 
+document
+  .querySelector("#select-dataset-container--validator")
+  .addEventListener("click", async () => {
+    // check for validation results
+    if (getValidationResultsCount() > 0) {
+      let reset = await userWantsToResetValidation();
+      if (!reset) {
+        return;
+      }
+
+      clearValidationResults();
+
+      // hide question 3
+      let questionThreeSection = document.querySelector(
+        "#validate_dataset-question-3"
+      );
+      questionThreeSection.classList.remove("show");
+      questionThreeSection.classList.remove("prev");
+
+      // hide question 4
+      document
+        .querySelector("#validate_dataset-question-4")
+        .classList.remove("show");
+    }
+
+    openDropdownPrompt(null, "dataset");
+  });
+
 // verifies if the user wants to reset any current validation table results to run the validator on a different validation track
 // (local vs pennsieve) or to choose another dataset to validate
 const userWantsToResetValidation = async () => {
