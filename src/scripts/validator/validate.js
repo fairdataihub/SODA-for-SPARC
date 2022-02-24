@@ -262,6 +262,11 @@ const transitionToValidateQuestionTwo = async () => {
 
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
+
+    // show the pennsieve track's confirm button
+    document.querySelector(
+      "#confirm-dataset-selection--validator"
+    ).style.visibility = "visible";
   }
 
   return true;
@@ -273,7 +278,7 @@ const transitionToValidateQuestionThree = async () => {
 
   if (userWantsToReset === false) return userWantsToReset;
 
-  // hide the confirm button
+  // hide the confirm buttons
   let confirmDatasetBtn = document.querySelector(
     "#validator-confirm-local-dataset-btn"
   );
@@ -449,6 +454,22 @@ document
     } else {
       await validatePennsieveDataset();
     }
+  });
+
+document
+  .querySelector("#confirm-dataset-selection--validator")
+  .addEventListener("click", function () {
+    // hide the confirm button
+    this.style.visibility = "hidden";
+
+    // transition to the next question
+    transitionFreeFormMode(
+      this,
+      "validate_dataset-question-2",
+      "validate_dataset-tab",
+      "",
+      "individual-question validate_dataset"
+    );
   });
 
 // observer for the selected dataset label in the dataset selection card in question 2
