@@ -350,26 +350,40 @@ document
 document
   .querySelector("#validate-local-dataset-path")
   .addEventListener("click", async (evt) => {
-    // check if the validator error results table is visible
-    let validatorErrors = document.querySelectorAll(
-      "#validate_dataset-question-4 tbody tr"
-    );
-
-    if (validatorErrors.length) {
-      let userReply = await Swal.fire({
-        title: `This will clear your dataset validation results. Are you sure you want to continue?`,
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-      });
-
-      // user doesn't want to clear their results and reset
-      if (!userReply) {
+    let validationResults = getValidationResultsCount();
+    if (validationResults > 0) {
+      // if there is validation work done check if the user wants to reset progress
+      let userWantsToReset = await userWantsToResetValidation();
+      if (!userWantsToReset) {
+        // user does not want to reset
         return;
       }
 
+      // reset validation table
+      clearValidationResults();
+
+      // clear the input value
+      this.value = "";
+
+      // hide the next section
+      let questionThreeSection = document.querySelector(
+        "#validate_dataset-question-3"
+      );
+      questionThreeSection.classList.remove("show");
+      questionThreeSection.classList.remove("prev");
+
+      // hide the run validator button
+      document
+        .querySelector("#validate_dataset-question-4")
+        .classList.remove("show");
+
+      // show the confirm button
+      let confirmDatasetBtn = document.querySelector(
+        "#validator-confirm-local-dataset-btn"
+      );
+      confirmDatasetBtn.parentElement.style.display = "flex";
+    } else {
+      console.log("hfghffgh");
       // hide question 3
       document.querySelector("#validate_dataset-question-3").style.visibility =
         "hidden";
@@ -380,7 +394,7 @@ document
       );
 
       // set the field display property to none to remove the field margings
-      confirmDatasetBtn.parentElement.style.display = "block";
+      confirmDatasetBtn.parentElement.style.display = "flex";
     }
 
     // open folder select dialog
@@ -418,35 +432,6 @@ document
     } else {
       await validatePennsieveDataset();
     }
-  });
-
-document
-  .querySelector("#validate-local-dataset-path")
-  .addEventListener("click", async function () {
-    // if there is validation work done check if the user wants to reset progress
-    let userWantsToReset = await userWantsToResetValidation();
-    if (!userWantsToReset) {
-      // user does not want to reset
-      return;
-    }
-
-    // reset validation table
-    clearValidationResults();
-
-    // clear the input value
-    this.value = "";
-
-    // hide the next section
-    document
-      .querySelector("#validate_dataset-question-3")
-      .classList.remove("show");
-
-    // hide the run validator button
-    document
-      .querySelector("#validate_dataset-question-4")
-      .classList.remove("show");
-
-    // show the confirm button
   });
 
 // observer for the selected dataset label in the dataset selection card in question 2
@@ -532,4 +517,13 @@ const clearValidationResults = () => {
   while (validationErrorsTable.firstChild) {
     validationErrorsTable.removeChild(validationErrorsTable.firstChild);
   }
+};
+
+const getValidationResultsCount = () => {
+  let validationErrorsTable = document.querySelector(
+    "#validation-errors-container tbody"
+  );
+
+  // check if there are any validation results
+  return validationErrorsTable.childElementCount;
 };
