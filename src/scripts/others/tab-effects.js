@@ -1783,6 +1783,7 @@ async function transitionFreeFormMode(
   button,
   category
 ) {
+  console.log("Called");
   let continueProgressRC = true;
   let continueProgressDD = true;
 

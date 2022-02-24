@@ -330,6 +330,15 @@ document
     // reset validation table
     clearValidationResults();
 
+    // move to next question
+    transitionFreeFormMode(
+      this,
+      "validate_dataset-question-1",
+      "validate_dataset-tab",
+      "",
+      "individual-question"
+    );
+
     // check the input
     document.querySelector("#validate-1-Pennsieve").checked = true;
 
