@@ -5,6 +5,7 @@ import os.path
 from os.path import expanduser
 # from organize_datasets import ps_retrieve_dataset
 from sparcur.simple.validate import main as validate
+from sparcur.simple.retrieve import main as retrieve
 from pathlib import Path
 from sparcur.config import auth
 from sparcur.simple.utils import backend_pennsieve
@@ -12,13 +13,27 @@ from sparcur.simple.utils import backend_pennsieve
 userpath = expanduser("~")
 from pprint import pprint
 
-# from sparcur.config import auth
-# from sparcur.simple.utils import backend_pennsieve
+from sparcur.config import auth
+from sparcur.simple.utils import backend_pennsieve
 # project_id = auth.get('remote-organization')
-# PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
-# root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
-# datasets = list(root.children)
+#PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
+#root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
+#datasets = list(root.children)
 
+#print(datasets)
+
+from sparcur.paths import Path
+from sparcur.utils import PennsieveId
+from sparcur.simple.retrieve import main as retrieve
+
+
+p = PennsieveId('N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0')
+d = PennsieveId('N:dataset:ada590fe-3556-4fa4-8476-0f085a00d781')
+ppp = Path('~/temp-datasets').expanduser().resolve()
+
+local_dataset = retrieve(id=d, dataset_id=d, project_id=p, parent_parent_path=ppp)
+
+validate(Path(local_dataset))
 
 from json import JSONEncoder
 from collections import deque
@@ -38,6 +53,8 @@ def hello_world():
 
 @app.route("/api_validate_pennsieve_dataset")
 def api_ps_retrieve_dataset():
+
+
     for i in range(0, 100000): 
         pass
     
