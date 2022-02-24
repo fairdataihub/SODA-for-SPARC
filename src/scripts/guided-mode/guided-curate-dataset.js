@@ -2517,6 +2517,7 @@ $(document).ready(() => {
     if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
       guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"]);
     }
+
     //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to next tab and update capsule
     let targetPage = current_sub_step.next();
@@ -2524,13 +2525,20 @@ $(document).ready(() => {
       let targetPageID = targetPage.attr("id");
       traverseToTab(targetPageID);
     } else {
-      traverseToTab("guided-designate-pi-owner-tab");
+      //if current page is the last page in its parent tab
+      let targetPageID = current_sub_step
+        .parent()
+        .next()
+        .children(".guided--panel")
+        .first()
+        .attr("id");
+      traverseToTab(targetPageID);
     }
 
     console.log(sodaJSONObj);
 
     //Mark page as completed in JSONObj so we know what pages to load when loading local saves
-    //(if it hasn't already been mark completed)
+    //(if it hasn't already been marked complete)
     if (!sodaJSONObj["completed-tabs"].includes(pageBeingLeftID)) {
       sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
     }
@@ -2538,9 +2546,6 @@ $(document).ready(() => {
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
 
-  $("#testat").on("click", async () => {
-    guidedLoadSavedProgressFiles();
-  });
   //back button click handler
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = current_sub_step.attr("id");
@@ -2548,41 +2553,28 @@ $(document).ready(() => {
     if (pageBeingLeftID === "guided-dataset-generation-confirmation-tab") {
       $("#guided-next-button").css("visibility", "visible");
     }
-    //handle case where current page is first in its section
-    if (!current_sub_step.prev().hasClass("guided--capsule-container")) {
-      current_sub_step.hide();
-      current_sub_step = current_sub_step.prev();
-      current_sub_step_capsule.css("background-color", "#ddd");
-      current_sub_step_capsule = current_sub_step_capsule.prev();
-      current_sub_step_capsule.css(
-        "background-color",
-        "var(--color-light-green)"
-      );
-      current_sub_step.css("display", "flex");
+
+    //NAVIGATE TO PREV PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
+    //if more tabs in parent tab, go to prev tab and update capsule/progression tab
+    let targetPage = current_sub_step.prev();
+    console.log(targetPage);
+    if (!targetPage.hasClass("guided--capsule-container")) {
+      let targetPageID = targetPage.attr("id");
+      traverseToTab(targetPageID);
     } else {
-      current_progression_tab.removeClass("selected-tab");
-      current_progression_tab = current_progression_tab.prev();
-      current_progression_tab.addClass("selected-tab");
-      const tabPanelId = current_progression_tab
-        .attr("id")
-        .replace("progression-tab", "parent-tab");
-      const tabPanel = $("#" + tabPanelId);
-      current_sub_step = tabPanel.children(".guided--panel").last();
-      current_sub_step_capsule = tabPanel
-        .children(".guided--capsule-container")
-        .children()
-        .last();
-      tabPanel.siblings().hide();
-      tabPanel.show();
+      //if current page is the first page in its parent tab
+      let targetPageID = current_sub_step
+        .parent()
+        .prev()
+        .children(".guided--panel")
+        .last()
+        .attr("id");
+      //handle case where target page is undefined (on the first page)
+      if (targetPageID != undefined) {
+        traverseToTab(targetPageID);
+      }
     }
   });
-  const getParentTabsProgressionTab = (parentTabElement) => {
-    progressionTabId = parentTabElement
-      .attr("id")
-      .replace("parent-tab", "progression-tab");
-    console.log(progressionTabId);
-    return $(`#${progressionTabId}`);
-  };
 
   //tagify initializations
   var guidedSubmissionTagsInput = document.getElementById(
