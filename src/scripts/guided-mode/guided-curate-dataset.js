@@ -175,6 +175,15 @@ const renderProgressCards = (progressFileJSONdata) => {
   });
   cardContainer.innerHTML = progressCards.join("\n");
 };
+
+const setActiveCapsule = (targetPageID) => {
+  $(".guided--capsule").removeClass("active");
+  let targetCapsuleID = targetPageID.replace("tab", "capsule");
+  let targetCapsule = $(`#${targetCapsuleID}`);
+  console.log(targetCapsule.attr("id"));
+  targetCapsule.addClass("active");
+};
+
 const guidedLoadSavedProgressFiles = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
@@ -193,28 +202,24 @@ const guidedLoadSavedProgressFiles = async () => {
     console.log("No guided save files found");
   }
 };
-const traverseToTab = (targetElementId) => {
+const traverseToTab = (targetPageID) => {
   let currentParentTab = current_sub_step.parent();
-  let targetElement = $(`#${targetElementId}`);
-  let targetElementParentTab = targetElement.parent();
-  console.log(targetElement.attr("id"));
-  let targetElementCapsuleID = targetElementId.replace("tab", "capsule");
-  let targetElementCapsule = $(`#${targetElementCapsuleID}`);
+  let targetPage = $(`#${targetPageID}`);
+  let targetPageParentTab = targetPage.parent();
 
   //Set all capsules to grey and set capsule of page being traversed to green
-  $(".guided--capsule").removeClass("active");
-  targetElementCapsule.addClass("active");
+  setActiveCapsule(targetPageID);
 
   //Check to see if target element has the same parent as current sub step
-  if (currentParentTab.attr("id") === targetElementParentTab.attr("id")) {
+  if (currentParentTab.attr("id") === targetPageParentTab.attr("id")) {
     current_sub_step.hide();
-    current_sub_step = targetElement;
-    current_sub_step.show();
+    current_sub_step = targetPage;
+    current_sub_step.css("display", "flex");
   } else {
     current_sub_step.hide();
     currentParentTab.hide();
-    targetElementParentTab.show();
-    current_sub_step = targetElement;
+    targetPageParentTab.show();
+    current_sub_step = targetPage;
     current_sub_step.css("display", "flex");
     console.log(current_sub_step);
   }
@@ -2496,46 +2501,26 @@ $(document).ready(() => {
     if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     }
 
-    //if more tabs in parent tab, go to next tab and update capsule
-    if (current_sub_step.next().attr("id") !== undefined) {
-      current_sub_step.hide();
-      current_sub_step = current_sub_step.next();
-      current_sub_step_capsule.css("background-color", "#ddd");
-      current_sub_step_capsule = current_sub_step_capsule.next();
-      current_sub_step_capsule.css(
-        "background-color",
-        "var(--color-light-green)"
-      );
-      current_sub_step.css("display", "flex");
-    } else {
-      //go to next tab
-      current_progression_tab.removeClass("selected-tab");
-      current_progression_tab = current_progression_tab.next();
-      current_progression_tab.addClass("selected-tab");
-      const tabPanelId = current_progression_tab
-        .attr("id")
-        .replace("progression-tab", "parent-tab");
-      if (tabPanelId == "prepare-pennsieve-metadata-parent-tab") {
-        $(".selectpicker").selectpicker("refresh");
-      }
-      const tabPanel = $("#" + tabPanelId);
-      current_sub_step = tabPanel.children(".guided--panel").first();
-      current_sub_step_capsule = tabPanel
-        .children(".guided--capsule-container")
-        .children()
-        .first();
-      tabPanel.siblings().hide();
-      tabPanel.show();
-    }
-    //disableProgressButton();
-    console.log(sodaJSONObj);
-
     if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
       guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"]);
     }
 
+    //if more tabs in parent tab, go to next tab and update capsule
+    const targetPage = current_sub_step.next();
+    if (targetPage.attr("id") !== undefined) {
+      const targetPageID = targetPage.attr("id");
+      traverseToTab(targetPageID);
+    } else {
+      traverseToTab("guided-designate-pi-owner-tab");
+    }
+
+    console.log(sodaJSONObj);
+
     //Mark page as completed in JSONObj so we know what pages to load when loading local saves
-    sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
+    //(if it hasn't already been mark completed)
+    if (!sodaJSONObj["completed-tabs"].includes(pageBeingLeftID)) {
+      sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
+    }
     //Save progress onto local storage with the dataset name as the key
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
@@ -2547,9 +2532,6 @@ $(document).ready(() => {
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = current_sub_step.attr("id");
 
-    if (pageBeingLeftID === "guided-folder-importation-tab") {
-      $("#guided-back-button").css("visibility", "hidden");
-    }
     if (pageBeingLeftID === "guided-dataset-generation-confirmation-tab") {
       $("#guided-next-button").css("visibility", "visible");
     }
@@ -2589,36 +2571,6 @@ $(document).ready(() => {
     return $(`#${progressionTabId}`);
   };
 
-  const setActiveCapsule = (pageIdToActivate) => {
-    $(".guided--progression-tab").removeClass("selected-tab");
-    let targetProgressionTab = "";
-  };
-
-  const traverseToTab = (targetElementId) => {
-    let currentParentTab = current_sub_step.parent();
-    let targetElement = $(`#${targetElementId}`);
-    let targetElementParentTab = targetElement.parent();
-    console.log(targetElement.attr("id"));
-    let targetElementCapsuleID = targetElementId.replace("tab", "capsule");
-    let targetElementCapsule = $(`#${targetElementCapsuleID}`);
-
-    //Set all capsules to grey and set capsule of page being traversed to green
-    $(".guided--capsule").css("background-color", "#ddd");
-    targetElementCapsule.css("background-color", "var(--color-light-green)");
-
-    //Check to see if target element has the same parent as current sub step
-    if (currentParentTab.attr("id") === targetElementParentTab.attr("id")) {
-      current_sub_step.hide();
-      current_sub_step = targetElement;
-      current_sub_step.show();
-    } else {
-      current_sub_step.hide();
-      currentParentTab.hide();
-      targetElementParentTab.show();
-      current_sub_step = targetElement;
-      current_sub_step.css("display", "flex");
-    }
-  };
   //tagify initializations
   var guidedSubmissionTagsInput = document.getElementById(
     "guided-tagify-submission-milestone-tags"
