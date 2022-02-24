@@ -297,8 +297,8 @@ document
       return;
     }
 
-    // reset validation table 
-    clearValidationResults()
+    // reset validation table
+    clearValidationResults();
 
     // transition to the next question - uses transitionToValidateQuestionTwo
     transitionFreeFormMode(
@@ -327,8 +327,8 @@ document
       return;
     }
 
-    // reset validation table 
-    clearValidationResults()
+    // reset validation table
+    clearValidationResults();
 
     // check the input
     document.querySelector("#validate-1-Pennsieve").checked = true;
@@ -475,8 +475,8 @@ const undoOptionCardSelection = (activeOptionCard) => {
     "#validate_dataset-section .option-card.non-selected"
   );
   previousOptionCard.classList.remove("non-selected");
-  previousOptionCard.classList.add("checked")
-  previousOptionCard.querySelector(".folder-checkbox input").checked = true
+  previousOptionCard.classList.add("checked");
+  previousOptionCard.querySelector(".folder-checkbox input").checked = true;
 
   // uncheck the selected option card and set it to a non-selected state
   activeOptionCard.querySelector(".folder-checkbox input").checked = false;
@@ -490,8 +490,8 @@ const clearValidationResults = () => {
     "#validation-errors-container tbody"
   );
 
-  // remove its children 
+  // remove its children
   while (validationErrorsTable.firstChild) {
-    validationErrorsTable.removeChild(validationErrorsTable.firstChild)
+    validationErrorsTable.removeChild(validationErrorsTable.firstChild);
   }
-}
+};
