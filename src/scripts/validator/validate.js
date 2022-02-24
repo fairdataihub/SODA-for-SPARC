@@ -420,6 +420,35 @@ document
     }
   });
 
+document
+  .querySelector("#validate-local-dataset-path")
+  .addEventListener("click", async function () {
+    // if there is validation work done check if the user wants to reset progress
+    let userWantsToReset = await userWantsToResetValidation();
+    if (!userWantsToReset) {
+      // user does not want to reset
+      return;
+    }
+
+    // reset validation table
+    clearValidationResults();
+
+    // clear the input value
+    this.value = "";
+
+    // hide the next section
+    document
+      .querySelector("#validate_dataset-question-3")
+      .classList.remove("show");
+
+    // hide the run validator button
+    document
+      .querySelector("#validate_dataset-question-4")
+      .classList.remove("show");
+
+    // show the confirm button
+  });
+
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   if ($("#bf_dataset_load_validator").text().trim() !== "None") {
