@@ -269,13 +269,13 @@ const populateGuidedModePages = (loadedJSONObj) => {
     lastCompletedTab = "guided-folder-importation-tab";
   }
   if (completedTabs.includes("guided-designate-pi-owner-tab")) {
-    //Refresh select pickers so items can be selected
-    $(".selectpicker").selectpicker("refresh");
     lastCompletedTab = "guided-designate-pi-owner-tab";
   }
 
   $("#guided_create_new_bf_dataset_btn").click();
   traverseToTab(lastCompletedTab);
+  //Refresh select pickers so items can be selected
+  $(".selectpicker").selectpicker("refresh");
   $("#guided-next-button").click();
 };
 //Loads UI when continue curation button is pressed
@@ -338,10 +338,13 @@ const setGuidedBannerImage = (croppedImagePath) => {
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
-  $(".guidedDatasetOwner").text(newPiOwnerObj.PiOwnerString);
-  sodaJSONObj["digital-metadata"]["pi-owner"] = newPiOwnerObj.UUID;
-  sodaJSONObj["digital-metadata"]["pi-owner-name"] =
-    newPiOwnerObj.name || "foo bar";
+  console.log(newPiOwnerObj);
+  $(".guidedDatasetOwner").text(newPiOwnerObj.userString);
+  sodaJSONObj["digital-metadata"]["pi-owner"] = {};
+  sodaJSONObj["digital-metadata"]["pi-owner"]["userString"] =
+    newPiOwnerObj.userString;
+  sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"] = newPiOwnerObj.UUID;
+  sodaJSONObj["digital-metadata"]["pi-owner"]["name"] = newPiOwnerObj.name;
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
@@ -599,9 +602,8 @@ $(document).ready(() => {
     let PiUUID = $("#guided_bf_list_users_pi").val().trim();
 
     const newPiOwner = {
-      PiOwnerString: PiOwnerString,
+      userString: PiOwnerString,
       UUID: PiUUID,
-      permission: "owner",
       name: PiName,
     };
     setGuidedDatasetPiOwner(newPiOwner);
@@ -1384,7 +1386,7 @@ $(document).ready(() => {
       .then(guided_main_curate())
       /*
       .then((res) => {
-        guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
+        guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner);//this will need to change as PI owner obj changed
       })*/
       .catch((error) => {
         console.log(error);
@@ -2426,9 +2428,8 @@ $(document).ready(() => {
       //Get initial dataset creator's user information and set OG PI owner to initial creator
       let user = await getUserInformation();
       const newPiOwner = {
-        PiOwnerString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+        userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
         UUID: user["id"],
-        permission: "owner",
         name: `${user["firstName"]} ${user["lastName"]}`,
       };
       setGuidedDatasetPiOwner(newPiOwner);
