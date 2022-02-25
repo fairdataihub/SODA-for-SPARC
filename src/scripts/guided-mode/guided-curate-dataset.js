@@ -5,24 +5,22 @@ let guidedTeamPermissions = [];
 //main nav variables initialized to first page of guided mode
 let current_sub_step = $("#guided-basic-description-tab");
 
-//nav functions
+/////////////////////////////////////////////////////////
+/////////////       Util functions      /////////////////
+/////////////////////////////////////////////////////////
 const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
 };
 const disableProgressButton = () => {
   $("#guided-next-button").prop("disabled", true);
 };
-
-/////////////////////////////////////////////////////////
-/////////////       Util functions      /////////////////
-/////////////////////////////////////////////////////////
 const saveGuidedProgress = (guidedProgressFileName) => {
   //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date().toLocaleDateString();
   try {
+    //create Guided-Progress folder if one does not exist
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-    console.log("Guided-Progress folder created if didn't exist");
   } catch (error) {
     log.error(error);
     console.log(error);
@@ -120,7 +118,7 @@ const renderProgressCards = (progressFileJSONdata) => {
     const progressFileSubtitle =
       progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
     let progressFileOwnerName =
-      progressFile["digital-metadata"]["pi-owner-name"];
+      progressFile["digital-metadata"]["pi-owner"]["name"];
     const progressFileLastModified = progressFile["last-modified"];
 
     return `
@@ -262,17 +260,43 @@ const populateGuidedModePages = (loadedJSONObj) => {
     lastCompletedTab = "guided-banner-image-addition-tab";
   }
   if (completedTabs.includes("guided-folder-importation-tab")) {
-    let datasetName = loadedJSONObj["digital-metadata"]["name"];
-    let datasetSubtitle = loadedJSONObj["digital-metadata"]["subtitle"];
-    $("#guided-dataset-name-input").val(datasetName);
-    $("#guided-dataset-subtitle-input").val(datasetSubtitle);
+    let datasetLocation = loadedJSONObj["starting-point"]["local-path"];
+    $(".guidedDatasetPath").text(datasetLocation);
     lastCompletedTab = "guided-folder-importation-tab";
   }
   if (completedTabs.includes("guided-designate-pi-owner-tab")) {
+    let PIOwner = loadedJSONObj["digital-metadata"]["pi-owner"]["userString"];
+    $(".guidedDatasetOwner").text(PIOwner);
     lastCompletedTab = "guided-designate-pi-owner-tab";
+  }
+  if (completedTabs.includes("guided-designate-permissions-tab")) {
+    // CURRENTLY NO UI UPDATES ON THIS TAB   TODO LATER
+
+    lastCompletedTab = "guided-designate-permissions-tab";
+  }
+  if (completedTabs.includes("add-edit-description-tags-tab")) {
+    let studyPurpose = loadedJSONObj["digital-metadata"]["study-purpose"];
+    let dataCollection = loadedJSONObj["digital-metadata"]["data-collection"];
+    let primaryConclusion =
+      loadedJSONObj["digital-metadata"]["primary-conclusion"];
+    let datasetTags = loadedJSONObj["digital-metadata"]["dataset-tags"];
+    $("#guided-ds-description-study-purpose").val(studyPurpose);
+    $("#guided-ds-description-data-collection").val(dataCollection);
+    $("#guided-ds-description-primary-conclusion").val(primaryConclusion);
+    guidedDatasetTagsTagify.addTags(datasetTags);
+
+    lastCompletedTab = "add-edit-description-tags-tab";
+  }
+  if (completedTabs.includes("guided-assign-license-tab")) {
+    // CURRENTLY NO UI UPDATES ON THIS TAB   TODO LATER
+    let datasetLicense = loadedJSONObj["digital-metadata"]["license"];
+    $(".guidedBfLicense").text(datasetLicense);
+
+    lastCompletedTab = "guided-assign-license-tab";
   }
 
   $("#guided_create_new_bf_dataset_btn").click();
+  console.log(lastCompletedTab);
   traverseToTab(lastCompletedTab);
   //Refresh select pickers so items can be selected
   $(".selectpicker").selectpicker("refresh");
@@ -2402,37 +2426,38 @@ $(document).ready(() => {
     pageBeingLeftID = current_sub_step.attr("id");
 
     if (pageBeingLeftID === "guided-basic-description-tab") {
-      sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
-      sodaJSONObj["generate-dataset"] = {};
-      sodaJSONObj["manifest-files"] = {};
-      sodaJSONObj["metadata-files"] = {};
-      sodaJSONObj["starting-point"] = {};
+      if (Object.keys(sodaJSONObj).length === 0) {
+        sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
+        sodaJSONObj["generate-dataset"] = {};
+        sodaJSONObj["manifest-files"] = {};
+        sodaJSONObj["metadata-files"] = {};
+        sodaJSONObj["starting-point"] = {};
 
-      datasetStructureJSONObj = { folders: {}, files: {} };
-      sodaJSONObj["dataset-metadata"] = {};
-      sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
-      sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
-      sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
-      sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
-      sodaJSONObj["digital-metadata"] = {};
-      sodaJSONObj["completed-tabs"] = [];
-      sodaJSONObj["last-modified"] = "";
+        datasetStructureJSONObj = { folders: {}, files: {} };
+        sodaJSONObj["dataset-metadata"] = {};
+        sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+        sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
+        sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
+        sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
+        sodaJSONObj["digital-metadata"] = {};
+        sodaJSONObj["completed-tabs"] = [];
+        sodaJSONObj["last-modified"] = "";
 
-      //set starting point to local for now for curate new dataset until new dataset functionality implemented
-      if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-        sodaJSONObj["starting-point"]["type"] = "bf";
+        //set starting point to local for now for curate new dataset until new dataset functionality implemented
+        if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
+          sodaJSONObj["starting-point"]["type"] = "bf";
+        }
+
+        let user = await getUserInformation();
+        const newPiOwner = {
+          userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+          UUID: user["id"],
+          name: `${user["firstName"]} ${user["lastName"]}`,
+        };
+        setGuidedDatasetPiOwner(newPiOwner);
       }
       setGuidedDatasetName($("#guided-dataset-name-input"));
       setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
-
-      //Get initial dataset creator's user information and set OG PI owner to initial creator
-      let user = await getUserInformation();
-      const newPiOwner = {
-        userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-        UUID: user["id"],
-        name: `${user["firstName"]} ${user["lastName"]}`,
-      };
-      setGuidedDatasetPiOwner(newPiOwner);
 
       $("#guided-back-button").css("visibility", "visible");
     }
