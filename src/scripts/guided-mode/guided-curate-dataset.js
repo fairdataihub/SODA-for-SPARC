@@ -716,10 +716,6 @@ $(document).ready(() => {
     tabPanel.css("display", "flex");
   });
 
-  $("#guided-curate-new-dataset-card").on("click", () => {
-    sodaJSONObj;
-  });
-
   // function for importing a banner image if one already exists
   $("#guided-button-add-banner-image").click(async () => {
     $("#guided-banner-image-modal").modal("show");
@@ -2429,6 +2425,12 @@ $(document).ready(() => {
       );
     }
   });
+  $("#guided-curate-new-dataset-card").on("click", () => {
+    guidedCreateSodaJSONObj("new");
+  });
+  $("#guided-curate-existing-local-dataset-card").on("click", () => {
+    guidedCreateSodaJSONObj("local");
+  });
 
   guidedCreateSodaJSONObj = (startingPoint) => {
     sodaJSONObj = {};
@@ -2447,8 +2449,12 @@ $(document).ready(() => {
     sodaJSONObj["completed-tabs"] = [];
     sodaJSONObj["last-modified"] = "";
 
+    if (startingPoint === "new") {
+      sodaJSONObj["starting-point"]["type"] = "bf";
+    }
+
     //set starting point to local for now for curate new dataset until new dataset functionality implemented
-    if (startoingPoint === "local") {
+    if (startingPoint === "local") {
       sodaJSONObj["starting-point"]["type"] = "bf";
     }
   };
@@ -2460,21 +2466,19 @@ $(document).ready(() => {
 
     if (pageBeingLeftID === "guided-basic-description-tab") {
       //If sodaJSONObj is empty, populate initial object properties
-      if (Object.keys(sodaJSONObj).length === 0) {
-        let user = await getUserInformation();
-        const originalDatasetCreator = {
-          userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-          UUID: user["id"],
-          name: `${user["firstName"]} ${user["lastName"]}`,
-        };
-        setGuidedDatasetPiOwner(originalDatasetCreator);
-        setGuidedDatasetName($("#guided-dataset-name-input"));
-        setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
-        if (guidedCroppedBannerImagePath) {
-          setGuidedBannerImage(guidedCroppedBannerImagePath);
-        } else {
-          setGuidedBannerImage("");
-        }
+      let user = await getUserInformation();
+      const originalDatasetCreator = {
+        userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+        UUID: user["id"],
+        name: `${user["firstName"]} ${user["lastName"]}`,
+      };
+      setGuidedDatasetPiOwner(originalDatasetCreator);
+      setGuidedDatasetName($("#guided-dataset-name-input"));
+      setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
+      if (guidedCroppedBannerImagePath) {
+        setGuidedBannerImage(guidedCroppedBannerImagePath);
+      } else {
+        setGuidedBannerImage("");
       }
       $("#guided-back-button").css("visibility", "visible");
     }
