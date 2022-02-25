@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <template class="task-template">
-  <section id="guided_curate_new_dataset-section" class="section js-section u-category-windows"
-        style="padding-left: 15px; overflow-y: hidden">
-    <div class="main-tabs show" id="guided_curate_dataset-tab" style="display: flex; height: 100%; overflow-y: hidden">
+  <section
+    id="guided_curate_new_dataset-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div
+      class="main-tabs show"
+      id="guided_curate_dataset-tab"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
       <header class="guided--header">
         <div class="guided--progression-tab-container">
-          <div class="guided--progression-tab guided--progression-tab-triangle selected-tab"
-            id="prepare-dataset-progression-tab">
+          <div
+            class="guided--progression-tab guided--progression-tab-triangle selected-tab"
+            id="prepare-dataset-progression-tab"
+          >
             <div class="guided--progression-tab-content">
               <span class="dot">1</span>
               <div class="guided--progression-tab-labels">
@@ -19,8 +28,10 @@
               </div>
             </div>
           </div>
-          <div class="guided--progression-tab guided--progression-tab-triangle"
-            id="prepare-pennsieve-metadata-progression-tab">
+          <div
+            class="guided--progression-tab guided--progression-tab-triangle"
+            id="prepare-pennsieve-metadata-progression-tab"
+          >
             <div class="guided--progression-tab-content">
               <span class="dot">2</span>
               <div class="guided--progression-tab-labels">
@@ -31,8 +42,10 @@
               </div>
             </div>
           </div>
-          <div class="guided--progression-tab guided--progression-tab-triangle"
-            id="prepare-dataset-metadata-progression-tab">
+          <div
+            class="guided--progression-tab guided--progression-tab-triangle"
+            id="prepare-dataset-metadata-progression-tab"
+          >
             <div class="guided--progression-tab-content">
               <span class="dot">3</span>
               <div class="guided--progression-tab-labels">
@@ -43,7 +56,10 @@
               </div>
             </div>
           </div>
-          <div class="guided--progression-tab" id="disseminate-dataset-progression-tab">
+          <div
+            class="guided--progression-tab"
+            id="disseminate-dataset-progression-tab"
+          >
             <div class="guided--progression-tab-content">
               <span class="dot">4</span>
               <div class="guided--progression-tab-labels">
@@ -60,9 +76,14 @@
       <div class="guided--body">
         <div id="prepare-dataset-parent-tab" style="width: 100%">
           <div class="guided--capsule-container">
-            <div class="guided--capsule active" id="guided-basic-description-capsule"></div>
-            <div class="guided--capsule" id="guided-banner-image-addition-capsule"></div>
-            <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
+            <div
+              class="guided--capsule active"
+              id="guided-basic-description-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-folder-importation-capsule"
+            ></div>
           </div>
 
           <div id="guided-basic-description-tab" class="guided--panel">
@@ -71,58 +92,103 @@
                 Curate a new dataset or continue from existing?
               </h1>
               <div class="guided--card-container">
-                <div class="option-card radio-button guided--generate-location-card selected"
-                  id="guided-curate-new-dataset-card" data-enable-next-button="true">
+                <div
+                  class="option-card radio-button guided--generate-location-card selected"
+                  id="guided-curate-new-dataset-card"
+                  data-enable-next-button="true"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <svg width="35px" height="35px" viewBox="0 0 16 16" class="bi bi-folder-plus"
-                      fill="var(--color-bg-orange)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
+                    <svg
+                      width="35px"
+                      height="35px"
+                      viewBox="0 0 16 16"
+                      class="bi bi-folder-plus"
+                      fill="var(--color-bg-orange)"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
                         d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B" />
-                      <path fill-rule="evenodd"
+                        fill="#565E6B"
+                      />
+                      <path
+                        fill-rule="evenodd"
                         d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"
-                        fill="#13716D" />
+                        fill="#13716D"
+                      />
                     </svg>
                     <h2>Curate a new dataset</h2>
                   </div>
                 </div>
-                <div class="coming-soon-div" data-content="Coming soon..." rel="popover" data-placement="bottom"
-                  data-trigger="hover">
-                  <div class="option-card radio-button guided--generate-location-card non-selected" style="
-                      background: #f6f6f6;
-                      pointer-events: none;
-                      opacity: 0.4;
-                    " id="guided-curate-existing-local-dataset-card" data-enable-next-button="true">
-                    <div class="card-head"></div>
-                    <div class="card-body">
-                      <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-laptop"
-                        fill="var(--color-bg-plum)" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                          d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z" />
-                        <path d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z" />
-                      </svg>
-                      <h2>Continue curating an existing local dataset</h2>
-                    </div>
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  style="
+                    background: #f6f6f6;
+                    pointer-events: none;
+                    opacity: 0.4;
+                  "
+                  id="guided-curate-existing-local-dataset-card"
+                  data-enable-next-button="true"
+                >
+                  <div class="card-head"></div>
+                  <div class="card-body">
+                    <svg
+                      width="40px"
+                      height="40px"
+                      viewBox="0 0 16 16"
+                      class="bi bi-laptop"
+                      fill="var(--color-bg-plum)"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
+                      />
+                      <path
+                        d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                      />
+                    </svg>
+                    <h2>Continue curating an existing local dataset</h2>
                   </div>
                 </div>
-                <div class="coming-soon-div" data-content="Coming soon..." rel="popover" data-placement="bottom"
-                  data-trigger="hover">
-                  <div class="option-card radio-button guided--generate-location-card non-selected" style="
+                <div
+                  class="coming-soon-div"
+                  data-content="Coming soon..."
+                  rel="popover"
+                  data-placement="bottom"
+                  data-trigger="hover"
+                >
+                  <div
+                    class="option-card radio-button guided--generate-location-card non-selected"
+                    style="
                       background: #f6f6f6;
                       pointer-events: none;
                       opacity: 0.4;
-                    " id="guided-curate-existing-Pennsieve-dataset-card" data-enable-next-button="true">
+                    "
+                    id="guided-curate-existing-Pennsieve-dataset-card"
+                    data-enable-next-button="true"
+                  >
                     <div class="card-head"></div>
                     <div class="card-body">
-                      <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-check"
-                        fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
+                      <svg
+                        width="40px"
+                        height="40px"
+                        viewBox="0 0 16 16"
+                        class="bi bi-folder-check"
+                        fill="var(--tagify-dd-color-primary)"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
                           d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                          fill="#565E6B" />
-                        <path fill-rule="evenodd"
+                          fill="#565E6B"
+                        />
+                        <path
+                          fill-rule="evenodd"
                           d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                          fill="#13716D" />
+                          fill="#13716D"
+                        />
                       </svg>
                       <h2>Continue curating an existing Pennsieve dataset</h2>
                     </div>
@@ -133,30 +199,239 @@
             <div id="guided-basic-description-panels" class="guided--panel">
               <div id="guided-curate-new-dataset-panel" class="guided--panel">
                 <div class="guided--question">
-                  <label class="guided--form-label">Dataset name:
-                    <i class="fas fa-info-circle popover-tooltip"
+                  <label class="guided--form-label"
+                    >Dataset name:
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
                       data-content="Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative."
-                      rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label>
-                  <input class="guided--input" type="text" name="guided-dataset-name"
-                    placeholder="Enter dataset name here" id="guided-dataset-name-input" />
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i
+                  ></label>
+                  <input
+                    class="guided--input"
+                    type="text"
+                    name="guided-dataset-name"
+                    placeholder="Enter dataset name here"
+                    id="guided-dataset-name-input"
+                  />
                 </div>
                 <div class="guided--question">
-                  <label class="guided--form-label">Dataset subtitle:
-                    <i class="fas fa-info-circle popover-tooltip"
+                  <label class="guided--form-label"
+                    >Dataset subtitle:
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
                       data-content="Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published."
-                      rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label>
-                  <textarea class="guided--input guided--text-area" type="text" name="guided-dataset-subtitle"
-                    placeholder="Enter datset subtitle here" id="guided-dataset-subtitle-input"
-                    style="height: 7.5em; padding-bottom: 20px"></textarea>
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i
+                  ></label>
+                  <textarea
+                    class="guided--input guided--text-area"
+                    type="text"
+                    name="guided-dataset-subtitle"
+                    placeholder="Enter datset subtitle here"
+                    id="guided-dataset-subtitle-input"
+                    style="height: 7.5em; padding-bottom: 20px"
+                  ></textarea>
                   <p>
-                    <span id="guided-subtitle-char-count" style="
+                    <span
+                      id="guided-subtitle-char-count"
+                      style="
                         position: relative;
                         bottom: 20px;
                         color: rgb(117, 107, 107);
-                      ">
+                      "
+                    >
                       256 characters left
                     </span>
                   </p>
+                </div>
+                <div class="guided--question show">
+                  <label class="guided--text-sub-step"
+                    >Please add a banner image to your dataset:
+                  </label>
+                  <div
+                    class="field"
+                    style="display: flex; justify-content: center; width: 100%"
+                  >
+                    <button
+                      id="guided-button-add-banner-image"
+                      class="btn_animated"
+                      style="
+                        width: 180px;
+                        border: none !important;
+                        margin-bottom: 15px;
+                      "
+                    >
+                      Add banner image
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="modal fade"
+                  id="guided-banner-image-modal"
+                  tabindex="-1"
+                  role="dialog"
+                  data-backdrop="false"
+                  style="
+                    background-color: rgba(0, 0, 0, 0.5);
+                    width: 100%;
+                    height: 100%;
+                  "
+                >
+                  <div
+                    class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+                    role="document"
+                  >
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4
+                          class="modal-title"
+                          id="guided-edit_banner_image_title"
+                        >
+                          Add a banner image
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+                  <br/><br/>
+                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
+                            rel="popover"
+                            data-html="true"
+                            data-placement="bottom"
+                            data-trigger="hover"
+                          ></i>
+                        </h4>
+                        <button
+                          type="button"
+                          class="close"
+                          data-dismiss="modal"
+                        >
+                          <i
+                            style="color: red; font-size: 25px"
+                            class="far fa-window-close"
+                          ></i>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <div
+                          id="guided-div-editbanner-img"
+                          style="display: flex; flex-direction: row"
+                        >
+                          <div
+                            id="guided-div-img-container-holder"
+                            class="img-container"
+                          >
+                            Imported image will be shown here. <br />You will be
+                            able to crop it before uploading.
+                          </div>
+
+                          <div
+                            id="guided-div-img-container"
+                            class="img-container"
+                            style="display: none; flex-direction: column"
+                          >
+                            <img
+                              id="guided-image-banner"
+                              class="banner-img"
+                              width="100%"
+                            />
+                            <p
+                              id="guided-para-path-image"
+                              style="
+                                margin-top: 0.5em;
+                                text-align: center;
+                                display: none;
+                              "
+                            ></p>
+                          </div>
+                        </div>
+                        <p
+                          id="guided-para-dataset-banner-image-status"
+                          style="
+                            text-align: center;
+                            font-weight: 400;
+                            color: var(--color-light-green);
+                            font-size: 15px;
+                          "
+                        ></p>
+                      </div>
+                      <div
+                        class="modal-footer"
+                        style="display: flex; justify-content: space-between"
+                      >
+                        <div
+                          style="
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: center;
+                          "
+                        >
+                          <div
+                            style="
+                              display: flex;
+                              flex-direction: column;
+                              justify-content: center;
+                              align-items: center;
+                              width: 100%;
+                            "
+                          >
+                            <button
+                              id="guided-button-import-banner-image"
+                              type="button"
+                              class="btn btn-primary"
+                              style="border-radius: 4px"
+                            >
+                              Import image
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="container-cropped-image">
+                          <div
+                            class="banner-image-size"
+                            style="width: 380px; text-align: center"
+                          >
+                            <span class="crop-image-text"
+                              >Cropped dimensions (must be between 512px and
+                              2048px):
+                            </span>
+                          </div>
+                          <input
+                            class="banner-image-size input"
+                            style="
+                              width: 70px;
+                              text-align: center;
+                              pointer-events: none;
+                            "
+                            id="guided-form-banner-height"
+                            type="text"
+                            readonly="readonly"
+                            size="7"
+                          />
+                          <div
+                            class="banner-image-size"
+                            style="width: 30px; text-align: center"
+                          >
+                            <span class="crop-image-text">px</span>
+                          </div>
+                        </div>
+
+                        <button
+                          id="guided-save-banner-image"
+                          type="button"
+                          class="btn btn-primary"
+                          style="border-radius: 4px; visibility: hidden"
+                        >
+                          Save changes
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="guided--question">
                   <h1 class="guided--text-sub-step">
@@ -165,115 +440,14 @@
                   </h1>
                 </div>
               </div>
-              <div id="guided-curate-existing-local-dataset-panel" class="guided--panel hidden"></div>
-              <div id="guided-curate-existing-Pennsieve-dataset-panel" class="guided--panel hidden"></div>
-            </div>
-          </div>
-
-          <div id="guided-banner-image-addition-tab" class="guided--panel hidden">
-            <div class="guided--question show">
-              <label class="guided--text-sub-step">Please add a banner image to your dataset:
-              </label>
-              <div class="field" style="display: flex; justify-content: center; width: 100%">
-                <button id="guided-button-add-banner-image" class="btn_animated" style="
-                    width: 180px;
-                    border: none !important;
-                    margin-bottom: 15px;
-                  ">
-                  Add banner image
-                </button>
-              </div>
-              <p class="hidden" style="color: red; width: 500px; text-align: left; margin: auto"
-                id="guided-input-destination-getting-started-locally-warning-message"></p>
-            </div>
-            <div class="modal fade" id="guided-banner-image-modal" tabindex="-1" role="dialog" data-backdrop="false"
-              style="
-                background-color: rgba(0, 0, 0, 0.5);
-                width: 100%;
-                height: 100%;
-              ">
-              <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h4 class="modal-title" id="guided-edit_banner_image_title">
-                      Add a banner image
-                      <i class="fas fa-info-circle popover-tooltip"
-                        data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
-                  <br/><br/>
-                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
-                        rel="popover" data-html="true" data-placement="bottom" data-trigger="hover"></i>
-                    </h4>
-                    <button type="button" class="close" data-dismiss="modal">
-                      <i style="color: red; font-size: 25px" class="far fa-window-close"></i>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <div id="guided-div-editbanner-img" style="display: flex; flex-direction: row">
-                      <div id="guided-div-img-container-holder" class="img-container">
-                        Imported image will be shown here. <br />You will be
-                        able to crop it before uploading.
-                      </div>
-
-                      <div id="guided-div-img-container" class="img-container"
-                        style="display: none; flex-direction: column">
-                        <img id="guided-image-banner" class="banner-img" width="100%" />
-                        <p id="guided-para-path-image" style="
-                            margin-top: 0.5em;
-                            text-align: center;
-                            display: none;
-                          "></p>
-                      </div>
-                    </div>
-                    <p id="guided-para-dataset-banner-image-status" style="
-                        text-align: center;
-                        font-weight: 400;
-                        color: var(--color-light-green);
-                        font-size: 15px;
-                      "></p>
-                  </div>
-                  <div class="modal-footer" style="display: flex; justify-content: space-between">
-                    <div style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: center;
-                      ">
-                      <div style="
-                          display: flex;
-                          flex-direction: column;
-                          justify-content: center;
-                          align-items: center;
-                          width: 100%;
-                        ">
-                        <button id="guided-button-import-banner-image" type="button" class="btn btn-primary"
-                          style="border-radius: 4px">
-                          Import image
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="container-cropped-image">
-                      <div class="banner-image-size" style="width: 380px; text-align: center">
-                        <span class="crop-image-text">Cropped dimensions (must be between 512px and
-                          2048px):
-                        </span>
-                      </div>
-                      <input class="banner-image-size input" style="
-                          width: 70px;
-                          text-align: center;
-                          pointer-events: none;
-                        " id="guided-form-banner-height" type="text" readonly="readonly" size="7" />
-                      <div class="banner-image-size" style="width: 30px; text-align: center">
-                        <span class="crop-image-text">px</span>
-                      </div>
-                    </div>
-
-                    <button id="guided-save-banner-image" type="button" class="btn btn-primary"
-                      style="border-radius: 4px; visibility: hidden">
-                      Save changes
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <div
+                id="guided-curate-existing-local-dataset-panel"
+                class="guided--panel hidden"
+              ></div>
+              <div
+                id="guided-curate-existing-Pennsieve-dataset-panel"
+                class="guided--panel hidden"
+              ></div>
             </div>
           </div>
 
@@ -285,34 +459,70 @@
                     Local dataset location:
                   </h5>
                 </div>
-                <div class="guided--dataset-content-container guided-change-dataset-name">
-                  <h5 class="guided--dataset-content guidedDatasetPath" id="guided-dataset-path"></h5>
+                <div
+                  class="guided--dataset-content-container guided-change-dataset-name"
+                >
+                  <h5
+                    class="guided--dataset-content guidedDatasetPath"
+                    id="guided-dataset-path"
+                  ></h5>
                 </div>
               </div>
             </div>
             <div class="guided--question show" id="guided_dataset_name_div">
-              <label class="guided--text-sub-step">What is the location of the dataset?
-                <i class="fas fa-info-circle popover-tooltip" data-content="Dataset location text" rel="popover"
-                  data-html="true" data-placement="right" data-trigger="hover"></i>
+              <label class="guided--text-sub-step"
+                >What is the location of the dataset?
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="Dataset location text"
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
               </label>
-              <div class="field" style="display: flex; justify-content: center; width: 100%">
-                <button id="guided-input-destination-getting-started-locally" class="btn_animated"
-                  style="width: 210px; border: none !important">
+              <div
+                class="field"
+                style="display: flex; justify-content: center; width: 100%"
+              >
+                <button
+                  id="guided-input-destination-getting-started-locally"
+                  class="btn_animated"
+                  style="width: 210px; border: none !important"
+                >
                   Browse here
                 </button>
               </div>
-              <p class="hidden" style="color: red; width: 500px; text-align: left; margin: auto"
-                id="guided-input-destination-getting-started-locally-warning-message"></p>
+              <p
+                class="hidden"
+                style="color: red; width: 500px; text-align: left; margin: auto"
+                id="guided-input-destination-getting-started-locally-warning-message"
+              ></p>
             </div>
           </div>
         </div>
 
-        <div id="prepare-pennsieve-metadata-parent-tab" class="guided--parent-tab hidden">
+        <div
+          id="prepare-pennsieve-metadata-parent-tab"
+          class="guided--parent-tab hidden"
+        >
           <div class="guided--capsule-container">
-            <div class="guided--capsule" id="guided-designate-pi-owner-capsule"></div>
-            <div class="guided--capsule" id="guided-designate-permissions-capsule"></div>
-            <div class="guided--capsule" id="add-edit-description-tags-capsule"></div>
-            <div class="guided--capsule" id="guided-assign-license-capsule"></div>
+            <div
+              class="guided--capsule"
+              id="guided-designate-pi-owner-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-designate-permissions-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="add-edit-description-tags-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-assign-license-capsule"
+            ></div>
           </div>
           <div id="guided-designate-pi-owner-tab" class="guided--panel">
             <div class="guided--container-data-display">
@@ -322,53 +532,78 @@
                     Designated PI owner:
                   </h5>
                 </div>
-                <div class="guided--dataset-content-container guided-change-dataset-name">
+                <div
+                  class="guided--dataset-content-container guided-change-dataset-name"
+                >
                   <h5 class="guided--dataset-content guidedDatasetOwner"></h5>
                 </div>
               </div>
             </div>
 
             <div class="guided--question">
-              <label class="guided--text-sub-step">Designate a PI Owner:
-                <i class="fas fa-info-circle popover-tooltip"
+              <label class="guided--text-sub-step"
+                >Designate a PI Owner:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
                   data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset."
-                  rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
               </label>
               <div class="guided--container-permissions">
                 <div style="flex-grow: 1">
-                  <div class="field" style="
+                  <div
+                    class="field"
+                    style="
                       display: flex;
                       width: 100%;
                       justify-content: center;
                       align-items: center;
                       flex-direction: column;
-                    ">
-                    <div id="guided_pi_bootstrap_select_div" style="
+                    "
+                  >
+                    <div
+                      id="guided_pi_bootstrap_select_div"
+                      style="
                         display: flex;
                         flex-direction: row;
                         justify-content: space-around;
                         width: 100%;
-                      ">
-                      <select class="selectpicker" data-live-search="true" style="
+                      "
+                    >
+                      <select
+                        class="selectpicker"
+                        data-live-search="true"
+                        style="
                           padding: 8px 12px;
                           margin-right: 30px;
                           height: 38px;
                           border-radius: 5px;
                           border: 1px solid black;
-                        " id="guided_bf_list_users_pi">
+                        "
+                        id="guided_bf_list_users_pi"
+                      >
                         <option>Select PI</option>
                       </select>
                     </div>
                   </div>
                 </div>
-                <button id="guided-button-add-permission-pi" class="btn_animated"
-                  style="width: 155px; border: none !important">
+                <button
+                  id="guided-button-add-permission-pi"
+                  class="btn_animated"
+                  style="width: 155px; border: none !important"
+                >
                   Designate PI owner
                 </button>
               </div>
             </div>
           </div>
-          <div id="guided-designate-permissions-tab" class="guided--panel hidden">
+          <div
+            id="guided-designate-permissions-tab"
+            class="guided--panel hidden"
+          >
             <div class="guided--container-data-display">
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
@@ -376,8 +611,10 @@
                     Designated user permissions:
                   </h5>
                 </div>
-                <div class="guided--container-dataset-info guidedDatasetUserPermissions"
-                  id="guided-dataset-user-permissions"></div>
+                <div
+                  class="guided--container-dataset-info guidedDatasetUserPermissions"
+                  id="guided-dataset-user-permissions"
+                ></div>
               </div>
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
@@ -385,113 +622,167 @@
                     Designated team permissions:
                   </h5>
                 </div>
-                <div class="guided--container-dataset-info guidedDatasetTeamPermissions"></div>
+                <div
+                  class="guided--container-dataset-info guidedDatasetTeamPermissions"
+                ></div>
               </div>
             </div>
 
             <div class="guided--question">
-              <label class="guided--text-sub-step">Designate user permissions:
-                <i class="fas fa-info-circle popover-tooltip"
+              <label class="guided--text-sub-step"
+                >Designate user permissions:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
                   data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
-                  rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
               </label>
               <div class="guided--container-permissions">
                 <div style="flex-grow: 1">
-                  <div class="field" style="
+                  <div
+                    class="field"
+                    style="
                       display: flex;
                       width: 100%;
                       justify-content: center;
                       align-items: center;
                       flex-direction: column;
-                    ">
-                    <div id="guided_user_bootstrap_select_div" style="
+                    "
+                  >
+                    <div
+                      id="guided_user_bootstrap_select_div"
+                      style="
                         display: flex;
                         flex-direction: row;
                         justify-content: space-around;
                         width: 100%;
-                      ">
-                      <select class="selectpicker" data-live-search="true" style="
+                      "
+                    >
+                      <select
+                        class="selectpicker"
+                        data-live-search="true"
+                        style="
                           padding: 8px 12px;
                           margin-right: 30px;
                           height: 38px;
                           border-radius: 5px;
                           border: 1px solid black;
-                        " id="guided_bf_list_users">
+                        "
+                        id="guided_bf_list_users"
+                      >
                         <option>Select user</option>
                       </select>
                     </div>
                   </div>
                 </div>
-                <select class="my-dropdown" style="
+                <select
+                  class="my-dropdown"
+                  style="
                     width: 150px;
                     margin: 0px 10px;
                     cursor: pointer;
                     height: 35px;
-                  " id="select-permission-list-3">
+                  "
+                  id="select-permission-list-3"
+                >
                   <option value="Select role">Select role</option>
                   <option value="viewer">viewer</option>
                   <option value="manager">manager</option>
-                  <option value="editor">editor</option>
-                </select><button id="guided-button-add-permission-user" class="btn_animated" style="
+                  <option value="editor">editor</option></select
+                ><button
+                  id="guided-button-add-permission-user"
+                  class="btn_animated"
+                  style="
                     width: 160px;
                     min-width: 160px;
                     border: none !important;
                     margin: 0px;
-                  ">
+                  "
+                >
                   Designate permission
                 </button>
               </div>
             </div>
             <div class="guided--question">
-              <label class="guided--text-sub-step" style="margin-top: 18px !important">Designate team permissions:
-                <i class="fas fa-info-circle popover-tooltip"
+              <label
+                class="guided--text-sub-step"
+                style="margin-top: 18px !important"
+                >Designate team permissions:
+                <i
+                  class="fas fa-info-circle popover-tooltip"
                   data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
-                  rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
               </label>
               <div class="guided--container-permissions">
                 <div style="flex-grow: 1">
-                  <div class="field" style="
+                  <div
+                    class="field"
+                    style="
                       display: flex;
                       width: 100%;
                       justify-content: center;
                       align-items: center;
                       flex-direction: column;
-                    ">
-                    <div id="guided_team_bootstrap_select_div" style="
+                    "
+                  >
+                    <div
+                      id="guided_team_bootstrap_select_div"
+                      style="
                         display: flex;
                         flex-direction: row;
                         justify-content: space-around;
                         width: 100%;
-                      ">
-                      <select class="selectpicker" data-live-search="true" style="
+                      "
+                    >
+                      <select
+                        class="selectpicker"
+                        data-live-search="true"
+                        style="
                           padding: 8px 12px;
                           margin-right: 30px;
                           height: 38px;
                           border-radius: 5px;
                           border: 1px solid black;
-                        " id="guided_bf_list_teams">
+                        "
+                        id="guided_bf_list_teams"
+                      >
                         <option>Select team</option>
                       </select>
                     </div>
                   </div>
                 </div>
-                <select class="my-dropdown" style="
+                <select
+                  class="my-dropdown"
+                  style="
                     width: 150px;
                     margin: 0px 10px;
                     cursor: pointer;
                     height: 35px;
-                  " id="select-permission-list-4">
+                  "
+                  id="select-permission-list-4"
+                >
                   <option value="Select role">Select role</option>
                   <option value="viewer">viewer</option>
                   <option value="manager">manager</option>
                   <option value="editor">editor</option>
                 </select>
-                <button id="guided-button-add-permission-team" class="btn_animated" style="
+                <button
+                  id="guided-button-add-permission-team"
+                  class="btn_animated"
+                  style="
                     width: 160px;
                     min-width: 160px;
                     border: none !important;
                     margin: 0px;
-                  ">
+                  "
+                >
                   Designate permission
                 </button>
               </div>
@@ -503,46 +794,86 @@
                 Enter your descriptions in the section below
               </h1>
               <div class="guided--input-container">
-                <label class="guided--form-label">Study purpose:
-                  <i class="fas fa-info-circle popover-tooltip"
+                <label class="guided--form-label"
+                  >Study purpose:
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
                     data-content="Enter a paragraph that explains the purpose of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
-                    rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                    style="margin-left: 5px; color: black"></i>
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
                 </label>
-                <textarea class="guided--input guided--text-area guided--text-data-description" type="text"
-                  name="guided-study-purpose" placeholder="Enter your study purpose here"
-                  id="guided-ds-description-study-purpose"></textarea>
+                <textarea
+                  class="guided--input guided--text-area guided--text-data-description"
+                  type="text"
+                  name="guided-study-purpose"
+                  placeholder="Enter your study purpose here"
+                  id="guided-ds-description-study-purpose"
+                ></textarea>
               </div>
               <div class="guided--input-container">
-                <label class="guided--form-label">Data collection:
-                  <i class="fas fa-info-circle popover-tooltip"
+                <label class="guided--form-label"
+                  >Data collection:
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
                     data-content="Enter a paragraph that explains the method you used for data collection below. We will enter the title for this section to your readme for you. Refrain from using markdown."
-                    rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                    style="margin-left: 5px; color: black"></i>
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
                 </label>
-                <textarea class="guided--input guided--text-area guided--text-data-description" type="text"
-                  name="guided-data-collection" placeholder="Enter your data collection here"
-                  id="guided-ds-description-data-collection"></textarea>
+                <textarea
+                  class="guided--input guided--text-area guided--text-data-description"
+                  type="text"
+                  name="guided-data-collection"
+                  placeholder="Enter your data collection here"
+                  id="guided-ds-description-data-collection"
+                ></textarea>
               </div>
               <div class="guided--input-container">
-                <label class="guided--form-label">Primary conclusion:
-                  <i class="fas fa-info-circle popover-tooltip"
+                <label class="guided--form-label"
+                  >Primary conclusion:
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
                     data-content="Enter a paragraph that explains the primary conclusion of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
-                    rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                    style="margin-left: 5px; color: black"></i>
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                    style="margin-left: 5px; color: black"
+                  ></i>
                 </label>
-                <textarea class="guided--input guided--text-area guided--text-data-description" type="text"
-                  name="guided-primary-conclusion" placeholder="Enter your primary conclusion here"
-                  id="guided-ds-description-primary-conclusion"></textarea>
+                <textarea
+                  class="guided--input guided--text-area guided--text-data-description"
+                  type="text"
+                  name="guided-primary-conclusion"
+                  placeholder="Enter your primary conclusion here"
+                  id="guided-ds-description-primary-conclusion"
+                ></textarea>
               </div>
             </div>
             <div class="guided--question show">
               <h1 class="guided--text-sub-step">
-                Enter dataset tags below<i class="fas fa-info-circle popover-tooltip"
+                Enter dataset tags below<i
+                  class="fas fa-info-circle popover-tooltip"
                   data-content="Add, edit, or remive metadata tags that describe key elements of your research. This will make your datasets more easily searchable once published. Click the x to delete a tag. Double click an existing tag to edit its contents."
-                  rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                  rel="popover"
+                  data-html="true"
+                  data-placement="right"
+                  data-trigger="hover"
+                ></i>
               </h1>
-              <input id="guided-tagify-dataset-tags" name="guided-tags" value="" autofocus />
+              <input
+                id="guided-tagify-dataset-tags"
+                name="guided-tags"
+                value=""
+                autofocus
+              />
             </div>
           </div>
           <div id="guided-assign-license-tab" class="guided--panel hidden">
@@ -568,25 +899,47 @@
                   Attribution (CC-BY) license to your SPARC dataset.
                 </p>
               </div>
-              <button id="guided-button-add-license" class="btn_animated lg" style="
+              <button
+                id="guided-button-add-license"
+                class="btn_animated lg"
+                style="
                   margin: 15 10px;
                   width: 290px;
                   height: 50px;
                   font-size: 15px;
-                ">
+                "
+              >
                 Assign Creative Commons Attribution (CC-BY) license
               </button>
             </div>
           </div>
         </div>
 
-        <div id="prepare-dataset-metadata-parent-tab" class="guided--parent-tab hidden">
+        <div
+          id="prepare-dataset-metadata-parent-tab"
+          class="guided--parent-tab hidden"
+        >
           <div class="guided--capsule-container">
-            <div class="guided--capsule" id="guided-create-subjects-metadata-capsule"></div>
-            <div class="guided--capsule" id="guided-create-submission-metadata-capsule"></div>
-            <div class="guided--capsule" id="guided-create-description-metadata-capsule"></div>
-            <div class="guided--capsule" id="guided-create-readme-metadata-capsule"></div>
-            <div class="guided--capsule" id="guided-create-changes-metadata-capsule"></div>
+            <div
+              class="guided--capsule"
+              id="guided-create-subjects-metadata-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-create-submission-metadata-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-create-description-metadata-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-create-readme-metadata-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-create-changes-metadata-capsule"
+            ></div>
           </div>
           <div id="guided-create-subjects-metadata-tab" class="guided--panel">
             <div class="guided--question" id="guided-subjects-intro">
@@ -594,17 +947,28 @@
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-generate-new-subjects-card" data-enable-next-button="true">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-generate-new-subjects-card"
+                  data-enable-next-button="true"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
                     <div class="card-body">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-accent)"
-                        class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40px"
+                        height="40px"
+                        fill="var(--color-accent)"
+                        class="bi bi-file-earmark-plus"
+                        viewBox="0 0 16 16"
+                      >
                         <path
-                          d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
+                          d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                        />
                         <path
-                          d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
+                          d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                        />
                       </svg>
                       <h2 style="margin-top: 2px">
                         I want to start a new subjects.xlsx file
@@ -612,11 +976,16 @@
                     </div>
                   </div>
                 </div>
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-continue-existing-subjects-card">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-continue-existing-subjects-card"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-bg-orange)"
+                    ></i>
                     <h2 style="margin-top: 2px">
                       I want to continue working on an existing submission.xlsx
                       file
@@ -624,38 +993,64 @@
                   </div>
                 </div>
               </div>
-              <div id="guided-create-submission-subjects-panels" class="guided--panel">
-                <div id="guided-generate-new-subjects-panel" class="guided--panel hidden">
+              <div
+                id="guided-create-submission-subjects-panels"
+                class="guided--panel"
+              >
+                <div
+                  id="guided-generate-new-subjects-panel"
+                  class="guided--panel hidden"
+                >
                   <h1 class="guided--text-sub-step">
                     Please click the button below to add a subject.
                   </h1>
-                  <button id="guided-add-subject-button" class="btn_animated"
-                    style="width: 200px; border: none !important">
+                  <button
+                    id="guided-add-subject-button"
+                    class="btn_animated"
+                    style="width: 200px; border: none !important"
+                  >
                     Add a subject
                   </button>
                 </div>
-                <div id="guided-continue-existing-subjects-panel" class="guided--panel hidden"></div>
+                <div
+                  id="guided-continue-existing-subjects-panel"
+                  class="guided--panel hidden"
+                ></div>
               </div>
             </div>
             <div id="guided-add-subject-div" class="hidden">ASDF</div>
           </div>
-          <div id="guided-create-submission-metadata-tab" class="guided--panel hidden">
+          <div
+            id="guided-create-submission-metadata-tab"
+            class="guided--panel hidden"
+          >
             <div class="guided--question show">
               <h1 class="guided--text-sub-step">
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-generate-new-submission-card" data-enable-next-button="true">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-generate-new-submission-card"
+                  data-enable-next-button="true"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
                     <div class="card-body">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-accent)"
-                        class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40px"
+                        height="40px"
+                        fill="var(--color-accent)"
+                        class="bi bi-file-earmark-plus"
+                        viewBox="0 0 16 16"
+                      >
                         <path
-                          d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
+                          d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                        />
                         <path
-                          d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
+                          d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                        />
                       </svg>
                       <h2 style="margin-top: 2px">
                         I want to start a new submission.xlsx file
@@ -663,11 +1058,16 @@
                     </div>
                   </div>
                 </div>
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-continue-existing-submission-card">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-continue-existing-submission-card"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-bg-orange)"
+                    ></i>
                     <h2 style="margin-top: 2px">
                       I want to continue working on an existing submission.xlsx
                       file
@@ -675,8 +1075,14 @@
                   </div>
                 </div>
               </div>
-              <div id="guided-create-submission-metadata-panels" class="guided--panel">
-                <div id="guided-generate-new-submission-panel" class="guided--panel hidden">
+              <div
+                id="guided-create-submission-metadata-panels"
+                class="guided--panel"
+              >
+                <div
+                  id="guided-generate-new-submission-panel"
+                  class="guided--panel hidden"
+                >
                   <div class="ui styled fluid accordion guided--accordion">
                     <div class="title active">
                       <i class="dropdown icon active"></i>Award and milestone
@@ -685,40 +1091,74 @@
                     <div class="content active">
                       <div class="guided--accordion-field-container">
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">SPARC Award number
-                            <i class="fas fa-info-circle popover-tooltip"
-                              data-content="SPARC award associated with the dataset." rel="popover"
-                              data-placement="right" data-html="true" data-trigger="hover"></i></label>
+                          <label class="guided--label-accordion-field"
+                            >SPARC Award number
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
+                              data-content="SPARC award associated with the dataset."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                            ></i
+                          ></label>
                           <div class="ui input modified">
-                            <input class="guided-award-and-milestone-information" type="text"
-                              id="guided-submission-sparc-award" placeholder="Type here..." />
+                            <input
+                              class="guided-award-and-milestone-information"
+                              type="text"
+                              id="guided-submission-sparc-award"
+                              placeholder="Type here..."
+                            />
                           </div>
                         </div>
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Enter the milestone(s):
-                            <i class="fas fa-info-circle popover-tooltip" data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+                          <label class="guided--label-accordion-field"
+                            >Enter the milestone(s):
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
+                              data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
                                   <br/><br/>
-                                  Hit 'Enter' to register it." rel="popover" data-placement="right" data-html="true"
-                              data-trigger="hover"></i>
+                                  Hit 'Enter' to register it."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                            ></i>
                           </label>
-                          <input class="guided-award-and-milestone-information"
-                            id="guided-tagify-submission-milestone-tags" name="milestone-tags"
-                            placeholder="Tye here and hit 'Enter' after each keyword." value="" autofocus />
+                          <input
+                            class="guided-award-and-milestone-information"
+                            id="guided-tagify-submission-milestone-tags"
+                            name="milestone-tags"
+                            placeholder="Tye here and hit 'Enter' after each keyword."
+                            value=""
+                            autofocus
+                          />
                         </div>
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Completion date:
-                            <i class="fas fa-info-circle popover-tooltip"
+                          <label class="guided--label-accordion-field"
+                            >Completion date:
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
                               data-content="Enter the completion date for your milestone(s) specified above."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 90%">
                             <div class="ui input modified">
-                              <select class="guided-award-and-milestone-information"
-                                id="guided-submission-completion-date">
+                              <select
+                                class="guided-award-and-milestone-information"
+                                id="guided-submission-completion-date"
+                              >
                                 <option disabled selected hidden>
                                   Select an option
                                 </option>
-                                <option id="guided-date-entry-pseudo-parent" value="Enter my own date">
+                                <option
+                                  id="guided-date-entry-pseudo-parent"
+                                  value="Enter my own date"
+                                >
                                   Enter my own date
                                 </option>
                               </select>
@@ -728,42 +1168,67 @@
                       </div>
                     </div>
                   </div>
-                  <button id="guided-generate-submission-file" class="btn_animated"
-                    style="width: 200px; border: none !important">
+                  <button
+                    id="guided-generate-submission-file"
+                    class="btn_animated"
+                    style="width: 200px; border: none !important"
+                  >
                     Generate submission file
                   </button>
                 </div>
-                <div id="guided-continue-existing-submission-panel" class="guided--panel hidden">
+                <div
+                  id="guided-continue-existing-submission-panel"
+                  class="guided--panel hidden"
+                >
                   b
                 </div>
               </div>
             </div>
           </div>
-          <div id="guided-create-description-metadata-tab" class="guided--panel hidden">
+          <div
+            id="guided-create-description-metadata-tab"
+            class="guided--panel hidden"
+          >
             <div class="guided--question show">
               <h1 class="guided--text-sub-step">
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
-                <div class="option-card radio-button guided--generate-location-card non-selected guided--card-large"
-                  id="guided-generate-new-description-card" data-enable-next-button="true">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected guided--card-large"
+                  id="guided-generate-new-description-card"
+                  data-enable-next-button="true"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-accent)"
-                      class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40px"
+                      height="40px"
+                      fill="var(--color-accent)"
+                      class="bi bi-file-earmark-plus"
+                      viewBox="0 0 16 16"
+                    >
                       <path
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
+                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                      />
                       <path
-                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
+                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                      />
                     </svg>
                     <h2>I want to start a new dataset_description.xlsx file</h2>
                   </div>
                 </div>
-                <div class="option-card radio-button guided--generate-location-card non-selected guided--card-large"
-                  id="guided-continue-existing-description-card">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected guided--card-large"
+                  id="guided-continue-existing-description-card"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-bg-orange)"
+                    ></i>
                     <h2>
                       I want to continue working on an existing
                       dataset_description.xlsx file
@@ -771,8 +1236,14 @@
                   </div>
                 </div>
               </div>
-              <div id="guided-create-description-metadata-panels" class="guided--panel">
-                <div id="guided-generate-new-description-panel" class="guided--panel hidden">
+              <div
+                id="guided-create-description-metadata-panels"
+                class="guided--panel"
+              >
+                <div
+                  id="guided-generate-new-description-panel"
+                  class="guided--panel hidden"
+                >
                   <div class="ui styled fluid accordion guided--accordion">
                     <div class="title active">
                       <i class="dropdown icon active"></i>Dataset Information
@@ -781,15 +1252,25 @@
                     <div class="content active">
                       <div class="guided--accordion-field-container">
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Dataset type:
-                            <i class="fas fa-info-circle popover-tooltip"
+                          <label class="guided--label-accordion-field"
+                            >Dataset type:
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
                               data-content="The type of this dataset, specifically whether it is experimental or computation. The only valid values are experimental or computational. <br><br> If experimental subjects are required, if computational, subjects are not required. Set to experimental by default, if you are submitting a computational study be sure to change it."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <select id="guided-ds-type" class="ui selection dropdown" placeholder="Type here">
+                              <select
+                                id="guided-ds-type"
+                                class="ui selection dropdown"
+                                placeholder="Type here"
+                              >
                                 <option value="experimental">Experiment</option>
                                 <option value="computational">
                                   Computational
@@ -807,11 +1288,18 @@
                     <div class="content">
                       <div class="guided--accordion-field-container">
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Number of subjects in your dataset:
-                            <i class="fas fa-info-circle popover-tooltip" data-content="Enter the number of unique subjects in this dataset. Should match with the number of rows in the
-                            subjects metadata file. Set to 0 if there are no subjects." rel="popover"
-                              data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                          <label class="guided--label-accordion-field"
+                            >Number of subjects in your dataset:
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
+                              data-content="Enter the number of unique subjects in this dataset. Should match with the number of rows in the
+                            subjects metadata file. Set to 0 if there are no subjects."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
@@ -820,11 +1308,18 @@
                           </div>
                         </div>
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Number of samples in your dataset:
-                            <i class="fas fa-info-circle popover-tooltip" data-content="Enter the number of unique samples in this dataset. Should match the number of rows in the
-                            samples metadata file. Set to 0 if there are no samples." rel="popover"
-                              data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                          <label class="guided--label-accordion-field"
+                            >Number of samples in your dataset:
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
+                              data-content="Enter the number of unique samples in this dataset. Should match the number of rows in the
+                            samples metadata file. Set to 0 if there are no samples."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
@@ -841,88 +1336,153 @@
                     <div class="content">
                       <div class="guided--accordion-field-container">
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Study organ system:<i
+                          <label class="guided--label-accordion-field"
+                            >Study organ system:<i
                               class="fas fa-info-circle popover-tooltip"
                               data-content="The major organ systems related to this study. <br><br> For example: spinal cord."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i></label>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i
+                          ></label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <input class="form-container-input-bf" type="text" id="guided-ds-study-organ-system"
-                                name="study organ system" placeholder="Type here..." style="font-size: 14px" />
+                              <input
+                                class="form-container-input-bf"
+                                type="text"
+                                id="guided-ds-study-organ-system"
+                                name="study organ system"
+                                placeholder="Type here..."
+                                style="font-size: 14px"
+                              />
                             </div>
                           </div>
                         </div>
 
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Study approach:<i
+                          <label class="guided--label-accordion-field"
+                            >Study approach:<i
                               class="fas fa-info-circle popover-tooltip"
                               data-content="The experimental approach or approaches taken in this study. <br><br> For example: electrophysiology."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <input type="text" class="form-container-input-bf" id="guided-ds-study-approach"
-                                name="study approach" placeholder="Type here..." style="font-size: 14px" />
+                              <input
+                                type="text"
+                                class="form-container-input-bf"
+                                id="guided-ds-study-approach"
+                                name="study approach"
+                                placeholder="Type here..."
+                                style="font-size: 14px"
+                              />
                             </div>
                           </div>
                         </div>
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Study technique:
-                            <i class="fas fa-info-circle popover-tooltip"
+                          <label class="guided--label-accordion-field"
+                            >Study technique:
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
                               data-content="The experimental techniques used in this study. <br><br> For example: patch clamp."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <input type="text" id="guided-ds-study-technique" class="form-container-input-bf"
-                                name="study technique" placeholder="Type here..." style="font-size: 14px" />
+                              <input
+                                type="text"
+                                id="guided-ds-study-technique"
+                                class="form-container-input-bf"
+                                name="study technique"
+                                placeholder="Type here..."
+                                style="font-size: 14px"
+                              />
                             </div>
                           </div>
                         </div>
                         <div class="guided--accordion-field">
                           <label class="guided--label-accordion-field">
-                            Study purpose:<i class="fas fa-info-circle popover-tooltip"
+                            Study purpose:<i
+                              class="fas fa-info-circle popover-tooltip"
                               data-content="A description of the study purpose for the structured abstract. <br><br> For example: This study was conducted to demonstrate data wranglers how to fill out dataset templates."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <textarea type="text" id="guided-ds-study-purpose" placeholder="Type here..." rows="6"
-                                style="font-size: 14px; width: 100%"></textarea>
+                              <textarea
+                                type="text"
+                                id="guided-ds-study-purpose"
+                                placeholder="Type here..."
+                                rows="6"
+                                style="font-size: 14px; width: 100%"
+                              ></textarea>
                             </div>
                           </div>
                         </div>
                         <div class="guided--accordion-field">
                           <label class="guided--label-accordion-field">
                             Study data collection:
-                            <i class="fas fa-info-circle popover-tooltip"
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
                               data-content="A description of the study data collection process for this dataset. Used to generate the structured abstract. <br><br> For example: Using an earlier version of this template we measured how much it confused data wranglers by counting the number of emails we had to exchange with them in order to fill it out."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <textarea type="text" id="guided-ds-study-data-collection" placeholder="Type here..."
-                                rows="6" style="font-size: 14px; width: 100%"></textarea>
+                              <textarea
+                                type="text"
+                                id="guided-ds-study-data-collection"
+                                placeholder="Type here..."
+                                rows="6"
+                                style="font-size: 14px; width: 100%"
+                              ></textarea>
                             </div>
                           </div>
                         </div>
                         <div class="guided--accordion-field">
                           <label class="guided--label-accordion-field">
                             Study primary conclusion:
-                            <i class="fas fa-info-circle popover-tooltip"
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
                               data-content="A description of the primary conclusion drawn from the study for the structured abstract. <br><br> For example: The primary conclusion of this study is that it is hard to make a good dataset template."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <textarea type="text" id="guided-ds-study-primary-conclusion" placeholder="Type here..."
-                                rows="6" style="font-size: 14px; width: 100%"></textarea>
+                              <textarea
+                                type="text"
+                                id="guided-ds-study-primary-conclusion"
+                                placeholder="Type here..."
+                                rows="6"
+                                style="font-size: 14px; width: 100%"
+                              ></textarea>
                             </div>
                           </div>
                         </div>
@@ -936,18 +1496,33 @@
                     <div class="content">
                       <div class="guided--accordion-field-container">
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">SPARC award number associated with this
-                            dataset:</label>
+                          <label class="guided--label-accordion-field"
+                            >SPARC award number associated with this
+                            dataset:</label
+                          >
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <input id="guided-ds-description-award-input" type="text" placeholder="Type here" />
+                              <input
+                                id="guided-ds-description-award-input"
+                                type="text"
+                                placeholder="Type here"
+                              />
                             </div>
                           </div>
                         </div>
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Contributor information:</label>
-                          <div id="guided-div-contributor-table-dd" style="display: none">
-                            <table class="ui celled table" style="text-align: center" id="guided-contributor-table-dd">
+                          <label class="guided--label-accordion-field"
+                            >Contributor information:</label
+                          >
+                          <div
+                            id="guided-div-contributor-table-dd"
+                            style="display: none"
+                          >
+                            <table
+                              class="ui celled table"
+                              style="text-align: center"
+                              id="guided-contributor-table-dd"
+                            >
                               <style>
                                 /* style for grabbed contributor row for moving contributors */
                                 .grab {
@@ -973,21 +1548,37 @@
                                     Corresponding author
                                   </th>
                                   <th style="width: 15%">
-                                    <i class="fas fa-info-circle popover-tooltip"
+                                    <i
+                                      class="fas fa-info-circle popover-tooltip"
                                       data-content="Click on the corresponding button to edit/delete a contributor."
-                                      rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i>
+                                      rel="popover"
+                                      data-placement="right"
+                                      data-html="true"
+                                      data-trigger="hover"
+                                    ></i>
                                   </th>
                                 </tr>
                               </thead>
                             </table>
                           </div>
                           <div style="display: flex">
-                            <div class="ui secondary submit button" style="margin: 20px 0"
-                              onclick="showContributorSweetalert(false, 'guided')">
-                              <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18"
-                                height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                            <div
+                              class="ui secondary submit button"
+                              style="margin: 20px 0"
+                              onclick="showContributorSweetalert(false, 'guided')"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                style="vertical-align: middle"
+                                width="18"
+                                height="18"
+                                fill="currentColor"
+                                class="bi bi-plus"
+                                viewBox="0 0 16 16"
+                              >
                                 <path
-                                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                                />
                               </svg>
                               Add a contributor
                             </div>
@@ -1002,14 +1593,23 @@
                     <div class="content">
                       <div class="guided--accordion-field-container">
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Protocol Information:</label>
+                          <label class="guided--label-accordion-field"
+                            >Protocol Information:</label
+                          >
                           <!--  this is where the table of protocol links will be -->
-                          <div style="margin: 10px 0; display: none" id="guided-div-protocol-link-table-dd">
-                            <table class="ui celled table" style="
+                          <div
+                            style="margin: 10px 0; display: none"
+                            id="guided-div-protocol-link-table-dd"
+                          >
+                            <table
+                              class="ui celled table"
+                              style="
                                 text-align: center;
                                 display: none;
                                 width: 100%;
-                              " id="guided-protocol-link-table-dd">
+                              "
+                              id="guided-protocol-link-table-dd"
+                            >
                               <style>
                                 /* style for grabbed contributor row for moving contributors */
                                 .grab {
@@ -1037,35 +1637,59 @@
                                     Description
                                   </th>
                                   <th style="width: 15%">
-                                    <i class="fas fa-info-circle popover-tooltip"
+                                    <i
+                                      class="fas fa-info-circle popover-tooltip"
                                       data-content="Click on the corresponding button to edit/delete a protocol."
-                                      rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i>
+                                      rel="popover"
+                                      data-placement="right"
+                                      data-html="true"
+                                      data-trigger="hover"
+                                    ></i>
                                   </th>
                                 </tr>
                               </thead>
                             </table>
                           </div>
                           <!--end here-->
-                          <div class="ui secondary submit button" style="
+                          <div
+                            class="ui secondary submit button"
+                            style="
                               margin-bottom: 10px;
                               margin-top: 15px;
                               width: 160px;
-                            " onclick="addProtocol('guided')">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18"
-                              height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                            "
+                            onclick="addProtocol('guided')"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              style="vertical-align: middle"
+                              width="18"
+                              height="18"
+                              fill="currentColor"
+                              class="bi bi-plus"
+                              viewBox="0 0 16 16"
+                            >
                               <path
-                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                              />
                             </svg>
                             Add a protocol
                           </div>
                         </div>
                         <div class="guided--accordion-field">
                           <label class="guided--label-accordion-field">
-                            Other Information:</label>
+                            Other Information:</label
+                          >
                           <!--  this is where the table of protocol links will be -->
-                          <div style="margin: 10px 0; display: none" id="guided-div-other-link-table-dd">
-                            <table class="ui celled table" style="text-align: center; display: none"
-                              id="guided-other-link-table-dd">
+                          <div
+                            style="margin: 10px 0; display: none"
+                            id="guided-div-other-link-table-dd"
+                          >
+                            <table
+                              class="ui celled table"
+                              style="text-align: center; display: none"
+                              id="guided-other-link-table-dd"
+                            >
                               <style>
                                 /* style for grabbed contributor row for moving contributors */
                                 .grab {
@@ -1093,24 +1717,41 @@
                                     Description
                                   </th>
                                   <th style="width: 15%">
-                                    <i class="fas fa-info-circle popover-tooltip"
+                                    <i
+                                      class="fas fa-info-circle popover-tooltip"
                                       data-content="Click on the corresponding button to edit/delete a link."
-                                      rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i>
+                                      rel="popover"
+                                      data-placement="right"
+                                      data-html="true"
+                                      data-trigger="hover"
+                                    ></i>
                                   </th>
                                 </tr>
                               </thead>
                             </table>
                           </div>
                           <!-- end here -->
-                          <div class="ui secondary submit button" style="
+                          <div
+                            class="ui secondary submit button"
+                            style="
                               margin-bottom: 10px;
                               margin-top: 15px;
                               width: 160px;
-                            " onclick="addAdditionalLink('guided')">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18"
-                              height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                            "
+                            onclick="addAdditionalLink('guided')"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              style="vertical-align: middle"
+                              width="18"
+                              height="18"
+                              fill="currentColor"
+                              class="bi bi-plus"
+                              viewBox="0 0 16 16"
+                            >
                               <path
-                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                              />
                             </svg>
                             Add a URL/DOI
                           </div>
@@ -1125,85 +1766,142 @@
                     <div class="content">
                       <div class="guided--accordion-field-container">
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Study collection title:
-                            <i class="fas fa-info-circle popover-tooltip"
+                          <label class="guided--label-accordion-field"
+                            >Study collection title:
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
                               data-content="Title of the larger collection of to which this dataset belongs. <br><br> For example: My SPARC research study."
-                              rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <input id="guided-ds-study-collection-title" class="form-container-input-bf"
-                                placeholder="Type here..." />
+                              <input
+                                id="guided-ds-study-collection-title"
+                                class="form-container-input-bf"
+                                placeholder="Type here..."
+                              />
                             </div>
                           </div>
                         </div>
                         <div class="guided--accordion-field">
-                          <label class="guided--label-accordion-field">Other funding source(s):
-                            <i class="fas fa-info-circle popover-tooltip" data-content="Other funding sources, if any. Hit 'Enter' on your
+                          <label class="guided--label-accordion-field"
+                            >Other funding source(s):
+                            <i
+                              class="fas fa-info-circle popover-tooltip"
+                              data-content="Other funding sources, if any. Hit 'Enter' on your
                         keyboard after typing each. Leave empty if none.
-                        " rel="popover" data-placement="right" data-html="true" data-trigger="hover"
-                              style="margin-left: 5px; color: black"></i>
+                        "
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <input id="guided-ds-other-funding" class="form-container-input-bf"
-                                placeholder="Type here and hit 'Enter' after each funding." />
+                              <input
+                                id="guided-ds-other-funding"
+                                class="form-container-input-bf"
+                                placeholder="Type here and hit 'Enter' after each funding."
+                              />
                             </div>
                           </div>
                         </div>
                         <div class="guided--accordion-field">
                           <label class="guided--label-accordion-field">
-                            Acknowledgments:<i class="fas fa-info-circle popover-tooltip" data-content="Acknowledgments beyond funding and contributors, if any.
-                          Leave empty if none." rel="popover" data-placement="right" data-html="true"
-                              data-trigger="hover" style="margin-left: 5px; color: black"></i>
+                            Acknowledgments:<i
+                              class="fas fa-info-circle popover-tooltip"
+                              data-content="Acknowledgments beyond funding and contributors, if any.
+                          Leave empty if none."
+                              rel="popover"
+                              data-placement="right"
+                              data-html="true"
+                              data-trigger="hover"
+                              style="margin-left: 5px; color: black"
+                            ></i>
                           </label>
                           <div class="demo-controls-body" style="width: 100%">
                             <div class="ui input modified">
-                              <textarea type="text" id="guided-ds-description-acknowledgments"
-                                placeholder="Type here..." rows="6" style="font-size: 14px; width: 100%"></textarea>
+                              <textarea
+                                type="text"
+                                id="guided-ds-description-acknowledgments"
+                                placeholder="Type here..."
+                                rows="6"
+                                style="font-size: 14px; width: 100%"
+                              ></textarea>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <button id="guided-generate-description-file" class="btn_animated"
-                    style="width: 200px; border: none !important">
+                  <button
+                    id="guided-generate-description-file"
+                    class="btn_animated"
+                    style="width: 200px; border: none !important"
+                  >
                     Generate description file
                   </button>
                 </div>
-                <div id="guided-continue-existing-description-panel" class="guided--panel hidden">
+                <div
+                  id="guided-continue-existing-description-panel"
+                  class="guided--panel hidden"
+                >
                   b
                 </div>
               </div>
             </div>
           </div>
-          <div id="guided-create-readme-metadata-tab" class="guided--panel hidden">
+          <div
+            id="guided-create-readme-metadata-tab"
+            class="guided--panel hidden"
+          >
             <div class="guided--question show">
               <h1 class="guided--text-sub-step">
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-start-new-readme-card" data-enable-next-button="true">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-start-new-readme-card"
+                  data-enable-next-button="true"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-accent)"
-                      class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40px"
+                      height="40px"
+                      fill="var(--color-accent)"
+                      class="bi bi-file-earmark-plus"
+                      viewBox="0 0 16 16"
+                    >
                       <path
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
+                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                      />
                       <path
-                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
+                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                      />
                     </svg>
                     <h2>I want to start a new README.txt file</h2>
                   </div>
                 </div>
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-continue-existing-readme-card">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-continue-existing-readme-card"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-bg-orange)"
+                    ></i>
                     <h2>
                       I want to continue working on an existing README.txt file
                     </h2>
@@ -1211,54 +1909,96 @@
                 </div>
               </div>
             </div>
-            <div id="guided-create-description-metadata-panels" class="guided--panel">
-              <div id="guided-start-new-readme-panel" class="guided--panel hidden">
+            <div
+              id="guided-create-description-metadata-panels"
+              class="guided--panel"
+            >
+              <div
+                id="guided-start-new-readme-panel"
+                class="guided--panel hidden"
+              >
                 <div class="guided--question show">
                   <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                     Draft your README file below:
-                    <i class="fas fa-info-circle popover-tooltip" data-content="." rel="popover" data-html="true"
-                      data-placement="right" data-trigger="hover"></i>
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="."
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i>
                   </h1>
                   <div class="guided--input-container">
-                    <textarea class="guided--input guided--text-area-tall" type="text" name="guided-study-purpose"
-                      placeholder="Draft your README here" id="guided-textarea-create-readme"></textarea>
+                    <textarea
+                      class="guided--input guided--text-area-tall"
+                      type="text"
+                      name="guided-study-purpose"
+                      placeholder="Draft your README here"
+                      id="guided-textarea-create-readme"
+                    ></textarea>
                   </div>
                 </div>
-                <button id="guided-generate-readme-file" class="btn_animated"
-                  style="width: 200px; border: none !important">
+                <button
+                  id="guided-generate-readme-file"
+                  class="btn_animated"
+                  style="width: 200px; border: none !important"
+                >
                   Generate ReadMe file
                 </button>
               </div>
-              <div id="guided-continue-existing-readme-panel" class="guided--panel hidden">
+              <div
+                id="guided-continue-existing-readme-panel"
+                class="guided--panel hidden"
+              >
                 b
               </div>
             </div>
           </div>
-          <div id="guided-create-changes-metadata-tab" class="guided--panel hidden">
+          <div
+            id="guided-create-changes-metadata-tab"
+            class="guided--panel hidden"
+          >
             <div class="guided--question show">
               <h1 class="guided--text-sub-step">
                 Please select an option below:
               </h1>
               <div class="guided--card-container">
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-start-new-changes-card" data-enable-next-button="true">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-start-new-changes-card"
+                  data-enable-next-button="true"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-accent)"
-                      class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40px"
+                      height="40px"
+                      fill="var(--color-accent)"
+                      class="bi bi-file-earmark-plus"
+                      viewBox="0 0 16 16"
+                    >
                       <path
-                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
+                        d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                      />
                       <path
-                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z" />
+                        d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                      />
                     </svg>
                     <h2>I want to start a new CHANGES.txt file</h2>
                   </div>
                 </div>
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-continue-existing-changes-card">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-continue-existing-changes-card"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
+                    <i
+                      class="far fa-save"
+                      style="color: var(--color-bg-orange)"
+                    ></i>
                     <h2>
                       I want to continue working on an existing CHANGES.txt file
                     </h2>
@@ -1266,37 +2006,75 @@
                 </div>
               </div>
             </div>
-            <div id="guided-create-description-metadata-panels" class="guided--panel">
-              <div id="guided-start-new-changes-panel" class="guided--panel hidden">
+            <div
+              id="guided-create-description-metadata-panels"
+              class="guided--panel"
+            >
+              <div
+                id="guided-start-new-changes-panel"
+                class="guided--panel hidden"
+              >
                 <div class="guided--question show">
                   <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                     Draft your CHANGES file below:
-                    <i class="fas fa-info-circle popover-tooltip" data-content="." rel="popover" data-html="true"
-                      data-placement="right" data-trigger="hover"></i>
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="."
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i>
                   </h1>
                   <div class="guided--input-container">
-                    <textarea class="guided--input guided--text-area-tall" type="text" name="guided-study-purpose"
-                      placeholder="Draft your CHANGES here" id="guided-textarea-create-changes"></textarea>
+                    <textarea
+                      class="guided--input guided--text-area-tall"
+                      type="text"
+                      name="guided-study-purpose"
+                      placeholder="Draft your CHANGES here"
+                      id="guided-textarea-create-changes"
+                    ></textarea>
                   </div>
                 </div>
-                <button id="guided-generate-changes-file" class="btn_animated"
-                  style="width: 200px; border: none !important">
+                <button
+                  id="guided-generate-changes-file"
+                  class="btn_animated"
+                  style="width: 200px; border: none !important"
+                >
                   Generate Changes file
                 </button>
               </div>
-              <div id="guided-continue-existing-changes-panel" class="guided--panel hidden">
+              <div
+                id="guided-continue-existing-changes-panel"
+                class="guided--panel hidden"
+              >
                 b
               </div>
             </div>
           </div>
         </div>
 
-        <div id="disseminate-dataset-parent-tab" class="guided--parent-tab hidden">
+        <div
+          id="disseminate-dataset-parent-tab"
+          class="guided--parent-tab hidden"
+        >
           <div class="guided--capsule-container">
-            <div class="guided--capsule" id="guided-dataset-generate-location-capsule"></div>
-            <div class="guided--capsule" id="guided-dataset-generate-destination-capsule"></div>
-            <div class="guided--capsule" id="guided-dataset-generation-confirmation-capsule"></div>
-            <div class="guided--capsule" id="guided-dataset-generate-capsule"></div>
+            <div
+              class="guided--capsule"
+              id="guided-dataset-generate-location-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-dataset-generate-destination-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-dataset-generation-confirmation-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-dataset-generate-capsule"
+            ></div>
           </div>
 
           <div id="guided-dataset-generate-location-tab" class="guided--panel">
@@ -1306,13 +2084,23 @@
               </h1>
 
               <div class="guided--card-container">
-                <div class="coming-soon-div" data-content="Coming soon..." rel="popover" data-placement="bottom"
-                  data-trigger="hover">
-                  <div class="option-card radio-button guided--generate-location-card non-selected" style="
+                <div
+                  class="coming-soon-div"
+                  data-content="Coming soon..."
+                  rel="popover"
+                  data-placement="bottom"
+                  data-trigger="hover"
+                >
+                  <div
+                    class="option-card radio-button guided--generate-location-card non-selected"
+                    style="
                       background: #f6f6f6;
                       pointer-events: none;
                       opacity: 0.4;
-                    " id="guided-generate-dataset-local-card" data-enable-next-button="true">
+                    "
+                    id="guided-generate-dataset-local-card"
+                    data-enable-next-button="true"
+                  >
                     <div class="card-head"></div>
                     <div class="card-body">
                       <i class="fas fa-desktop" style="color: #13716d"></i>
@@ -1320,18 +2108,29 @@
                     </div>
                   </div>
                 </div>
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-generate-dataset-pennsieve-card">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-generate-dataset-pennsieve-card"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-cloud-arrow-up"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
+                    <svg
+                      width="50px"
+                      height="50px"
+                      viewBox="0 0 16 16"
+                      class="bi bi-cloud-arrow-up"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
                         d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
-                        fill="#565E6B" />
-                      <path fill-rule="evenodd"
+                        fill="#565E6B"
+                      />
+                      <path
+                        fill-rule="evenodd"
                         d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
-                        fill="#B80D49" />
+                        fill="#B80D49"
+                      />
                     </svg>
                     <h2 style="margin-top: 10px">
                       Generate directly on Pennsieve
@@ -1339,14 +2138,23 @@
                   </div>
                 </div>
               </div>
-              <div id="guided-dataset-generate-location-panels" class="guided--panel">
-                <div id="guided-generate-dataset-local-panel" class="guided--panel hidden">
+              <div
+                id="guided-dataset-generate-location-panels"
+                class="guided--panel"
+              >
+                <div
+                  id="guided-generate-dataset-local-panel"
+                  class="guided--panel hidden"
+                >
                   <h4 class="ui header guided--prompt-continue">
                     Please press next to confirm you would like to generate your
                     dataset on your computer
                   </h4>
                 </div>
-                <div id="guided-generate-dataset-pennsieve-panel" class="guided--panel hidden">
+                <div
+                  id="guided-generate-dataset-pennsieve-panel"
+                  class="guided--panel hidden"
+                >
                   <div class="guided--input-container">
                     <h1 class="guided--text-sub-step">
                       Is this your Pennsieve account?
@@ -1359,10 +2167,16 @@
                           </h5>
                         </div>
                         <div class="guided--dataset-content-container">
-                          <h5 id="guided-bf-account" class="guided--dataset-content guidedBfAccount">
+                          <h5
+                            id="guided-bf-account"
+                            class="guided--dataset-content guidedBfAccount"
+                          >
                             None
                           </h5>
-                          <i class="far fa-edit jump-back guided-change-dataset-name" style="color: #000"></i>
+                          <i
+                            class="far fa-edit jump-back guided-change-dataset-name"
+                            style="color: #000"
+                          ></i>
                         </div>
                       </div>
                       <div class="guided--card-dataset-info">
@@ -1372,20 +2186,30 @@
                           </h5>
                         </div>
                         <div class="guided--dataset-content-container">
-                          <h5 class="guided--dataset-content guidedBfAccountDetails" id="guided-account-details">
+                          <h5
+                            class="guided--dataset-content guidedBfAccountDetails"
+                            id="guided-account-details"
+                          >
                             None
                           </h5>
-                          <i class="far fa-edit jump-back guided-change-dataset-name" style="color: #000"></i>
+                          <i
+                            class="far fa-edit jump-back guided-change-dataset-name"
+                            style="color: #000"
+                          ></i>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <button class="ui positive button guided--button" id="pennsieve-account-confirm-button" style="
+                  <button
+                    class="ui positive button guided--button"
+                    id="pennsieve-account-confirm-button"
+                    style="
                       background-color: var(--color-light-green) !important;
                       width: 120px !important;
                       margin: 20px !important;
-                    ">
+                    "
+                  >
                     Confirm
                   </button>
                 </div>
@@ -1393,7 +2217,10 @@
             </div>
           </div>
 
-          <div id="guided-dataset-generate-destination-tab" class="guided--panel hidden">
+          <div
+            id="guided-dataset-generate-destination-tab"
+            class="guided--panel hidden"
+          >
             <div class="guided--container-data-display">
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
@@ -1401,7 +2228,10 @@
                 </div>
                 <div class="guided--dataset-content-container">
                   <h5 class="guided--dataset-content guidedBfAccount">None</h5>
-                  <i class="far fa-edit jump-back guided-change-dataset-name" style="color: #000"></i>
+                  <i
+                    class="far fa-edit jump-back guided-change-dataset-name"
+                    style="color: #000"
+                  ></i>
                 </div>
               </div>
               <div class="guided--card-dataset-info">
@@ -1412,7 +2242,10 @@
                   <h5 class="guided--dataset-content guidedBfAccountDetails">
                     None
                   </h5>
-                  <i class="far fa-edit jump-back guided-change-dataset-name" style="color: #000"></i>
+                  <i
+                    class="far fa-edit jump-back guided-change-dataset-name"
+                    style="color: #000"
+                  ></i>
                 </div>
               </div>
             </div>
@@ -1422,47 +2255,86 @@
               </h1>
 
               <div class="guided--card-container">
-                <div class="option-card radio-button guided--generate-location-card non-selected"
-                  id="guided-generate-dataset-new-card" data-enable-next-button="true">
+                <div
+                  class="option-card radio-button guided--generate-location-card non-selected"
+                  id="guided-generate-dataset-new-card"
+                  data-enable-next-button="true"
+                >
                   <div class="card-head"></div>
                   <div class="card-body">
-                    <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-plus"
-                      fill="var(--color-bg-orange)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
+                    <svg
+                      width="40px"
+                      height="40px"
+                      viewBox="0 0 16 16"
+                      class="bi bi-folder-plus"
+                      fill="var(--color-bg-orange)"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
                         d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                        fill="#565E6B" />
-                      <path fill-rule="evenodd"
+                        fill="#565E6B"
+                      />
+                      <path
+                        fill-rule="evenodd"
                         d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"
-                        fill="#13716D" />
+                        fill="#13716D"
+                      />
                     </svg>
                     <h2>I want to generate on a new dataset</h2>
                   </div>
                 </div>
-                <div class="coming-soon-div" data-content="Coming soon..." rel="popover" data-placement="bottom"
-                  data-trigger="hover">
-                  <div class="option-card radio-button guided--generate-location-card non-selected" style="
+                <div
+                  class="coming-soon-div"
+                  data-content="Coming soon..."
+                  rel="popover"
+                  data-placement="bottom"
+                  data-trigger="hover"
+                >
+                  <div
+                    class="option-card radio-button guided--generate-location-card non-selected"
+                    style="
                       background: #f6f6f6;
                       pointer-events: none;
                       opacity: 0.4;
-                    " id="guided-generate-dataset-existing-card" data-enable-next-button="true">
+                    "
+                    id="guided-generate-dataset-existing-card"
+                    data-enable-next-button="true"
+                  >
                     <div class="card-head"></div>
                     <div class="card-body">
-                      <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-check"
-                        fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
+                      <svg
+                        width="40px"
+                        height="40px"
+                        viewBox="0 0 16 16"
+                        class="bi bi-folder-check"
+                        fill="var(--tagify-dd-color-primary)"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
                           d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                          fill="#565E6B" />
-                        <path fill-rule="evenodd"
+                          fill="#565E6B"
+                        />
+                        <path
+                          fill-rule="evenodd"
                           d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                          fill="#13716D" />
+                          fill="#13716D"
+                        />
                       </svg>
                       <h2>I want to genenerate on an existing dataset</h2>
                     </div>
                   </div>
                 </div>
               </div>
-              <div id="generate-dataset-destination-panels" class="guided--panel">
-                <div id="guided-generate-dataset-new-panel" class="guided--panel hidden">
+              <div
+                id="generate-dataset-destination-panels"
+                class="guided--panel"
+              >
+                <div
+                  id="guided-generate-dataset-new-panel"
+                  class="guided--panel hidden"
+                >
                   <div class="guided--input-container">
                     <h4 class="ui header guided--prompt-continue">
                       Please modify or confirm your dataset name:
@@ -1474,24 +2346,39 @@
                             Current name:
                           </h5>
                         </div>
-                        <div class="guided--dataset-content-container guided-change-dataset-name">
-                          <h5 id="guided-confirm-dataset-name" class="guided--dataset-content guidedDatasetName">
+                        <div
+                          class="guided--dataset-content-container guided-change-dataset-name"
+                        >
+                          <h5
+                            id="guided-confirm-dataset-name"
+                            class="guided--dataset-content guidedDatasetName"
+                          >
                             None
                           </h5>
-                          <i class="far fa-edit jump-back guided-change-dataset-name" style="color: #000"></i>
+                          <i
+                            class="far fa-edit jump-back guided-change-dataset-name"
+                            style="color: #000"
+                          ></i>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <button class="ui positive button guided--button" id="guided-dataset-name-confirm-button" style="
+                  <button
+                    class="ui positive button guided--button"
+                    id="guided-dataset-name-confirm-button"
+                    style="
                       background-color: var(--color-light-green) !important;
                       width: 120px !important;
                       margin-bottom: 10px;
-                    ">
+                    "
+                  >
                     Confirm
                   </button>
                 </div>
-                <div id="guided-generate-dataset-existing-panel" class="guided--panel hidden">
+                <div
+                  id="guided-generate-dataset-existing-panel"
+                  class="guided--panel hidden"
+                >
                   <div class="guided--question">
                     <div class="ui form" style="width: 100%">
                       <div class="grouped fields">
@@ -1499,8 +2386,12 @@
                           Which existing Pennsieve dataset would you like to
                           use?
                         </h1>
-                        <div class="field" style="margin: 15px auto; width: 450px">
-                          <div style="
+                        <div
+                          class="field"
+                          style="margin: 15px auto; width: 450px"
+                        >
+                          <div
+                            style="
                               display: flex;
                               flex-direction: column;
                               justify-content: space-between;
@@ -1509,42 +2400,67 @@
                               box-shadow: 0px 0px 10px #d5d5d5;
                               padding: 15px 25px;
                               border-radius: 5px;
-                            ">
-                            <div style="
+                            "
+                          >
+                            <div
+                              style="
                                 display: flex;
                                 flex-direction: row;
                                 justify-content: space-between;
                                 margin-bottom: 15px;
-                              ">
+                              "
+                            >
                               <div>
                                 <h5 style="color: #808080; font-size: 15px">
                                   Current dataset:
-                                  <span style="
+                                  <span
+                                    style="
                                       color: #000;
                                       font-weight: 600;
                                       margin-left: 8px;
                                       font-size: 15px;
-                                    " id="guided-current-bf-dataset-generate">None</span>
+                                    "
+                                    id="guided-current-bf-dataset-generate"
+                                    >None</span
+                                  >
                                 </h5>
                               </div>
-                              <svg class="svg-change-current-account dataset bi bi-pencil-fill"
-                                onclick="openDropdownPrompt(this, 'dataset')" xmlns="http://www.w3.org/2000/svg"
-                                width="18" height="18" fill="#000" viewBox="0 0 16 16">
+                              <svg
+                                class="svg-change-current-account dataset bi bi-pencil-fill"
+                                onclick="openDropdownPrompt(this, 'dataset')"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                fill="#000"
+                                viewBox="0 0 16 16"
+                              >
                                 <path
-                                  d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
+                                  d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                                />
                               </svg>
-                              <div class="ui active green inline loader small" style="display: none"></div>
+                              <div
+                                class="ui active green inline loader small"
+                                style="display: none"
+                              ></div>
                               <!-- this is what is shown in the Edit Current dataset prompt  -->
-                              <div style="display: none" id="guided-div-permission-list">
-                                <h5 style="
+                              <div
+                                style="display: none"
+                                id="guided-div-permission-list"
+                              >
+                                <h5
+                                  style="
                                     text-align: left;
                                     color: #000;
                                     display: none;
-                                  ">
+                                  "
+                                >
                                   Select permissions for filtering dataset
                                   lists:
                                   <div class="tooltipnew">
-                                    <img class="info" src="assets/img/info.png" />
+                                    <img
+                                      class="info"
+                                      src="assets/img/info.png"
+                                    />
                                     <span class="tooltiptext">
                                       You will see multiple dropdown lists
                                       throughout the SODA interface listing you
@@ -1557,16 +2473,23 @@
                                       permissions.
                                       <br /><br />
                                       See our
-                                      <a href="https://fairdataihub.org/sodaforsparc/docs/Add-edit-permissions"
-                                        style="color: white">
-                                        documentation</a>
+                                      <a
+                                        href="https://fairdataihub.org/sodaforsparc/docs/Add-edit-permissions"
+                                        style="color: white"
+                                      >
+                                        documentation</a
+                                      >
                                       on Pennsieve permissions for more
                                       information.
                                     </span>
                                   </div>
                                 </h5>
                                 <div style="display: none">
-                                  <select class="my-dropdown" style="width: 100%" id="guided-select-permission-list">
+                                  <select
+                                    class="my-dropdown"
+                                    style="width: 100%"
+                                    id="guided-select-permission-list"
+                                  >
                                     <option default>All</option>
                                     <option>Owner</option>
                                     <option>Manager</option>
@@ -1574,24 +2497,43 @@
                                     <option>Viewer</option>
                                   </select>
                                 </div>
-                                <div id="guided-div-filter-datasets-progress" class="ui active green inline loader"
-                                  style="display: none; margin: 10px auto"></div>
-                                <p id="guided-para-filter-datasets-status" style="font-size: 14px; display: none"></p>
+                                <div
+                                  id="guided-div-filter-datasets-progress"
+                                  class="ui active green inline loader"
+                                  style="display: none; margin: 10px auto"
+                                ></div>
+                                <p
+                                  id="guided-para-filter-datasets-status"
+                                  style="font-size: 14px; display: none"
+                                ></p>
 
-                                <h5 style="
+                                <h5
+                                  style="
                                     text-align: left;
                                     color: #000;
                                     display: none;
-                                  " id="guided-bf-dataset-select-header">
+                                  "
+                                  id="guided-bf-dataset-select-header"
+                                >
                                   Select your dataset
                                 </h5>
-                                <div class="search-select-box" id="guided-bf-dataset-select-div" style="display: none">
-                                  <select class="w-100" id="guided-curate-bf-dataset-list" data-live-search="true"
-                                    name="Pennsieve dataset" style="
+                                <div
+                                  class="search-select-box"
+                                  id="guided-bf-dataset-select-div"
+                                  style="display: none"
+                                >
+                                  <select
+                                    class="w-100"
+                                    id="guided-curate-bf-dataset-list"
+                                    data-live-search="true"
+                                    name="Pennsieve dataset"
+                                    style="
                                       width: 450px;
                                       border-radius: 7px;
                                       padding: 8px;
-                                    " data-none-selected-text="Loading datasets...">
+                                    "
+                                    data-none-selected-text="Loading datasets..."
+                                  >
                                     <option value="" disabled>
                                       Loading...
                                     </option>
@@ -1600,19 +2542,25 @@
                               </div>
                             </div>
                           </div>
-                          <div style="
+                          <div
+                            style="
                               display: none;
                               flex-direction: row;
                               justify-content: center;
                               margin: 10px auto;
-                            ">
-                            <button id="guided-butfton-confirm-bf-dataset" class="btn_animated"
-                              data-next="Question-generate-dataset-existing-folders-options" style="
+                            "
+                          >
+                            <button
+                              id="guided-butfton-confirm-bf-dataset"
+                              class="btn_animated"
+                              data-next="Question-generate-dataset-existing-folders-options"
+                              style="
                                 display: none;
                                 margin: 10px auto;
                                 width: 100px;
                                 border: none !important;
-                              ">
+                              "
+                            >
                               Confirm
                             </button>
                           </div>
@@ -1625,19 +2573,29 @@
             </div>
           </div>
 
-          <div id="guided-dataset-generation-confirmation-tab" class="guided--panel hidden">
+          <div
+            id="guided-dataset-generation-confirmation-tab"
+            class="guided--panel hidden"
+          >
             <div class="guided--container-data-display">
-              <label class="guided--form-label" style="text-align: center; margin-top: 10px; margin-bottom: 5px">Current
-                dataset structure:</label>
+              <label
+                class="guided--form-label"
+                style="text-align: center; margin-top: 10px; margin-bottom: 5px"
+                >Current dataset structure:</label
+              >
               <div id="guided-div-dataset-tree-preview">
                 guided js tree here.
               </div>
               <div class="guided--card-dataset-info">
-                <label class="guided--form-label" style="
+                <label
+                  class="guided--form-label"
+                  style="
                     text-align: center;
                     margin-top: 10px;
                     margin-bottom: 5px;
-                  ">Other dataset info:</label>
+                  "
+                  >Other dataset info:</label
+                >
               </div>
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
@@ -1647,7 +2605,10 @@
                   <h5 class="guided--dataset-content guidedDatasetName">
                     None
                   </h5>
-                  <i class="far fa-edit jump-back guided-change-dataset-name" style="color: #000"></i>
+                  <i
+                    class="far fa-edit jump-back guided-change-dataset-name"
+                    style="color: #000"
+                  ></i>
                 </div>
               </div>
               <div class="guided--card-dataset-info">
@@ -1658,7 +2619,10 @@
                   <h5 class="guided--dataset-content guidedDatasetSubtitle">
                     None
                   </h5>
-                  <i class="far fa-edit jump-back guided-change-dataset-subtitle" style="color: #000"></i>
+                  <i
+                    class="far fa-edit jump-back guided-change-dataset-subtitle"
+                    style="color: #000"
+                  ></i>
                 </div>
               </div>
               <div class="guided--card-dataset-info">
@@ -1678,7 +2642,9 @@
                     Designated user permissions:
                   </h5>
                 </div>
-                <div class="guided--container-dataset-info guidedDatasetUserPermissions"></div>
+                <div
+                  class="guided--container-dataset-info guidedDatasetUserPermissions"
+                ></div>
               </div>
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
@@ -1686,14 +2652,19 @@
                     Designated team permissions:
                   </h5>
                 </div>
-                <div class="guided--container-dataset-info guidedDatasetTeamPermissions"></div>
+                <div
+                  class="guided--container-dataset-info guidedDatasetTeamPermissions"
+                ></div>
               </div>
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
                   <h5 class="guided--dataset-description">Dataset Tags:</h5>
                 </div>
                 <div class="guided--dataset-content-container">
-                  <h5 class="guided--dataset-content guidedDatasetTags" style="white-space: pre-wrap"></h5>
+                  <h5
+                    class="guided--dataset-content guidedDatasetTags"
+                    style="white-space: pre-wrap"
+                  ></h5>
                   <i class="far fa-edit jump-back" style="color: #000"></i>
                 </div>
               </div>
@@ -1708,32 +2679,51 @@
                 </div>
               </div>
             </div>
-            <button class="ui positive button guided--button" id="guided-generate-dataset-button" style="
+            <button
+              class="ui positive button guided--button"
+              id="guided-generate-dataset-button"
+              style="
                 background-color: var(--color-light-green) !important;
                 width: 120px !important;
-              ">
+              "
+            >
               Generate
             </button>
           </div>
 
           <div id="guided-dataset-generation-tab" class="guided--panel hidden">
-            <progress class="progresstrack" id="guided-progress-bar-new-curate" max="100" value="0"></progress>
+            <progress
+              class="progresstrack"
+              id="guided-progress-bar-new-curate"
+              max="100"
+              value="0"
+            ></progress>
           </div>
         </div>
       </div>
       <footer class="guided--footer">
-        <button class="ui secondary basic button guided--button-footer" id="guided-back-button"
-          style="width: 120px !important">
+        <button
+          class="ui secondary basic button guided--button-footer"
+          id="guided-back-button"
+          style="width: 120px !important"
+        >
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
         </button>
-        <button class="ui positive button guided--button-footer" id="guided-next-button" style="
+        <button
+          class="ui positive button guided--button-footer"
+          id="guided-next-button"
+          style="
             background-color: var(--color-light-green) !important;
             width: 120px !important;
-          ">
+          "
+        >
           Next
         </button>
-                 </footer>
+      </footer>
     </div>
   </section>
-  <script src="./scripts/guided-mode/guided-curate-dataset.js" type="text/javascript"></script>
+  <script
+    src="./scripts/guided-mode/guided-curate-dataset.js"
+    type="text/javascript"
+  ></script>
 </template>

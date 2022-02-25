@@ -2342,8 +2342,6 @@ $(document).ready(() => {
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
       let image_file_size = fs.statSync(imagePath)["size"];
-      console.log(image_file_size);
-      console.log(imagePath);
       if (image_file_size < 5 * 1024 * 1024) {
         guidedCroppedBannerImagePath = imagePath;
         $("#guided-banner-image-modal").modal("hide");
@@ -2458,16 +2456,13 @@ $(document).ready(() => {
       }
       setGuidedDatasetName($("#guided-dataset-name-input"));
       setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
-
-      $("#guided-back-button").css("visibility", "visible");
-    }
-    if (pageBeingLeftID === "guided-banner-image-addition-tab") {
-      //Check if cropped image path is empty, and if not, store the path to the sodaJSONObj
       if (guidedCroppedBannerImagePath) {
         setGuidedBannerImage(guidedCroppedBannerImagePath);
       } else {
         setGuidedBannerImage("");
       }
+
+      $("#guided-back-button").css("visibility", "visible");
     }
     if (pageBeingLeftID === "guided-folder-importation-tab") {
     }
