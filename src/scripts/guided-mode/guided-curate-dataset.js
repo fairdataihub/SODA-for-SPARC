@@ -2426,13 +2426,13 @@ $(document).ready(() => {
     pageBeingLeftID = current_sub_step.attr("id");
 
     if (pageBeingLeftID === "guided-basic-description-tab") {
+      //If sodaJSONObj is empty, populate initial object properties
       if (Object.keys(sodaJSONObj).length === 0) {
         sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
         sodaJSONObj["generate-dataset"] = {};
         sodaJSONObj["manifest-files"] = {};
         sodaJSONObj["metadata-files"] = {};
         sodaJSONObj["starting-point"] = {};
-
         datasetStructureJSONObj = { folders: {}, files: {} };
         sodaJSONObj["dataset-metadata"] = {};
         sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
@@ -2449,12 +2449,12 @@ $(document).ready(() => {
         }
 
         let user = await getUserInformation();
-        const newPiOwner = {
+        const originalDatasetCreator = {
           userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
           UUID: user["id"],
           name: `${user["firstName"]} ${user["lastName"]}`,
         };
-        setGuidedDatasetPiOwner(newPiOwner);
+        setGuidedDatasetPiOwner(originalDatasetCreator);
       }
       setGuidedDatasetName($("#guided-dataset-name-input"));
       setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
@@ -2471,7 +2471,6 @@ $(document).ready(() => {
     }
     if (pageBeingLeftID === "guided-folder-importation-tab") {
     }
-
     if (pageBeingLeftID === "guided-designate-pi-owner-tab") {
     }
     if (pageBeingLeftID === "guided-designate-permissions-tab") {
@@ -2555,6 +2554,16 @@ $(document).ready(() => {
       guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"]);
     }
 
+    console.log(sodaJSONObj);
+
+    //Mark page as completed in JSONObj so we know what pages to load when loading local saves
+    //(if it hasn't already been marked complete)
+    if (!sodaJSONObj["completed-tabs"].includes(pageBeingLeftID)) {
+      sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
+    }
+    //Save progress onto local storage with the dataset name as the key
+    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
     //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to next tab and update capsule
     let targetPage = current_sub_step.next();
@@ -2571,17 +2580,6 @@ $(document).ready(() => {
         .attr("id");
       traverseToTab(targetPageID);
     }
-
-    console.log(sodaJSONObj);
-
-    //Mark page as completed in JSONObj so we know what pages to load when loading local saves
-    //(if it hasn't already been marked complete)
-
-    if (!sodaJSONObj["completed-tabs"].includes(pageBeingLeftID)) {
-      sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
-    }
-    //Save progress onto local storage with the dataset name as the key
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
 
   //back button click handler
