@@ -716,6 +716,10 @@ $(document).ready(() => {
     tabPanel.css("display", "flex");
   });
 
+  $("#guided-curate-new-dataset-card").on("click", () => {
+    sodaJSONObj;
+  });
+
   // function for importing a banner image if one already exists
   $("#guided-button-add-banner-image").click(async () => {
     $("#guided-banner-image-modal").modal("show");
@@ -2426,6 +2430,29 @@ $(document).ready(() => {
     }
   });
 
+  guidedCreateSodaJSONObj = (startingPoint) => {
+    sodaJSONObj = {};
+    sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
+    sodaJSONObj["generate-dataset"] = {};
+    sodaJSONObj["manifest-files"] = {};
+    sodaJSONObj["metadata-files"] = {};
+    sodaJSONObj["starting-point"] = {};
+    datasetStructureJSONObj = { folders: {}, files: {} };
+    sodaJSONObj["dataset-metadata"] = {};
+    sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+    sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
+    sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
+    sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
+    sodaJSONObj["digital-metadata"] = {};
+    sodaJSONObj["completed-tabs"] = [];
+    sodaJSONObj["last-modified"] = "";
+
+    //set starting point to local for now for curate new dataset until new dataset functionality implemented
+    if (startoingPoint === "local") {
+      sodaJSONObj["starting-point"]["type"] = "bf";
+    }
+  };
+
   //next button click handler
   $("#guided-next-button").on("click", async () => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
@@ -2434,26 +2461,6 @@ $(document).ready(() => {
     if (pageBeingLeftID === "guided-basic-description-tab") {
       //If sodaJSONObj is empty, populate initial object properties
       if (Object.keys(sodaJSONObj).length === 0) {
-        sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
-        sodaJSONObj["generate-dataset"] = {};
-        sodaJSONObj["manifest-files"] = {};
-        sodaJSONObj["metadata-files"] = {};
-        sodaJSONObj["starting-point"] = {};
-        datasetStructureJSONObj = { folders: {}, files: {} };
-        sodaJSONObj["dataset-metadata"] = {};
-        sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
-        sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
-        sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
-        sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
-        sodaJSONObj["digital-metadata"] = {};
-        sodaJSONObj["completed-tabs"] = [];
-        sodaJSONObj["last-modified"] = "";
-
-        //set starting point to local for now for curate new dataset until new dataset functionality implemented
-        if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-          sodaJSONObj["starting-point"]["type"] = "bf";
-        }
-
         let user = await getUserInformation();
         const originalDatasetCreator = {
           userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
@@ -2461,15 +2468,14 @@ $(document).ready(() => {
           name: `${user["firstName"]} ${user["lastName"]}`,
         };
         setGuidedDatasetPiOwner(originalDatasetCreator);
+        setGuidedDatasetName($("#guided-dataset-name-input"));
+        setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
+        if (guidedCroppedBannerImagePath) {
+          setGuidedBannerImage(guidedCroppedBannerImagePath);
+        } else {
+          setGuidedBannerImage("");
+        }
       }
-      setGuidedDatasetName($("#guided-dataset-name-input"));
-      setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
-      if (guidedCroppedBannerImagePath) {
-        setGuidedBannerImage(guidedCroppedBannerImagePath);
-      } else {
-        setGuidedBannerImage("");
-      }
-
       $("#guided-back-button").css("visibility", "visible");
     }
     if (pageBeingLeftID === "guided-folder-importation-tab") {
@@ -2500,7 +2506,6 @@ $(document).ready(() => {
     }
     if (pageBeingLeftID === "guided-assign-license-tab") {
     }
-
     if (pageBeingLeftID === "guided-dataset-generation-tab") {
       if ($("#generate-dataset-local-card").hasClass("checked")) {
         sodaJSONObj["generate-dataset"]["destination"] = "local";
@@ -2509,7 +2514,6 @@ $(document).ready(() => {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
     }
-
     if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
       if ($("#guided-generate-dataset-local-card").hasClass("checked")) {
         sodaJSONObj["generate-dataset"]["destination"] = "local";
@@ -2518,7 +2522,6 @@ $(document).ready(() => {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
     }
-
     if (pageBeingLeftID === "guided-dataset-generate-destination-tab") {
       if ($("#guided-generate-dataset-new-card").hasClass("checked")) {
         confirmed_dataset_name = $("#guided-bf-dataset-name-confirm").text();
@@ -2535,7 +2538,6 @@ $(document).ready(() => {
 
       $("#guided-next-button").css("visibility", "hidden");
     }
-
     if (pageBeingLeftID === "add-edit-tags-tab") {
       const guidedTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
         (tag) => {
@@ -2546,13 +2548,10 @@ $(document).ready(() => {
       console.log(guidedTags);
       guidedTags.length > 0 ? enableProgressButton() : disableProgressButton();
     }
-
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
     }
-
     if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     }
-
     if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
       guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"]);
     }
