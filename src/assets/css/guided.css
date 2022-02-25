@@ -535,6 +535,11 @@
   margin-top: 15px;
   margin-bottom: 25px;
 }
+.guided--capsule-container-branch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .guided--capsule {
   height: 5px;
   width: 50px;

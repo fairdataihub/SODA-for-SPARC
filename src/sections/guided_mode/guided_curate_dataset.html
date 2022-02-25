@@ -81,9 +81,21 @@
               id="guided-basic-description-capsule"
             ></div>
             <div
-              class="guided--capsule"
-              id="guided-folder-importation-capsule"
-            ></div>
+              class="guided--capsule-container-branch hidden"
+              id="guided-curate-new-dataset-branch-capsule-container"
+            >
+              <div class="guided--capsule" id="guided-a1-capsule"></div>
+              <div class="guided--capsule" id="guided-a2-capsule"></div>
+            </div>
+            <div
+              class="guided--capsule-container-branch hidden"
+              id="guided-curate-existing-local-dataset-branch-capsule-container"
+            >
+              <div
+                class="guided--capsule"
+                id="guided-folder-importation-capsule"
+              ></div>
+            </div>
           </div>
 
           <div id="guided-basic-description-tab" class="guided--panel">
@@ -96,6 +108,7 @@
                   class="option-card radio-button guided--generate-location-card selected"
                   id="guided-curate-new-dataset-card"
                   data-enable-next-button="true"
+                  data-branch-capsule-container-id="guided-curate-new-dataset-branch-capsule-container"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -126,6 +139,7 @@
                   class="option-card radio-button guided--generate-location-card non-selected"
                   id="guided-curate-existing-local-dataset-card"
                   data-enable-next-button="true"
+                  data-branch-capsule-container-id="guided-curate-existing-local-dataset-branch-capsule-container"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">

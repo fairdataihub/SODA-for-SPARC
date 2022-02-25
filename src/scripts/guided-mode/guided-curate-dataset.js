@@ -693,10 +693,18 @@ $(document).ready(() => {
   //card click hanndler that displays the card's panel using the card's id prefix
   //e.g. clicking a card with id "foo-bar-card" will display the panel with the id "foo-bar-panel"
   $(".guided--card-container > div").on("click", function () {
-    $(this).attr("data-enable-next-button") == "true"
+    const selectedTab = $(this);
+
+    selectedTab.attr("data-enable-next-button") == "true"
       ? enableProgressButton()
       : disableProgressButton();
-    const selectedTab = $(this);
+    if (selectedTab.attr("data-branch-capsule-container-id")) {
+      $(".guided--capsule-container-branch").hide();
+      let selectedTabsCapsulesID = selectedTab.attr(
+        "data-branch-capsule-container-id"
+      );
+      $(`#${selectedTabsCapsulesID}`).css("display", "flex");
+    }
     selectedTab.siblings().removeClass("checked");
     selectedTab.siblings().addClass("non-selected");
     selectedTab.removeClass("non-selected");
