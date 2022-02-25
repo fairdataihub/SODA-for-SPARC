@@ -2570,9 +2570,23 @@ $(document).ready(() => {
     //Save progress onto local storage with the dataset name as the key
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
+    const getNextPageNotSkipped = () => {
+      const nextPage = current_sub_step.next();
+      if (nextPage == undefined) {
+        return undefined;
+      }
+      if (!nextPage.attr("skip")) {
+        return nextPage;
+      }
+      if (nextPage.attr("skip")) {
+        current_sub_step = current_sub_step.next();
+        return getNextPageNotSkipped();
+      }
+    };
+
     //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to next tab and update capsule
-    let targetPage = current_sub_step.next();
+    let targetPage = getNextPageNotSkipped();
     if (targetPage.attr("id") !== undefined) {
       let targetPageID = targetPage.attr("id");
       traverseToTab(targetPageID);
