@@ -2426,6 +2426,7 @@ $(document).ready(() => {
     }
   });
   $("#guided-curate-new-dataset-card").on("click", () => {
+    $(".guided-curate-new-dataset-branch-page").removeClass("skip");
     guidedCreateSodaJSONObj("new");
   });
   $("#guided-curate-existing-local-dataset-card").on("click", () => {
@@ -2575,10 +2576,11 @@ $(document).ready(() => {
       if (nextPage == undefined) {
         return undefined;
       }
-      if (!nextPage.attr("skip")) {
+      if (!nextPage.hasClass("skip")) {
+        console.log("returned");
         return nextPage;
       }
-      if (nextPage.attr("skip")) {
+      if (nextPage.hasClass("skip")) {
         current_sub_step = current_sub_step.next();
         return getNextPageNotSkipped();
       }
