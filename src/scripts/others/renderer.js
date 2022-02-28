@@ -4985,7 +4985,7 @@ function dropHelper(
     }
     /// check for File duplicate
     if (statsObj.isFile()) {
-      var nonAllowedDuplicate = false
+      var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
@@ -5018,13 +5018,13 @@ function dropHelper(
               nonAllowedDuplicateFiles.push(itemPath);
               continue;
             } else {
-              if(Object.keys(myPath["files"]).length === 0) {
+              if (Object.keys(myPath["files"]).length === 0) {
                 importedFiles[originalFileName] = {
                   path: itemPath,
                   basename: originalFileName,
                 };
               }
-              for(let objectKey in myPath["files"]) {
+              for (let objectKey in myPath["files"]) {
                 if (objectKey !== undefined) {
                   nonAllowedDuplicate = false;
                   //just checking if paths are the same
