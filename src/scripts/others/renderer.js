@@ -4985,6 +4985,7 @@ function dropHelper(
     }
     /// check for File duplicate
     if (statsObj.isFile()) {
+      var nonAllowedDuplicate = false
       var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
@@ -5005,21 +5006,28 @@ function dropHelper(
             basename: path.parse(itemPath).base,
           };
         } else {
+          //console.log(nonAllowedDuplicate)
           //check if fileName is in to-be-imported object keys
-          if (originalFileName in importedFiles) {
+          if (importedFiles.hasOwnProperty(originalFileName)) {
             nonAllowedDuplicate = true;
             nonAllowedDuplicateFiles.push(itemPath);
             continue;
           } else {
             //check if filename is in already-imported object keys
-            if (originalFileName in myPath["files"]) {
+            if (myPath["files"].hasOwnProperty(originalFileName)) {
               nonAllowedDuplicate = true;
               nonAllowedDuplicateFiles.push(itemPath);
               continue;
             } else {
-              for (var objectKey in myPath["files"]) {
+              if(Object.keys(myPath["files"]).length === 0) {
+                importedFiles[originalFileName] = {
+                  path: itemPath,
+                  basename: originalFileName,
+                };
+              }
+              for(let objectKey in myPath["files"]) {
                 if (objectKey !== undefined) {
-                  var nonAllowedDuplicate = false;
+                  nonAllowedDuplicate = false;
                   //just checking if paths are the same
                   if (itemPath === myPath["files"][objectKey]["path"]) {
                     nonAllowedDuplicateFiles.push(itemPath);
@@ -5038,6 +5046,7 @@ function dropHelper(
           }
         }
       }
+      //console.log(nonAllowedDuplicateFiles);
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
@@ -5066,18 +5075,20 @@ function dropHelper(
             };
           }
         } else {
-          if (itemName in myPath["folders"]) {
+          if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
             folderPath.push(itemPath);
+            continue;
           } else {
-            if (itemName in importedFolders) {
+            if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
               folderPath.push(itemPath);
+              continue;
             } else {
               //folder is in neither so write
-              importedFolders[renamedFolderName] = {
+              importedFolders[originalFolderName] = {
                 path: itemPath,
                 "original-basename": originalFolderName,
               };
