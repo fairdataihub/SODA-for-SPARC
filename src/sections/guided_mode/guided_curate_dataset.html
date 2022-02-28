@@ -105,12 +105,13 @@
               <h1 class="guided--text-sub-step">
                 Curate a new dataset or continue from existing?
               </h1>
-              <div class="guided--card-container">
+              <div class="guided--card-container" data->
                 <div
                   class="option-card radio-button guided--generate-location-card selected"
                   id="guided-curate-new-dataset-card"
                   data-enable-next-button="true"
                   data-branch-capsule-container-id="guided-curate-new-dataset-branch-capsule-container"
+                  data-branch-pages-class="guided-curate-new-dataset-branch-page"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -142,6 +143,7 @@
                   id="guided-curate-existing-local-dataset-card"
                   data-enable-next-button="true"
                   data-branch-capsule-container-id="guided-curate-existing-local-dataset-branch-capsule-container"
+                  data-branch-pages-class="guided-curate-existing-local-dataset-branch-page"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -445,31 +447,36 @@
           </div>
           <div
             id="guided-fc1-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page skip"
+            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            data-skip-page="true"
           >
             ase ase
           </div>
           <div
             id="guided-fc2-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page skip"
+            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            data-skip-page="true"
           >
             ase ase
           </div>
           <div
             id="guided-fc3-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page skip"
+            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            data-skip-page="true"
           >
             ase ase
           </div>
           <div
             id="guided-fc4-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page skip"
+            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            data-skip-page="true"
           >
             ase ase
           </div>
           <div
             id="guided-folder-importation-tab"
-            class="guided--panel hidden skip"
+            class="guided--panel hidden guided-curate-existing-local-dataset-branch-page"
+            data-skip-page="true"
           >
             <div class="guided--container-data-display">
               <div class="guided--card-dataset-info">

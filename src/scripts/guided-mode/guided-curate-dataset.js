@@ -694,10 +694,11 @@ $(document).ready(() => {
   //e.g. clicking a card with id "foo-bar-card" will display the panel with the id "foo-bar-panel"
   $(".guided--card-container > div").on("click", function () {
     const selectedTab = $(this);
-
+    //If button has data-enable-next-button attribute, enable the progress button
     selectedTab.attr("data-enable-next-button") == "true"
       ? enableProgressButton()
       : disableProgressButton();
+    //hide capsule containers for page branches that are not selected
     if (selectedTab.attr("data-branch-capsule-container-id")) {
       $(".guided--capsule-container-branch").hide();
       let selectedTabsCapsulesID = selectedTab.attr(
@@ -705,13 +706,22 @@ $(document).ready(() => {
       );
       $(`#${selectedTabsCapsulesID}`).css("display", "flex");
     }
+    //handle skip pages following card
+    if (selectedTab.data("branch-pages-class")) {
+      console.log($(`.${selectedTab.data("branch-pages-class")}`));
+      $(`.${selectedTab.data("branch-pages-class")}`).attr(
+        "data-skip-page",
+        "false"
+      );
+    }
+
     selectedTab.siblings().removeClass("checked");
     selectedTab.siblings().addClass("non-selected");
     selectedTab.removeClass("non-selected");
     selectedTab.addClass("checked");
 
-    const tabPanelId = selectedTab.attr("id").replace("-card", "-panel");
-    const tabPanel = $("#" + tabPanelId);
+    const tabPanelId = selectedTab.attr("id").replace("card", "panel");
+    const tabPanel = $(`#${tabPanelId}`);
     tabPanel.siblings().hide();
     tabPanel.css("display", "flex");
   });
@@ -2576,13 +2586,12 @@ $(document).ready(() => {
       if (nextPage == undefined) {
         return undefined;
       }
-      if (!nextPage.hasClass("skip")) {
-        console.log("returned");
-        return nextPage;
-      }
-      if (nextPage.hasClass("skip")) {
+      if (nextPage.data("skip-page")) {
+        current_sub_step.hide();
         current_sub_step = current_sub_step.next();
         return getNextPageNotSkipped();
+      } else {
+        return nextPage;
       }
     };
 
