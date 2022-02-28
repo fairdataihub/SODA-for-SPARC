@@ -2600,7 +2600,6 @@ $("#button-submit-dataset").click(async () => {
         console.log("Done submit track");
 
         if (statusMessage.includes("Success: COMPLETED")) {
-          console.log("Only success logged once now");
           ipcRenderer.send(
             "track-event",
             "Success",
