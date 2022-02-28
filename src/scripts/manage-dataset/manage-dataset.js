@@ -2510,6 +2510,7 @@ $("#button-submit-dataset").click(async () => {
 
   var countDone = 0;
   var timerProgress = setInterval(progressfunction, 1000);
+  let statusMessage = "Error";
 
   function progressfunction() {
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
@@ -2536,14 +2537,7 @@ $("#button-submit-dataset").click(async () => {
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );
       } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
-          defaultBfDatasetId
-        );
-
+        statusMessage = res[0];
         completionStatus = res[1];
         let submitprintstatus = res[2];
         totalFileSize = res[3];
@@ -2597,12 +2591,24 @@ $("#button-submit-dataset").click(async () => {
         }
       }
     });
+
     if (completionStatus === "Done") {
       countDone++;
 
       if (countDone > 1) {
         log.info("Done submit track");
         console.log("Done submit track");
+
+        if (statusMessage.includes("Success: COMPLETED")) {
+          console.log("Only success logged once now");
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Progress track`,
+            defaultBfDatasetId
+          );
+        }
 
         clearInterval(timerProgress);
 
