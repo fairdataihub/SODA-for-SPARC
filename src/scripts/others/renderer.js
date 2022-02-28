@@ -9153,3 +9153,16 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
+
+document
+  .getElementById("direct-to-feedback")
+  .addEventListener("click", function () {
+    if (
+      !document.getElementById("feedback-wrapper").classList.contains("is-open")
+    ) {
+      document.getElementById("feedback-btn").click();
+    }
+    document.querySelector("#feedback-btn").scrollIntoView({
+      behavior: "smooth",
+    });
+  });
