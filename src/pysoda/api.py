@@ -76,7 +76,7 @@ from organize_datasets import generate_dataset_locally, bf_get_dataset_files_fol
 import sys
 import zerorpc
 
-MIN_SODA_VERSION = "5.3.0"
+MIN_SODA_VERSION = "5.3.1"
 
 
 class SodaApi(object):
