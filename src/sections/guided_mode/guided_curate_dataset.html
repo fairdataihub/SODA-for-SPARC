@@ -88,6 +88,8 @@
               <div class="guided--capsule" id="guided-fc2-capsule"></div>
               <div class="guided--capsule" id="guided-fc3-capsule"></div>
               <div class="guided--capsule" id="guided-fc4-capsule"></div>
+              <div class="guided--capsule" id="guided-fc5-capsule"></div>
+              <div class="guided--capsule" id="guided-fc6-capsule"></div>
             </div>
             <div
               class="guided--capsule-container-branch hidden"
@@ -105,13 +107,14 @@
               <h1 class="guided--text-sub-step">
                 Curate a new dataset or continue from existing?
               </h1>
-              <div class="guided--card-container" data->
+              <div class="guided--card-container">
                 <div
                   class="option-card radio-button guided--generate-location-card selected"
                   id="guided-curate-new-dataset-card"
                   data-enable-next-button="true"
                   data-branch-capsule-container-id="guided-curate-new-dataset-branch-capsule-container"
                   data-branch-pages-class="guided-curate-new-dataset-branch-page"
+                  data-branch-pages-group-class="starting-point-branch-page"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -144,6 +147,7 @@
                   data-enable-next-button="true"
                   data-branch-capsule-container-id="guided-curate-existing-local-dataset-branch-capsule-container"
                   data-branch-pages-class="guided-curate-existing-local-dataset-branch-page"
+                  data-branch-pages-group-class="starting-point-branch-page"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -182,6 +186,7 @@
                     "
                     id="guided-curate-existing-Pennsieve-dataset-card"
                     data-enable-next-button="true"
+                    data-branch-pages-group-class="starting-point-branch-page"
                   >
                     <div class="card-head"></div>
                     <div class="card-body">
@@ -447,35 +452,49 @@
           </div>
           <div
             id="guided-fc1-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            ase ase
+            Primary
           </div>
           <div
             id="guided-fc2-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            ase ase
+            Source
           </div>
           <div
             id="guided-fc3-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            ase ase
+            Derivative
           </div>
           <div
             id="guided-fc4-tab"
-            class="guided--panel hidden guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            ase ase
+            Code
+          </div>
+          <div
+            id="guided-fc5-tab"
+            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
+            data-skip-page="true"
+          >
+            Protocol
+          </div>
+          <div
+            id="guided-fc6-tab"
+            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
+            data-skip-page="true"
+          >
+            Docs
           </div>
           <div
             id="guided-folder-importation-tab"
-            class="guided--panel hidden guided-curate-existing-local-dataset-branch-page"
+            class="guided--panel hidden guided starting-point-branch-page guided-curate-existing-local-dataset-branch-page"
             data-skip-page="true"
           >
             <div class="guided--container-data-display">

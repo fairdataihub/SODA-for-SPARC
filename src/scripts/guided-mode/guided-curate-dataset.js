@@ -211,6 +211,7 @@ const guidedLoadSavedProgressFiles = async () => {
   }
 };
 const traverseToTab = (targetPageID) => {
+  console.log(targetPageID);
   if (
     targetPageID === "guided-designate-pi-owner-tab" ||
     "guided-designate-permissions-tab"
@@ -708,7 +709,10 @@ $(document).ready(() => {
     }
     //handle skip pages following card
     if (selectedTab.data("branch-pages-class")) {
-      console.log($(`.${selectedTab.data("branch-pages-class")}`));
+      const branchPagesGroupClass = selectedTab.attr(
+        "data-branch-pages-group-class"
+      );
+      $(`.${branchPagesGroupClass}`).attr("data-skip-page", "true");
       $(`.${selectedTab.data("branch-pages-class")}`).attr(
         "data-skip-page",
         "false"
@@ -2582,7 +2586,7 @@ $(document).ready(() => {
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
     const getNextPageNotSkipped = () => {
-      const nextPage = current_sub_step.next();
+      let nextPage = current_sub_step.next();
       if (nextPage == undefined) {
         return undefined;
       }
@@ -2621,9 +2625,24 @@ $(document).ready(() => {
       $("#guided-next-button").css("visibility", "visible");
     }
 
-    //NAVIGATE TO PREV PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
-    //if more tabs in parent tab, go to prev tab and update capsule/progression tab
-    let targetPage = current_sub_step.prev();
+    const getPrevPageNotSkipped = () => {
+      const prevPage = current_sub_step.prev();
+      if (prevPage.hasClass("guided--capsule-container")) {
+        console.log("prev page was capsule container");
+        return prevPage;
+      }
+      if (prevPage.data("skip-page")) {
+        current_sub_step.hide();
+        current_sub_step = current_sub_step.prev();
+        console.log("prev page had skip page attr");
+        return getPrevPageNotSkipped();
+      } else {
+        console.log("prev page no skip page attr");
+        return prevPage;
+      }
+    };
+
+    let targetPage = getPrevPageNotSkipped();
     if (!targetPage.hasClass("guided--capsule-container")) {
       let targetPageID = targetPage.attr("id");
       traverseToTab(targetPageID);
@@ -2637,7 +2656,11 @@ $(document).ready(() => {
         .attr("id");
       //handle case where target page is undefined (on the first page)
       if (targetPageID != undefined) {
-        traverseToTab(targetPageID);
+        current_sub_step.hide();
+        current_sub_step = $(`#${targetPageID}`);
+        targetPage = getPrevPageNotSkipped();
+        alert(targetPage.attr("id"));
+        traverseToTab(targetPage.attr("id"));
       }
     }
   });
