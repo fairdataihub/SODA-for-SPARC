@@ -6516,11 +6516,11 @@ function initiate_generate() {
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 
-  console.log(sodaJSONObj)
+  console.log(sodaJSONObj);
 
-  // convert to JSON 
-  let json = JSON.stringify(sodaJSONObj)
-  console.log(json)
+  // convert to JSON
+  let json = JSON.stringify(sodaJSONObj);
+  console.log(json);
 
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
