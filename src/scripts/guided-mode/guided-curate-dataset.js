@@ -124,52 +124,52 @@ const renderProgressCards = (progressFileJSONdata) => {
     const progressFileLastModified = progressFile["last-modified"];
 
     return `
-         <div class="guided--dataset-card">
-                <div class="guided--container-dataset-card-center">  
-                ${progressFileImage}     
-                  <div class="guided--dataset-card-title">
-                    <h1 class="guided--text-dataset-card progress-file-name">${progressFileName}</h1>
-                    <h2 class="guided--text-dataset-card-sub">
-                      ${progressFileSubtitle}
-                    </h2>
-                  </div>
-                </div>
-                <div class="guided--dataset-card-body">
-                  <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">${progressFileOwnerName}</h1>
-                    <h2 class="guided--text-dataset-card-sub">Owner</h2>
-                  </div>
-                  <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">0 GB</h1>
-                    <h2 class="guided--text-dataset-card-sub">Size</h2>
-                  </div>
-                  <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">
-                      ${progressFileLastModified}
-                    </h1>
-                    <h2 class="guided--text-dataset-card-sub">Last modified</h2>
-                  </div>
-                  <div class="guided--dataset-card-item">
-                    <h1 class="guided--text-dataset-card">In progress</h1>
-                    <h2 class="guided--text-dataset-card-sub"> 
-                      Curation status
-                    </h2>
-                  </div>
-                </div>
-                <div class="guided--container-dataset-card-center">
-                  <button
-                    class="ui positive button guided--button-footer"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 160px !important;
-                      margin: 10px;
-                    "
-                    onClick="guidedResumeProgress($(this))"
-                  >
-                    Continue curation
-                  </button>
-                </div>
-              </div>`;
+      <div class="guided--dataset-card">
+        <div class="guided--container-dataset-card-center">  
+        ${progressFileImage}     
+          <div class="guided--dataset-card-title">
+            <h1 class="guided--text-dataset-card progress-file-name">${progressFileName}</h1>
+            <h2 class="guided--text-dataset-card-sub">
+              ${progressFileSubtitle}
+            </h2>
+          </div>
+        </div>
+        <div class="guided--dataset-card-body">
+          <div class="guided--dataset-card-item">
+            <h1 class="guided--text-dataset-card">${progressFileOwnerName}</h1>
+            <h2 class="guided--text-dataset-card-sub">Owner</h2>
+          </div>
+          <div class="guided--dataset-card-item">
+            <h1 class="guided--text-dataset-card">0 GB</h1>
+            <h2 class="guided--text-dataset-card-sub">Size</h2>
+          </div>
+          <div class="guided--dataset-card-item">
+            <h1 class="guided--text-dataset-card">
+              ${progressFileLastModified}
+            </h1>
+            <h2 class="guided--text-dataset-card-sub">Last modified</h2>
+          </div>
+          <div class="guided--dataset-card-item">
+            <h1 class="guided--text-dataset-card">In progress</h1>
+            <h2 class="guided--text-dataset-card-sub"> 
+              Curation status
+            </h2>
+          </div>
+        </div>
+        <div class="guided--container-dataset-card-center">
+          <button
+            class="ui positive button guided--button-footer"
+            style="
+              background-color: var(--color-light-green) !important;
+              width: 160px !important;
+              margin: 10px;
+            "
+            onClick="guidedResumeProgress($(this))"
+          >
+            Continue curation
+          </button>
+        </div>
+      </div>`;
   });
   cardContainer.innerHTML = progressCards.join("\n");
 };
@@ -255,6 +255,13 @@ const populateGuidedModePages = (loadedJSONObj) => {
     let datasetSubtitle = loadedJSONObj["digital-metadata"]["subtitle"];
     $("#guided-dataset-name-input").val(datasetName);
     $("#guided-dataset-subtitle-input").val(datasetSubtitle);
+
+    let startingPoint = sodaJSONObj["starting-point"]["type"];
+    if (startingPoint == "new") {
+    }
+    if (startingPoint == "local") {
+    }
+
     lastCompletedTab = "guided-basic-description-tab";
   }
   if (completedTabs.includes("guided-banner-image-addition-tab")) {
@@ -702,23 +709,23 @@ $(document).ready(() => {
       ? enableProgressButton()
       : disableProgressButton();
     //hide capsule containers for page branches that are not selected
-    if (selectedTab.attr("data-branch-capsule-container-id")) {
-      $(".guided--capsule-container-branch").hide();
-      let selectedTabsCapsulesID = selectedTab.attr(
-        "data-branch-capsule-container-id"
-      );
-      $(`#${selectedTabsCapsulesID}`).css("display", "flex");
-    }
+    const capsuleContainerID = selectedTab
+      .attr("id")
+      .replace("card", "branch-capsule-container");
+    $(".guided--capsule-container-branch").hide();
+    $(`#${capsuleContainerID}`).css("display", "flex");
+
     //handle skip pages following card
-    if (selectedTab.data("branch-pages-class")) {
+    if (selectedTab.data("branch-pages-group-class")) {
       const branchPagesGroupClass = selectedTab.attr(
         "data-branch-pages-group-class"
       );
       $(`.${branchPagesGroupClass}`).attr("data-skip-page", "true");
-      $(`.${selectedTab.data("branch-pages-class")}`).attr(
-        "data-skip-page",
-        "false"
-      );
+      const pageBranchToRemoveSkip = selectedTab
+        .attr("id")
+        .replace("card", "branch-page");
+      console.log(pageBranchToRemoveSkip);
+      $(`.${pageBranchToRemoveSkip}`).attr("data-skip-page", "false");
     }
 
     selectedTab.siblings().removeClass("checked");
@@ -2441,15 +2448,8 @@ $(document).ready(() => {
       );
     }
   });
-  $("#guided-curate-new-dataset-card").on("click", () => {
-    $(".guided-curate-new-dataset-branch-page").removeClass("skip");
-    guidedCreateSodaJSONObj("new");
-  });
-  $("#guided-curate-existing-local-dataset-card").on("click", () => {
-    guidedCreateSodaJSONObj("local");
-  });
 
-  guidedCreateSodaJSONObj = (startingPoint) => {
+  guidedCreateSodaJSONObj = () => {
     sodaJSONObj = {};
     sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
     sodaJSONObj["generate-dataset"] = {};
@@ -2465,15 +2465,6 @@ $(document).ready(() => {
     sodaJSONObj["digital-metadata"] = {};
     sodaJSONObj["completed-tabs"] = [];
     sodaJSONObj["last-modified"] = "";
-
-    if (startingPoint === "new") {
-      sodaJSONObj["starting-point"]["type"] = "bf";
-    }
-
-    //set starting point to local for now for curate new dataset until new dataset functionality implemented
-    if (startingPoint === "local") {
-      sodaJSONObj["starting-point"]["type"] = "bf";
-    }
   };
 
   //next button click handler
@@ -2483,21 +2474,26 @@ $(document).ready(() => {
 
     if (pageBeingLeftID === "guided-basic-description-tab") {
       //If sodaJSONObj is empty, populate initial object properties
-      let user = await getUserInformation();
-      const originalDatasetCreator = {
-        userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-        UUID: user["id"],
-        name: `${user["firstName"]} ${user["lastName"]}`,
-      };
-      setGuidedDatasetPiOwner(originalDatasetCreator);
+      if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
+        guidedCreateSodaJSONObj();
+        sodaJSONObj["starting-point"]["type"] = "new";
+      }
+      if ($("#guided-curate-existing-local-dataset-card").hasClass("checked")) {
+        guidedCreateSodaJSONObj();
+        sodaJSONObj["starting-point"]["type"] = "local";
+      }
+      if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
+        let user = await getUserInformation();
+        const originalDatasetCreator = {
+          userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+          UUID: user["id"],
+          name: `${user["firstName"]} ${user["lastName"]}`,
+        };
+        setGuidedDatasetPiOwner(originalDatasetCreator);
+      }
       setGuidedDatasetName($("#guided-dataset-name-input"));
       setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
-      if (guidedCroppedBannerImagePath) {
-        setGuidedBannerImage(guidedCroppedBannerImagePath);
-      } else {
-        setGuidedBannerImage("");
-      }
-      $("#guided-back-button").css("visibility", "visible");
+      setGuidedBannerImage(guidedCroppedBannerImagePath);
     }
     if (pageBeingLeftID === "guided-folder-importation-tab") {
     }
@@ -2647,7 +2643,6 @@ $(document).ready(() => {
         //previous element was the last element in the container.
         //go to the next page-set and return the first page to be transitioned to.
         console.log("back to prev parent tab");
-
         prevPage = startingPage
           .parent()
           .prev()

@@ -112,8 +112,6 @@
                   class="option-card radio-button guided--generate-location-card selected"
                   id="guided-curate-new-dataset-card"
                   data-enable-next-button="true"
-                  data-branch-capsule-container-id="guided-curate-new-dataset-branch-capsule-container"
-                  data-branch-pages-class="guided-curate-new-dataset-branch-page"
                   data-branch-pages-group-class="starting-point-branch-page"
                 >
                   <div class="card-head"></div>
@@ -145,8 +143,6 @@
                   class="option-card radio-button guided--generate-location-card non-selected"
                   id="guided-curate-existing-local-dataset-card"
                   data-enable-next-button="true"
-                  data-branch-capsule-container-id="guided-curate-existing-local-dataset-branch-capsule-container"
-                  data-branch-pages-class="guided-curate-existing-local-dataset-branch-page"
                   data-branch-pages-group-class="starting-point-branch-page"
                 >
                   <div class="card-head"></div>
@@ -2752,7 +2748,15 @@
           id="guided-back-button"
           style="width: 120px !important"
         >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+          >Back</button
+        ><button
+          class="content-button"
+          style="height: 5px; width: 5px"
+          id="guided_back_to_main_menu"
+          data-section="guided_mode"
+        >
+          <h2>Curate a new dataset</h2>
         </button>
         <button
           class="ui positive button guided--button-footer"
