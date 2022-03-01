@@ -194,6 +194,43 @@ setActiveProgressionTab = (targetPageID) => {
   targetProgressionTab.addClass("selected-tab");
 };
 
+const handlePageBranching = (selectedCardElement) => {
+  console.log(selectedCardElement);
+  //If button has data-enable-next-button attribute, enable the progress button
+  selectedCardElement.attr("data-enable-next-button") == "true"
+    ? enableProgressButton()
+    : disableProgressButton();
+  //hide capsule containers for page branches that are not selected
+  const capsuleContainerID = selectedCardElement
+    .attr("id")
+    .replace("card", "branch-capsule-container");
+  $(".guided--capsule-container-branch").hide();
+  $(`#${capsuleContainerID}`).css("display", "flex");
+
+  //handle skip pages following card
+  if (selectedCardElement.data("branch-pages-group-class")) {
+    const branchPagesGroupClass = selectedCardElement.attr(
+      "data-branch-pages-group-class"
+    );
+    $(`.${branchPagesGroupClass}`).attr("data-skip-page", "true");
+    const pageBranchToRemoveSkip = selectedCardElement
+      .attr("id")
+      .replace("card", "branch-page");
+    console.log(pageBranchToRemoveSkip);
+    $(`.${pageBranchToRemoveSkip}`).attr("data-skip-page", "false");
+  }
+
+  selectedCardElement.siblings().removeClass("checked");
+  selectedCardElement.siblings().addClass("non-selected");
+  selectedCardElement.removeClass("non-selected");
+  selectedCardElement.addClass("checked");
+
+  const tabPanelId = selectedCardElement.attr("id").replace("card", "panel");
+  const tabPanel = $(`#${tabPanelId}`);
+  tabPanel.siblings().hide();
+  tabPanel.css("display", "flex");
+};
+
 const guidedLoadSavedProgressFiles = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
@@ -258,10 +295,10 @@ const populateGuidedModePages = (loadedJSONObj) => {
 
     let startingPoint = sodaJSONObj["starting-point"]["type"];
     if (startingPoint == "new") {
-      $("#guided-curate-new-dataset").click();
+      handlePageBranching($("#guided-curate-new-dataset-card"));
     }
     if (startingPoint == "local") {
-      $("#guided-curate-existing-local-dataset-card").click();
+      handlePageBranching($("#guided-curate-existing-local-dataset-card"));
     }
 
     lastCompletedTab = "guided-basic-description-tab";
@@ -705,40 +742,7 @@ $(document).ready(() => {
   //card click hanndler that displays the card's panel using the card's id prefix
   //e.g. clicking a card with id "foo-bar-card" will display the panel with the id "foo-bar-panel"
   $(".guided--card-container > div").on("click", function () {
-    const selectedTab = $(this);
-    //If button has data-enable-next-button attribute, enable the progress button
-    selectedTab.attr("data-enable-next-button") == "true"
-      ? enableProgressButton()
-      : disableProgressButton();
-    //hide capsule containers for page branches that are not selected
-    const capsuleContainerID = selectedTab
-      .attr("id")
-      .replace("card", "branch-capsule-container");
-    $(".guided--capsule-container-branch").hide();
-    $(`#${capsuleContainerID}`).css("display", "flex");
-
-    //handle skip pages following card
-    if (selectedTab.data("branch-pages-group-class")) {
-      const branchPagesGroupClass = selectedTab.attr(
-        "data-branch-pages-group-class"
-      );
-      $(`.${branchPagesGroupClass}`).attr("data-skip-page", "true");
-      const pageBranchToRemoveSkip = selectedTab
-        .attr("id")
-        .replace("card", "branch-page");
-      console.log(pageBranchToRemoveSkip);
-      $(`.${pageBranchToRemoveSkip}`).attr("data-skip-page", "false");
-    }
-
-    selectedTab.siblings().removeClass("checked");
-    selectedTab.siblings().addClass("non-selected");
-    selectedTab.removeClass("non-selected");
-    selectedTab.addClass("checked");
-
-    const tabPanelId = selectedTab.attr("id").replace("card", "panel");
-    const tabPanel = $(`#${tabPanelId}`);
-    tabPanel.siblings().hide();
-    tabPanel.css("display", "flex");
+    handlePageBranching($(this));
   });
 
   // function for importing a banner image if one already exists
