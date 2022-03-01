@@ -1034,7 +1034,7 @@ $("#button-add-description").click(() => {
         title: "This description does not follow SPARC guidelines.",
         html: `
         Your description should include all of the mandatory sections. Additionally, each section should be no longer than one paragraph.
-        <br> 
+        <br>
         <br>
         Are you sure you want to continue?`,
         heightAuto: false,
@@ -1517,7 +1517,6 @@ $("#edit_banner_image_button").click(async () => {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
           log.error(`An error happened: ${img_src}`);
-          console.log(`An error happened: ${img_src}`);
           Swal.fire({
             icon: "error",
             text: "An error occurred when importing the image. Please try again later.",
@@ -1537,7 +1536,6 @@ $("#edit_banner_image_button").click(async () => {
         }
       } else {
         log.error(`An error happened: ${img_src}`);
-        console.log(`An error happened: ${img_src}`);
 
         Swal.fire({
           icon: "error",
@@ -1558,7 +1556,6 @@ $("#edit_banner_image_button").click(async () => {
       }
     } else {
       log.error(`An error happened: ${img_src}`);
-      console.log(`An error happened: ${img_src}`);
 
       Swal.fire({
         icon: "error",
@@ -1814,8 +1811,6 @@ $(document).ready(() => {
                 let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
                 if (fileSizeInMegabytes > 5) {
-                  console.log("File size too large. Resizing image");
-
                   fs.unlinkSync(converted_image_file);
 
                   await Jimp.read(original_image_path)
@@ -1851,13 +1846,11 @@ $(document).ready(() => {
                     let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
                     if (fileSizeInMegabytes > 5) {
-                      console.log("File size is too big", fileSizeInMegabytes);
                       conversion_success = false;
                       // SHOW ERROR
                     }
                   }
                 }
-                console.log("file conversion complete");
                 image_path = converted_image_file;
                 imageExtension = "jpg";
                 $("#para-path-image").html(image_path);
@@ -2518,6 +2511,7 @@ $("#button-submit-dataset").click(async () => {
 
   var countDone = 0;
   var timerProgress = setInterval(progressfunction, 1000);
+  let statusMessage = "Error";
 
   function progressfunction() {
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
@@ -2544,14 +2538,7 @@ $("#button-submit-dataset").click(async () => {
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );
       } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
-          defaultBfDatasetId
-        );
-
+        statusMessage = res[0];
         completionStatus = res[1];
         let submitprintstatus = res[2];
         totalFileSize = res[3];
@@ -2605,12 +2592,23 @@ $("#button-submit-dataset").click(async () => {
         }
       }
     });
+
     if (completionStatus === "Done") {
       countDone++;
 
       if (countDone > 1) {
         log.info("Done submit track");
         console.log("Done submit track");
+
+        if (statusMessage.includes("Success: COMPLETED")) {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Progress track`,
+            defaultBfDatasetId
+          );
+        }
 
         clearInterval(timerProgress);
 
