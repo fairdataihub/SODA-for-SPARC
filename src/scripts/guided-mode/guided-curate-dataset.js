@@ -2628,76 +2628,37 @@ $(document).ready(() => {
       $("#guided-next-button").css("visibility", "visible");
     }
 
-    /*
-    const getNextPageNotSkipped = (startingPage) => {
+    const getPrevPageNotSkipped = (startingPage) => {
       //Check if param element's following element is undefined
       //(usually the case when the element is the last element in it's container)
-      if (startingPage.next().attr("id") != undefined) {
+      if (!startingPage.prev().hasClass("guided--capsule-container")) {
         //if not, check if it has the data-attribute skip-page
         //if so, recurse back until a page without the skip-page attribute is found
-        let nextPage = startingPage.next();
-        if (nextPage.data("skip-page")) {
-          return getNextPageNotSkipped(nextPage);
+        let prevPage = startingPage.prev();
+        if (prevPage.data("skip-page")) {
+          console.log("recursive back");
+          return getPrevPageNotSkipped(prevPage);
         } else {
+          console.log("regular back");
           //element is valid and not to be skipped
-          return nextPage;
+          return prevPage;
         }
       } else {
         //previous element was the last element in the container.
         //go to the next page-set and return the first page to be transitioned to.
+        console.log("back to prev parent tab");
+
         nextPage = startingPage
           .parent()
-          .next()
+          .prev()
           .children(".guided--panel")
-          .first();
+          .last();
         return nextPage;
       }
     };
-
-    //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
-    //if more tabs in parent tab, go to next tab and update capsule
-    let targetPage = getNextPageNotSkipped(CURRENT_PAGE);
+    let targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
     let targetPageID = targetPage.attr("id");
-
-    traverseToTab(targetPageID);*/
-
-    const getPrevPageNotSkipped = () => {
-      const prevPage = CURRENT_PAGE.prev();
-      if (prevPage.hasClass("guided--capsule-container")) {
-        console.log("prev page was capsule container");
-        return prevPage;
-      }
-      if (prevPage.data("skip-page")) {
-        CURRENT_PAGE.hide();
-        CURRENT_PAGE = CURRENT_PAGE.prev();
-        console.log("prev page had skip page attr");
-        return getPrevPageNotSkipped();
-      } else {
-        console.log("prev page no skip page attr");
-        return prevPage;
-      }
-    };
-
-    let targetPage = getPrevPageNotSkipped();
-    if (!targetPage.hasClass("guided--capsule-container")) {
-      let targetPageID = targetPage.attr("id");
-      traverseToTab(targetPageID);
-    } else {
-      //if current page is the first page in its parent tab
-      let targetPageID = CURRENT_PAGE.parent()
-        .prev()
-        .children(".guided--panel")
-        .last()
-        .attr("id");
-      //handle case where target page is undefined (on the first page)
-      if (targetPageID != undefined) {
-        CURRENT_PAGE.hide();
-        CURRENT_PAGE = $(`#${targetPageID}`);
-        targetPage = getPrevPageNotSkipped();
-        alert(targetPage.attr("id"));
-        traverseToTab(targetPage.attr("id"));
-      }
-    }
+    traverseToTab(targetPageID);
   });
 
   //tagify initializations
