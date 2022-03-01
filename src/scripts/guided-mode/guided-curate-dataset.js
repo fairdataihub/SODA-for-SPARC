@@ -258,8 +258,10 @@ const populateGuidedModePages = (loadedJSONObj) => {
 
     let startingPoint = sodaJSONObj["starting-point"]["type"];
     if (startingPoint == "new") {
+      $("#guided-curate-new-dataset").click();
     }
     if (startingPoint == "local") {
+      $("#guided-curate-existing-local-dataset-card").click();
     }
 
     lastCompletedTab = "guided-basic-description-tab";
@@ -2471,17 +2473,21 @@ $(document).ready(() => {
   $("#guided-next-button").on("click", async () => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.attr("id");
-
     if (pageBeingLeftID === "guided-basic-description-tab") {
       //If sodaJSONObj is empty, populate initial object properties
-      if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-        guidedCreateSodaJSONObj();
-        sodaJSONObj["starting-point"]["type"] = "new";
+      if (Object.keys(sodaJSONObj).length === 0) {
+        if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
+          guidedCreateSodaJSONObj();
+          sodaJSONObj["starting-point"]["type"] = "new";
+        }
+        if (
+          $("#guided-curate-existing-local-dataset-card").hasClass("checked")
+        ) {
+          guidedCreateSodaJSONObj();
+          sodaJSONObj["starting-point"]["type"] = "local";
+        }
       }
-      if ($("#guided-curate-existing-local-dataset-card").hasClass("checked")) {
-        guidedCreateSodaJSONObj();
-        sodaJSONObj["starting-point"]["type"] = "local";
-      }
+
       if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
         let user = await getUserInformation();
         const originalDatasetCreator = {
@@ -2491,6 +2497,7 @@ $(document).ready(() => {
         };
         setGuidedDatasetPiOwner(originalDatasetCreator);
       }
+
       setGuidedDatasetName($("#guided-dataset-name-input"));
       setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
       setGuidedBannerImage(guidedCroppedBannerImagePath);
