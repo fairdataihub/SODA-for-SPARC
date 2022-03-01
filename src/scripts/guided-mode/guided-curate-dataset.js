@@ -1,9 +1,11 @@
+const { start } = require("repl");
+
 //Temp variables used for data storage until put into sodaJSONObj on next button press
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
 
 //main nav variables initialized to first page of guided mode
-let current_sub_step = $("#guided-basic-description-tab");
+let CURRENT_PAGE = $("#guided-basic-description-tab");
 
 /////////////////////////////////////////////////////////
 /////////////       Util functions      /////////////////
@@ -219,7 +221,7 @@ const traverseToTab = (targetPageID) => {
     //Refresh select pickers so items can be selected
     $(".selectpicker").selectpicker("refresh");
   }
-  let currentParentTab = current_sub_step.parent();
+  let currentParentTab = CURRENT_PAGE.parent();
   let targetPage = $(`#${targetPageID}`);
   let targetPageParentTab = targetPage.parent();
 
@@ -229,15 +231,15 @@ const traverseToTab = (targetPageID) => {
 
   //Check to see if target element has the same parent as current sub step
   if (currentParentTab.attr("id") === targetPageParentTab.attr("id")) {
-    current_sub_step.hide();
-    current_sub_step = targetPage;
-    current_sub_step.css("display", "flex");
+    CURRENT_PAGE.hide();
+    CURRENT_PAGE = targetPage;
+    CURRENT_PAGE.css("display", "flex");
   } else {
-    current_sub_step.hide();
+    CURRENT_PAGE.hide();
     currentParentTab.hide();
     targetPageParentTab.show();
-    current_sub_step = targetPage;
-    current_sub_step.css("display", "flex");
+    CURRENT_PAGE = targetPage;
+    CURRENT_PAGE.css("display", "flex");
   }
 };
 //populates user inputs from the completed-tabs array, and returns the last page
@@ -2477,7 +2479,7 @@ $(document).ready(() => {
   //next button click handler
   $("#guided-next-button").on("click", async () => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
-    pageBeingLeftID = current_sub_step.attr("id");
+    pageBeingLeftID = CURRENT_PAGE.attr("id");
 
     if (pageBeingLeftID === "guided-basic-description-tab") {
       //If sodaJSONObj is empty, populate initial object properties
@@ -2585,55 +2587,89 @@ $(document).ready(() => {
     //Save progress onto local storage with the dataset name as the key
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
-    const getNextPageNotSkipped = () => {
-      let nextPage = current_sub_step.next();
-      if (nextPage == undefined) {
-        return undefined;
-      }
-      if (nextPage.data("skip-page")) {
-        current_sub_step.hide();
-        current_sub_step = current_sub_step.next();
-        return getNextPageNotSkipped();
+    const getNextPageNotSkipped = (startingPage) => {
+      //Check if param element's following element is undefined
+      //(usually the case when the element is the last element in it's container)
+      if (startingPage.next().attr("id") != undefined) {
+        //if not, check if it has the data-attribute skip-page
+        //if so, recurse back until a page without the skip-page attribute is found
+        let nextPage = startingPage.next();
+        if (nextPage.data("skip-page")) {
+          return getNextPageNotSkipped(nextPage);
+        } else {
+          //element is valid and not to be skipped
+          return nextPage;
+        }
       } else {
+        //previous element was the last element in the container.
+        //go to the next page-set and return the first page to be transitioned to.
+        nextPage = startingPage
+          .parent()
+          .next()
+          .children(".guided--panel")
+          .first();
         return nextPage;
       }
     };
 
     //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to next tab and update capsule
-    let targetPage = getNextPageNotSkipped();
-    if (targetPage.attr("id") !== undefined) {
-      let targetPageID = targetPage.attr("id");
-      traverseToTab(targetPageID);
-    } else {
-      //if current page is the last page in its parent tab
-      let targetPageID = current_sub_step
-        .parent()
-        .next()
-        .children(".guided--panel")
-        .first()
-        .attr("id");
-      traverseToTab(targetPageID);
-    }
+    let targetPage = getNextPageNotSkipped(CURRENT_PAGE);
+    let targetPageID = targetPage.attr("id");
+
+    traverseToTab(targetPageID);
   });
 
   //back button click handler
   $("#guided-back-button").on("click", () => {
-    pageBeingLeftID = current_sub_step.attr("id");
+    pageBeingLeftID = CURRENT_PAGE.attr("id");
 
     if (pageBeingLeftID === "guided-dataset-generation-confirmation-tab") {
       $("#guided-next-button").css("visibility", "visible");
     }
 
+    /*
+    const getNextPageNotSkipped = (startingPage) => {
+      //Check if param element's following element is undefined
+      //(usually the case when the element is the last element in it's container)
+      if (startingPage.next().attr("id") != undefined) {
+        //if not, check if it has the data-attribute skip-page
+        //if so, recurse back until a page without the skip-page attribute is found
+        let nextPage = startingPage.next();
+        if (nextPage.data("skip-page")) {
+          return getNextPageNotSkipped(nextPage);
+        } else {
+          //element is valid and not to be skipped
+          return nextPage;
+        }
+      } else {
+        //previous element was the last element in the container.
+        //go to the next page-set and return the first page to be transitioned to.
+        nextPage = startingPage
+          .parent()
+          .next()
+          .children(".guided--panel")
+          .first();
+        return nextPage;
+      }
+    };
+
+    //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
+    //if more tabs in parent tab, go to next tab and update capsule
+    let targetPage = getNextPageNotSkipped(CURRENT_PAGE);
+    let targetPageID = targetPage.attr("id");
+
+    traverseToTab(targetPageID);*/
+
     const getPrevPageNotSkipped = () => {
-      const prevPage = current_sub_step.prev();
+      const prevPage = CURRENT_PAGE.prev();
       if (prevPage.hasClass("guided--capsule-container")) {
         console.log("prev page was capsule container");
         return prevPage;
       }
       if (prevPage.data("skip-page")) {
-        current_sub_step.hide();
-        current_sub_step = current_sub_step.prev();
+        CURRENT_PAGE.hide();
+        CURRENT_PAGE = CURRENT_PAGE.prev();
         console.log("prev page had skip page attr");
         return getPrevPageNotSkipped();
       } else {
@@ -2648,16 +2684,15 @@ $(document).ready(() => {
       traverseToTab(targetPageID);
     } else {
       //if current page is the first page in its parent tab
-      let targetPageID = current_sub_step
-        .parent()
+      let targetPageID = CURRENT_PAGE.parent()
         .prev()
         .children(".guided--panel")
         .last()
         .attr("id");
       //handle case where target page is undefined (on the first page)
       if (targetPageID != undefined) {
-        current_sub_step.hide();
-        current_sub_step = $(`#${targetPageID}`);
+        CURRENT_PAGE.hide();
+        CURRENT_PAGE = $(`#${targetPageID}`);
         targetPage = getPrevPageNotSkipped();
         alert(targetPage.attr("id"));
         traverseToTab(targetPage.attr("id"));
