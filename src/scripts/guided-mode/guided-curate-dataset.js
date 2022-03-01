@@ -2648,12 +2648,19 @@ $(document).ready(() => {
         //go to the next page-set and return the first page to be transitioned to.
         console.log("back to prev parent tab");
 
-        nextPage = startingPage
+        prevPage = startingPage
           .parent()
           .prev()
           .children(".guided--panel")
           .last();
-        return nextPage;
+        if (prevPage.data("skip-page")) {
+          console.log("recursive back");
+          return getPrevPageNotSkipped(prevPage);
+        } else {
+          console.log("regular back");
+          //element is valid and not to be skipped
+          return prevPage;
+        }
       }
     };
     let targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
