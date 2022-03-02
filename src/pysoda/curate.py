@@ -3136,8 +3136,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 list_upload_manifest_files.append([[manifestpath], item])
                 main_total_generate_dataset_size += getsize(manifestpath)
 
-       
-
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
@@ -3149,50 +3147,58 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             list_final_names = item[4]
             tracking_folder = item[5]
             relative_path = item[6]
-            
+
             ## check if agent is running in the background
             agent_running()
 
             BUCKET_SIZE = 750
-            
+
             # determine if the current folder's files exceeds 750 (past 750 is a breaking point atm)
-            # if so proceed to batch uploading 
+            # if so proceed to batch uploading
             if len(list_upload) > BUCKET_SIZE:
                 # store the aggregate of the amount of files in the folder
                 total_files = len(list_upload)
-                
+
                 # create a start index and an end index
-                start_index = end_index =  0
-                
-                # while startIndex < files.length 
+                start_index = end_index = 0
+
+                # while startIndex < files.length
                 while start_index < total_files:
                     # set the endIndex to startIndex plus 750
                     end_index = start_index + BUCKET_SIZE - 1
-                    
+
                     # check if the endIndex is out of bounds
-                    if end_index >= total_files: 
+                    if end_index >= total_files:
                         # if so set end index to files.length - 1
                         end_index = len(list_upload) - 1
-                        
+
                     # get the 750 files between startIndex and endIndex (inclusive of endIndex)
-                    upload_bucket = list_upload[start_index: end_index + 1]
-                    
+                    upload_bucket = list_upload[start_index : end_index + 1]
+
                     # inform the user files are being uploaded
-                    main_curate_progress_message = "Uploading files in " + str(relative_path)
-                    
+                    main_curate_progress_message = "Uploading files in " + str(
+                        relative_path
+                    )
+
                     # clear the pennsieve queue for successive batches
                     clear_queue()
-                    
+
                     # upload the files
                     bf_folder.upload(*upload_bucket)
-           
-                    # update the files 
+
+                    # update the files
                     bf_folder.update()
-                
+
                     # handle renaming to final names
-                    for index, projected_name in enumerate(list_projected_names[start_index:end_index + 1]):
-                        final_name = list_final_names[start_index:end_index + 1][index]
-                        desired_name = list_desired_names[start_index:end_index + 1][index]
+                    for index, projected_name in enumerate(
+                        list_projected_names[start_index : end_index + 1]
+                    ):
+                        final_name = list_final_names[start_index : end_index + 1][
+                            index
+                        ]
+                        desired_name = list_desired_names[start_index : end_index + 1][
+                            index
+                        ]
                         if final_name != projected_name:
                             bf_item_list = bf_folder.items
                             (
@@ -3200,22 +3206,28 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                 my_bf_existing_files_name,
                                 my_bf_existing_files_name_with_extension,
                             ) = bf_get_existing_files_details(bf_folder)
-                            for item in my_bf_existing_files[start_index:end_index + 1]:
+                            for item in my_bf_existing_files[
+                                start_index : end_index + 1
+                            ]:
                                 if item.name == projected_name:
                                     item.name = final_name
                                     item.update()
                                     if "files" not in tracking_folder:
                                         tracking_folder["files"] = {}
-                                        tracking_folder["files"][desired_name] = {"value": item}
-                 
+                                        tracking_folder["files"][desired_name] = {
+                                            "value": item
+                                        }
+
                     # update the start_index to end_index + 1
-                    start_index = end_index + 1      
+                    start_index = end_index + 1
             else:
-                 # clear the pennsieve queue
+                # clear the pennsieve queue
                 clear_queue()
 
-                # upload all files at once for the folder 
-                main_curate_progress_message = "Uploading files in " + str(relative_path)
+                # upload all files at once for the folder
+                main_curate_progress_message = "Uploading files in " + str(
+                    relative_path
+                )
 
                 # fails when a single folder has more than 750 files (at which point I'm not sure)
                 bf_folder.upload(*list_upload)
@@ -3238,7 +3250,9 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                 item.update()
                                 if "files" not in tracking_folder:
                                     tracking_folder["files"] = {}
-                                    tracking_folder["files"][desired_name] = {"value": item}
+                                    tracking_folder["files"][desired_name] = {
+                                        "value": item
+                                    }
 
         if list_upload_metadata_files:
             main_curate_progress_message = (
