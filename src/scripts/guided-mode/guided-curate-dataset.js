@@ -1,4 +1,4 @@
-const { start } = require("repl");
+//const { start } = require("repl");
 
 //Temp variables used for data storage until put into sodaJSONObj on next button press
 let guidedUserPermissions = [];
@@ -366,6 +366,17 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   populateGuidedModePages(sodaJSONObj);
 };
 
+const handleSubjectFileName = (e, inputToRemove) => {
+  if (e.which == 13) {
+    subjectName = inputToRemove.val().trim();
+    if (subjectName.length > 0) {
+      subjectIdCellToAddNameTo = inputToRemove.parent();
+      inputToRemove.remove();
+      subjectIdCellToAddNameTo.text(subjectName);
+    }
+  }
+};
+
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
     "value",
@@ -514,7 +525,7 @@ const removeTeamPermission = (teamParentElement) => {
     .remove();
 };
 
-setGuidedLicense = (newLicense) => {
+const setGuidedLicense = (newLicense) => {
   $(".guidedBfLicense").text(newLicense);
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
@@ -692,129 +703,51 @@ $(document).ready(() => {
     let SubjectsTableBody = document.getElementById(
       "number-of-subjects-table-body"
     );
-    const foo = Array(numSubjectRowsToCreate)
+    const subjectRows = Array(numSubjectRowsToCreate)
       .fill(0)
       .map((_, i) => {
         let tableIndex = i + 1;
-        return `<tr><td class="middle aligned collapsing text-center">${tableIndex}</td>
-                    <td class="middle aligned text-center">SUB-2321</td>
-                    <td
-                      class="middle aligned collapsing"
-                      style="min-width: 130px"
-                    >
-                      <button
-                        type="button"
-                        class="btn btn-primary btn-sm"
-                        style="
-                          background-color: var(--color-light-green) !important;
-                        "
-                      >
-                        Structure
-                      </button>
-                    </td>
-                    <td class="middle aligned collapsing text-center">
-                      <i class="far fa-edit"></i>
-                    </td>
-                    <td class="middle aligned collapsing text-center remove-left-border">
-                      <i class="far fa-trash-alt"></i>
-                    </td></tr>`;
+        return `
+          <tr>
+            <td class="middle aligned collapsing text-center">${tableIndex}</td>
+            <td class="middle aligned">
+              <input
+                class="guided--input guided-input-subject-file-name"
+                type="text"
+                name="guided-number-of-samples"
+                placeholder="Enter subject ID and press enter"
+                onkeyup="handleSubjectFileName(event, $(this))"
+              />
+            </td>
+            <td
+              class="middle aligned collapsing text-center"
+              style="min-width: 130px"
+            >
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                style="background-color: var(--color-light-green) !important;"
+              >
+                Structure
+              </button>
+            </td>
+            <td class="middle aligned collapsing text-center">
+              <i class="far fa-edit"></i>
+            </td>
+            <td
+              class="middle aligned collapsing text-center remove-left-border"
+            >
+              <i class="far fa-trash-alt"></i>
+            </td>
+          </tr>
+        `;
       });
-    SubjectsTableBody.innerHTML = foo.join("\n");
-    /*let cardContainer = document.getElementById("resume-curation-container");
-  const progressCards = progressFileJSONdata.map((progressFile) => {
-    console.log(progressFile);
-    let progressFileImage =
-      progressFile["digital-metadata"]["banner-image-path"] || "";
-
-    if (progressFileImage === "") {
-      progressFileImage = `
-          <img
-            src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-            alt="Dataset banner image placeholder"
-            style="height: 60px; width: 60px"
-          />
-        `;
-    } else {
-      progressFileImage = `
-          <img
-            src='${progressFileImage}'
-            alt="Dataset banner image"
-            style="height: 60px; width: 60px"
-          />
-        `;
-    }
-    const progressFileName = progressFile["digital-metadata"]["name"] || "";
-    const progressFileSubtitle =
-      progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
-    let progressFileOwnerName =
-      progressFile["digital-metadata"]["pi-owner"]["name"];
-    const progressFileLastModified = progressFile["last-modified"];
-
-    return `
-      <div class="guided--dataset-card">
-        <div class="guided--container-dataset-card-center">  
-        ${progressFileImage}     
-          <div class="guided--dataset-card-title">
-            <h1 class="guided--text-dataset-card progress-file-name">${progressFileName}</h1>
-            <h2 class="guided--text-dataset-card-sub">
-              ${progressFileSubtitle}
-            </h2>
-          </div>
-        </div>
-        <div class="guided--dataset-card-body">
-          <div class="guided--dataset-card-item">
-            <h1 class="guided--text-dataset-card">${progressFileOwnerName}</h1>
-            <h2 class="guided--text-dataset-card-sub">Owner</h2>
-          </div>
-          <div class="guided--dataset-card-item">
-            <h1 class="guided--text-dataset-card">0 GB</h1>
-            <h2 class="guided--text-dataset-card-sub">Size</h2>
-          </div>
-          <div class="guided--dataset-card-item">
-            <h1 class="guided--text-dataset-card">
-              ${progressFileLastModified}
-            </h1>
-            <h2 class="guided--text-dataset-card-sub">Last modified</h2>
-          </div>
-          <div class="guided--dataset-card-item">
-            <h1 class="guided--text-dataset-card">In progress</h1>
-            <h2 class="guided--text-dataset-card-sub"> 
-              Curation status
-            </h2>
-          </div>
-        </div>
-        <div class="guided--container-dataset-card-center">
-          <button
-            class="ui positive button guided--button-footer"
-            style="
-              background-color: var(--color-light-green) !important;
-              width: 160px !important;
-              margin: 10px;
-            "
-            onClick="guidedResumeProgress($(this))"
-          >
-            Continue curation
-          </button>
-        </div>
-      </div>`;
-  });
-  cardContainer.innerHTML = progressCards.join("\n");*/
+    SubjectsTableBody.innerHTML = subjectRows.join("\n");
 
     $("#number-of-subjects-prompt").hide();
     $("#number-of-subjects-table").css("display", "flex");
   });
 
-  $(".guided-change-dataset-name").on("click", async function () {
-    const { value: datasetName } = await Swal.fire({
-      title: "Input new dataset name",
-      input: "text",
-      inputPlaceholder: "Enter your new dataset name here",
-    });
-
-    if (datasetName) {
-      $(".guidedDatasetName").text(datasetName);
-    }
-  });
   $(".guided-change-dataset-subtitle").on("click", async function () {
     const { value: datasetSubtitle } = await Swal.fire({
       title: "Input new dataset subtitle",
