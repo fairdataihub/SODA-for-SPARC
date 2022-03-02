@@ -279,6 +279,7 @@ const traverseToTab = (targetPageID) => {
     CURRENT_PAGE.css("display", "flex");
   }
 };
+
 //populates user inputs from the completed-tabs array, and returns the last page
 //that the user completed
 const populateGuidedModePages = (loadedJSONObj) => {
@@ -293,15 +294,17 @@ const populateGuidedModePages = (loadedJSONObj) => {
     $("#guided-dataset-name-input").val(datasetName);
     $("#guided-dataset-subtitle-input").val(datasetSubtitle);
 
-    let startingPoint = sodaJSONObj["starting-point"]["type"];
+    let startingPoint = loadedJSONObj["starting-point"]["type"];
     if (startingPoint == "new") {
       handlePageBranching($("#guided-curate-new-dataset-card"));
+      lastCompletedTab = "guided-basic-description-tab";
     }
     if (startingPoint == "local") {
       handlePageBranching($("#guided-curate-existing-local-dataset-card"));
+      lastCompletedTab = "guided-basic-description-tab";
+    } else {
+      lastCompletedTab = "guided-basic-description-tab";
     }
-
-    lastCompletedTab = "guided-basic-description-tab";
   }
   if (completedTabs.includes("guided-banner-image-addition-tab")) {
     // CURRENTLY NO UI UPDATES ON THIS TAB

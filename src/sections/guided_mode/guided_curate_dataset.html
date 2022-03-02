@@ -451,7 +451,30 @@
             class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            Primary
+            <div class="guided--question">
+              <h1 class="guided--text-sub-step">
+                How many subjects does your dataset contain?
+              </h1>
+              <input
+                class="guided--input"
+                type="text"
+                name="guided-number-of-samples"
+                placeholder="Enter number of samples"
+                id="guided-number-of-samples-input"
+              />
+              <button
+                id="guided-button-generate-subjects-table"
+                class="btn_animated"
+                style="
+                  width: 160px;
+                  min-width: 160px;
+                  border: none !important;
+                  margin: 10px;
+                "
+              >
+                Designate permission
+              </button>
+            </div>
           </div>
           <div
             id="guided-fc2-tab"
