@@ -3136,8 +3136,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 list_upload_manifest_files.append([[manifestpath], item])
                 main_total_generate_dataset_size += getsize(manifestpath)
 
-        # clear the pennsieve queue
-        clear_queue()
+       
 
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
@@ -3153,10 +3152,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             
             ## check if agent is running in the background
             agent_running()
+
+            BUCKET_SIZE = 750
             
             # determine if the current folder's files exceeds 750 (past 750 is a breaking point atm)
             # if so proceed to batch uploading 
-            if len(list_upload) > 750:
+            if len(list_upload) > BUCKET_SIZE:
                 # store the aggregate of the amount of files in the folder
                 total_files = len(list_upload)
                 
@@ -3166,7 +3167,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 # while startIndex < files.length 
                 while start_index < total_files:
                     # set the endIndex to startIndex plus 750
-                    end_index = start_index + 749
+                    end_index = start_index + BUCKET_SIZE - 1
                     
                     # check if the endIndex is out of bounds
                     if end_index >= total_files: 
@@ -3190,8 +3191,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 
                     # handle renaming to final names
                     for index, projected_name in enumerate(list_projected_names[start_index:end_index + 1]):
-                        final_name = list_final_names[index]
-                        desired_name = list_desired_names[index]
+                        final_name = list_final_names[start_index:end_index + 1][index]
+                        desired_name = list_desired_names[start_index:end_index + 1][index]
                         if final_name != projected_name:
                             bf_item_list = bf_folder.items
                             (
@@ -3199,7 +3200,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                 my_bf_existing_files_name,
                                 my_bf_existing_files_name_with_extension,
                             ) = bf_get_existing_files_details(bf_folder)
-                            for item in my_bf_existing_files:
+                            for item in my_bf_existing_files[start_index:end_index + 1]:
                                 if item.name == projected_name:
                                     item.name = final_name
                                     item.update()
@@ -3210,6 +3211,9 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     # update the start_index to end_index + 1
                     start_index = end_index + 1      
             else:
+                 # clear the pennsieve queue
+                clear_queue()
+
                 # upload all files at once for the folder 
                 main_curate_progress_message = "Uploading files in " + str(relative_path)
 
