@@ -3150,47 +3150,91 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             list_final_names = item[4]
             tracking_folder = item[5]
             relative_path = item[6]
-
-            # track block upload size for a more reactive progress bar
-            # progress_percentage = io.StringIO()
-            # total_size = 0
-            # progress_percentage_array.append({});
-            # progress_percentage_array[-1]["files"] = {}
-            # for file in list_upload:
-            # file_size = os.path.getsize(file)
-            # file_name = os.path.basename(file)
-            # progress_percentage_array[-1]["files"][file] = file_size
-            # total_size += file_size
-            # progress_percentage_array[-1]["output-stream"] = progress_percentage
-            # progress_percentage_array[-1].pop('completed-size', None)
-
+            
             ## check if agent is running in the background
             agent_running()
+            
+            # determine if the current folder's files exceeds 750 (past 750 is a breaking point atm)
+            # if so proceed to batch uploading 
+            if len(list_upload) > 750:
+                # store the aggregate of the amount of files in the folder
+                total_files = len(list_upload)
+                
+                # create a start index and an end index
+                start_index = end_index =  0
+                
+                # while startIndex < files.length 
+                while start_index < total_files:
+                    # set the endIndex to startIndex plus 750
+                    end_index = start_index + 749
+                    
+                    # check if the endIndex is out of bounds
+                    if end_index >= total_files: 
+                        # if so set end index to files.length - 1
+                        end_index = len(list_upload) - 1
+                        
+                    # get the 750 files between startIndex and endIndex (inclusive of endIndex)
+                    upload_bucket = list_upload[start_index: end_index + 1]
+                    
+                    # inform the user files are being uploaded
+                    main_curate_progress_message = "Uploading files in " + str(relative_path)
+                    
+                    # clear the pennsieve queue for successive batches
+                    clear_queue()
+                    
+                    # upload the files
+                    bf_folder.upload(*upload_bucket)
+           
+                    # update the files 
+                    bf_folder.update()
+                
+                    # handle renaming to final names
+                    for index, projected_name in enumerate(list_projected_names[start_index:end_index + 1]):
+                        final_name = list_final_names[index]
+                        desired_name = list_desired_names[index]
+                        if final_name != projected_name:
+                            bf_item_list = bf_folder.items
+                            (
+                                my_bf_existing_files,
+                                my_bf_existing_files_name,
+                                my_bf_existing_files_name_with_extension,
+                            ) = bf_get_existing_files_details(bf_folder)
+                            for item in my_bf_existing_files:
+                                if item.name == projected_name:
+                                    item.name = final_name
+                                    item.update()
+                                    if "files" not in tracking_folder:
+                                        tracking_folder["files"] = {}
+                                        tracking_folder["files"][desired_name] = {"value": item}
+                 
+                    # update the start_index to end_index + 1
+                    start_index = end_index + 1      
+            else:
+                # upload all files at once for the folder 
+                main_curate_progress_message = "Uploading files in " + str(relative_path)
 
-            # upload
-            main_curate_progress_message = "Uploading files in " + str(relative_path)
+                # fails when a single folder has more than 750 files (at which point I'm not sure)
+                bf_folder.upload(*list_upload)
+                bf_folder.update()
 
-            bf_folder.upload(*list_upload)
-            bf_folder.update()
-
-            # rename to final name
-            for index, projected_name in enumerate(list_projected_names):
-                final_name = list_final_names[index]
-                desired_name = list_desired_names[index]
-                if final_name != projected_name:
-                    bf_item_list = bf_folder.items
-                    (
-                        my_bf_existing_files,
-                        my_bf_existing_files_name,
-                        my_bf_existing_files_name_with_extension,
-                    ) = bf_get_existing_files_details(bf_folder)
-                    for item in my_bf_existing_files:
-                        if item.name == projected_name:
-                            item.name = final_name
-                            item.update()
-                            if "files" not in tracking_folder:
-                                tracking_folder["files"] = {}
-                            tracking_folder["files"][desired_name] = {"value": item}
+                # rename to final name
+                for index, projected_name in enumerate(list_projected_names):
+                    final_name = list_final_names[index]
+                    desired_name = list_desired_names[index]
+                    if final_name != projected_name:
+                        bf_item_list = bf_folder.items
+                        (
+                            my_bf_existing_files,
+                            my_bf_existing_files_name,
+                            my_bf_existing_files_name_with_extension,
+                        ) = bf_get_existing_files_details(bf_folder)
+                        for item in my_bf_existing_files:
+                            if item.name == projected_name:
+                                item.name = final_name
+                                item.update()
+                                if "files" not in tracking_folder:
+                                    tracking_folder["files"] = {}
+                                    tracking_folder["files"][desired_name] = {"value": item}
 
         if list_upload_metadata_files:
             main_curate_progress_message = (
@@ -3206,7 +3250,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     "Uploading manifest file in " + str(bf_folder.name) + " folder"
                 )
                 bf_folder.upload(*manifest_file)
-                # bf_folder.update()
+                bf_folder.update()
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
     except Exception as e:
