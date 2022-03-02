@@ -366,8 +366,8 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   populateGuidedModePages(sodaJSONObj);
 };
 
-const handleSubjectFileName = (e, inputToRemove) => {
-  if (e.which == 13) {
+const handleSubjectFileName = (event, inputToRemove) => {
+  if (event.which == 13) {
     subjectName = inputToRemove.val().trim();
     if (subjectName.length > 0) {
       subjectIdCellToAddNameTo = inputToRemove.parent();
@@ -375,6 +375,15 @@ const handleSubjectFileName = (e, inputToRemove) => {
       subjectIdCellToAddNameTo.text(subjectName);
     }
   }
+};
+
+const openStructureFolder = (clickedStructureButton) => {
+  $("#number-of-subjects-table").hide();
+  let subjectID = clickedStructureButton
+    .parent()
+    .siblings(".subject-id-cell")
+    .text();
+  $("#structure-subjects-file").css("display", "flex");
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -710,7 +719,7 @@ $(document).ready(() => {
         return `
           <tr>
             <td class="middle aligned collapsing text-center">${tableIndex}</td>
-            <td class="middle aligned">
+            <td class="middle aligned subject-id-cell">
               <input
                 class="guided--input guided-input-subject-file-name"
                 type="text"
@@ -727,6 +736,7 @@ $(document).ready(() => {
                 type="button"
                 class="btn btn-primary btn-sm"
                 style="background-color: var(--color-light-green) !important;"
+                onclick="openStructureFolder($(this))"
               >
                 Structure
               </button>
