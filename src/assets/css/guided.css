@@ -519,6 +519,10 @@
   flex-direction: column;
 }
 
+.remove-left-border {
+  border-left: none !important;
+}
+
 .guided--folder-card-container {
   width: 600px;
   display: flex;

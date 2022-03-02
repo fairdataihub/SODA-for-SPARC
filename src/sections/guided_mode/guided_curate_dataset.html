@@ -451,7 +451,7 @@
             class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question">
+            <div class="guided--question" id="number-of-subjects-prompt">
               <h1 class="guided--text-sub-step">
                 How many subjects does your dataset contain?
               </h1>
@@ -469,11 +469,50 @@
                   width: 160px;
                   min-width: 160px;
                   border: none !important;
-                  margin: 10px;
+                  margin: 15px;
                 "
               >
-                Designate permission
+                Create subjects table
               </button>
+            </div>
+            <div class="guided--question hidden" id="number-of-subjects-table">
+              <table class="ui celled striped table">
+                <thead>
+                  <tr>
+                    <th class="center aligned">Index</th>
+                    <th>Subject ID</th>
+                    <th class="center aligned">Structure folder</th>
+                    <th class="center aligned">Edit</th>
+                    <th class="center aligned remove-left-border">Delete</th>
+                  </tr>
+                </thead>
+                <tbody id="number-of-subjects-table-body">
+                  <tr>
+                    <td class="center aligned collapsing">1</td>
+                    <td>SUB-2321</td>
+                    <td
+                      class="center aligned collapsing"
+                      style="min-width: 130px"
+                    >
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        style="
+                          background-color: var(--color-light-green) !important;
+                        "
+                      >
+                        Structure
+                      </button>
+                    </td>
+                    <td class="center aligned collapsing">
+                      <i class="far fa-edit"></i>
+                    </td>
+                    <td class="center aligned collapsing remove-left-border">
+                      <i class="far fa-trash-alt"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
           <div
@@ -2779,7 +2818,7 @@
           id="guided_back_to_main_menu"
           data-section="guided_mode"
         >
-          <h2>Curate a new dataset</h2>
+          <h2>HOME (TEMP)</h2>
         </button>
         <button
           class="ui positive button guided--button-footer"

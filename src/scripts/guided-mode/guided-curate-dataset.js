@@ -685,6 +685,125 @@ $(document).ready(() => {
     setGuidedDatasetPiOwner(newPiOwner);
   });
 
+  $("#guided-button-generate-subjects-table").on("click", () => {
+    let numSubjectRowsToCreate = parseInt(
+      $("#guided-number-of-samples-input").val()
+    );
+    let SubjectsTableBody = document.getElementById(
+      "number-of-subjects-table-body"
+    );
+    const foo = Array(numSubjectRowsToCreate)
+      .fill(0)
+      .map((_, i) => {
+        let tableIndex = i + 1;
+        return `<tr><td class="middle aligned collapsing text-center">${tableIndex}</td>
+                    <td class="middle aligned text-center">SUB-2321</td>
+                    <td
+                      class="middle aligned collapsing"
+                      style="min-width: 130px"
+                    >
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        style="
+                          background-color: var(--color-light-green) !important;
+                        "
+                      >
+                        Structure
+                      </button>
+                    </td>
+                    <td class="middle aligned collapsing text-center">
+                      <i class="far fa-edit"></i>
+                    </td>
+                    <td class="middle aligned collapsing text-center remove-left-border">
+                      <i class="far fa-trash-alt"></i>
+                    </td></tr>`;
+      });
+    SubjectsTableBody.innerHTML = foo.join("\n");
+    /*let cardContainer = document.getElementById("resume-curation-container");
+  const progressCards = progressFileJSONdata.map((progressFile) => {
+    console.log(progressFile);
+    let progressFileImage =
+      progressFile["digital-metadata"]["banner-image-path"] || "";
+
+    if (progressFileImage === "") {
+      progressFileImage = `
+          <img
+            src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+            alt="Dataset banner image placeholder"
+            style="height: 60px; width: 60px"
+          />
+        `;
+    } else {
+      progressFileImage = `
+          <img
+            src='${progressFileImage}'
+            alt="Dataset banner image"
+            style="height: 60px; width: 60px"
+          />
+        `;
+    }
+    const progressFileName = progressFile["digital-metadata"]["name"] || "";
+    const progressFileSubtitle =
+      progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
+    let progressFileOwnerName =
+      progressFile["digital-metadata"]["pi-owner"]["name"];
+    const progressFileLastModified = progressFile["last-modified"];
+
+    return `
+      <div class="guided--dataset-card">
+        <div class="guided--container-dataset-card-center">  
+        ${progressFileImage}     
+          <div class="guided--dataset-card-title">
+            <h1 class="guided--text-dataset-card progress-file-name">${progressFileName}</h1>
+            <h2 class="guided--text-dataset-card-sub">
+              ${progressFileSubtitle}
+            </h2>
+          </div>
+        </div>
+        <div class="guided--dataset-card-body">
+          <div class="guided--dataset-card-item">
+            <h1 class="guided--text-dataset-card">${progressFileOwnerName}</h1>
+            <h2 class="guided--text-dataset-card-sub">Owner</h2>
+          </div>
+          <div class="guided--dataset-card-item">
+            <h1 class="guided--text-dataset-card">0 GB</h1>
+            <h2 class="guided--text-dataset-card-sub">Size</h2>
+          </div>
+          <div class="guided--dataset-card-item">
+            <h1 class="guided--text-dataset-card">
+              ${progressFileLastModified}
+            </h1>
+            <h2 class="guided--text-dataset-card-sub">Last modified</h2>
+          </div>
+          <div class="guided--dataset-card-item">
+            <h1 class="guided--text-dataset-card">In progress</h1>
+            <h2 class="guided--text-dataset-card-sub"> 
+              Curation status
+            </h2>
+          </div>
+        </div>
+        <div class="guided--container-dataset-card-center">
+          <button
+            class="ui positive button guided--button-footer"
+            style="
+              background-color: var(--color-light-green) !important;
+              width: 160px !important;
+              margin: 10px;
+            "
+            onClick="guidedResumeProgress($(this))"
+          >
+            Continue curation
+          </button>
+        </div>
+      </div>`;
+  });
+  cardContainer.innerHTML = progressCards.join("\n");*/
+
+    $("#number-of-subjects-prompt").hide();
+    $("#number-of-subjects-table").css("display", "flex");
+  });
+
   $(".guided-change-dataset-name").on("click", async function () {
     const { value: datasetName } = await Swal.fire({
       title: "Input new dataset name",
