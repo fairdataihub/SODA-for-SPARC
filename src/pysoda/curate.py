@@ -3061,6 +3061,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             relative_path,
         )
 
+        # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         ds.update()
         list_upload_metadata_files = []
@@ -3142,6 +3143,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
         for item in list_upload_files:
+            # main_curate_progress_message = "In file one"
             list_upload = item[0]
             bf_folder = item[1]
             list_projected_names = item[2]
@@ -3153,7 +3155,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             ## check if agent is running in the background
             agent_running()
 
-            BUCKET_SIZE = 750
+            BUCKET_SIZE = 500
             
             # determine if the current folder's files exceeds 750 (past 750 is a breaking point atm)
             # if so proceed to batch uploading 
