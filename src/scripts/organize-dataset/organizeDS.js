@@ -831,19 +831,19 @@ function showParentSwal(duplicateArray) {
     <div class="swal-button-container">
       <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
       newList +
-      `')">Skip ${html_word}</button>
+      `', 'free-form')">Skip ${html_word}</button>
       <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
       newList +
-      `')">Replace Existing ${html_word}</button>
+      `', 'free-form')">Replace Existing ${html_word}</button>
       <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
       newList +
-      `')">Import Duplicates</button>
-      <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+      `', 'free-form')">Import Duplicates</button>
+      <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel','', 'free-form')">Cancel</button>
       </div>`,
   });
 }
 
-function handleDuplicateImports(btnId, duplicateArray) {
+function handleDuplicateImports(btnId, duplicateArray, curationMode) {
   Swal.close();
   //creates the html for sweetalert
   function createSwalDuplicateContent(btnId, list) {
@@ -938,6 +938,14 @@ function handleDuplicateImports(btnId, duplicateArray) {
       },
     ],
   });
+  var filtered = "";
+  if (curationMode === "free-form") {
+    filtered = getGlobalPath(organizeDSglobalPath);
+  }
+  if (curationMode === "guided") {
+    filtered = getGlobalPath(guidedOrganizeDSglobalPath);
+  }
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
   //SKIP OPTION
   if (btnId === "skip") {
@@ -1114,24 +1122,21 @@ function handleDuplicateImports(btnId, duplicateArray) {
           <div class="swal-button-container">
             <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
             newList +
-            `')">Skip ${html_word}</button>
+            `', 'free-form')">Skip ${html_word}</button>
             <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
             newList +
-            `')">Replace Existing ${html_word}</button>
+            `', 'free-form')">Replace Existing ${html_word}</button>
             <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
             newList +
-            `')">Import Duplicates</button>
-            <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+            `', 'free-form')">Import Duplicates</button>
+            <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
             </div>`,
         });
       }
     });
   }
-
   //RENAME OPTION
   if (btnId === "rename") {
-    var filtered = getGlobalPath(organizeDSglobalPath);
-    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     var temp = "";
     if (duplicateArray.substring(0, 1) === "[") {
       temp = duplicateArray.substring(1, duplicateArray.length - 1);
@@ -1415,9 +1420,6 @@ function handleDuplicateImports(btnId, duplicateArray) {
       });
   }
   if (btnId === "replace") {
-    //new prompt with list of files/folders and input fields to rename files/folders
-    var filtered = getGlobalPath(organizeDSglobalPath);
-    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     var tempFile = [];
     var temp = duplicateArray.substring(1, duplicateArray.length - 1);
     temp = temp.split(",");
@@ -1788,10 +1790,10 @@ function addFilesfunction(
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
-        `')">Skip ${html_word}</button>
-        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing ${html_word}</button>
-        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+        `', 'free-form')">Skip ${html_word}</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing ${html_word}</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel, 'free-form'))">Cancel</button>
         </div>`,
     });
   }
