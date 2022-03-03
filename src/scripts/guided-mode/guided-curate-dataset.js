@@ -174,6 +174,17 @@ const renderProgressCards = (progressFileJSONdata) => {
   cardContainer.innerHTML = progressCards.join("\n");
 };
 
+const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
+  datasetStructureJSONObj["folders"][highLevelFolderName] = {
+    folders: {
+      SUB: { folders: {}, files: {}, type: "", action: [] },
+    },
+    files: {},
+    type: "",
+    action: [],
+  };
+};
+
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("tab", "capsule");
@@ -757,6 +768,7 @@ $(document).ready(() => {
         `;
       });
     SubjectsTableBody.innerHTML = subjectRows.join("\n");
+    guidedAddHighLevelFolderToDatasetStructureObj("primary");
 
     $("#number-of-subjects-prompt").hide();
     $("#number-of-subjects-table").css("display", "flex");

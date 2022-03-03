@@ -5061,7 +5061,8 @@ function dropHelper(
   importedFolders,
   nonAllowedDuplicateFiles,
   uiFiles,
-  uiFolders
+  uiFolders,
+  curationMode
 ) {
   console.log(ev1);
   console.log(ev2);
@@ -5154,6 +5155,7 @@ function dropHelper(
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
+        console.log("from drop helper");
         Swal.fire({
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
