@@ -4789,6 +4789,10 @@ function addFoldersfunction(
   folderArray,
   currentLocation
 ) {
+  console.log(action);
+  console.log(nonallowedFolderArray);
+  console.log(folderArray);
+  console.log(currentLocation);
   var uiFolders = {};
   var importedFolders = {};
   var duplicateFolders = [];
@@ -5046,6 +5050,15 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
+  console.log(ev1);
+  console.log(ev2);
+  console.log(action);
+  console.log(myPath);
+  console.log(importedFiles);
+  console.log(importedFolders);
+  console.log(nonAllowedDuplicateFiles);
+  console.log(uiFiles);
+  console.log(uiFolders);
   var folderPath = [];
   var duplicateFolders = [];
   for (var i = 0; i < ev1.length; i++) {
