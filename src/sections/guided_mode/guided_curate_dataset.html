@@ -486,35 +486,71 @@
                     <th class="center aligned remove-left-border">Delete</th>
                   </tr>
                 </thead>
-                <tbody id="number-of-subjects-table-body">
-                  <tr>
-                    <td class="center aligned collapsing">1</td>
-                    <td>SUB-2321</td>
-                    <td
-                      class="center aligned collapsing"
-                      style="min-width: 130px"
-                    >
-                      <button
-                        type="button"
-                        class="btn btn-primary btn-sm"
-                        style="
-                          background-color: var(--color-light-green) !important;
-                        "
-                      >
-                        Structure
-                      </button>
-                    </td>
-                    <td class="center aligned collapsing">
-                      <i class="far fa-edit"></i>
-                    </td>
-                    <td class="center aligned collapsing remove-left-border">
-                      <i class="far fa-trash-alt"></i>
-                    </td>
-                  </tr>
-                </tbody>
+                <tbody id="number-of-subjects-table-body"></tbody>
               </table>
             </div>
             <div class="guided--question hidden" id="structure-subjects-file">
+              <h1 class="guided--text-sub-step">
+                virtually structure your dataset in the interface below.
+              </h1>
+              <div class="guided--folder-organization-buttons-container">
+                <button
+                  class="ui secondary basic button small"
+                  id="guided-button-return-sub-table"
+                  style="width: 190px !important"
+                >
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back to subjects table
+                </button>
+                <input
+                  style="
+                    float: left;
+                    height: 40px;
+                    border: none;
+                    font-family: 'Raleway', sans-serif;
+                    font-size: 16px;
+                    font-weight: 600;
+                    text-decoration: underline;
+                    cursor: default;
+                    color: #898989;
+                    width: 300px;
+                  "
+                  id="guided-input-global-path"
+                  value="My_dataset_folder/"
+                  readonly
+                />
+                <div class="guided--folder-organization-buttons-container-sub">
+                  <button
+                    class="ui primary basic button small"
+                    style="margin-right: 7px"
+                  >
+                    <i class="fas fa-folder-plus" style="margin-right: 7px"></i
+                    >New folder
+                  </button>
+                  <button class="ui primary basic button small">
+                    <svg
+                      style="margin-right: 7px"
+                      width="1em"
+                      height=".9em"
+                      viewBox="0 0 16 16"
+                      class="bi bi-upload"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+                      />
+                    </svg>
+                    Import
+                  </button>
+                </div>
+              </div>
+
               <div
                 id="items"
                 class="div-organize-items"
@@ -1130,7 +1166,7 @@
                 ></div>
               </div>
             </div>
-            <div id="guided-add-subject-div" class="hidden">ASDF</div>
+            <div id="guided-add-subject-div" class="hidden"></div>
           </div>
           <div
             id="guided-create-submission-metadata-tab"

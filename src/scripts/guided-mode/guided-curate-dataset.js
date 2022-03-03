@@ -757,6 +757,10 @@ $(document).ready(() => {
     $("#number-of-subjects-prompt").hide();
     $("#number-of-subjects-table").css("display", "flex");
   });
+  $("#guided-button-return-sub-table").on("click", () => {
+    $("#structure-subjects-file").hide();
+    $("#number-of-subjects-table").css("display", "flex");
+  });
 
   $(".guided-change-dataset-subtitle").on("click", async function () {
     const { value: datasetSubtitle } = await Swal.fire({

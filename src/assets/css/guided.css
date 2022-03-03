@@ -476,16 +476,18 @@
 }
 
 .guided--folder-organization-buttons-container {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   flex-direction: row;
   align-items: center;
+  margin-bottom: 7px;
 }
-
-.faded {
-  opacity: 0.2;
+.guided--folder-organization-buttons-container-sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
 .show {
   pointer-events: auto;
   visibility: visible;
