@@ -39,7 +39,7 @@ button:focus {
   height: 0.65em;
   transform: scale(0);
   transition: 120ms transform ease-in-out;
-  box-shadow: inset 1em 1em var(--color-light-green);
+  background-color: var(--color-light-green);
 }
 
 .checkbox-design:checked::before {
@@ -93,6 +93,16 @@ button:focus {
   align-self: center;
 }
 
+.btn-text {
+  padding: 0;
+  border: none;
+  background-color: inherit;
+  color: #4183c4;
+  text-decoration: underline;
+  text-underline-position: under;
+  display: inline-block;
+}
+
 .selectAll-container {
   margin-top: 5px;
   margin-bottom: 0px;
@@ -109,6 +119,15 @@ button:focus {
   margin-right: 10px;
   margin-left: 10px;
   align-self: center;
+  text-align: center;
+}
+
+.jexcel_container {
+  margin-right: 20px;
+}
+
+.checkbox-design:focus {
+  outline: none;
 }
 
 .input-container {
@@ -149,7 +168,6 @@ button:focus {
   max-height: 300px;
   overflow: overlay;
   margin: 5px;
-  text-align-last: center;
 }
 
 .rename-btn {
@@ -495,6 +513,36 @@ button[data-id="bf_list_users_pi"] {
   background-color: #eeeaea;
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
+}
+
+@-o-keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #85ceff;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+@keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+  50% {
+    background-color: #85ceff;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+.backgroundAnimate {
+  background-image: none !important;
+  -o-animation: fadeIt 3s ease-in-out;
+  animation: fadeIt 3s ease-in-out;
 }
 
 .ds-selected {

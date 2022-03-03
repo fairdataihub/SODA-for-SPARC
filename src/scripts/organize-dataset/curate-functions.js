@@ -219,9 +219,6 @@ const checkAvailableSpace = () => {
           roundToHundredth(folderSizeMB) +
           "MB " +
           "or consider uploading directly to Pennsieve.";
-        //console.log(res);
-        //console.log(freeMemoryMB + "\n free mem in mb");
-        //console.log(folderSizeMB + "\n folder size in mb");
 
         //converted to MB/GB/TB for user readability
         if (folderSizeMB > 1000) {
@@ -1085,6 +1082,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       dropdownEventID = ev.id;
     }
     $(".svg-change-current-account.dataset").css("display", "none");
+    $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
     setTimeout(async function () {
@@ -1093,7 +1091,7 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
       var bfDataset = "";
 
       // if users edit Current dataset
-      datasetPermissionDiv.style.display = "block";
+      datasetPermissionDiv.style.display = "none";
       $(datasetPermissionDiv)
         .find("#curatebfdatasetlist")
         .find("option")
@@ -1259,7 +1257,9 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             $("#bf-dataset-select-div").hide();
           },
           didOpen: () => {
+            $("#div-permission-list-2").css("display", "block");
             $(".ui.active.green.inline.loader.small").css("display", "none");
+            datasetPermissionDiv.style.display = "block";
             $("#curatebfdatasetlist").attr("disabled", false);
             $(datasetPermissionDiv)
               .find("#div-filter-datasets-progress-2")
@@ -1477,7 +1477,7 @@ function checkPrevDivForConfirmButton(category) {
 const updateDatasetList = (bfaccount) => {
   var filteredDatasets = [];
 
-  $("#div-filter-datasets-progress-2").css("display", "block");
+  $("#div-filter-datasets-progress-2").css("display", "none");
 
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Search here...", "Select dataset");

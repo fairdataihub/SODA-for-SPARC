@@ -6337,6 +6337,10 @@ a.close.disabled {
   content: none;
 }
 
+#banner-modal {
+  width: auto;
+}
+
 .modal-content {
   position: relative;
   display: -webkit-box;

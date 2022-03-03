@@ -640,15 +640,6 @@ function renameFolder(
             organizeCurrentLocation,
             inputGlobal
           );
-
-          // log the success
-          logCurationForAnalytics(
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 3", "Rename", promptVar],
-            determineDatasetLocation()
-          );
         }
       }
     });
@@ -751,6 +742,14 @@ function checkSubArrayBool(parentArray, childArray) {
   return bool;
 }
 
+function animate_updatedFiles() {
+  let updated_docs = document.getElementsByClassName("update-file");
+
+  for (let i = 0; i < updated_docs.length; i++) {
+    $(updated_docs[i].parentElement).addClass("backgroundAnimate");
+  }
+}
+
 function showItemsAsListBootbox(arrayOfItems) {
   var htmlElement = "";
   let i = 0;
@@ -773,10 +772,77 @@ function selectAll(source) {
   }
 }
 
-function onBtnClicked(btnId, duplicateArray) {
+function showParentSwal(duplicateArray) {
+  var tempFile = [];
+  var temp = duplicateArray.substring(1, duplicateArray.length - 1);
+  temp = temp.split(",");
+  let titleSwal = "";
+  let htmlSwal = "";
+  let html_word = "";
+
+  for (let i = 0; i < temp.length; i++) {
+    let lastSlash = temp[i].lastIndexOf("\\") + 1;
+    let fieldContainer = document.createElement("div");
+    if (lastSlash === 0) {
+      //in case it's on mac
+      lastSlash = temp[i].lastIndexOf("/") + 1;
+    }
+    //removes [ ] at end of string when passed through as JSON.stringify
+    tempFile[i] = temp[i].substring(lastSlash, temp[i].length);
+  }
+  if (tempFile[0].indexOf(".") != -1) {
+    titleSwal = "Duplicate file(s) detected";
+    htmlSwal =
+      "Files with the following names are already in the the current folder: ";
+    html_word = "Files";
+  } else {
+    titleSwal = "Duplicate folder(s) detected";
+    htmlSwal =
+      "Folders with the following names are already in the current folder: ";
+    html_word = "Folders";
+  }
+  var listElements = showItemsAsListBootbox(tempFile);
+  newList = JSON.stringify(temp).replace(/"/g, "");
+
+  return Swal.fire({
+    title: titleSwal,
+    icon: "warning",
+    showConfirmButton: false,
+    allowOutsideClick: false,
+    showCloseButton: true,
+    customClass: "wide-swal-auto",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    html:
+      `
+    <div class="caption">
+      <p>${htmlSwal}<p><ul style="text-align: start;">${listElements}</ul></p></p>
+    </div>  
+    <div class="swal-button-container">
+      <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
+      newList +
+      `')">Skip ${html_word}</button>
+      <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
+      newList +
+      `')">Replace Existing ${html_word}</button>
+      <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
+      newList +
+      `')">Import Duplicates</button>
+      <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+      </div>`,
+  });
+}
+
+function handleDuplicateImports(btnId, duplicateArray) {
   Swal.close();
   //creates the html for sweetalert
-  function createContent(btnId, list) {
+  function createSwalDuplicateContent(btnId, list) {
     if (btnId === "replace" || btnId === "skip") {
       type = "checkbox";
     } else if (btnId === "rename") {
@@ -803,7 +869,11 @@ function onBtnClicked(btnId, duplicateArray) {
       input.setAttribute("required", "");
 
       input.id = tempFile[i];
-      input.placeholder = justFileName;
+      if (extIndex != -1) {
+        input.placeholder = justFileName;
+      } else {
+        input.placeholder = input.id;
+      }
       para.style = "margin: 0; margin: 10px;";
       para.className = "input-name";
       container.id = "container";
@@ -853,6 +923,15 @@ function onBtnClicked(btnId, duplicateArray) {
         },
         //duration: 3000,
       },
+      {
+        type: "no_selection",
+        background: "#B80D49",
+        icon: {
+          className: "fas fa-times-circle",
+          tagName: "i",
+          color: "white",
+        },
+      },
     ],
   });
 
@@ -878,7 +957,7 @@ function onBtnClicked(btnId, duplicateArray) {
     selectAll.append(para2);
     selectAll.append(container);
 
-    tempFile = createContent(btnId, temp);
+    tempFile = createSwalDuplicateContent(btnId, temp);
     if (tempFile[0].indexOf(".") === -1) {
       var header = "Select which folders to skip";
     } else {
@@ -888,6 +967,67 @@ function onBtnClicked(btnId, duplicateArray) {
     Swal.fire({
       title: header,
       html: selectAll,
+      focusConfirm: false,
+      showCancelButton: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      didOpen: () => {
+        var confirm_button = document.getElementsByClassName("swal2-confirm");
+        confirm_button[0].disabled = true;
+        var select_all =
+          document.getElementById("container").parentElement.children[0]
+            .children[0];
+        var container = document.getElementById("container");
+        var check_boxes = container.querySelectorAll("input[type=checkbox]");
+        let checkedCount = 0;
+        check_boxes.forEach(function (element) {
+          element.addEventListener("change", function () {
+            if (this.checked) {
+              checkedCount += 1;
+              if (checkedCount === check_boxes.length) {
+                select_all.checked = true;
+              } else {
+                select_all.checked = false;
+              }
+              confirm_button[0].disabled = false;
+            } else {
+              checkedCount -= 1;
+              if (checkedCount === check_boxes.length) {
+                select_all.checked = true;
+              } else {
+                select_all.checked = false;
+              }
+              let one_checked = false;
+              for (let i = 0; i < check_boxes.length; i++) {
+                if (check_boxes[i].checked) {
+                  one_checked = true;
+                  break;
+                }
+              }
+              if (one_checked === true) {
+                confirm_button[0].disabled = false;
+              } else {
+                confirm_button[0].disabled = true;
+                select_all.checked = false;
+              }
+            }
+          });
+        });
+        select_all.addEventListener("change", function () {
+          var check_boxes = container.querySelectorAll("input[type=checkbox]");
+          if (this.checked) {
+            confirm_button[0].disabled = false;
+          } else {
+            confirm_button[0].disabled = true;
+          }
+        });
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         let container = document.getElementById("container");
@@ -923,25 +1063,30 @@ function onBtnClicked(btnId, duplicateArray) {
           }
         }
       }
+      if (!result.isConfirmed) {
+        showParentSwal(duplicateArray);
+        return;
+      }
       //unless all files are skipped it will prompt again on what to do
       //with duplicate files
-      var listElements = showItemsAsListBootbox(fileName);
-      newList = JSON.stringify(newList).replace(/"/g, "");
-      let titleSwal = "";
-      let htmlSwal = "";
-      let html_word = "";
-      if (tempFile[0].indexOf(".") != -1) {
-        titleSwal = "Duplicate file(s) detected";
-        htmlSwal =
-          "Files with the following names are already in the the current folder: ";
-        html_word = "Files";
-      } else {
-        titleSwal = "Duplicate folder(s) detected";
-        htmlSwal =
-          "Folders with the following names are already in the current folder: ";
-        html_word = "Folders";
-      }
+
       if (fileName.length > 0) {
+        var listElements = showItemsAsListBootbox(fileName);
+        newList = JSON.stringify(newList).replace(/"/g, "");
+        let titleSwal = "";
+        let htmlSwal = "";
+        let html_word = "";
+        if (tempFile[0].indexOf(".") != -1) {
+          titleSwal = "Duplicate file(s) detected";
+          htmlSwal =
+            "Files with the following names are already in the the current folder: ";
+          html_word = "Files";
+        } else {
+          titleSwal = "Duplicate folder(s) detected";
+          htmlSwal =
+            "Folders with the following names are already in the current folder: ";
+          html_word = "Folders";
+        }
         Swal.fire({
           title: titleSwal,
           icon: "warning",
@@ -949,43 +1094,32 @@ function onBtnClicked(btnId, duplicateArray) {
           allowOutsideClick: false,
           showCloseButton: true,
           customClass: "wide-swal-auto",
-          backdrop: "rgba(0, 0, 0, 0.4)",
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: "animate_animated animate_zoomout animate__faster",
+            popup: "animate__animated animate__zoomOut animate__faster",
           },
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
           html:
             `
           <div class="caption">
             <p>${htmlSwal}<p><ul style="text-align: start;">${listElements}</ul></p></p>
           </div>  
           <div class="swal-button-container">
-            <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
+            <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
             newList +
             `')">Skip ${html_word}</button>
-            <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '` +
+            <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '` +
             newList +
             `')">Replace Existing ${html_word}</button>
-            <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '` +
+            <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '` +
             newList +
             `')">Import Duplicates</button>
-            <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
+            <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
             </div>`,
         });
-      } else {
-        if (tempFile[0].indexOf(".") != -1) {
-          toastUpdate.open({
-            type: "file_updated",
-            message: "Skipped File(s)",
-          });
-        } else {
-          toastUpdate.open({
-            type: "file_updated",
-            message: "Skipped Folder(s)",
-          });
-        }
       }
     });
   }
@@ -1003,7 +1137,7 @@ function onBtnClicked(btnId, duplicateArray) {
     temp = temp.split(",");
     container = document.createElement("div");
 
-    var tempFile = createContent(btnId, temp);
+    var tempFile = createSwalDuplicateContent(btnId, temp);
     if (tempFile[0].indexOf(".") === -1) {
       var header = "Rename Folders";
     } else {
@@ -1014,9 +1148,11 @@ function onBtnClicked(btnId, duplicateArray) {
         title: header,
         confirmButtonText: "Save",
         allowOutsideClick: false,
+        focusConfirm: false,
         heightAuto: false,
         customClass: "wide-swal",
         showCloseButton: true,
+        showCancelButton: true,
         backdrop: "rgba(0, 0, 0, 0.4)",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -1025,6 +1161,85 @@ function onBtnClicked(btnId, duplicateArray) {
           popup: "animate_animated animate_zoomout animate__faster",
         },
         html: container,
+        didOpen: () => {
+          var confirm_button = document.getElementsByClassName("swal2-confirm");
+          var container = document.getElementById("container");
+          let input_fields = container.querySelectorAll("input[type=text]");
+          let fileExt = input_fields[0].id.lastIndexOf(".");
+          var keyCheck;
+          if (fileExt === -1) {
+            //working with a folder
+            keyCheck = myPath["folders"];
+          } else {
+            //working with a file
+            keyCheck = myPath["files"];
+          }
+
+          confirm_button[0].disabled = true;
+          input_fields.forEach(function (element) {
+            element.addEventListener("input", function () {
+              if (fileExt != -1) {
+                let first_ext = element.id.lastIndexOf(".");
+                let extType = element.id.substring(
+                  first_ext,
+                  element.id.length
+                );
+                if (
+                  element.value === "" ||
+                  keyCheck.hasOwnProperty(element.value + extType)
+                ) {
+                  confirm_button[0].disabled = true;
+                } else {
+                  let one_input = false;
+                  for (let i = 0; i < input_fields.length; i++) {
+                    let file_Ext = input_fields[i].id.lastIndexOf(".");
+                    extType = input_fields[i].id.substring(
+                      file_Ext,
+                      input_fields[i].id.length
+                    );
+                    if (
+                      input_fields[i].value === "" ||
+                      keyCheck.hasOwnProperty(input_fields[i].value + extType)
+                    ) {
+                      one_input = true;
+                      break;
+                    }
+                  }
+                  if (one_input === true) {
+                    confirm_button[0].disabled = true;
+                  } else {
+                    input_fields.forEach(function (element) {});
+                    confirm_button[0].disabled = false;
+                  }
+                }
+              } else {
+                //working with folders
+                if (
+                  element.value === "" ||
+                  keyCheck.hasOwnProperty(element.value)
+                ) {
+                  confirm_button[0].disabled = true;
+                } else {
+                  let one_input = false;
+                  for (let i = 0; i < input_fields.length; i++) {
+                    if (
+                      input_fields[i].value === "" ||
+                      keyCheck.hasOwnProperty(element.value)
+                    ) {
+                      one_input = true;
+                      break;
+                    }
+                  }
+                  if (one_input === true) {
+                    confirm_button[0].disabed = true;
+                  } else {
+                    confirm_button[0].disabled = false;
+                  }
+                }
+              }
+            });
+          });
+        },
         preConfirm: () => {
           //check the same name isn't being used
           var fileNames = [];
@@ -1187,8 +1402,11 @@ function onBtnClicked(btnId, duplicateArray) {
           }
           toastUpdate.open({
             type: "file_updated",
-            message: "Succesfully Imported and Renamed!",
+            message: "Successfully Imported and Renamed!",
           });
+        }
+        if (!result.isConfirmed) {
+          showParentSwal(duplicateArray);
         }
       });
   }
@@ -1217,7 +1435,7 @@ function onBtnClicked(btnId, duplicateArray) {
     selectAll.append(container);
 
     //loop through paths and get file name
-    var tempFile = createContent(btnId, temp);
+    var tempFile = createSwalDuplicateContent(btnId, temp);
 
     if (tempFile[0].indexOf(".") === -1) {
       var header = "Select which folders to replace";
@@ -1229,104 +1447,179 @@ function onBtnClicked(btnId, duplicateArray) {
       title: header,
       html: selectAll,
       allowOutsideClick: false,
+      cancelButtonText: "Cancel",
+      showCancelButton: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      didOpen: () => {
+        var confirm_button = document.getElementsByClassName("swal2-confirm");
+        confirm_button[0].disabled = true;
+        var select_all =
+          document.getElementById("container").parentElement.children[0]
+            .children[0];
+        var container = document.getElementById("container");
+        var check_boxes = container.querySelectorAll("input[type=checkbox]");
+        let checkedCount = 0;
+        check_boxes.forEach(function (element) {
+          element.addEventListener("change", function () {
+            if (this.checked) {
+              checkedCount += 1;
+              if (checkedCount === check_boxes.length) {
+                select_all.checked = true;
+              } else {
+                select_all.checked = false;
+              }
+              confirm_button[0].disabled = false;
+            } else {
+              checkedCount -= 1;
+              if (checkedCount === check_boxes.length) {
+                select_all.checked = true;
+              } else {
+                select_all.checked = false;
+              }
+              let one_checked = false;
+              for (let i = 0; i < check_boxes.length; i++) {
+                if (check_boxes[i].checked) {
+                  one_checked = true;
+                  break;
+                }
+              }
+              if (one_checked === true) {
+                confirm_button[0].disabled = false;
+              } else {
+                confirm_button[0].disabled = true;
+                select_all.checked = false;
+              }
+            }
+          });
+        });
+        select_all.addEventListener("change", function () {
+          var check_boxes = container.querySelectorAll("input[type=checkbox]");
+          if (this.checked) {
+            confirm_button[0].disabled = false;
+          } else {
+            confirm_button[0].disabled = true;
+          }
+        });
+      },
     }).then((result) => {
       if (result.isConfirmed) {
-        let container = document.getElementById("container");
-        let checkboxes = container.querySelectorAll(
+        container = document.getElementById("container");
+        var checkboxes = container.querySelectorAll(
           "input[type=checkbox]:checked"
         );
-        let fileCheck = [];
-        for (let i = 0; i < temp.length; i++) {
-          let lastSlash = temp[i].lastIndexOf("\\") + 1;
-          if (lastSlash === 0) {
-            lastSlash = temp[i].lastIndexOf("/") + 1;
+        if (checkboxes.length > 0) {
+          let fileCheck = [];
+          for (let i = 0; i < temp.length; i++) {
+            let lastSlash = temp[i].lastIndexOf("\\") + 1;
+            if (lastSlash === 0) {
+              lastSlash = temp[i].lastIndexOf("/") + 1;
+            }
+            fileCheck.push(temp[i].substring(lastSlash, temp[i].length));
           }
-          fileCheck.push(temp[i].substring(lastSlash, temp[i].length));
-        }
-        for (let i = 0; i < checkboxes.length; i++) {
-          var removeExt = checkboxes[i].id.lastIndexOf(".");
+          for (let i = 0; i < checkboxes.length; i++) {
+            var removeExt = checkboxes[i].id.lastIndexOf(".");
+            if (removeExt === -1) {
+              let justName = checkboxes[i].id;
+              let index = fileCheck.indexOf(checkboxes[i].id);
+              let fileName = checkboxes[i].id;
+              myPath["folders"][justName] = {
+                files: myPath["folders"][tempFile[index]].files,
+                folders: myPath["folders"][tempFile[index]].folders,
+                path: temp[index],
+                type: "local",
+                action: ["new", "updated"],
+              };
+              for (let j = 0; j < nodes.length; j++) {
+                if (nodes[j].innerText === fileName) {
+                  nodes[j].parentNode.remove();
+                }
+              }
+              listItems(myPath, "#items");
+              getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                datasetStructureJSONObj
+              );
+            } else {
+              let justName = checkboxes[i].id.substring(0, removeExt);
+              let ext = checkboxes[i].id.substring(
+                removeExt,
+                checkboxes[i].id.length
+              );
+              let index = fileCheck.indexOf(checkboxes[i].id);
+              let fileName = checkboxes[i].id;
+              delete myPath["files"][fileName];
+              myPath["files"][justName + ext] = {
+                path: temp[index],
+                basename: fileName,
+                type: "local",
+                description: "",
+                "additional-metadata": "",
+                action: ["new", "updated"],
+              };
+              for (let j = 0; j < nodes.length; j++) {
+                if (nodes[j].innerText === fileName) {
+                  nodes[j].parentNode.remove();
+                }
+              }
+              listItems(myPath, "#items");
+              getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                datasetStructureJSONObj
+              );
+            }
+          }
+          let section = organizeDSglobalPath.value;
+          let lastSlash = section.indexOf("/") + 1;
+          section = section.substring(lastSlash, section.length - 1);
+          if (section.includes("/")) {
+            let lastSlash = section.lastIndexOf("/") + 1;
+            section = section.substring(lastSlash, section.length);
+          }
+          let back_button = document.getElementById("button-back");
+          back_button.click();
+          let folders = document
+            .getElementById("items")
+            .getElementsByClassName("folder_desc");
+          for (let i = 0; i < folders.length; i++) {
+            if (folders[i].innerText === section) {
+              folders[i].parentNode.dispatchEvent(new Event("dblclick"));
+            }
+          }
+
+          animate_updatedFiles();
+
+          //add glowing effect here after page is refreshed
           if (removeExt === -1) {
-            let justName = checkboxes[i].id;
-            let index = fileCheck.indexOf(checkboxes[i].id);
-            let fileName = checkboxes[i].id;
-            myPath["folders"][justName] = {
-              files: myPath["folders"][tempFile[index]].files,
-              folders: myPath["folders"][tempFile[index]].folders,
-              path: temp[index],
-              type: "local",
-              action: ["new", "updated"],
-            };
-            for (let j = 0; j < nodes.length; j++) {
-              if (nodes[j].innerText === fileName) {
-                nodes[j].parentNode.remove();
-              }
-            }
-            listItems(myPath, "#items");
-            getInFolder(
-              "#items",
-              "#items",
-              organizeDSglobalPath,
-              datasetStructureJSONObj
-            );
+            toastUpdate.open({
+              type: "file_updated",
+              message: "Updated Folder(s)",
+            });
           } else {
-            let justName = checkboxes[i].id.substring(0, removeExt);
-            let ext = checkboxes[i].id.substring(
-              removeExt,
-              checkboxes[i].id.length
-            );
-            let index = fileCheck.indexOf(checkboxes[i].id);
-            let fileName = checkboxes[i].id;
-            delete myPath["files"][fileName];
-            myPath["files"][justName + ext] = {
-              path: temp[index],
-              basename: fileName,
-              type: "local",
-              description: "",
-              "additional-metadata": "",
-              action: ["new", "updated"],
-            };
-            for (let j = 0; j < nodes.length; j++) {
-              if (nodes[j].innerText === fileName) {
-                nodes[j].parentNode.remove();
-              }
-            }
-            listItems(myPath, "#items");
-            getInFolder(
-              "#items",
-              "#items",
-              organizeDSglobalPath,
-              datasetStructureJSONObj
-            );
+            toastUpdate.open({
+              type: "file_updated",
+              message: "Updated File(s)",
+            });
           }
+        } else {
+          toastUpdate.open({
+            type: "no_selection",
+            message: "No selection was made",
+          });
         }
       }
-      let section = organizeDSglobalPath.value;
-      let lastSlash = section.indexOf("/") + 1;
-      section = section.substring(lastSlash, section.length - 1);
-      if (section.includes("/")) {
-        let lastSlash = section.lastIndexOf("/") + 1;
-        section = section.substring(lastSlash, section.length);
-      }
-      let back_button = document.getElementById("button-back");
-      back_button.click();
-      let folders = document
-        .getElementById("items")
-        .getElementsByClassName("folder_desc");
-      for (let i = 0; i < folders.length; i++) {
-        if (folders[i].innerText === section) {
-          folders[i].parentNode.dispatchEvent(new Event("dblclick"));
-        }
-      }
-      if (removeExt === -1) {
-        toastUpdate.open({
-          type: "file_updated",
-          message: "Updated Folder(s)",
-        });
-      } else {
-        toastUpdate.open({
-          type: "file_updated",
-          message: "Updated File(s)",
-        });
+      if (!result.isConfirmed) {
+        showParentSwal(duplicateArray);
       }
     });
     //then handle the selected checkboxes
@@ -1344,15 +1637,6 @@ function addFilesfunction(
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
-  var uiFilesWithoutExtension = {};
-
-  for (var file in currentLocation["files"]) {
-    uiFilesWithoutExtension[path.parse(file).base] = 1;
-    //use uiFilesWithoutExtension to compare names
-    //if names and path are the same it is nonallowed
-    //if just name is the same
-  }
-  //gets files already placed and puts into json
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
@@ -1385,54 +1669,131 @@ function addFilesfunction(
           basename: path.parse(fileName).base,
         };
       } else {
-        for (var objectKey in currentLocation["files"]) {
+        //check file name in key of regular files (search for duplicate)
+        if (path.parse(fileName).base in regularFiles) {
+          nonAllowedDuplicateFiles.push(fileName);
+          nonAllowedDuplicate = true;
+          continue;
+        } else {
+          //search for duplicate in currentlocation[files]
+          if (path.parse(fileName).base in currentLocation["files"]) {
+            nonAllowedDuplicateFiles.push(fileName);
+            nonAllowedDuplicate = true;
+            continue;
+          } else {
+            //not in there or regular files so store?
+            regularFiles[path.parse(fileName).base] = {
+              path: fileName,
+              basename: path.parse(fileName).base,
+            };
+          }
+        }
+        for (const objectKey in currentLocation["files"]) {
           //tries finding duplicates with the same path
-          if (objectKey !== undefined) {
+          if (objectKey != undefined) {
             var nonAllowedDuplicate = false;
             //if file already exist in json
             if (fileName === currentLocation["files"][objectKey]["path"]) {
-              console.log(fileName);
               if (
                 currentLocation["files"][objectKey]["action"].includes(
                   "renamed"
                 ) === false
               ) {
+                //same path and has not been renamed
                 nonAllowedDuplicateFiles.push(fileName);
                 nonAllowedDuplicate = true;
-                break;
+                continue;
+              }
+            } else {
+              //file path and object key path arent the same
+              //check if the file name are the same
+              //if so consider it as a duplicate
+              if (path.parse(fileName).base === objectKey) {
+                nonAllowedDuplicateFiles.push(fileName);
+                nonAllowedDuplicate = true;
+                continue;
+              } else {
+                //store in regular files
+                regularFiles[path.parse(fileName).base] = {
+                  path: fileName,
+                  basename: path.parse(fileName).base,
+                };
               }
             }
-            console.log(path.parse(fileName).base);
-            console.log(fileName in currentLocation["files"]);
-            if (path.parse(fileName).base in currentLocation["files"]) {
-              nonAllowedDuplicateFiles.push(fileName);
-              nonAllowedDuplicate = true;
-              break;
-            } else {
-              var fileBaseName = path.basename(fileName);
-              regularFiles[fileBaseName] = {
-                path: fileName,
-                basename: fileBaseName,
-              };
-            }
           }
-        }
-
-        if (!nonAllowedDuplicate) {
-          //there was a duplicate with the same name but different path
-          //prompt user if they want to allow duplicate
-          var j = 1;
-          var originalFileNameWithoutExt = path.parse(fileBaseName).name;
-          var fileNameWithoutExt = originalFileNameWithoutExt;
         }
       }
     }
   }
 
+  if (nonAllowedDuplicateFiles.length > 0) {
+    //add sweetalert here before non duplicate files pop
+    var baseName = [];
+    for (let element in nonAllowedDuplicateFiles) {
+      let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
+      if (lastSlash === 0) {
+        lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("/") + 1;
+      }
+      baseName.push(
+        nonAllowedDuplicateFiles[element].substring(
+          lastSlash,
+          nonAllowedDuplicateFiles[element].length
+        )
+      );
+    }
+    var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+
+    //alert giving a list of files + path that cannot be copied bc theyre duplicates
+    var listElements = showItemsAsListBootbox(baseName);
+    let titleSwal = "";
+    let htmlSwal = "";
+    let html_word = "";
+    if (baseName.length != 0) {
+      if (baseName[0].indexOf(".") != -1) {
+        titleSwal = "Duplicate file(s) detected";
+        htmlSwal =
+          "Files with the following names are already in the the current folder: ";
+        html_word = "Files";
+      } else {
+        titleSwal = "Duplicate folder(s) detected";
+        htmlSwal =
+          "Folders with the following names are already in the current folder: ";
+        html_word = "Folders";
+      }
+    }
+    Swal.fire({
+      title: titleSwal,
+      icon: "warning",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      showCloseButton: true,
+      customClass: "wide-swal-auto",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      html:
+        `
+      <div class="caption">
+        <p>${htmlSwal}<p><ul style="text-align:start;">${listElements}</ul></p></p>
+      </div>  
+      <div class="swal-button-container">
+        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
+        list +
+        `')">Skip ${html_word}</button>
+        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing ${html_word}</button>
+        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
+        </div>`,
+    });
+  }
+
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
-  console.log(nonAllowedDuplicateFiles);
-  console.log(regularFiles);
   if (Object.keys(regularFiles).length > 0) {
     for (var element in regularFiles) {
       currentLocation["files"][regularFiles[element]["basename"]] = {
@@ -1464,85 +1825,7 @@ function addFilesfunction(
         globalPathValue
       );
     }
-
-    // log the success
-    logCurationForAnalytics(
-      "Success",
-      PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      ["Step 3", "Import", "File"],
-      determineDatasetLocation()
-    );
-
-    console.log("Does anything happen past here?");
-  }
-  //add sweetalert here before non duplicate files pop
-  var baseName = [];
-  for (let element in nonAllowedDuplicateFiles) {
-    let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
-    if (lastSlash === 0) {
-      lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("/") + 1;
-    }
-    baseName.push(
-      nonAllowedDuplicateFiles[element].substring(
-        lastSlash,
-        nonAllowedDuplicateFiles[element].length
-      )
-    );
-  }
-  var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
-
-  //alert giving a list of files + path that cannot be copied bc theyre duplicates
-  var listElements = showItemsAsListBootbox(baseName);
-  console.log(baseName);
-  let titleSwal = "";
-  let htmlSwal = "";
-  let html_word = "";
-  if (baseName.length != 0) {
-    if (baseName[0].indexOf(".") != -1) {
-      titleSwal = "Duplicate file(s) detected";
-      htmlSwal =
-        "Files with the following names are already in the the current folder: ";
-      html_word = "Files";
-    } else {
-      titleSwal = "Duplicate folder(s) detected";
-      htmlSwal =
-        "Folders with the following names are already in the current folder: ";
-      html_word = "Folders";
-    }
-  }
-
-  if (nonAllowedDuplicateFiles.length > 0) {
-    Swal.fire({
-      title: titleSwal,
-      icon: "warning",
-      showConfirmButton: false,
-      allowOutsideClick: false,
-      showCloseButton: true,
-      customClass: "wide-swal-auto",
-      backdrop: "rgba(0, 0, 0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster",
-      },
-      html:
-        `
-      <div class="caption">
-        <p>${htmlSwal}<p><ul style="text-align:start;">${listElements}</ul></p></p>
-      </div>  
-      <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="onBtnClicked('skip', '` +
-        list +
-        `')">Skip ${html_word}</button>
-        <button id="replace" class="btn replace-btn" onclick="onBtnClicked('replace', '${list}')">Replace Existing ${html_word}</button>
-        <button id="rename" class="btn rename-btn" onclick="onBtnClicked('rename', '${list}')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="onBtnClicked('cancel')">Cancel</button>
-        </div>`,
-    });
-
-    // log the success
+    // log the successful import
     logCurationForAnalytics(
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE,

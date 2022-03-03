@@ -356,8 +356,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
           "Error",
           MetadataAnalyticsPrefix.MANIFEST,
           AnalyticsGranularity.ACTION,
-          MetadataAnalyticsPrefix.MANIFEST +
-            " - Generate - Check Storage Space",
+          "Generate - Check Storage Space",
           Destinations.LOCAL
         );
       } else {
@@ -365,8 +364,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
           "Success",
           MetadataAnalyticsPrefix.MANIFEST,
           AnalyticsGranularity.ACTION,
-          MetadataAnalyticsPrefix.MANIFEST +
-            " - Generate - Check Storage Space",
+          "Generate - Check Storage Space",
           Destinations.LOCAL
         );
         sodaJSONObj["starting-point"]["type"] = "local";

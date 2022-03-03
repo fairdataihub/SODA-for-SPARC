@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "5.2.0",
+  "version": "5.3.1",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -38,7 +38,7 @@
         "dmg",
         "zip"
       ],
-      "icon": "assets/app-icon/mac/icon.png",
+      "icon": "assets/app-icon/mac/icon.icns",
       "darkModeSupport": false,
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
