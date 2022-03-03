@@ -383,6 +383,10 @@ const openStructureFolder = (clickedStructureButton) => {
     .parent()
     .siblings(".subject-id-cell")
     .text();
+  console.log(subjectID);
+  $("#guided-input-global-path").val(
+    "My_dataset_folder/primary/" + subjectID + "/"
+  );
   $("#structure-subjects-file").css("display", "flex");
 };
 
@@ -738,7 +742,7 @@ $(document).ready(() => {
                 style="background-color: var(--color-light-green) !important;"
                 onclick="openStructureFolder($(this))"
               >
-                Structure
+                Add files
               </button>
             </td>
             <td class="middle aligned collapsing text-center">
