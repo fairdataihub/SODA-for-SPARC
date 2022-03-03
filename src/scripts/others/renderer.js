@@ -687,6 +687,9 @@ const downloadManifest = document.getElementById("a-manifest");
 
 /////// New Organize Datasets /////////////////////
 const organizeDSglobalPath = document.getElementById("input-global-path");
+const guidedOrganizeDSglobalPath = document.getElementById(
+  "guided-input-global-path"
+);
 const organizeDSbackButton = document.getElementById("button-back");
 const organizeDSaddFiles = document.getElementById("add-files");
 const organizeDSaddNewFolder = document.getElementById("new-folder");
@@ -4951,24 +4954,34 @@ function allowDrop(ev) {
 
 var filesElement;
 var targetElement;
-function drop(ev) {
-  irregularFolderArray = [];
-  var action = "";
-  filesElement = ev.dataTransfer.files;
-  targetElement = ev.target;
-  // get global path
-  var currentPath = organizeDSglobalPath.value;
+
+function drop(ev, curationMode) {
+  var currentPath = "";
+  if (curationMode === "free-form") {
+    currentPath = organizeDSglobalPath.value;
+  }
+  if (curationMode === "guided") {
+    currentPath = guidedOrganizeDSglobalPath.value;
+  }
+  console.log(currentPath);
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
+  console.log(datasetStructureJSONObj);
   var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+  console.log(myPath);
+  irregularFolderArray = [];
+  var action = "";
+  filesElement = ev.dataTransfer.files;
+  targetElement = ev.target;
   var importedFiles = {};
   var importedFolders = {};
   var nonAllowedDuplicateFiles = [];
   ev.preventDefault();
   var uiFiles = {};
   var uiFolders = {};
+
   $("body").addClass("waiting");
 
   for (var file in myPath["files"]) {
