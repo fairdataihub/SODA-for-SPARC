@@ -176,9 +176,20 @@ const renderProgressCards = (progressFileJSONdata) => {
 
 const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
   datasetStructureJSONObj["folders"][highLevelFolderName] = {
-    folders: {
-      SUB: { folders: {}, files: {}, type: "", action: [] },
-    },
+    folders: {},
+    files: {},
+    type: "",
+    action: [],
+  };
+};
+const guidedAddHighLevelFolderFolderToDatasetStructureObj = (
+  highLevelFolderName,
+  createFolderName
+) => {
+  datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
+    createFolderName
+  ] = {
+    folders: {},
     files: {},
     type: "",
     action: [],
@@ -384,6 +395,10 @@ const handleSubjectFileName = (event, inputToRemove) => {
       subjectIdCellToAddNameTo = inputToRemove.parent();
       inputToRemove.remove();
       subjectIdCellToAddNameTo.text(subjectName);
+      guidedAddHighLevelFolderFolderToDatasetStructureObj(
+        "primary",
+        subjectName
+      );
     }
   }
 };

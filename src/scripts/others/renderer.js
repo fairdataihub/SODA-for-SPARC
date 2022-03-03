@@ -4968,6 +4968,7 @@ function drop(ev, curationMode) {
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
+  console.log(filtered);
   console.log(datasetStructureJSONObj);
   var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
   console.log(myPath);
@@ -5034,7 +5035,8 @@ function drop(ev, curationMode) {
         importedFolders,
         nonAllowedDuplicateFiles,
         uiFiles,
-        uiFolders
+        uiFolders,
+        curationMode
       );
     });
   } else {
@@ -5047,7 +5049,8 @@ function drop(ev, curationMode) {
       importedFolders,
       nonAllowedDuplicateFiles,
       uiFiles,
-      uiFolders
+      uiFolders,
+      curationMode
     );
   }
 }
@@ -5075,6 +5078,13 @@ function dropHelper(
   console.log(uiFolders);
   var folderPath = [];
   var duplicateFolders = [];
+  var slashCount = "";
+  if (curationMode === "free-form") {
+    slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  }
+  if (curationMode === "guided") {
+    slashCount = guidedOrganizeDSglobalPath.value.trim().split("/").length - 1;
+  }
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
@@ -5092,7 +5102,7 @@ function dropHelper(
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+
       if (slashCount === 1) {
         Swal.fire({
           icon: "error",
@@ -5153,7 +5163,6 @@ function dropHelper(
       //console.log(nonAllowedDuplicateFiles);
     } else if (statsObj.isDirectory()) {
       /// drop a folder
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
         console.log("from drop helper");
         Swal.fire({

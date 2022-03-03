@@ -721,9 +721,13 @@ function loadFileFolder(myPath) {
 }
 
 function getRecursivePath(filteredList, inputObj) {
+  console.log(filteredList);
+  console.log(inputObj);
   var myPath = inputObj;
   for (var item of filteredList) {
     if (item.trim() !== "") {
+      console.log(myPath);
+      console.log(item);
       myPath = myPath["folders"][item];
     }
   }
