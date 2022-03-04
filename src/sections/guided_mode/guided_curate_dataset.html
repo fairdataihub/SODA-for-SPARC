@@ -84,8 +84,14 @@
               class="guided--capsule-container-branch hidden"
               id="guided-curate-new-dataset-branch-capsule-container"
             >
-              <div class="guided--capsule" id="guided-fc1-capsule"></div>
-              <div class="guided--capsule" id="guided-fc2-capsule"></div>
+              <div
+                class="guided--capsule"
+                id="guided-subjects-folder-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
+                id="guided-samples-folder-capsule"
+              ></div>
               <div class="guided--capsule" id="guided-fc3-capsule"></div>
               <div class="guided--capsule" id="guided-fc4-capsule"></div>
               <div class="guided--capsule" id="guided-fc5-capsule"></div>
@@ -447,7 +453,7 @@
             </div>
           </div>
           <div
-            id="guided-fc1-tab"
+            id="guided-subjects-folder-tab"
             class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
@@ -476,7 +482,7 @@
                 Create subjects table
               </button>
             </div>
-            <div class="guided--question hidden" id="number-of-subjects-table">
+            <div class="guided--question hidden" id="subjects-table">
               <table class="ui celled striped table">
                 <thead>
                   <tr>
@@ -489,10 +495,10 @@
                     <th class="center aligned remove-left-border">Delete</th>
                   </tr>
                 </thead>
-                <tbody id="number-of-subjects-table-body"></tbody>
+                <tbody id="subjects-table-body"></tbody>
               </table>
             </div>
-            <div class="guided--question hidden" id="structure-subjects-file">
+            <div class="guided--question hidden" id="structure-subjects-folder">
               <h1 class="guided--text-sub-step">
                 virtually structure your dataset in the interface below.
               </h1>
@@ -564,11 +570,26 @@
             </div>
           </div>
           <div
-            id="guided-fc2-tab"
+            id="guided-samples-folder-tab"
             class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            Source
+            <div class="guided--question hidden" id="samples-table">
+              <table class="ui celled striped table">
+                <thead>
+                  <tr>
+                    <th class="center aligned">Index</th>
+                    <th>Subject ID</th>
+                    <th class="center aligned">
+                      Specify data files for the subject
+                    </th>
+                    <th class="center aligned">Edit</th>
+                    <th class="center aligned remove-left-border">Delete</th>
+                  </tr>
+                </thead>
+                <tbody id="samples-table-body"></tbody>
+              </table>
+            </div>
           </div>
           <div
             id="guided-fc3-tab"

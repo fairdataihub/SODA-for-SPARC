@@ -404,7 +404,7 @@ const handleSubjectFileName = (event, inputToRemove) => {
 };
 
 const openStructureFolder = (clickedStructureButton) => {
-  $("#number-of-subjects-table").hide();
+  $("#subjects-table").hide();
   let subjectID = clickedStructureButton
     .parent()
     .siblings(".subject-id-cell")
@@ -413,7 +413,7 @@ const openStructureFolder = (clickedStructureButton) => {
   $("#guided-input-global-path").val(
     "My_dataset_folder/primary/" + subjectID + "/"
   );
-  $("#structure-subjects-file").css("display", "flex");
+  $("#structure-subjects-folder").css("display", "flex");
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -739,9 +739,7 @@ $(document).ready(() => {
     let numSubjectRowsToCreate = parseInt(
       $("#guided-number-of-samples-input").val()
     );
-    let SubjectsTableBody = document.getElementById(
-      "number-of-subjects-table-body"
-    );
+    let SubjectsTableBody = document.getElementById("subjects-table-body");
     const subjectRows = Array(numSubjectRowsToCreate)
       .fill(0)
       .map((_, i) => {
@@ -786,11 +784,11 @@ $(document).ready(() => {
     guidedAddHighLevelFolderToDatasetStructureObj("primary");
 
     $("#number-of-subjects-prompt").hide();
-    $("#number-of-subjects-table").css("display", "flex");
+    $("#subjects-table").css("display", "flex");
   });
   $("#guided-button-return-sub-table").on("click", () => {
-    $("#structure-subjects-file").hide();
-    $("#number-of-subjects-table").css("display", "flex");
+    $("#structure-subjects-folder").hide();
+    $("#subjects-table").css("display", "flex");
   });
 
   $(".guided-change-dataset-subtitle").on("click", async function () {
@@ -2950,7 +2948,7 @@ $(document).ready(() => {
               getInFolder(
                 ".single-item",
                 "#guided-items",
-                guidedOrganizeDSglobalPath,
+                organizeDSglobalPath,
                 datasetStructureJSONObj
               );
 
