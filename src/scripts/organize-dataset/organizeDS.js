@@ -845,6 +845,7 @@ function showParentSwal(duplicateArray) {
 
 function handleDuplicateImports(btnId, duplicateArray, curationMode) {
   Swal.close();
+  console.log(curationMode);
   //creates the html for sweetalert
   function createSwalDuplicateContent(btnId, list) {
     if (btnId === "replace" || btnId === "skip") {
@@ -1793,7 +1794,7 @@ function addFilesfunction(
         `', 'free-form')">Skip ${html_word}</button>
         <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing ${html_word}</button>
         <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel, 'free-form'))">Cancel</button>
+        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel, '', 'free-form'))">Cancel</button>
         </div>`,
     });
   }

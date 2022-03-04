@@ -2847,6 +2847,150 @@ $(document).ready(() => {
     duplicates: false,
   });
 
+  $("#guided-new-folder").on("click", () => {
+    event.preventDefault();
+    var slashCount =
+      guidedOrganizeDSglobalPath.value.trim().split("/").length - 1;
+    if (slashCount !== 1) {
+      var newFolderName = "New Folder";
+      Swal.fire({
+        title: "Add new folder...",
+        text: "Enter a name below:",
+        heightAuto: false,
+        input: "text",
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: "Cancel",
+        confirmButtonText: "Add folder",
+        reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          $(".swal2-input").attr("id", "add-new-folder-input");
+          $(".swal2-confirm").attr("id", "add-new-folder-button");
+          $("#add-new-folder-input").keyup(function () {
+            var val = $("#add-new-folder-input").val();
+            console.log(val);
+            for (var char of nonAllowedCharacters) {
+              if (val.includes(char)) {
+                Swal.showValidationMessage(
+                  `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
+                );
+                $("#add-new-folder-button").attr("disabled", true);
+                return;
+              }
+              $("#add-new-folder-button").attr("disabled", false);
+            }
+          });
+        },
+        didDestroy: () => {
+          $(".swal2-confirm").attr("id", "");
+          $(".swal2-input").attr("id", "");
+        },
+      }).then((result) => {
+        if (result.value) {
+          if (result.value !== null && result.value !== "") {
+            newFolderName = result.value.trim();
+            // check for duplicate or files with the same name
+            var duplicate = false;
+            var itemDivElements =
+              document.getElementById("guided-items").children;
+            for (var i = 0; i < itemDivElements.length; i++) {
+              if (newFolderName === itemDivElements[i].innerText) {
+                duplicate = true;
+                break;
+              }
+            }
+            if (duplicate) {
+              Swal.fire({
+                icon: "error",
+                text: "Duplicate folder name: " + newFolderName,
+                confirmButtonText: "OK",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+              });
+
+              logCurationForAnalytics(
+                "Error",
+                PrepareDatasetsAnalyticsPrefix.CURATE,
+                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                ["Step 3", "Add", "Folder"],
+                determineDatasetLocation()
+              );
+            } else {
+              var appendString = "";
+              appendString =
+                appendString +
+                '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+                newFolderName +
+                "</div></div>";
+              $(appendString).appendTo("#guided-items");
+
+              /// update datasetStructureJSONObj
+              var currentPath = guidedOrganizeDSglobalPath.value;
+              var jsonPathArray = currentPath.split("/");
+              var filtered = jsonPathArray.slice(1).filter(function (el) {
+                return el != "";
+              });
+
+              var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+              // update Json object with new folder created
+              var renamedNewFolder = newFolderName;
+              myPath["folders"][renamedNewFolder] = {
+                folders: {},
+                files: {},
+                type: "virtual",
+                action: ["new"],
+              };
+
+              listItems(myPath, "#guided-items");
+              getInFolder(
+                ".single-item",
+                "#guided-items",
+                guidedOrganizeDSglobalPath,
+                datasetStructureJSONObj
+              );
+
+              // log that the folder was successfully added
+              logCurationForAnalytics(
+                "Success",
+                PrepareDatasetsAnalyticsPrefix.CURATE,
+                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                ["Step 3", "Add", "Folder"],
+                determineDatasetLocation()
+              );
+
+              hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+              hideMenu(
+                "high-level-folder",
+                menuFolder,
+                menuHighLevelFolders,
+                menuFile
+              );
+            }
+          }
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
+        confirmButtonText: "OK",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    }
+  });
+
   $("#guided-submission-completion-date").change(function () {
     const text = $("#guided-submission-completion-date").val();
     if (text == "Enter my own date") {
