@@ -226,15 +226,15 @@ var table1;
 function loadManifestFileEdits(jsondata) {
   let columns = Object.keys(jsondata[0]);
   let columnList = [];
-  for (let i=0; i<columns.length;i++) {
+  for (let i = 0; i < columns.length; i++) {
     let subColumn = {
-      type:"text",
+      type: "text",
       width: "120px",
       name: columns[i],
       title: columns[i],
       readOnly: false,
-    }
-    columnList.push(subColumn)
+    };
+    columnList.push(subColumn);
   }
   // After ID in pop has been initiated, initialize jspreadsheet
   table1 = jspreadsheet(document.getElementById("div-manifest-edit"), {
@@ -246,63 +246,77 @@ function loadManifestFileEdits(jsondata) {
         // Insert a new column
         if (obj.options.allowInsertColumn == true) {
           items.push({
-              title:obj.options.text.insertANewColumnBefore,
-              onclick:function() {
-                  obj.insertColumn(1, parseInt(x), 1);
-                  $("#div-manifest-edit").find("table").find("thead").find("td").dblclick(function(e) {
-                    e.target.contentEditable = true;
-                    e.target.innerText = "";
-                    e.target.focus()
-                  });
-              }
+            title: obj.options.text.insertANewColumnBefore,
+            onclick: function () {
+              obj.insertColumn(1, parseInt(x), 1);
+              $("#div-manifest-edit")
+                .find("table")
+                .find("thead")
+                .find("td")
+                .dblclick(function (e) {
+                  e.target.contentEditable = true;
+                  e.target.innerText = "";
+                  e.target.focus();
+                });
+            },
           });
         }
         if (obj.options.allowInsertColumn == true) {
-         items.push({
-             title:obj.options.text.insertANewColumnAfter,
-             onclick:function() {
-                 obj.insertColumn(1, parseInt(x), 0);
-                 $("#div-manifest-edit").find("table").find("thead").find("td").dblclick(function(e) {
-                   e.target.contentEditable = true;
-                   e.target.innerText = "";
-                   e.target.focus()
-                 });
-             }
-         });
-       }
-       // Delete a column
-       if (obj.options.allowDeleteColumn == true) {
-         items.push({
-             title:obj.options.text.deleteSelectedColumns,
-             onclick:function() {
-                 obj.deleteColumn(obj.getSelectedColumns().length ? undefined : parseInt(x));
-             }
-         });
-       }
-    }
-    return items;
-    }
-  })
-  $("#div-manifest-edit").find("table").find("thead").find("td").dblclick(function(e) {
-    e.target.contentEditable = true;
-    e.target.innerText = "";
-    e.target.focus()
+          items.push({
+            title: obj.options.text.insertANewColumnAfter,
+            onclick: function () {
+              obj.insertColumn(1, parseInt(x), 0);
+              $("#div-manifest-edit")
+                .find("table")
+                .find("thead")
+                .find("td")
+                .dblclick(function (e) {
+                  e.target.contentEditable = true;
+                  e.target.innerText = "";
+                  e.target.focus();
+                });
+            },
+          });
+        }
+        // Delete a column
+        if (obj.options.allowDeleteColumn == true) {
+          items.push({
+            title: obj.options.text.deleteSelectedColumns,
+            onclick: function () {
+              obj.deleteColumn(
+                obj.getSelectedColumns().length ? undefined : parseInt(x)
+              );
+            },
+          });
+        }
+      }
+      return items;
+    },
   });
+  $("#div-manifest-edit")
+    .find("table")
+    .find("thead")
+    .find("td")
+    .dblclick(function (e) {
+      e.target.contentEditable = true;
+      e.target.innerText = "";
+      e.target.focus();
+    });
 }
 
 const processManifestInfo = (headers, data) => {
   let sortedArr = [];
   // sort json data by appending ordered entries (by columns) to each object's element
-  for (let i=0; i<data.length;i++) {
+  for (let i = 0; i < data.length; i++) {
     let temp = {};
-    for (let j=0; j<headers.length;j++) {
+    for (let j = 0; j < headers.length; j++) {
       let header = headers[j];
       temp[header] = data[i][j];
     }
-    sortedArr.push(temp)
+    sortedArr.push(temp);
   }
-  return sortedArr
-}
+  return sortedArr;
+};
 
 var localDatasetFolderPath = "";
 
