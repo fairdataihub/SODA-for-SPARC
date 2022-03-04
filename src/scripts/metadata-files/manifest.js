@@ -172,7 +172,8 @@ $(document).ready(function () {
         },
       })["Sheet1"];
       Swal.fire({
-        title: "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
+        title:
+          "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
         html: "<div id='div-manifest-edit'></div>",
         allowEscapeKey: false,
         allowOutsideClick: false,
