@@ -109,7 +109,7 @@
           </div>
 
           <div id="guided-basic-description-tab" class="guided--panel">
-            <div class="guided--question" id="samples-table">
+            <div class="guided--question" id="samplesZZZZ-table">
               <table class="ui celled striped table">
                 <thead>
                   <tr>
@@ -117,28 +117,24 @@
                     <th>Subject ID</th>
                     <th>Sample ID</th>
                     <th class="center aligned">
-                      Specify data files for the subject
+                      Specify data files for the sample
                     </th>
                     <th class="center aligned">Edit</th>
                     <th class="center aligned remove-left-border">Delete</th>
                   </tr>
                 </thead>
-                <tbody id="samples-table-body">
+                <tbody id="samples-table-bodyZZZZ">
                   <tr>
                     <td class="middle aligned collapsing text-center">1</td>
-                    <td
-                      class="middle aligned collapsing"
-                      style="min-width: 90px"
-                    >
-                      1
+                    <td class="middle aligned" style="min-width: 90px">
+                      ${subjectID}
                     </td>
-
                     <td class="middle aligned subject-id-cell">
                       <input
                         class="guided--input guided-input-sample-file-name"
                         type="text"
                         name="guided-number-of-samples"
-                        placeholder="Enter sample ID and press enter"
+                        placeholder="Enter number of samples ${subjectID} has"
                         onkeyup="nameSubjectFile(event, $(this))"
                       />
                     </td>

@@ -402,12 +402,7 @@ const guidedAddHighLevelFolderFolderToDatasetStructureObj = (
     action: [],
   };
 };
-const renderSamplesTable = (subjectArray) => {
-  let samplesTableBody = document.getElementById("samples-table-body");
-  const sampleRows = subjectArray.map((subjectID, index) => {
-    let tableIndex = index + 1;
-  });
-};
+
 //SUBJECT TABLE FUNCTIONS
 //Click handler that sets the Subject's name after enter press in the table input
 $("#guided-button-generate-subjects-table").on("click", () => {
@@ -481,6 +476,13 @@ $("#guided-button-return-sub-table").on("click", () => {
 
 //SAMPLE TABLE FUNCTIONS
 //takes the number of subjects input and creates x (input number) rows
+const renderSamplesTable = (subjectArray) => {
+  let samplesTableBody = document.getElementById("samples-table-body");
+  const sampleRows = subjectArray.map((subjectID, index) => {
+    let tableIndex = index + 1;
+    console.log(subjectID);
+  });
+};
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
@@ -489,6 +491,7 @@ const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
       percentToIncrease
   );
 };
+
 const setGuidedProgressBarValue = (value) => {
   $("#guided-progress-bar-new-curate").attr("value", value);
 };
@@ -2613,6 +2616,9 @@ $(document).ready(() => {
       setGuidedDatasetName($("#guided-dataset-name-input"));
       setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
       setGuidedBannerImage(guidedCroppedBannerImagePath);
+    }
+    if (pageBeingLeftID === "guided-subjects-folder-tab") {
+      console.log("foo");
     }
     if (pageBeingLeftID === "guided-folder-importation-tab") {
     }
