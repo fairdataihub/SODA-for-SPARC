@@ -73,7 +73,6 @@ const readFileAsync = async (path) => {
     });
   });
 };
-
 const getAllProgressFileData = async (progressFiles) => {
   return Promise.all(
     progressFiles.map((progressFile) => {
@@ -82,7 +81,6 @@ const getAllProgressFileData = async (progressFiles) => {
     })
   );
 };
-
 const getProgressFileData = async (progressFile) => {
   let progressFilePath = path.join(
     guidedProgressFilePath,
@@ -91,7 +89,6 @@ const getProgressFileData = async (progressFile) => {
   console.log(progressFilePath);
   return readFileAsync(progressFilePath);
 };
-
 const renderProgressCards = (progressFileJSONdata) => {
   let cardContainer = document.getElementById("resume-curation-container");
   const progressCards = progressFileJSONdata.map((progressFile) => {
@@ -173,14 +170,12 @@ const renderProgressCards = (progressFileJSONdata) => {
   });
   cardContainer.innerHTML = progressCards.join("\n");
 };
-
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("tab", "capsule");
   let targetCapsule = $(`#${targetCapsuleID}`);
   targetCapsule.addClass("active");
 };
-
 setActiveProgressionTab = (targetPageID) => {
   $(".guided--progression-tab").removeClass("selected-tab");
   let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
@@ -193,7 +188,6 @@ setActiveProgressionTab = (targetPageID) => {
   let targetProgressionTab = $(`#${targetProgressionTabID}`);
   targetProgressionTab.addClass("selected-tab");
 };
-
 const handlePageBranching = (selectedCardElement) => {
   console.log(selectedCardElement);
   //If button has data-enable-next-button attribute, enable the progress button
@@ -230,7 +224,6 @@ const handlePageBranching = (selectedCardElement) => {
   tabPanel.siblings().hide();
   tabPanel.css("display", "flex");
 };
-
 const guidedLoadSavedProgressFiles = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
@@ -279,7 +272,55 @@ const traverseToTab = (targetPageID) => {
     CURRENT_PAGE.css("display", "flex");
   }
 };
+const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
+  $("#guided-progress-bar-new-curate").attr(
+    "value",
+    parseInt($("#guided-progress-bar-new-curate").attr("value")) +
+      percentToIncrease
+  );
+};
+const setGuidedProgressBarValue = (value) => {
+  $("#guided-progress-bar-new-curate").attr("value", value);
+};
+function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+/////////////////////////////////////////////////////////
+//////////       GUIDED FORM VALIDATORS       ///////////
+/////////////////////////////////////////////////////////
+const validateGuidedBasicDescriptionInputs = () => {
+  //True if dataset name and dataset subtitle inputs are valid
+  if (
+    check_forbidden_characters_bf(
+      $("#guided-dataset-name-input").val().trim()
+    ) ||
+    $("#guided-dataset-name-input").val().trim().length == 0 ||
+    $("#guided-dataset-subtitle-input").val().trim().length == 0
+  ) {
+    disableProgressButton();
+  } else {
+    enableProgressButton();
+  }
+};
 
+const validateGuidedDatasetDescriptionInputs = () => {
+  if (
+    $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
+    $("#guided-ds-description-data-collection").val().trim().length == 0 ||
+    $("#guided-ds-description-primary-conclusion").val().trim().length == 0
+  ) {
+    disableProgressButton();
+  } else {
+    enableProgressButton();
+  }
+};
 //populates user inputs from the completed-tabs array, and returns the last page
 //that the user completed
 const populateGuidedModePages = (loadedJSONObj) => {
@@ -367,7 +408,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 };
 
 //FOLDER STRUCTURE UTIL FUNCTIONS
-
 const openStructureFolder = (clickedStructureButton) => {
   $("#subjects-table").hide();
   let subjectID = clickedStructureButton
@@ -380,7 +420,6 @@ const openStructureFolder = (clickedStructureButton) => {
   );
   $("#structure-subjects-folder").css("display", "flex");
 };
-
 const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
   datasetStructureJSONObj["folders"][highLevelFolderName] = {
     folders: {},
@@ -401,6 +440,27 @@ const guidedAddHighLevelFolderFolderToDatasetStructureObj = (
     type: "",
     action: [],
   };
+};
+
+//dataset description (first page) functions
+guidedCreateSodaJSONObj = () => {
+  sodaJSONObj = {};
+  sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
+  sodaJSONObj["generate-dataset"] = {};
+  sodaJSONObj["manifest-files"] = {};
+  sodaJSONObj["metadata-files"] = {};
+  sodaJSONObj["starting-point"] = {};
+  sodaJSONObj["dataset-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
+  sodaJSONObj["digital-metadata"] = {};
+  sodaJSONObj["completed-tabs"] = [];
+  sodaJSONObj["last-modified"] = "";
+  datasetStructureJSONObj = { folders: {}, files: {} };
 };
 
 //SUBJECT TABLE FUNCTIONS
@@ -477,6 +537,7 @@ $("#guided-button-return-sub-table").on("click", () => {
 //SAMPLE TABLE FUNCTIONS
 //takes the number of subjects input and creates x (input number) rows
 const renderSamplesTable = (subjectArray) => {
+  //on monday get array from dataset structure...TEMP
   let samplesTableBody = document.getElementById("samples-table-body");
   const sampleRows = subjectArray.map((subjectID, index) => {
     let tableIndex = index + 1;
@@ -484,27 +545,6 @@ const renderSamplesTable = (subjectArray) => {
   });
 };
 
-const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
-  $("#guided-progress-bar-new-curate").attr(
-    "value",
-    parseInt($("#guided-progress-bar-new-curate").attr("value")) +
-      percentToIncrease
-  );
-};
-
-const setGuidedProgressBarValue = (value) => {
-  $("#guided-progress-bar-new-curate").attr("value", value);
-};
-function makeid(length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
 $("#guided-dataset-name-input").val("test " + makeid(5));
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
@@ -632,40 +672,9 @@ const removeTeamPermission = (teamParentElement) => {
     .children(`[data-team-string='${teamStringToRemove}']`)
     .remove();
 };
-
 const setGuidedLicense = (newLicense) => {
   $(".guidedBfLicense").text(newLicense);
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
-};
-
-/////////////////////////////////////////////////////////
-//////////       GUIDED FORM VALIDATORS       ///////////
-/////////////////////////////////////////////////////////
-const validateGuidedBasicDescriptionInputs = () => {
-  //True if dataset name and dataset subtitle inputs are valid
-  if (
-    check_forbidden_characters_bf(
-      $("#guided-dataset-name-input").val().trim()
-    ) ||
-    $("#guided-dataset-name-input").val().trim().length == 0 ||
-    $("#guided-dataset-subtitle-input").val().trim().length == 0
-  ) {
-    disableProgressButton();
-  } else {
-    enableProgressButton();
-  }
-};
-
-const validateGuidedDatasetDescriptionInputs = () => {
-  if (
-    $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
-    $("#guided-ds-description-data-collection").val().trim().length == 0 ||
-    $("#guided-ds-description-primary-conclusion").val().trim().length == 0
-  ) {
-    disableProgressButton();
-  } else {
-    enableProgressButton();
-  }
 };
 
 $(document).ready(() => {
@@ -838,9 +847,12 @@ $(document).ready(() => {
     }
   });
   $("#guided-dataset-subtitle-input").on("keyup", () => {
+    const guidedDatasetSubtitleCharCount = document.getElementById(
+      "guided-subtitle-char-count"
+    );
     countCharacters(
       document.getElementById("guided-dataset-subtitle-input"),
-      guidedDatasetSubtitle_char_count
+      guidedDatasetSubtitleCharCount
     );
     validateGuidedBasicDescriptionInputs();
   });
@@ -1049,16 +1061,6 @@ $(document).ready(() => {
   });
 
   //TODO changes completed question's opacity to .5, then scrolls to next question
-  const complete_curr_question = (questionID) => {
-    questionID.css("opacity", ".5");
-    nextQuestion = questionID.next();
-    nextQuestion.css("display", "flex");
-    nextId = nextQuestion.attr("id");
-    document.getElementById(nextId).scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-  };
   //********************************************************************************************************
   //FETCH FUNCTIONS//
   //fetch
@@ -2566,24 +2568,6 @@ $(document).ready(() => {
     }
   });
 
-  guidedCreateSodaJSONObj = () => {
-    sodaJSONObj = {};
-    sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
-    sodaJSONObj["generate-dataset"] = {};
-    sodaJSONObj["manifest-files"] = {};
-    sodaJSONObj["metadata-files"] = {};
-    sodaJSONObj["starting-point"] = {};
-    datasetStructureJSONObj = { folders: {}, files: {} };
-    sodaJSONObj["dataset-metadata"] = {};
-    sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
-    sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
-    sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
-    sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
-    sodaJSONObj["digital-metadata"] = {};
-    sodaJSONObj["completed-tabs"] = [];
-    sodaJSONObj["last-modified"] = "";
-  };
-
   //next button click handler
   $("#guided-next-button").on("click", async () => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
@@ -3281,7 +3265,3 @@ const guided_generate = async () => {
   var countDone = 0;
   var timerProgress = setInterval(main_progressfunction, 1000);
 };
-
-const guidedDatasetSubtitle_char_count = document.getElementById(
-  "guided-subtitle-char-count"
-);
