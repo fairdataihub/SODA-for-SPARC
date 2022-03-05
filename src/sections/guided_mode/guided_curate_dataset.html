@@ -109,6 +109,66 @@
           </div>
 
           <div id="guided-basic-description-tab" class="guided--panel">
+            <div class="guided--question" id="samples-table">
+              <table class="ui celled striped table">
+                <thead>
+                  <tr>
+                    <th class="center aligned">Index</th>
+                    <th>Subject ID</th>
+                    <th>Sample ID</th>
+                    <th class="center aligned">
+                      Specify data files for the subject
+                    </th>
+                    <th class="center aligned">Edit</th>
+                    <th class="center aligned remove-left-border">Delete</th>
+                  </tr>
+                </thead>
+                <tbody id="samples-table-body">
+                  <tr>
+                    <td class="middle aligned collapsing text-center">1</td>
+                    <td
+                      class="middle aligned collapsing"
+                      style="min-width: 90px"
+                    >
+                      1
+                    </td>
+
+                    <td class="middle aligned subject-id-cell">
+                      <input
+                        class="guided--input guided-input-sample-file-name"
+                        type="text"
+                        name="guided-number-of-samples"
+                        placeholder="Enter sample ID and press enter"
+                        onkeyup="nameSubjectFile(event, $(this))"
+                      />
+                    </td>
+                    <td
+                      class="middle aligned collapsing text-center"
+                      style="min-width: 130px"
+                    >
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        style="
+                          background-color: var(--color-light-green) !important;
+                        "
+                        onclick="openStructureFolder($(this))"
+                      >
+                        Add files
+                      </button>
+                    </td>
+                    <td class="middle aligned collapsing text-center">
+                      <i class="far fa-edit"></i>
+                    </td>
+                    <td
+                      class="middle aligned collapsing text-center remove-left-border"
+                    >
+                      <i class="far fa-trash-alt"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <div class="guided--question">
               <h1 class="guided--text-sub-step">
                 Curate a new dataset or continue from existing?
@@ -574,7 +634,7 @@
             class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question hidden" id="samples-table">
+            <div class="guided--question" id="samples-table">
               <table class="ui celled striped table">
                 <thead>
                   <tr>
@@ -587,7 +647,43 @@
                     <th class="center aligned remove-left-border">Delete</th>
                   </tr>
                 </thead>
-                <tbody id="samples-table-body"></tbody>
+                <tbody id="samples-table-body">
+                  <tr>
+                    <td class="middle aligned collapsing text-center">1</td>
+                    <td class="middle aligned subject-id-cell">
+                      <input
+                        class="guided--input guided-input-subject-file-name"
+                        type="text"
+                        name="guided-number-of-samples"
+                        placeholder="Enter subject ID and press enter"
+                        onkeyup="nameSubjectFile(event, $(this))"
+                      />
+                    </td>
+                    <td
+                      class="middle aligned collapsing text-center"
+                      style="min-width: 130px"
+                    >
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        style="
+                          background-color: var(--color-light-green) !important;
+                        "
+                        onclick="openStructureFolder($(this))"
+                      >
+                        Add files
+                      </button>
+                    </td>
+                    <td class="middle aligned collapsing text-center">
+                      <i class="far fa-edit"></i>
+                    </td>
+                    <td
+                      class="middle aligned collapsing text-center remove-left-border"
+                    >
+                      <i class="far fa-trash-alt"></i>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>

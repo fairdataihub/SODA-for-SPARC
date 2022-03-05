@@ -174,28 +174,6 @@ const renderProgressCards = (progressFileJSONdata) => {
   cardContainer.innerHTML = progressCards.join("\n");
 };
 
-const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
-  datasetStructureJSONObj["folders"][highLevelFolderName] = {
-    folders: {},
-    files: {},
-    type: "",
-    action: [],
-  };
-};
-const guidedAddHighLevelFolderFolderToDatasetStructureObj = (
-  highLevelFolderName,
-  createFolderName
-) => {
-  datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
-    createFolderName
-  ] = {
-    folders: {},
-    files: {},
-    type: "",
-    action: [],
-  };
-};
-
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("tab", "capsule");
@@ -388,20 +366,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   populateGuidedModePages(sodaJSONObj);
 };
 
-const handleSubjectFileName = (event, inputToRemove) => {
-  if (event.which == 13) {
-    subjectName = inputToRemove.val().trim();
-    if (subjectName.length > 0) {
-      subjectIdCellToAddNameTo = inputToRemove.parent();
-      inputToRemove.remove();
-      subjectIdCellToAddNameTo.text(subjectName);
-      guidedAddHighLevelFolderFolderToDatasetStructureObj(
-        "primary",
-        subjectName
-      );
-    }
-  }
-};
+//FOLDER STRUCTURE UTIL FUNCTIONS
 
 const openStructureFolder = (clickedStructureButton) => {
   $("#subjects-table").hide();
@@ -415,6 +380,107 @@ const openStructureFolder = (clickedStructureButton) => {
   );
   $("#structure-subjects-folder").css("display", "flex");
 };
+
+const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
+  datasetStructureJSONObj["folders"][highLevelFolderName] = {
+    folders: {},
+    files: {},
+    type: "",
+    action: [],
+  };
+};
+const guidedAddHighLevelFolderFolderToDatasetStructureObj = (
+  highLevelFolderName,
+  createFolderName
+) => {
+  datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
+    createFolderName
+  ] = {
+    folders: {},
+    files: {},
+    type: "",
+    action: [],
+  };
+};
+const renderSamplesTable = (subjectArray) => {
+  let samplesTableBody = document.getElementById("samples-table-body");
+  const sampleRows = subjectArray.map((subjectID, index) => {
+    let tableIndex = index + 1;
+  });
+};
+//SUBJECT TABLE FUNCTIONS
+//Click handler that sets the Subject's name after enter press in the table input
+$("#guided-button-generate-subjects-table").on("click", () => {
+  let numSubjectRowsToCreate = parseInt(
+    $("#guided-number-of-samples-input").val()
+  );
+  let subjectsTableBody = document.getElementById("subjects-table-body");
+  const subjectRows = Array(numSubjectRowsToCreate)
+    .fill(0)
+    .map((_, index) => {
+      let tableIndex = index + 1;
+      return `
+        <tr>
+          <td class="middle aligned collapsing text-center">${tableIndex}</td>
+          <td class="middle aligned subject-id-cell">
+            <input
+              class="guided--input guided-input-subject-file-name"
+              type="text"
+              name="guided-number-of-samples"
+              placeholder="Enter subject ID and press enter"
+              onkeyup="nameSubjectFile(event, $(this))"
+            />
+          </td>
+          <td
+            class="middle aligned collapsing text-center"
+            style="min-width: 130px"
+          >
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              style="background-color: var(--color-light-green) !important;"
+              onclick="openStructureFolder($(this))"
+            >
+              Add files
+            </button>
+          </td>
+          <td class="middle aligned collapsing text-center">
+            <i class="far fa-edit"></i>
+          </td>
+          <td
+            class="middle aligned collapsing text-center remove-left-border"
+          >
+            <i class="far fa-trash-alt"></i>
+          </td>
+        </tr>
+      `;
+    });
+  subjectsTableBody.innerHTML = subjectRows.join("\n");
+  guidedAddHighLevelFolderToDatasetStructureObj("primary");
+  $("#number-of-subjects-prompt").hide();
+  $("#subjects-table").css("display", "flex");
+});
+const nameSubjectFile = (event, inputToRemove) => {
+  if (event.which == 13) {
+    subjectName = inputToRemove.val().trim();
+    if (subjectName.length > 0) {
+      subjectIdCellToAddNameTo = inputToRemove.parent();
+      inputToRemove.remove();
+      subjectIdCellToAddNameTo.text(subjectName);
+      guidedAddHighLevelFolderFolderToDatasetStructureObj(
+        "primary",
+        subjectName
+      );
+    }
+  }
+};
+$("#guided-button-return-sub-table").on("click", () => {
+  $("#structure-subjects-folder").hide();
+  $("#subjects-table").css("display", "flex");
+});
+
+//SAMPLE TABLE FUNCTIONS
+//takes the number of subjects input and creates x (input number) rows
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
@@ -733,62 +799,6 @@ $(document).ready(() => {
       name: PiName,
     };
     setGuidedDatasetPiOwner(newPiOwner);
-  });
-
-  $("#guided-button-generate-subjects-table").on("click", () => {
-    let numSubjectRowsToCreate = parseInt(
-      $("#guided-number-of-samples-input").val()
-    );
-    let SubjectsTableBody = document.getElementById("subjects-table-body");
-    const subjectRows = Array(numSubjectRowsToCreate)
-      .fill(0)
-      .map((_, i) => {
-        let tableIndex = i + 1;
-        return `
-          <tr>
-            <td class="middle aligned collapsing text-center">${tableIndex}</td>
-            <td class="middle aligned subject-id-cell">
-              <input
-                class="guided--input guided-input-subject-file-name"
-                type="text"
-                name="guided-number-of-samples"
-                placeholder="Enter subject ID and press enter"
-                onkeyup="handleSubjectFileName(event, $(this))"
-              />
-            </td>
-            <td
-              class="middle aligned collapsing text-center"
-              style="min-width: 130px"
-            >
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                style="background-color: var(--color-light-green) !important;"
-                onclick="openStructureFolder($(this))"
-              >
-                Add files
-              </button>
-            </td>
-            <td class="middle aligned collapsing text-center">
-              <i class="far fa-edit"></i>
-            </td>
-            <td
-              class="middle aligned collapsing text-center remove-left-border"
-            >
-              <i class="far fa-trash-alt"></i>
-            </td>
-          </tr>
-        `;
-      });
-    SubjectsTableBody.innerHTML = subjectRows.join("\n");
-    guidedAddHighLevelFolderToDatasetStructureObj("primary");
-
-    $("#number-of-subjects-prompt").hide();
-    $("#subjects-table").css("display", "flex");
-  });
-  $("#guided-button-return-sub-table").on("click", () => {
-    $("#structure-subjects-folder").hide();
-    $("#subjects-table").css("display", "flex");
   });
 
   $(".guided-change-dataset-subtitle").on("click", async function () {
