@@ -420,6 +420,7 @@ const openStructureFolder = (clickedStructureButton) => {
   );
   $("#structure-subjects-folder").css("display", "flex");
 };
+//TODO CLEAN UP
 const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
   datasetStructureJSONObj["folders"][highLevelFolderName] = {
     folders: {},
@@ -435,6 +436,20 @@ const guidedAddHighLevelFolderFolderToDatasetStructureObj = (
   datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
     createFolderName
   ] = {
+    folders: {},
+    files: {},
+    type: "",
+    action: [],
+  };
+};
+const guidedAddHighLevelFolderFolderFolderToDatasetStructureObj = (
+  highLevelFolderName,
+  parentFolderName,
+  createFolderName
+) => {
+  datasetStructureJSONObj["folders"][highLevelFolderName][parentFolderName][
+    "folders"
+  ][createFolderName] = {
     folders: {},
     files: {},
     type: "",
@@ -535,7 +550,22 @@ $("#guided-button-return-sub-table").on("click", () => {
 });
 
 //SAMPLE TABLE FUNCTIONS
-//takes the number of subjects input and creates x (input number) rows
+//Creates a sample table using subjects from datasetStructureJSONObj
+const nameSampleFile = (event, inputToRemove) => {
+  if (event.which == 13) {
+    sampleName = inputToRemove.val().trim();
+    if (subjectName.length > 0) {
+      subjectIdCellToAddNameTo = inputToRemove.parent();
+      inputToRemove.remove();
+      subjectIdCellToAddNameTo.text(subjectName);
+      guidedAddHighLevelFolderFolderFolderToDatasetStructureObj(
+        "primary",
+        subjectName,
+        sampleName
+      );
+    }
+  }
+};
 const renderSamplesTable = (subjectArray) => {
   //on monday get array from dataset structure...TEMP
   let samplesTableBody = document.getElementById("samples-table-body");
@@ -1230,7 +1260,7 @@ $(document).ready(() => {
         (error, res) => {
           if (error) {
             ipcRenderer.send(
-              "track-event",
+              "track-evefnt",
               "Error",
               "Manage Dataset - Change PI Owner",
               bfDataset
