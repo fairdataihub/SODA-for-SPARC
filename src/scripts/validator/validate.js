@@ -4,6 +4,8 @@ const {
   handleAxiosValidationErrors,
 } = require("./scripts/validator/axios-validator-utility.js");
 
+const { translatePipelineError } = require("./scripts/validator/parse-pipeline-errors.js")
+
 /*
 *******************************************************************************************************************
 // Setup for Axios client that talks to the validator 
@@ -168,8 +170,10 @@ const displayValidationErrors = (errors) => {
   for (const error of errors) {
     let { message, validator } = error;
 
+    let translatedMessage = translatePipelineError(error)
+
     // add message and validator to the display
-    addValidationErrorToTable(tableBody, message, validator);
+    addValidationErrorToTable(tableBody, translatedMessage[0], validator[1]);
   }
 };
 

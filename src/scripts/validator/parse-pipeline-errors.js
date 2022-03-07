@@ -5,34 +5,39 @@
 */
 
 
-// The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
-const pipelineErrorToTranslationTable = {
-    required: {
-        "missingSubmission": translateMissingSubmission
-    },
-    type: {
-
-    }, 
-    pattern: {
-
-    }
-}
-
 /* 
 Takes a validation error and parses the features of the error to determine what translation function to use on the error object
 @param {blame: string, message: string, pipeline_stage: string, schema_path: string[], validator: string, validator_value: string[]} error  
          - A validation error from one of the Validator pipelines (either Pennsieve or Local)
 */
 const validationErrorPipeline = (error) => {
-
     // get the validation category from the error message 
     let validationCategory = error.validator
 
     // parse the features of the given error to get a key to the correct error message translation
     let translationKey = parseFeature(error.message)
 
+    console.log("The keys are: ", validationCategory, translationKey)
+    console.log("The table is: ", pipelineErrorToTranslationTable)
+
     // use the returned error type key to determine what translation function to run
-    let translationFunction = pipelineErrorToTranslationTable[validationCategory][translationKey]
+    let validationCategoryTable = pipelineErrorToTranslationTable[validationCategory]
+
+    if(!validationCategoryTable) {
+        throw new Error(`Missing validation type from table: ${validationCategory}`)
+    }
+
+    console.log("The sub table is: ", validationCategoryTable)
+
+    // get the translation function from the table
+    let translationFunction = validationCategoryTable[translationKey]
+
+    console.log("The transition function is: ", translationFunction)
+
+    // this error has not been considered so send back Empty to denote that I missed a case
+    if(!translationFunction) {
+        return ["Empty", "Empty", "Empty"]
+    }
 
     // send the translated message back to the user interface 
     return translationFunction(error.message)
@@ -54,3 +59,22 @@ const parseMissingSubmission = (errorMessage) => {
 const translateMissingSubmission = () => {
     return ["You are missing a top level submission file", "Fix this by creating a top level submission file for your dataset", "URL: fix.SODA.page"]
 }
+
+// The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
+const pipelineErrorToTranslationTable = {
+    required: {
+        missingSubmission: translateMissingSubmission
+    },
+    type: {
+
+    }, 
+    pattern: {
+
+    },
+    minItems: {
+
+    }
+}
+
+// export the validationErrorPipeline function 
+exports.translatePipelineError = validationErrorPipeline;
