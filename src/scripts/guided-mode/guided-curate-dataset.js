@@ -753,6 +753,24 @@ $(document).ready(() => {
     guidedAddTeamPermission(newTeamPermissionObj);
   });
 
+  $(".guided--radio-button").on("click", function () {
+    const radioButtonsToBeDeselected = $(this).siblings(
+      ".guided--radio-button"
+    );
+    radioButtonsToBeDeselected.removeClass("selected");
+    radioButtonsToBeDeselected.addClass("not-selected");
+    $(this).removeClass("not-selected");
+    $(this).addClass("selected");
+  });
+  $("#guided-button-has-subjects").on("click", () => {
+    $("#guided-user-has-subjects-form").css("display", "flex");
+    $("#guided-user-no-subjects-form").hide();
+  });
+  $("#guided-button-no-subjects").on("click", () => {
+    $("#guided-user-has-subjects-form").hide();
+    $("#guided-user-no-subjects-form").css("display", "flex");
+  });
+
   /////////////////////////////////////////////////////////
   //////////       GUIDED jsTree FUNCTIONS       //////////
   /////////////////////////////////////////////////////////

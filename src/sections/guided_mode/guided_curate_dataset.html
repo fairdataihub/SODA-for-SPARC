@@ -458,29 +458,94 @@
             data-skip-page="true"
           >
             <div class="guided--question" id="number-of-subjects-prompt">
-              <h1 class="guided--text-sub-step">
-                How many subjects does your dataset contain?
-              </h1>
-              <input
-                class="guided--input"
-                type="text"
-                name="guided-number-of-samples"
-                placeholder="Enter number of samples"
-                id="guided-number-of-subjects-input"
-                style="width: 200px; text-align: center"
-              />
-              <button
-                id="guided-button-generate-subjects-table"
-                class="btn_animated"
-                style="
-                  width: 160px;
-                  min-width: 160px;
-                  border: none !important;
-                  margin: 15px;
-                "
+              <div class="guided--input-container">
+                <label class="guided--form-label centered">
+                  Does your dataset contain any subjects?
+                </label>
+                <div
+                  class="guided--radio-button-container"
+                  style="margin-bottom: 7px"
+                >
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    id="guided-button-has-subjects"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    class="ui negative basic button guided--radio-button"
+                    id="guided-button-no-subjects"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+              <div
+                class="guided--panel hidden"
+                id="guided-user-has-subjects-form"
               >
-                Create subjects table
-              </button>
+                <div class="guided--input-container">
+                  <label class="guided--form-label centered"
+                    >How many subjects does your dataset have?
+                  </label>
+                  <input
+                    class="guided--input"
+                    type="text"
+                    name="guided-number-of-subjects"
+                    placeholder="Enter number of subjects"
+                    id="guided-number-of-subjects-input"
+                    style="width: 400px; text-align: center"
+                  />
+                </div>
+                <div class="guided--input-container">
+                  <label class="guided--form-label centered"
+                    >How many samples does your dataset have?
+                  </label>
+                  <input
+                    class="guided--input"
+                    type="text"
+                    name="guided-number-of-samples"
+                    placeholder="Enter number of samples"
+                    id="guided-number-of-samples-input"
+                    style="width: 400px; text-align: center"
+                  />
+                </div>
+                <div class="guided--input-container">
+                  <label class="guided--form-label centered"
+                    >Do all of your subjects have the same amount of samples?
+                  </label>
+                  <div class="guided--radio-button-container">
+                    <button
+                      class="ui positive basic button guided--radio-button"
+                      id="guided-button-has-subjects"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      class="ui negative basic button guided--radio-button"
+                      id="guided-button-no-subjects"
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+                <button
+                  id="guided-button-generate-subjects-table"
+                  class="btn_animated"
+                  style="
+                    width: 160px;
+                    min-width: 160px;
+                    border: none !important;
+                    margin: 15px;
+                  "
+                >
+                  Create subjects table
+                </button>
+              </div>
+              <div
+                class="guided--panel hidden"
+                id="guided-user-no-subjects-form"
+              ></div>
             </div>
             <div class="guided--question hidden" id="subjects-table">
               <table class="ui celled striped table">
@@ -574,7 +639,7 @@
             class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question" id="number-of-samples-prompt">
+            <!-- <div class="guided--question" id="number-of-samples-prompt">
               <h1 class="guided--text-sub-step">
                 How many samples do each of your subjects contain?
               </h1>
@@ -612,7 +677,7 @@
               >
                 Create sample tables
               </button>
-            </div>
+            </div> -->
           </div>
           <div
             id="guided-fc3-tab"
