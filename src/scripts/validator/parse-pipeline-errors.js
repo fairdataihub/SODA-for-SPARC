@@ -14,8 +14,9 @@ const validationErrorPipeline = (error) => {
     // get the validation category from the error message 
     let validationCategory = error.validator
 
-    // parse the features of the given error to get a key to the correct error message translation
-    let translationKey = parseFeature(error.message)
+  // use the returned error type key to determine what translation function to run
+  let translationFunction =
+    pipelineErrorToTranslationTable[validationCategory][translationKey];
 
     console.log("The keys are: ", validationCategory, translationKey)
     console.log("The table is: ", pipelineErrorToTranslationTable)
@@ -45,16 +46,16 @@ const validationErrorPipeline = (error) => {
 
 // Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
 const parseFeature = (errorMessage) => {
-    // search the string for a feature that can be used to determine what translation key to return 
-    return parseMissingSubmission(errorMessage)
-}
+  // search the string for a feature that can be used to determine what translation key to return
+  return parseMissingSubmission(errorMessage);
+};
 
 const parseMissingSubmission = (errorMessage) => {
-    // determine if this is a missing submission file error message 
+  // determine if this is a missing submission file error message
 
-    // if so return the translation key
-    return "missingSubmission"
-}
+  // if so return the translation key
+  return "missingSubmission";
+};
 
 const translateMissingSubmission = () => {
     return ["You are missing a top level submission file", "Fix this by creating a top level submission file for your dataset", "URL: fix.SODA.page"]
