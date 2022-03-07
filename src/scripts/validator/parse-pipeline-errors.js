@@ -10,68 +10,70 @@ Takes a validation error and parses the features of the error to determine what 
          - A validation error from one of the Validator pipelines (either Pennsieve or Local)
 */
 const validationErrorPipeline = (error) => {
-    // get the validation category from the error message
-    let validationCategory = error.validator;
+  // get the validation category from the error message
+  let validationCategory = error.validator;
 
-    // use the returned error type key to determine what translation function to run
-    let translationKey = parseFeature(error.message)
+  // use the returned error type key to determine what translation function to run
+  let translationKey = parseFeature(error.message);
 
-    console.log("The keys are: ", validationCategory, translationKey);
-    console.log("The table is: ", pipelineErrorToTranslationTable);
+  console.log("The keys are: ", validationCategory, translationKey);
+  console.log("The table is: ", pipelineErrorToTranslationTable);
 
-    // use the returned error type key to determine what translation function to run
-    let validationCategoryTable =
-        pipelineErrorToTranslationTable[validationCategory];
+  // use the returned error type key to determine what translation function to run
+  let validationCategoryTable =
+    pipelineErrorToTranslationTable[validationCategory];
 
-    if (!validationCategoryTable) {
-        throw new Error(`Missing validation type from table: ${validationCategory}`)
-    }
+  if (!validationCategoryTable) {
+    throw new Error(
+      `Missing validation type from table: ${validationCategory}`
+    );
+  }
 
-    console.log("The sub table is: ", validationCategoryTable);
+  console.log("The sub table is: ", validationCategoryTable);
 
-    // get the translation function from the table
-    let translationFunction = validationCategoryTable[translationKey];
+  // get the translation function from the table
+  let translationFunction = validationCategoryTable[translationKey];
 
-    console.log("The transition function is: ", translationFunction);
+  console.log("The transition function is: ", translationFunction);
 
-    // this error has not been considered so send back Empty to denote that I missed a case
-    if (!translationFunction) {
-        return ["Empty", "Empty", "Empty"]
-    }
+  // this error has not been considered so send back Empty to denote that I missed a case
+  if (!translationFunction) {
+    return ["Empty", "Empty", "Empty"];
+  }
 
-    // send the translated message back to the user interface
-    return translationFunction(error.message);
+  // send the translated message back to the user interface
+  return translationFunction(error.message);
 };
 
 // Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
 const parseFeature = (errorMessage) => {
-    // search the string for a feature that can be used to determine what translation key to return
-    return parseMissingSubmission(errorMessage);
+  // search the string for a feature that can be used to determine what translation key to return
+  return parseMissingSubmission(errorMessage);
 };
 
 const parseMissingSubmission = (errorMessage) => {
-    // determine if this is a missing submission file error message
+  // determine if this is a missing submission file error message
 
-    // if so return the translation key
-    return "missingSubmission";
+  // if so return the translation key
+  return "missingSubmission";
 };
 
 const translateMissingSubmission = () => {
-    return [
-        "You are missing a top level submission file",
-        "Fix this by creating a top level submission file for your dataset",
-        "URL: fix.SODA.page",
-    ];
+  return [
+    "You are missing a top level submission file",
+    "Fix this by creating a top level submission file for your dataset",
+    "URL: fix.SODA.page",
+  ];
 };
 
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
-    required: {
-        missingSubmission: translateMissingSubmission,
-    },
-    type: {},
-    pattern: {},
-    minItems: {},
+  required: {
+    missingSubmission: translateMissingSubmission,
+  },
+  type: {},
+  pattern: {},
+  minItems: {},
 };
 
 // export the validationErrorPipeline function
