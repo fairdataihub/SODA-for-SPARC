@@ -14,9 +14,8 @@ const validationErrorPipeline = (error) => {
     // get the validation category from the error message 
     let validationCategory = error.validator
 
-  // use the returned error type key to determine what translation function to run
-  let translationFunction =
-    pipelineErrorToTranslationTable[validationCategory][translationKey];
+    // use the returned error type key to determine what translation function to run
+    let translationKey = parseFeature(error.message)
 
     console.log("The keys are: ", validationCategory, translationKey)
     console.log("The table is: ", pipelineErrorToTranslationTable)
@@ -24,7 +23,7 @@ const validationErrorPipeline = (error) => {
     // use the returned error type key to determine what translation function to run
     let validationCategoryTable = pipelineErrorToTranslationTable[validationCategory]
 
-    if(!validationCategoryTable) {
+    if (!validationCategoryTable) {
         throw new Error(`Missing validation type from table: ${validationCategory}`)
     }
 
@@ -36,7 +35,7 @@ const validationErrorPipeline = (error) => {
     console.log("The transition function is: ", translationFunction)
 
     // this error has not been considered so send back Empty to denote that I missed a case
-    if(!translationFunction) {
+    if (!translationFunction) {
         return ["Empty", "Empty", "Empty"]
     }
 
@@ -46,15 +45,15 @@ const validationErrorPipeline = (error) => {
 
 // Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
 const parseFeature = (errorMessage) => {
-  // search the string for a feature that can be used to determine what translation key to return
-  return parseMissingSubmission(errorMessage);
+    // search the string for a feature that can be used to determine what translation key to return
+    return parseMissingSubmission(errorMessage);
 };
 
 const parseMissingSubmission = (errorMessage) => {
-  // determine if this is a missing submission file error message
+    // determine if this is a missing submission file error message
 
-  // if so return the translation key
-  return "missingSubmission";
+    // if so return the translation key
+    return "missingSubmission";
 };
 
 const translateMissingSubmission = () => {
@@ -68,7 +67,7 @@ const pipelineErrorToTranslationTable = {
     },
     type: {
 
-    }, 
+    },
     pattern: {
 
     },
