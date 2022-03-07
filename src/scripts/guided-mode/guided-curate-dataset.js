@@ -482,12 +482,13 @@ guidedCreateSodaJSONObj = () => {
 //Click handler that sets the Subject's name after enter press in the table input
 $("#guided-button-generate-subjects-table").on("click", () => {
   let numSubjectRowsToCreate = parseInt(
-    $("#guided-number-of-samples-input").val()
+    $("#guided-number-of-subjects-input").val()
   );
   let subjectsTableBody = document.getElementById("subjects-table-body");
+  console.log(numSubjectRowsToCreate);
   const subjectRows = Array(numSubjectRowsToCreate)
     .fill(0)
-    .map((_, index) => {
+    .map((subject, index) => {
       let tableIndex = index + 1;
       return `
         <tr>
@@ -550,6 +551,32 @@ $("#guided-button-return-sub-table").on("click", () => {
 });
 
 //SAMPLE TABLE FUNCTIONS
+$("#guided-button-generate-samples-table").on("click", () => {
+  let numSubjectRowsToCreate = parseInt(
+    $("#guided-number-of-samples-input").val()
+  );
+  let subjectsTableBody = document.getElementById("samples-table-body");
+
+  $("#number-of-samples-prompt").hide();
+  $("#samples-table").css("display", "flex");
+});
+const createInputNumSampleFiles = (event, inputToRemove) => {
+  let numSampleRowsToCreate = parseInt(inputToRemove.val().trim());
+  console.log(numSampleRowsToCreate);
+  if (event.which == 13) {
+    sampleName = inputToRemove.val().trim();
+    if (subjectName.length > 0) {
+      subjectIdCellToAddNameTo = inputToRemove.parent();
+      inputToRemove.remove();
+      subjectIdCellToAddNameTo.text(subjectName);
+      guidedAddHighLevelFolderFolderFolderToDatasetStructureObj(
+        "primary",
+        subjectName,
+        sampleName
+      );
+    }
+  }
+};
 //Creates a sample table using subjects from datasetStructureJSONObj
 const nameSampleFile = (event, inputToRemove) => {
   if (event.which == 13) {
@@ -2632,7 +2659,26 @@ $(document).ready(() => {
       setGuidedBannerImage(guidedCroppedBannerImagePath);
     }
     if (pageBeingLeftID === "guided-subjects-folder-tab") {
-      console.log("foo");
+      const subjects = Object.keys(
+        datasetStructureJSONObj.folders.primary.folders
+      );
+      let numSamplesInputs = document.getElementById(
+        "number-of-samples-inputs"
+      );
+      const sampleInputs = subjects.map((subject) => {
+        return `
+          <div style="padding: 5px">
+            <input
+              class="guided--input"
+              type="text"
+              name="guided-number-of-samples"
+              placeholder="Enter number of samples ${subject} contains"
+              style="width: 450px;"
+            />
+          </div>
+        `;
+      });
+      numSamplesInputs.innerHTML = sampleInputs.join("\n");
     }
     if (pageBeingLeftID === "guided-folder-importation-tab") {
     }
