@@ -8,15 +8,16 @@
 Takes a validation error and parses the features of the error to determine what translation function to use on the error object
 @param {blame: string, message: string, pipeline_stage: string, schema_path: string[], validator: string, validator_value: string[], path: string[]} error  
          - A validation error from one of the Validator pipelines (either Pennsieve or Local)
+@param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
-const validationErrorPipeline = (error) => {
-  let { message } = error;
-
+const validationErrorPipeline = (error, pipeline) => {
   // get the validation category from the error message
   let validationCategory = error.validator;
 
   // use the returned error type key to determine what translation function to run
-  let translationKey = parseFeature(message);
+  let translationKey = parseFeature(error, pipeline);
+
+  let { message } = error;
 
   if (!translationKey) {
     throw new Error(
@@ -48,16 +49,21 @@ const validationErrorPipeline = (error) => {
   return translationFunction(message);
 };
 
-// Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
-const parseFeature = (errorMessage) => {
+/* 
+Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
+@param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
+*/
+const parseFeature = (error, pipeline) => {
   let translationKey = "";
+  const { message, path, validator } = error
   // search the string for a feature that can be used to determine what translation key to return
-  translationKey = translationKey || parseMissingSubmission(errorMessage);
-  translationKey = translationKey || parseMissingAwardNumber(errorMessage);
-  translationKey = translationKey || parseMissingOrganSystem(errorMessage);
-  translationKey = translationKey || parseMissingModality(errorMessage);
-  translationKey = translationKey || parseMissingTechnique(errorMessage);
-  translationKey = translationKey || parseMissingTechniqueValues
+  translationKey = translationKey || parseMissingSubmission(message);
+  translationKey = translationKey || parseMissingAwardNumber(message);
+  translationKey = translationKey || parseMissingOrganSystem(message);
+  translationKey = translationKey || parseMissingModality(message);
+  translationKey = translationKey || parseMissingTechnique(message);
+  translationKey = translationKey || parseMissingTechniqueValues(message, path)
+  translationKey = translationKey || parseIncorrectDatasetName(message, path, validator, pipeline)
 
   return translationKey;
 };
@@ -121,7 +127,7 @@ const parseMissingTechnique = (errorMessage) => {
 const parseMissingTechniqueValues = (errorMessage, path) => {
   const lastElementOfPath = path[path.length - 1]
 
-  if(lastElementOfPath === 'techniques') {
+  if (lastElementOfPath === 'techniques') {
     if (errorMessage === "[] is too short") {
       // if so return the translation key
       return "missingTechnique";
@@ -129,6 +135,31 @@ const parseMissingTechniqueValues = (errorMessage, path) => {
   }
 
   // return nothing to indicate no match has been found
+  return ""
+}
+
+// TODO: Expand this to also check for invalid local dataset names 
+const parseIncorrectDatasetName = (errorMessage, path, validator, pipeline) => {
+  let lastElementOfPath = path[path.length - 1]
+
+  // address a bug case wherein the validator parses a local dataset name
+  // using a pennsieve dataset pattern
+  if (validator === "pattern" && lastElementOfPath === 'uri_api' && pipeline === "local") {
+    return ""
+  }
+
+
+  // check if all conditions point to dealing with an invalid package/dataset name
+  if (lastElementOfPath === 'uri_api' && pipeline === "pennsieve" && validator === "pattern") {
+    let regExp = new RegExp('does not match ^https://api\\.pennsieve\\.io/(datasets|packages)/')
+    
+    let hasIncorrectDatasetName = regExp.test(errorMessage)
+
+    if(!hasIncorrectDatasetName) return ""
+
+    return "invalidDatasetName"
+  }
+
   return ""
 }
 
@@ -182,6 +213,16 @@ const translateMissingTechniqueValues = () => {
   ];
 }
 
+// TODO: Make it match Local or Pennsieve url/name for the error message translation.
+// TODO: Take out idk lol 
+const translateIncorrectDatasetName = () => {
+  return [
+    "Your dataset's name/package does not match expectations of the Pennsieve platform/local datasets",
+    "Fix this by changing your dataset's name if this is about your dataset. If not idk lol",
+    "URL: fix.SODA.page",
+  ];
+}
+
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
   required: {
@@ -192,7 +233,9 @@ const pipelineErrorToTranslationTable = {
     missingTechnique: translateMissingTechnique,
   },
   type: {},
-  pattern: {},
+  pattern: {
+    invalidDatasetName: translateIncorrectDatasetName
+  },
   minItems: {
     missingTechnique: translateMissingTechniqueValues
   },
