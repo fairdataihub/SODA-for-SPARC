@@ -10,23 +10,25 @@ Takes a validation error and parses the features of the error to determine what 
          - A validation error from one of the Validator pipelines (either Pennsieve or Local)
 */
 const validationErrorPipeline = (error) => {
-    // get the validation category from the error message
-    let validationCategory = error.validator;
+  // get the validation category from the error message
+  let validationCategory = error.validator;
 
-    // use the returned error type key to determine what translation function to run
-    let translationKey = parseFeature(error.message)
+  // use the returned error type key to determine what translation function to run
+  let translationKey = parseFeature(error.message);
 
     if (!translationKey) {
         throw new Error(`Missing translation key for this error message ${error.message}`)
     }
 
-    // use the returned error type key to determine what translation function to run
-    let validationCategoryTable =
-        pipelineErrorToTranslationTable[validationCategory];
+  // use the returned error type key to determine what translation function to run
+  let validationCategoryTable =
+    pipelineErrorToTranslationTable[validationCategory];
 
-    if (!validationCategoryTable) {
-        throw new Error(`Missing validation type from table: ${validationCategory}`)
-    }
+  if (!validationCategoryTable) {
+    throw new Error(
+      `Missing validation type from table: ${validationCategory}`
+    );
+  }
 
     // get the translation function from the table
     let translationFunction = validationCategoryTable[translationKey];
@@ -37,8 +39,8 @@ const validationErrorPipeline = (error) => {
         //return ["Empty", "Empty", "Empty"]
     }
 
-    // send the translated message back to the user interface
-    return translationFunction(error.message);
+  // send the translated message back to the user interface
+  return translationFunction(error.message);
 };
 
 // Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
@@ -62,21 +64,21 @@ const parseMissingSubmission = (errorMessage) => {
 };
 
 const translateMissingSubmission = () => {
-    return [
-        "You are missing a top level submission file",
-        "Fix this by creating a top level submission file for your dataset",
-        "URL: fix.SODA.page",
-    ];
+  return [
+    "You are missing a top level submission file",
+    "Fix this by creating a top level submission file for your dataset",
+    "URL: fix.SODA.page",
+  ];
 };
 
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
-    required: {
-        missingSubmission: translateMissingSubmission,
-    },
-    type: {},
-    pattern: {},
-    minItems: {},
+  required: {
+    missingSubmission: translateMissingSubmission,
+  },
+  type: {},
+  pattern: {},
+  minItems: {},
 };
 
 // export the validationErrorPipeline function
