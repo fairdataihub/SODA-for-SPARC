@@ -257,12 +257,12 @@ const parseMissingFunding = (errorMessage) => {
 };
 
 const parseMissingProtocolUrlOrDoi = (errorMessage) => {
-  if(errorMessage === "'protocol_url_or_doi' is a required property") {
-    return "missingProtocolUrlOrDoi"
+  if (errorMessage === "'protocol_url_or_doi' is a required property") {
+    return "missingProtocolUrlOrDoi";
   }
 
-  return ""
-}
+  return "";
+};
 
 // Translation functions **************************************************************************************************************************
 
@@ -353,8 +353,8 @@ const translateMissingProtocolUrlOrDoi = () => {
     "Your samples file is missing a 'protocol url or doi' column/field",
     "Fix this by adding a 'protocol url or doi' field/column to your samples file.",
     "URL: path to SODA",
-  ]
-}
+  ];
+};
 
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
@@ -365,7 +365,7 @@ const pipelineErrorToTranslationTable = {
     missingModality: translateMissingModality,
     missingTechnique: translateMissingTechnique,
     missingFunding: translateMissingFunding,
-    missingProtocolUrlOrDoi: translateMissingProtocolUrlOrDoi
+    missingProtocolUrlOrDoi: translateMissingProtocolUrlOrDoi,
   },
   type: {},
   pattern: {
