@@ -57,6 +57,7 @@ const parseFeature = (errorMessage) => {
   translationKey = translationKey || parseMissingOrganSystem(errorMessage);
   translationKey = translationKey || parseMissingModality(errorMessage);
   translationKey = translationKey || parseMissingTechnique(errorMessage);
+  translationKey = translationKey || parseMissingTechniqueValues
 
   return translationKey;
 };
@@ -118,6 +119,20 @@ const parseMissingTechnique = (errorMessage) => {
   return "";
 }
 
+const parseMissingTechniqueValues = (errorMessage, path) => {
+  const lastElementOfPath = path[path.length - 1]
+
+  if(lastElementOfPath === 'techniques') {
+    if (errorMessage === "[] is too short") {
+      // if so return the translation key
+      return "missingTechnique";
+    }
+  }
+
+  // return nothing to indicate no match has been found
+  return ""
+}
+
 // Translation functions **************************************************************************************************************************
 
 const translateMissingSubmission = () => {
@@ -160,6 +175,14 @@ const translateMissingTechnique = () => {
   ];
 };
 
+const translateMissingTechniqueValues = () => {
+  return [
+    "Your dataset description file's techniques field/column is missing study techniques.",
+    "Fix this by visiting your dataset description file and adding at least one study technique in the 'Study technique' field/column.",
+    "URL: fix.SODA.page",
+  ];
+}
+
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
   required: {
@@ -171,7 +194,9 @@ const pipelineErrorToTranslationTable = {
   },
   type: {},
   pattern: {},
-  minItems: {},
+  minItems: {
+    missingTechnique: translateMissingTechniqueValues
+  },
 };
 
 // export the validationErrorPipeline function
