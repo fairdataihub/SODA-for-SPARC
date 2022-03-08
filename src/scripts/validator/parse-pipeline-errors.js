@@ -10,11 +10,7 @@ Takes a validation error and parses the features of the error to determine what 
          - A validation error from one of the Validator pipelines (either Pennsieve or Local)
 */
 const validationErrorPipeline = (error) => {
-<<<<<<< HEAD
     let { message } = error
-=======
-  let { message } = error;
->>>>>>> 13163c1ffff71b4534b66965020f019a7f70446c
 
   // get the validation category from the error message
   let validationCategory = error.validator;
