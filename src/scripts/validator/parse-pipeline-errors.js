@@ -16,8 +16,9 @@ const validationErrorPipeline = (error) => {
     // use the returned error type key to determine what translation function to run
     let translationKey = parseFeature(error.message)
 
-    console.log("The keys are: ", validationCategory, translationKey);
-    console.log("The table is: ", pipelineErrorToTranslationTable);
+    if (!translationKey) {
+        throw new Error(`Missing translation key for this error message ${error.message}`)
+    }
 
     // use the returned error type key to determine what translation function to run
     let validationCategoryTable =
@@ -27,16 +28,13 @@ const validationErrorPipeline = (error) => {
         throw new Error(`Missing validation type from table: ${validationCategory}`)
     }
 
-    console.log("The sub table is: ", validationCategoryTable);
-
     // get the translation function from the table
     let translationFunction = validationCategoryTable[translationKey];
 
-    console.log("The transition function is: ", translationFunction);
-
     // this error has not been considered so send back Empty to denote that I missed a case
     if (!translationFunction) {
-        return ["Empty", "Empty", "Empty"]
+        throw new Error(`Missing translation function for this translation key: ${translationKey}`)
+        //return ["Empty", "Empty", "Empty"]
     }
 
     // send the translated message back to the user interface
@@ -45,15 +43,22 @@ const validationErrorPipeline = (error) => {
 
 // Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
 const parseFeature = (errorMessage) => {
+    let translationKey = ""
     // search the string for a feature that can be used to determine what translation key to return
-    return parseMissingSubmission(errorMessage);
+    translationKey = parseMissingSubmission(errorMessage) || translationKey;
+
+    return translationKey
 };
 
 const parseMissingSubmission = (errorMessage) => {
     // determine if this is a missing submission file error message
+    if (errorMessage === "'submission_file' is a required property") {
+        // if so return the translation key
+        return "missingSubmission";
+    }
 
-    // if so return the translation key
-    return "missingSubmission";
+    // return nothing to indicate no match has been found
+    return ""
 };
 
 const translateMissingSubmission = () => {
