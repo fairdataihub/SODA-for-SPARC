@@ -553,21 +553,19 @@ $("#guided-button-generate-subjects-table").on("click", () => {
 const nameSubjectFile = (event, subjectNameInput) => {
   if (event.which == 13) {
     subjectName = subjectNameInput.val().trim();
-    subjectNameElement = `asdf`;
+    subjectNameElement = `${subjectName}`;
     if (subjectName.length > 0) {
       subjectIdCellToAddNameTo = subjectNameInput.parent();
       subjectNameInput.remove();
-      //do the jsx thingy here
-      console.log(subjectNameElement);
-      console.log(subjectIdCellToAddNameTo);
-      subjectIdCellToAddNameTo.innerHTML = subjectNameElement;
+      subjectIdCellToAddNameTo.html(subjectNameElement); /*
       guidedAddHighLevelFolderFolderToDatasetStructureObj(
         "primary",
         subjectName
-      );
+      );*/
     }
   }
 };
+
 $("#guided-button-return-sub-table").on("click", () => {
   $("#structure-subjects-folder").hide();
   $("#subjects-table").css("display", "flex");
