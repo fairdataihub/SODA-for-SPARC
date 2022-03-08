@@ -57,14 +57,22 @@ const parseFeature = (error, pipeline) => {
   let translationKey = "";
   const { message, path, validator } = error;
   // search the string for a feature that can be used to determine what translation key to return
-  translationKey = translationKey || parseMissingSubmission(message);
-  translationKey = translationKey || parseMissingAwardNumber(message);
-  translationKey = translationKey || parseMissingOrganSystem(message);
-  translationKey = translationKey || parseMissingModality(message);
-  translationKey = translationKey || parseMissingTechnique(message);
-  translationKey = translationKey || parseMissingTechniqueValues(message, path)
-  translationKey = translationKey || parseIncorrectDatasetName(message, path, validator, pipeline)
-  translationKey = translationKey || parseInvalidDatasetId(message, path, validator, pipeline)
+
+  // check the required category if applicable
+  if (validator === "required") {
+    translationKey = translationKey || parseMissingSubmission(message);
+    translationKey = translationKey || parseMissingAwardNumber(message);
+    translationKey = translationKey || parseMissingOrganSystem(message);
+    translationKey = translationKey || parseMissingModality(message);
+    translationKey = translationKey || parseMissingTechnique(message);
+    translationKey = translationKey || parseMissingFunding(message);
+  } else if (validator === "pattern") {
+    translationKey = translationKey || parseIncorrectDatasetName(message, path, validator, pipeline)
+    translationKey = translationKey || parseInvalidDatasetId(message, path, validator, pipeline)
+    translationKey = translationKey || parseInvalidOrganization(message, path, validator, pipeline)
+  } else if(validator === "minItems") {
+    translationKey = translationKey || parseMissingTechniqueValues(message, path)
+  }
 
   return translationKey;
 };
@@ -192,6 +200,41 @@ const parseInvalidDatasetId = (errorMessage, path, validator, pipeline) => {
   return ""
 }
 
+const parseInvalidOrganization = (errorMessage, path, validator, pipeline) => {
+  let lastElementOfPath = path[path.length - 1]
+
+  // address a bug case wherein the validator treats a local dataset
+  // as if it were a Pennsieve dataset
+  if (validator === "pattern" && lastElementOfPath === 'uri_human' && pipeline === "local") {
+    return ""
+  }
+
+
+  // check if all conditions point to dealing with an invalid organization
+  if (lastElementOfPath === 'uri_human' && validator === "pattern" && pipeline === "pennsieve") {
+    // check if the string has an N:organization pattern included in the message
+    let regExp = new RegExp(
+      "does not match '^https://app\\.pennsieve\\.io/N:organization:'"
+    );
+
+    let hasInvalidOrganization = regExp.test(errorMessage);
+
+    if (hasInvalidOrganization) {
+      return "invalidOrganization"
+    }
+  }
+
+  return ""
+}
+
+const parseMissingFunding = (errorMessage) => {
+  if(errorMessage === "'funding' is a required property") {
+    return "missingFunding"
+  }
+
+  return ""
+}
+
 // Translation functions **************************************************************************************************************************
 
 const translateMissingSubmission = () => {
@@ -260,6 +303,22 @@ const translateInvalidDatasetId = () => {
   ]
 }
 
+const translateInvalidOrganization = () => {
+  return [
+    "Your organization ID is invalid",
+    "Fix this by contacting the Pennsieve team using the 'Get Help' sidebar menu option.",
+    "URL: fpath to Pennsieve",
+  ]
+}
+
+const translateMissingFunding = () => {
+  return [
+    "Your dataset description file is missing a Funding field/column",
+    "Fix this by adding a Funding field/column to your dataset description column.",
+    "URL: path to SODA",
+  ]
+}
+
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
   required: {
@@ -268,11 +327,13 @@ const pipelineErrorToTranslationTable = {
     missingOrganSystem: translateMissingOrganSystem,
     missingModality: translateMissingModality,
     missingTechnique: translateMissingTechnique,
+    missingFunding: translateMissingFunding
   },
   type: {},
   pattern: {
     invalidDatasetName: translateIncorrectDatasetName,
-    invalidDatasetId: translateInvalidDatasetId
+    invalidDatasetId: translateInvalidDatasetId,
+    invalidOrganization: translateInvalidOrganization
   },
   minItems: {
     missingTechnique: translateMissingTechniqueValues,
