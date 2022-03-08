@@ -66,6 +66,7 @@ const parseFeature = (error, pipeline) => {
     translationKey = translationKey || parseMissingModality(message);
     translationKey = translationKey || parseMissingTechnique(message);
     translationKey = translationKey || parseMissingFunding(message);
+    translationKey = translationKey || parseMissingProtocolUrlOrDoi(message);
   } else if (validator === "pattern") {
     translationKey = translationKey || parseIncorrectDatasetName(message, path, validator, pipeline)
     translationKey = translationKey || parseInvalidDatasetId(message, path, validator, pipeline)
@@ -241,6 +242,14 @@ const parseMissingFunding = (errorMessage) => {
   return ""
 }
 
+const parseMissingProtocolUrlOrDoi = (errorMessage) => {
+  if(errorMessage === "'protocol_url_or_doi' is a required property") {
+    return "missingProtocolUrlOrDoi"
+  }
+
+  return ""
+}
+
 // Translation functions **************************************************************************************************************************
 
 const translateMissingSubmission = () => {
@@ -325,6 +334,14 @@ const translateMissingFunding = () => {
   ]
 }
 
+const translateMissingProtocolUrlOrDoi = () => {
+  return [
+    "Your samples file is missing a 'protocol url or doi' column/field",
+    "Fix this by adding a 'protocol url or doi' field/column to your samples file.",
+    "URL: path to SODA",
+  ]
+}
+
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
   required: {
@@ -333,7 +350,8 @@ const pipelineErrorToTranslationTable = {
     missingOrganSystem: translateMissingOrganSystem,
     missingModality: translateMissingModality,
     missingTechnique: translateMissingTechnique,
-    missingFunding: translateMissingFunding
+    missingFunding: translateMissingFunding,
+    missingProtocolUrlOrDoi: translateMissingProtocolUrlOrDoi
   },
   type: {},
   pattern: {
