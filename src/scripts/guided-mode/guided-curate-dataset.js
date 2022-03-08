@@ -440,6 +440,23 @@ const guidedAddHighLevelFolderFolderToDatasetStructureObj = (
     action: [],
   };
 };
+const guidedRenameHighLevelFolderFolderToDatasetStructureObj = (
+  highLevelFolderName,
+  folderNameToRename,
+  newFolderName
+) => {
+  copiedFolderToRename =
+    datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
+      folderNameToRename
+    ];
+  datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
+    newFolderName
+  ] = copiedFolderToRename;
+
+  delete datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
+    folderNameToRename
+  ];
+};
 const guidedAddHighLevelFolderFolderFolderToDatasetStructureObj = (
   highLevelFolderName,
   parentFolderName,
@@ -561,7 +578,7 @@ const nameSubjectFolder = (event, subjectNameInput) => {
         <i
           class="far fa-edit jump-back"
           style="cursor: pointer;"
-          onclick="renameSubjectFolder($(this))"
+          onclick="openSubjectRenameInput($(this))"
         >
         </i>
       </div>
@@ -569,17 +586,27 @@ const nameSubjectFolder = (event, subjectNameInput) => {
     if (subjectName.length > 0) {
       const subjectIdCellToAddNameTo = subjectNameInput.parent();
       subjectIdCellToAddNameTo.html(subjectNameElement);
-      if (subjectNameInput.attr("data-prev-name"))
+      if (subjectNameInput.attr("data-prev-name")) {
+        const subjectFolderToRename = subjectNameInput.attr("data-prev-name");
+        guidedRenameHighLevelFolderFolderToDatasetStructureObj(
+          "primary",
+          subjectFolderToRename,
+          subjectName
+        );
+      } else {
         guidedAddHighLevelFolderFolderToDatasetStructureObj(
           "primary",
           subjectName
         );
+      }
     }
   }
 };
+
 //On edit button click, creates a new subject ID rename input box
-const renameSubjectFolder = (subjectNameEditButton) => {
+const openSubjectRenameInput = (subjectNameEditButton) => {
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
+  const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
   const subjectRenameElement = `
     <input
       class="guided--input"
@@ -587,6 +614,7 @@ const renameSubjectFolder = (subjectNameEditButton) => {
       name="guided-subject-id"
       placeholder="Enter new subject ID"
       onkeyup="nameSubjectFolder(event, $(this))"
+      data-prev-name="${prevSubjectName}"
     />
   `;
   subjectIdCellToRename.html(subjectRenameElement);
