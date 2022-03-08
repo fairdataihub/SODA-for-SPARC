@@ -520,7 +520,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
       let tableIndex = index + 1;
       return `
         <tr>
-          <td class="middle aligned collapsing text-center">${tableIndex}</td>
+          <td class="middle aligned collapsing text-center"><span class="subject-table-index">${tableIndex}</span></td>
           <td class="middle aligned subject-id-cell">
             <input
               class="guided--input"
@@ -619,11 +619,26 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
   `;
   subjectIdCellToRename.html(subjectRenameElement);
 };
+//updates the indices for guided tables using class given to spans in index cells
+const updateGuidedTableIndices = (tableIndexClass) => {
+  const indiciesToUpdate = $(`.${tableIndexClass}`);
+  indiciesToUpdate.each((index, indexElement) => {
+    let newIndex = index + 1;
+    indexElement.innerHTML = newIndex;
+  });
+};
 
 const deleteSubjectFolder = (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
   const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
-  console.log(subjectIdToDelete);
+  //delete the table row element in the UI
+  subjectIdCellToDelete.remove();
+  //Update subject table row indices
+  updateGuidedTableIndices("subject-table-index");
+  //delete the subject folder from the dataset structure obj
+  delete datasetStructureJSONObj["folders"]["primary"]["folders"][
+    subjectIdToDelete
+  ];
 };
 
 $("#guided-button-return-sub-table").on("click", () => {
