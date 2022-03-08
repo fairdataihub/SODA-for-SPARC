@@ -10,7 +10,7 @@ Takes a validation error and parses the features of the error to determine what 
          - A validation error from one of the Validator pipelines (either Pennsieve or Local)
 */
 const validationErrorPipeline = (error) => {
-    let {message} = error
+    let { message } = error
 
     // get the validation category from the error message
     let validationCategory = error.validator;
@@ -32,16 +32,16 @@ const validationErrorPipeline = (error) => {
         );
     }
 
-  // get the translation function from the table
-  let translationFunction = validationCategoryTable[translationKey];
+    // get the translation function from the table
+    let translationFunction = validationCategoryTable[translationKey];
 
-  // this error has not been considered so send back Empty to denote that I missed a case
-  if (!translationFunction) {
-    throw new Error(
-      `Missing translation function for this translation key: ${translationKey}`
-    );
-    //return ["Empty", "Empty", "Empty"]
-  }
+    // this error has not been considered so send back Empty to denote that I missed a case
+    if (!translationFunction) {
+        throw new Error(
+            `Missing translation function for this translation key: ${translationKey}`
+        );
+        //return ["Empty", "Empty", "Empty"]
+    }
 
     // send the translated message back to the user interface
     return translationFunction(message);
@@ -51,24 +51,25 @@ const validationErrorPipeline = (error) => {
 const parseFeature = (errorMessage) => {
     let translationKey = ""
     // search the string for a feature that can be used to determine what translation key to return
-    translationKey = parseMissingSubmission(errorMessage) || translationKey;
-    translationKey = parseMissingAwardNumber(errorMessage) || translationKey;
+    translationKey = translationKey || parseMissingSubmission(errorMessage);
+    translationKey = translationKey || parseMissingAwardNumber(errorMessage);
+    translationKey = translationKey || parseMissingOrganSystem(errorMessage);
 
-  return translationKey;
+    return translationKey;
 };
 
 
 
-// Parsing functionality *************************************************************************************************************************
+// Parsing functions *************************************************************************************************************************
 const parseMissingSubmission = (errorMessage) => {
-  // determine if this is a missing submission file error message
-  if (errorMessage === "'submission_file' is a required property") {
-    // if so return the translation key
-    return "missingSubmission";
-  }
+    // determine if this is a missing submission file error message
+    if (errorMessage === "'submission_file' is a required property") {
+        // if so return the translation key
+        return "missingSubmission";
+    }
 
-  // return nothing to indicate no match has been found
-  return "";
+    // return nothing to indicate no match has been found
+    return "";
 };
 
 const parseMissingAwardNumber = (errorMessage) => {
@@ -76,6 +77,17 @@ const parseMissingAwardNumber = (errorMessage) => {
     if (errorMessage === "'award_number' is a required property") {
         // if so return the translation key
         return "missingAwardNumber";
+    }
+
+    // return nothing to indicate no match has been found
+    return ""
+}
+
+const parseMissingOrganSystem = () => {
+    // determine if this is a missing submission file error message
+    if (errorMessage === "'organ' is a required property") {
+        // if so return the translation key
+        return "missingOrganSystem";
     }
 
     // return nothing to indicate no match has been found
@@ -101,12 +113,21 @@ const translateMissingAwardNumber = () => {
     ];
 }
 
+const translateMissingOrganSystem = () => {
+    return [
+        "Your dataset description file is missing information on the organ system of the study",
+        "Fix this by visiting your dataset description file and adding an organ system field/column with appropriate data",
+        "URL: fix.SODA.page",
+    ];
+}
+
 
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
     required: {
         missingSubmission: translateMissingSubmission,
-        missingAwardNumber: translateMissingAwardNumber
+        missingAwardNumber: translateMissingAwardNumber,
+        missingOrganSystem: translateMissingOrganSystem
     },
     type: {},
     pattern: {},
