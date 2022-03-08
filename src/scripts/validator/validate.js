@@ -83,7 +83,7 @@ const validateLocalDataset = async () => {
     showConfirmButton: true,
   });
 
-  console.log(JSON.stringify(validationResponse.data));
+  // console.log(JSON.stringify(validationResponse.data));
 
   if (!validationErrorsOccurred(validationResponse.data)) {
     return;

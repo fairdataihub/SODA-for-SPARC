@@ -20,7 +20,7 @@ const validationErrorPipeline = (error) => {
 
   if (!translationKey) {
     throw new Error(
-      `Missing translation key for this error message ${message}`
+      `Missing translation key for this error message: ${message}`
     );
   }
 
@@ -42,7 +42,6 @@ const validationErrorPipeline = (error) => {
     throw new Error(
       `Missing translation function for this translation key: ${translationKey}`
     );
-    //return ["Empty", "Empty", "Empty"]
   }
 
   // send the translated message back to the user interface
@@ -57,6 +56,7 @@ const parseFeature = (errorMessage) => {
   translationKey = translationKey || parseMissingAwardNumber(errorMessage);
   translationKey = translationKey || parseMissingOrganSystem(errorMessage);
   translationKey = translationKey || parseMissingModality(errorMessage);
+  translationKey = translationKey || parseMissingTechnique(errorMessage);
 
   return translationKey;
 };
@@ -84,7 +84,7 @@ const parseMissingAwardNumber = (errorMessage) => {
   return "";
 };
 
-const parseMissingOrganSystem = () => {
+const parseMissingOrganSystem = (errorMessage) => {
   // determine if this is a missing submission file error message
   if (errorMessage === "'organ' is a required property") {
     // if so return the translation key
@@ -95,7 +95,7 @@ const parseMissingOrganSystem = () => {
   return "";
 };
 
-const parseMissingModality = () => {
+const parseMissingModality = (errorMessage) => {
   // determine if this is a missing submission file error message
   if (errorMessage === "'modality' is a required property") {
     // if so return the translation key
@@ -105,6 +105,18 @@ const parseMissingModality = () => {
   // return nothing to indicate no match has been found
   return "";
 };
+
+
+const parseMissingTechnique = (errorMessage) => {
+  // determine if this is a missing submission file error message
+  if (errorMessage === "'technique' is a required property") {
+    // if so return the translation key
+    return "missingTechnique";
+  }
+
+  // return nothing to indicate no match has been found
+  return "";
+}
 
 // Translation functions **************************************************************************************************************************
 
@@ -140,6 +152,14 @@ const translateMissingModality = () => {
   ];
 };
 
+const translateMissingTechnique = () => {
+  return [
+    "Your dataset description file is missing information on the techniques used in the study",
+    "Fix this by visiting your dataset description file and adding a study technique column/field with the appropriate information",
+    "URL: fix.SODA.page",
+  ];
+};
+
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
   required: {
@@ -147,6 +167,7 @@ const pipelineErrorToTranslationTable = {
     missingAwardNumber: translateMissingAwardNumber,
     missingOrganSystem: translateMissingOrganSystem,
     missingModality: translateMissingModality,
+    missingTechnique: translateMissingTechnique
   },
   type: {},
   pattern: {},
