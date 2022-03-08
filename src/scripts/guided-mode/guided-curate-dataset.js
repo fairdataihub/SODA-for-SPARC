@@ -495,12 +495,10 @@ $("#guided-button-generate-subjects-table").on("click", () => {
       type="text"
       name="guided-number-of-samples"
       placeholder="Quantity"
-      onkeyup="nameSubjectFile(event, $(this))"
       style="width: 120px; text-align: center;"
     />
   `;
   let subjectsTableBody = document.getElementById("subjects-table-body");
-
   const subjectRows = Array(numSubjectRowsToCreate)
     .fill(0)
     .map((subject, index) => {
@@ -540,7 +538,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
             </button>
           </td>
           <td
-            class="middle aligned collapsing text-center remove-left-border"
+            class="middle aligned collapsing text-center"
           >
             <i class="far fa-trash-alt" style="color: red"></i>
           </td>
@@ -552,12 +550,12 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   $("#number-of-subjects-prompt").hide();
   $("#subjects-table").css("display", "flex");
 });
-const nameSubjectFile = (event, inputToRemove) => {
+const nameSubjectFile = (event, subjectNameInput) => {
   if (event.which == 13) {
-    subjectName = inputToRemove.val().trim();
+    subjectName = subjectNameInput.val().trim();
     if (subjectName.length > 0) {
-      subjectIdCellToAddNameTo = inputToRemove.parent();
-      inputToRemove.remove();
+      subjectIdCellToAddNameTo = subjectNameInput.parent();
+      subjectNameInput.remove();
       subjectIdCellToAddNameTo.text(subjectName);
       guidedAddHighLevelFolderFolderToDatasetStructureObj(
         "primary",
