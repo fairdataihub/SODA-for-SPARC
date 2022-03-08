@@ -125,9 +125,9 @@ const parseMissingTechnique = (errorMessage) => {
 };
 
 const parseMissingTechniqueValues = (errorMessage, path) => {
-  const lastElementOfPath = path[path.length - 1]
+  const lastElementOfPath = path[path.length - 1];
 
-  if (lastElementOfPath === 'techniques') {
+  if (lastElementOfPath === "techniques") {
     if (errorMessage === "[] is too short") {
       // if so return the translation key
       return "missingTechnique";
@@ -135,8 +135,8 @@ const parseMissingTechniqueValues = (errorMessage, path) => {
   }
 
   // return nothing to indicate no match has been found
-  return ""
-}
+  return "";
+};
 
 // TODO: Expand this to also check for invalid local dataset names 
 const parseIncorrectDatasetName = (errorMessage, path, validator, pipeline) => {
@@ -211,7 +211,7 @@ const translateMissingTechniqueValues = () => {
     "Fix this by visiting your dataset description file and adding at least one study technique in the 'Study technique' field/column.",
     "URL: fix.SODA.page",
   ];
-}
+};
 
 // TODO: Make it match Local or Pennsieve url/name for the error message translation.
 // TODO: Take out idk lol 
@@ -237,7 +237,7 @@ const pipelineErrorToTranslationTable = {
     invalidDatasetName: translateIncorrectDatasetName
   },
   minItems: {
-    missingTechnique: translateMissingTechniqueValues
+    missingTechnique: translateMissingTechniqueValues,
   },
 };
 
