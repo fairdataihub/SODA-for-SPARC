@@ -181,24 +181,30 @@ const parseIncorrectDatasetName = (errorMessage, path, validator, pipeline) => {
   return "";
 };
 
-
 const parseInvalidDatasetId = (errorMessage, path, validator, pipeline) => {
-  let lastElementOfPath = path[path.length - 1]
+  let lastElementOfPath = path[path.length - 1];
 
   // address a bug case wherein the validator parses a local dataset name
   // using a pennsieve dataset pattern and creates an id error
-  if (validator === "pattern" && lastElementOfPath === 'id' && pipeline === "local") {
-    return ""
+  if (
+    validator === "pattern" &&
+    lastElementOfPath === "id" &&
+    pipeline === "local"
+  ) {
+    return "";
   }
-
 
   // check if all conditions point to dealing with an invalid dataset id
-  if (lastElementOfPath === 'id' && pipeline === "pennsieve" && validator === "pattern") {
-    return "invalidDatasetId"
+  if (
+    lastElementOfPath === "id" &&
+    pipeline === "pennsieve" &&
+    validator === "pattern"
+  ) {
+    return "invalidDatasetId";
   }
 
-  return ""
-}
+  return "";
+};
 
 const parseInvalidOrganization = (errorMessage, path, validator, pipeline) => {
   let lastElementOfPath = path[path.length - 1]
@@ -300,8 +306,8 @@ const translateInvalidDatasetId = () => {
     "Your Pennsieve dataset does not have a valid UUID",
     "Fix this by contacting the Pennsieve team using the 'Get Help' sidebar menu option.",
     "URL: fpath to Pennsieve",
-  ]
-}
+  ];
+};
 
 const translateInvalidOrganization = () => {
   return [
