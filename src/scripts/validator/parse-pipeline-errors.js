@@ -107,7 +107,6 @@ const parseMissingModality = (errorMessage) => {
   return "";
 };
 
-
 const parseMissingTechnique = (errorMessage) => {
   // determine if this is a missing submission file error message
   if (errorMessage === "'technique' is a required property") {
@@ -117,7 +116,7 @@ const parseMissingTechnique = (errorMessage) => {
 
   // return nothing to indicate no match has been found
   return "";
-}
+};
 
 const parseMissingTechniqueValues = (errorMessage, path) => {
   const lastElementOfPath = path[path.length - 1]
@@ -190,7 +189,7 @@ const pipelineErrorToTranslationTable = {
     missingAwardNumber: translateMissingAwardNumber,
     missingOrganSystem: translateMissingOrganSystem,
     missingModality: translateMissingModality,
-    missingTechnique: translateMissingTechnique
+    missingTechnique: translateMissingTechnique,
   },
   type: {},
   pattern: {},
