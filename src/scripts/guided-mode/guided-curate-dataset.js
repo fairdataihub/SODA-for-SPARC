@@ -508,11 +508,11 @@ $("#guided-button-generate-subjects-table").on("click", () => {
           <td class="middle aligned collapsing text-center">${tableIndex}</td>
           <td class="middle aligned subject-id-cell">
             <input
-              class="guided--input guided-input-subject-file-name"
+              class="guided--input"
               type="text"
               name="guided-subject-id"
               placeholder="Enter subject ID and press enter"
-              onkeyup="nameSubjectFile(event, $(this))"
+              onkeyup="nameSubjectFolder(event, $(this))"
             />
           </td>
           <td class="middle aligned collapsing text-center">
@@ -550,20 +550,43 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   $("#number-of-subjects-prompt").hide();
   $("#subjects-table").css("display", "flex");
 });
-const nameSubjectFile = (event, subjectNameInput) => {
+const nameSubjectFolder = (event, subjectNameInput) => {
   if (event.which == 13) {
-    subjectName = subjectNameInput.val().trim();
-    subjectNameElement = `${subjectName}`;
+    const subjectName = subjectNameInput.val().trim();
+    const subjectNameElement = `
+      <div class="space-between">
+        <span>${subjectName}</span>
+        <i
+          class="far fa-edit jump-back"
+          style="cursor: pointer;"
+          onclick="renameSubjectTableSubjectID($(this))"
+        >
+        </i>
+      </div>
+    `;
     if (subjectName.length > 0) {
-      subjectIdCellToAddNameTo = subjectNameInput.parent();
-      subjectNameInput.remove();
-      subjectIdCellToAddNameTo.html(subjectNameElement); /*
+      const subjectIdCellToAddNameTo = subjectNameInput.parent();
+      subjectIdCellToAddNameTo.html(subjectNameElement);
       guidedAddHighLevelFolderFolderToDatasetStructureObj(
         "primary",
         subjectName
-      );*/
+      );
     }
   }
+};
+//On edit button click, creates a new subject ID rename input box
+renameSubjectTableSubjectID = (subjectNameEditButton) => {
+  const subjectIdCellToRename = subjectNameEditButton.closest("td");
+  const subjectRenameElement = `
+    <input
+      class="guided--input"
+      type="text"
+      name="guided-subject-id"
+      placeholder="Enter new subject ID"
+      onkeyup="nameSubjectFolder(event, $(this))"
+    />
+  `;
+  subjectIdCellToRename.html(subjectRenameElement);
 };
 
 $("#guided-button-return-sub-table").on("click", () => {

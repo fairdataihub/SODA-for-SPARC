@@ -524,14 +524,9 @@
 .remove-left-border {
   border-left: none !important;
 }
-
-.guided--folder-card-container {
-  width: 600px;
+.space-between {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
 }
 
 .guided--capsule-container {
