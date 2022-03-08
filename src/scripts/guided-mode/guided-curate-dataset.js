@@ -482,10 +482,25 @@ guidedCreateSodaJSONObj = () => {
 //Click handler that sets the Subject's name after enter press in the table input
 $("#guided-button-generate-subjects-table").on("click", () => {
   let numSubjectRowsToCreate = parseInt(
-    $("#guided-number-of-subjects-input").val()
+    $("#guided-number-of-subjects-input").val().trim()
   );
+  let numSamplesIfAllSubjectsSameNumSamples = $(
+    "#guided-number-of-samples-input"
+  )
+    .val()
+    .trim();
+  let numberOfSamplesInput = `
+    <input
+      class="guided--input guided-input-sample-count"
+      type="text"
+      name="guided-number-of-samples"
+      placeholder="Quantity"
+      onkeyup="nameSubjectFile(event, $(this))"
+      style="width: 120px; text-align: center;"
+    />
+  `;
   let subjectsTableBody = document.getElementById("subjects-table-body");
-  console.log(numSubjectRowsToCreate);
+
   const subjectRows = Array(numSubjectRowsToCreate)
     .fill(0)
     .map((subject, index) => {
@@ -497,10 +512,17 @@ $("#guided-button-generate-subjects-table").on("click", () => {
             <input
               class="guided--input guided-input-subject-file-name"
               type="text"
-              name="guided-number-of-samples"
+              name="guided-subject-id"
               placeholder="Enter subject ID and press enter"
               onkeyup="nameSubjectFile(event, $(this))"
             />
+          </td>
+          <td class="middle aligned collapsing text-center">
+            ${
+              numSamplesIfAllSubjectsSameNumSamples
+                ? numSamplesIfAllSubjectsSameNumSamples
+                : numberOfSamplesInput
+            }
           </td>
           <td
             class="middle aligned collapsing text-center"
@@ -509,19 +531,18 @@ $("#guided-button-generate-subjects-table").on("click", () => {
             <button
               type="button"
               class="btn btn-primary btn-sm"
-              style="background-color: var(--color-light-green) !important;"
+              style="
+                background-color: var(--color-light-green) !important;
+              "
               onclick="openStructureFolder($(this))"
             >
               Add files
             </button>
           </td>
-          <td class="middle aligned collapsing text-center">
-            <i class="far fa-edit"></i>
-          </td>
           <td
             class="middle aligned collapsing text-center remove-left-border"
           >
-            <i class="far fa-trash-alt"></i>
+            <i class="far fa-trash-alt" style="color: red"></i>
           </td>
         </tr>
       `;
@@ -769,6 +790,13 @@ $(document).ready(() => {
   $("#guided-button-no-subjects").on("click", () => {
     $("#guided-user-has-subjects-form").hide();
     $("#guided-user-no-subjects-form").css("display", "flex");
+  });
+
+  $("#guided-button-samples-same").on("click", () => {
+    $("#guided-sample-count-same").css("display", "flex");
+  });
+  $("#guided-button-samples-not-same").on("click", () => {
+    $("#guided-sample-count-same").hide();
   });
 
   /////////////////////////////////////////////////////////

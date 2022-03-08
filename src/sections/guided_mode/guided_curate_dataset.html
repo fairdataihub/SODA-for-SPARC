@@ -458,27 +458,25 @@
             data-skip-page="true"
           >
             <div class="guided--question" id="number-of-subjects-prompt">
-              <div class="guided--input-container">
-                <label class="guided--form-label centered">
-                  Does your dataset contain any subjects?
-                </label>
-                <div
-                  class="guided--radio-button-container"
-                  style="margin-bottom: 7px"
+              <label class="guided--form-label centered">
+                Does your dataset contain any subjects?
+              </label>
+              <div
+                class="guided--radio-button-container"
+                style="margin-bottom: 7px"
+              >
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-has-subjects"
                 >
-                  <button
-                    class="ui positive basic button guided--radio-button"
-                    id="guided-button-has-subjects"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    class="ui negative basic button guided--radio-button"
-                    id="guided-button-no-subjects"
-                  >
-                    No
-                  </button>
-                </div>
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-subjects"
+                >
+                  No
+                </button>
               </div>
               <div
                 class="guided--panel hidden"
@@ -497,9 +495,31 @@
                     style="width: 400px; text-align: center"
                   />
                 </div>
-                <div class="guided--input-container">
+                <div class="guided--input-container" style="margin-top: 25px">
                   <label class="guided--form-label centered"
-                    >How many samples does your dataset have?
+                    >Do all of your subjects have the same amount of samples?
+                  </label>
+                  <div class="guided--radio-button-container">
+                    <button
+                      class="ui positive basic button guided--radio-button"
+                      id="guided-button-samples-same"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      class="ui negative basic button guided--radio-button"
+                      id="guided-button-samples-not-same"
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="guided--input-container hidden"
+                  id="guided-sample-count-same"
+                >
+                  <label class="guided--form-label centered"
+                    >How many samples does each subject have?
                   </label>
                   <input
                     class="guided--input"
@@ -509,25 +529,6 @@
                     id="guided-number-of-samples-input"
                     style="width: 400px; text-align: center"
                   />
-                </div>
-                <div class="guided--input-container">
-                  <label class="guided--form-label centered"
-                    >Do all of your subjects have the same amount of samples?
-                  </label>
-                  <div class="guided--radio-button-container">
-                    <button
-                      class="ui positive basic button guided--radio-button"
-                      id="guided-button-has-subjects"
-                    >
-                      Yes
-                    </button>
-                    <button
-                      class="ui negative basic button guided--radio-button"
-                      id="guided-button-no-subjects"
-                    >
-                      No
-                    </button>
-                  </div>
                 </div>
                 <button
                   id="guided-button-generate-subjects-table"
@@ -553,10 +554,10 @@
                   <tr>
                     <th class="center aligned">Index</th>
                     <th>Subject ID</th>
+                    <th>Number of samples</th>
                     <th class="center aligned">
                       Specify data files for the subject
                     </th>
-                    <th class="center aligned">Edit</th>
                     <th class="center aligned remove-left-border">Delete</th>
                   </tr>
                 </thead>
