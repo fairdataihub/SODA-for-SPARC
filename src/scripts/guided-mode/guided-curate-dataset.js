@@ -413,11 +413,9 @@ const openStructureFolder = (clickedStructureButton) => {
   let subjectID = clickedStructureButton
     .parent()
     .siblings(".subject-id-cell")
+    .find("span")
     .text();
-  console.log(subjectID);
-  $("#guided-input-global-path").val(
-    "My_dataset_folder/primary/" + subjectID + "/"
-  );
+  $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
   $("#structure-subjects-folder").css("display", "flex");
 };
 //TODO CLEAN UP
@@ -540,7 +538,11 @@ $("#guided-button-generate-subjects-table").on("click", () => {
           <td
             class="middle aligned collapsing text-center"
           >
-            <i class="far fa-trash-alt" style="color: red"></i>
+            <i
+              class="far fa-trash-alt"
+              style="color: red; cursor: pointer;"
+              onclick="deleteSubjectFolder($(this))"
+            ></i>
           </td>
         </tr>
       `;
@@ -555,11 +557,11 @@ const nameSubjectFolder = (event, subjectNameInput) => {
     const subjectName = subjectNameInput.val().trim();
     const subjectNameElement = `
       <div class="space-between">
-        <span>${subjectName}</span>
+        <span class="subject-id">${subjectName}</span>
         <i
           class="far fa-edit jump-back"
           style="cursor: pointer;"
-          onclick="renameSubjectTableSubjectID($(this))"
+          onclick="renameSubjectFolder($(this))"
         >
         </i>
       </div>
@@ -567,15 +569,16 @@ const nameSubjectFolder = (event, subjectNameInput) => {
     if (subjectName.length > 0) {
       const subjectIdCellToAddNameTo = subjectNameInput.parent();
       subjectIdCellToAddNameTo.html(subjectNameElement);
-      guidedAddHighLevelFolderFolderToDatasetStructureObj(
-        "primary",
-        subjectName
-      );
+      if (subjectNameInput.attr("data-prev-name"))
+        guidedAddHighLevelFolderFolderToDatasetStructureObj(
+          "primary",
+          subjectName
+        );
     }
   }
 };
 //On edit button click, creates a new subject ID rename input box
-renameSubjectTableSubjectID = (subjectNameEditButton) => {
+const renameSubjectFolder = (subjectNameEditButton) => {
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
   const subjectRenameElement = `
     <input
@@ -587,6 +590,12 @@ renameSubjectTableSubjectID = (subjectNameEditButton) => {
     />
   `;
   subjectIdCellToRename.html(subjectRenameElement);
+};
+
+const deleteSubjectFolder = (subjectDeleteButton) => {
+  const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
+  const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
+  console.log(subjectIdToDelete);
 };
 
 $("#guided-button-return-sub-table").on("click", () => {
