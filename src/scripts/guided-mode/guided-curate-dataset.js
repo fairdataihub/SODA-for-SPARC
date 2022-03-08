@@ -553,10 +553,14 @@ $("#guided-button-generate-subjects-table").on("click", () => {
 const nameSubjectFile = (event, subjectNameInput) => {
   if (event.which == 13) {
     subjectName = subjectNameInput.val().trim();
+    subjectNameElement = `asdf`;
     if (subjectName.length > 0) {
       subjectIdCellToAddNameTo = subjectNameInput.parent();
       subjectNameInput.remove();
-      subjectIdCellToAddNameTo.text(subjectName);
+      //do the jsx thingy here
+      console.log(subjectNameElement);
+      console.log(subjectIdCellToAddNameTo);
+      subjectIdCellToAddNameTo.innerHTML = subjectNameElement;
       guidedAddHighLevelFolderFolderToDatasetStructureObj(
         "primary",
         subjectName
