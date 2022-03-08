@@ -102,7 +102,7 @@ const pipelineErrorToTranslationTable = {
     missingModality: translateMissingModality,
     missingTechnique: translateMissingTechnique,
     missingFunding: translateMissingFunding,
-    missingProtocolUrlOrDoi: translateMissingProtocolUrlOrDoi
+    missingProtocolUrlOrDoi: translateMissingProtocolUrlOrDoi,
   },
   type: {},
   pattern: {
