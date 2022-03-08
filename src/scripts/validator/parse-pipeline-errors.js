@@ -60,6 +60,7 @@ const parseFeature = (errorMessage) => {
     translationKey = translationKey || parseMissingSubmission(errorMessage);
     translationKey = translationKey || parseMissingAwardNumber(errorMessage);
     translationKey = translationKey || parseMissingOrganSystem(errorMessage);
+    translationKey = translationKey || parseMissingModality(errorMessage)
 
     return translationKey;
 };
@@ -100,6 +101,17 @@ const parseMissingOrganSystem = () => {
     return ""
 }
 
+const parseMissingModality = () => {
+    // determine if this is a missing submission file error message
+    if (errorMessage === "'modality' is a required property") {
+        // if so return the translation key
+        return "missingModality";
+    }
+
+    // return nothing to indicate no match has been found
+    return ""
+}
+
 // Translation functions **************************************************************************************************************************
 
 const translateMissingSubmission = () => {
@@ -126,13 +138,22 @@ const translateMissingOrganSystem = () => {
     ];
 }
 
+const translateMissingModality = () => {
+    return [
+        "Your dataset description file is missing information on the modality of the study",
+        "Fix this by visiting your dataset description file and adding a modality field/column with the appropriate information",
+        "URL: fix.SODA.page",
+    ];
+}
+
 
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
     required: {
         missingSubmission: translateMissingSubmission,
         missingAwardNumber: translateMissingAwardNumber,
-        missingOrganSystem: translateMissingOrganSystem
+        missingOrganSystem: translateMissingOrganSystem,
+        missingModality: translateMissingModality
     },
     type: {},
     pattern: {},
