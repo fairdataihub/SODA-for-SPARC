@@ -55,7 +55,7 @@ Parse features of the given error message to determine what kind of translation 
 */
 const parseFeature = (error, pipeline) => {
   let translationKey = "";
-  const { message, path, validator } = error
+  const { message, path, validator } = error;
   // search the string for a feature that can be used to determine what translation key to return
   translationKey = translationKey || parseMissingSubmission(message);
   translationKey = translationKey || parseMissingAwardNumber(message);
@@ -139,30 +139,39 @@ const parseMissingTechniqueValues = (errorMessage, path) => {
   return "";
 };
 
-// TODO: Expand this to also check for invalid local dataset names 
+// TODO: Expand this to also check for invalid local dataset names
 const parseIncorrectDatasetName = (errorMessage, path, validator, pipeline) => {
-  let lastElementOfPath = path[path.length - 1]
+  let lastElementOfPath = path[path.length - 1];
 
   // address a bug case wherein the validator parses a local dataset name
   // using a pennsieve dataset pattern
-  if (validator === "pattern" && lastElementOfPath === 'uri_api' && pipeline === "local") {
-    return ""
+  if (
+    validator === "pattern" &&
+    lastElementOfPath === "uri_api" &&
+    pipeline === "local"
+  ) {
+    return "";
   }
-
 
   // check if all conditions point to dealing with an invalid package/dataset name
-  if (lastElementOfPath === 'uri_api' && pipeline === "pennsieve" && validator === "pattern") {
-    let regExp = new RegExp('does not match ^https://api\\.pennsieve\\.io/(datasets|packages)/')
+  if (
+    lastElementOfPath === "uri_api" &&
+    pipeline === "pennsieve" &&
+    validator === "pattern"
+  ) {
+    let regExp = new RegExp(
+      "does not match ^https://api\\.pennsieve\\.io/(datasets|packages)/"
+    );
 
-    let hasIncorrectDatasetName = regExp.test(errorMessage)
+    let hasIncorrectDatasetName = regExp.test(errorMessage);
 
-    if (!hasIncorrectDatasetName) return ""
+    if (!hasIncorrectDatasetName) return "";
 
-    return "invalidDatasetName"
+    return "invalidDatasetName";
   }
 
-  return ""
-}
+  return "";
+};
 
 
 const parseInvalidDatasetId = (errorMessage, path, validator, pipeline) => {
@@ -234,14 +243,14 @@ const translateMissingTechniqueValues = () => {
 };
 
 // TODO: Make it match Local or Pennsieve url/name for the error message translation.
-// TODO: Take out idk lol 
+// TODO: Take out idk lol
 const translateIncorrectDatasetName = () => {
   return [
     "Your dataset's name/package does not match expectations of the Pennsieve platform/local datasets",
     "Fix this by changing your dataset's name if this is about your dataset. If not idk lol",
     "URL: fix.SODA.page",
   ];
-}
+};
 
 const translateInvalidDatasetId = () => {
   return [
