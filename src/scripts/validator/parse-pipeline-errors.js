@@ -79,10 +79,12 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseMissingProtocolUrlOrDoi(message);
-    translationKey = translationKey || ValidationErrorParser.parseMissingTitle(message)
-    translationKey = translationKey || ValidationErrorParser.parseMissingSubjects(message)
-    translationKey = translationKey || ValidationErrorParser.parseMissingSamples(message)
-
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingTitle(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingSubjects(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingSamples(message);
   } else if (validator === "pattern") {
     translationKey =
       translationKey ||
@@ -128,7 +130,8 @@ const pipelineErrorToTranslationTable = {
     missingModality: ParsedErrorTranslator.translateMissingModality,
     missingTechnique: ParsedErrorTranslator.translateMissingTechnique,
     missingFunding: ParsedErrorTranslator.translateMissingFunding,
-    missingProtocolUrlOrDoi: ParsedErrorTranslator.translateMissingProtocolUrlOrDoi,
+    missingProtocolUrlOrDoi:
+      ParsedErrorTranslator.translateMissingProtocolUrlOrDoi,
     missingTitle: ParsedErrorTranslator.translateMissingTitle,
     missingSubjects: ParsedErrorTranslator.translateMissingSubjects,
     missingSamples: ParsedErrorTranslator.translateMissingSamples,
