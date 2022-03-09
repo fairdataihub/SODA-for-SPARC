@@ -1820,18 +1820,13 @@ function addFilesfunction(
         '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         regularFiles[element]["basename"] +
         "</div></div>";
-      
+
       $(uiItem).html(appendString);
       console.log($(uiItem));
       console.log("above is the UI item before entering listItems function");
     }
     listItems(currentLocation, uiItem);
-    getInFolder(
-      singleUIItem,
-      uiItem,
-      organizeCurrentLocation,
-      globalPathValue
-    );
+    getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     // log the successful import
     logCurationForAnalytics(
       "Success",

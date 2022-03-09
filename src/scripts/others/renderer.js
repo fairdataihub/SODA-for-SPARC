@@ -5254,8 +5254,8 @@ function dropHelper(
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   $("body").removeClass("waiting");
-  let endTime = performance.now()
-  console.log((`Duration for DropHelper): ${endTime - startTime} milliseconds`));
+  let endTime = performance.now();
+  console.log(`Duration for DropHelper): ${endTime - startTime} milliseconds`);
 }
 
 var irregularFolderArray = [];
@@ -5707,9 +5707,9 @@ function listItems(jsonObj, uiItem) {
   var sortedObj = sortObjByKeys(jsonObj);
   console.log(sortedObj.length);
   console.log(typeof sortedObj);
-  if(Object.keys(sortedObj["folders"]).length > 0) {
+  if (Object.keys(sortedObj["folders"]).length > 0) {
     console.log(sortedObj["folders"]);
-    console.log(Object.keys(sortedObj["folders"]).length)
+    console.log(Object.keys(sortedObj["folders"]).length);
     console.log("sortedObj[folders] > 0");
     for (var item in sortedObj["folders"]) {
       var emptyFolder = "";
@@ -5721,10 +5721,10 @@ function listItems(jsonObj, uiItem) {
           emptyFolder = " empty";
         }
       }
-  
+
       cloud_item = "";
       deleted_folder = false;
-  
+
       if ("action" in sortedObj["folders"][item]) {
         if (
           sortedObj["folders"][item]["action"].includes("deleted") ||
@@ -5739,14 +5739,14 @@ function listItems(jsonObj, uiItem) {
           }
         }
       }
-  
+
       if (sortedObj["folders"][item]["type"] == "bf") {
         cloud_item = " pennsieve_folder";
         if (deleted_folder) {
           cloud_item = " pennsieve_folder_deleted";
         }
       }
-  
+
       if (
         sortedObj["folders"][item]["type"] == "local" &&
         sortedObj["folders"][item]["action"].includes("existing")
@@ -5756,7 +5756,7 @@ function listItems(jsonObj, uiItem) {
           cloud_item = " local_folder_deleted";
         }
       }
-  
+
       if (sortedObj["folders"][item]["action"].includes("updated")) {
         cloud_item = " update-file";
         appendString =
@@ -5781,13 +5781,15 @@ function listItems(jsonObj, uiItem) {
       }
     }
   }
-  if(Object.keys(sortedObj["files"]).length > 0) {
+  if (Object.keys(sortedObj["files"]).length > 0) {
     console.log("sortedObj[files] > 0");
     for (var item in sortedObj["files"]) {
       // not the auto-generated manifest
       if (sortedObj["files"][item].length !== 1) {
         if ("path" in sortedObj["files"][item]) {
-          var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
+          var extension = path
+            .extname(sortedObj["files"][item]["path"])
+            .slice(1);
         } else {
           var extension = "other";
         }
@@ -5821,10 +5823,10 @@ function listItems(jsonObj, uiItem) {
       } else {
         extension = "other";
       }
-  
+
       cloud_item = "";
       deleted_file = false;
-  
+
       if ("action" in sortedObj["files"][item]) {
         if (
           sortedObj["files"][item]["action"].includes("deleted") ||
@@ -5832,19 +5834,21 @@ function listItems(jsonObj, uiItem) {
         ) {
           extension += " deleted_file";
           deleted_file = true;
-          if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
+          if (
+            sortedObj["files"][item]["action"].includes("recursive_deleted")
+          ) {
             extension += " recursive_deleted_file";
           }
         }
       }
-  
+
       if (sortedObj["files"][item]["type"] == "bf") {
         cloud_item = " pennsieve_file";
         if (deleted_file) {
           cloud_item = " pennsieve_file_deleted";
         }
       }
-  
+
       if (
         sortedObj["files"][item]["type"] == "local" &&
         sortedObj["files"][item]["action"].includes("existing")
@@ -5905,7 +5909,7 @@ function listItems(jsonObj, uiItem) {
   });
   drag_event_fired = false;
   let endTime = performance.now();
-  console.log((`Duration for listItems: ${endTime - startTime} milliseconds`));
+  console.log(`Duration for listItems: ${endTime - startTime} milliseconds`);
 }
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
@@ -5935,7 +5939,7 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   });
   let endTime = performance.now();
   //let duration = endTime - startTime;
-  console.log((`Duration for getInFolder: ${endTime - startTime} milliseconds`))
+  console.log(`Duration for getInFolder: ${endTime - startTime} milliseconds`);
 }
 
 function sliceStringByValue(string, endingValue) {
