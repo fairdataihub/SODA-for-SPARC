@@ -67,32 +67,54 @@ const parseFeature = (error, pipeline) => {
 
   // check the required category if applicable
   if (validator === "required") {
-    translationKey = translationKey || ValidationErrorParser.parseMissingSubmission(message);
-    translationKey = translationKey || ValidationErrorParser.parseMissingAwardNumber(message);
-    translationKey = translationKey || ValidationErrorParser.parseMissingOrganSystem(message);
-    translationKey = translationKey || ValidationErrorParser.parseMissingModality(message);
-    translationKey = translationKey || ValidationErrorParser.parseMissingTechnique(message);
-    translationKey = translationKey || ValidationErrorParser.parseMissingFunding(message);
-    translationKey = translationKey || ValidationErrorParser.parseMissingProtocolUrlOrDoi(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingSubmission(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingAwardNumber(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingOrganSystem(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingModality(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingTechnique(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingFunding(message);
+    translationKey =
+      translationKey ||
+      ValidationErrorParser.parseMissingProtocolUrlOrDoi(message);
   } else if (validator === "pattern") {
     translationKey =
       translationKey ||
-      ValidationErrorParser.parseIncorrectDatasetName(message, path, validator, pipeline);
+      ValidationErrorParser.parseIncorrectDatasetName(
+        message,
+        path,
+        validator,
+        pipeline
+      );
     translationKey =
       translationKey ||
-      ValidationErrorParser.parseInvalidDatasetId(message, path, validator, pipeline);
+      ValidationErrorParser.parseInvalidDatasetId(
+        message,
+        path,
+        validator,
+        pipeline
+      );
     translationKey =
       translationKey ||
-      ValidationErrorParser.parseInvalidOrganization(message, path, validator, pipeline);
+      ValidationErrorParser.parseInvalidOrganization(
+        message,
+        path,
+        validator,
+        pipeline
+      );
   } else if (validator === "minItems") {
     translationKey =
-      translationKey || ValidationErrorParser.parseMissingTechniqueValues(message, path);
+      translationKey ||
+      ValidationErrorParser.parseMissingTechniqueValues(message, path);
   }
 
   return translationKey;
 };
-
-
 
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
