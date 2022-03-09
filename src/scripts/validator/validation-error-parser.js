@@ -212,6 +212,15 @@ const ValidationErrorParser = {
     }
 
     return ""
+  },
+
+  // dataset description 1.2.3 requires a name property. This has been superceded by 'title' in 2.0.0
+  parseMissingName: (errorMessage) => {
+    if (errorMessage === "'name' is a required property") {
+        return "missingName";
+      }
+  
+      return ""
   }
 };
 

@@ -141,7 +141,16 @@ const ParsedErrorTranslator = {
             "URL: Path to SODA"
         ]
 
+    },
+
+    translateMissingName: (errorMessage) => {
+        return [
+            "Your dataset description file is missing a 'name' column/field",
+            "Fix this by adding a 'name' field/column to your dataset description file.",
+            "URL: path to SODA"
+        ]
     }
+
 }
 
 
