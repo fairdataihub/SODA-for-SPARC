@@ -105,7 +105,7 @@ const ParsedErrorTranslator = {
     ];
   },
 
-  translateMissingSubjects: () => {
+  translateMissingNumberOfSubjects: () => {
     return [
       "Your dataset description file is missing a 'number_of_subjects' column/field",
       "Fix this by adding a 'number_of_subjects' field/column to your dataset description file.",
@@ -113,7 +113,7 @@ const ParsedErrorTranslator = {
     ];
   },
 
-  translateMissingSamples: () => {
+  translateMissingNumberOfSamples: () => {
     return [
       "Your dataset description file is missing a 'number_of_samples' column/field",
       "Fix this by adding a 'number_of_samples' field/column to your dataset description file.",
@@ -161,6 +161,14 @@ const ParsedErrorTranslator = {
         "Your dataset 'description' file is missing a description field/column.",
         "Fix this by adding a 'description' field/column to your dataset description file.",
         "URL: path to SODA",
+      ]
+  },
+
+  translateMissingSamples: () => {
+      return [
+          "Your dataset does not have a samples file",
+          "To fix this add a samples file and fill in at least one row of required fields.",
+          "URL: path to SODA"
       ]
   }
 };

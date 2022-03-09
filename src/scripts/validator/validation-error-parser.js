@@ -185,17 +185,17 @@ const ValidationErrorParser = {
     return "";
   },
 
-  parseMissingSubjects: (errorMessage) => {
+  parseMissingNumberOfSubjects: (errorMessage) => {
     if (errorMessage === "'number_of_subjects' is a required property") {
-      return "missingSubjects";
+      return "missingNumberOfSubjects";
     }
 
     return "";
   },
 
-  parseMissingSamples: (errorMessage) => {
+  parseMissingNumberOfSamples: (errorMessage) => {
     if (errorMessage === "'number_of_samples' is a required property") {
-      return "missingSamples";
+      return "missingNumberOfSamples";
     }
 
     return "";
@@ -226,6 +226,14 @@ const ValidationErrorParser = {
   parseMissingDescription: () => {
       if(errorMessage === "'description' is a required property") {
           return "missingDescription"
+      }
+
+      return ""
+  },
+
+  parseMissingSamples: () => {
+      if(errorMessage === "'samples' is a required property") {
+          return "missingSamples"
       }
 
       return ""
