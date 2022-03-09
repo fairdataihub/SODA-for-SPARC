@@ -711,14 +711,79 @@ const renderSamplesTables = () => {
   let subjectsToMap = Object.keys(
     datasetStructureJSONObj.folders.primary.folders
   );
+  //get the sample count from the number of samples input on the subjects page and
+  //map the subjects to an array to create the sample tables
   let sampleData = subjectsToMap.map((subject) => {
-    return $(`.subject-id:contains("${subject}")`).parent();
+    let subjectNumSamples = $(`.subject-id:contains("${subject}")`)
+      .closest("tr")
+      .find(".guided-input-sample-count")
+      .val();
+    return {
+      subjectName: subject,
+      sampleCount: subjectNumSamples,
+    };
   });
-  const sampleRows = subjectArray.map((subjectID, index) => {
-    let tableIndex = index + 1;
-    console.log(subjectID);
+  let sampleTables = sampleData.map((subject) => {
+    return `
+      <table class="ui celled striped table">
+        <thead>
+          <tr>
+            <th colspan="4" class="text-center">${subject.subjectName}</th>
+          </tr>
+          <tr>
+            <th class="center aligned">Index</th>
+            <th>Sample ID</th>
+            <th class="center aligned">
+              Specify data files for the sample
+            </th>
+            <th class="center aligned">Delete</th>
+          </tr>
+        </thead>
+        <tbody id="samples-table-body">
+          <tr>
+            <td class="middle aligned collapsing text-center">
+              <span class="sample-table-index">1</span>
+            </td>
+            <td class="middle aligned sample-id-cell">
+              <input
+                class="guided--input"
+                type="text"
+                name="guided-sample-id"
+                placeholder="Enter sample ID and press enter"
+                onkeyup="nameSampleFolder(event, $(this))"
+              />
+            </td>
+            <td
+              class="middle aligned collapsing text-center"
+              style="min-width: 130px"
+            >
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                style="
+                  background-color: var(--color-light-green) !important;
+                "
+                onclick="openStructureFolder($(this))"
+              >
+                Add files
+              </button>
+            </td>
+            <td class="middle aligned collapsing text-center">
+              <i
+                class="far fa-trash-alt"
+                style="color: red; cursor: pointer"
+                onclick="deleteSampleFolder($(this))"
+              ></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    `;
   });
-  let samplesTableBody = document.getElementById("samples-table-body");
+  let sampleTablesContainer = document.getElementById(
+    "sample-tables-container"
+  );
+  sampleTablesContainer.innerHTML = sampleTables.join("\n");
 };
 
 $("#guided-dataset-name-input").val("test " + makeid(5));
