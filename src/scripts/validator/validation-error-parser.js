@@ -228,13 +228,13 @@ const ValidationErrorParser = {
       return "missingDescription";
     }
 
-      return ""
+    return "";
   },
 
   parseMissingSamples: () => {
-      if(errorMessage === "'samples' is a required property") {
-          return "missingSamples"
-      }
+    if (errorMessage === "'samples' is a required property") {
+      return "missingSamples";
+    }
 
       return ""
   },
