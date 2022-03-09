@@ -694,7 +694,9 @@ const renderSamplesTables = () => {
   let subjectsToMap = Object.keys(
     datasetStructureJSONObj.folders.primary.folders
   );
-  let sampleData = subjectsToMap.map((subject) => {});
+  let sampleData = subjectsToMap.map((subject) => {
+    return $(`.subject-id:contains("${subject}")`).parent();
+  });
   const sampleRows = subjectArray.map((subjectID, index) => {
     let tableIndex = index + 1;
     console.log(subjectID);
@@ -2784,26 +2786,7 @@ $(document).ready(() => {
       setGuidedBannerImage(guidedCroppedBannerImagePath);
     }
     if (pageBeingLeftID === "guided-subjects-folder-tab") {
-      const subjects = Object.keys(
-        datasetStructureJSONObj.folders.primary.folders
-      );
-      let numSamplesInputs = document.getElementById(
-        "number-of-samples-inputs"
-      );
-      const sampleInputs = subjects.map((subject) => {
-        return `
-          <div style="padding: 5px">
-            <input
-              class="guided--input"
-              type="text"
-              name="guided-number-of-samples"
-              placeholder="Enter number of samples ${subject} contains"
-              style="width: 450px;"
-            />
-          </div>
-        `;
-      });
-      numSamplesInputs.innerHTML = sampleInputs.join("\n");
+      renderSamplesTables();
     }
     if (pageBeingLeftID === "guided-folder-importation-tab") {
     }
