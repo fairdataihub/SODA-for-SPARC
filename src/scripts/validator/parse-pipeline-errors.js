@@ -6,8 +6,9 @@
 
 const {
   ValidationErrorParser,
-} = require("./scripts/validator/validation-error-parser.js");
+} = require("./validation-error-parser.js");
 
+const { ParsedErrorTranslator } = require("./parsed-error-translator.js")
 
 
 /* 
@@ -96,22 +97,22 @@ const parseFeature = (error, pipeline) => {
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
 const pipelineErrorToTranslationTable = {
   required: {
-    missingSubmission: translateMissingSubmission,
-    missingAwardNumber: translateMissingAwardNumber,
-    missingOrganSystem: translateMissingOrganSystem,
-    missingModality: translateMissingModality,
-    missingTechnique: translateMissingTechnique,
-    missingFunding: translateMissingFunding,
-    missingProtocolUrlOrDoi: translateMissingProtocolUrlOrDoi,
+    missingSubmission: ParsedErrorTranslator.translateMissingSubmission,
+    missingAwardNumber: ParsedErrorTranslator.translateMissingAwardNumber,
+    missingOrganSystem: ParsedErrorTranslator.translateMissingOrganSystem,
+    missingModality: ParsedErrorTranslator.translateMissingModality,
+    missingTechnique: ParsedErrorTranslator.translateMissingTechnique,
+    missingFunding: ParsedErrorTranslator.translateMissingFunding,
+    missingProtocolUrlOrDoi: ParsedErrorTranslator.translateMissingProtocolUrlOrDoi,
   },
   type: {},
   pattern: {
-    invalidDatasetName: translateIncorrectDatasetName,
-    invalidDatasetId: translateInvalidDatasetId,
-    invalidOrganization: translateInvalidOrganization,
+    invalidDatasetName: ParsedErrorTranslator.translateIncorrectDatasetName,
+    invalidDatasetId: ParsedErrorTranslator.translateInvalidDatasetId,
+    invalidOrganization: ParsedErrorTranslator.translateInvalidOrganization,
   },
   minItems: {
-    missingTechnique: translateMissingTechniqueValues,
+    missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,
   },
 };
 
