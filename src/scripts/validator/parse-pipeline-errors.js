@@ -82,9 +82,11 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey || ValidationErrorParser.parseMissingTitle(message);
     translationKey =
-      translationKey || ValidationErrorParser.parseMissingNumberOfSubjects(message);
+      translationKey ||
+      ValidationErrorParser.parseMissingNumberOfSubjects(message);
     translationKey =
-      translationKey || ValidationErrorParser.parseMissingNumberOfSamples(message);
+      translationKey ||
+      ValidationErrorParser.parseMissingNumberOfSamples(message);
     translationKey =
       translationKey || ValidationErrorParser.parseMissingName(message);
     translationKey =
@@ -141,11 +143,13 @@ const pipelineErrorToTranslationTable = {
     missingProtocolUrlOrDoi:
       ParsedErrorTranslator.translateMissingProtocolUrlOrDoi,
     missingTitle: ParsedErrorTranslator.translateMissingTitle,
-    missingNumberOfSubjects: ParsedErrorTranslator.translateMissingNumberOfSubjects,
-    missingNumberOfSamples: ParsedErrorTranslator.translateMissingNumberOfSamples,
+    missingNumberOfSubjects:
+      ParsedErrorTranslator.translateMissingNumberOfSubjects,
+    missingNumberOfSamples:
+      ParsedErrorTranslator.translateMissingNumberOfSamples,
     missingName: ParsedErrorTranslator.translateMissingName,
     missingDescription: ParsedErrorTranslator.translateMissingDescription,
-    missingSamples: ParsedErrorTranslator.missingSamples
+    missingSamples: ParsedErrorTranslator.missingSamples,
   },
   type: {},
   pattern: {

@@ -157,20 +157,20 @@ const ParsedErrorTranslator = {
 
   // used in SDS 1.2.3 for dataset description file
   translateMissingDescription: () => {
-      return [
-        "Your dataset 'description' file is missing a description field/column.",
-        "Fix this by adding a 'description' field/column to your dataset description file.",
-        "URL: path to SODA",
-      ]
+    return [
+      "Your dataset 'description' file is missing a description field/column.",
+      "Fix this by adding a 'description' field/column to your dataset description file.",
+      "URL: path to SODA",
+    ];
   },
 
   translateMissingSamples: () => {
-      return [
-          "Your dataset does not have a samples file",
-          "To fix this add a samples file and fill in at least one row of required fields.",
-          "URL: path to SODA"
-      ]
-  }
+    return [
+      "Your dataset does not have a samples file",
+      "To fix this add a samples file and fill in at least one row of required fields.",
+      "URL: path to SODA",
+    ];
+  },
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
