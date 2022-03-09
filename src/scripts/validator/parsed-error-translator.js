@@ -101,46 +101,49 @@ const ParsedErrorTranslator = {
         return [
             "Your dataset description file is missing a 'title' column/field",
             "Fix this by adding a 'title' field/column to your dataset description file.",
-            "URL: path to SODA"
-        ]
+            "URL: path to SODA",
+        ];
     },
 
     translateMissingSubjects: () => {
         return [
             "Your dataset description file is missing a 'number_of_subjects' column/field",
             "Fix this by adding a 'number_of_subjects' field/column to your dataset description file.",
-            "URL: path to SODA"
-        ]
+            "URL: path to SODA",
+        ];
     },
 
     translateMissingSamples: () => {
         return [
             "Your dataset description file is missing a 'number_of_samples' column/field",
             "Fix this by adding a 'number_of_samples' field/column to your dataset description file.",
-            "URL: path to SODA"
-        ]
+            "URL: path to SODA",
+        ];
     },
 
-    translateInvalidContributorRole: (errorMessage,) => {
+    translateInvalidContributorRole: (errorMessage) => {
         // get the contributor role values that are marked as incorrect from the error message
-        let searchForContributorValues = /\['*.'\]/g 
+        let searchForContributorValues = /\['*.'\]/g;
 
-        let invalidContributorValues = searchForContributorValues.match(errorMessage)
+        let invalidContributorValues =
+            searchForContributorValues.match(errorMessage);
 
-        let errorExplanation = ""
-        // handle the case where no contributors are found 
-        if(!invalidContributorValues.length) {
-            errorExplanation = "Your dataset description file has invalid contributor role values."
+        let errorExplanation = "";
+        // handle the case where no contributors are found
+        if (!invalidContributorValues.length) {
+            errorExplanation =
+                "Your dataset description file has invalid contributor role values.";
         } else {
-            errorExplanation = `Your dataset description file has these invalid contributor role values: ${invalidContributorValues.join(",")}`
+            errorExplanation = `Your dataset description file has these invalid contributor role values: ${invalidContributorValues.join(
+                ","
+            )}`;
         }
 
         return [
-            errorExplanation, 
+            errorExplanation,
             "To fix, select one of the valid contributor role values provided by data cite. SODA makes this easy.",
-            "URL: Path to SODA"
-        ]
-
+            "URL: Path to SODA",
+        ];
     },
 
     translateMissingName: (errorMessage) => {
@@ -150,8 +153,6 @@ const ParsedErrorTranslator = {
             "URL: path to SODA"
         ]
     }
+};
 
-}
-
-
-exports.ParsedErrorTranslator = ParsedErrorTranslator
+exports.ParsedErrorTranslator = ParsedErrorTranslator;

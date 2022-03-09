@@ -117,7 +117,9 @@ const parseFeature = (error, pipeline) => {
       translationKey ||
       ValidationErrorParser.parseMissingTechniqueValues(message, path);
   } else if (validator === "contains") {
-    translationKey = translationKey || ValidationErrorParser.parseInvalidContributorRole(message, validator)
+    translationKey =
+      translationKey ||
+      ValidationErrorParser.parseInvalidContributorRole(message, validator);
   }
 
   return translationKey;
