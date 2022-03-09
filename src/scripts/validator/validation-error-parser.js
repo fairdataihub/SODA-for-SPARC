@@ -224,9 +224,9 @@ const ValidationErrorParser = {
   },
 
   parseMissingDescription: () => {
-      if(errorMessage === "'description' is a required property") {
-          return "missingDescription"
-      }
+    if (errorMessage === "'description' is a required property") {
+      return "missingDescription";
+    }
 
       return ""
   },
