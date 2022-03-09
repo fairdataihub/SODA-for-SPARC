@@ -499,11 +499,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   let numSubjectRowsToCreate = parseInt(
     $("#guided-number-of-subjects-input").val().trim()
   );
-  let numSamplesIfAllSubjectsSameNumSamples = $(
-    "#guided-number-of-samples-input"
-  )
-    .val()
-    .trim();
+  // gets amount of samples to fill all number of sample input boxes
   let numberOfSamplesInput = `
     <input
       class="guided--input guided-input-sample-count"
@@ -531,11 +527,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
             />
           </td>
           <td class="middle aligned collapsing text-center">
-            ${
-              numSamplesIfAllSubjectsSameNumSamples
-                ? numSamplesIfAllSubjectsSameNumSamples
-                : numberOfSamplesInput
-            }
+            ${numberOfSamplesInput}
           </td>
           <td
             class="middle aligned collapsing text-center"
@@ -565,6 +557,14 @@ $("#guided-button-generate-subjects-table").on("click", () => {
       `;
     });
   subjectsTableBody.innerHTML = subjectRows.join("\n");
+  if ($("#guided-button-samples-same").hasClass("selected")) {
+    let numSamplesIfAllSubjectsSameNumSamples = $(
+      "#guided-number-of-samples-input"
+    )
+      .val()
+      .trim();
+    $(".guided-input-sample-count").val(numSamplesIfAllSubjectsSameNumSamples);
+  }
   guidedAddHighLevelFolderToDatasetStructureObj("primary");
   $("#number-of-subjects-prompt").hide();
   $("#subjects-table").css("display", "flex");
@@ -689,13 +689,17 @@ const nameSampleFile = (event, inputToRemove) => {
     }
   }
 };
-const renderSamplesTable = (subjectArray) => {
-  //on monday get array from dataset structure...TEMP
-  let samplesTableBody = document.getElementById("samples-table-body");
+const renderSamplesTables = () => {
+  //get subjects from the datasetStructureJSONObj
+  let subjectsToMap = Object.keys(
+    datasetStructureJSONObj.folders.primary.folders
+  );
+  let sampleData = subjectsToMap.map((subject) => {});
   const sampleRows = subjectArray.map((subjectID, index) => {
     let tableIndex = index + 1;
     console.log(subjectID);
   });
+  let samplesTableBody = document.getElementById("samples-table-body");
 };
 
 $("#guided-dataset-name-input").val("test " + makeid(5));
