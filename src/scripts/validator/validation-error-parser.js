@@ -198,21 +198,21 @@ const ValidationErrorParser = {
       return "missingSamples";
     }
 
-    return ""
+    return "";
   },
 
   // TODO: Test for any possible variability in the input that can ruin our regular expression for getting the roles that need to be changed
   parseInvalidContributorRole: (errorMessage, validator) => {
-      // TODO: Make more robust and yet also more specific
-    let searchForContributor = /{'contributor_role':/
-    let hasContributor = searchForContributor.test(errorMessage)
+    // TODO: Make more robust and yet also more specific
+    let searchForContributor = /{'contributor_role':/;
+    let hasContributor = searchForContributor.test(errorMessage);
 
-    if(hasContributor && validator === "contains") {
-        return "invalidContributorRole"
+    if (hasContributor && validator === "contains") {
+      return "invalidContributorRole";
     }
 
-    return ""
-  }
+    return "";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
