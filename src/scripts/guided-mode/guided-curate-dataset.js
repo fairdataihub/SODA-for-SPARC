@@ -775,15 +775,41 @@ const renderSamplesTables = () => {
       <table class="ui celled striped table">
         <thead>
           <tr>
-            <th colspan="4" class="text-center">${subject.subjectName}</th>
+            <th
+              colspan="4"
+              class="text-center"
+              style="
+                z-index: 2;
+                height: 50px;
+                position: sticky !important;
+                top: -10px !important;
+              "
+            >
+              ${subject.subjectName}
+            </th>
           </tr>
           <tr>
-            <th class="center aligned">Index</th>
-            <th>Sample ID</th>
-            <th class="center aligned">
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
+              Index
+            </th>
+            <th style="z-index: 2; position: sticky !important; top: 40px !important">
+              Sample ID
+            </th>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
               Specify data files for the sample
             </th>
-            <th class="center aligned">Delete</th>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
+              Delete
+            </th>
           </tr>
         </thead>
         <tbody>
