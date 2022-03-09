@@ -139,7 +139,7 @@ const pipelineErrorToTranslationTable = {
     missingTitle: ParsedErrorTranslator.translateMissingTitle,
     missingSubjects: ParsedErrorTranslator.translateMissingSubjects,
     missingSamples: ParsedErrorTranslator.translateMissingSamples,
-    missingName: ParsedErrorTranslator.translateMissingName
+    missingName: ParsedErrorTranslator.translateMissingName,
   },
   type: {},
   pattern: {
@@ -150,12 +150,11 @@ const pipelineErrorToTranslationTable = {
   minItems: {
     missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,
   },
-  anyOf: {
-
-  },
+  anyOf: {},
   contains: {
-    invalidContributorRole: ParsedErrorTranslator.translateInvalidContributorRole
-  }
+    invalidContributorRole:
+      ParsedErrorTranslator.translateInvalidContributorRole,
+  },
 };
 
 // export the validationErrorPipeline function
