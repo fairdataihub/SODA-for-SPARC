@@ -4,12 +4,9 @@
 
 */
 
-const {
-  ValidationErrorParser,
-} = require("./validation-error-parser.js");
+const { ValidationErrorParser } = require("./validation-error-parser.js");
 
-const { ParsedErrorTranslator } = require("./parsed-error-translator.js")
-
+const { ParsedErrorTranslator } = require("./parsed-error-translator.js");
 
 /* 
 Takes a validation error and parses the features of the error to determine what translation function to use on the error object
@@ -125,7 +122,8 @@ const pipelineErrorToTranslationTable = {
     missingModality: ParsedErrorTranslator.translateMissingModality,
     missingTechnique: ParsedErrorTranslator.translateMissingTechnique,
     missingFunding: ParsedErrorTranslator.translateMissingFunding,
-    missingProtocolUrlOrDoi: ParsedErrorTranslator.translateMissingProtocolUrlOrDoi,
+    missingProtocolUrlOrDoi:
+      ParsedErrorTranslator.translateMissingProtocolUrlOrDoi,
   },
   type: {},
   pattern: {
