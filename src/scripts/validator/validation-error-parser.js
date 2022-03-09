@@ -178,28 +178,28 @@ const ValidationErrorParser = {
   },
 
   parseMissingTitle: (errorMessage) => {
-      if(errorMessage === "'title' is a required property") {
-          return "missingTitle"
-      }
+    if (errorMessage === "'title' is a required property") {
+      return "missingTitle";
+    }
 
-      return ""
+    return "";
   },
 
   parseMissingSubjects: (errorMessage) => {
-    if(errorMessage === "'number_of_subjects' is a required property") {
-        return "missingSubjects"
+    if (errorMessage === "'number_of_subjects' is a required property") {
+      return "missingSubjects";
     }
 
-    return ""
+    return "";
   },
 
   parseMissingSamples: (errorMessage) => {
-    if(errorMessage === "'number_of_samples' is a required property") {
-        return "missingSamples"
+    if (errorMessage === "'number_of_samples' is a required property") {
+      return "missingSamples";
     }
 
-    return ""
-  }
+    return "";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
