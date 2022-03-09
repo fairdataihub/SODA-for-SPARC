@@ -1397,7 +1397,7 @@ button[data-id="bf_list_users_pi"] {
   float: right;
   transform: translateX(350px);
   transition: transform 1.4s ease-in-out;
-  display: grid;
+  display: none;
   grid-template-rows: auto;
   text-align: center;
   overflow-wrap: break-word;
@@ -1433,6 +1433,7 @@ button[data-id="bf_list_users_pi"] {
 
 .div-display-details.show {
   transform: translateX(0);
+  display: grid;
 }
 
 .button-display-details {

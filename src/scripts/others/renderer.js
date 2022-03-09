@@ -4968,6 +4968,7 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
+  let startTime = performance.now();
   var folderPath = [];
   var duplicateFolders = [];
   for (var i = 0; i < ev1.length; i++) {
@@ -5198,16 +5199,16 @@ function dropHelper(
         importedFiles[element]["basename"] +
         "</div></div>";
       $(appendString).appendTo(ev2);
-      listItems(myPath, "#items");
-      getInFolder(
-        ".single-item",
-        "#items",
-        organizeDSglobalPath,
-        datasetStructureJSONObj
-      );
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
+    listItems(myPath, "#items");
+    // getInFolder(
+    //   ".single-item",
+    //   "#items",
+    //   organizeDSglobalPath,
+    //   datasetStructureJSONObj
+    // );
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   if (Object.keys(importedFolders).length > 0) {
     for (var element in importedFolders) {
@@ -5226,7 +5227,7 @@ function dropHelper(
         "... </div></div>";
       $(placeholderString).appendTo(ev2);
       // await listItems(myPath, "#items");
-      listItems(myPath, "#items");
+      //listItems(myPath, "#items");
       if (element !== originalName) {
         myPath["folders"][element]["action"].push("renamed");
       }
@@ -5241,18 +5242,20 @@ function dropHelper(
         "</div></div>";
       $("#placeholder_element").remove();
       $(appendString).appendTo(ev2);
-      listItems(myPath, "#items");
-      getInFolder(
-        ".single-item",
-        "#items",
-        organizeDSglobalPath,
-        datasetStructureJSONObj
-      );
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
+    listItems(myPath, "#items");
+    /*getInFolder(
+      ".single-item",
+      "#items",
+      organizeDSglobalPath,
+      datasetStructureJSONObj
+    );*/
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   $("body").removeClass("waiting");
+  let endTime = performance.now()
+  console.log((`Duration for DropHelper): ${endTime - startTime} milliseconds`));
 }
 
 var irregularFolderArray = [];
@@ -5699,178 +5702,189 @@ function sortObjByKeys(object) {
 }
 
 function listItems(jsonObj, uiItem) {
+  let startTime = performance.now();
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
-
-  for (var item in sortedObj["folders"]) {
-    var emptyFolder = "";
-    if (!highLevelFolders.includes(item)) {
-      if (
-        JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-        JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-      ) {
-        emptyFolder = " empty";
-      }
-    }
-
-    cloud_item = "";
-    deleted_folder = false;
-
-    if ("action" in sortedObj["folders"][item]) {
-      if (
-        sortedObj["folders"][item]["action"].includes("deleted") ||
-        sortedObj["folders"][item]["action"].includes("recursive_deleted")
-      ) {
-        emptyFolder += " deleted_folder";
-        deleted_folder = true;
+  console.log(sortedObj.length);
+  console.log(typeof sortedObj);
+  if(Object.keys(sortedObj["folders"]).length > 0) {
+    console.log(sortedObj["folders"]);
+    console.log(Object.keys(sortedObj["folders"]).length)
+    console.log("sortedObj[folders] > 0");
+    for (var item in sortedObj["folders"]) {
+      var emptyFolder = "";
+      if (!highLevelFolders.includes(item)) {
         if (
+          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+        ) {
+          emptyFolder = " empty";
+        }
+      }
+  
+      cloud_item = "";
+      deleted_folder = false;
+  
+      if ("action" in sortedObj["folders"][item]) {
+        if (
+          sortedObj["folders"][item]["action"].includes("deleted") ||
           sortedObj["folders"][item]["action"].includes("recursive_deleted")
         ) {
-          emptyFolder += " recursive_deleted_file";
+          emptyFolder += " deleted_folder";
+          deleted_folder = true;
+          if (
+            sortedObj["folders"][item]["action"].includes("recursive_deleted")
+          ) {
+            emptyFolder += " recursive_deleted_file";
+          }
         }
       }
-    }
-
-    if (sortedObj["folders"][item]["type"] == "bf") {
-      cloud_item = " pennsieve_folder";
-      if (deleted_folder) {
-        cloud_item = " pennsieve_folder_deleted";
+  
+      if (sortedObj["folders"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_folder";
+        if (deleted_folder) {
+          cloud_item = " pennsieve_folder_deleted";
+        }
       }
-    }
-
-    if (
-      sortedObj["folders"][item]["type"] == "local" &&
-      sortedObj["folders"][item]["action"].includes("existing")
-    ) {
-      cloud_item = " local_folder";
-      if (deleted_folder) {
-        cloud_item = " local_folder_deleted";
+  
+      if (
+        sortedObj["folders"][item]["type"] == "local" &&
+        sortedObj["folders"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_folder";
+        if (deleted_folder) {
+          cloud_item = " local_folder_deleted";
+        }
       }
-    }
-
-    if (sortedObj["folders"][item]["action"].includes("updated")) {
-      cloud_item = " update-file";
-      appendString =
-        appendString +
-        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-        emptyFolder +
-        '"></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
-    } else {
-      appendString =
-        appendString +
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-        emptyFolder +
-        '"></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
+  
+      if (sortedObj["folders"][item]["action"].includes("updated")) {
+        cloud_item = " update-file";
+        appendString =
+          appendString +
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+      } else {
+        appendString =
+          appendString +
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+      }
     }
   }
-  for (var item in sortedObj["files"]) {
-    // not the auto-generated manifest
-    if (sortedObj["files"][item].length !== 1) {
-      if ("path" in sortedObj["files"][item]) {
-        var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
-      } else {
-        var extension = "other";
-      }
-      if (sortedObj["files"][item]["type"] == "bf") {
-        if (sortedObj["files"][item]["action"].includes("deleted")) {
-          original_file_name = item.substring(0, item.lastIndexOf("-"));
-          extension = original_file_name.split(".").pop();
+  if(Object.keys(sortedObj["files"]).length > 0) {
+    console.log("sortedObj[files] > 0");
+    for (var item in sortedObj["files"]) {
+      // not the auto-generated manifest
+      if (sortedObj["files"][item].length !== 1) {
+        if ("path" in sortedObj["files"][item]) {
+          var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
         } else {
-          extension = item.split(".").pop();
+          var extension = "other";
         }
-      }
-      if (
-        ![
-          "docx",
-          "doc",
-          "pdf",
-          "txt",
-          "jpg",
-          "JPG",
-          "jpeg",
-          "JPEG",
-          "xlsx",
-          "xls",
-          "csv",
-          "png",
-          "PNG",
-        ].includes(extension)
-      ) {
+        if (sortedObj["files"][item]["type"] == "bf") {
+          if (sortedObj["files"][item]["action"].includes("deleted")) {
+            original_file_name = item.substring(0, item.lastIndexOf("-"));
+            extension = original_file_name.split(".").pop();
+          } else {
+            extension = item.split(".").pop();
+          }
+        }
+        if (
+          ![
+            "docx",
+            "doc",
+            "pdf",
+            "txt",
+            "jpg",
+            "JPG",
+            "jpeg",
+            "JPEG",
+            "xlsx",
+            "xls",
+            "csv",
+            "png",
+            "PNG",
+          ].includes(extension)
+        ) {
+          extension = "other";
+        }
+      } else {
         extension = "other";
       }
-    } else {
-      extension = "other";
-    }
-
-    cloud_item = "";
-    deleted_file = false;
-
-    if ("action" in sortedObj["files"][item]) {
-      if (
-        sortedObj["files"][item]["action"].includes("deleted") ||
-        sortedObj["files"][item]["action"].includes("recursive_deleted")
-      ) {
-        extension += " deleted_file";
-        deleted_file = true;
-        if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
-          extension += " recursive_deleted_file";
+  
+      cloud_item = "";
+      deleted_file = false;
+  
+      if ("action" in sortedObj["files"][item]) {
+        if (
+          sortedObj["files"][item]["action"].includes("deleted") ||
+          sortedObj["files"][item]["action"].includes("recursive_deleted")
+        ) {
+          extension += " deleted_file";
+          deleted_file = true;
+          if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
+            extension += " recursive_deleted_file";
+          }
         }
       }
-    }
-
-    if (sortedObj["files"][item]["type"] == "bf") {
-      cloud_item = " pennsieve_file";
-      if (deleted_file) {
-        cloud_item = " pennsieve_file_deleted";
+  
+      if (sortedObj["files"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_file";
+        if (deleted_file) {
+          cloud_item = " pennsieve_file_deleted";
+        }
       }
-    }
-
-    if (
-      sortedObj["files"][item]["type"] == "local" &&
-      sortedObj["files"][item]["action"].includes("existing")
-    ) {
-      cloud_item = " local_file";
-      if (deleted_file) {
-        cloud_item = " local_file_deleted";
+  
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_file";
+        if (deleted_file) {
+          cloud_item = " local_file_deleted";
+        }
       }
-    }
-    if (
-      sortedObj["files"][item]["type"] == "local" &&
-      sortedObj["files"][item]["action"].includes("updated")
-    ) {
-      cloud_item = " update-file";
-      if (deleted_file) {
-        cloud_item = "pennsieve_file_deleted";
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("updated")
+      ) {
+        cloud_item = " update-file";
+        if (deleted_file) {
+          cloud_item = "pennsieve_file_deleted";
+        }
+        appendString =
+          appendString +
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+      } else {
+        appendString =
+          appendString +
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
       }
-      appendString =
-        appendString +
-        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-        extension +
-        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
-    } else {
-      appendString =
-        appendString +
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-        extension +
-        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
     }
   }
+  console.log(uiItem);
   $(uiItem).empty();
   $(uiItem).html(appendString);
 
@@ -5890,9 +5904,12 @@ function listItems(jsonObj, uiItem) {
     select_items_ctrl(items, event, isDragging);
   });
   drag_event_fired = false;
+  let endTime = performance.now();
+  console.log((`Duration for listItems: ${endTime - startTime} milliseconds`));
 }
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
+  let startTime = performance.now();
   $(singleUIItem).dblclick(function () {
     if ($(this).children("h1").hasClass("myFol")) {
       var folderName = this.innerText;
@@ -5916,6 +5933,9 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
     }
   });
+  let endTime = performance.now();
+  //let duration = endTime - startTime;
+  console.log((`Duration for getInFolder: ${endTime - startTime} milliseconds`))
 }
 
 function sliceStringByValue(string, endingValue) {

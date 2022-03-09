@@ -1311,6 +1311,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             }
           }
           if (folder === true) {
+            //working with folders
             if (sameName.includes(true) === true) {
               sameName = [];
               i = 0;
@@ -1344,6 +1345,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
               }
             }
           } else {
+            //working with files
             //update file json
             if (sameName.includes(true) === true) {
               sameName = [];
@@ -1794,6 +1796,8 @@ function addFilesfunction(
 
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
+  console.log(Object.keys(regularFiles));
+  console.log("above is the keys of the regular files JSON");
   if (Object.keys(regularFiles).length > 0) {
     for (var element in regularFiles) {
       currentLocation["files"][regularFiles[element]["basename"]] = {
@@ -1816,15 +1820,18 @@ function addFilesfunction(
         '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         regularFiles[element]["basename"] +
         "</div></div>";
+      
       $(uiItem).html(appendString);
-      listItems(currentLocation, uiItem);
-      getInFolder(
-        singleUIItem,
-        uiItem,
-        organizeCurrentLocation,
-        globalPathValue
-      );
+      console.log($(uiItem));
+      console.log("above is the UI item before entering listItems function");
     }
+    listItems(currentLocation, uiItem);
+    getInFolder(
+      singleUIItem,
+      uiItem,
+      organizeCurrentLocation,
+      globalPathValue
+    );
     // log the successful import
     logCurationForAnalytics(
       "Success",
