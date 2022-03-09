@@ -594,6 +594,8 @@ const nameSubjectFolder = (event, subjectNameInput) => {
       if (subjectName.length > 0) {
         const subjectIdCellToAddNameTo = subjectNameInput.parent();
         subjectIdCellToAddNameTo.html(subjectNameElement);
+        //When editing a subject, a prev-name attribute is added to the input
+        //Check for this, and if it exists, rename the property in the dsJSONObj
         if (subjectNameInput.attr("data-prev-name")) {
           const subjectFolderToRename = subjectNameInput.attr("data-prev-name");
           guidedRenameHighLevelFolderFolderToDatasetStructureObj(
@@ -642,7 +644,7 @@ const updateGuidedTableIndices = (tableIndexClass) => {
     indexElement.innerHTML = newIndex;
   });
 };
-
+//Deletes the entered subject folder from dsJSONObj and updates UI
 const deleteSubjectFolder = (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
   const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
@@ -655,7 +657,7 @@ const deleteSubjectFolder = (subjectDeleteButton) => {
     subjectIdToDelete
   ];
 };
-
+//Takes the user back to the subject table from subject folder structure page
 $("#guided-button-return-sub-table").on("click", () => {
   $("#structure-subjects-folder").hide();
   $("#subjects-table").css("display", "flex");
