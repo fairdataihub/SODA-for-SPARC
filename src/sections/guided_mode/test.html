@@ -1,44 +1,9 @@
-<table class="ui celled striped table">
-  <thead>
-    <tr>
-      <th
-        colspan="4"
-        class="text-center"
-        style="
-          z-index: 2;
-          height: 50px;
-          position: sticky !important;
-          top: -10px !important;
-        "
-      >
-        ${subject.subjectName}
-      </th>
-    </tr>
-    <tr>
-      <th
-        class="center aligned"
-        style="z-index: 2; position: sticky !important; top: 40px !important"
-      >
-        Index
-      </th>
-      <th style="z-index: 2; position: sticky !important; top: 40px !important">
-        Sample ID
-      </th>
-      <th
-        class="center aligned"
-        style="z-index: 2; position: sticky !important; top: 40px !important"
-      >
-        Specify data files for the sample
-      </th>
-      <th
-        class="center aligned"
-        style="z-index: 2; position: sticky !important; top: 40px !important"
-      >
-        Delete
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    ${sampleRows}
-  </tbody>
-</table>
+<div class="space-between">
+  <span class="sample-id">${sampleName}</span>
+  <i
+    class="far fa-edit jump-back"
+    style="cursor: pointer"
+    onclick="openSampleRenameInput($(this))"
+  >
+  </i>
+</div>

@@ -1,5 +1,7 @@
-//const { start } = require("repl");
-
+const guidedFolderStructureContext = {
+  subjects: {},
+  samples: {},
+};
 //Temp variables used for data storage until put into sodaJSONObj on next button press
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
@@ -408,7 +410,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 };
 
 //FOLDER STRUCTURE UTIL FUNCTIONS
-const openStructureFolder = (clickedStructureButton) => {
+const openSubjectFolder = (clickedStructureButton) => {
   $("#subjects-table").hide();
   let subjectID = clickedStructureButton
     .parent()
@@ -539,7 +541,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
               style="
                 background-color: var(--color-light-green) !important;
               "
-              onclick="openStructureFolder($(this))"
+              onclick="openSubjectFolder($(this))"
             >
               Add files
             </button>
@@ -636,6 +638,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
   `;
   subjectIdCellToRename.html(subjectRenameElement);
 };
+
 //updates the indices for guided tables using class given to spans in index cells
 const updateGuidedTableIndices = (tableIndexClass) => {
   const indiciesToUpdate = $(`.${tableIndexClass}`);
@@ -664,6 +667,7 @@ $("#guided-button-return-sub-table").on("click", () => {
 });
 
 //SAMPLE TABLE FUNCTIONS
+
 $("#guided-button-generate-samples-table").on("click", () => {
   let numSubjectRowsToCreate = parseInt(
     $("#guided-number-of-samples-input").val()
@@ -690,21 +694,99 @@ const createInputNumSampleFiles = (event, inputToRemove) => {
     }
   }
 };
-//Creates a sample table using subjects from datasetStructureJSONObj
-const nameSampleFile = (event, inputToRemove) => {
+const nameSampleFolder = (event, sampleNameInput) => {
   if (event.which == 13) {
-    sampleName = inputToRemove.val().trim();
-    if (subjectName.length > 0) {
-      subjectIdCellToAddNameTo = inputToRemove.parent();
-      inputToRemove.remove();
-      subjectIdCellToAddNameTo.text(subjectName);
-      guidedAddHighLevelFolderFolderFolderToDatasetStructureObj(
-        "primary",
-        subjectName,
-        sampleName
+    try {
+      const sampleName = sampleNameInput.val().trim();
+      /*let existingSubjectNames = Object.keys(
+        datasetStructureJSONObj.folders.primary.folders.subjects.folders
       );
+      //Throw error if entered subject name is duplicate
+      if (existingSubjectNames.includes(subjectName)) {
+        throw new Error("Subject name already exists");
+      }*/
+      const sampleNameElement = `
+        <div class="space-between">
+          <span class="sample-id">${sampleName}</span>
+          <i
+            class="far fa-edit jump-back"
+            style="cursor: pointer"
+            onclick="openSampleRenameInput($(this))"
+          >
+          </i>
+        </div>
+      `;
+      if (sampleName.length > 0) {
+        const sampleIdCellToAddNameTo = sampleNameInput.parent();
+        sampleIdCellToAddNameTo.html(sampleNameElement);
+        //When editing a subject, a prev-name attribute is added to the input
+        //Check for this, and if it exists, rename the property in the dsJSONObj
+        if (sampleNameInput.attr("data-prev-name")) {
+          const sampleFolderToRename =
+            sampleNameInput.attr("data-prev-name"); /*
+          guidedRenameHighLevelFolderFolderToDatasetStructureObj(
+            "primary",
+            subjectFolderToRename,
+            subjectName
+          );*/
+        } else {
+          /*guidedAddHighLevelFolderFolderToDatasetStructureObj(
+            "primary",
+            subjectName
+          );*/
+        }
+      }
+    } catch (error) {
+      notyf.open({
+        duration: "3000",
+        type: "error",
+        message: error,
+      });
     }
   }
+};
+const openSampleRenameInput = (subjectNameEditButton) => {
+  const sampleIdCellToRename = subjectNameEditButton.closest("td");
+  const prevSampleName = sampleIdCellToRename.find(".sample-id").text();
+  const sampleRenameElement = `
+    <input
+      class="guided--input"
+      type="text"
+      name="guided-sample-id"
+      placeholder="Enter new subject ID"
+      onkeyup="nameSampleFolder(event, $(this))"
+      data-prev-name="${prevSampleName}"
+    />
+  `;
+  sampleIdCellToRename.html(sampleRenameElement);
+};
+const openSampleFolder = (clickedStructureButton) => {
+  $("#sample-tables-container").hide();
+  let subjectID = clickedStructureButton
+    .parent()
+    .siblings(".subject-id-cell")
+    .find("span")
+    .text();
+  $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
+  $("#structure-subjects-folder").css("display", "flex");
+};
+const deleteSampleFolder = (sampleDeleteButton) => {
+  const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
+  const subjectIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
+  //delete the table row element in the UI
+  sampleIdCellToDelete.remove();
+  //Update sample table row indices
+  updateGuidedTableIndices("sample-table-index");
+  //delete the sample folder from the dataset structure obj
+  let samplesSubject = sampleDeleteButton
+    .closest("tbody")
+    .siblings()
+    .find(".sample-table-name")
+    .text();
+
+  /*delete datasetStructureJSONObj["folders"]["primary"]["folders"][
+    subjectIdToDelete
+  ];*/
 };
 const renderSamplesTables = () => {
   //get subjects from the datasetStructureJSONObj
@@ -753,7 +835,7 @@ const renderSamplesTables = () => {
                 style="
                         background-color: var(--color-light-green) !important;
                       "
-                onclick="openStructureFolder($(this))"
+                onclick="openSampleFolder($(this))"
               >
                 Add files
               </button>
@@ -769,53 +851,66 @@ const renderSamplesTables = () => {
      `;
       })
       .join("\n");
-    console.log(sampleRows);
 
     return `
       <table class="ui celled striped table">
-        <thead>
-          <tr>
-            <th
-              colspan="4"
-              class="text-center"
-              style="
-                z-index: 2;
-                height: 50px;
-                position: sticky !important;
-                top: -10px !important;
-              "
-            >
+      <thead>
+        <tr>
+          <th
+            colspan="4"
+            class="text-center"
+            style="
+              z-index: 2;
+              height: 50px;
+              position: sticky !important;
+              top: -10px !important;
+            "
+          >
+            <span class="sample-table-name">
               ${subject.subjectName}
-            </th>
-          </tr>
-          <tr>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
+            </span>
+            <button
+              class="ui primary basic button small"
+              id="guided-new-folder"
+              style="position: absolute;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);"
+              onclick="addSampleFolder($(this))"
             >
-              Index
-            </th>
-            <th style="z-index: 2; position: sticky !important; top: 40px !important">
-              Sample ID
-            </th>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
-            >
-              Specify data files for the sample
-            </th>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
-            >
-              Delete
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          ${sampleRows}
-        </tbody>
-      </table>
+              <i class="fas fa-folder-plus" style="margin-right: 7px"></i
+              >Add ${subject.subjectName} sample
+            </button>
+          </th>
+        </tr>
+        <tr>
+          <th
+            class="center aligned"
+            style="z-index: 2; position: sticky !important; top: 40px !important"
+          >
+            Index
+          </th>
+          <th style="z-index: 2; position: sticky !important; top: 40px !important">
+            Sample ID
+          </th>
+          <th
+            class="center aligned"
+            style="z-index: 2; position: sticky !important; top: 40px !important"
+          >
+            Specify data files for the sample
+          </th>
+          <th
+            class="center aligned"
+            style="z-index: 2; position: sticky !important; top: 40px !important"
+          >
+            Delete
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sampleRows}
+      </tbody>
+    </table>
     `;
   });
   let sampleTablesContainer = document.getElementById(
