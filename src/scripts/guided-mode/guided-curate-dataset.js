@@ -571,34 +571,48 @@ $("#guided-button-generate-subjects-table").on("click", () => {
 });
 const nameSubjectFolder = (event, subjectNameInput) => {
   if (event.which == 13) {
-    const subjectName = subjectNameInput.val().trim();
-    const subjectNameElement = `
-      <div class="space-between">
-        <span class="subject-id">${subjectName}</span>
-        <i
-          class="far fa-edit jump-back"
-          style="cursor: pointer;"
-          onclick="openSubjectRenameInput($(this))"
-        >
-        </i>
-      </div>
-    `;
-    if (subjectName.length > 0) {
-      const subjectIdCellToAddNameTo = subjectNameInput.parent();
-      subjectIdCellToAddNameTo.html(subjectNameElement);
-      if (subjectNameInput.attr("data-prev-name")) {
-        const subjectFolderToRename = subjectNameInput.attr("data-prev-name");
-        guidedRenameHighLevelFolderFolderToDatasetStructureObj(
-          "primary",
-          subjectFolderToRename,
-          subjectName
-        );
-      } else {
-        guidedAddHighLevelFolderFolderToDatasetStructureObj(
-          "primary",
-          subjectName
-        );
+    try {
+      const subjectName = subjectNameInput.val().trim();
+      let existingSubjectNames = Object.keys(
+        datasetStructureJSONObj.folders.primary.folders
+      );
+      if (existingSubjectNames.includes(subjectName)) {
+        throw new Error("Subject name already exists");
       }
+      const subjectNameElement = `
+            <div class="space-between">
+              <span class="subject-id">${subjectName}</span>
+              <i
+                class="far fa-edit jump-back"
+                style="cursor: pointer;"
+                onclick="openSubjectRenameInput($(this))"
+              >
+              </i>
+            </div>
+          `;
+      if (subjectName.length > 0) {
+        const subjectIdCellToAddNameTo = subjectNameInput.parent();
+        subjectIdCellToAddNameTo.html(subjectNameElement);
+        if (subjectNameInput.attr("data-prev-name")) {
+          const subjectFolderToRename = subjectNameInput.attr("data-prev-name");
+          guidedRenameHighLevelFolderFolderToDatasetStructureObj(
+            "primary",
+            subjectFolderToRename,
+            subjectName
+          );
+        } else {
+          guidedAddHighLevelFolderFolderToDatasetStructureObj(
+            "primary",
+            subjectName
+          );
+        }
+      }
+    } catch (error) {
+      notyf.open({
+        duration: "3000",
+        type: "error",
+        message: error,
+      });
     }
   }
 };
