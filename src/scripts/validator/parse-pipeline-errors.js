@@ -142,7 +142,7 @@ const pipelineErrorToTranslationTable = {
     missingSubjects: ParsedErrorTranslator.translateMissingSubjects,
     missingSamples: ParsedErrorTranslator.translateMissingSamples,
     missingName: ParsedErrorTranslator.translateMissingName,
-    missingDescription: ParsedErrorTranslator.translateMissingDescription
+    missingDescription: ParsedErrorTranslator.translateMissingDescription,
   },
   type: {},
   pattern: {
