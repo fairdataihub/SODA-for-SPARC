@@ -112,6 +112,8 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseMissingTechniqueValues(message, path);
+  } else if (validator === "contains") {
+    translationKey = translationKey || ValidationErrorParser.parseInvalidContributorRole(message, validator)
   }
 
   return translationKey;
@@ -140,6 +142,12 @@ const pipelineErrorToTranslationTable = {
   minItems: {
     missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,
   },
+  anyOf: {
+
+  },
+  contains: {
+    
+  }
 };
 
 // export the validationErrorPipeline function

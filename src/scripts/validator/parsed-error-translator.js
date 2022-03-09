@@ -96,7 +96,7 @@ const ParsedErrorTranslator = {
             "URL: path to SODA",
         ];
     },
-    
+
     translateMissingTitle: () => {
         return [
             "Your dataset description file is missing a 'title' column/field",
@@ -119,6 +119,28 @@ const ParsedErrorTranslator = {
             "Fix this by adding a 'number_of_samples' field/column to your dataset description file.",
             "URL: path to SODA"
         ]
+    },
+
+    translateInvalidContributorRole: (errorMessage,) => {
+        // get the contributor role values that are marked as incorrect from the error message
+        let searchForContributorValues = /\['*.'\]/g 
+
+        let invalidContributorValues = searchForContributorValues.match(errorMessage)
+
+        let errorExplanation = ""
+        // handle the case where no contributors are found 
+        if(!invalidContributorValues.length) {
+            errorExplanation = "Your dataset description file has invalid contributor role values."
+        } else {
+            errorExplanation = `Your dataset description file has these invalid contributor role values: ${invalidContributorValues.join(",")}`
+        }
+
+        return [
+            errorExplanation, 
+            "To fix, select one of the valid contributor role values provided by data cite. SODA makes this easy.",
+            "URL: Path to SODA"
+        ]
+
     }
 }
 
