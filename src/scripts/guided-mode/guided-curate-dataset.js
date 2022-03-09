@@ -576,6 +576,7 @@ const nameSubjectFolder = (event, subjectNameInput) => {
       let existingSubjectNames = Object.keys(
         datasetStructureJSONObj.folders.primary.folders
       );
+      //Throw error if entered subject name is duplicate
       if (existingSubjectNames.includes(subjectName)) {
         throw new Error("Subject name already exists");
       }
