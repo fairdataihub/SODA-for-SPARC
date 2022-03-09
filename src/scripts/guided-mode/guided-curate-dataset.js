@@ -724,25 +724,15 @@ const renderSamplesTables = () => {
     };
   });
   let sampleTables = sampleData.map((subject) => {
-    return `
-      <table class="ui celled striped table">
-        <thead>
-          <tr>
-            <th colspan="4" class="text-center">${subject.subjectName}</th>
-          </tr>
-          <tr>
-            <th class="center aligned">Index</th>
-            <th>Sample ID</th>
-            <th class="center aligned">
-              Specify data files for the sample
-            </th>
-            <th class="center aligned">Delete</th>
-          </tr>
-        </thead>
-        <tbody id="samples-table-body">
+    console.log(subject);
+    let sampleRows = Array(parseInt(subject.sampleCount))
+      .fill(0)
+      .map((subject, index) => {
+        let tableIndex = index + 1;
+        return `
           <tr>
             <td class="middle aligned collapsing text-center">
-              <span class="sample-table-index">1</span>
+              <span class="sample-table-index">${tableIndex}</span>
             </td>
             <td class="middle aligned sample-id-cell">
               <input
@@ -761,8 +751,8 @@ const renderSamplesTables = () => {
                 type="button"
                 class="btn btn-primary btn-sm"
                 style="
-                  background-color: var(--color-light-green) !important;
-                "
+                        background-color: var(--color-light-green) !important;
+                      "
                 onclick="openStructureFolder($(this))"
               >
                 Add files
@@ -776,6 +766,28 @@ const renderSamplesTables = () => {
               ></i>
             </td>
           </tr>
+     `;
+      })
+      .join("\n");
+    console.log(sampleRows);
+
+    return `
+      <table class="ui celled striped table">
+        <thead>
+          <tr>
+            <th colspan="4" class="text-center">${subject.subjectName}</th>
+          </tr>
+          <tr>
+            <th class="center aligned">Index</th>
+            <th>Sample ID</th>
+            <th class="center aligned">
+              Specify data files for the sample
+            </th>
+            <th class="center aligned">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sampleRows}
         </tbody>
       </table>
     `;
