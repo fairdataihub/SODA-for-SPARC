@@ -96,6 +96,30 @@ const ParsedErrorTranslator = {
             "Fix this by adding a 'protocol url or doi' field/column to your samples file.",
             "URL: path to SODA",
         ]
+    },
+
+    translateMissingTitle: () => {
+        return [
+            "Your dataset description file is missing a 'title' column/field",
+            "Fix this by adding a 'title' field/column to your dataset description file.",
+            "URL: path to SODA"
+        ]
+    },
+
+    translateMissingSubjects: () => {
+        return [
+            "Your dataset description file is missing a 'number_of_subjects' column/field",
+            "Fix this by adding a 'number_of_subjects' field/column to your dataset description file.",
+            "URL: path to SODA"
+        ]
+    },
+
+    translateMissingSamples: () => {
+        return [
+            "Your dataset description file is missing a 'number_of_samples' column/field",
+            "Fix this by adding a 'number_of_samples' field/column to your dataset description file.",
+            "URL: path to SODA"
+        ]
     }
 }
 
