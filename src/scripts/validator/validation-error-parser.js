@@ -237,6 +237,14 @@ const ValidationErrorParser = {
       }
 
       return ""
+  },
+
+  parseMissingSubjects: () => {
+    if(errorMessage === "'subjects' is a required property") {
+        return "missingSubjects"
+    }
+
+    return ""
   }
 };
 

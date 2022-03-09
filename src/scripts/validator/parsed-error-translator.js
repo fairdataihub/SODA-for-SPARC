@@ -170,6 +170,14 @@ const ParsedErrorTranslator = {
           "To fix this add a samples file and fill in at least one row of required fields.",
           "URL: path to SODA"
       ]
+  },
+
+  translateMissingSubjects: () => {
+      return [
+        "Your dataset does not have a subjects file",
+        "To fix this add a subjects file and fill in at least one row of required fields.",
+        "URL: path to SODA"
+      ]
   }
 };
 

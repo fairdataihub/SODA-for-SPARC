@@ -91,6 +91,8 @@ const parseFeature = (error, pipeline) => {
       translationKey || ValidationErrorParser.parseMissingDescription(message);
     translationKey =
       translationKey || ValidationErrorParser.parseMissingSamples(message);
+    translationKey =
+      translationKey || ValidationErrorParser.parseMissingSubjects(message);
   } else if (validator === "pattern") {
     translationKey =
       translationKey ||
@@ -145,7 +147,8 @@ const pipelineErrorToTranslationTable = {
     missingNumberOfSamples: ParsedErrorTranslator.translateMissingNumberOfSamples,
     missingName: ParsedErrorTranslator.translateMissingName,
     missingDescription: ParsedErrorTranslator.translateMissingDescription,
-    missingSamples: ParsedErrorTranslator.missingSamples
+    missingSamples: ParsedErrorTranslator.missingSamples,
+    missingSubjects: ParsedErrorTranslator.missingSubjects,
   },
   type: {},
   pattern: {
