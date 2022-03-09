@@ -236,16 +236,16 @@ const ValidationErrorParser = {
       return "missingSamples";
     }
 
-      return ""
+    return "";
   },
 
   parseMissingSubjects: () => {
-    if(errorMessage === "'subjects' is a required property") {
-        return "missingSubjects"
+    if (errorMessage === "'subjects' is a required property") {
+      return "missingSubjects";
     }
 
-    return ""
-  }
+    return "";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
