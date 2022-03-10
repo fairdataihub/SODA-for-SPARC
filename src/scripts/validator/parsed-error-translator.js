@@ -202,7 +202,7 @@ const ParsedErrorTranslator = {
 
     return [
       errorExplanation,
-      'To correct this problem change the invalid subject ID to be formatted as a string without these invalid characters: <>/"\\',
+      'To correct this problem ensure the subject id matches the relevant subject folder name. Ensure it is more than one letter, and that it does not have any of these invalid characters: <>/"\\',
       "URL: path to SODA",
     ];
   },
