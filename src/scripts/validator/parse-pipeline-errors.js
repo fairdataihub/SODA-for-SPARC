@@ -131,6 +131,9 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidContributorRole(message, validator);
+  } else if (validator === "type") {
+    translationKey =
+      translationKey || ValidationErrorParser.parseInvalidSubjectIdType(path, validator);
   }
 
   return translationKey;
@@ -157,7 +160,9 @@ const pipelineErrorToTranslationTable = {
     missingSamples: ParsedErrorTranslator.missingSamples,
     missingSubjects: ParsedErrorTranslator.missingSubjects,
   },
-  type: {},
+  type: {
+    invalidSubjectIdType: ParsedErrorTranslator.invalidSubjectIdType
+  },
   pattern: {
     invalidDatasetName: ParsedErrorTranslator.translateIncorrectDatasetName,
     invalidDatasetId: ParsedErrorTranslator.translateInvalidDatasetId,

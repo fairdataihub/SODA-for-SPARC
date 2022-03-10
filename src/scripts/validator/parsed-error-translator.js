@@ -182,7 +182,7 @@ const ParsedErrorTranslator = {
 
   translateInvalidSubjectIdPattern: (errorMessage) => {
     // get the user's invalid subject id out of the error message
-    // TODO: Make a function that pulls the invalid parameter(s?) out of an error message. I want to show the user what is actually invalid, but since they're returned in the string rahter than a list or some other
+    // TODO: Make a function that pulls the invalid parameter(s?) out of an error message. I want to show the user what is actually invalid, but since they're returned in the string rather than a list or some other
     //       easily accessible container I'll need to access the parameter by the string's features. These may change. If I do this in a lot of the pattern errors this may result in a lot of changes to deal with.
     let searchForTextFollowingId = /does not match/;
 
@@ -206,6 +206,33 @@ const ParsedErrorTranslator = {
       "URL: path to SODA",
     ];
   },
+
+  translateInvalidSubjectIdType: (errorMessage) => {
+    // get the user's invalid subject id out of the error message
+    // TODO: Make a function that pulls the invalid parameter(s?) out of an error message. I want to show the user what is actually invalid, but since they're returned in the string rather than a list or some other
+    //       easily accessible container I'll need to access the parameter by the string's features. These may change. If I do this in a lot of the pattern errors this may result in a lot of changes to deal with.
+    let searchForTextFollowingId = /is not of type/;
+
+    let indexOfTextFollowingId = searchForTextFollowingId.exec(errorMessage);
+
+    let errorExplanation = "";
+
+    // handle there being no parameters found
+    // happens if the regex is bad and doesn't find a result
+    if (!indexOfTextFollowingId) {
+      errorExplanation =
+        "One of your Subject file's subject Ids is not formatted as a string";
+    } else {
+      let invalidId = errorMessage.slice(0, indexOfTextFollowingId).trim();
+      errorExplanation = `Your subject file has this ill-formed subject id: ${invalidId}`;
+    }
+
+    return [
+      errorExplanation,
+      'To correct this problem change the invalid subject ID to be formatted as a string rather than a number.',
+      "URL: path to SODA",
+    ];
+  }
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
