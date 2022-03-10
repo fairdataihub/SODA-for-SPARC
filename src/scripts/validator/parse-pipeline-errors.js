@@ -7,6 +7,7 @@
 const { ValidationErrorParser } = require("./validation-error-parser.js");
 
 const { ParsedErrorTranslator } = require("./parsed-error-translator.js");
+const { VALIDATOR_CATEGORIES } = require("./validator-categories.js");
 
 /* 
 Takes a validation error and parses the features of the error to determine what translation function to use on the error object
@@ -137,6 +138,8 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidSubjectIdType(path, validator);
+  } else if (validator === VALIDATOR_CATEGORIES.ANY_OF) {
+    translationKey = translationKey || ValidationErrorParser.parseInvalidSpeciesAnyOf
   }
 
   return translationKey;
@@ -177,7 +180,9 @@ const pipelineErrorToTranslationTable = {
   minItems: {
     missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,
   },
-  anyOf: {},
+  anyOf: {
+    invalidSpeciesAnyOf: ParsedErrorTranslator.translateInvalidSpeciesAnyOf
+  },
   contains: {
     invalidContributorRole:
       ParsedErrorTranslator.translateInvalidContributorRole,

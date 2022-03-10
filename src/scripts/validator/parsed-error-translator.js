@@ -241,6 +241,26 @@ const ParsedErrorTranslator = {
       "URL: path to SODA",
     ];
   },
+
+  translateInvalidSpeciesAnyOf: (errorMessage) => {
+    let searchForTextFollowingSpeciesValue = /is not valid under any of the given schemas/
+
+    let indexOfTextFollowingSpeciesValue = searchForTextFollowingSpeciesValue.exec(errorMessage)
+
+    let errorExplanation = ""
+
+    if(!indexOfTextFollowingSpeciesValue) {
+      errorExplanation = "Your subjects file has an invalid value for one of the species fields/rows."
+    } else {
+      let invalidSpecies = errorMessage.slice(0, indexOfTextFollowingSpeciesValue)
+      errorExplanation = `Your subjects file has the following invalid species: ${invalidSpecies}`
+    }
+
+    return [
+      errorExplanation,
+      "To correct this problem change the invalid species field"
+    ]
+  }
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
