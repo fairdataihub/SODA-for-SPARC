@@ -120,6 +120,12 @@ const parseFeature = (error, pipeline) => {
         validator,
         pipeline
       );
+    translationKey =
+      translationKey ||
+      ValidationErrorParser.parseInvalidSubjectIdPattern(
+        path,
+        validator,
+      );
   } else if (validator === "minItems") {
     translationKey =
       translationKey ||
@@ -159,6 +165,7 @@ const pipelineErrorToTranslationTable = {
     invalidDatasetName: ParsedErrorTranslator.translateIncorrectDatasetName,
     invalidDatasetId: ParsedErrorTranslator.translateInvalidDatasetId,
     invalidOrganization: ParsedErrorTranslator.translateInvalidOrganization,
+    invalidSubjectIdPattern: ParsedErrorTranslator.translateInvalidSubjectIdPattern
   },
   minItems: {
     missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,

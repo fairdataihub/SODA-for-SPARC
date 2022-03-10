@@ -247,7 +247,7 @@ const ValidationErrorParser = {
     return "";
   },
 
-  parseInvalidSubjectIdPattern: (errorMessage, path, validator) => {
+  parseInvalidSubjectIdPattern: (path, validator) => {
     if(validator !== "pattern") return ""
 
     const lastPathElement = path[path.length - 1]
