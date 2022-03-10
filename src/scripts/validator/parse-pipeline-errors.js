@@ -64,7 +64,7 @@ const parseFeature = (error, pipeline) => {
   // search the string for a feature that can be used to determine what translation key to return
 
   // check the required category if applicable
-  if (validator === "required") {
+  if (validator === VALIDATOR_CATEGORIES.REQUIRED) {
     translationKey =
       translationKey || ValidationErrorParser.parseMissingSubmission(message);
     translationKey =
@@ -98,7 +98,7 @@ const parseFeature = (error, pipeline) => {
       translationKey || ValidationErrorParser.parseMissingSubjects(message);
     translationKey =
       translationKey || ValidationErrorParser.parseMissingSpecies(message);
-  } else if (validator === "pattern") {
+  } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseIncorrectDatasetName(
@@ -126,15 +126,15 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidSubjectIdPattern(path, validator);
-  } else if (validator === "minItems") {
+  } else if (validator === VALIDATOR_CATEGORIES.MIN_ITEMS) {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseMissingTechniqueValues(message, path);
-  } else if (validator === "contains") {
+  } else if (validator === VALIDATOR_CATEGORIES.CONTAINS) {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidContributorRole(message, validator);
-  } else if (validator === "type") {
+  } else if (validator === VALIDATOR_CATEGORIES.TYPE) {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidSubjectIdType(path, validator);
