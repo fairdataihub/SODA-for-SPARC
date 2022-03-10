@@ -225,7 +225,7 @@ const ValidationErrorParser = {
     return "";
   },
 
-  parseMissingDescription: () => {
+  parseMissingDescription: (errorMessage) => {
     if (errorMessage === "'description' is a required property") {
       return "missingDescription";
     }
@@ -233,7 +233,7 @@ const ValidationErrorParser = {
     return "";
   },
 
-  parseMissingSamples: () => {
+  parseMissingSamples: (errorMessage) => {
     if (errorMessage === "'samples' is a required property") {
       return "missingSamples";
     }
@@ -241,7 +241,7 @@ const ValidationErrorParser = {
     return "";
   },
 
-  parseMissingSubjects: () => {
+  parseMissingSubjects: (errorMessage) => {
     if (errorMessage === "'subjects' is a required property") {
       return "missingSubjects";
     }
@@ -292,6 +292,18 @@ const ValidationErrorParser = {
 
     return "invalidSpeciesAnyOf";
   },
+
+  parseInvalidContributorNamePattern: (path, validator) => {
+    if(validator !== VALIDATOR_CATEGORIES.PATTERN) return ""
+
+    let lastElement = path[path.length - 1]
+
+    if(lastElement !== "contributor_name") {
+      return ""
+    }
+
+    return "invalidContributorNamePattern"
+  }
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
