@@ -268,6 +268,14 @@ const ValidationErrorParser = {
 
     return "invalidSubjectIdType";
   },
+
+  parseMissingSpecies: (errorMessage) => {
+    if(errorMessage === "'species' is a required property") {
+      return "missingSpecies"
+    }
+
+    return ""
+  }
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
