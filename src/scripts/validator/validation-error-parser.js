@@ -246,6 +246,20 @@ const ValidationErrorParser = {
 
     return "";
   },
+
+  parseInvalidSubjectIdPattern: (errorMessage, path, validator) => {
+    if(validator !== "pattern") return ""
+
+    const lastPathElement = path[path.length - 1]
+
+    // TODO: Make a function that checks for the name of the last element of a path? There will be about 3-5 other validation categories that use any one path ending. If that ending changes that will be a lot of 
+    //       decentralized rewrites. Something something concrete dependencies
+    if(lastPathElement !== "subject_id") return ""
+
+
+    return "invalidSubjectIdPattern"
+
+  }
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
