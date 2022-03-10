@@ -271,11 +271,10 @@ const ParsedErrorTranslator = {
   },
 
   translateInvalidContributorNamePattern: (errorMessage) => {
-    let searchForTextFollowingContributorName =
-      /does not match/;
+    let searchForTextFollowingContributorName = /does not match/;
 
     let indexOfTextFollowingContributorNameValue =
-    searchForTextFollowingContributorName.exec(errorMessage);
+      searchForTextFollowingContributorName.exec(errorMessage);
 
     let errorExplanation = "";
 
@@ -294,7 +293,7 @@ const ParsedErrorTranslator = {
       errorExplanation,
       "To correct this problem change the contributor name to be a Last, First format.",
     ];
-  }
+  },
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
