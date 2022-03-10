@@ -269,6 +269,32 @@ const ParsedErrorTranslator = {
       "To correct this problem change the invalid species field",
     ];
   },
+
+  translateInvalidContributorNamePattern: (errorMessage) => {
+    let searchForTextFollowingContributorName =
+      /does not match/;
+
+    let indexOfTextFollowingContributorNameValue =
+    searchForTextFollowingContributorName.exec(errorMessage);
+
+    let errorExplanation = "";
+
+    if (!indexOfTextFollowingContributorNameValue) {
+      errorExplanation =
+        "Your dataset description file has an invalid value for one of the contributor name fields";
+    } else {
+      let invalidContributorName = errorMessage.slice(
+        0,
+        indexOfTextFollowingContributorNameValue
+      );
+      errorExplanation = `Your dataset description file has the following invalid contributor name: ${invalidContributorName}`;
+    }
+
+    return [
+      errorExplanation,
+      "To correct this problem change the contributor name to be a Last, First format.",
+    ];
+  }
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
