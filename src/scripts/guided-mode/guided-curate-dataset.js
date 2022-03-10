@@ -412,10 +412,10 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 //FOLDER STRUCTURE UTIL FUNCTIONS
 const openSubjectFolder = (clickedStructureButton) => {
   let subjectID = clickedStructureButton
-    .parent()
-    .siblings(".subject-id-cell")
-    .find("span")
+    .closest("tr")
+    .find(".subject-id")
     .text();
+  $("#structure-return-destination-text").text("subjects table");
   $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
   $("#guided-button-exit-folder-structure").data(
     "prev-page",
@@ -760,14 +760,22 @@ const openSampleRenameInput = (subjectNameEditButton) => {
   sampleIdCellToRename.html(sampleRenameElement);
 };
 const openSampleFolder = (clickedStructureButton) => {
-  $("#sample-tables-container").hide();
-  let subjectID = clickedStructureButton
-    .parent()
-    .siblings(".subject-id-cell")
-    .find("span")
-    .text();
-  $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
-  $("#structure-subjects-folder").css("display", "flex");
+  let subjectIdFromTable = clickedStructureButton
+    .closest("tbody")
+    .siblings()
+    .find(".sample-table-name")
+    .text()
+    .trim();
+  let sampleID = clickedStructureButton.closest("tr").find(".sample-id").text();
+  $("#structure-return-destination-text").text("samples table");
+  $("#guided-input-global-path").val(
+    `My_dataset_folder/primary/${subjectIdFromTable}/${sampleID}/`
+  );
+  $("#guided-button-exit-folder-structure").data(
+    "prev-page",
+    "guided-samples-folder-tab"
+  );
+  traverseToTab("guided-structure-folder-tab");
 };
 const deleteSampleFolder = (sampleDeleteButton) => {
   const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
@@ -3242,6 +3250,10 @@ $(document).ready(() => {
     duplicates: false,
   });
 
+  $("#guided-button-exit-folder-structure").on("click", function () {
+    previousFolderStructurePage = $(this).data("prev-page");
+    traverseToTab(previousFolderStructurePage);
+  });
   $("#guided-new-folder").on("click", () => {
     event.preventDefault();
     var slashCount =
