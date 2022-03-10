@@ -260,11 +260,11 @@ const ValidationErrorParser = {
   },
 
   parseInvalidSubjectIdType: (path, validator) => {
-      if(validator !== "type") return ""
+    if (validator !== "type") return "";
 
-      const lastPathElement = path[path.length - 1];
+    const lastPathElement = path[path.length - 1];
 
-      if(lastPathElement !== "subject_id") return ""
+    if (lastPathElement !== "subject_id") return "";
 
       return "invalidSubjectIdType"
       
