@@ -233,6 +233,15 @@ const ParsedErrorTranslator = {
       "URL: path to SODA",
     ];
   },
+
+  translateMissingSpecies: () => {
+    return [
+      "Your subjects file is missing a species field/column, or a value for said field/column",
+      "Fix this by adding a species field/column if not existing, and adding a valid value.",
+      "URL: path to SODA"
+    ]
+  }
+
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
