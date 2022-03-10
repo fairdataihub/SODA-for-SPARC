@@ -139,7 +139,8 @@ const parseFeature = (error, pipeline) => {
       translationKey ||
       ValidationErrorParser.parseInvalidSubjectIdType(path, validator);
   } else if (validator === VALIDATOR_CATEGORIES.ANY_OF) {
-    translationKey = translationKey || ValidationErrorParser.parseInvalidSpeciesAnyOf
+    translationKey =
+      translationKey || ValidationErrorParser.parseInvalidSpeciesAnyOf;
   }
 
   return translationKey;
@@ -181,7 +182,7 @@ const pipelineErrorToTranslationTable = {
     missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,
   },
   anyOf: {
-    invalidSpeciesAnyOf: ParsedErrorTranslator.translateInvalidSpeciesAnyOf
+    invalidSpeciesAnyOf: ParsedErrorTranslator.translateInvalidSpeciesAnyOf,
   },
   contains: {
     invalidContributorRole:
