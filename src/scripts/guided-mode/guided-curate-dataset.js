@@ -411,14 +411,17 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
 //FOLDER STRUCTURE UTIL FUNCTIONS
 const openSubjectFolder = (clickedStructureButton) => {
-  $("#subjects-table").hide();
   let subjectID = clickedStructureButton
     .parent()
     .siblings(".subject-id-cell")
     .find("span")
     .text();
   $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
-  $("#structure-subjects-folder").css("display", "flex");
+  $("#guided-button-exit-folder-structure").data(
+    "prev-page",
+    "guided-subjects-folder-tab"
+  );
+  traverseToTab("guided-structure-folder-tab");
 };
 //TODO CLEAN UP
 const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
@@ -661,10 +664,6 @@ const deleteSubjectFolder = (subjectDeleteButton) => {
   ];
 };
 //Takes the user back to the subject table from subject folder structure page
-$("#guided-button-return-sub-table").on("click", () => {
-  $("#structure-subjects-folder").hide();
-  $("#subjects-table").css("display", "flex");
-});
 
 //SAMPLE TABLE FUNCTIONS
 
@@ -871,7 +870,6 @@ const renderSamplesTables = () => {
             </span>
             <button
               class="ui primary basic button small"
-              id="guided-new-folder"
               style="position: absolute;
                 right: 20px;
                 top: 50%;
