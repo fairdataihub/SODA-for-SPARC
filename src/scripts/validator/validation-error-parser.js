@@ -270,12 +270,12 @@ const ValidationErrorParser = {
   },
 
   parseMissingSpecies: (errorMessage) => {
-    if(errorMessage === "'species' is a required property") {
-      return "missingSpecies"
+    if (errorMessage === "'species' is a required property") {
+      return "missingSpecies";
     }
 
-    return ""
-  }
+    return "";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
