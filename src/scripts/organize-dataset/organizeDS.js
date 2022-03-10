@@ -731,6 +731,7 @@ function getRecursivePath(filteredList, inputObj) {
       myPath = myPath["folders"][item];
     }
   }
+  console.log(myPath);
   return myPath;
 }
 

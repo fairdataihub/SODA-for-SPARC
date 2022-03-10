@@ -528,7 +528,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
               type="text"
               name="guided-subject-id"
               placeholder="Enter subject ID and press enter"
-              onkeyup="nameSubjectFolder(event, $(this))"
+              onkeyup="createSubjectFolder(event, $(this))"
             />
           </td>
           <td class="middle aligned collapsing text-center">
@@ -574,7 +574,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   $("#number-of-subjects-prompt").hide();
   $("#subjects-table").css("display", "flex");
 });
-const nameSubjectFolder = (event, subjectNameInput) => {
+const createSubjectFolder = (event, subjectNameInput) => {
   if (event.which == 13) {
     try {
       const subjectName = subjectNameInput.val().trim();
@@ -599,20 +599,30 @@ const nameSubjectFolder = (event, subjectNameInput) => {
       if (subjectName.length > 0) {
         const subjectIdCellToAddNameTo = subjectNameInput.parent();
         subjectIdCellToAddNameTo.html(subjectNameElement);
-        //When editing a subject, a prev-name attribute is added to the input
-        //Check for this, and if it exists, rename the property in the dsJSONObj
+
+        subjectTargetFolder = getRecursivePath(
+          ["primary"],
+          datasetStructureJSONObj
+        ).folders;
+        //Check to see if input has prev-name data attribute
+        //Added when renaming a subject
         if (subjectNameInput.attr("data-prev-name")) {
+          //get the name of the subject being renamed
           const subjectFolderToRename = subjectNameInput.attr("data-prev-name");
-          guidedRenameHighLevelFolderFolderToDatasetStructureObj(
-            "primary",
-            subjectFolderToRename,
-            subjectName
-          );
+          //create a temp copy of the folder to be renamed
+          copiedFolderToRename = subjectTargetFolder[subjectFolderToRename];
+          //set the copied obj from the prev name to the new obj name
+          subjectTargetFolder[subjectName] = copiedFolderToRename;
+          //delete the temp copy of the folder that was renamed
+          delete subjectTargetFolder[subjectFolderToRename];
         } else {
-          guidedAddHighLevelFolderFolderToDatasetStructureObj(
-            "primary",
-            subjectName
-          );
+          //Create an empty folder for the new subject
+          subjectTargetFolder[subjectName] = {
+            folders: {},
+            files: {},
+            type: "",
+            action: [],
+          };
         }
       }
     } catch (error) {
@@ -635,7 +645,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
       type="text"
       name="guided-subject-id"
       placeholder="Enter new subject ID"
-      onkeyup="nameSubjectFolder(event, $(this))"
+      onkeyup="createSubjectFolder(event, $(this))"
       data-prev-name="${prevSubjectName}"
     />
   `;
@@ -693,10 +703,16 @@ const createInputNumSampleFiles = (event, inputToRemove) => {
     }
   }
 };
-const nameSampleFolder = (event, sampleNameInput) => {
+const createSampleFolder = (event, sampleNameInput) => {
   if (event.which == 13) {
     try {
       const sampleName = sampleNameInput.val().trim();
+      const sampleParentSubjectName = sampleNameInput
+        .closest("tbody")
+        .siblings()
+        .find(".sample-table-name")
+        .text()
+        .trim();
       /*let existingSubjectNames = Object.keys(
         datasetStructureJSONObj.folders.primary.folders.subjects.folders
       );
@@ -718,21 +734,30 @@ const nameSampleFolder = (event, sampleNameInput) => {
       if (sampleName.length > 0) {
         const sampleIdCellToAddNameTo = sampleNameInput.parent();
         sampleIdCellToAddNameTo.html(sampleNameElement);
-        //When editing a subject, a prev-name attribute is added to the input
-        //Check for this, and if it exists, rename the property in the dsJSONObj
+
+        sampleTargetFolder = getRecursivePath(
+          ["primary", sampleParentSubjectName],
+          datasetStructureJSONObj
+        ).folders;
+        //Check to see if input has prev-name data attribute
+        //Added when renaming sample
         if (sampleNameInput.attr("data-prev-name")) {
-          const sampleFolderToRename =
-            sampleNameInput.attr("data-prev-name"); /*
-          guidedRenameHighLevelFolderFolderToDatasetStructureObj(
-            "primary",
-            subjectFolderToRename,
-            subjectName
-          );*/
+          //get the name of the sample being renamed
+          const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
+          //create a temp copy of the folder to be renamed
+          copiedFolderToRename = sampleTargetFolder[sampleFolderToRename];
+          //set the copied obj from the prev name to the new obj name
+          sampleTargetFolder[sampleName] = copiedFolderToRename;
+          //delete the temp copy of the folder that was renamed
+          delete sampleTargetFolder[sampleFolderToRename];
         } else {
-          /*guidedAddHighLevelFolderFolderToDatasetStructureObj(
-            "primary",
-            subjectName
-          );*/
+          //Create an empty folder for the new sample
+          sampleTargetFolder[sampleName] = {
+            folders: {},
+            files: {},
+            type: "",
+            action: [],
+          };
         }
       }
     } catch (error) {
@@ -753,7 +778,7 @@ const openSampleRenameInput = (subjectNameEditButton) => {
       type="text"
       name="guided-sample-id"
       placeholder="Enter new subject ID"
-      onkeyup="nameSampleFolder(event, $(this))"
+      onkeyup="createSampleFolder(event, $(this))"
       data-prev-name="${prevSampleName}"
     />
   `;
@@ -829,7 +854,7 @@ const renderSamplesTables = () => {
                 type="text"
                 name="guided-sample-id"
                 placeholder="Enter sample ID and press enter"
-                onkeyup="nameSampleFolder(event, $(this))"
+                onkeyup="createSampleFolder(event, $(this))"
               />
             </td>
             <td
