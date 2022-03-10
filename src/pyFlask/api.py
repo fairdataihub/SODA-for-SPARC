@@ -71,7 +71,7 @@ def api_validate_dataset_pipeline():
     # path = Path(userpath +  "\\Pennsieve-dataset-114-version-2\\files")
     path = Path(ds_path)
 
-    blob = validate(path)
+    blob = validate(norm_ds_path)
 
     errors = blob.get('errors')
 
