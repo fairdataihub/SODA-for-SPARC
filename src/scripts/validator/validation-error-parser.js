@@ -248,7 +248,7 @@ const ValidationErrorParser = {
   },
 
   parseInvalidSubjectIdPattern: (path, validator) => {
-    if(validator !== "pattern") return ""
+    if (validator !== "pattern") return "";
 
     const lastPathElement = path[path.length - 1];
 
