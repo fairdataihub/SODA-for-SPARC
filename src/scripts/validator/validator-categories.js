@@ -7,12 +7,12 @@ Purpose: The dataset validator categorizes its errors using the below categories
 */
 
 const VALIDATOR_CATEGORIES = {
-    ANY_OF: "anyOf",
-    PATTERN: "pattern",
-    REQUIRED: "required",
-    CONTAINS: "contains",
-    TYPE: "type",
-    MIN_ITEMS: "minItems"
-}
+  ANY_OF: "anyOf",
+  PATTERN: "pattern",
+  REQUIRED: "required",
+  CONTAINS: "contains",
+  TYPE: "type",
+  MIN_ITEMS: "minItems",
+};
 
-exports.VALIDATOR_CATEGORIES = VALIDATOR_CATEGORIES
+exports.VALIDATOR_CATEGORIES = VALIDATOR_CATEGORIES;

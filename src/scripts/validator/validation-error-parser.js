@@ -1,5 +1,4 @@
-const {VALIDATOR_CATEGORIES} = require("./validator-categories.js")
-
+const { VALIDATOR_CATEGORIES } = require("./validator-categories.js");
 
 const ValidationErrorParser = {
   parseMissingSubmission: (errorMessage) => {
@@ -281,18 +280,18 @@ const ValidationErrorParser = {
   },
 
   parseInvalidSpeciesAnyOf: (path, validator) => {
-    if(validator !== VALIDATOR_CATEGORIES.ANY_OF) {
-      return ""
+    if (validator !== VALIDATOR_CATEGORIES.ANY_OF) {
+      return "";
     }
 
-    let lastElementOfPath = path[path.length - 1]
+    let lastElementOfPath = path[path.length - 1];
 
-    if(lastElementOfPath !== "species") {
-      return ""
+    if (lastElementOfPath !== "species") {
+      return "";
     }
 
-    return "invalidSpeciesAnyOf"
-  }
+    return "invalidSpeciesAnyOf";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
