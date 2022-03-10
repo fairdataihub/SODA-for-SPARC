@@ -229,10 +229,10 @@ const ParsedErrorTranslator = {
 
     return [
       errorExplanation,
-      'To correct this problem change the invalid subject ID to be formatted as a string rather than a number.',
+      "To correct this problem change the invalid subject ID to be formatted as a string rather than a number.",
       "URL: path to SODA",
     ];
-  }
+  },
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;

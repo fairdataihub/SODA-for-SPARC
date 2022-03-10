@@ -266,9 +266,8 @@ const ValidationErrorParser = {
 
     if (lastPathElement !== "subject_id") return "";
 
-      return "invalidSubjectIdType"
-      
-  }
+    return "invalidSubjectIdType";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
