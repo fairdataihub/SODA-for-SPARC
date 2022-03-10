@@ -162,7 +162,7 @@ const pipelineErrorToTranslationTable = {
     missingDescription: ParsedErrorTranslator.translateMissingDescription,
     missingSamples: ParsedErrorTranslator.missingSamples,
     missingSubjects: ParsedErrorTranslator.missingSubjects,
-    missingSPecies: ParsedErrorTranslator.missingSpecies
+    missingSPecies: ParsedErrorTranslator.missingSpecies,
   },
   type: {
     invalidSubjectIdType: ParsedErrorTranslator.invalidSubjectIdType,
