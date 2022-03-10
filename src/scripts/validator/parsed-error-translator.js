@@ -242,6 +242,8 @@ const ParsedErrorTranslator = {
     ];
   },
 
+   // TODO: when multiple species are invalid we get back an array in the string rather than just a single param
+   //       format this? Probably not but I'll think about it.
   translateInvalidSpeciesAnyOf: (errorMessage) => {
     let searchForTextFollowingSpeciesValue =
       /is not valid under any of the given schemas/;
