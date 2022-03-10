@@ -294,16 +294,16 @@ const ValidationErrorParser = {
   },
 
   parseInvalidContributorNamePattern: (path, validator) => {
-    if(validator !== VALIDATOR_CATEGORIES.PATTERN) return ""
+    if (validator !== VALIDATOR_CATEGORIES.PATTERN) return "";
 
-    let lastElement = path[path.length - 1]
+    let lastElement = path[path.length - 1];
 
-    if(lastElement !== "contributor_name") {
-      return ""
+    if (lastElement !== "contributor_name") {
+      return "";
     }
 
-    return "invalidContributorNamePattern"
-  }
+    return "invalidContributorNamePattern";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
