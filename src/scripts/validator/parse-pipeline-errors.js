@@ -187,7 +187,7 @@ const pipelineErrorToTranslationTable = {
       ParsedErrorTranslator.translateInvalidSubjectIdPattern,
     invalidContributorNamePattern:
       ParsedErrorTranslator.translateInvalidContributorNamePattern,
-    invalid
+    invalid,
   },
   minItems: {
     missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,
