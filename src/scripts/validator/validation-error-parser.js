@@ -330,6 +330,20 @@ const ValidationErrorParser = {
 
     return "invalidAcknowledgmentsType";
   },
+
+  parseAdditionalPropertiesDatasetDescription: (path, validator) => {
+    if(validator !== VALIDATOR_CATEGORIES.ADDITIONAL_PROPERTIES) {
+      return ""
+    }
+
+    let lastElementOfPath = path[path.length - 1]
+
+    if(lastElementOfPath !== "dataset_description_file") {
+      return ""
+    }
+
+    return "datasetDescriptionAdditionalProperties"
+  }
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;

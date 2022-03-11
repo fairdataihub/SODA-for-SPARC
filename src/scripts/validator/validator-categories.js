@@ -13,6 +13,7 @@ const VALIDATOR_CATEGORIES = {
   CONTAINS: "contains",
   TYPE: "type",
   MIN_ITEMS: "minItems",
+  ADDITIONAL_PROPERTIES: "additionalProperties"
 };
 
 exports.VALIDATOR_CATEGORIES = VALIDATOR_CATEGORIES;
