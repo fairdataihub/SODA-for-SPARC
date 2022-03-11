@@ -345,8 +345,16 @@ const ValidationErrorParser = {
     return "datasetDescriptionAdditionalProperties";
   },
 
-  parseContributorAffiliationAnyOf: () => {
-    
+  parseInvalidContributorAffiliationAnyOf: (path, validator) => {
+    if (validator !== VALIDATOR_CATEGORIES.ANY_OF) return ""
+
+    let lastElementOfPath = path[path.length - 1]
+
+    if (lastElementOfPath !== "contributor_affiliation") {
+      return ""
+    }
+
+    return "contributorAffiliationAnyOf"
   }
 };
 
