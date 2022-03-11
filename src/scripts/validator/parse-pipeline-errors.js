@@ -5,12 +5,12 @@
 */
 
 // TODO: It should be relatively easy to generalize the Type errors. I need to watch for edge cases
-//       but based off the duplication in the code and the standardization ( mostly) of the 'Type' 
-//       errors one function should be able to handle them. 
+//       but based off the duplication in the code and the standardization ( mostly) of the 'Type'
+//       errors one function should be able to handle them.
 
 // TODO: It should be relatively easy to generalize 'required' category errors as well. One function with
 //       handling for the different string values (each representing a field or metadata file ) should be simple
-//       enough. 
+//       enough.
 
 const { ValidationErrorParser } = require("./validation-error-parser.js");
 

@@ -6,7 +6,6 @@ Purpose: A dictionary/object with translations for a particular (or form of in s
 
 */
 
-
 const ParsedErrorTranslator = {
   translateMissingSubmission: () => {
     return [
@@ -311,13 +310,15 @@ const ParsedErrorTranslator = {
     let additionalPropertiesIndex =
       findAdditionalPropertiesRegExp.exec(errorMessage);
 
-    let errorExplanation = ""
+    let errorExplanation = "";
 
     if (!additionalPropertiesIndex) {
       errorExplanation = "Your dataset description file has additional properties"
     } else {
-      let additionalProperties = errorExplanation.slice(additionalPropertiesIndex)
-      errorMessage = `Your dataset description file has additional properties: ${additionalProperties}`
+      let additionalProperties = errorExplanation.slice(
+        additionalPropertiesIndex
+      );
+      errorMessage = `Your dataset description file has additional properties: ${additionalProperties}`;
     }
 
     return [
