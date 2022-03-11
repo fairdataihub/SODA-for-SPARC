@@ -356,6 +356,48 @@ const ValidationErrorParser = {
 
     return "contributorAffiliationAnyOf";
   },
+
+  // May be one of the harder ones to figure out how to generalize.
+  // The validator will always have 'contributors' in the schema_path (not the same as path)
+  // so perhaps between all of the different fields that can have a contains error 
+  // looking into schema path when validator === contains will be the key?
+  // Another piece of variabiality is the errorMessage itself. For contains it is broken up into 
+  // objects that are parsed in as strings. So separating out all of the fields and keys is going 
+  // to require a somewhat involved function. For now I'm just going to 
+  // log the whole error message and work on the human readbility 
+  parseInvalidContributorInformationContains: (path, validator) => {
+    if(validator !== VALIDATOR_CATEGORIES.CONTAINS) return ""
+
+    let path = path[path.length - 1]
+
+    if(path !== "contributors") return ""
+
+    return "invalidContributorsContains"
+  }
+
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
+
+//"None of 
+// [{'contributor_name': 'Jeff, Salisbury', 
+// 'contributor_affiliation': '<', 'contributor_role': ['PrincipalInvestigator']}, 
+// {'contributor_role': ['CorrespondingAuthor']}] are valid under the given schema"
+
+/*
+
+"None of [{'contributor_name': 'Jeff, Salisbury', 'contributor_affiliation': '<', 
+          'contributor_role': ['PrincipalInvestigator']}, 
+          {'contributor_role': ['CorrespondingAuthor']}] are valid under the given schema"
+
+
+"None of [{'contributor_name': 'Jeff, Salisbury', 'contributor_affiliation': '<', 
+        'contributor_role': ['PrincipalInvestigator'], 'first_name': 'Salisbury', 
+        'last_name': 'Jeff', 
+        'id': 'file:///C:/Users/CMarroquin/temp-datasets/DatasetTemplate/contributors/Salisbury-Jeff'}, 
+        {'contributor_name': 'Wallop, San', 'contributor_affiliation': '>>', 
+        'contributor_role': ['CorrespondingAuthor'], 'first_name': 'San', 'last_name': 'Wallop', 
+        'id': 'file:///C:/Users/CMarroquin/temp-datasets/DatasetTemplate/contributors/San-Wallop'}] 
+        are valid under the given schema"
+
+*/
