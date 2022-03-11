@@ -3279,6 +3279,39 @@ $(document).ready(() => {
     previousFolderStructurePage = $(this).data("prev-page");
     traverseToTab(previousFolderStructurePage);
   });
+  /// back button Curate
+  $("#guided-button-back").on("click", function () {
+    var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+    if (slashCount !== 1) {
+      var filtered = getGlobalPath(organizeDSglobalPath);
+      if (filtered.length === 1) {
+        organizeDSglobalPath.value = filtered[0] + "/";
+      } else {
+        organizeDSglobalPath.value =
+          filtered.slice(0, filtered.length - 1).join("/") + "/";
+      }
+      var myPath = datasetStructureJSONObj;
+      for (var item of filtered.slice(1, filtered.length - 1)) {
+        myPath = myPath["folders"][item];
+      }
+      // construct UI with files and folders
+      var appendString = loadFileFolder(myPath);
+
+      /// empty the div
+      $("#items").empty();
+      $("#items").html(appendString);
+
+      organizeLandingUIEffect();
+      // reconstruct div with new elements
+      listItems(myPath, "#items");
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
+    }
+  });
   $("#guided-new-folder").on("click", () => {
     event.preventDefault();
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;

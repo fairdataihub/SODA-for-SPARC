@@ -675,6 +675,7 @@
                   readonly
                 />
                 <div class="guided--folder-organization-buttons-container-sub">
+                  <button id="guided-button-back">back</button>
                   <button
                     class="ui primary basic button small"
                     id="guided-new-folder"
@@ -706,13 +707,7 @@
                   </button>
                 </div>
               </div>
-              <!--
-              <div
-                id="items"
-                class="div-organize-items"
-                ondrop="drop(event, 'guided');"
-                ondragover="allowDrop(event);"
-              ></div>-->
+              <div id="move-here" style="width: 100%"></div>
             </div>
           </div>
           <div
@@ -2975,15 +2970,7 @@
           id="guided-back-button"
           style="width: 120px !important"
         >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i
-          >Back</button
-        ><button
-          class="content-button"
-          style="height: 5px; width: 5px"
-          id="guided_back_to_main_menu"
-          data-section="guided_mode"
-        >
-          <h2>HOME (TEMP)</h2>
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
         </button>
         <button
           class="ui positive button guided--button-footer"

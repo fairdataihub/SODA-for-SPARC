@@ -1851,7 +1851,8 @@ function loadDetailsContextMenu(
   filePath,
   textareaID1,
   textareaID2,
-  paraLocalPath
+  paraLocalPath,
+  curationMode
 ) {
   if ("description" in filePath["files"][fileName]) {
     document.getElementById(textareaID1).value =
@@ -1868,6 +1869,8 @@ function loadDetailsContextMenu(
   path_label = document.querySelector(
     "#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label"
   );
+  console.log(path_label);
+  console.log(filePath);
   if (filePath["files"][fileName]["type"] === "bf") {
     path_label.innerHTML = "<b>Pennsieve path:<br></b>";
     bf_path = "";

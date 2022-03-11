@@ -1200,7 +1200,9 @@
                       </div>
                     </div>
                     <!-- These are the context menu options, will not appear on the UI until prompted -->
-                    <ul class="menu reg-folder off">
+                    <ul
+                      class="menu reg-folder off shared-folder-structure-element"
+                    >
                       <li id="reg-folder-rename">
                         <i class="fas fa-edit fa-fw"></i>Rename
                       </li>
@@ -1211,7 +1213,9 @@
                         <i class="far fa-trash-alt fa-fw"></i>Delete
                       </li>
                     </ul>
-                    <ul class="menu high-level-folder off">
+                    <ul
+                      class="menu high-level-folder off shared-folder-structure-element"
+                    >
                       <li id="high-folder-rename">
                         <i class="fas fa-edit fa-fw"></i>Rename
                       </li>
@@ -1222,7 +1226,7 @@
                         <i class="fas fa-info fa-fw"></i>Details
                       </li>
                     </ul>
-                    <ul class="menu file off">
+                    <ul class="menu file off shared-folder-structure-element">
                       <li id="file-rename">
                         <i class="fas fa-edit fa-fw"></i>Rename
                       </li>
@@ -1237,11 +1241,14 @@
                       </li>
                     </ul>
                     <!-- <span class="hoverPath" style="display: none"></span> -->
-                    <span class="hoverFullName" style="display: none"></span>
+                    <span
+                      class="hoverFullName shared-folder-structure-element"
+                      style="display: none"
+                    ></span>
                     <!-- END -->
                     <div
                       id="items"
-                      class="div-organize-items"
+                      class="div-organize-items shared-folder-structure-element"
                       ondrop="drop(event, 'free-form');"
                       ondragover="allowDrop(event);"
                     ></div>
