@@ -216,8 +216,9 @@ const pipelineErrorToTranslationTable = {
       ParsedErrorTranslator.translateInvalidContributorRole,
   },
   additionalProperties: {
-    datasetDescriptionAdditionalProperties: ParsedErrorTranslator.translateAdditionalPropertiesDatasetDescription
-  }
+    datasetDescriptionAdditionalProperties:
+      ParsedErrorTranslator.translateAdditionalPropertiesDatasetDescription,
+  },
 };
 
 // export the validationErrorPipeline function
