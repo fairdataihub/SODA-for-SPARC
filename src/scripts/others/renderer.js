@@ -4647,7 +4647,7 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
       },
     });
   }
-  if(path.length > 0) {
+  if (path.length > 0) {
     let resultPromise = new Promise(async (resolved) => {
       // console.log("entering promise");
       // console.log("actually we don't need it here");
@@ -4665,14 +4665,14 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
           // console.log("didopen stage here");
           //Swal.clickConfirm();
           await Swal.showLoading();
-          
+
           // console.log("now we move forward");
           //Swal.clickConfirm();
         },
         willClose: () => {
           // console.log("will close?");
           Swal.clickConfirm();
-        }
+        },
       });
       resolved();
       // resolved();
@@ -4686,10 +4686,12 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
         "#items",
         ".single-item",
         datasetStructureJSONObj
-      )
+      );
       let endTime = performance.now();
-      console.log(`Duration of ipcRenderer: ${endTime - startTime} milliseconds`);
-    })
+      console.log(
+        `Duration of ipcRenderer: ${endTime - startTime} milliseconds`
+      );
+    });
   }
 });
 

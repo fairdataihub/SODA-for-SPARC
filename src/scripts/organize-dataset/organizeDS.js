@@ -1835,7 +1835,9 @@ async function addFilesfunction(
     );
   }
   let endTime = performance.now();
-  console.log(`Duration of addFilesFunction: ${endTime - startTime} milliseconds`);
+  console.log(
+    `Duration of addFilesFunction: ${endTime - startTime} milliseconds`
+  );
 }
 
 ///// function to load details to show in display once
