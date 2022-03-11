@@ -1628,7 +1628,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
   }
 }
 
-function addFilesfunction(
+async function addFilesfunction(
   fileArray,
   currentLocation,
   organizeCurrentLocation,
@@ -1636,6 +1636,7 @@ function addFilesfunction(
   singleUIItem,
   globalPathValue
 ) {
+  let startTime = performance.now();
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
@@ -1792,12 +1793,11 @@ function addFilesfunction(
         <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
         </div>`,
     });
+    //return console.log("this is when there are duplicates");
   }
 
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
-  console.log(Object.keys(regularFiles));
-  console.log("above is the keys of the regular files JSON");
   if (Object.keys(regularFiles).length > 0) {
     for (var element in regularFiles) {
       currentLocation["files"][regularFiles[element]["basename"]] = {
@@ -1822,8 +1822,6 @@ function addFilesfunction(
         "</div></div>";
 
       $(uiItem).html(appendString);
-      console.log($(uiItem));
-      console.log("above is the UI item before entering listItems function");
     }
     listItems(currentLocation, uiItem);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
@@ -1836,6 +1834,8 @@ function addFilesfunction(
       determineDatasetLocation()
     );
   }
+  let endTime = performance.now();
+  console.log(`Duration of addFilesFunction: ${endTime - startTime} milliseconds`);
 }
 
 ///// function to load details to show in display once

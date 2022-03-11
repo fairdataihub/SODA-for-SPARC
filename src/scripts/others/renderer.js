@@ -4620,6 +4620,7 @@ organizeDSaddFiles.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
+  let startTime = performance.now();
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let hidden_files_present = false;
@@ -4646,14 +4647,50 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
       },
     });
   }
-  addFilesfunction(
-    path,
-    myPath,
-    organizeDSglobalPath,
-    "#items",
-    ".single-item",
-    datasetStructureJSONObj
-  );
+  if(path.length > 0) {
+    let resultPromise = new Promise(async (resolved) => {
+      // console.log("entering promise");
+      // console.log("actually we don't need it here");
+      await Swal.fire({
+        title: "Importing files...",
+        html: "Please wait",
+        allowEscapeKey: true,
+        allowOutsideClick: true,
+        heightAuto: false,
+        showConfirmButton: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        timer: 400,
+        didOpen: async () => {
+          // console.log("didopen stage here");
+          //Swal.clickConfirm();
+          await Swal.showLoading();
+          
+          // console.log("now we move forward");
+          //Swal.clickConfirm();
+        },
+        willClose: () => {
+          // console.log("will close?");
+          Swal.clickConfirm();
+        }
+      });
+      resolved();
+      // resolved();
+      // console.log("should move on to then()");
+    }).then(async () => {
+      // console.log("entering addFiles function");
+      await addFilesfunction(
+        path,
+        myPath,
+        organizeDSglobalPath,
+        "#items",
+        ".single-item",
+        datasetStructureJSONObj
+      )
+      let endTime = performance.now();
+      console.log(`Duration of ipcRenderer: ${endTime - startTime} milliseconds`);
+    })
+  }
 });
 
 organizeDSaddFolders.addEventListener("click", function () {
@@ -4968,6 +5005,7 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
+  //measuring performance here
   let startTime = performance.now();
   var folderPath = [];
   var duplicateFolders = [];
@@ -5888,7 +5926,7 @@ function listItems(jsonObj, uiItem) {
       }
     }
   }
-  console.log(uiItem);
+  // console.log(uiItem);
   $(uiItem).empty();
   $(uiItem).html(appendString);
 
