@@ -140,6 +140,7 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidSubjectIdType(path, validator);
+    translationKey = translationKey || ValidationErrorParser.parseInvalidFundingType(path, validator)
   } else if (validator === VALIDATOR_CATEGORIES.ANY_OF) {
     translationKey =
       translationKey || ValidationErrorParser.parseInvalidSpeciesAnyOf;
@@ -171,7 +172,8 @@ const pipelineErrorToTranslationTable = {
     missingSPecies: ParsedErrorTranslator.missingSpecies,
   },
   type: {
-    invalidSubjectIdType: ParsedErrorTranslator.invalidSubjectIdType,
+    invalidSubjectIdType: ParsedErrorTranslator.translateInvalidSubjectIdType,
+    invalidFundingType: ParsedErrorTranslator.translateInvalidFundingType
   },
   pattern: {
     invalidDatasetName: ParsedErrorTranslator.translateIncorrectDatasetName,

@@ -304,6 +304,22 @@ const ValidationErrorParser = {
 
     return "invalidContributorNamePattern";
   },
+
+  parseInvalidFundingType: (path, validator) => {
+    if(validator !== VALIDATOR_CATEGORIES.TYPE) {
+      return ""
+    }
+
+    // check if path contains funding b/c when dealing with funding type 
+    // all the ways I have checked before will not work (different format for path)
+    if(!path.includes("funding")) {
+      return ""
+    }
+
+    return "invalidFundingType"
+
+  }
+
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
