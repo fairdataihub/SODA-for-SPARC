@@ -6,6 +6,7 @@ Purpose: A dictionary/object with translations for a particular (or form of in s
 
 */
 
+
 const ParsedErrorTranslator = {
   translateMissingSubmission: () => {
     return [
@@ -309,17 +310,17 @@ const ParsedErrorTranslator = {
 
     let additionalPropertiesIndex = findAdditionalPropertiesRegExp.exec(errorMessage)
 
-    let errorMessage = ""
+    let errorExplanation = ""
 
     if(!additionalPropertiesIndex) {
-      errorMessage = "Your dataset description file has additional properties"
+      errorExplanation = "Your dataset description file has additional properties"
     } else {
-      let additionalProperties = errorMessage.slice(additionalPropertiesIndex)
+      let additionalProperties = errorExplanation.slice(additionalPropertiesIndex)
       errorMessage = `Your dataset description file has additional properties: ${additionalProperties}`
     }
 
     return [
-      errorMessage,
+      errorExplanation,
       "To fix this issue ensure your metadata version number aligns with the headers in your dataset description file. Version options are 1.2.3 or 2.0.0.",
       "URL: Path to SODA"
     ]
