@@ -303,6 +303,27 @@ const ParsedErrorTranslator = {
       "URL: Path to SODA",
     ];
   },
+
+  translateAdditionalPropertiesDatasetDescription: (errorMessage) => {
+    let findAdditionalPropertiesRegExp = /\(/
+
+    let additionalPropertiesIndex = findAdditionalPropertiesRegExp.exec(errorMessage)
+
+    let errorMessage = ""
+
+    if(!additionalPropertiesIndex) {
+      errorMessage = "Your dataset description file has additional properties"
+    } else {
+      let additionalProperties = errorMessage.slice(additionalPropertiesIndex)
+      errorMessage = `Your dataset description file has additional properties: ${additionalProperties}`
+    }
+
+    return [
+      errorMessage,
+      "To fix this issue ensure your metadata version number aligns with the headers in your dataset description file. Version options are 1.2.3 or 2.0.0.",
+      "URL: Path to SODA"
+    ]
+  }
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
