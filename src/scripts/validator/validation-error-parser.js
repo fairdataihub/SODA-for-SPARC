@@ -316,22 +316,20 @@ const ValidationErrorParser = {
       return "";
     }
 
-    return "invalidFundingType"
-
+    return "invalidFundingType";
   },
 
   parseInvalidAcknowledgmentsType: (path, validator) => {
-    if(validator !== VALIDATOR_CATEGORIES.TYPE) return ""
+    if (validator !== VALIDATOR_CATEGORIES.TYPE) return "";
 
-    let lastElementOfPath = path[path.length - 1]
+    let lastElementOfPath = path[path.length - 1];
 
-    if(lastElementOfPath !== "acknowledgments") {
-      return ""
+    if (lastElementOfPath !== "acknowledgments") {
+      return "";
     }
 
-    return "invalidAcknowledgmentsType"
-  }
-
+    return "invalidAcknowledgmentsType";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
