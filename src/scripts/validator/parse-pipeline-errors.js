@@ -148,8 +148,13 @@ const parseFeature = (error, pipeline) => {
   } else if (validator === VALIDATOR_CATEGORIES.ANY_OF) {
     translationKey =
       translationKey || ValidationErrorParser.parseInvalidSpeciesAnyOf;
-  } else if(validator === VALIDATOR_CATEGORIES.ADDITIONAL_PROPERTIES) {
-    translationKey = translationKey || ValidationErrorParser.parseAdditionalPropertiesDatasetDescription(path, validator)
+  } else if (validator === VALIDATOR_CATEGORIES.ADDITIONAL_PROPERTIES) {
+    translationKey =
+      translationKey ||
+      ValidationErrorParser.parseAdditionalPropertiesDatasetDescription(
+        path,
+        validator
+      );
   }
 
   return translationKey;
