@@ -171,7 +171,7 @@ const pipelineErrorToTranslationTable = {
     missingDescription: ParsedErrorTranslator.translateMissingDescription,
     missingSamples: ParsedErrorTranslator.missingSamples,
     missingSubjects: ParsedErrorTranslator.missingSubjects,
-    missingSPecies: ParsedErrorTranslator.missingSpecies,
+    missingSpecies: ParsedErrorTranslator.missingSpecies,
   },
   type: {
     invalidSubjectIdType: ParsedErrorTranslator.translateInvalidSubjectIdType,
@@ -185,6 +185,7 @@ const pipelineErrorToTranslationTable = {
       ParsedErrorTranslator.translateInvalidSubjectIdPattern,
     invalidContributorNamePattern:
       ParsedErrorTranslator.translateInvalidContributorNamePattern,
+    invalid
   },
   minItems: {
     missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,

@@ -318,6 +318,18 @@ const ValidationErrorParser = {
 
     return "invalidFundingType"
 
+  },
+
+  parseInvalidAcknowledgmentsType: (path, validator) => {
+    if(validator !== VALIDATOR_CATEGORIES.TYPE) return ""
+
+    let lastElementOfPath = path[path.length - 1]
+
+    if(lastElementOfPath !== "acknowledgments") {
+      return ""
+    }
+
+    return "invalidAcknowledgmentsType"
   }
 
 };
