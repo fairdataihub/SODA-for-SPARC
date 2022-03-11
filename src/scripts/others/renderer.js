@@ -4750,6 +4750,7 @@ function addFoldersfunction(
   folderArray,
   currentLocation
 ) {
+  let startTime = performance.now();
   var uiFolders = {};
   var importedFolders = {};
   var duplicateFolders = [];
@@ -4873,21 +4874,21 @@ function addFoldersfunction(
           element +
           "</div></div>";
         $("#items").html(appendString);
-        listItems(currentLocation, "#items");
-        getInFolder(
-          ".single-item",
-          "#items",
-          organizeDSglobalPath,
-          datasetStructureJSONObj
-        );
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-        hideMenu(
-          "high-level-folder",
-          menuFolder,
-          menuHighLevelFolders,
-          menuFile
-        );
       }
+      listItems(currentLocation, "#items");
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideMenu(
+        "high-level-folder",
+        menuFolder,
+        menuHighLevelFolders,
+        menuFile
+      );
 
       // log the success
       logCurationForAnalytics(
@@ -4899,6 +4900,8 @@ function addFoldersfunction(
       );
     }
   }
+  let endTime = performance.now();
+  console.log(`Duration of addFolders: ${endTime - startTime} milliseconds`);
 }
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
@@ -4908,7 +4911,7 @@ function allowDrop(ev) {
 
 var filesElement;
 var targetElement;
-function drop(ev) {
+async function drop(ev) {
   irregularFolderArray = [];
   var action = "";
   filesElement = ev.dataTransfer.files;
@@ -4960,7 +4963,7 @@ function drop(ev) {
       didOpen: () => {
         $(".swal-popover").popover();
       },
-    }).then((result) => {
+    }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         action = "replace";
@@ -4969,6 +4972,29 @@ function drop(ev) {
       } else {
         return;
       }
+        await Swal.fire({
+        title: "Importing files...",
+        html: "Please wait",
+        allowEscapeKey: true,
+        allowOutsideClick: true,
+        heightAuto: false,
+        showConfirmButton: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        timer: 400,
+        didOpen: async () => {
+          // console.log("didopen stage here");
+          //Swal.clickConfirm();
+          await Swal.showLoading();
+
+          // console.log("now we move forward");
+          //Swal.clickConfirm();
+        },
+        willClose: () => {
+          // console.log("will close?");
+          Swal.clickConfirm();
+        },
+      });
       dropHelper(
         filesElement,
         targetElement,
@@ -4982,6 +5008,29 @@ function drop(ev) {
       );
     });
   } else {
+    await Swal.fire({
+      title: "Importing files...",
+      html: "Please wait",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      showConfirmButton: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      timer: 400,
+      didOpen: async () => {
+        // console.log("didopen stage here");
+        //Swal.clickConfirm();
+        await Swal.showLoading();
+
+        // console.log("now we move forward");
+        //Swal.clickConfirm();
+      },
+      willClose: () => {
+        // console.log("will close?");
+        Swal.clickConfirm();
+      },
+    });
     dropHelper(
       filesElement,
       targetElement,
@@ -5008,6 +5057,7 @@ function dropHelper(
   uiFolders
 ) {
   //measuring performance here
+  //Swal.fire({})
   let startTime = performance.now();
   var folderPath = [];
   var duplicateFolders = [];
