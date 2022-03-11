@@ -658,24 +658,31 @@
                   <i class="fas fa-arrow-left" style="margin-right: 10px"></i
                   >Back to <span id="structure-return-destination-text"></span>
                 </button>
-                <input
-                  style="
-                    float: left;
-                    height: 40px;
-                    border: none;
-                    font-family: 'Raleway', sans-serif;
-                    font-size: 16px;
-                    font-weight: 600;
-                    cursor: default;
-                    color: #898989;
-                    width: 300px;
-                  "
-                  id="guided-input-global-path"
-                  value="My_dataset_folder/"
-                  readonly
-                />
-                <div class="guided--folder-organization-buttons-container-sub">
+              </div>
+              <div class="guided--folder-organization-buttons-container">
+                <div
+                  class="guided--folder-organization-buttons-container-sub"
+                  style="flex-grow: 1"
+                >
                   <button id="guided-button-back">back</button>
+                  <input
+                    style="
+                      margin: 0px 7px;
+                      display: flex;
+                      flex-grow: 1;
+                      border: none;
+                      font-family: 'Raleway', sans-serif;
+                      font-size: 16px;
+                      font-weight: 600;
+                      cursor: default;
+                      color: #898989;
+                    "
+                    id="guided-input-global-path"
+                    value="My_dataset_folder/"
+                    readonly
+                  />
+                </div>
+                <div class="guided--folder-organization-buttons-container-sub">
                   <button
                     class="ui primary basic button small"
                     id="guided-new-folder"
@@ -707,7 +714,10 @@
                   </button>
                 </div>
               </div>
-              <div id="move-here" style="width: 100%"></div>
+              <div
+                id="guided-folder-structure-container"
+                style="width: 100%"
+              ></div>
             </div>
           </div>
           <div

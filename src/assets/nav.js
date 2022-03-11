@@ -32,7 +32,9 @@ function handleSectionTrigger(event) {
   if (sectionId === "guided_mode-section") {
     guidedLoadSavedProgressFiles();
     organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    $(".shared-folder-structure-element").appendTo($("#move-here"));
+    $(".shared-folder-structure-element").appendTo(
+      $("#guided-folder-structure-container")
+    );
   }
   if (sectionId === "main_tabs-section") {
     organizeDSglobalPath = document.getElementById("input-global-path");

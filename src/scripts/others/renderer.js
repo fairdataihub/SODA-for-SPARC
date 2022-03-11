@@ -4953,14 +4953,8 @@ function allowDrop(ev) {
 var filesElement;
 var targetElement;
 
-function drop(ev, curationMode) {
-  var currentPath = "";
-  if (curationMode === "free-form") {
-    currentPath = organizeDSglobalPath.value;
-  }
-  if (curationMode === "guided") {
-    currentPath = organizeDSglobalPath.value;
-  }
+function drop(ev) {
+  var currentPath = organizeDSglobalPath.value;
   console.log(currentPath);
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -5033,8 +5027,7 @@ function drop(ev, curationMode) {
         importedFolders,
         nonAllowedDuplicateFiles,
         uiFiles,
-        uiFolders,
-        curationMode
+        uiFolders
       );
     });
   } else {
@@ -5048,8 +5041,7 @@ function drop(ev, curationMode) {
       importedFolders,
       nonAllowedDuplicateFiles,
       uiFiles,
-      uiFolders,
-      curationMode
+      uiFolders
     );
   }
 }
@@ -5063,8 +5055,7 @@ function dropHelper(
   importedFolders,
   nonAllowedDuplicateFiles,
   uiFiles,
-  uiFolders,
-  curationMode
+  uiFolders
 ) {
   console.log(ev1);
   console.log(ev2);
@@ -5077,13 +5068,7 @@ function dropHelper(
   console.log(uiFolders);
   var folderPath = [];
   var duplicateFolders = [];
-  var slashCount = "";
-  if (curationMode === "free-form") {
-    slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-  }
-  if (curationMode === "guided") {
-    slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-  }
+  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
