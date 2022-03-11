@@ -292,17 +292,17 @@ const ParsedErrorTranslator = {
     return [
       errorExplanation,
       "To correct this problem change the contributor name to be a Last, First format.",
-      "URL: Path to SODA"
+      "URL: Path to SODA",
     ];
   },
 
   translateInvalidFundingType: () => {
-   return [
-     "Your dataset description file's funding field/column is invalid",
-     "To fix this, ensure your grant number is the value for the funding field/column.",
-     "URL: Path to SODA"
-   ]
-  }
+    return [
+      "Your dataset description file's funding field/column is invalid",
+      "To fix this, ensure your grant number is the value for the funding field/column.",
+      "URL: Path to SODA",
+    ];
+  },
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
