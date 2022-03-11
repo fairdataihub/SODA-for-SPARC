@@ -345,9 +345,7 @@ const ValidationErrorParser = {
     return "datasetDescriptionAdditionalProperties";
   },
 
-  parseContributorAffiliationAnyOf: () => {
-    
-  }
+  parseContributorAffiliationAnyOf: () => {},
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
