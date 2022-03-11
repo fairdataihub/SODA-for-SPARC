@@ -686,10 +686,8 @@ const downloadDescription = document.getElementById("a-description");
 const downloadManifest = document.getElementById("a-manifest");
 
 /////// New Organize Datasets /////////////////////
-const organizeDSglobalPath = document.getElementById("input-global-path");
-const guidedOrganizeDSglobalPath = document.getElementById(
-  "guided-input-global-path"
-);
+let organizeDSglobalPath = "";
+
 const organizeDSbackButton = document.getElementById("button-back");
 const organizeDSaddFiles = document.getElementById("add-files");
 const organizeDSaddNewFolder = document.getElementById("new-folder");
@@ -4961,7 +4959,7 @@ function drop(ev, curationMode) {
     currentPath = organizeDSglobalPath.value;
   }
   if (curationMode === "guided") {
-    currentPath = guidedOrganizeDSglobalPath.value;
+    currentPath = organizeDSglobalPath.value;
   }
   console.log(currentPath);
   var jsonPathArray = currentPath.split("/");
@@ -5040,6 +5038,7 @@ function drop(ev, curationMode) {
       );
     });
   } else {
+    console.log("no irregular folders");
     dropHelper(
       filesElement,
       targetElement,
@@ -5083,7 +5082,7 @@ function dropHelper(
     slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   }
   if (curationMode === "guided") {
-    slashCount = guidedOrganizeDSglobalPath.value.trim().split("/").length - 1;
+    slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   }
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
@@ -5104,6 +5103,7 @@ function dropHelper(
       var originalFileName = path.parse(itemPath).base;
 
       if (slashCount === 1) {
+        console.log("slash count is not 1");
         Swal.fire({
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
@@ -5123,6 +5123,7 @@ function dropHelper(
         } else {
           //check if fileName is in to-be-imported object keys
           if (importedFiles.hasOwnProperty(originalFileName)) {
+            console.log("filename is in to-be-imported obj keys");
             nonAllowedDuplicate = true;
             nonAllowedDuplicateFiles.push(itemPath);
             continue;
@@ -5864,6 +5865,7 @@ function listItems(jsonObj, uiItem) {
     }
 
     if (sortedObj["folders"][item]["action"].includes("updated")) {
+      console.log("jupdated");
       cloud_item = " update-file";
       appendString =
         appendString +
@@ -5875,6 +5877,7 @@ function listItems(jsonObj, uiItem) {
         item +
         "</div></div>";
     } else {
+      console.log("jnotupdated");
       appendString =
         appendString +
         '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +

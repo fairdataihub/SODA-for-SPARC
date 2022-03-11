@@ -945,7 +945,7 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
     filtered = getGlobalPath(organizeDSglobalPath);
   }
   if (curationMode === "guided") {
-    filtered = getGlobalPath(guidedOrganizeDSglobalPath);
+    filtered = getGlobalPath(organizeDSglobalPath);
   }
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 

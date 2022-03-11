@@ -29,8 +29,20 @@ function handleSectionTrigger(event) {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   // Render guided mode resume progress cards if guided mode section is chosen
-  if (sectionId === "guided_mode-section") {
+  if (
+    sectionId === "guided_mode-section" ||
+    sectionId === "guided_curate_new_dataset-section"
+  ) {
     guidedLoadSavedProgressFiles();
+    console.log(organizeDSglobalPath);
+    organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    console.log(organizeDSglobalPath);
+  } else {
+    console.log(sectionId);
+    alert("ORGANIZEDSGLOBALPATH back to free-form mode");
+    console.log(organizeDSglobalPath);
+    organizeDSglobalPath = document.getElementById("input-global-path");
+    console.log(organizeDSglobalPath);
   }
 
   document.getElementById(sectionId).classList.add("is-shown");

@@ -3281,8 +3281,7 @@ $(document).ready(() => {
   });
   $("#guided-new-folder").on("click", () => {
     event.preventDefault();
-    var slashCount =
-      guidedOrganizeDSglobalPath.value.trim().split("/").length - 1;
+    var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount !== 1) {
       var newFolderName = "New Folder";
       Swal.fire({
@@ -3328,8 +3327,7 @@ $(document).ready(() => {
             newFolderName = result.value.trim();
             // check for duplicate or files with the same name
             var duplicate = false;
-            var itemDivElements =
-              document.getElementById("guided-items").children;
+            var itemDivElements = document.getElementById("items").children;
             for (var i = 0; i < itemDivElements.length; i++) {
               if (newFolderName === itemDivElements[i].innerText) {
                 duplicate = true;
@@ -3359,10 +3357,10 @@ $(document).ready(() => {
                 '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
                 newFolderName +
                 "</div></div>";
-              $(appendString).appendTo("#guided-items");
+              $(appendString).appendTo("#items");
 
               /// update datasetStructureJSONObj
-              var currentPath = guidedOrganizeDSglobalPath.value;
+              var currentPath = organizeDSglobalPath.value;
               var jsonPathArray = currentPath.split("/");
               var filtered = jsonPathArray.slice(1).filter(function (el) {
                 return el != "";
@@ -3378,10 +3376,10 @@ $(document).ready(() => {
                 action: ["new"],
               };
 
-              listItems(myPath, "#guided-items");
+              listItems(myPath, "#items");
               getInFolder(
                 ".single-item",
-                "#guided-items",
+                "#items",
                 organizeDSglobalPath,
                 datasetStructureJSONObj
               );
