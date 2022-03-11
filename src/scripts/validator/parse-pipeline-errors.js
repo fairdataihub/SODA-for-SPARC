@@ -178,7 +178,8 @@ const pipelineErrorToTranslationTable = {
   type: {
     invalidSubjectIdType: ParsedErrorTranslator.translateInvalidSubjectIdType,
     invalidFundingType: ParsedErrorTranslator.translateInvalidFundingType,
-    invalidAcknowledgmentsType: ParsedErrorTranslator.translateInvalidFundingType
+    invalidAcknowledgmentsType:
+      ParsedErrorTranslator.translateInvalidFundingType,
   },
   pattern: {
     invalidDatasetName: ParsedErrorTranslator.translateIncorrectDatasetName,
