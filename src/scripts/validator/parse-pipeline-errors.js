@@ -155,8 +155,14 @@ const parseFeature = (error, pipeline) => {
       ValidationErrorParser.parseInvalidFundingType(path, validator);
   } else if (validator === VALIDATOR_CATEGORIES.ANY_OF) {
     translationKey =
-      translationKey || ValidationErrorParser.parseInvalidSpeciesAnyOf(path, validator)
-    translationKey = translationKey || ValidationErrorParser.parseInvalidContributorAffiliationAnyOf(path, validator)
+      translationKey ||
+      ValidationErrorParser.parseInvalidSpeciesAnyOf(path, validator);
+    translationKey =
+      translationKey ||
+      ValidationErrorParser.parseInvalidContributorAffiliationAnyOf(
+        path,
+        validator
+      );
   } else if (validator === VALIDATOR_CATEGORIES.ADDITIONAL_PROPERTIES) {
     translationKey =
       translationKey ||
@@ -211,7 +217,8 @@ const pipelineErrorToTranslationTable = {
   },
   anyOf: {
     invalidSpeciesAnyOf: ParsedErrorTranslator.translateInvalidSpeciesAnyOf,
-    contributorAffiliationAnyOf: ParsedErrorTranslator.translateContributorAffiliationAnyOf
+    contributorAffiliationAnyOf:
+      ParsedErrorTranslator.translateContributorAffiliationAnyOf,
   },
   contains: {
     invalidContributorRole:

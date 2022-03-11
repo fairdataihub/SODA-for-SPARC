@@ -313,7 +313,8 @@ const ParsedErrorTranslator = {
     let errorExplanation = "";
 
     if (!additionalPropertiesIndex) {
-      errorExplanation = "Your dataset description file has additional properties"
+      errorExplanation =
+        "Your dataset description file has additional properties";
     } else {
       let additionalProperties = errorExplanation.slice(
         additionalPropertiesIndex
@@ -332,23 +333,28 @@ const ParsedErrorTranslator = {
     let searchForTextFollowingAffiliationValue =
       /is not valid under any of the given schemas/;
 
-    let textFollowingAffiliationIdx = searchForTextFollowingAffiliationValue.exec(errorMessage)
+    let textFollowingAffiliationIdx =
+      searchForTextFollowingAffiliationValue.exec(errorMessage);
 
-    let errorExplanation = ""
+    let errorExplanation = "";
 
     if (!textFollowingAffiliationIdx) {
-      errorExplanation = "Your dataset description file has invalid entries for the Contributor affiliation field/column."
+      errorExplanation =
+        "Your dataset description file has invalid entries for the Contributor affiliation field/column.";
     } else {
-      let invalidContributorAffiliations = errorMessage.slice(0, textFollowingAffiliationIdx)
-      errorExplanation = `Your dataset description file has the following invalid entries for the Contributor affiliation row/field: ${invalidContributorAffiliations}`
+      let invalidContributorAffiliations = errorMessage.slice(
+        0,
+        textFollowingAffiliationIdx
+      );
+      errorExplanation = `Your dataset description file has the following invalid entries for the Contributor affiliation row/field: ${invalidContributorAffiliations}`;
     }
 
     return [
       errorExplanation,
       "To fix this issue ensure your contributor affiliation entries are all formatted as strings.",
-      "URL: Path to SODA"
-    ]
-  }
+      "URL: Path to SODA",
+    ];
+  },
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
