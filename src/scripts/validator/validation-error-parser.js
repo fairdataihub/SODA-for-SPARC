@@ -357,7 +357,7 @@ const ValidationErrorParser = {
     return "contributorAffiliationAnyOf";
   },
 
-  // May be one of the harder ones to figure out how to generalize.
+  // May be (this along with other Contains errors) one of the harder ones to figure out how to generalize.
   // The validator will always have 'contributors' in the schema_path (not the same as path)
   // so perhaps between all of the different fields that can have a contains error 
   // looking into schema path when validator === contains will be the key?
