@@ -389,6 +389,26 @@ const ParsedErrorTranslator = {
       "URL: Path to SODA",
     ];
   },
+
+  translateInvalidRelationTypeEnum: (errorMessage) => {
+    let searchForTextFollowingInvalidRelationType = /is not one of/
+
+    let idxForTextFollowingInvalidRelationType = searchForTextFollowingInvalidRelationType.exec(errorMessage)
+  
+    let errorExplanation = ""
+    if(!idxForTextFollowingInvalidRelationType) {
+      errorExplanation = "Your dataset description file has invalid entries for the 'relation type' field/row."
+    } else {
+      let invalidEntries = errorMessage.slice(0, idxForTextFollowingInvalidRelationType)
+      errorExplanation = `Your dataset description file has the following invalid entries: ${invalidEntries}`
+    }
+
+    return [
+      errorExplanation,
+      "To fix this issue use one of the valid 'relation type' values outlined in the SPARC SDS.",
+      "URL: Path to SODA"
+    ]
+  }
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
