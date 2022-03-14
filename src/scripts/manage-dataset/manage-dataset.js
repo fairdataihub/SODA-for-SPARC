@@ -2614,7 +2614,7 @@ $("#button-submit-dataset").click(async () => {
         );
         Swal.fire({
           icon: "error",
-          title: "An error occured",
+          title: "An error occurred",
           html: "Please return to progress page to see full error",
         }).then((result) => {
           progressClone.remove();

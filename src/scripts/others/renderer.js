@@ -6618,7 +6618,7 @@ function initiate_generate() {
       uploadLocally.style = "background-color: #fff";
       Swal.fire({
         icon: "error",
-        title: "An error occured",
+        title: "An error occurred",
         html: "Please return to progress page to see full error",
       }).then((result) => {
         statusBarClone.remove();
@@ -6925,8 +6925,8 @@ function initiate_generate() {
         uploadLocally.style = "background-color: #fff";
         Swal.fire({
           icon: "error",
-          title: "An error occured",
-          html: "An error occured",
+          title: "An error occurred",
+          html: "An error occurred",
         }).then((result) => {
           //statusBarClone.remove();
           if (result.isConfirmed) {
