@@ -356,10 +356,12 @@ const ParsedErrorTranslator = {
     ];
   },
 
+  
   translateInvalidContributorsContains: (errorMessage) => {
     return [
       "Your dataset description file has invalid contributor information",
-      "To fix ensure that all contributor information "
+      "To fix ensure that all contributor information is valid by the SPARC SDS that matches your version number",
+      "URL: Path to SODA"
     ]
   }
 };

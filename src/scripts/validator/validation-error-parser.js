@@ -368,9 +368,9 @@ const ValidationErrorParser = {
   parseInvalidContributorInformationContains: (path, validator) => {
     if (validator !== VALIDATOR_CATEGORIES.CONTAINS) return "";
 
-    let path = path[path.length - 1];
+    let lastElementOfPath = path[path.length - 1];
 
-    if (path !== "contributors") return "";
+    if (lastElementOfPath !== "contributors") return "";
 
     return "invalidContributorsContains";
   },

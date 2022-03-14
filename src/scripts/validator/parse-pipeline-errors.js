@@ -146,6 +146,7 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidContributorRole(message, validator);
+    translationKey = translationKey || ValidationErrorParser.parseInvalidContributorInformationContains(path, validator)
   } else if (validator === VALIDATOR_CATEGORIES.TYPE) {
     translationKey =
       translationKey ||
@@ -223,6 +224,7 @@ const pipelineErrorToTranslationTable = {
   contains: {
     invalidContributorRole:
       ParsedErrorTranslator.translateInvalidContributorRole,
+    invalidContributorsContains: ParsedErrorTranslator.translateInvalidContributorsContains
   },
   additionalProperties: {
     datasetDescriptionAdditionalProperties:
