@@ -183,15 +183,12 @@ const parseFeature = (error, pipeline) => {
         path,
         validator
       );
-  } else if(validator === VALIDATOR_CATEGORIES.ENUM) {
+  } else if (validator === VALIDATOR_CATEGORIES.ENUM) {
     translationKey =
       translationKey ||
-      ValidationErrorParser.parseInvalidRelationTypeEnum(
-        path,
-        validator
-      );
+      ValidationErrorParser.parseInvalidRelationTypeEnum(path, validator);
   } else {
-    throw new Error("The given category wasn't accounted for: ", validator )
+    throw new Error("The given category wasn't accounted for: ", validator);
   }
 
   return translationKey;
@@ -255,8 +252,9 @@ const pipelineErrorToTranslationTable = {
       ParsedErrorTranslator.translateAdditionalPropertiesDatasetDescription,
   },
   enum: {
-    invalidRelationTypeEnum: ParsedErrorTranslator.translateInvalidRelationTypeEnum
-  }
+    invalidRelationTypeEnum:
+      ParsedErrorTranslator.translateInvalidRelationTypeEnum,
+  },
 };
 
 // export the validationErrorPipeline function
