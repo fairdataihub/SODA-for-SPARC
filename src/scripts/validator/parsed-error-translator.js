@@ -356,7 +356,7 @@ const ParsedErrorTranslator = {
     ];
   },
 
-  
+
   translateInvalidContributorsContains: (errorMessage) => {
     return [
       "Your dataset description file has invalid contributor information",
