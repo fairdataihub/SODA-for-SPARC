@@ -374,6 +374,16 @@ const ValidationErrorParser = {
 
     return "invalidContributorsContains";
   },
+
+  parseInvalidIdentifierDescriptionType: (path, validator) => {
+    if(validator !== VALIDATOR_CATEGORIES.TYPE) return ""
+
+    let lastElementOfPath = path[path.length - 1]
+
+    if(lastElementOfPath !== "related_identifier_description") return ""
+
+    return "invalidIdentifierDescriptionType"
+  }
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
