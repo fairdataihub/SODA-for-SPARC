@@ -692,6 +692,9 @@ const deleteSubjectFolder = (subjectDeleteButton) => {
   subjectIdCellToDelete.remove();
   //Update subject table row indices
   updateGuidedTableIndices("subject-table-index");
+  console.log(
+    datasetStructureJSONObj["folders"]["primary"]["folders"][subjectIdToDelete]
+  );
   //delete the subject folder from the dataset structure obj
   delete datasetStructureJSONObj["folders"]["primary"]["folders"][
     subjectIdToDelete
@@ -737,13 +740,22 @@ const createSampleFolder = (event, sampleNameInput) => {
         .find(".sample-table-name")
         .text()
         .trim();
-      /*let existingSubjectNames = Object.keys(
-        datasetStructureJSONObj.folders.primary.folders.subjects.folders
+      let sampleNameArray = [];
+      //Add all existing sample names to anarray
+      Object.keys(datasetStructureJSONObj["folders"]["primary"]["folders"]).map(
+        (subjectName) => {
+          let samplesInSubject = Object.keys(
+            datasetStructureJSONObj["folders"]["primary"]["folders"][
+              subjectName
+            ]["folders"]
+          );
+          Array.prototype.push.apply(sampleNameArray, samplesInSubject);
+        }
       );
-      //Throw error if entered subject name is duplicate
-      if (existingSubjectNames.includes(subjectName)) {
-        throw new Error("Subject name already exists");
-      }*/
+      //Throw error if entered sample name is duplicate
+      if (sampleNameArray.includes(sampleName)) {
+        throw new Error("Sample name already exists");
+      }
       const sampleNameElement = `
         <div class="space-between">
           <span class="sample-id">${sampleName}</span>
@@ -851,21 +863,24 @@ const openSampleFolder = (clickedStructureButton) => {
 };
 const deleteSampleFolder = (sampleDeleteButton) => {
   const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
-  const subjectIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
+  let samplesParentSubject = sampleDeleteButton
+    .closest("tbody")
+    .siblings()
+    .find(".sample-table-name")
+    .text()
+    .trim();
+  const sampleIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
+  console.log(samplesParentSubject);
+  console.log(sampleIdToDelete);
   //delete the table row element in the UI
   sampleIdCellToDelete.remove();
   //Update sample table row indices
   updateGuidedTableIndices("sample-table-index");
   //delete the sample folder from the dataset structure obj
-  let samplesSubject = sampleDeleteButton
-    .closest("tbody")
-    .siblings()
-    .find(".sample-table-name")
-    .text();
 
-  /*delete datasetStructureJSONObj["folders"]["primary"]["folders"][
-    subjectIdToDelete
-  ];*/
+  delete datasetStructureJSONObj["folders"]["primary"]["folders"][
+    samplesParentSubject
+  ]["folders"][sampleIdToDelete];
 };
 const renderSamplesTables = () => {
   //get subjects from the datasetStructureJSONObj
@@ -932,7 +947,7 @@ const renderSamplesTables = () => {
       .join("\n");
 
     return `
-      <table class="ui celled striped table" style="margin-bottom: 25px">
+      <table class="ui celled striped table" style="margin-bottom: 25px; min-width: 900px;">
         <thead>
           <tr>
             <th
