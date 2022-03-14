@@ -159,6 +159,10 @@ const parseFeature = (error, pipeline) => {
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidFundingType(path, validator);
+    
+      translationKey =
+      translationKey ||
+      ValidationErrorParser.parseInvalidIdentifierDescriptionType(path, validator);
   } else if (validator === VALIDATOR_CATEGORIES.ANY_OF) {
     translationKey =
       translationKey ||
@@ -208,6 +212,7 @@ const pipelineErrorToTranslationTable = {
     invalidFundingType: ParsedErrorTranslator.translateInvalidFundingType,
     invalidAcknowledgmentsType:
       ParsedErrorTranslator.translateInvalidFundingType,
+    invalidIdentifierDescriptionType: ParsedErrorTranslator.translateInvalidIdentifierDescriptionType
   },
   pattern: {
     invalidDatasetName: ParsedErrorTranslator.translateIncorrectDatasetName,
