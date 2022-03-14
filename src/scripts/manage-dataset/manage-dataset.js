@@ -2378,7 +2378,8 @@ $("#button-submit-dataset").click(async () => {
   returnButton.innerHTML = "Return to progress";
   let returnPage = document.getElementById("upload_local_dataset_btn");
   returnButton.onclick = function () {
-    document.getElementById("upload_local_dataset_progress_div").style.display = "flex";
+    document.getElementById("upload_local_dataset_progress_div").style.display =
+      "flex";
     returnPage.click();
   };
   progressClone.appendChild(returnButton);
