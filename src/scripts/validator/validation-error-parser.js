@@ -376,14 +376,14 @@ const ValidationErrorParser = {
   },
 
   parseInvalidIdentifierDescriptionType: (path, validator) => {
-    if(validator !== VALIDATOR_CATEGORIES.TYPE) return ""
+    if (validator !== VALIDATOR_CATEGORIES.TYPE) return "";
 
-    let lastElementOfPath = path[path.length - 1]
+    let lastElementOfPath = path[path.length - 1];
 
-    if(lastElementOfPath !== "related_identifier_description") return ""
+    if (lastElementOfPath !== "related_identifier_description") return "";
 
-    return "invalidIdentifierDescriptionType"
-  }
+    return "invalidIdentifierDescriptionType";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
