@@ -363,6 +363,28 @@ const ParsedErrorTranslator = {
       "URL: Path to SODA",
     ];
   },
+
+  translateInvalidIdentifierDescriptionType: (errorMessage) => {
+    let searchForTextFollowingDescriptionParam = /is not of type/;
+
+    let indexOfTextFollowingDescriptionParam = searchForTextFollowingDescriptionParam.exec(errorMessage);
+
+    let errorExplanation = "";
+
+    if(!indexOfTextFollowingDescriptionParam) {
+      errorExplanation = "Your dataset description file has invalid entries for the 'Identifier description' field/row."
+    } else {
+      let invalidEntry = errorMessage.slice(0, indexOfTextFollowingDescriptionParam)
+      errorExplanation = `Your dataset description file has this invalid entry for the 'Identifier description' field: ${invalidEntry}`
+    }
+
+
+    return [
+      errorExplanation,
+      "To fix the issue ensure your 'identifier description' fields are formatted as strings that are accurate descriptions of the referent of the related identifier",
+      "URL: Path to SODA"    
+    ]
+  }
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
