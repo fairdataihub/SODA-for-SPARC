@@ -4679,95 +4679,103 @@ organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) => {
-  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  irregularFolderArray = [];
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  for (var ele of pathElement) {
-    detectIrregularFolders(path.basename(ele), ele);
+ipcRenderer.on(
+  "selected-folders-organize-datasets",
+  async (event, pathElement) => {
+    var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+    irregularFolderArray = [];
+    var filtered = getGlobalPath(organizeDSglobalPath);
+    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+    for (var ele of pathElement) {
+      detectIrregularFolders(path.basename(ele), ele);
+    }
+    if (irregularFolderArray.length > 0) {
+      Swal.fire({
+        title:
+          "The following folders contain non-allowed characters in their names. How should we handle them?",
+        html:
+          "<div style='max-height:300px; overflow-y:auto'>" +
+          irregularFolderArray.join("</br>") +
+          "</div>",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Replace characters with (-)",
+        denyButtonText: "Remove characters",
+        cancelButtonText: "Cancel",
+        didOpen: () => {
+          $(".swal-popover").popover();
+        },
+        footer: footer,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          await Swal.fire({
+            title: "Importing items...",
+            html: "Please wait",
+            allowEscapeKey: true,
+            allowOutsideClick: true,
+            heightAuto: false,
+            showConfirmButton: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            timer: 400,
+            didOpen: () => {
+              //creates the loading icon for SweetAlert
+              Swal.showLoading();
+            },
+          });
+          addFoldersfunction(
+            "replace",
+            irregularFolderArray,
+            pathElement,
+            myPath
+          );
+        } else if (result.isDenied) {
+          await Swal.fire({
+            title: "Importing items...",
+            html: "Please wait",
+            allowEscapeKey: true,
+            allowOutsideClick: true,
+            heightAuto: false,
+            showConfirmButton: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            timer: 400,
+            didOpen: () => {
+              //creates the loading icon for SweetAlert
+              Swal.showLoading();
+            },
+          });
+          addFoldersfunction(
+            "remove",
+            irregularFolderArray,
+            pathElement,
+            myPath
+          );
+        }
+      });
+    } else {
+      await Swal.fire({
+        title: "Importing items...",
+        html: "Please wait",
+        allowEscapeKey: true,
+        allowOutsideClick: true,
+        heightAuto: false,
+        showConfirmButton: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        timer: 400,
+        didOpen: () => {
+          //creates the loading icon for SweetAlert
+          Swal.showLoading();
+        },
+      });
+      addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+    }
   }
-  if (irregularFolderArray.length > 0) {
-    Swal.fire({
-      title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
-      didOpen: () => {
-        $(".swal-popover").popover();
-      },
-      footer: footer,
-    }).then(async (result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        await Swal.fire({
-          title: "Importing items...",
-          html: "Please wait",
-          allowEscapeKey: true,
-          allowOutsideClick: true,
-          heightAuto: false,
-          showConfirmButton: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          timer: 400,
-          didOpen: () => {
-            //creates the loading icon for SweetAlert
-            Swal.showLoading();
-          },
-        });
-        addFoldersfunction(
-          "replace",
-          irregularFolderArray,
-          pathElement,
-          myPath
-        );
-      } else if (result.isDenied) {
-        await Swal.fire({
-          title: "Importing items...",
-          html: "Please wait",
-          allowEscapeKey: true,
-          allowOutsideClick: true,
-          heightAuto: false,
-          showConfirmButton: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          timer: 400,
-          didOpen: () => {
-            //creates the loading icon for SweetAlert
-            Swal.showLoading();
-          },
-        });
-        addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-      }
-    });
-  } else {
-    await Swal.fire({
-      title: "Importing items...",
-      html: "Please wait",
-      allowEscapeKey: true,
-      allowOutsideClick: true,
-      heightAuto: false,
-      showConfirmButton: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      timer: 400,
-      didOpen: () => {
-        //creates the loading icon for SweetAlert
-        Swal.showLoading();
-      },
-    });
-    addFoldersfunction("", irregularFolderArray, pathElement, myPath);
-  }
-});
+);
 
 function addFoldersfunction(
   action,
@@ -4907,12 +4915,7 @@ function addFoldersfunction(
         datasetStructureJSONObj
       );
       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu(
-        "high-level-folder",
-        menuFolder,
-        menuHighLevelFolders,
-        menuFile
-      );
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
 
       // log the success
       logCurationForAnalytics(
@@ -4994,7 +4997,7 @@ async function drop(ev) {
       } else {
         return;
       }
-        await Swal.fire({
+      await Swal.fire({
         title: "Importing items...",
         html: "Please wait",
         allowEscapeKey: true,
@@ -6006,12 +6009,11 @@ function listItems(jsonObj, uiItem) {
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(async function () {
-
-    if($(this).children("h1").hasClass("myFol")) {
+    if ($(this).children("h1").hasClass("myFol")) {
       var folderName = this.innerText;
       var appendString = "";
       currentLocation.value = currentLocation.value + folderName + "/";
-  
+
       var currentPath = currentLocation.value;
       var jsonPathArray = currentPath.split("/");
       var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -6020,43 +6022,43 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       var myPath = getRecursivePath(filtered, globalObj);
       let amount_of_items = Object.keys(myPath["files"]).length;
       amount_of_items = amount_of_items + Object.keys(myPath["folders"]).length;
-      if(amount_of_items < 1000) {
+      if (amount_of_items < 1000) {
         var appendString = loadFileFolder(myPath);
 
         $(uiItem).empty();
         $(uiItem).html(appendString);
         organizeLandingUIEffect();
-  
+
         // reconstruct folders and files (child elements after emptying the Div)
         listItems(myPath, uiItem);
         getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
       } else {
-          //await is needed for prompt to appear before continuing
-          await Swal.fire({
-            title: "Opening folder...",
-            html: "Please wait",
-            allowEscapeKey: true,
-            allowOutsideClick: true,
-            heightAuto: false,
-            showConfirmButton: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            timerProgressBar: false,
-            timer: 200,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          });
-          if ($(this).children("h1").hasClass("myFol")) {
-            var appendString = loadFileFolder(myPath);
-    
-            $(uiItem).empty();
-            $(uiItem).html(appendString);
-            organizeLandingUIEffect();
-      
-            // reconstruct folders and files (child elements after emptying the Div)
-            listItems(myPath, uiItem);
-            getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
-          }
+        //await is needed for prompt to appear before continuing
+        await Swal.fire({
+          title: "Opening folder...",
+          html: "Please wait",
+          allowEscapeKey: true,
+          allowOutsideClick: true,
+          heightAuto: false,
+          showConfirmButton: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          timer: 200,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+        if ($(this).children("h1").hasClass("myFol")) {
+          var appendString = loadFileFolder(myPath);
+
+          $(uiItem).empty();
+          $(uiItem).html(appendString);
+          organizeLandingUIEffect();
+
+          // reconstruct folders and files (child elements after emptying the Div)
+          listItems(myPath, uiItem);
+          getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
+        }
       }
     }
   });
