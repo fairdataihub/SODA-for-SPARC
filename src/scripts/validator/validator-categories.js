@@ -14,7 +14,7 @@ const VALIDATOR_CATEGORIES = {
   TYPE: "type",
   MIN_ITEMS: "minItems",
   ADDITIONAL_PROPERTIES: "additionalProperties",
-  ENUM: "enum"
+  ENUM: "enum",
 };
 
 exports.VALIDATOR_CATEGORIES = VALIDATOR_CATEGORIES;
