@@ -1636,7 +1636,6 @@ async function addFilesfunction(
   singleUIItem,
   globalPathValue
 ) {
-  let startTime = performance.now();
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
@@ -1834,10 +1833,6 @@ async function addFilesfunction(
       determineDatasetLocation()
     );
   }
-  let endTime = performance.now();
-  console.log(
-    `Duration of addFilesFunction: ${endTime - startTime} milliseconds`
-  );
 }
 
 ///// function to load details to show in display once

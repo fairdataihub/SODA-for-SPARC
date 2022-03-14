@@ -4619,8 +4619,7 @@ organizeDSaddFiles.addEventListener("click", function () {
   ipcRenderer.send("open-files-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
-  let startTime = performance.now();
+ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let hidden_files_present = false;
@@ -4648,50 +4647,31 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
     });
   }
   if (path.length > 0) {
-    let resultPromise = new Promise(async (resolved) => {
-      // console.log("entering promise");
-      // console.log("actually we don't need it here");
-      await Swal.fire({
-        title: "Importing files...",
-        html: "Please wait",
-        allowEscapeKey: true,
-        allowOutsideClick: true,
-        heightAuto: false,
-        showConfirmButton: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        timer: 400,
-        didOpen: async () => {
-          // console.log("didopen stage here");
-          //Swal.clickConfirm();
-          await Swal.showLoading();
-
-          // console.log("now we move forward");
-          //Swal.clickConfirm();
-        },
-        willClose: () => {
-          // console.log("will close?");
-          Swal.clickConfirm();
-        },
-      });
-      resolved();
-      // resolved();
-      // console.log("should move on to then()");
-    }).then(async () => {
-      // console.log("entering addFiles function");
-      await addFilesfunction(
-        path,
-        myPath,
-        organizeDSglobalPath,
-        "#items",
-        ".single-item",
-        datasetStructureJSONObj
-      );
-      let endTime = performance.now();
-      console.log(
-        `Duration of ipcRenderer: ${endTime - startTime} milliseconds`
-      );
+    //await is needed for swal to display before continuing
+    await Swal.fire({
+      title: "Importing items...",
+      html: "Please wait",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      showConfirmButton: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      timer: 400,
+      didOpen: () => {
+        //creates the loading icon for SweetAlert
+        Swal.showLoading();
+      },
     });
+    //waiting for add files to be completed
+    await addFilesfunction(
+      path,
+      myPath,
+      organizeDSglobalPath,
+      "#items",
+      ".single-item",
+      datasetStructureJSONObj
+    );
   }
 });
 
@@ -4699,7 +4679,7 @@ organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
+ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) => {
   var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   irregularFolderArray = [];
   var filtered = getGlobalPath(organizeDSglobalPath);
@@ -4726,9 +4706,24 @@ ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
         $(".swal-popover").popover();
       },
       footer: footer,
-    }).then((result) => {
+    }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
+        await Swal.fire({
+          title: "Importing items...",
+          html: "Please wait",
+          allowEscapeKey: true,
+          allowOutsideClick: true,
+          heightAuto: false,
+          showConfirmButton: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          timer: 400,
+          didOpen: () => {
+            //creates the loading icon for SweetAlert
+            Swal.showLoading();
+          },
+        });
         addFoldersfunction(
           "replace",
           irregularFolderArray,
@@ -4736,10 +4731,40 @@ ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
           myPath
         );
       } else if (result.isDenied) {
+        await Swal.fire({
+          title: "Importing items...",
+          html: "Please wait",
+          allowEscapeKey: true,
+          allowOutsideClick: true,
+          heightAuto: false,
+          showConfirmButton: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          timer: 400,
+          didOpen: () => {
+            //creates the loading icon for SweetAlert
+            Swal.showLoading();
+          },
+        });
         addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
       }
     });
   } else {
+    await Swal.fire({
+      title: "Importing items...",
+      html: "Please wait",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      showConfirmButton: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      timer: 400,
+      didOpen: () => {
+        //creates the loading icon for SweetAlert
+        Swal.showLoading();
+      },
+    });
     addFoldersfunction("", irregularFolderArray, pathElement, myPath);
   }
 });
@@ -4750,7 +4775,6 @@ function addFoldersfunction(
   folderArray,
   currentLocation
 ) {
-  let startTime = performance.now();
   var uiFolders = {};
   var importedFolders = {};
   var duplicateFolders = [];
@@ -4900,8 +4924,6 @@ function addFoldersfunction(
       );
     }
   }
-  let endTime = performance.now();
-  console.log(`Duration of addFolders: ${endTime - startTime} milliseconds`);
 }
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
@@ -4973,7 +4995,7 @@ async function drop(ev) {
         return;
       }
         await Swal.fire({
-        title: "Importing files...",
+        title: "Importing items...",
         html: "Please wait",
         allowEscapeKey: true,
         allowOutsideClick: true,
@@ -4983,15 +5005,9 @@ async function drop(ev) {
         timerProgressBar: false,
         timer: 400,
         didOpen: async () => {
-          // console.log("didopen stage here");
-          //Swal.clickConfirm();
           await Swal.showLoading();
-
-          // console.log("now we move forward");
-          //Swal.clickConfirm();
         },
         willClose: () => {
-          // console.log("will close?");
           Swal.clickConfirm();
         },
       });
@@ -5009,7 +5025,7 @@ async function drop(ev) {
     });
   } else {
     await Swal.fire({
-      title: "Importing files...",
+      title: "Importing items...",
       html: "Please wait",
       allowEscapeKey: true,
       allowOutsideClick: true,
@@ -5056,9 +5072,6 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
-  //measuring performance here
-  //Swal.fire({})
-  let startTime = performance.now();
   var folderPath = [];
   var duplicateFolders = [];
   for (var i = 0; i < ev1.length; i++) {
@@ -5334,18 +5347,16 @@ function dropHelper(
       $(appendString).appendTo(ev2);
     }
     listItems(myPath, "#items");
-    /*getInFolder(
+    getInFolder(
       ".single-item",
       "#items",
       organizeDSglobalPath,
       datasetStructureJSONObj
-    );*/
+    );
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   $("body").removeClass("waiting");
-  let endTime = performance.now();
-  console.log(`Duration for DropHelper): ${endTime - startTime} milliseconds`);
 }
 
 var irregularFolderArray = [];
@@ -5792,15 +5803,9 @@ function sortObjByKeys(object) {
 }
 
 function listItems(jsonObj, uiItem) {
-  let startTime = performance.now();
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
-  console.log(sortedObj.length);
-  console.log(typeof sortedObj);
   if (Object.keys(sortedObj["folders"]).length > 0) {
-    console.log(sortedObj["folders"]);
-    console.log(Object.keys(sortedObj["folders"]).length);
-    console.log("sortedObj[folders] > 0");
     for (var item in sortedObj["folders"]) {
       var emptyFolder = "";
       if (!highLevelFolders.includes(item)) {
@@ -5872,7 +5877,6 @@ function listItems(jsonObj, uiItem) {
     }
   }
   if (Object.keys(sortedObj["files"]).length > 0) {
-    console.log("sortedObj[files] > 0");
     for (var item in sortedObj["files"]) {
       // not the auto-generated manifest
       if (sortedObj["files"][item].length !== 1) {
@@ -5998,38 +6002,64 @@ function listItems(jsonObj, uiItem) {
     select_items_ctrl(items, event, isDragging);
   });
   drag_event_fired = false;
-  let endTime = performance.now();
-  console.log(`Duration for listItems: ${endTime - startTime} milliseconds`);
 }
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
-  let startTime = performance.now();
-  $(singleUIItem).dblclick(function () {
-    if ($(this).children("h1").hasClass("myFol")) {
+  $(singleUIItem).dblclick(async function () {
+
+    if($(this).children("h1").hasClass("myFol")) {
       var folderName = this.innerText;
       var appendString = "";
       currentLocation.value = currentLocation.value + folderName + "/";
-
+  
       var currentPath = currentLocation.value;
       var jsonPathArray = currentPath.split("/");
       var filtered = jsonPathArray.slice(1).filter(function (el) {
         return el.trim() != "";
       });
       var myPath = getRecursivePath(filtered, globalObj);
-      var appendString = loadFileFolder(myPath);
+      let amount_of_items = Object.keys(myPath["files"]).length;
+      amount_of_items = amount_of_items + Object.keys(myPath["folders"]).length;
+      if(amount_of_items < 1000) {
+        var appendString = loadFileFolder(myPath);
 
-      $(uiItem).empty();
-      $(uiItem).html(appendString);
-      organizeLandingUIEffect();
-
-      // reconstruct folders and files (child elements after emptying the Div)
-      listItems(myPath, uiItem);
-      getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
+        $(uiItem).empty();
+        $(uiItem).html(appendString);
+        organizeLandingUIEffect();
+  
+        // reconstruct folders and files (child elements after emptying the Div)
+        listItems(myPath, uiItem);
+        getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
+      } else {
+          //await is needed for prompt to appear before continuing
+          await Swal.fire({
+            title: "Opening folder...",
+            html: "Please wait",
+            allowEscapeKey: true,
+            allowOutsideClick: true,
+            heightAuto: false,
+            showConfirmButton: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            timer: 200,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+          if ($(this).children("h1").hasClass("myFol")) {
+            var appendString = loadFileFolder(myPath);
+    
+            $(uiItem).empty();
+            $(uiItem).html(appendString);
+            organizeLandingUIEffect();
+      
+            // reconstruct folders and files (child elements after emptying the Div)
+            listItems(myPath, uiItem);
+            getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
+          }
+      }
     }
   });
-  let endTime = performance.now();
-  //let duration = endTime - startTime;
-  console.log(`Duration for getInFolder: ${endTime - startTime} milliseconds`);
 }
 
 function sliceStringByValue(string, endingValue) {
