@@ -2882,6 +2882,8 @@ const populateMetadataObject = (
 /// function to populate/reload Organize dataset UI when users move around between tabs and make changes
 // (to high-level folders)
 const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
+  console.log(currentLocation);
+  console.log(datasetFolder);
   var baseName = path.basename(datasetFolder);
   currentLocation = {
     type: "local",
