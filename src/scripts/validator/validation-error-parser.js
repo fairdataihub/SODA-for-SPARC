@@ -384,6 +384,16 @@ const ValidationErrorParser = {
 
     return "invalidIdentifierDescriptionType";
   },
+
+  parseInvalidRelationType: (path, validator) => {
+    if(validator !== VALIDATOR_CATEGORIES.ENUM) return ""
+
+    let lastElementOfPath = path[path.length - 1]
+
+    if(lastElementOfPath !== "relation_type") return ""
+
+    return "invalidRelationTypeEnum"
+  }
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
