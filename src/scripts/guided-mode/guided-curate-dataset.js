@@ -422,16 +422,10 @@ const openSubjectFolder = (clickedStructureButton) => {
     "guided-subjects-folder-tab"
   );
   traverseToTab("guided-structure-folder-tab");
+
   var filtered = getGlobalPath(organizeDSglobalPath);
-  console.log(filtered);
-  if (filtered.length === 1) {
-    organizeDSglobalPath.value = filtered[0] + "/";
-    console.log(organizeDSglobalPath.value);
-  } else {
-    organizeDSglobalPath.value =
-      filtered.slice(0, filtered.length).join("/") + "/";
-    console.log(organizeDSglobalPath.value);
-  }
+  organizeDSglobalPath.value =
+    filtered.slice(0, filtered.length).join("/") + "/";
   var myPath = datasetStructureJSONObj;
   for (var item of filtered.slice(1, filtered.length)) {
     console.log(item);
@@ -442,12 +436,10 @@ const openSubjectFolder = (clickedStructureButton) => {
 
   /// empty the div
   $("#items").empty();
-
   $("#items").html(appendString);
 
   // reconstruct div with new elements
   listItems(myPath, "#items");
-
   getInFolder(
     ".single-item",
     "#items",
@@ -833,6 +825,29 @@ const openSampleFolder = (clickedStructureButton) => {
     "guided-samples-folder-tab"
   );
   traverseToTab("guided-structure-folder-tab");
+  var filtered = getGlobalPath(organizeDSglobalPath);
+  organizeDSglobalPath.value =
+    filtered.slice(0, filtered.length).join("/") + "/";
+
+  var myPath = datasetStructureJSONObj;
+  for (var item of filtered.slice(1, filtered.length)) {
+    myPath = myPath["folders"][item];
+  }
+  // construct UI with files and folders
+  var appendString = loadFileFolder(myPath);
+
+  /// empty the div
+  $("#items").empty();
+  $("#items").html(appendString);
+
+  // reconstruct div with new elements
+  listItems(myPath, "#items");
+  getInFolder(
+    ".single-item",
+    "#items",
+    organizeDSglobalPath,
+    datasetStructureJSONObj
+  );
 };
 const deleteSampleFolder = (sampleDeleteButton) => {
   const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
@@ -917,63 +932,63 @@ const renderSamplesTables = () => {
       .join("\n");
 
     return `
-      <table class="ui celled striped table">
-      <thead>
-        <tr>
-          <th
-            colspan="4"
-            class="text-center"
-            style="
-              z-index: 2;
-              height: 50px;
-              position: sticky !important;
-              top: -10px !important;
-            "
-          >
-            <span class="sample-table-name">
-              ${subject.subjectName}
-            </span>
-            <button
-              class="ui primary basic button small"
-              style="position: absolute;
-                right: 20px;
-                top: 50%;
-                transform: translateY(-50%);"
-              onclick="addSampleFolder($(this))"
+      <table class="ui celled striped table" style="margin-bottom: 25px">
+        <thead>
+          <tr>
+            <th
+              colspan="4"
+              class="text-center"
+              style="
+                z-index: 2;
+                height: 50px;
+                position: sticky !important;
+                top: -10px !important;
+              "
             >
-              <i class="fas fa-folder-plus" style="margin-right: 7px"></i
-              >Add ${subject.subjectName} sample
-            </button>
-          </th>
-        </tr>
-        <tr>
-          <th
-            class="center aligned"
-            style="z-index: 2; position: sticky !important; top: 40px !important"
-          >
-            Index
-          </th>
-          <th style="z-index: 2; position: sticky !important; top: 40px !important">
-            Sample ID
-          </th>
-          <th
-            class="center aligned"
-            style="z-index: 2; position: sticky !important; top: 40px !important"
-          >
-            Specify data files for the sample
-          </th>
-          <th
-            class="center aligned"
-            style="z-index: 2; position: sticky !important; top: 40px !important"
-          >
-            Delete
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        ${sampleRows}
-      </tbody>
-    </table>
+              <span class="sample-table-name">
+                ${subject.subjectName}
+              </span>
+              <button
+                class="ui primary basic button small"
+                style="position: absolute;
+                  right: 20px;
+                  top: 50%;
+                  transform: translateY(-50%);"
+                onclick="addSampleFolder($(this))"
+              >
+                <i class="fas fa-folder-plus" style="margin-right: 7px"></i
+                >Add ${subject.subjectName} sample
+              </button>
+            </th>
+          </tr>
+          <tr>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
+              Index
+            </th>
+            <th style="z-index: 2; position: sticky !important; top: 40px !important">
+              Sample ID
+            </th>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
+              Specify data files for the sample
+            </th>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
+              Delete
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sampleRows}
+        </tbody>
+      </table>
     `;
   });
   let sampleTablesContainer = document.getElementById(
@@ -2426,10 +2441,13 @@ $(document).ready(() => {
         return;
       }
     }
+    updateJSONStructureDSstructure();
+
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in sodaJSONObj["dataset-structure"]) {
       sodaJSONObj["dataset-structure"]["files"] = {};
     }
+
     // delete manifest files added for treeview
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
