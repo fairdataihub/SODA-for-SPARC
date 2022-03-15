@@ -92,7 +92,10 @@
                 class="guided--capsule"
                 id="guided-samples-folder-capsule"
               ></div>
-              <div class="guided--capsule" id="guided-fc3-capsule"></div>
+              <div
+                class="guided--capsule"
+                id="guided-derivative-folder-capsule"
+              ></div>
               <div class="guided--capsule" id="guided-fc4-capsule"></div>
               <div class="guided--capsule" id="guided-fc5-capsule"></div>
               <div class="guided--capsule" id="guided-fc6-capsule"></div>
@@ -454,7 +457,7 @@
           </div>
           <div
             id="guided-subjects-folder-tab"
-            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
             <div class="guided--question" id="number-of-subjects-prompt">
@@ -611,35 +614,53 @@
           </div>
           <div
             id="guided-samples-folder-tab"
-            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
             <div id="sample-tables-container"></div>
           </div>
           <div
-            id="guided-fc3-tab"
-            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
+            id="guided-derivative-folder-tab"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            Derivative
+            <div class="guided--question" id="number-of-deriv-prompt">
+              <label class="guided--form-label centered"
+                >Does your dataset contain source data?
+              </label>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-has-source-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-source-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
           </div>
           <div
             id="guided-fc4-tab"
-            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
             Code
           </div>
           <div
             id="guided-fc5-tab"
-            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
             Protocol
           </div>
           <div
             id="guided-fc6-tab"
-            class="guided--panel hidden guided starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
             Docs
@@ -725,7 +746,7 @@
           </div>
           <div
             id="guided-folder-importation-tab"
-            class="guided--panel hidden guided starting-point-branch-page guided-curate-existing-local-dataset-branch-page"
+            class="guided--panel hidden starting-point-branch-page guided-curate-existing-local-dataset-branch-page"
             data-skip-page="true"
           >
             <div class="guided--container-data-display">

@@ -900,7 +900,6 @@ const renderSamplesTables = () => {
     };
   });
   let sampleTables = sampleData.map((subject) => {
-    console.log(subject);
     let sampleRows = Array(parseInt(subject.sampleCount))
       .fill(0)
       .map((subject, index) => {
@@ -1011,6 +1010,20 @@ const renderSamplesTables = () => {
   );
   sampleTablesContainer.innerHTML = sampleTables.join("\n");
 };
+
+//Derivative page functions
+$("#guided-button-has-source-data").on("click", () => {
+  $("#structure-return-destination-text").text("Source page");
+  $("#guided-input-global-path").val(`My_dataset_folder/source/`);
+  $("#guided-button-exit-folder-structure").data(
+    "prev-page",
+    "guided-derivative-folder-tab"
+  );
+  traverseToTab("guided-structure-folder-tab");
+});
+$("#guided-button-no-source-data").on("click", () => {
+  $("#guided-user-has-subjects-form").hide();
+});
 
 $("#guided-dataset-name-input").val("test " + makeid(5));
 const getTagsFromTagifyElement = (tagifyElement) => {
