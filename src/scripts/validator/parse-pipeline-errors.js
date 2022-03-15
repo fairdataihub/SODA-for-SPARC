@@ -24,100 +24,35 @@ Takes a validation error and parses the features of the error to determine what 
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
 const validationErrorPipeline = (error, pipeline) => {
-  // get the validation category from the error message
-  let validationCategory = error.validator;
+  // get translated error message 
+  let translatedErrorMessage = getTranslatedErrorMessage(error,  pipeline)
 
-  // use the returned error type key to determine what translation function to run
-  let translationKey = parseFeature(error, pipeline);
+  console.log("Current translated error message: ", translatedErrorMessage)
 
-  let { message } = error;
-
-  if (!translationKey) {
-    throw new Error(
-      `Missing translation key for this error message: ${message}`
-    );
-  }
-
-  // use the returned error type key to determine what translation function to run
-  let validationCategoryTable =
-    pipelineErrorToTranslationTable[validationCategory];
-
-  if (!validationCategoryTable) {
-    throw new Error(
-      `Missing validation type from table: ${validationCategory}`
-    );
-  }
-
-  // get the translation function from the table
-  let translationFunction = validationCategoryTable[translationKey];
-
-  // this error has not been considered so send back Empty to denote that I missed a case
-  if (!translationFunction) {
-    throw new Error(
-      `Missing translation function for this translation key: ${translationKey}`
-    );
-  }
-
-  // send the translated message back to the user interface
-  return translationFunction(message);
+  return translatedErrorMessage
 };
 
 /* 
 Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
-const parseFeature = (error, pipeline) => {
+const getTranslatedErrorMessage = (error, pipeline) => {
   let translationKey = "";
   const { message, path, validator } = error;
+  let translatedErrorMessage = ""
   // search the string for a feature that can be used to determine what translation key to return
 
   // check the required category if applicable
   if (validator === VALIDATOR_CATEGORIES.REQUIRED) {
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingSubmission(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingAwardNumber(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingOrganSystem(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingModality(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingTechnique(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingFunding(message);
-    // translationKey =
-    //   translationKey ||
-    //   ValidationErrorParser.parseMissingProtocolUrlOrDoi(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingTitle(message);
-    // translationKey =
-    //   translationKey ||
-    //   ValidationErrorParser.parseMissingNumberOfSubjects(message);
-    // translationKey =
-    //   translationKey ||
-    //   ValidationErrorParser.parseMissingNumberOfSamples(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingName(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingDescription(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingSamples(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingSubjects(message);
-    // translationKey =
-    //   translationKey || ValidationErrorParser.parseMissingSpecies(message);
-
     // get the name of the missing required field
     let missingField =
       ValidationErrorParser.parseMissingRequiredFields(message);
 
-    // set the translation key using the field name 
+    // get the metadata file name that the missing field belongs to 
     let metadataFile = fieldToMetadataFileMap[missingField]
 
-    //
-    ParsedErrorTranslator.parseMissingRequiredFields(missingField, metadataFile)
-
-
+    // using the missing field and metadata file create an error message for the user
+    translatedErrorMessage = ParsedErrorTranslator.parseMissingRequiredFields(missingField, metadataFile)
   } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
     translationKey =
       translationKey ||
@@ -203,7 +138,7 @@ const parseFeature = (error, pipeline) => {
     throw new Error("The given category wasn't accounted for: ", validator);
   }
 
-  return translationKey;
+  return translatedErrorMessage;
 };
 
 // The top level 'required' 'type' and 'pattern' are values from the 'validator' key that is returned by the validator
