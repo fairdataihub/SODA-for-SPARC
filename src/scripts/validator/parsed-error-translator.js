@@ -391,6 +391,7 @@ const ParsedErrorTranslator = {
   },
 
   translateInvalidRelationTypeEnum: (errorMessage) => {
+    // TODO: Double check this string match
     let searchForTextFollowingInvalidRelationType = /is not one of/;
 
     let idxForTextFollowingInvalidRelationType =
@@ -411,6 +412,19 @@ const ParsedErrorTranslator = {
     return [
       errorExplanation,
       "To fix this issue use one of the valid 'relation type' values outlined in the SPARC SDS.",
+      "URL: Path to SODA",
+    ];
+  },
+
+  translateMissingRelatedIdentifiers: () => {
+    let errorExplanation = "";
+
+    errorExplanation =
+      "Your dataset description file is missing a required 'identifier' entry.";
+
+    return [
+      errorExplanation,
+      "To fix this ensure that all of your 'identifier' fields/rows have a value.",
       "URL: Path to SODA",
     ];
   },

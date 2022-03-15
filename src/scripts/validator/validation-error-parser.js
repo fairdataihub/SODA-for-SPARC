@@ -394,6 +394,13 @@ const ValidationErrorParser = {
 
     return "invalidRelationTypeEnum";
   },
+
+  parseMissingRelatedIdentifier: (errorMessage) => {
+    if (errorMessage !== "'related_identifier' is a required property")
+      return "";
+
+    return "missingRelatedIdentifier";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;
