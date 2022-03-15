@@ -56,6 +56,122 @@ const ValidationErrorParser = {
     return "";
   },
 
+  parseMissingSpecies: (errorMessage) => {
+    if (errorMessage === "'species' is a required property") {
+      return "missingSpecies";
+    }
+
+    return "";
+  },
+
+  parseMissingFunding: (errorMessage) => {
+    if (errorMessage === "'funding' is a required property") {
+      return "missingFunding";
+    }
+
+    return "";
+  },
+
+  parseMissingProtocolUrlOrDoi: (errorMessage) => {
+    if (errorMessage === "'protocol_url_or_doi' is a required property") {
+      return "missingProtocolUrlOrDoi";
+    }
+
+    return "";
+  },
+
+  parseMissingTitle: (errorMessage) => {
+    if (errorMessage === "'title' is a required property") {
+      return "missingTitle";
+    }
+
+    return "";
+  },
+
+  parseMissingNumberOfSubjects: (errorMessage) => {
+    if (errorMessage === "'number_of_subjects' is a required property") {
+      return "missingNumberOfSubjects";
+    }
+
+    return "";
+  },
+
+  parseMissingNumberOfSamples: (errorMessage) => {
+    if (errorMessage === "'number_of_samples' is a required property") {
+      return "missingNumberOfSamples";
+    }
+
+    return "";
+  },
+
+  // dataset description 1.2.3 requires a name property. This has been superceded by 'title' in 2.0.0
+  parseMissingName: (errorMessage) => {
+    if (errorMessage === "'name' is a required property") {
+      return "missingName";
+    }
+
+    return "";
+  },
+
+  parseMissingDescription: (errorMessage) => {
+    if (errorMessage === "'description' is a required property") {
+      return "missingDescription";
+    }
+
+    return "";
+  },
+
+  parseMissingSamples: (errorMessage) => {
+    if (errorMessage === "'samples' is a required property") {
+      return "missingSamples";
+    }
+
+    return "";
+  },
+
+  parseMissingSubjects: (errorMessage) => {
+    if (errorMessage === "'subjects' is a required property") {
+      return "missingSubjects";
+    }
+
+    return "";
+  },
+
+  // TODO: Experiment with this parser for required fields to see if it works with the usual 
+  parseMissingRequiredFields: (errorMessage) => {
+    let missingFieldCharacters = []
+    let encounteredComma = false
+
+    // take the missing field out of the error message
+    for (let idx = 0; idx < errorMessage; idx++) {
+      // check if comma
+      if (errorMessage[idx] === "'") {
+        // check if first comma encountered
+        if (!encounteredComma) {
+          encounteredComma = true
+        } else {
+          // second comma encountered indicates we have traversed the entire parameter the user 
+          // has not entered. field building is done.
+          break
+        }
+      } else {
+        // build up the missing required field 
+        missingFieldCharacters.push(errorMessage[idx])
+      }
+    }
+
+    // create the missing field name 
+    let missingField = missingFieldCharacters.join("")
+
+    // return the parsed missing required field
+    return missingField
+  },
+
+
+  // end of current required category parsing code ---------------------------------------------------
+
+
+  // start of other parsing code ---------------------------------------------------------------------
   parseMissingTechniqueValues: (errorMessage, path) => {
     const lastElementOfPath = path[path.length - 1];
 
@@ -103,6 +219,8 @@ const ValidationErrorParser = {
 
     return "";
   },
+
+
 
   parseInvalidDatasetId: (errorMessage, path, validator, pipeline) => {
     let lastElementOfPath = path[path.length - 1];
@@ -163,45 +281,7 @@ const ValidationErrorParser = {
     return "";
   },
 
-  parseMissingFunding: (errorMessage) => {
-    if (errorMessage === "'funding' is a required property") {
-      return "missingFunding";
-    }
 
-    return "";
-  },
-
-  parseMissingProtocolUrlOrDoi: (errorMessage) => {
-    if (errorMessage === "'protocol_url_or_doi' is a required property") {
-      return "missingProtocolUrlOrDoi";
-    }
-
-    return "";
-  },
-
-  parseMissingTitle: (errorMessage) => {
-    if (errorMessage === "'title' is a required property") {
-      return "missingTitle";
-    }
-
-    return "";
-  },
-
-  parseMissingNumberOfSubjects: (errorMessage) => {
-    if (errorMessage === "'number_of_subjects' is a required property") {
-      return "missingNumberOfSubjects";
-    }
-
-    return "";
-  },
-
-  parseMissingNumberOfSamples: (errorMessage) => {
-    if (errorMessage === "'number_of_samples' is a required property") {
-      return "missingNumberOfSamples";
-    }
-
-    return "";
-  },
 
   // TODO: Test for any possible variability in the input that can ruin our regular expression for getting the roles that need to be changed
   parseInvalidContributorRole: (errorMessage, validator) => {
@@ -211,39 +291,6 @@ const ValidationErrorParser = {
 
     if (hasContributor && validator === "contains") {
       return "invalidContributorRole";
-    }
-
-    return "";
-  },
-
-  // dataset description 1.2.3 requires a name property. This has been superceded by 'title' in 2.0.0
-  parseMissingName: (errorMessage) => {
-    if (errorMessage === "'name' is a required property") {
-      return "missingName";
-    }
-
-    return "";
-  },
-
-  parseMissingDescription: (errorMessage) => {
-    if (errorMessage === "'description' is a required property") {
-      return "missingDescription";
-    }
-
-    return "";
-  },
-
-  parseMissingSamples: (errorMessage) => {
-    if (errorMessage === "'samples' is a required property") {
-      return "missingSamples";
-    }
-
-    return "";
-  },
-
-  parseMissingSubjects: (errorMessage) => {
-    if (errorMessage === "'subjects' is a required property") {
-      return "missingSubjects";
     }
 
     return "";
@@ -271,13 +318,7 @@ const ValidationErrorParser = {
     return "invalidSubjectIdType";
   },
 
-  parseMissingSpecies: (errorMessage) => {
-    if (errorMessage === "'species' is a required property") {
-      return "missingSpecies";
-    }
 
-    return "";
-  },
 
   parseInvalidSpeciesAnyOf: (path, validator) => {
     if (validator !== VALIDATOR_CATEGORIES.ANY_OF) {

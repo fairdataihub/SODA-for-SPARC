@@ -73,39 +73,45 @@ const parseFeature = (error, pipeline) => {
 
   // check the required category if applicable
   if (validator === VALIDATOR_CATEGORIES.REQUIRED) {
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingSubmission(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingAwardNumber(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingOrganSystem(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingModality(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingTechnique(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingFunding(message);
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseMissingProtocolUrlOrDoi(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingTitle(message);
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseMissingNumberOfSubjects(message);
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseMissingNumberOfSamples(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingName(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingDescription(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingSamples(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingSubjects(message);
-    translationKey =
-      translationKey || ValidationErrorParser.parseMissingSpecies(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingSubmission(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingAwardNumber(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingOrganSystem(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingModality(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingTechnique(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingFunding(message);
+    // translationKey =
+    //   translationKey ||
+    //   ValidationErrorParser.parseMissingProtocolUrlOrDoi(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingTitle(message);
+    // translationKey =
+    //   translationKey ||
+    //   ValidationErrorParser.parseMissingNumberOfSubjects(message);
+    // translationKey =
+    //   translationKey ||
+    //   ValidationErrorParser.parseMissingNumberOfSamples(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingName(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingDescription(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingSamples(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingSubjects(message);
+    // translationKey =
+    //   translationKey || ValidationErrorParser.parseMissingSpecies(message);
+
+    // get the name of the missing required field 
+    let missingField = ValidationErrorParser.parseMissingRequiredFields(message)
+
+    // set the translation key using the field name 
+    translationKey = parsedErrorToTranslationKeyMap[missingField]
   } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
     translationKey =
       translationKey ||
@@ -258,6 +264,10 @@ const pipelineErrorToTranslationTable = {
     invalidRelationTypeEnum: ParsedErrorTranslator.translateInvalidRelationTypeEnum
   }
 };
+
+const missingFieldNameToPipelineErrorKeyTable = {
+  "funding": "missing"
+}
 
 // export the validationErrorPipeline function
 exports.translatePipelineError = validationErrorPipeline;
