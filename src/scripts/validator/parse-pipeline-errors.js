@@ -111,13 +111,14 @@ const parseFeature = (error, pipeline) => {
     let missingField =
       ValidationErrorParser.parseMissingRequiredFields(message);
 
-    // set the translation key using the field name 
-    let metadataFile = fieldToMetadataFileMap[missingField]
+    // set the translation key using the field name
+    let metadataFile = fieldToMetadataFileMap[missingField];
 
     //
-    ParsedErrorTranslator.parseMissingRequiredFields(missingField, metadataFile)
-
-
+    ParsedErrorTranslator.parseMissingRequiredFields(
+      missingField,
+      metadataFile
+    );
   } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
     translationKey =
       translationKey ||
