@@ -106,10 +106,12 @@ const parseFeature = (error, pipeline) => {
       translationKey || ValidationErrorParser.parseMissingSubjects(message);
     translationKey =
       translationKey || ValidationErrorParser.parseMissingSpecies(message);
-
     translationKey =
       translationKey ||
       ValidationErrorParser.parseMissingRelatedIdentifier(message);
+    translationKey =
+      translationKey ||
+      ValidationErrorParser.parseMissingRelatedIdentifierType(message);
   } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
     translationKey =
       translationKey ||
@@ -221,6 +223,8 @@ const pipelineErrorToTranslationTable = {
     missingSpecies: ParsedErrorTranslator.missingSpecies,
     missingRelatedIdentifier:
       ParsedErrorTranslator.translateMissingRelatedIdentifiers,
+    missingRelatedIdentifierType:
+      ParsedErrorTranslator.translateMissingRelatedIdentifierType,
   },
   type: {
     invalidSubjectIdType: ParsedErrorTranslator.translateInvalidSubjectIdType,

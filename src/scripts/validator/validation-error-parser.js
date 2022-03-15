@@ -401,6 +401,14 @@ const ValidationErrorParser = {
 
     return "missingRelatedIdentifier";
   },
+
+  parseMissingRelatedIdentifierType: (errorMessage) => {
+    if (errorMessage !== "'related_identifier_type' is a required property") {
+      return "";
+    }
+
+    return "missingRelatedIdentifierType";
+  },
 };
 
 exports.ValidationErrorParser = ValidationErrorParser;

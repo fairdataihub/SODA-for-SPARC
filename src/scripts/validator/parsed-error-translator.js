@@ -428,6 +428,17 @@ const ParsedErrorTranslator = {
       "URL: Path to SODA",
     ];
   },
+
+  translateMissingRelatedIdentifierType: () => {
+    let errorExplanation =
+      "Your description file missing a required 'identifier type' entry";
+
+    return [
+      errorExplanation,
+      "To fix this ensure that all of your 'identifier type' fields/rows have a value.",
+      "URL: Path to SODA",
+    ];
+  },
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
