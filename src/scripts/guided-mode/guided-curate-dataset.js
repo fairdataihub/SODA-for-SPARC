@@ -522,6 +522,62 @@ guidedCreateSodaJSONObj = () => {
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 
+/********** Folder structure utility **********/
+const highLevelFolderPageData = {
+  source: {
+    returnText: "source page",
+    pathSuffix: "source/",
+    backPageId: "guided-source-folder-tab",
+  },
+  code: {
+    returnText: "code page",
+    pathSuffix: "code/",
+    backPageId: "guided-code-folder-tab",
+  },
+  docs: {
+    returnText: "docs page",
+    pathSuffix: "docs/",
+    backPageId: "guided-docs-folder-tab",
+  },
+};
+const openFolderStructurePage = (pageDataObj) => {
+  $("#structure-return-destination-text").text(pageDataObj.returnText);
+  $("#guided-input-global-path").val(
+    `My_dataset_folder/${pageDataObj.pathSuffix}`
+  );
+  $("#guided-button-exit-folder-structure").data(
+    "prev-page",
+    pageDataObj.backPageId
+  );
+  updateFolderStructureUI();
+  traverseToTab("guided-structure-folder-tab");
+};
+const updateFolderStructureUI = () => {
+  var filtered = getGlobalPath(organizeDSglobalPath);
+  organizeDSglobalPath.value =
+    filtered.slice(0, filtered.length).join("/") + "/";
+
+  var myPath = datasetStructureJSONObj;
+  for (var item of filtered.slice(1, filtered.length)) {
+    myPath = myPath["folders"][item];
+  }
+  // construct UI with files and folders
+  var appendString = loadFileFolder(myPath);
+
+  /// empty the div
+  $("#items").empty();
+  $("#items").html(appendString);
+
+  // reconstruct div with new elements
+  listItems(myPath, "#items");
+  getInFolder(
+    ".single-item",
+    "#items",
+    organizeDSglobalPath,
+    datasetStructureJSONObj
+  );
+};
+
 //SUBJECT TABLE FUNCTIONS
 //Click handler that sets the Subject's name after enter press in the table input
 $("#guided-button-generate-subjects-table").on("click", () => {
@@ -713,23 +769,7 @@ $("#guided-button-generate-samples-table").on("click", () => {
   $("#number-of-samples-prompt").hide();
   $("#samples-table").css("display", "flex");
 });
-const createInputNumSampleFiles = (event, inputToRemove) => {
-  let numSampleRowsToCreate = parseInt(inputToRemove.val().trim());
-  console.log(numSampleRowsToCreate);
-  if (event.which == 13) {
-    sampleName = inputToRemove.val().trim();
-    if (subjectName.length > 0) {
-      subjectIdCellToAddNameTo = inputToRemove.parent();
-      inputToRemove.remove();
-      subjectIdCellToAddNameTo.text(subjectName);
-      guidedAddHighLevelFolderFolderFolderToDatasetStructureObj(
-        "primary",
-        subjectName,
-        sampleName
-      );
-    }
-  }
-};
+
 const createSampleFolder = (event, sampleNameInput) => {
   if (event.which == 13) {
     try {
@@ -1013,13 +1053,13 @@ const renderSamplesTables = () => {
 
 /*********** Source page functions ***********/
 $("#guided-button-has-source-data").on("click", () => {
-  $("#structure-return-destination-text").text("Source page");
-  $("#guided-input-global-path").val(`My_dataset_folder/source/`);
-  $("#guided-button-exit-folder-structure").data(
-    "prev-page",
-    "guided-source-folder-tab"
-  );
-  traverseToTab("guided-structure-folder-tab");
+  datasetStructureJSONObj["folders"]["source"] = {
+    folders: {},
+    files: {},
+    type: "",
+    action: [],
+  };
+  openFolderStructurePage(highLevelFolderPageData.source);
 });
 $("#guided-button-no-source-data").on("click", () => {});
 
@@ -1027,25 +1067,25 @@ $("#guided-button-no-source-data").on("click", () => {});
 
 /*********** Code page functions ***********/
 $("#guided-button-has-code-data").on("click", () => {
-  $("#structure-return-destination-text").text("Code page");
-  $("#guided-input-global-path").val(`My_dataset_folder/code/`);
-  $("#guided-button-exit-folder-structure").data(
-    "prev-page",
-    "guided-code-folder-tab"
-  );
-  traverseToTab("guided-structure-folder-tab");
+  datasetStructureJSONObj["folders"]["code"] = {
+    folders: {},
+    files: {},
+    type: "",
+    action: [],
+  };
+  openFolderStructurePage(highLevelFolderPageData.code);
 });
 $("#guided-button-no-code-data").on("click", () => {});
 
 /*********** Docs page functions ***********/
 $("#guided-button-has-docs-data").on("click", () => {
-  $("#structure-return-destination-text").text("Docs page");
-  $("#guided-input-global-path").val(`My_dataset_folder/docs/`);
-  $("#guided-button-exit-folder-structure").data(
-    "prev-page",
-    "guided-docs-folder-tab"
-  );
-  traverseToTab("guided-structure-folder-tab");
+  datasetStructureJSONObj["folders"]["docs"] = {
+    folders: {},
+    files: {},
+    type: "",
+    action: [],
+  };
+  openFolderStructurePage(highLevelFolderPageData.docs);
 });
 $("#guided-button-no-docs-data").on("click", () => {});
 
@@ -3384,7 +3424,6 @@ $(document).ready(() => {
   /// back button Curate
   $("#guided-button-back").on("click", function () {
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-    console.log(slashCount);
     if (slashCount !== 1) {
       var filtered = getGlobalPath(organizeDSglobalPath);
       if (filtered.length === 1) {
@@ -3414,8 +3453,6 @@ $(document).ready(() => {
         organizeDSglobalPath,
         datasetStructureJSONObj
       );
-    } else {
-      $("#guided-button-exit-folder-structure").click();
     }
   });
   $("#guided-new-folder").on("click", () => {
