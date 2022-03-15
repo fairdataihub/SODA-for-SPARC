@@ -1011,19 +1011,43 @@ const renderSamplesTables = () => {
   sampleTablesContainer.innerHTML = sampleTables.join("\n");
 };
 
-//Derivative page functions
+/*********** Source page functions ***********/
 $("#guided-button-has-source-data").on("click", () => {
   $("#structure-return-destination-text").text("Source page");
   $("#guided-input-global-path").val(`My_dataset_folder/source/`);
   $("#guided-button-exit-folder-structure").data(
     "prev-page",
-    "guided-derivative-folder-tab"
+    "guided-source-folder-tab"
   );
   traverseToTab("guided-structure-folder-tab");
 });
-$("#guided-button-no-source-data").on("click", () => {
-  $("#guided-user-has-subjects-form").hide();
+$("#guided-button-no-source-data").on("click", () => {});
+
+/*********** Derivative page functions ***********/
+
+/*********** Code page functions ***********/
+$("#guided-button-has-code-data").on("click", () => {
+  $("#structure-return-destination-text").text("Code page");
+  $("#guided-input-global-path").val(`My_dataset_folder/code/`);
+  $("#guided-button-exit-folder-structure").data(
+    "prev-page",
+    "guided-code-folder-tab"
+  );
+  traverseToTab("guided-structure-folder-tab");
 });
+$("#guided-button-no-code-data").on("click", () => {});
+
+/*********** Docs page functions ***********/
+$("#guided-button-has-docs-data").on("click", () => {
+  $("#structure-return-destination-text").text("Docs page");
+  $("#guided-input-global-path").val(`My_dataset_folder/docs/`);
+  $("#guided-button-exit-folder-structure").data(
+    "prev-page",
+    "guided-docs-folder-tab"
+  );
+  traverseToTab("guided-structure-folder-tab");
+});
+$("#guided-button-no-docs-data").on("click", () => {});
 
 $("#guided-dataset-name-input").val("test " + makeid(5));
 const getTagsFromTagifyElement = (tagifyElement) => {

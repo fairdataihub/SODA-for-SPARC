@@ -94,11 +94,20 @@
               ></div>
               <div
                 class="guided--capsule"
+                id="guided-source-folder-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
                 id="guided-derivative-folder-capsule"
               ></div>
-              <div class="guided--capsule" id="guided-fc4-capsule"></div>
-              <div class="guided--capsule" id="guided-fc5-capsule"></div>
-              <div class="guided--capsule" id="guided-fc6-capsule"></div>
+              <div
+                class="guided--capsule"
+                id="guided-code-folder-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
+                id="guided-docs-folder-capsule"
+              ></div>
             </div>
             <div
               class="guided--capsule-container-branch hidden"
@@ -620,11 +629,11 @@
             <div id="sample-tables-container"></div>
           </div>
           <div
-            id="guided-derivative-folder-tab"
+            id="guided-source-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question" id="number-of-deriv-prompt">
+            <div class="guided--question">
               <label class="guided--form-label centered"
                 >Does your dataset contain source data?
               </label>
@@ -645,25 +654,61 @@
             </div>
           </div>
           <div
-            id="guided-fc4-tab"
+            id="guided-derivative-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            Code
+            Derivative
           </div>
           <div
-            id="guided-fc5-tab"
+            id="guided-code-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            Protocol
+            <div class="guided--question">
+              <label class="guided--form-label centered"
+                >Does your dataset contain code?
+              </label>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-has-code-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-code-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
           </div>
           <div
-            id="guided-fc6-tab"
+            id="guided-docs-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            Docs
+            <div class="guided--question">
+              <label class="guided--form-label centered"
+                >Does your dataset contain docs?
+              </label>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-has-docs-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-docs-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
           </div>
           <div
             id="guided-structure-folder-tab"
