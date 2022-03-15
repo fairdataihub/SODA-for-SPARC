@@ -439,6 +439,19 @@ const ParsedErrorTranslator = {
       "URL: Path to SODA",
     ];
   },
+
+  /*
+    @param missingField string : represents the required field that was missing from the user's metadata files
+    @param metadataFile string : the metadata file that the given missing field belongs to 
+  */
+  translateMissingRequiredFields: (missingField, metadataFile) => {
+    let errorExplanation = `Your ${metadataFile} is missing this required field: ${missingField}`
+    let errorSolution = `To fix this problem, please add the ${missingField} to the ${metadataFile}.`
+    let pathToSoda = "URL: Path to SODA"
+
+    return [errorExplanation, errorSolution, pathToSoda]
+
+  }
 };
 
 exports.ParsedErrorTranslator = ParsedErrorTranslator;
