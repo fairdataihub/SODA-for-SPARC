@@ -1061,7 +1061,38 @@ $("#guided-button-has-source-data").on("click", () => {
   };
   openFolderStructurePage(highLevelFolderPageData.source);
 });
-$("#guided-button-no-source-data").on("click", () => {});
+$("#guided-button-no-source-data").on("click", () => {
+  if (datasetStructureJSONObj["folders"]["source"] != undefined) {
+    Swal.fire({
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      title:
+        "Are you sure you would like to delete existing source folder data?",
+      text: "You will not be able to undo this action!",
+      icon: "warning",
+      showConfirmButton: true,
+      confirmButtonText: "Continue",
+      showCancelButton: "No",
+      focusCancel: true,
+      reverseButtons: reverseSwalButtons,
+      heightAuto: false,
+      customClass: "swal-wide",
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //DELETE
+      }
+    });
+  } else {
+    // DELETE
+  }
+});
 
 /*********** Derivative page functions ***********/
 
