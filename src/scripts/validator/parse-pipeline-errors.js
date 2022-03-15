@@ -24,12 +24,12 @@ Takes a validation error and parses the features of the error to determine what 
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
 const validationErrorPipeline = (error, pipeline) => {
-  // get translated error message 
-  let translatedErrorMessage = getTranslatedErrorMessage(error,  pipeline)
+  // get translated error message
+  let translatedErrorMessage = getTranslatedErrorMessage(error, pipeline);
 
-  console.log("Current translated error message: ", translatedErrorMessage)
+  console.log("Current translated error message: ", translatedErrorMessage);
 
-  return translatedErrorMessage
+  return translatedErrorMessage;
 };
 
 /* 
@@ -39,7 +39,7 @@ Parse features of the given error message to determine what kind of translation 
 const getTranslatedErrorMessage = (error, pipeline) => {
   let translationKey = "";
   const { message, path, validator } = error;
-  let translatedErrorMessage = ""
+  let translatedErrorMessage = "";
   // search the string for a feature that can be used to determine what translation key to return
 
   // check the required category if applicable
@@ -48,11 +48,14 @@ const getTranslatedErrorMessage = (error, pipeline) => {
     let missingField =
       ValidationErrorParser.parseMissingRequiredFields(message);
 
-    // get the metadata file name that the missing field belongs to 
-    let metadataFile = fieldToMetadataFileMap[missingField]
+    // get the metadata file name that the missing field belongs to
+    let metadataFile = fieldToMetadataFileMap[missingField];
 
     // using the missing field and metadata file create an error message for the user
-    translatedErrorMessage = ParsedErrorTranslator.parseMissingRequiredFields(missingField, metadataFile)
+    translatedErrorMessage = ParsedErrorTranslator.parseMissingRequiredFields(
+      missingField,
+      metadataFile
+    );
   } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
     translationKey =
       translationKey ||
