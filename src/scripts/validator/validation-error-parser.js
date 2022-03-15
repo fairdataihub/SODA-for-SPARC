@@ -137,10 +137,10 @@ const ValidationErrorParser = {
     return "";
   },
 
-  // TODO: Experiment with this parser for required fields to see if it works with the usual 
+  // TODO: Experiment with this parser for required fields to see if it works with the usual
   parseMissingRequiredFields: (errorMessage) => {
-    let missingFieldCharacters = []
-    let encounteredComma = false
+    let missingFieldCharacters = [];
+    let encounteredComma = false;
 
     // take the missing field out of the error message
     for (let idx = 0; idx < errorMessage; idx++) {
@@ -148,28 +148,26 @@ const ValidationErrorParser = {
       if (errorMessage[idx] === "'") {
         // check if first comma encountered
         if (!encounteredComma) {
-          encounteredComma = true
+          encounteredComma = true;
         } else {
-          // second comma encountered indicates we have traversed the entire parameter the user 
+          // second comma encountered indicates we have traversed the entire parameter the user
           // has not entered. field building is done.
-          break
+          break;
         }
       } else {
-        // build up the missing required field 
-        missingFieldCharacters.push(errorMessage[idx])
+        // build up the missing required field
+        missingFieldCharacters.push(errorMessage[idx]);
       }
     }
 
-    // create the missing field name 
-    let missingField = missingFieldCharacters.join("")
+    // create the missing field name
+    let missingField = missingFieldCharacters.join("");
 
     // return the parsed missing required field
-    return missingField
+    return missingField;
   },
 
-
   // end of current required category parsing code ---------------------------------------------------
-
 
   // start of other parsing code ---------------------------------------------------------------------
   parseMissingTechniqueValues: (errorMessage, path) => {
@@ -219,8 +217,6 @@ const ValidationErrorParser = {
 
     return "";
   },
-
-
 
   parseInvalidDatasetId: (errorMessage, path, validator, pipeline) => {
     let lastElementOfPath = path[path.length - 1];
@@ -281,8 +277,6 @@ const ValidationErrorParser = {
     return "";
   },
 
-
-
   // TODO: Test for any possible variability in the input that can ruin our regular expression for getting the roles that need to be changed
   parseInvalidContributorRole: (errorMessage, validator) => {
     // TODO: Make more robust and yet also more specific
@@ -317,8 +311,6 @@ const ValidationErrorParser = {
 
     return "invalidSubjectIdType";
   },
-
-
 
   parseInvalidSpeciesAnyOf: (path, validator) => {
     if (validator !== VALIDATOR_CATEGORIES.ANY_OF) {

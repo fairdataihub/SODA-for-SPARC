@@ -107,11 +107,12 @@ const parseFeature = (error, pipeline) => {
     // translationKey =
     //   translationKey || ValidationErrorParser.parseMissingSpecies(message);
 
-    // get the name of the missing required field 
-    let missingField = ValidationErrorParser.parseMissingRequiredFields(message)
+    // get the name of the missing required field
+    let missingField =
+      ValidationErrorParser.parseMissingRequiredFields(message);
 
-    // set the translation key using the field name 
-    translationKey = parsedErrorToTranslationKeyMap[missingField]
+    // set the translation key using the field name
+    translationKey = parsedErrorToTranslationKeyMap[missingField];
   } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
     translationKey =
       translationKey ||
@@ -268,8 +269,8 @@ const pipelineErrorToTranslationTable = {
 };
 
 const missingFieldNameToPipelineErrorKeyTable = {
-  "funding": "missing"
-}
+  funding: "missing",
+};
 
 // export the validationErrorPipeline function
 exports.translatePipelineError = validationErrorPipeline;
