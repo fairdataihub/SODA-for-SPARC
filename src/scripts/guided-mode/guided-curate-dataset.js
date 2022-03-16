@@ -1062,17 +1062,19 @@ $("#guided-button-has-source-data").on("click", () => {
   openFolderStructurePage(highLevelFolderPageData.source);
 });
 $("#guided-button-no-source-data").on("click", () => {
+  //ask user to confirm they would like to delete source folder if it exists
   if (datasetStructureJSONObj["folders"]["source"] != undefined) {
     Swal.fire({
       allowOutsideClick: false,
       allowEscapeKey: false,
       title:
-        "Are you sure you would like to delete existing source folder data?",
+        "Reverting your decision will wipe out any changes you have made to the source folder.",
       text: "You will not be able to undo this action!",
       icon: "warning",
       showConfirmButton: true,
-      confirmButtonText: "Continue",
-      showCancelButton: "No",
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#3085d6 !important",
+      showCancelButton: true,
       focusCancel: true,
       reverseButtons: reverseSwalButtons,
       heightAuto: false,
@@ -1086,11 +1088,17 @@ $("#guided-button-no-source-data").on("click", () => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        //DELETE
+        //User agrees to delete source folder
+        delete datasetStructureJSONObj["folders"]["source"];
+      } else {
+        //User cancels
+        //reset button UI to how it was before the user clicked no source files
+        $("#guided-button-no-source-data").removeClass("selected");
+        $("#guided-button-no-source-data").addClass("not-selected");
+        $("#guided-button-has-source-data").removeClass("not-selected");
+        $("#guided-button-has-source-data").addClass("selected");
       }
     });
-  } else {
-    // DELETE
   }
 });
 
