@@ -34,27 +34,46 @@ const validationErrorPipeline = (error, pipeline) => {
 
 /* 
 Parse features of the given error message to determine what kind of translation needs to occur to make the message human readable
+@param object error: A validation error from the Validator. 
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
 const getTranslatedErrorMessage = (error, pipeline) => {
   let translationKey = "";
   const { message, path, validator } = error;
   let translatedErrorMessage = "";
-  // search the string for a feature that can be used to determine what translation key to return
 
   // check the required category if applicable
   if (validator === VALIDATOR_CATEGORIES.REQUIRED) {
-    // get the name of the missing required field
-    let missingField =
+    // get the name of the missing property
+    let missingProperty =
       ValidationErrorParser.parseMissingRequiredFields(message);
 
-    // get the metadata file name that the missing field belongs to
-    let metadataFile = fieldToMetadataFileMap[missingField];
+    // check if a field was returned
+    if (!missingProperty) {
+      // if not throw an error as the parser encountered an unexpected format for the
+      // 'required' validation category error message
+      throw Error(`Could not find a field in the given error message: ${message}`)
+    }
+
+    // determine what metadata file the given field belongs to
+    let metadataFile = MissingFieldNameToMetadataFileMap[missingProperty];
+
+    // catch any table misses caused by using different field name spelling than the validator
+    // and/or those caused when the missing property is a required metadata file and not a field
+    if (!metadataFile) {
+      // check to see if the missing field is a missing metadata file 
+      // Tom models file names with _ but I use spaces e.g., dataset description vs dataset_description
+      missingProperty = missingProperty.replace("_", " ") 
+
+      if(!Object.values(METADATA_FILES).includes(missingProperty)) {
+        throw Error(`No metadata file/field associated with this key: ${missingProperty}`)
+      }
+    }
 
     // using the missing field and metadata file create an error message for the user
-    translatedErrorMessage = ParsedErrorTranslator.parseMissingRequiredFields(
-      missingField,
-      metadataFile
+    translatedErrorMessage = ParsedErrorTranslator.translateMissingRequiredProperties(
+      metadataFile === undefined ? undefined : missingProperty,
+      metadataFile === undefined ? missingProperty : metadataFile
     );
   } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
     translationKey =
@@ -117,6 +136,8 @@ const getTranslatedErrorMessage = (error, pipeline) => {
         validator
       );
   } else if (validator === VALIDATOR_CATEGORIES.ANY_OF) {
+    console.log("Current error is: ",  error)
+    console.log("Path is: ", path)
     translationKey =
       translationKey ||
       ValidationErrorParser.parseInvalidSpeciesAnyOf(path, validator);
@@ -211,7 +232,14 @@ const pipelineErrorToTranslationTable = {
   },
 };
 
-const missingFieldNameToPipelineErrorKeyTable = {
+const METADATA_FILES = {
+  DATASET_DESCRIPTION: "dataset description",
+  SUBMISSION_FILE: "submission file"
+};
+
+
+
+const MissingFieldNameToMetadataFileMap = {
   type: METADATA_FILES.DATASET_DESCRIPTION,
   title: METADATA_FILES.DATASET_DESCRIPTION,
   subtitle: METADATA_FILES.DATASET_DESCRIPTION,
@@ -250,9 +278,7 @@ const missingFieldNameToPipelineErrorKeyTable = {
   "title for complete data set": METADATA_FILES.DATASET_DESCRIPTION,
 };
 
-const METADATA_FILES = {
-  DATASET_DESCRIPTION: "dataset description",
-};
+
 
 // export the validationErrorPipeline function
 exports.translatePipelineError = validationErrorPipeline;

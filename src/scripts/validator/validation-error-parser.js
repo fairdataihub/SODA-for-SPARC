@@ -143,7 +143,7 @@ const ValidationErrorParser = {
     let encounteredComma = false;
 
     // take the missing field out of the error message
-    for (let idx = 0; idx < errorMessage; idx++) {
+    for (let idx = 0; idx < errorMessage.length; idx++) {
       // check if comma
       if (errorMessage[idx] === "'") {
         // check if first comma encountered
@@ -317,6 +317,8 @@ const ValidationErrorParser = {
       return "";
     }
 
+    if(!path) return ""
+
     let lastElementOfPath = path[path.length - 1];
 
     if (lastElementOfPath !== "species") {
@@ -380,6 +382,8 @@ const ValidationErrorParser = {
 
   parseInvalidContributorAffiliationAnyOf: (path, validator) => {
     if (validator !== VALIDATOR_CATEGORIES.ANY_OF) return "";
+
+    if(!path) return ""
 
     let lastElementOfPath = path[path.length - 1];
 

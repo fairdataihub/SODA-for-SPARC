@@ -18,7 +18,7 @@ from sparcur.paths import Path as SparCurPath
 from configparser import ConfigParser
 import sys
 import yaml
-
+import pprint
 
 # project_id = auth.get('remote-organization')
 #PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
@@ -73,6 +73,16 @@ def api_validate_dataset_pipeline():
 
     blob = validate(norm_ds_path)
 
+    pprint.pprint(blob)
+
+    json_blob = json.dumps(blob, indent=4, default=str)
+
+    # write blob to a local file
+    with open("validation-result.txt", 'w') as file: 
+        file.write(json_blob)
+
+
+    # return json.dumps(blob, cls=DequeEncoder)
     errors = blob.get('errors')
 
     return json.dumps(errors, cls=DequeEncoder)
