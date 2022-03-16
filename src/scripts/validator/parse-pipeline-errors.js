@@ -212,7 +212,46 @@ const pipelineErrorToTranslationTable = {
 };
 
 const missingFieldNameToPipelineErrorKeyTable = {
-  funding: "missing",
+  type: METADATA_FILES.DATASET_DESCRIPTION,
+  title: METADATA_FILES.DATASET_DESCRIPTION,
+  subtitle: METADATA_FILES.DATASET_DESCRIPTION,
+  keywords: METADATA_FILES.DATASET_DESCRIPTION,
+  funding: METADATA_FILES.DATASET_DESCRIPTION,
+  acknowledgments: METADATA_FILES.DATASET_DESCRIPTION,
+  "study purpose": METADATA_FILES.DATASET_DESCRIPTION,
+  "study data collection": METADATA_FILES.DATASET_DESCRIPTION,
+  "study primary conclusion": METADATA_FILES.DATASET_DESCRIPTION,
+  "study organ system": METADATA_FILES.DATASET_DESCRIPTION,
+  "study approach": METADATA_FILES.DATASET_DESCRIPTION,
+  "study technique": METADATA_FILES.DATASET_DESCRIPTION,
+  "study collection title": METADATA_FILES.DATASET_DESCRIPTION,
+  "contributor name": METADATA_FILES.DATASET_DESCRIPTION,
+  "contributor orcid": METADATA_FILES.DATASET_DESCRIPTION,
+  "contributor affiliation": METADATA_FILES.DATASET_DESCRIPTION,
+  "contributor role": METADATA_FILES.DATASET_DESCRIPTION,
+  "identifier description": METADATA_FILES.DATASET_DESCRIPTION,
+  "relation type": METADATA_FILES.DATASET_DESCRIPTION,
+  identifier: METADATA_FILES.DATASET_DESCRIPTION,
+  "identifier type": METADATA_FILES.DATASET_DESCRIPTION,
+  "number of subjects": METADATA_FILES.DATASET_DESCRIPTION,
+  "number of samples": METADATA_FILES.DATASET_DESCRIPTION,
+  // 1.2.3 properties
+  name: METADATA_FILES.DATASET_DESCRIPTION,
+  description: METADATA_FILES.DATASET_DESCRIPTION,
+  contributors: METADATA_FILES.DATASET_DESCRIPTION,
+  "contributor orcid id": METADATA_FILES.DATASET_DESCRIPTION,
+  "is contact person": METADATA_FILES.DATASET_DESCRIPTION,
+  "originating article doi": METADATA_FILES.DATASET_DESCRIPTION,
+  "protocol url or doi": METADATA_FILES.DATASET_DESCRIPTION,
+  "additional links": METADATA_FILES.DATASET_DESCRIPTION,
+  "link description": METADATA_FILES.DATASET_DESCRIPTION,
+  "completeness of data set": METADATA_FILES.DATASET_DESCRIPTION,
+  "parent dataset id": METADATA_FILES.DATASET_DESCRIPTION,
+  "title for complete data set": METADATA_FILES.DATASET_DESCRIPTION,
+};
+
+const METADATA_FILES = {
+  DATASET_DESCRIPTION: "dataset description",
 };
 
 // export the validationErrorPipeline function
