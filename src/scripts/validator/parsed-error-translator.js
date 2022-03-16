@@ -445,19 +445,18 @@ const ParsedErrorTranslator = {
     @param metadataFile string : the metadata file that the given missing field belongs to 
   */
   translateMissingRequiredProperties: (missingField, metadataFile) => {
-    let errorExplanation = ""
-    let errorSolution = ""
+    let errorExplanation = "";
+    let errorSolution = "";
 
     // check if missing field was not provided
-    if(!missingField) {
+    if (!missingField) {
       // the user is missing a required metadata file; not a metadata field
-      errorExplanation = `You are missing this required metadata file: ${metadataFile}`
-      errorSolution = `To fix this problem, please create a ${metadataFile} file and/or fill it out according to SDS 2.0.0`
+      errorExplanation = `You are missing this required metadata file: ${metadataFile}`;
+      errorSolution = `To fix this problem, please create a ${metadataFile} file and/or fill it out according to SDS 2.0.0`;
     } else {
       errorExplanation = `Your ${metadataFile} is missing this required field: ${missingField}`;
       errorSolution = `To fix this problem, please add the ${missingField} to the ${metadataFile}.`;
     }
-
 
     // TODO: Add code that uses metadata file to give the correct path to where this can be modified in SDOA
     let pathToSoda = "URL: Path to SODA";
