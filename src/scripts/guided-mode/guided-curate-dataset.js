@@ -456,9 +456,6 @@ const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
     action: [],
   };
 };
-const blah = () => {
-  console.log("blah");
-};
 
 //dataset description (first page) functions
 guidedCreateSodaJSONObj = () => {
@@ -1284,8 +1281,19 @@ const setGuidedLicense = (newLicense) => {
   $(".guidedBfLicense").text(newLicense);
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
-
+const displayEmptyDropBoxToolTip = () => {
+  $("#items").append(
+    `<div class="guided--flex-center">
+      <div style="background-color: pink; height: 20px; width: 20px;"></div>
+      <div style="background-color: pink; height: 20px; width: 20px;"></div>
+      <div style="background-color: pink; height: 20px; width: 20px;"></div>
+    </div>`
+  );
+};
 $(document).ready(() => {
+  $("#button-render-empty-drop-helper").on("click", () => {
+    displayEmptyDropBoxToolTip();
+  });
   $("#guided-button-add-permission-user").on("click", function () {
     //create user permissions object
     const newUserPermission = {

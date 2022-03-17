@@ -26,7 +26,22 @@
   flex-direction: column;
   align-items: center;
 }
+.guided--drop-tooltip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  bottom: 70px;
+  display: flex;
+  justify-content: center;
+  width: 500px;
+  z-index: 100000;
+  background-color: aqua;
+}
 
+.guided--text-instructional-content {
+  margin-bottom: 0.5rem;
+}
 .guided--container > h2 {
   margin: 0px;
 }
@@ -262,7 +277,7 @@
 .guided--flex-center {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
 }
 
 .guided--container-dataset-info {

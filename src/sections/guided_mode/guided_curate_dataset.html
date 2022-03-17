@@ -647,8 +647,9 @@
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-source-data"
                 >
-                  Yes
-                </button>
+                  Yes</button
+                >Required if subjects are used in the experiment producing the
+                dataset.
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-no-source-data"
@@ -659,7 +660,7 @@
             </div>
             <button
               id="guided-button-open-source-folder"
-              class="btn_animated"
+              class="btn_animated hidden"
               style="
                 width: 160px;
                 min-width: 160px;
@@ -766,6 +767,7 @@
               <h1 class="guided--text-sub-step">
                 virtually structure your dataset in the interface below.
               </h1>
+
               <div class="guided--folder-organization-buttons-container">
                 <button
                   class="ui secondary basic button small"
@@ -774,6 +776,7 @@
                   <i class="fas fa-arrow-left" style="margin-right: 10px"></i
                   >Back to <span id="structure-return-destination-text"></span>
                 </button>
+                <button id="button-render-empty-drop-helper">test</button>
               </div>
               <div class="guided--folder-organization-buttons-container">
                 <div
@@ -835,14 +838,22 @@
                   </button>
                 </div>
               </div>
-              <div
-                id="guided-folder-structure-container"
-                class="w-100"
-                style="background-color: pink; z-index: 20000"
-                ondragover="blah()"
-              ></div>
+              <div id="guided-folder-structure-container" class="w-100"></div>
             </div>
           </div>
+          <!--
+          <div class="guided--drop-tooltip">
+            <p>Drag and drop in box above</p>
+            <div
+              style="
+                height: 50px;
+                width: 200px;
+                margin: 10px;
+                background-color: aliceblue;
+              "
+            ></div>
+          </div>-->
+
           <div
             id="guided-folder-importation-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-existing-local-dataset-branch-page"
