@@ -317,7 +317,7 @@ const ValidationErrorParser = {
       return "";
     }
 
-    if(!path) return ""
+    if (!path) return "";
 
     let lastElementOfPath = path[path.length - 1];
 
@@ -383,7 +383,7 @@ const ValidationErrorParser = {
   parseInvalidContributorAffiliationAnyOf: (path, validator) => {
     if (validator !== VALIDATOR_CATEGORIES.ANY_OF) return "";
 
-    if(!path) return ""
+    if (!path) return "";
 
     let lastElementOfPath = path[path.length - 1];
 
