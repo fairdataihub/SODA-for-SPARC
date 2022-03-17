@@ -73,13 +73,22 @@ def api_validate_dataset_pipeline():
 
     blob = validate(norm_ds_path)
 
-    pprint.pprint(blob)
+    # peel out the status object 
+    status = blob.get('status')
 
-    json_blob = json.dumps(blob, indent=4, default=str)
+    # peel out the path_error_report object
+    path_error_report = status.get('path_error_report')
+
+    pprint.pprint(path_error_report)
+
+    # get the validation errors out of the error report 
+
+
+    path_error_report = json.dumps(path_error_report, indent=4, default=str)
 
     # write blob to a local file
     with open("validation-result.txt", 'w') as file: 
-        file.write(json_blob)
+        file.write(path_error_report)
 
 
     # return json.dumps(blob, cls=DequeEncoder)
