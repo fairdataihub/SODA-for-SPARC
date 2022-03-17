@@ -456,49 +456,8 @@ const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
     action: [],
   };
 };
-const guidedAddHighLevelFolderFolderToDatasetStructureObj = (
-  highLevelFolderName,
-  createFolderName
-) => {
-  datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
-    createFolderName
-  ] = {
-    folders: {},
-    files: {},
-    type: "",
-    action: [],
-  };
-};
-const guidedRenameHighLevelFolderFolderToDatasetStructureObj = (
-  highLevelFolderName,
-  folderNameToRename,
-  newFolderName
-) => {
-  copiedFolderToRename =
-    datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
-      folderNameToRename
-    ];
-  datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
-    newFolderName
-  ] = copiedFolderToRename;
-
-  delete datasetStructureJSONObj["folders"][highLevelFolderName]["folders"][
-    folderNameToRename
-  ];
-};
-const guidedAddHighLevelFolderFolderFolderToDatasetStructureObj = (
-  highLevelFolderName,
-  parentFolderName,
-  createFolderName
-) => {
-  datasetStructureJSONObj["folders"][highLevelFolderName][parentFolderName][
-    "folders"
-  ][createFolderName] = {
-    folders: {},
-    files: {},
-    type: "",
-    action: [],
-  };
+const blah = () => {
+  console.log("blah");
 };
 
 //dataset description (first page) functions
@@ -528,6 +487,11 @@ const highLevelFolderPageData = {
     returnText: "source page",
     pathSuffix: "source/",
     backPageId: "guided-source-folder-tab",
+  },
+  derivative: {
+    returnText: "derivative page",
+    pathSuffix: "derivative/",
+    backPageId: "guided-derivative-folder-tab",
   },
   code: {
     returnText: "code page",
@@ -579,6 +543,9 @@ const updateFolderStructureUI = () => {
 };
 
 //SUBJECT TABLE FUNCTIONS
+$("#show-create-subjects-table-div").on("click", () => {
+  $("#guided-button-generate-subjects-table").show();
+});
 //Click handler that sets the Subject's name after enter press in the table input
 $("#guided-button-generate-subjects-table").on("click", () => {
   let numSubjectRowsToCreate = parseInt(
@@ -1053,13 +1020,14 @@ const renderSamplesTables = () => {
 
 /*********** Source page functions ***********/
 $("#guided-button-has-source-data").on("click", () => {
-  datasetStructureJSONObj["folders"]["source"] = {
-    folders: {},
-    files: {},
-    type: "",
-    action: [],
-  };
-  openFolderStructurePage(highLevelFolderPageData.source);
+  if (datasetStructureJSONObj["folders"]["source"] == undefined)
+    datasetStructureJSONObj["folders"]["source"] = {
+      folders: {},
+      files: {},
+      type: "",
+      action: [],
+    };
+  $("#guided-button-open-source-folder").show();
 });
 $("#guided-button-no-source-data").on("click", () => {
   //ask user to confirm they would like to delete source folder if it exists
@@ -1069,7 +1037,7 @@ $("#guided-button-no-source-data").on("click", () => {
       allowEscapeKey: false,
       title:
         "Reverting your decision will wipe out any changes you have made to the source folder.",
-      text: "You will not be able to undo this action!",
+      text: "Are you sure you would like to delete your derivative folder progress?",
       icon: "warning",
       showConfirmButton: true,
       confirmButtonText: "Delete",
@@ -1090,19 +1058,76 @@ $("#guided-button-no-source-data").on("click", () => {
       if (result.isConfirmed) {
         //User agrees to delete source folder
         delete datasetStructureJSONObj["folders"]["source"];
+        $("#guided-button-open-source-folder").hide();
       } else {
         //User cancels
         //reset button UI to how it was before the user clicked no source files
-        $("#guided-button-no-source-data").removeClass("selected");
-        $("#guided-button-no-source-data").addClass("not-selected");
-        $("#guided-button-has-source-data").removeClass("not-selected");
-        $("#guided-button-has-source-data").addClass("selected");
+        $("#guided-button-has-source-data").click();
       }
     });
   }
+  $("#guided-button-open-source-folder").hide();
+});
+$("#guided-button-open-source-folder").on("click", () => {
+  openFolderStructurePage(highLevelFolderPageData.source);
 });
 
 /*********** Derivative page functions ***********/
+
+/*********** derivative page functions ***********/
+/*********** derivative page functions ***********/
+$("#guided-button-has-derivative-data").on("click", () => {
+  if (datasetStructureJSONObj["folders"]["derivative"] == undefined)
+    datasetStructureJSONObj["folders"]["derivative"] = {
+      folders: {},
+      files: {},
+      type: "",
+      action: [],
+    };
+  $("#guided-button-open-derivative-folder").show();
+});
+$("#guided-button-no-derivative-data").on("click", () => {
+  //ask user to confirm they would like to delete derivative folder if it exists
+  if (datasetStructureJSONObj["folders"]["derivative"] != undefined) {
+    Swal.fire({
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      title:
+        "Reverting your decision will wipe out any changes you have made to the derivative folder.",
+      text: "You will not be able to undo this action!",
+      icon: "warning",
+      showConfirmButton: true,
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#3085d6 !important",
+      showCancelButton: true,
+      focusCancel: true,
+      reverseButtons: reverseSwalButtons,
+      heightAuto: false,
+      customClass: "swal-wide",
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //User agrees to delete derivative folder
+        delete datasetStructureJSONObj["folders"]["derivative"];
+        $("#guided-button-open-derivative-folder").hide();
+      } else {
+        //User cancels
+        //reset button UI to how it was before the user clicked no derivative files
+        $("#guided-button-has-derivative-data").click();
+      }
+    });
+  }
+  $("#guided-button-open-derivative-folder").hide();
+});
+$("#guided-button-open-derivative-folder").on("click", () => {
+  openFolderStructurePage(highLevelFolderPageData.derivative);
+});
 
 /*********** Code page functions ***********/
 $("#guided-button-has-code-data").on("click", () => {
@@ -1280,28 +1305,26 @@ $(document).ready(() => {
   });
 
   $(".guided--radio-button").on("click", function () {
-    const radioButtonsToBeDeselected = $(this).siblings(
-      ".guided--radio-button"
-    );
-    radioButtonsToBeDeselected.removeClass("selected");
-    radioButtonsToBeDeselected.addClass("not-selected");
-    $(this).removeClass("not-selected");
-    $(this).addClass("selected");
-  });
-  $("#guided-button-has-subjects").on("click", () => {
-    $("#guided-user-has-subjects-form").css("display", "flex");
-    $("#guided-user-no-subjects-form").hide();
-  });
-  $("#guided-button-no-subjects").on("click", () => {
-    $("#guided-user-has-subjects-form").hide();
-    $("#guided-user-no-subjects-form").css("display", "flex");
-  });
+    const selectedButton = $(this);
+    const notSelectedButton = $(this).siblings(".guided--radio-button");
 
-  $("#guided-button-samples-same").on("click", () => {
-    $("#guided-sample-count-same").css("display", "flex");
-  });
-  $("#guided-button-samples-not-same").on("click", () => {
-    $("#guided-sample-count-same").hide();
+    notSelectedButton.removeClass("selected");
+    notSelectedButton.addClass("not-selected");
+    selectedButton.removeClass("not-selected");
+    selectedButton.addClass("selected");
+
+    //Display selected element container if data-next-question exists
+    if (selectedButton.data("next-question")) {
+      nextQuestionID = selectedButton.data("next-question");
+      $(`#${nextQuestionID}`).css("display", "flex");
+    }
+    //Hide all child containers of non-selected buttons
+    notSelectedButton.each(function () {
+      if ($(this).data("next-question")) {
+        nextQuestionID = $(this).data("next-question");
+        $(`#${nextQuestionID}`).hide();
+      }
+    });
   });
 
   /////////////////////////////////////////////////////////

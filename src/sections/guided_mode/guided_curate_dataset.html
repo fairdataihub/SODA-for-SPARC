@@ -480,6 +480,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-subjects"
+                  data-next-question="guided-user-has-subjects-form"
                 >
                   Yes
                 </button>
@@ -511,10 +512,14 @@
                   <label class="guided--form-label centered"
                     >Do all of your subjects have the same amount of samples?
                   </label>
-                  <div class="guided--radio-button-container">
+                  <div
+                    class="guided--radio-button-container"
+                    id="show-create-subjects-table-div"
+                  >
                     <button
                       class="ui positive basic button guided--radio-button"
                       id="guided-button-samples-same"
+                      data-next-question="guided-sample-count-same"
                     >
                       Yes
                     </button>
@@ -544,7 +549,7 @@
                 </div>
                 <button
                   id="guided-button-generate-subjects-table"
-                  class="btn_animated"
+                  class="btn_animated hidden"
                   style="
                     width: 160px;
                     min-width: 160px;
@@ -652,13 +657,55 @@
                 </button>
               </div>
             </div>
+            <button
+              id="guided-button-open-source-folder"
+              class="btn_animated"
+              style="
+                width: 160px;
+                min-width: 160px;
+                border: none !important;
+                margin: 15px;
+              "
+            >
+              Structure source data
+            </button>
           </div>
           <div
             id="guided-derivative-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            Derivative
+            <div class="guided--question">
+              <label class="guided--form-label centered"
+                >Does your dataset contain derivative data?
+              </label>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-has-derivative-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-derivative-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <button
+              id="guided-button-open-derivative-folder"
+              class="btn_animated"
+              style="
+                width: 180px;
+                min-width: 180px;
+                border: none !important;
+                margin: 15px;
+              "
+            >
+              Structure derivative data
+            </button>
           </div>
           <div
             id="guided-code-folder-tab"
@@ -790,7 +837,9 @@
               </div>
               <div
                 id="guided-folder-structure-container"
-                style="width: 100%"
+                class="w-100"
+                style="background-color: pink; z-index: 20000"
+                ondragover="blah()"
               ></div>
             </div>
           </div>
