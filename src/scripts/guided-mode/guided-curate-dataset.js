@@ -1037,7 +1037,7 @@ $("#guided-button-no-source-data").on("click", () => {
       allowEscapeKey: false,
       title:
         "Reverting your decision will wipe out any changes you have made to the source folder.",
-      text: "Are you sure you would like to delete your derivative folder progress?",
+      text: "Are you sure you would like to delete your source folder progress?",
       icon: "warning",
       showConfirmButton: true,
       confirmButtonText: "Delete",
@@ -1094,7 +1094,7 @@ $("#guided-button-no-derivative-data").on("click", () => {
       allowEscapeKey: false,
       title:
         "Reverting your decision will wipe out any changes you have made to the derivative folder.",
-      text: "You will not be able to undo this action!",
+      text: "Are you sure you would like to delete your derivative folder progress?",
       icon: "warning",
       showConfirmButton: true,
       confirmButtonText: "Delete",
