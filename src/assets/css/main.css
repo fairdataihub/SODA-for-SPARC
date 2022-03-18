@@ -881,6 +881,7 @@ button[data-id="guided_bf_list_teams"] {
   align-items: center;
   width: 100%;
   padding: 25px;
+  opacity: 0.55;
 }
 
 .file-templates-button {

@@ -3654,7 +3654,12 @@ $(document).ready(() => {
       });
     }
   });
-
+  $("#guided-imoprt-file").on("click", () => {
+    ipcRenderer.send("open-files-organize-datasets-dialog");
+  });
+  $("#guided-import-folder").on("click", () => {
+    ipcRenderer.send("open-folders-organize-datasets-dialog");
+  });
   $("#guided-submission-completion-date").change(function () {
     const text = $("#guided-submission-completion-date").val();
     if (text == "Enter my own date") {
