@@ -436,6 +436,8 @@ const openSubjectFolder = (clickedStructureButton) => {
     </button>
   `);
   traverseToTab("guided-structure-folder-tab");
+  //Manually override active capsule to make it seem like they're still on the subjects tab
+  setActiveCapsule("guided-subjects-folder-tab");
 
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value =
