@@ -420,10 +420,16 @@ const openSubjectFolder = (clickedStructureButton) => {
   );
   $("#structure-return-destination-text").text("subjects table");
   $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
-  $("#guided-button-exit-folder-structure").data(
-    "prev-page",
-    "guided-subjects-folder-tab"
-  );
+  $("#folder-structure-button-row-top").append(`
+    <button
+      class="ui secondary basic button small"
+      onclick="returnToTableFromFolderStructure($(this))"
+      data-prev-page="guided-subjects-folder-tab"
+    >
+      <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+      >Back to subjects table
+    </button>
+  `);
   traverseToTab("guided-structure-folder-tab");
 
   var filtered = getGlobalPath(organizeDSglobalPath);
@@ -488,7 +494,6 @@ const highLevelFolderPageData = {
       "Virtually structure your source folder in the interface below.",
     contentsText:
       "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
-    returnText: "source page",
     pathSuffix: "source/",
     backPageId: "guided-source-folder-tab",
   },
@@ -497,7 +502,6 @@ const highLevelFolderPageData = {
       "Virtually structure your derivative folder in the interface below.",
     contentsText:
       "Your derivative folder should contain lorem ipsum foo bar random instructional text will go here",
-    returnText: "derivative page",
     pathSuffix: "derivative/",
     backPageId: "guided-derivative-folder-tab",
   },
@@ -505,7 +509,6 @@ const highLevelFolderPageData = {
     headerText: "Virtually structure your code folder in the interface below.",
     contentsText:
       "Your code folder should contain lorem ipsum foo bar random instructional text will go here",
-    returnText: "code page",
     pathSuffix: "code/",
     backPageId: "guided-code-folder-tab",
   },
@@ -513,26 +516,16 @@ const highLevelFolderPageData = {
     headerText: "Virtually structure your docs folder in the interface below.",
     contentsText:
       "Your docs folder should contain lorem ipsum foo bar random instructional text will go here",
-    returnText: "docs page",
     pathSuffix: "docs/",
     backPageId: "guided-docs-folder-tab",
   },
 };
-const openFolderStructurePage = (pageDataObj) => {
+const updateFolderStructureUI = (pageDataObj) => {
   $("#structure-folder-header").text(pageDataObj.headerText);
   $("#structure-folder-contents").text(pageDataObj.contentsText);
-  $("#structure-return-destination-text").text(pageDataObj.returnText);
   $("#guided-input-global-path").val(
     `My_dataset_folder/${pageDataObj.pathSuffix}`
   );
-  $("#guided-button-exit-folder-structure").data(
-    "prev-page",
-    pageDataObj.backPageId
-  );
-  updateFolderStructureUI();
-  traverseToTab("guided-structure-folder-tab");
-};
-const updateFolderStructureUI = () => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value =
     filtered.slice(0, filtered.length).join("/") + "/";
@@ -563,6 +556,12 @@ const updateFolderStructureUI = () => {
 $("#show-create-subjects-table-div-skip-samples").on("click", () => {
   $("#guided-button-generate-subjects-table").show();
 });
+
+const returnToTableFromFolderStructure = (clickedBackButton) => {
+  previousFolderStructurePage = clickedBackButton.attr("data-prev-page");
+  traverseToTab(previousFolderStructurePage);
+  clickedBackButton.remove();
+};
 
 $("#show-create-subjects-table-div").on("click", () => {
   $("#guided-button-generate-subjects-table").show();
@@ -1050,7 +1049,8 @@ $("#guided-button-has-source-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#guided-button-open-source-folder").show();
+  $("#structure-subjects-folder").appendTo($("#guided-user-has-source-data"));
+  updateFolderStructureUI(highLevelFolderPageData.source);
 });
 $("#guided-button-no-source-data").on("click", () => {
   //ask user to confirm they would like to delete source folder if it exists
@@ -1081,7 +1081,6 @@ $("#guided-button-no-source-data").on("click", () => {
       if (result.isConfirmed) {
         //User agrees to delete source folder
         delete datasetStructureJSONObj["folders"]["source"];
-        $("#guided-button-open-source-folder").hide();
       } else {
         //User cancels
         //reset button UI to how it was before the user clicked no source files
@@ -1089,10 +1088,6 @@ $("#guided-button-no-source-data").on("click", () => {
       }
     });
   }
-  $("#guided-button-open-source-folder").hide();
-});
-$("#guided-button-open-source-folder").on("click", () => {
-  openFolderStructurePage(highLevelFolderPageData.source);
 });
 
 /*********** Derivative page functions ***********/
@@ -1104,7 +1099,10 @@ $("#guided-button-has-derivative-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#guided-button-open-derivative-folder").show();
+  $("#structure-subjects-folder").appendTo(
+    $("#guided-user-has-derivative-data")
+  );
+  updateFolderStructureUI(highLevelFolderPageData.derivative);
 });
 $("#guided-button-no-derivative-data").on("click", () => {
   //ask user to confirm they would like to delete derivative folder if it exists
@@ -1135,7 +1133,6 @@ $("#guided-button-no-derivative-data").on("click", () => {
       if (result.isConfirmed) {
         //User agrees to delete derivative folder
         delete datasetStructureJSONObj["folders"]["derivative"];
-        $("#guided-button-open-derivative-folder").hide();
       } else {
         //User cancels
         //reset button UI to how it was before the user clicked no derivative files
@@ -1143,10 +1140,6 @@ $("#guided-button-no-derivative-data").on("click", () => {
       }
     });
   }
-  $("#guided-button-open-derivative-folder").hide();
-});
-$("#guided-button-open-derivative-folder").on("click", () => {
-  openFolderStructurePage(highLevelFolderPageData.derivative);
 });
 
 /*********** Code page functions ***********/
@@ -1158,7 +1151,8 @@ $("#guided-button-has-code-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#guided-button-open-code-folder").show();
+  $("#structure-subjects-folder").appendTo($("#guided-user-has-code-data"));
+  updateFolderStructureUI(highLevelFolderPageData.code);
 });
 $("#guided-button-no-code-data").on("click", () => {
   //ask user to confirm they would like to delete code folder if it exists
@@ -1189,7 +1183,6 @@ $("#guided-button-no-code-data").on("click", () => {
       if (result.isConfirmed) {
         //User agrees to delete code folder
         delete datasetStructureJSONObj["folders"]["code"];
-        $("#guided-button-open-code-folder").hide();
       } else {
         //User cancels
         //reset button UI to how it was before the user clicked no code files
@@ -1197,10 +1190,6 @@ $("#guided-button-no-code-data").on("click", () => {
       }
     });
   }
-  $("#guided-button-open-code-folder").hide();
-});
-$("#guided-button-open-code-folder").on("click", () => {
-  openFolderStructurePage(highLevelFolderPageData.code);
 });
 
 /*********** Docs page functions ***********/
@@ -1212,7 +1201,8 @@ $("#guided-button-has-docs-data").on("click", () => {
       type: "",
       action: [],
     };
-  $("#guided-button-open-docs-folder").show();
+  $("#structure-subjects-folder").appendTo($("#guided-user-has-docs-data"));
+  updateFolderStructureUI(highLevelFolderPageData.docs);
 });
 $("#guided-button-no-docs-data").on("click", () => {
   //ask user to confirm they would like to delete docs folder if it exists
@@ -1243,7 +1233,6 @@ $("#guided-button-no-docs-data").on("click", () => {
       if (result.isConfirmed) {
         //User agrees to delete docs folder
         delete datasetStructureJSONObj["folders"]["docs"];
-        $("#guided-button-open-docs-folder").hide();
       } else {
         //User cancels
         //reset button UI to how it was before the user clicked no docs files
@@ -1251,10 +1240,6 @@ $("#guided-button-no-docs-data").on("click", () => {
       }
     });
   }
-  $("#guided-button-open-docs-folder").hide();
-});
-$("#guided-button-open-docs-folder").on("click", () => {
-  openFolderStructurePage(highLevelFolderPageData.docs);
 });
 
 $("#guided-dataset-name-input").val("test " + makeid(5));
@@ -3583,10 +3568,6 @@ $(document).ready(() => {
     duplicates: false,
   });
 
-  $("#guided-button-exit-folder-structure").on("click", function () {
-    previousFolderStructurePage = $(this).data("prev-page");
-    traverseToTab(previousFolderStructurePage);
-  });
   /// back button Curate
   $("#guided-button-back").on("click", function () {
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;

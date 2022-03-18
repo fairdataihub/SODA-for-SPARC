@@ -667,6 +667,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-source-data"
+                  data-next-question="guided-user-has-source-data"
                 >
                   Yes
                 </button>
@@ -678,18 +679,10 @@
                 </button>
               </div>
             </div>
-            <button
-              id="guided-button-open-source-folder"
-              class="btn_animated hidden"
-              style="
-                width: 160px;
-                min-width: 160px;
-                border: none !important;
-                margin: 15px;
-              "
-            >
-              Structure source data
-            </button>
+            <div
+              class="guided--panel hidden"
+              id="guided-user-has-source-data"
+            ></div>
           </div>
           <div
             id="guided-derivative-folder-tab"
@@ -709,6 +702,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-derivative-data"
+                  data-next-question="guided-user-has-derivative-data"
                 >
                   Yes
                 </button>
@@ -720,18 +714,10 @@
                 </button>
               </div>
             </div>
-            <button
-              id="guided-button-open-derivative-folder"
-              class="btn_animated hidden"
-              style="
-                width: 175px;
-                min-width: 175px;
-                border: none !important;
-                margin: 15px;
-              "
-            >
-              Structure derivative data
-            </button>
+            <div
+              class="guided--panel hidden"
+              id="guided-user-has-derivative-data"
+            ></div>
           </div>
           <div
             id="guided-code-folder-tab"
@@ -752,6 +738,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-code-data"
+                  data-next-question="guided-user-has-code-data"
                 >
                   Yes
                 </button>
@@ -763,18 +750,10 @@
                 </button>
               </div>
             </div>
-            <button
-              id="guided-button-open-code-folder"
-              class="btn_animated hidden"
-              style="
-                width: 140px;
-                min-width: 140px;
-                border: none !important;
-                margin: 15px;
-              "
-            >
-              Structure code data
-            </button>
+            <div
+              class="guided--panel hidden"
+              id="guided-user-has-code-data"
+            ></div>
           </div>
           <div
             id="guided-docs-folder-tab"
@@ -796,6 +775,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-docs-data"
+                  data-next-question="guided-user-has-docs-data"
                 >
                   Yes
                 </button>
@@ -807,18 +787,10 @@
                 </button>
               </div>
             </div>
-            <button
-              id="guided-button-open-docs-folder"
-              class="btn_animated hidden"
-              style="
-                width: 140px;
-                min-width: 140px;
-                border: none !important;
-                margin: 15px;
-              "
-            >
-              Structure docs data
-            </button>
+            <div
+              class="guided--panel hidden"
+              id="guided-user-has-docs-data"
+            ></div>
           </div>
 
           <div
@@ -838,14 +810,11 @@
                 style="max-width: 600px"
               ></p>
 
-              <div class="guided--folder-organization-buttons-container">
-                <button
-                  class="ui secondary basic button small"
-                  id="guided-button-exit-folder-structure"
-                >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
-                  >Back to <span id="structure-return-destination-text"></span>
-                </button>
+              <div
+                class="guided--folder-organization-buttons-container"
+                id="folder-structure-button-row-top"
+                style="flex-direction: row-reverse"
+              >
                 <button
                   class="ui primary basic button small remove-margin-right"
                   id="guided-imoprt-file"
