@@ -4089,15 +4089,17 @@ organizeDSbackButton.addEventListener("click", function () {
       myPath = myPath["folders"][item];
     }
     // construct UI with files and folders
-    var appendString = loadFileFolder(myPath);
-
-    /// empty the div
     $("#items").empty();
-    $("#items").html(appendString);
-
+    already_created_elem = [];
+    let items = loadFileFolder(myPath);
+    let total_item_count = items[1].length + items[0].length;
+    console.log("retrieved items count " + total_item_count)
+    console.log(typeof items);
+    console.log(items);
+    //we have some items to display
+    add_items_to_view(items, 400);
     organizeLandingUIEffect();
     // reconstruct div with new elements
-    listItems(myPath, "#items");
     getInFolder(
       ".single-item",
       "#items",
@@ -4648,21 +4650,21 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
   }
   if (path.length > 0) {
     //await is needed for swal to display before continuing
-    await Swal.fire({
-      title: "Importing items...",
-      html: "Please wait",
-      allowEscapeKey: true,
-      allowOutsideClick: true,
-      heightAuto: false,
-      showConfirmButton: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      timer: 400,
-      didOpen: () => {
-        //creates the loading icon for SweetAlert
-        Swal.showLoading();
-      },
-    });
+    // await Swal.fire({
+    //   title: "Importing items...",
+    //   html: "Please wait",
+    //   allowEscapeKey: true,
+    //   allowOutsideClick: true,
+    //   heightAuto: false,
+    //   showConfirmButton: false,
+    //   backdrop: "rgba(0,0,0, 0.4)",
+    //   timerProgressBar: false,
+    //   timer: 400,
+    //   didOpen: () => {
+    //     //creates the loading icon for SweetAlert
+    //     Swal.showLoading();
+    //   },
+    // });
     //waiting for add files to be completed
     await addFilesfunction(
       path,
@@ -4907,13 +4909,15 @@ function addFoldersfunction(
           "</div></div>";
         $("#items").html(appendString);
       }
-      listItems(currentLocation, "#items");
+      $("#items").empty();
+      listItems(currentLocation, "#items", 400);
       getInFolder(
         ".single-item",
         "#items",
         organizeDSglobalPath,
         datasetStructureJSONObj
       );
+      beginScrollListen();
       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
 
@@ -5805,11 +5809,15 @@ function sortObjByKeys(object) {
   return orderedObject;
 }
 
-function listItems(jsonObj, uiItem) {
+function listItems(jsonObj, uiItem, amount_req) {
+  //allow amount to choose how many elements to create
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
+  let file_elements = [], folder_elements = [];
+  let count = 0;
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
+      count += 1;
       var emptyFolder = "";
       if (!highLevelFolders.includes(item)) {
         if (
@@ -5857,30 +5865,50 @@ function listItems(jsonObj, uiItem) {
 
       if (sortedObj["folders"][item]["action"].includes("updated")) {
         cloud_item = " update-file";
-        appendString =
-          appendString +
-          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-          emptyFolder +
-          '"></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
+        let elem_creation = '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+        emptyFolder +
+        '"></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+        
+        // folder_elements.push(elem_creation);
+        appendString = appendString + elem_creation;
+        if(count === 100) {
+          folder_elements.push(appendString);
+          count = 0;
+          continue;
+        }
       } else {
-        appendString =
-          appendString +
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-          emptyFolder +
-          '"></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
+        let element_creation = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+        emptyFolder +
+        '"></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+        
+        // folder_elements.push(element_creation);
+        appendString = appendString + element_creation;
+        if(count === 100) {
+          folder_elements.push(appendString);
+          count = 0;
+          continue;
+        }
+      }
+    }
+    if(count < 100) {
+      if(!folder_elements.includes(appendString)) {
+        folder_elements.push(appendString);
+        count = 0;
       }
     }
   }
+  count = 0;
   if (Object.keys(sortedObj["files"]).length > 0) {
     for (var item in sortedObj["files"]) {
+      count += 1;
       // not the auto-generated manifest
       if (sortedObj["files"][item].length !== 1) {
         if ("path" in sortedObj["files"][item]) {
@@ -5963,31 +5991,71 @@ function listItems(jsonObj, uiItem) {
         if (deleted_file) {
           cloud_item = "pennsieve_file_deleted";
         }
-        appendString =
-          appendString +
-          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
+        let elem_creation = '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+        extension +
+        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+
+        appendString = appendString + elem_creation;
+        if(count === 100) {
+          console.log("adding 200 elements to array");
+          file_elements.push(appendString);
+          count = 0;
+          continue;
+        }
       } else {
-        appendString =
-          appendString +
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
+        let element_creation = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+        extension +
+        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+        cloud_item +
+        '">' +
+        item +
+        "</div></div>";
+
+        appendString = appendString + element_creation;
+        if(count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          continue;
+        }
       }
+    }
+    if(count < 100) {
+      console.log("count is less tha 100");
+      console.log(file_elements.includes(appendString));
+      if(!file_elements.includes(appendString)) {
+        console.log("not included so we push");
+        file_elements.push(appendString);
+        count = 0;
+      }
+      // continue;
     }
   }
   // console.log(uiItem);
-  $(uiItem).empty();
-  $(uiItem).html(appendString);
+  if(amount_req != undefined) {
+    console.log("amount requested " + amount_req);
+    //add items using a different function
+    if(folder_elements[0] === "") {
+      folder_elements.splice(0,1);
+    }
+    if(file_elements[0] === "") {
+      file_elements.splice(0,1);
+    }
+    let items = [folder_elements, file_elements];
+
+    //want the initial files to be imported
+    let itemDisplay = new Promise(async (resolved) => {
+      await add_items_to_view(items, amount_req);
+      resolved();
+    });
+  } else {
+    //load everything in place
+    $(uiItem).empty();
+    $(uiItem).html(appendString);
+  }
 
   dragselect_area.stop();
 
@@ -6007,11 +6075,12 @@ function listItems(jsonObj, uiItem) {
   drag_event_fired = false;
 }
 
+
+
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
       var folderName = this.innerText;
-      var appendString = "";
       currentLocation.value = currentLocation.value + folderName + "/";
 
       var currentPath = currentLocation.value;
@@ -6022,44 +6091,20 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       var myPath = getRecursivePath(filtered, globalObj);
       let amount_of_items = Object.keys(myPath["files"]).length;
       amount_of_items = amount_of_items + Object.keys(myPath["folders"]).length;
-      if (amount_of_items < 1000) {
-        var appendString = loadFileFolder(myPath);
-
-        $(uiItem).empty();
-        $(uiItem).html(appendString);
-        organizeLandingUIEffect();
-
-        // reconstruct folders and files (child elements after emptying the Div)
-        listItems(myPath, uiItem);
-        getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
-      } else {
-        //await is needed for prompt to appear before continuing
-        await Swal.fire({
-          title: "Opening folder...",
-          html: "Please wait",
-          allowEscapeKey: true,
-          allowOutsideClick: true,
-          heightAuto: false,
-          showConfirmButton: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          timer: 200,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-        if ($(this).children("h1").hasClass("myFol")) {
-          var appendString = loadFileFolder(myPath);
-
-          $(uiItem).empty();
-          $(uiItem).html(appendString);
-          organizeLandingUIEffect();
-
-          // reconstruct folders and files (child elements after emptying the Div)
-          listItems(myPath, uiItem);
-          getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
-        }
-      }
+      console.log(amount_of_items);
+      $("#items").empty();
+      already_created_elem = [];
+      let items = loadFileFolder(myPath);
+      let total_item_count = items[1].length + items[0].length;
+      console.log("retrieved items count " + total_item_count)
+      console.log(typeof items);
+      console.log(items);
+      //we have some items to display
+      amount = 400;
+      add_items_to_view(items, 400);
+      organizeLandingUIEffect();
+      // reconstruct folders and files (child elements after emptying the Div)
+      getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
     }
   });
 }

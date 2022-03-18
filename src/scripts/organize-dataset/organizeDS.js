@@ -658,9 +658,12 @@ function getGlobalPath(path) {
 function loadFileFolder(myPath) {
   var appendString = "";
   var sortedObj = sortObjByKeys(myPath);
+  let count = 0;
+  let file_elem = [], folder_elem = []
 
   for (var item in sortedObj["folders"]) {
     var emptyFolder = "";
+    count += 1;
     if (!highLevelFolders.includes(item)) {
       if (
         JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
@@ -670,14 +673,29 @@ function loadFileFolder(myPath) {
       }
     }
     appendString =
-      appendString +
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-      emptyFolder +
-      '"></h1><div class="folder_desc">' +
-      item +
-      "</div></div>";
+    appendString +
+    '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+    emptyFolder +
+    '"></h1><div class="folder_desc">' +
+    item +
+    "</div></div>";
+    if(count === 100) {
+      folder_elem.push(appendString);
+      count = 0;
+      continue
+    }
   }
+  if(count < 100) {
+    if(!folder_elem.includes(appendString)) {
+      folder_elem.push(appendString);
+      count = 0;
+    }
+  }
+
+  count = 0;
+  appendString = "";
   for (var item in sortedObj["files"]) {
+    count += 1;
     // not the auto-generated manifest
     if (sortedObj["files"][item].length !== 1) {
       if ("path" in sortedObj["files"][item]) {
@@ -715,9 +733,27 @@ function loadFileFolder(myPath) {
       '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
       item +
       "</div></div>";
+    if(count === 100) {
+      file_elem.push(appendString);
+      count = 0;
+      continue;
+    }
+  }
+  if(count < 100) {
+    if(!file_elem.includes(appendString)) {
+      file_elem.push(appendString);
+      count = 0;
+    }
+  }
+  if(folder_elem[0] === "") {
+    folder_elem.splice(0, 1);
+  }
+  if(file_elem[0] === "") {
+    file_elem.splice(0, 1);
   }
 
-  return appendString;
+  let items = [folder_elem, file_elem];
+  return items;
 }
 
 function getRecursivePath(filteredList, inputObj) {
@@ -1815,15 +1851,11 @@ async function addFilesfunction(
           "action"
         ].push("renamed");
       }
-      var appendString =
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-        regularFiles[element]["basename"] +
-        "</div></div>";
-
-      $(uiItem).html(appendString);
     }
-    listItems(currentLocation, uiItem);
+
+    listItems(currentLocation, uiItem, 400);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
+    beginScrollListen();
     // log the successful import
     logCurationForAnalytics(
       "Success",
@@ -1833,6 +1865,125 @@ async function addFilesfunction(
       determineDatasetLocation()
     );
   }
+}
+
+//create intersection observ
+const scroll_box = document.querySelector("#organize-dataset-tab");
+const item_box = document.querySelector("#items");
+const dataset_path = document.getElementById("input-global-path");
+
+observeElement(dataset_path, "value", function () {
+  console.log(dataset_path.value);
+  if(dataset_path.value === "My_dataset_folder/") {
+    console.log("removing");
+    scroll_box.removeEventListener("scroll", function() {}, true);
+  }
+  if(dataset_path.value != "My_dataset_folder/") {
+    console.log("got it");
+    if(item_box.offsetHeight != 420) {
+      $("#items").empty();
+      var filtered = getGlobalPath(document.getElementById("input-global-path"));
+      var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+      amount = 400;
+      listItems(myPath, "items", 400);
+      getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
+      beginScrollListen();
+    }
+  }
+});
+
+function observeElement(element, property, callback, delay = 0) {
+  let elementPrototype = Object.getPrototypeOf(element);
+  if (elementPrototype.hasOwnProperty(property)) {
+      let descriptor = Object.getOwnPropertyDescriptor(elementPrototype, property);
+      Object.defineProperty(element, property, {
+          get: function() {
+              return descriptor.get.apply(this, arguments);
+          },
+          set: function () {
+              let oldValue = this[property];
+              descriptor.set.apply(this, arguments);
+              let newValue = this[property];
+              if (typeof callback == "function") {
+                  setTimeout(callback.bind(this, oldValue, newValue), delay);
+              }
+              return newValue;
+          }
+      });
+  }
+}
+
+
+//add certain amount of items
+already_created_elem = [];
+async function add_items_to_view(list, amount_req) {
+  console.log(list);
+  console.log("amount in add_items" + amount_req);
+  uiItems = "#items";
+  already_created_elem = list[0].concat(list[1]);
+  console.log(already_created_elem);
+  $(uiItems).empty();
+    for(let i = 0; i < amount_req/100; i++) {
+      if(i < already_created_elem.length) {
+        $(uiItems).empty();
+        $(uiItems).html(already_created_elem[i]);
+      } else {
+        break;
+      }
+    }
+  console.log($(uiItems));
+}
+
+var amount = 400;
+
+function beginScrollListen() {
+  console.log("starting scroll listener");
+  amount = 400;
+  scroll_box.addEventListener("scroll", function() {
+    let bottom_page = scroll_box.scrollHeight;
+    let total_items = already_created_elem.length;
+    console.log("items so far " + Math.ceil(item_box.childElementCount/100));
+    console.log("total items to show" + total_items)
+    console.log(scroll_box.scrollTop + 400);
+    console.log(item_box.offsetHeight);
+    if(item_box.offsetHeight === 420) {
+      scroll_box.removeEventListener("scroll", ()=>{}, true);
+      amount = 400;
+    }
+    //bigger than default height
+    if(Math.ceil(item_box.childElementCount/100) === total_items) {
+      console.log("all items have been displayed");
+      scroll_box.removeEventListener("scroll", function() {}, true);
+      return;
+    } else {
+      if((scroll_box.scrollTop + 400) > item_box.offsetHeight) {
+        console.log("load new elements")
+        //list next items
+        console.log("initial amount" + amount);
+        //new to only trigger once
+        let wait4items = new Promise(async (resolved) => {
+          var filtered = getGlobalPath(document.getElementById("input-global-path"));
+          var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+          scroll_box.removeEventListener("scroll", ()=> {});
+          listItems(myPath, "items", amount);
+          getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
+          console.log("should have added now resolving");
+          // scroll_box
+          // beginScrollListen();
+          resolved();
+        }).then(() => {
+          if(Math.ceil(item_box.childElementCount/100) != total_items)
+          amount += 400;
+          console.log("adding 400 to amount" + amount);
+        });
+      }
+      if(scroll_box.scrollTop > bottom_page) {
+        console.log("bottom of page");
+        console.log(bottom_page);
+        scroll_box.removeEventListener("scroll", ()=> {});
+      }
+    }
+  });
 }
 
 ///// function to load details to show in display once
