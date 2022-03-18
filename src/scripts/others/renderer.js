@@ -4093,7 +4093,7 @@ organizeDSbackButton.addEventListener("click", function () {
     already_created_elem = [];
     let items = loadFileFolder(myPath);
     let total_item_count = items[1].length + items[0].length;
-    console.log("retrieved items count " + total_item_count)
+    console.log("retrieved items count " + total_item_count);
     console.log(typeof items);
     console.log(items);
     //we have some items to display
@@ -5813,7 +5813,8 @@ function listItems(jsonObj, uiItem, amount_req) {
   //allow amount to choose how many elements to create
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
-  let file_elements = [], folder_elements = [];
+  let file_elements = [],
+    folder_elements = [];
   let count = 0;
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
@@ -5865,41 +5866,43 @@ function listItems(jsonObj, uiItem, amount_req) {
 
       if (sortedObj["folders"][item]["action"].includes("updated")) {
         cloud_item = " update-file";
-        let elem_creation = '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-        emptyFolder +
-        '"></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
-        
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
         // folder_elements.push(elem_creation);
         appendString = appendString + elem_creation;
-        if(count === 100) {
+        if (count === 100) {
           folder_elements.push(appendString);
           count = 0;
           continue;
         }
       } else {
-        let element_creation = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-        emptyFolder +
-        '"></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
-        
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
         // folder_elements.push(element_creation);
         appendString = appendString + element_creation;
-        if(count === 100) {
+        if (count === 100) {
           folder_elements.push(appendString);
           count = 0;
           continue;
         }
       }
     }
-    if(count < 100) {
-      if(!folder_elements.includes(appendString)) {
+    if (count < 100) {
+      if (!folder_elements.includes(appendString)) {
         folder_elements.push(appendString);
         count = 0;
       }
@@ -5991,42 +5994,44 @@ function listItems(jsonObj, uiItem, amount_req) {
         if (deleted_file) {
           cloud_item = "pennsieve_file_deleted";
         }
-        let elem_creation = '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-        extension +
-        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
         appendString = appendString + elem_creation;
-        if(count === 100) {
+        if (count === 100) {
           console.log("adding 200 elements to array");
           file_elements.push(appendString);
           count = 0;
           continue;
         }
       } else {
-        let element_creation = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-        extension +
-        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
         appendString = appendString + element_creation;
-        if(count === 100) {
+        if (count === 100) {
           file_elements.push(appendString);
           count = 0;
           continue;
         }
       }
     }
-    if(count < 100) {
+    if (count < 100) {
       console.log("count is less tha 100");
       console.log(file_elements.includes(appendString));
-      if(!file_elements.includes(appendString)) {
+      if (!file_elements.includes(appendString)) {
         console.log("not included so we push");
         file_elements.push(appendString);
         count = 0;
@@ -6035,14 +6040,14 @@ function listItems(jsonObj, uiItem, amount_req) {
     }
   }
   // console.log(uiItem);
-  if(amount_req != undefined) {
+  if (amount_req != undefined) {
     console.log("amount requested " + amount_req);
     //add items using a different function
-    if(folder_elements[0] === "") {
-      folder_elements.splice(0,1);
+    if (folder_elements[0] === "") {
+      folder_elements.splice(0, 1);
     }
-    if(file_elements[0] === "") {
-      file_elements.splice(0,1);
+    if (file_elements[0] === "") {
+      file_elements.splice(0, 1);
     }
     let items = [folder_elements, file_elements];
 
@@ -6075,8 +6080,6 @@ function listItems(jsonObj, uiItem, amount_req) {
   drag_event_fired = false;
 }
 
-
-
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
@@ -6096,7 +6099,7 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       already_created_elem = [];
       let items = loadFileFolder(myPath);
       let total_item_count = items[1].length + items[0].length;
-      console.log("retrieved items count " + total_item_count)
+      console.log("retrieved items count " + total_item_count);
       console.log(typeof items);
       console.log(items);
       //we have some items to display
