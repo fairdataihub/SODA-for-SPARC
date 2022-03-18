@@ -10660,6 +10660,14 @@ button.bg-dark:focus {
 
 .text-center {
   text-align: center !important;
+  margin-bottom: 0.3rem;
+}
+.text-center.medium {
+  font-size: medium;
+}
+.text-center.large {
+  font-size: large;
+  font-weight: 600;
 }
 
 @media (min-width: 576px) {

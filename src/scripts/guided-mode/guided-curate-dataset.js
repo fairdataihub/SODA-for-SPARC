@@ -1,7 +1,3 @@
-const guidedFolderStructureContext = {
-  subjects: {},
-  samples: {},
-};
 //Temp variables used for data storage until put into sodaJSONObj on next button press
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
@@ -415,6 +411,9 @@ const openSubjectFolder = (clickedStructureButton) => {
     .closest("tr")
     .find(".subject-id")
     .text();
+  $("#pre-folder-text").text(subjectID + "'s ");
+  $("#post-folder-text").text("");
+  $("#structure-folder-contents").text("Your subjects folder should contain");
   $("#structure-return-destination-text").text("subjects table");
   $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
   $("#guided-button-exit-folder-structure").data(
@@ -1281,19 +1280,8 @@ const setGuidedLicense = (newLicense) => {
   $(".guidedBfLicense").text(newLicense);
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
-const displayEmptyDropBoxToolTip = () => {
-  $("#items").append(
-    `<div class="guided--flex-center">
-      <div style="background-color: pink; height: 20px; width: 20px;"></div>
-      <div style="background-color: pink; height: 20px; width: 20px;"></div>
-      <div style="background-color: pink; height: 20px; width: 20px;"></div>
-    </div>`
-  );
-};
+
 $(document).ready(() => {
-  $("#button-render-empty-drop-helper").on("click", () => {
-    displayEmptyDropBoxToolTip();
-  });
   $("#guided-button-add-permission-user").on("click", function () {
     //create user permissions object
     const newUserPermission = {

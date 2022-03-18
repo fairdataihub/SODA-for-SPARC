@@ -642,14 +642,17 @@
               <label class="guided--form-label centered"
                 >Does your dataset contain source data?
               </label>
+              <p class="guided--help-text text-center">
+                Required if subjects are used in the experiment producing the
+                dataset.
+              </p>
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-source-data"
                 >
-                  Yes</button
-                >Required if subjects are used in the experiment producing the
-                dataset.
+                  Yes
+                </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-no-source-data"
@@ -765,8 +768,11 @@
           >
             <div class="guided--question" id="structure-subjects-folder">
               <h1 class="guided--text-sub-step">
-                virtually structure your dataset in the interface below.
+                Virtually structure your
+                <b id="pre-folder-text"></b> folder
+                <b id="post-folder-text"></b> in the interface below.
               </h1>
+              <p class="text-center medium" id="structure-folder-contents"></p>
 
               <div class="guided--folder-organization-buttons-container">
                 <button
@@ -776,7 +782,6 @@
                   <i class="fas fa-arrow-left" style="margin-right: 10px"></i
                   >Back to <span id="structure-return-destination-text"></span>
                 </button>
-                <button id="button-render-empty-drop-helper">test</button>
               </div>
               <div class="guided--folder-organization-buttons-container">
                 <div
@@ -3131,6 +3136,10 @@
   </section>
   <script
     src="./scripts/guided-mode/guided-curate-dataset.js"
+    type="text/javascript"
+  ></script>
+  <script
+    src="./scripts/guided-mode/lottieJSON.js"
     type="text/javascript"
   ></script>
 </template>

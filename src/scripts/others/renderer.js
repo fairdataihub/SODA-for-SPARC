@@ -34,6 +34,7 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+const lottie = require("lottie-web");
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
@@ -5975,7 +5976,37 @@ function listItems(jsonObj, uiItem) {
     }
   }
   $(uiItem).empty();
-  $(uiItem).html(appendString);
+  if (appendString != "") {
+    $(uiItem).html(appendString);
+  } else {
+    //Fired when no folders are to be appended to the folder structure element.
+    //Gets the name of the current folder from organizeDSglobalPath and instructs the user
+    //on what to do in the empty folder.
+    let currentFolder = "";
+    if (organizeDSglobalPath.value == undefined) {
+      currentFolder = "My_dataset_folder";
+    } else {
+      currentFolder = organizeDSglobalPath.value.split("/").reverse()[1];
+    }
+    $(uiItem).append(
+      `<div class="drag-drop-container-instructions">
+        <div id="dragDropInscturctions" style="height: 100px; width: 100px;"></div>
+        <p class="text-center large">
+          Drop folders and files to be included in the <b>${currentFolder}</b> folder.
+        </p>
+        <p class="text-center">
+          You may also <b>add</b> or <b>import</b> a new folder using the buttons in the upper right corner.
+        </p>
+      </div>`
+    );
+    lottie.loadAnimation({
+      container: document.querySelector("#dragDropInscturctions"),
+      animationData: dragDrop,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
 
   dragselect_area.stop();
 
