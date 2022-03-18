@@ -218,12 +218,14 @@ const handlePageBranching = (selectedCardElement) => {
 
   const tabPanelId = selectedCardElement.attr("id").replace("card", "panel");
   const tabPanel = $(`#${tabPanelId}`);
-  console.log(tabPanel);
-  tabPanel.siblings().hide();
-  tabPanel.css("display", "flex");
-  tabPanel[0].scrollIntoView({
-    behavior: "smooth",
-  });
+  //checks to see if clicked card has a panel, if so, hides siblings and smooth scrolls to it
+  if (tabPanel.length != 0) {
+    tabPanel.siblings().hide();
+    tabPanel.css("display", "flex");
+    tabPanel[0].scrollIntoView({
+      behavior: "smooth",
+    });
+  }
 };
 const guidedLoadSavedProgressFiles = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
