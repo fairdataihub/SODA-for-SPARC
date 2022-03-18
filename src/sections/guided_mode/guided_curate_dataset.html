@@ -658,8 +658,10 @@
                 >Does your dataset contain source data?
               </label>
               <p class="guided--help-text text-center">
-                Required if subjects are used in the experiment producing the
-                dataset.
+                <b>Optional</b> folder containing unaltered, raw files from an
+                experiment, if they are included in the data. For example, this
+                folder may include the “truly” raw k-space data for a Magnetic
+                Resonance (MR) image that has not yet been reconstructed.
               </p>
               <div class="guided--radio-button-container">
                 <button
@@ -698,6 +700,11 @@
               <label class="guided--form-label centered"
                 >Does your dataset contain derivative data?
               </label>
+              <p class="guided--help-text text-center">
+                <b>Required</b> if derivative data exists. Derived data should
+                be organized into subject and sample folders, using the subject
+                and sample IDs as the folder names, as with the primary data.
+              </p>
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -715,10 +722,10 @@
             </div>
             <button
               id="guided-button-open-derivative-folder"
-              class="btn_animated"
+              class="btn_animated hidden"
               style="
-                width: 180px;
-                min-width: 180px;
+                width: 175px;
+                min-width: 175px;
                 border: none !important;
                 margin: 15px;
               "
@@ -733,8 +740,14 @@
           >
             <div class="guided--question">
               <label class="guided--form-label centered"
-                >Does your dataset contain code?
+                >Does your dataset contain code data?
               </label>
+              <p class="guided--help-text text-center">
+                <b>Required</b> if code is used in the generation of the data;
+                the folder contains all the source codes used in the study such
+                as text and source code (e.g., MATLAB, etc.). Any supporting
+                code.
+              </p>
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -750,6 +763,18 @@
                 </button>
               </div>
             </div>
+            <button
+              id="guided-button-open-code-folder"
+              class="btn_animated hidden"
+              style="
+                width: 140px;
+                min-width: 140px;
+                border: none !important;
+                margin: 15px;
+              "
+            >
+              Structure code data
+            </button>
           </div>
           <div
             id="guided-docs-folder-tab"
@@ -758,8 +783,15 @@
           >
             <div class="guided--question">
               <label class="guided--form-label centered"
-                >Does your dataset contain docs?
+                >Does your dataset contain docs data?
               </label>
+              <p class="guided--help-text text-center">
+                <b>Optional</b> folder that contains all the supporting
+                documents for the dataset, including but not limited to, a
+                representative image for the dataset. Unlike the readme file,
+                which is necessarily a text document, docs can contain documents
+                in multiple formats, including images.
+              </p>
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -775,19 +807,36 @@
                 </button>
               </div>
             </div>
+            <button
+              id="guided-button-open-docs-folder"
+              class="btn_animated hidden"
+              style="
+                width: 140px;
+                min-width: 140px;
+                border: none !important;
+                margin: 15px;
+              "
+            >
+              Structure docs data
+            </button>
           </div>
+
           <div
             id="guided-structure-folder-tab"
             class="guided--panel hidden"
             data-skip-page="true"
           >
             <div class="guided--question" id="structure-subjects-folder">
-              <h1 class="guided--text-sub-step">
-                Virtually structure your
-                <b id="pre-folder-text"></b> folder
-                <b id="post-folder-text"></b> in the interface below.
-              </h1>
-              <p class="text-center medium" id="structure-folder-contents"></p>
+              <h1
+                class="guided--text-sub-step"
+                id="structure-folder-header"
+                style="max-width: 800px"
+              ></h1>
+              <p
+                class="text-center medium"
+                id="structure-folder-contents"
+                style="max-width: 600px"
+              ></p>
 
               <div class="guided--folder-organization-buttons-container">
                 <button

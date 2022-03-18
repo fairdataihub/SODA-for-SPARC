@@ -1,3 +1,40 @@
-<h1 class="guided--text-sub-step">
-  virtually structure your dataset in the interface below.
-</h1>
+<div
+  id="guided-docs-folder-tab"
+  class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+  data-skip-page="true"
+>
+  <div class="guided--question">
+    <label class="guided--form-label centered"
+      >Does your dataset contain docs data?
+    </label>
+    <p class="guided--help-text text-center">
+      Required if subjects are used in the experiment producing the dataset.
+    </p>
+    <div class="guided--radio-button-container">
+      <button
+        class="ui positive basic button guided--radio-button"
+        id="guided-button-has-docs-data"
+      >
+        Yes
+      </button>
+      <button
+        class="ui negative basic button guided--radio-button"
+        id="guided-button-no-docs-data"
+      >
+        No
+      </button>
+    </div>
+  </div>
+  <button
+    id="guided-button-open-docs-folder"
+    class="btn_animated hidden"
+    style="
+      width: 135px;
+      min-width: 135px;
+      border: none !important;
+      margin: 15px;
+    "
+  >
+    Structure docs data
+  </button>
+</div>

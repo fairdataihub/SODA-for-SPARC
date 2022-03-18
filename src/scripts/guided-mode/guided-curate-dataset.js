@@ -411,9 +411,13 @@ const openSubjectFolder = (clickedStructureButton) => {
     .closest("tr")
     .find(".subject-id")
     .text();
-  $("#pre-folder-text").text(subjectID + "'s ");
-  $("#post-folder-text").text("");
-  $("#structure-folder-contents").text("Your subjects folder should contain");
+  $("#structure-folder-header").text(
+    `Virtually structure ${subjectID}'s subject folder in the interface below.`
+  );
+  $("#structure-folder-contents").text(
+    `${subjectID}'s folder should contain lorem ipsum foo bar random instructional
+    text will go here`
+  );
   $("#structure-return-destination-text").text("subjects table");
   $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
   $("#guided-button-exit-folder-structure").data(
@@ -480,27 +484,43 @@ guidedCreateSodaJSONObj = () => {
 /********** Folder structure utility **********/
 const highLevelFolderPageData = {
   source: {
+    headerText:
+      "Virtually structure your source folder in the interface below.",
+    contentsText:
+      "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
     returnText: "source page",
     pathSuffix: "source/",
     backPageId: "guided-source-folder-tab",
   },
   derivative: {
+    headerText:
+      "Virtually structure your derivative folder in the interface below.",
+    contentsText:
+      "Your derivative folder should contain lorem ipsum foo bar random instructional text will go here",
     returnText: "derivative page",
     pathSuffix: "derivative/",
     backPageId: "guided-derivative-folder-tab",
   },
   code: {
+    headerText: "Virtually structure your code folder in the interface below.",
+    contentsText:
+      "Your code folder should contain lorem ipsum foo bar random instructional text will go here",
     returnText: "code page",
     pathSuffix: "code/",
     backPageId: "guided-code-folder-tab",
   },
   docs: {
+    headerText: "Virtually structure your docs folder in the interface below.",
+    contentsText:
+      "Your docs folder should contain lorem ipsum foo bar random instructional text will go here",
     returnText: "docs page",
     pathSuffix: "docs/",
     backPageId: "guided-docs-folder-tab",
   },
 };
 const openFolderStructurePage = (pageDataObj) => {
+  $("#structure-folder-header").text(pageDataObj.headerText);
+  $("#structure-folder-contents").text(pageDataObj.contentsText);
   $("#structure-return-destination-text").text(pageDataObj.returnText);
   $("#guided-input-global-path").val(
     `My_dataset_folder/${pageDataObj.pathSuffix}`
@@ -1076,9 +1096,6 @@ $("#guided-button-open-source-folder").on("click", () => {
 });
 
 /*********** Derivative page functions ***********/
-
-/*********** derivative page functions ***********/
-/*********** derivative page functions ***********/
 $("#guided-button-has-derivative-data").on("click", () => {
   if (datasetStructureJSONObj["folders"]["derivative"] == undefined)
     datasetStructureJSONObj["folders"]["derivative"] = {
@@ -1134,27 +1151,111 @@ $("#guided-button-open-derivative-folder").on("click", () => {
 
 /*********** Code page functions ***********/
 $("#guided-button-has-code-data").on("click", () => {
-  datasetStructureJSONObj["folders"]["code"] = {
-    folders: {},
-    files: {},
-    type: "",
-    action: [],
-  };
+  if (datasetStructureJSONObj["folders"]["code"] == undefined)
+    datasetStructureJSONObj["folders"]["code"] = {
+      folders: {},
+      files: {},
+      type: "",
+      action: [],
+    };
+  $("#guided-button-open-code-folder").show();
+});
+$("#guided-button-no-code-data").on("click", () => {
+  //ask user to confirm they would like to delete code folder if it exists
+  if (datasetStructureJSONObj["folders"]["code"] != undefined) {
+    Swal.fire({
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      title:
+        "Reverting your decision will wipe out any changes you have made to the code folder.",
+      text: "Are you sure you would like to delete your code folder progress?",
+      icon: "warning",
+      showConfirmButton: true,
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#3085d6 !important",
+      showCancelButton: true,
+      focusCancel: true,
+      reverseButtons: reverseSwalButtons,
+      heightAuto: false,
+      customClass: "swal-wide",
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //User agrees to delete code folder
+        delete datasetStructureJSONObj["folders"]["code"];
+        $("#guided-button-open-code-folder").hide();
+      } else {
+        //User cancels
+        //reset button UI to how it was before the user clicked no code files
+        $("#guided-button-has-code-data").click();
+      }
+    });
+  }
+  $("#guided-button-open-code-folder").hide();
+});
+$("#guided-button-open-code-folder").on("click", () => {
   openFolderStructurePage(highLevelFolderPageData.code);
 });
-$("#guided-button-no-code-data").on("click", () => {});
 
 /*********** Docs page functions ***********/
 $("#guided-button-has-docs-data").on("click", () => {
-  datasetStructureJSONObj["folders"]["docs"] = {
-    folders: {},
-    files: {},
-    type: "",
-    action: [],
-  };
+  if (datasetStructureJSONObj["folders"]["docs"] == undefined)
+    datasetStructureJSONObj["folders"]["docs"] = {
+      folders: {},
+      files: {},
+      type: "",
+      action: [],
+    };
+  $("#guided-button-open-docs-folder").show();
+});
+$("#guided-button-no-docs-data").on("click", () => {
+  //ask user to confirm they would like to delete docs folder if it exists
+  if (datasetStructureJSONObj["folders"]["docs"] != undefined) {
+    Swal.fire({
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      title:
+        "Reverting your decision will wipe out any changes you have made to the docs folder.",
+      text: "Are you sure you would like to delete your docs folder progress?",
+      icon: "warning",
+      showConfirmButton: true,
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#3085d6 !important",
+      showCancelButton: true,
+      focusCancel: true,
+      reverseButtons: reverseSwalButtons,
+      heightAuto: false,
+      customClass: "swal-wide",
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //User agrees to delete docs folder
+        delete datasetStructureJSONObj["folders"]["docs"];
+        $("#guided-button-open-docs-folder").hide();
+      } else {
+        //User cancels
+        //reset button UI to how it was before the user clicked no docs files
+        $("#guided-button-has-docs-data").click();
+      }
+    });
+  }
+  $("#guided-button-open-docs-folder").hide();
+});
+$("#guided-button-open-docs-folder").on("click", () => {
   openFolderStructurePage(highLevelFolderPageData.docs);
 });
-$("#guided-button-no-docs-data").on("click", () => {});
 
 $("#guided-dataset-name-input").val("test " + makeid(5));
 const getTagsFromTagifyElement = (tagifyElement) => {

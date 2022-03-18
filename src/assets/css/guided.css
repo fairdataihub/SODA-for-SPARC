@@ -590,6 +590,7 @@
 }
 .guided--help-text {
   font-size: 0.9rem;
+  max-width: 650px;
 }
 
 .guided--radio-button {
