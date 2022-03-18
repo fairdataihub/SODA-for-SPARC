@@ -3290,6 +3290,9 @@ main_generate_destination = ""
 main_initial_bfdataset_size = 0
 bf = ""
 myds = ""
+# a global that tracks the amount of files that have been uploaded in an upload session; 
+# is reset once the session ends by success, or failure (is implicitly reset in case of Pennsieve Agent freeze by the user closing SODA)
+main_curation_uploaded_files = 0 
 
 
 def bf_check_dataset_files_validity(soda_json_structure, bf):
@@ -3608,6 +3611,13 @@ def main_curate_function_progress():
         main_generated_dataset_size,
         elapsed_time_formatted,
     )
+
+
+
+# return the current amount of files that have been successfully uploaded 
+# and return the size in a similar fashion to the main_curate_function_progress endpoint 
+def main_curate_function_file_count():
+    return (main_curation_uploaded_files)
 
 
 def preview_dataset(soda_json_structure):
