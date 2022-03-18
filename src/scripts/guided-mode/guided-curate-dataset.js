@@ -187,7 +187,6 @@ setActiveProgressionTab = (targetPageID) => {
   targetProgressionTab.addClass("selected-tab");
 };
 const handlePageBranching = (selectedCardElement) => {
-  console.log(selectedCardElement);
   //If button has data-enable-next-button attribute, enable the progress button
   selectedCardElement.attr("data-enable-next-button") == "true"
     ? enableProgressButton()
@@ -219,8 +218,12 @@ const handlePageBranching = (selectedCardElement) => {
 
   const tabPanelId = selectedCardElement.attr("id").replace("card", "panel");
   const tabPanel = $(`#${tabPanelId}`);
+  console.log(tabPanel);
   tabPanel.siblings().hide();
   tabPanel.css("display", "flex");
+  tabPanel[0].scrollIntoView({
+    behavior: "smooth",
+  });
 };
 const guidedLoadSavedProgressFiles = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
@@ -1405,7 +1408,11 @@ $(document).ready(() => {
     //Display selected element container if data-next-question exists
     if (selectedButton.data("next-question")) {
       nextQuestionID = selectedButton.data("next-question");
-      $(`#${nextQuestionID}`).css("display", "flex");
+      nextQuestionElement = $(`#${nextQuestionID}`);
+      nextQuestionElement.css("display", "flex");
+      nextQuestionElement[0].scrollIntoView({
+        behavior: "smooth",
+      });
     }
     //Hide all child containers of non-selected buttons
     notSelectedButton.each(function () {
