@@ -539,6 +539,11 @@ const updateFolderStructureUI = () => {
 };
 
 //SUBJECT TABLE FUNCTIONS
+//TEMP function to skip samples prompt
+$("#show-create-subjects-table-div-skip-samples").on("click", () => {
+  $("#guided-button-generate-subjects-table").show();
+});
+
 $("#show-create-subjects-table-div").on("click", () => {
   $("#guided-button-generate-subjects-table").show();
 });
@@ -615,6 +620,8 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   }
   guidedAddHighLevelFolderToDatasetStructureObj("primary");
   $("#number-of-subjects-prompt").hide();
+  // temp
+  $(".guided-input-sample-count").val("0");
   $("#subjects-table").css("display", "flex");
 });
 const createSubjectFolder = (event, subjectNameInput) => {

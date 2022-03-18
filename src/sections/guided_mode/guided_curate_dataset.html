@@ -88,10 +88,11 @@
                 class="guided--capsule"
                 id="guided-subjects-folder-capsule"
               ></div>
+              <!--temp sample skip
               <div
                 class="guided--capsule"
                 id="guided-samples-folder-capsule"
-              ></div>
+              ></div>-->
               <div
                 class="guided--capsule"
                 id="guided-source-folder-capsule"
@@ -475,6 +476,7 @@
               </label>
               <div
                 class="guided--radio-button-container"
+                id="show-create-subjects-table-div-skip-samples"
                 style="margin-bottom: 7px"
               >
                 <button
@@ -508,6 +510,19 @@
                     style="width: 400px; text-align: center"
                   />
                 </div>
+                <button
+                  id="guided-button-generate-subjects-table"
+                  class="btn_animated hidden"
+                  style="
+                    width: 160px;
+                    min-width: 160px;
+                    border: none !important;
+                    margin: 15px;
+                  "
+                >
+                  Create subjects table
+                </button>
+                <!--
                 <div class="guided--input-container" style="margin-top: 25px">
                   <label class="guided--form-label centered"
                     >Do all of your subjects have the same amount of samples?
@@ -558,7 +573,7 @@
                   "
                 >
                   Create subjects table
-                </button>
+                </button>-->
               </div>
               <div
                 class="guided--panel hidden"
@@ -628,7 +643,7 @@
           </div>
           <div
             id="guided-samples-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page-temp sample skip"
             data-skip-page="true"
           >
             <div id="sample-tables-container"></div>
@@ -875,19 +890,6 @@
               <div id="guided-folder-structure-container" class="w-100"></div>
             </div>
           </div>
-          <!--
-          <div class="guided--drop-tooltip">
-            <p>Drag and drop in box above</p>
-            <div
-              style="
-                height: 50px;
-                width: 200px;
-                margin: 10px;
-                background-color: aliceblue;
-              "
-            ></div>
-          </div>-->
-
           <div
             id="guided-folder-importation-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-existing-local-dataset-branch-page"
