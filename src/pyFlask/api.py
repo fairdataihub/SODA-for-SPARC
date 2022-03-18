@@ -84,6 +84,7 @@ def api_validate_dataset_pipeline():
     # get the validation errors out of the error report 
 
 
+
     path_error_report = json.dumps(path_error_report, indent=4, default=str)
 
     # write blob to a local file
@@ -93,6 +94,8 @@ def api_validate_dataset_pipeline():
 
     # return json.dumps(blob, cls=DequeEncoder)
     errors = blob.get('errors')
+
+
 
     return json.dumps(errors, cls=DequeEncoder)
 
@@ -222,6 +225,9 @@ def add_orthauth_yaml(ps_account):
     os.chmod(orthauth_path_secrets, 0o0600) # required for the validator
 
     return "Valid"
+
+
+
 
 
 # from sparcur.paths import Path
