@@ -79,11 +79,10 @@ def api_validate_dataset_pipeline():
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
 
-    pprint.pprint(path_error_report)
+    pprint.pprint(blob.get('errors'))
 
     # get the validation errors out of the error report 
-
-
+    
 
     path_error_report = json.dumps(path_error_report, indent=4, default=str)
 
@@ -95,12 +94,7 @@ def api_validate_dataset_pipeline():
     # return json.dumps(blob, cls=DequeEncoder)
     errors = blob.get('errors')
 
-
-
     return json.dumps(errors, cls=DequeEncoder)
-
-    # return json.dumps(validate(path), cls=DequeEncoder)
-
     
 
     # validate the dataset
