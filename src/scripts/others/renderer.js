@@ -34,6 +34,7 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+const {datasetUploadSession} = require("./analytics.js")
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
@@ -6478,6 +6479,9 @@ function initiate_generate() {
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
 
+  // create a dataset upload session 
+  datasetUploadSession.startSession()
+
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
@@ -6515,8 +6519,6 @@ function initiate_generate() {
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
-
-  console.log(sodaJSONObj);
 
   // convert to JSON
   let json = JSON.stringify(sodaJSONObj);
