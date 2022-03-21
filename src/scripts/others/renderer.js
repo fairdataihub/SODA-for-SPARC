@@ -34,7 +34,9 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
-const { datasetUploadSession } = require("./analytics.js");
+// TODO: Test with a build
+const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
+
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
