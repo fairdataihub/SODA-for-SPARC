@@ -3191,6 +3191,9 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     # update the files
                     bf_folder.update()
 
+                    # update the global that tracks the amount of files that have been successfully uploaded
+                    main_curation_uploaded_files += BUCKET_SIZE
+
                     # handle renaming to final names
                     for index, projected_name in enumerate(
                         list_projected_names[start_index : end_index + 1]
