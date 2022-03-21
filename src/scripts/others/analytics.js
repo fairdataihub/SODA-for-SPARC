@@ -72,7 +72,6 @@ const trackEvent = (category, action, label, value) => {
   }
 };
 
-
 /*
 Purpose: Creates a session ID that is used for tracking which dataset upload session a Google Analytics call with the Action 'Organize Dataset - Step 7 - *' belongs to. 
          This is made necessary by the Pennsieve Agent's freezing during a dataset upload; which prevents us from 
@@ -82,8 +81,8 @@ Purpose: Creates a session ID that is used for tracking which dataset upload ses
 const datasetUploadSession = {
   id: undefined,
   startSession: function () {
-    this.id = uuid()
-  }
-}
+    this.id = uuid();
+  },
+};
 
 module.exports = { trackEvent, datasetUploadSession };
