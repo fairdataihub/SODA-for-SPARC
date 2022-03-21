@@ -3616,9 +3616,11 @@ def main_curate_function_progress():
     )
 
 
-# return the current amount of files that have been successfully uploaded
-# and return the size in a similar fashion to the main_curate_function_progress endpoint
 def main_curate_function_file_count():
+    """
+    Function frequently called by front end to help keep track of the amount of files that have 
+    been successfully uploaded to Pennsieve 
+    """
     return main_curation_uploaded_files
 
 
