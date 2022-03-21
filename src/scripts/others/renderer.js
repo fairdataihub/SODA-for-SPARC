@@ -6630,12 +6630,13 @@ function initiate_generate() {
         "track-event",
         "Success",
         PrepareDatasetsAnalyticsPrefix.CURATE +
-          "Step 7 - Generate - Dataset - Number of Files",
+          " - Step 7 - Generate - Dataset - Number of Files",
         `${datasetUploadSession.id}`,
         (uploadedFiles += 250)
       );
 
-      console.log("Uploaded a bucket of 250 on failure using this id: ", datasetUploadSession.id)
+      console.log("Uploaded a bucket of 250 on failure using this id: ", PrepareDatasetsAnalyticsPrefix.CURATE +
+      "Step 7 - Generate - Dataset - Number of Files", datasetUploadSession.id)
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
@@ -6930,7 +6931,7 @@ function initiate_generate() {
           "track-event",
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE +
-            "Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
         );
