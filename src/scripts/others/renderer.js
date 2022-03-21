@@ -1106,7 +1106,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1122,7 +1122,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1176,7 +1176,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   client.invoke(
     "api_save_subjects_file",
@@ -1268,7 +1268,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1284,7 +1284,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1338,7 +1338,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -1856,7 +1856,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2573,9 +2573,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6376,9 +6376,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -6622,11 +6622,17 @@ function initiate_generate() {
         }
       );
 
-      // TODO: Check when an upload has started instead of assuming we fail on upload to Pennsieve 
+      // TODO: Check when an upload has started instead of assuming we fail on upload to Pennsieve
       // TODO: Variable for the bucket size -- just need to decide where it should be placed
-      // some files have been successfully uploaded before the crash occurred. Reasonable to say half of the bucket. 
-      ipcRenderer.send("track-event", "Success", MetadataAnalyticsPrefix.CURATE + "Step 7 - Generate - Dataset - Number of Files", `${datasetUploadSession.id}`, uploadedFiles += 250)
-
+      // some files have been successfully uploaded before the crash occurred. Reasonable to say half of the bucket.
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        MetadataAnalyticsPrefix.CURATE +
+          "Step 7 - Generate - Dataset - Number of Files",
+        `${datasetUploadSession.id}`,
+        (uploadedFiles += 250)
+      );
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
