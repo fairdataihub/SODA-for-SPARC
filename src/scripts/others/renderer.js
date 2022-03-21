@@ -6628,11 +6628,13 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Success",
-        MetadataAnalyticsPrefix.CURATE +
+        PrepareDatasetsAnalyticsPrefix.CURATE +
           "Step 7 - Generate - Dataset - Number of Files",
         `${datasetUploadSession.id}`,
         (uploadedFiles += 250)
       );
+
+      console.log("Uploaded a bucket of 250 on failure using this id: ", datasetUploadSession.id)
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
@@ -6913,7 +6915,6 @@ function initiate_generate() {
 
   // TODO: Only execute if this is an upload to Pennsieve
   // inform analytics when files have been uploaded to Pennsieve
-  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000);
   const checkForBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_main_curate_get_uploaded_files", (err, res) => {
@@ -6927,7 +6928,7 @@ function initiate_generate() {
         ipcRenderer.send(
           "track-event",
           "Success",
-          MetadataAnalyticsPrefix.CURATE +
+          PrepareDatasetsAnalyticsPrefix.CURATE +
             "Step 7 - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           uploadedFiles
@@ -6940,6 +6941,7 @@ function initiate_generate() {
       clearInterval(timerCheckForBucketUpload);
     }
   };
+  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000);
 }
 
 const show_curation_shortcut = () => {
