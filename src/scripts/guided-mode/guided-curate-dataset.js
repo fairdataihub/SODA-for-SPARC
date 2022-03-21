@@ -227,6 +227,14 @@ const handlePageBranching = (selectedCardElement) => {
     });
   }
 };
+
+//Scroll down to dataset name prompt when a dataset start location is selected.
+$(".dataset-info-button").on("click", () => {
+  $("#guided-dataset-name-prompt")[0].scrollIntoView({
+    behavior: "smooth",
+  });
+});
+
 const guidedLoadSavedProgressFiles = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
@@ -1791,8 +1799,6 @@ $(document).ready(() => {
     $("#guided-next-button").click();
   });
 
-  //TODO changes completed question's opacity to .5, then scrolls to next question
-  //********************************************************************************************************
   //FETCH FUNCTIONS//
   //fetch
   const create_dataset = async (

@@ -38,6 +38,9 @@ function handleSectionTrigger(event) {
   }
   if (sectionId === "main_tabs-section") {
     organizeDSglobalPath = document.getElementById("input-global-path");
+    $(".shared-folder-structure-element").appendTo(
+      $("#free-form-folder-structure-container")
+    );
   }
 
   document.getElementById(sectionId).classList.add("is-shown");
