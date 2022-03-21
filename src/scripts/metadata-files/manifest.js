@@ -231,8 +231,8 @@ function loadManifestFileEdits(jsondata) {
   for (let i = 0; i < columns.length; i++) {
     let subColumn = {
       type: "text",
-      tableWidth:'100%',
-      width: '200px',
+      tableWidth: "100%",
+      width: "200px",
       name: columns[i],
       title: columns[i],
       readOnly: false,
@@ -1313,25 +1313,26 @@ function createManifestLocally(editBoolean, originalDataset) {
                     Swal.hideLoading();
                   },
                 }).then((result) => {});
-            } else {
-              // console.log(res)
-              Swal.fire({
-                title: "Successfully generated!",
-                heightAuto: false,
-                showConfirmButton: false,
-                timer: 800,
-                icon: "success",
-                backdrop: "rgba(0,0,0, 0.4)",
-                didOpen: () => {
-                  Swal.hideLoading();
-                },
-              }).then((result) => {});
-              $("#preview-manifest-fake-confirm").click();
-              $("#Question-prepare-manifest-4").removeClass("show");
-              $("#Question-prepare-manifest-4").removeClass("prev");
-              loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+              } else {
+                // console.log(res)
+                Swal.fire({
+                  title: "Successfully generated!",
+                  heightAuto: false,
+                  showConfirmButton: false,
+                  timer: 800,
+                  icon: "success",
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  didOpen: () => {
+                    Swal.hideLoading();
+                  },
+                }).then((result) => {});
+                $("#preview-manifest-fake-confirm").click();
+                $("#Question-prepare-manifest-4").removeClass("show");
+                $("#Question-prepare-manifest-4").removeClass("prev");
+                loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+              }
             }
-          })
+          );
           Swal.fire({
             title: "Successfully generated!",
             heightAuto: false,
@@ -1343,7 +1344,6 @@ function createManifestLocally(editBoolean, originalDataset) {
               Swal.hideLoading();
             },
           }).then((result) => {});
-
         } else {
           // SODA Manifest Files folder
           let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
