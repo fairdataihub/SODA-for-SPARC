@@ -6635,7 +6635,10 @@ function initiate_generate() {
         (uploadedFiles += 250)
       );
 
-      console.log("Uploaded a bucket of 250 on failure using this id: ", datasetUploadSession.id)
+      console.log(
+        "Uploaded a bucket of 250 on failure using this id: ",
+        datasetUploadSession.id
+      );
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
