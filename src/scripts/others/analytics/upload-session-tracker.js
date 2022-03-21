@@ -5,11 +5,10 @@ Purpose: Creates a session ID that is used for tracking which dataset upload ses
          the Agent has frozen. This is something that the Pennsieve team has a milestone to fix however, so we will not want to work with this. 
 */
 const datasetUploadSession = {
-    id: undefined,
-    startSession: function () {
-      this.id = uuid();
-    },
-  };
-  
+  id: undefined,
+  startSession: function () {
+    this.id = uuid();
+  },
+};
 
-  module.exports = { datasetUploadSession };
+module.exports = { datasetUploadSession };
