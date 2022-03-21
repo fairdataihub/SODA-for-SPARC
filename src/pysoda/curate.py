@@ -2425,6 +2425,7 @@ def create_high_level_manifest_files_existing_bf(
     except Exception as e:
         raise e
 
+
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
     soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
     # # create local folder to save manifest files temporarly (delete any existing one first)
@@ -2433,8 +2434,19 @@ def create_high_level_manifest_files_existing_local_starting_point(dataset_path)
 
     for high_level_fol in listdir(dataset_path):
 
-        if high_level_fol in ['primary', 'derivative', 'docs', 'code', 'source', 'protocol']:
-            onlyfiles = [join(dataset_path, high_level_fol, f) for f in listdir(join(dataset_path, high_level_fol)) if isfile(join(dataset_path, high_level_fol, f))]
+        if high_level_fol in [
+            "primary",
+            "derivative",
+            "docs",
+            "code",
+            "source",
+            "protocol",
+        ]:
+            onlyfiles = [
+                join(dataset_path, high_level_fol, f)
+                for f in listdir(join(dataset_path, high_level_fol))
+                if isfile(join(dataset_path, high_level_fol, f))
+            ]
 
             for file in onlyfiles:
 
@@ -2445,6 +2457,7 @@ def create_high_level_manifest_files_existing_local_starting_point(dataset_path)
                 if p.stem == "manifest":
                     # make copy from this manifest path to folderpath
                     shutil.copyfile(file, join(folderpath, p.name))
+
 
 def generate_relative_path(x, y):
     if x:
