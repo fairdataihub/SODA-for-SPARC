@@ -1567,24 +1567,79 @@ $(document).ready(() => {
   $(".guided--text-data-description").on("keyup", function () {
     validateGuidedDatasetDescriptionInputs();
   });
-  $("#guided-dataset-name-input").on("keyup", () => {
-    let newName = $("#guided-dataset-name-input").val().trim();
-    if (newName !== "") {
-      if (check_forbidden_characters_bf(newName)) {
-        $("#guided-dataset-name-input-warning-message").text(
-          "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
-        );
-        $("#guided-dataset-name-input-warning-message").show();
-        disableProgressButton();
-      } else {
-        /*change this to continue button $("#create-pennsieve-dataset").hide(); */
-        $("#guided-dataset-name-input-warning-message").hide();
-        validateGuidedBasicDescriptionInputs();
-      }
+  const validateGuidedBasicDescriptionInputs = () => {
+    //True if dataset name and dataset subtitle inputs are valid
+    if (
+      check_forbidden_characters_bf(
+        $("#guided-dataset-name-input").val().trim()
+      ) ||
+      $("#guided-dataset-name-input").val().trim().length == 0 ||
+      $("#guided-dataset-subtitle-input").val().trim().length == 0
+    ) {
+      disableProgressButton();
     } else {
-      $("#guided-dataset-name-input-warning-message").hide();
+      enableProgressButton();
     }
+  };
+
+  const generateWarningMessageElement = (warningMessageText) => {
+    return `
+      <div class="alert alert-danger guided--alert" role="alert">
+        ${warningMessageText}
+      </div>
+    `;
+    disableProgressButton();
+  };
+  const generateWarningMessage = (elementIdToWarn) => {
+    const elementToWarn = $(`#${elementIdToWarn}`);
+    const warningMessage = elementToWarn.data("warning");
+    if (!elementToWarn.next().hasClass("alert")) {
+      elementToWarn.after(generateWarningMessageElement(warningMessage));
+    }
+    enableProgressButton();
+  };
+  const removeWarningMessageIfExists = (elementIdToCheck) => {
+    const elementToCheck = $(`#${elementIdToCheck}`);
+    if (elementToCheck.next().hasClass("alert")) {
+      elementToCheck.next().remove();
+    }
+  };
+  const validatePage = (pageID) => {
+    let pageValid = false;
+    if (pageID === "guided-basic-description-tab") {
+      let name = document
+        .getElementById(`guided-dataset-name-input`)
+        .value.trim();
+      if (name !== "") {
+        if (check_forbidden_characters_bf(name)) {
+          generateWarningMessage("guided-dataset-name-input");
+        } else {
+          removeWarningMessageIfExists("guided-dataset-name-input");
+          pageValid = true;
+        }
+      }
+
+      let subtitle = document
+        .getElementById(`guided-dataset-subtitle-input`)
+        .value.trim();
+      if (subtitle !== "") {
+        if (subtitle.length > 255) {
+          generateWarningMessage(`guided-dataset-subtitle-input`);
+        } else {
+          removeWarningMessageIfExists(`guided-dataset-subtitle-input`);
+        }
+      }
+    }
+    if (pageValid) {
+      enableProgressButton();
+    } else {
+      disableProgressButton();
+    }
+  };
+  $(`[data-page="guided-basic-description-tab"]`).on("keyup", () => {
+    validatePage("guided-basic-description-tab");
   });
+
   $("#guided-dataset-subtitle-input").on("keyup", () => {
     const guidedDatasetSubtitleCharCount = document.getElementById(
       "guided-subtitle-char-count"

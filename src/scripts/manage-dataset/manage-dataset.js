@@ -714,9 +714,13 @@ $("#button-add-permission-team").click(() => {
 // Character count for subtitle //
 function countCharacters(textelement, pelement) {
   var textEntered = textelement.value;
-  var counter = 255 - textEntered.length;
-  pelement.innerHTML = counter + " characters remaining";
-  return textEntered.length;
+  var counter = 256 - textEntered.length;
+  if (counter < 0) {
+    pelement.innerHTML = `${Math.abs(counter)} characters over limit`;
+  } else {
+    pelement.innerHTML = counter + " characters remaining";
+    return textEntered.length;
+  }
 }
 
 $(document).ready(() => {

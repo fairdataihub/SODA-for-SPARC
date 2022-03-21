@@ -665,3 +665,9 @@
 .guided--accordion-field-container .guided--accordion-field:last-child {
   margin-bottom: 10px;
 }
+
+.guided--alert {
+  margin: 5px;
+  width: 100%;
+  border-radius: 4px;
+}

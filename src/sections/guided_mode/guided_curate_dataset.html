@@ -244,10 +244,12 @@
               ></label>
               <input
                 class="guided--input"
+                id="guided-dataset-name-input"
+                data-page="guided-basic-description-tab"
+                data-warning="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
                 type="text"
                 name="guided-dataset-name"
                 placeholder="Enter dataset name here"
-                id="guided-dataset-name-input"
               />
             </div>
             <div class="guided--question">
@@ -262,26 +264,28 @@
                   data-trigger="hover"
                 ></i
               ></label>
-              <textarea
-                class="guided--input guided--text-area"
-                type="text"
-                name="guided-dataset-subtitle"
-                placeholder="Enter datset subtitle here"
-                id="guided-dataset-subtitle-input"
-                style="height: 7.5em; padding-bottom: 20px"
-              ></textarea>
-              <p>
+              <p style="height: 0px; margin: 0px">
                 <span
                   id="guided-subtitle-char-count"
                   style="
                     position: relative;
-                    bottom: 20px;
+                    top: 100px;
                     color: rgb(117, 107, 107);
                   "
                 >
                   256 characters left
                 </span>
               </p>
+              <textarea
+                class="guided--input guided--text-area"
+                id="guided-dataset-subtitle-input"
+                data-page="guided-basic-description-tab"
+                data-warning="A Pennsieve dataset subtitle must be under 255 characters."
+                type="text"
+                name="guided-dataset-subtitle"
+                placeholder="Enter datset subtitle here"
+                style="height: 7.5em; padding-bottom: 20px"
+              ></textarea>
             </div>
             <div class="guided--question show">
               <label class="guided--text-sub-step"
