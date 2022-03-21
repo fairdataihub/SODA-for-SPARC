@@ -3618,8 +3618,8 @@ def main_curate_function_progress():
 
 def main_curate_function_file_count():
     """
-    Function frequently called by front end to help keep track of the amount of files that have 
-    been successfully uploaded to Pennsieve 
+    Function frequently called by front end to help keep track of the amount of files that have
+    been successfully uploaded to Pennsieve
     """
     return main_curation_uploaded_files
 
