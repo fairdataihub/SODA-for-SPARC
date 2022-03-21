@@ -6584,6 +6584,7 @@ function initiate_generate() {
         main_total_generate_dataset_size
       );
 
+      // when we fail we want to know the total amount of files we were trying to upload
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -6735,15 +6736,6 @@ function initiate_generate() {
         `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
         datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
         main_total_generate_dataset_size
-      );
-
-      // track amount of files for all datasets
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        "Number of Files",
-        file_counter
       );
 
       // track amount of files for datasets by ID or Local
