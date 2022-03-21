@@ -7,11 +7,10 @@ Purpose: Creates a session ID that is used for tracking which dataset upload ses
 const { v4: uuid } = require("uuid");
 
 const datasetUploadSession = {
-    id: undefined,
-    startSession: function () {
-      this.id = uuid();
-    },
-  };
-  
+  id: undefined,
+  startSession: function () {
+    this.id = uuid();
+  },
+};
 
-  module.exports = { datasetUploadSession };
+module.exports = { datasetUploadSession };
