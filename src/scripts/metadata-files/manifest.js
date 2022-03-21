@@ -180,7 +180,8 @@ $(document).ready(function () {
         showConfirmButton: true,
         confirmButtonText: "Confirm",
         showCancelButton: true,
-        width: 600,
+        width: "90%",
+        // height: "80%",
         customClass: "swal-large",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -230,7 +231,8 @@ function loadManifestFileEdits(jsondata) {
   for (let i = 0; i < columns.length; i++) {
     let subColumn = {
       type: "text",
-      width: "120px",
+      tableWidth:'100%',
+      width: '200px',
       name: columns[i],
       title: columns[i],
       readOnly: false,
@@ -1248,8 +1250,9 @@ async function generateManifestFolderLocallyForEdit() {
         },
       }).then((result) => {});
       return;
+    } else {
+      createManifestLocally(true, "");
     }
-    createManifestLocally(true, "");
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
@@ -1290,6 +1293,45 @@ function createManifestLocally(editBoolean, originalDataset) {
         $("#bf_dataset_create_manifest").text("None");
       } else {
         if (editBoolean) {
+          //// else: create locally for the purpose of generating of manifest files locally
+          client.invoke(
+            "api_create_high_level_manifest_files_existing_local_starting_point",
+            localDatasetFolderPath,
+            async (error, res) => {
+              if (error) {
+                var emessage = userError(error);
+                log.error(error);
+                console.error(error);
+                Swal.fire({
+                  title: "Failed to load the manifest files for edits.",
+                  html: emessage,
+                  heightAuto: false,
+                  showConfirmButton: true,
+                  icon: "error",
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  didOpen: () => {
+                    Swal.hideLoading();
+                  },
+                }).then((result) => {});
+            } else {
+              // console.log(res)
+              Swal.fire({
+                title: "Successfully generated!",
+                heightAuto: false,
+                showConfirmButton: false,
+                timer: 800,
+                icon: "success",
+                backdrop: "rgba(0,0,0, 0.4)",
+                didOpen: () => {
+                  Swal.hideLoading();
+                },
+              }).then((result) => {});
+              $("#preview-manifest-fake-confirm").click();
+              $("#Question-prepare-manifest-4").removeClass("show");
+              $("#Question-prepare-manifest-4").removeClass("prev");
+              loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
+            }
+          })
           Swal.fire({
             title: "Successfully generated!",
             heightAuto: false,
@@ -1301,13 +1343,7 @@ function createManifestLocally(editBoolean, originalDataset) {
               Swal.hideLoading();
             },
           }).then((result) => {});
-          $("#preview-manifest-fake-confirm").click();
-          $("#Question-prepare-manifest-4").removeClass("show");
-          $("#Question-prepare-manifest-4").removeClass("prev");
-          manifestFolderPath = res;
-          loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
-          // move to the next question with a Fake confirm button
-          //// else: create locally for the purpose of generating of manifest files locally
+
         } else {
           // SODA Manifest Files folder
           let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
