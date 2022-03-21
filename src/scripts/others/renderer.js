@@ -34,7 +34,7 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
-const { datasetUploadSession } = require("./analytics.js")
+const { datasetUploadSession } = require("./analytics.js");
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
@@ -1104,7 +1104,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
         });
@@ -1120,7 +1120,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
     }
@@ -1174,7 +1174,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   client.invoke(
     "api_save_subjects_file",
@@ -1266,7 +1266,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1282,7 +1282,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1336,7 +1336,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -1854,7 +1854,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2571,9 +2571,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-    dsEmptyField.join(", "),
+      dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-    conEmptyField.join(", "),
+      conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6374,9 +6374,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+          "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -6498,8 +6498,8 @@ function initiate_generate() {
   }
   let dataset_destination = "";
 
-  // track the amount of files that have been uploaded/generated 
-  let filesUploaded = 0
+  // track the amount of files that have been uploaded/generated
+  let filesUploaded = 0;
 
   // determine if the dataset is being uploaded to Pennsieve or being generated locally
   if ("bf-dataset-selected" in sodaJSONObj) {
@@ -6897,26 +6897,20 @@ function initiate_generate() {
     }
   }
 
-
-  // TODO: Only execute if this is an upload to Pennsieve 
+  // TODO: Only execute if this is an upload to Pennsieve
   // inform analytics when files have been uploaded to Pennsieve
-  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000)
+  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000);
   const checkForBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
 
     // if the amount is different from the stored amount, send the new amount to analytics
 
-    //stop the inteval when the upload is complete 
+    //stop the inteval when the upload is complete
     if (main_curate_status === "Done") {
       clearInterval(timerCheckForBucketUpload);
     }
-  }
-
+  };
 }
-
-
-
-
 
 const show_curation_shortcut = () => {
   Swal.fire({
