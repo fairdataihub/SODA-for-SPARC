@@ -6498,8 +6498,8 @@ function initiate_generate() {
   }
   let dataset_destination = "";
 
-  // track the amount of files that have been uploaded/generated 
-  let uploadedFiles = 0
+  // track the amount of files that have been uploaded/generated
+  let uploadedFiles = 0;
 
   // determine if the dataset is being uploaded to Pennsieve or being generated locally
   if ("bf-dataset-selected" in sodaJSONObj) {
@@ -6909,19 +6909,23 @@ function initiate_generate() {
   const checkForBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_main_curate_get_uploaded_files", (err, res) => {
-      // TODO : Handle the error case 
+      // TODO : Handle the error case
 
       // check if the amount of successfully uploaded files has increased
       if (res > uploadedFiles) {
-        uploadedFiles = res
+        uploadedFiles = res;
 
         // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-        ipcRenderer.send("track-event", "Success", MetadataAnalyticsPrefix.CURATE + "Step 7 - Generate - Dataset - Number of Files", `${datasetUploadSession.id}`, uploadedFiles)
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          MetadataAnalyticsPrefix.CURATE +
+            "Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          uploadedFiles
+        );
       }
-
-    })
-
-
+    });
 
     //stop the inteval when the upload is complete
     if (main_curate_status === "Done") {
