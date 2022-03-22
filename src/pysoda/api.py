@@ -236,7 +236,7 @@ class SodaApi(object):
             return create_high_level_manifest_files_existing_local_starting_point(dataset_path)
         except Exception as e:
             raise e
-
+            
     ### Bf
     def api_bf_add_account_api_key(self, keyname, key, secret):
         try:
