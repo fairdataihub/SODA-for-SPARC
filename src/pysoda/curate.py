@@ -3616,12 +3616,17 @@ def main_curate_function_progress():
     )
 
 
-def main_curate_function_file_count():
+def main_curate_function_upload_details():
     """
     Function frequently called by front end to help keep track of the amount of files that have
-    been successfully uploaded to Pennsieve
+    been successfully uploaded to Pennsieve, and the size of the uploaded files 
     """
-    return main_curation_uploaded_files
+    if main_generate_destination == "bf":
+            main_generated_dataset_size = (
+                bf_dataset_size() - main_initial_bfdataset_size
+            )
+    
+    return ( main_curation_uploaded_files, main_generated_dataset_size)
 
 
 def preview_dataset(soda_json_structure):
