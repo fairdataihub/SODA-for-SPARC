@@ -238,7 +238,7 @@
                 class="btn_animated"
                 id="guided-button-add-banner-image"
                 data-warning="A banner image has not been added to your dataset. Please add one before you continue."
-                data-alert-type="secondary"
+                data-alert-type="warning"
                 style="width: 180px; border: none !important"
               >
                 Add banner image
@@ -259,7 +259,7 @@
               <input
                 class="guided--input"
                 id="guided-dataset-name-input"
-                data-page="guided-basic-description-tab"
+                data-input-set="guided-basic-description-tab"
                 data-warning="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
                 data-alert-type="danger"
                 type="text"
@@ -294,7 +294,7 @@
               <textarea
                 class="guided--input guided--text-area"
                 id="guided-dataset-subtitle-input"
-                data-page="guided-basic-description-tab"
+                data-input-set="guided-basic-description-tab"
                 data-warning="A Pennsieve dataset subtitle must be under 255 characters."
                 data-alert-type="danger"
                 type="text"
@@ -458,12 +458,6 @@
                 </div>
               </div>
             </div>
-            <div class="guided--question">
-              <h1 class="guided--text-sub-step">
-                You will retain dataset ownership unless you designate another
-                user as owner further on in the curation process
-              </h1>
-            </div>
           </div>
           <div
             id="guided-subjects-folder-tab"
@@ -483,12 +477,14 @@
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-subjects"
                   data-next-question="guided-user-has-subjects-form"
+                  onclick="disableProgressButton()"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-no-subjects"
+                  onclick="enableProgressButton()"
                 >
                   No
                 </button>
@@ -503,11 +499,13 @@
                   </label>
                   <input
                     class="guided--input"
-                    type="text"
-                    name="guided-number-of-subjects"
-                    placeholder="Enter number of subjects"
                     id="guided-number-of-subjects-input"
+                    type="text"
+                    placeholder="Enter number of subjects"
                     style="width: 400px; text-align: center"
+                    data-input-set="guided-subjects-folder-tab"
+                    data-warning="Please enter a valid number between 1 and 500."
+                    data-alert-type="danger"
                   />
                 </div>
                 <button

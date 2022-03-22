@@ -303,6 +303,14 @@ function makeid(length) {
   }
   return result;
 }
+const isNumber = (number, minVal, maxVal) => {
+  return (
+    !isNaN(parseFloat(number)) &&
+    isFinite(number) &&
+    number >= minVal &&
+    number <= maxVal
+  );
+};
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
 /////////////////////////////////////////////////////////
@@ -1586,15 +1594,20 @@ $(document).ready(() => {
   };
   const removeWarningMessageIfExists = (elementIdToCheck) => {
     const elementToCheck = $(`#${elementIdToCheck}`);
-    if (elementToCheck.next().hasClass("alert")) {
+    const warningMessageToRemove = elementToCheck.next();
+    console.log(warningMessageToRemove);
+    if (warningMessageToRemove.hasClass("alert")) {
+      console.log("removing alert");
       elementToCheck.next().remove();
     }
   };
-  const validateInputSet = (inputSetID) => {
+  const validateInputSet = (inputElementToValidate) => {
+    inputSetID = inputElementToValidate.data("input-set");
+
     if (inputSetID === "guided-basic-description-tab") {
-      nameIsValid = false;
-      subtitleIsValid = false;
-      bannerImageIsValid = false;
+      let nameIsValid = false;
+      let subtitleIsValid = false;
+      let bannerImageIsValid = false;
       let name = document
         .getElementById(`guided-dataset-name-input`)
         .value.trim();
@@ -1618,68 +1631,45 @@ $(document).ready(() => {
           subtitleIsValid = true;
         }
       }
-      console.log(tempGuidedCroppedBannerImagePath);
-      if (tempGuidedCroppedBannerImagePath == "") {
+      if (
+        tempGuidedCroppedBannerImagePath == "" &&
+        subtitleIsValid == true &&
+        nameIsValid == true
+      ) {
         generateWarningMessage(`guided-button-add-banner-image`);
       } else {
         removeWarningMessageIfExists(`guided-button-add-banner-image`);
         bannerImageIsValid = true;
       }
-      console.log(nameIsValid);
-      console.log(subtitleIsValid);
-      console.log(bannerImageIsValid);
+
       if (nameIsValid && subtitleIsValid && bannerImageIsValid != "") {
         enableProgressButton();
       } else {
         disableProgressButton();
       }
     }
-    if (inputSetID === "guided-basic-description-tab") {
-      nameIsValid = false;
-      subtitleIsValid = false;
-      bannerImageIsValid = false;
-      let name = document
-        .getElementById(`guided-dataset-name-input`)
+    if (inputSetID === "guided-subjects-folder-tab") {
+      let numSubjectsIsValid = false;
+      let numSubjects = document
+        .getElementById(`guided-number-of-subjects-input`)
         .value.trim();
-      if (name !== "") {
-        if (check_forbidden_characters_bf(name)) {
-          generateWarningMessage("guided-dataset-name-input");
+      if (numSubjects !== "") {
+        const createSubjectsTableButton = document.getElementById(
+          "guided-button-generate-subjects-table"
+        );
+        if (!isNumber(numSubjects, 1, 500)) {
+          generateWarningMessage("guided-number-of-subjects-input");
+          createSubjectsTableButton.disabled = true;
         } else {
-          removeWarningMessageIfExists("guided-dataset-name-input");
-          nameIsValid = true;
+          removeWarningMessageIfExists("guided-number-of-subjects-input");
+          createSubjectsTableButton.disabled = false;
+          numSubjectsIsValid = true;
         }
-      }
-
-      let subtitle = document
-        .getElementById(`guided-dataset-subtitle-input`)
-        .value.trim();
-      if (subtitle !== "") {
-        if (subtitle.length > 255) {
-          generateWarningMessage(`guided-dataset-subtitle-input`);
-        } else {
-          removeWarningMessageIfExists(`guided-dataset-subtitle-input`);
-          subtitleIsValid = true;
-        }
-      }
-      console.log(tempGuidedCroppedBannerImagePath);
-      if (tempGuidedCroppedBannerImagePath == "") {
-        generateWarningMessage(`guided-button-add-banner-image`);
-      } else {
-        removeWarningMessageIfExists(`guided-button-add-banner-image`);
-        bannerImageIsValid = true;
-      }
-      console.log(nameIsValid);
-      console.log(subtitleIsValid);
-      console.log(bannerImageIsValid);
-      if (nameIsValid && subtitleIsValid && bannerImageIsValid != "") {
-        enableProgressButton();
-      } else {
-        disableProgressButton();
       }
     }
   };
-  $(`[data-page="guided-basic-description-tab"]`).on("keyup", () => {
-    validateInputSet("guided-basic-description-tab");
+  $(`[data-input-set]`).on("keyup", function () {
+    validateInputSet($(this));
   });
 
   $("#guided-dataset-subtitle-input").on("keyup", () => {
