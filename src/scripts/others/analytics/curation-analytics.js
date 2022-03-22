@@ -21,10 +21,8 @@ const getLocallyGeneratedFileCount = async (generationLocation) => {
 
 }
 
-
-
 // Sends detailed information about failures that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH 
-const logCurationErrorsToAnalytics = async () => {
+const logCurationErrorsToAnalytics = async (main_total_generate_dataset_size, uploadedFiles,  uploadedFilesSize) => {
     logCurationForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
@@ -163,7 +161,8 @@ const logCurationErrorsToAnalytics = async () => {
 }
 
 
-const logCurationSuccessToAnalytics = async (manifest_files_requested) => {
+// Sends detailed information about successful uploads that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH
+const logCurationSuccessToAnalytics = async (manifest_files_requested, main_total_generate_dataset_size) => {
     if (manifest_files_requested) {
         let high_level_folder_num = 0;
         if ("dataset-structure" in sodaJSONObj) {

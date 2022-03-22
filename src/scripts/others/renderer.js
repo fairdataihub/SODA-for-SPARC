@@ -6541,7 +6541,6 @@ function initiate_generate() {
       generateProgressBar.value = 0;
       log.error(error);
       console.error(error);
-      // forceActionSidebar('show');
 
       client.invoke(
         "api_bf_dataset_account",
@@ -6559,7 +6558,7 @@ function initiate_generate() {
       );
 
       // log the curation errors to Google Analytics 
-      logCurationErrorsToAnalytics()
+      logCurationErrorsToAnalytics(main_total_generate_dataset_size, uploadedFiles, uploadedFilesSize)
 
     } else {
       main_total_generate_dataset_size = res[1];
