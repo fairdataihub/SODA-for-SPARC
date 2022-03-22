@@ -6742,15 +6742,6 @@ function initiate_generate() {
         );
       }
 
-      // for tracking the total size of all datasets ever created on SODA
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        "Size",
-        main_total_generate_dataset_size
-      );
-
       logCurationForAnalytics(
         "Success",
         PrepareDatasetsAnalyticsPrefix.CURATE,
@@ -6949,6 +6940,8 @@ function initiate_generate() {
 
   // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
   // and their aggregate size
+  // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload. 
+  //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
   if (dataset_destination === "bf") {
     // inform analytics when files have been uploaded to Pennsieve
     const checkForBucketUpload = () => {
