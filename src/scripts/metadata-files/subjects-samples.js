@@ -260,23 +260,18 @@ function hideForm(type) {
   $("#btn-add-" + type + "").css("display", "inline-block");
 }
 
-function validateSubSamID(ev, curationMode) {
+function validateSubSamID(ev) {
   var regex = /^[a-zA-Z0-9-_]+$/;
   var id = $(ev).prop("id");
   var value = $("#" + id).val();
   //Validate TextBox value against the Regex.
   var isValid = regex.test(value);
-  if (curationMode === "free-form") {
-    generateWarningMessage("guided-number-of-subjects-input");
-    if (!isValid && value.trim() !== "") {
-      $(ev).addClass("invalid");
-      $("#para-" + id).css("display", "block");
-    } else {
-      $(ev).removeClass("invalid");
-      $("#para-" + id).css("display", "none");
-    }
-  }
-  if (curationMode === "guided") {
+  if (!isValid && value.trim() !== "") {
+    $(ev).addClass("invalid");
+    $("#para-" + id).css("display", "block");
+  } else {
+    $(ev).removeClass("invalid");
+    $("#para-" + id).css("display", "none");
   }
 }
 

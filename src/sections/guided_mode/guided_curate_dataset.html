@@ -265,6 +265,7 @@
                 type="text"
                 name="guided-dataset-name"
                 placeholder="Enter dataset name here"
+                onkeyup="validateInput($(this))"
               />
             </div>
             <div class="guided--question">
@@ -301,6 +302,7 @@
                 name="guided-dataset-subtitle"
                 placeholder="Enter datset subtitle here"
                 style="height: 7.5em; padding-bottom: 20px"
+                onkeyup="validateInput($(this))"
               ></textarea>
             </div>
 
@@ -504,8 +506,9 @@
                     placeholder="Enter number of subjects"
                     style="width: 400px; text-align: center"
                     data-input-set="guided-subjects-folder-tab"
-                    data-warning="Please enter a valid number between 1 and 500."
+                    data-warning="Please enter a valid number between 1 and 1000."
                     data-alert-type="danger"
+                    onkeyup="validateInput($(this))"
                   />
                 </div>
                 <button

@@ -311,6 +311,79 @@ const isNumber = (number, minVal, maxVal) => {
     number <= maxVal
   );
 };
+function subSamInputIsValid(subSamInput) {
+  let regex = /^[a-zA-Z0-9-_]+$/;
+  return regex.test(subSamInput);
+}
+const generateAlertElement = (alertType, warningMessageText) => {
+  return `
+      <div class="alert alert-${alertType} guided--alert" role="alert">
+        ${warningMessageText}
+      </div>
+    `;
+  disableProgressButton();
+};
+const generateWarningMessage = (elementToWarn) => {
+  const warningMessage = elementToWarn.data("warning");
+  const alertType = elementToWarn.data("alert-type");
+  if (!elementToWarn.next().hasClass("alert")) {
+    elementToWarn.after(generateAlertElement(alertType, warningMessage));
+  }
+  enableProgressButton();
+};
+const removeWarningMessageIfExists = (elementToCheck) => {
+  const warningMessageToRemove = elementToCheck.next();
+  if (warningMessageToRemove.hasClass("alert")) {
+    console.log("removing alert");
+    elementToCheck.next().remove();
+  }
+};
+const validateInput = (inputElementToValidate) => {
+  let inputIsValid = false;
+
+  const inputID = inputElementToValidate.attr("id");
+  if (inputID === "guided-dataset-name-input") {
+    let name = inputElementToValidate.val().trim();
+    if (name !== "") {
+      if (!check_forbidden_characters_bf(name)) {
+        removeWarningMessageIfExists(inputElementToValidate);
+        inputIsValid = true;
+      } else {
+        generateWarningMessage(inputElementToValidate);
+      }
+    }
+  }
+  if (inputID === "guided-dataset-subtitle-input") {
+    let subtitle = inputElementToValidate.val().trim();
+    if (subtitle !== "") {
+      if (subtitle.length < 255) {
+        removeWarningMessageIfExists(inputElementToValidate);
+        inputIsValid = true;
+      } else {
+        generateWarningMessage(inputElementToValidate);
+      }
+    }
+  }
+  if (inputID === "guided-number-of-subjects-input") {
+    let numSubjects = inputElementToValidate.val().trim();
+    if (numSubjects !== "") {
+      if (numSubjects !== "") {
+        const createSubjectsTableButton = document.getElementById(
+          "guided-button-generate-subjects-table"
+        );
+        if (isNumber(numSubjects, 1, 1000)) {
+          removeWarningMessageIfExists(inputElementToValidate);
+          createSubjectsTableButton.disabled = false;
+          inputIsValid = true;
+        } else {
+          generateWarningMessage(inputElementToValidate);
+          createSubjectsTableButton.disabled = true;
+        }
+      }
+    }
+  }
+  return inputIsValid;
+};
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
 /////////////////////////////////////////////////////////
@@ -607,6 +680,9 @@ $("#guided-button-generate-subjects-table").on("click", () => {
               name="guided-subject-id"
               placeholder="Enter subject ID and press enter"
               onkeyup="createSubjectFolder(event, $(this))"
+              data-input-set="guided-subjects-folder-tab"
+              data-warning="Subject IDs may not contain special characters"
+              data-alert-type="danger"
             />
           </td>
           <td class="middle aligned collapsing text-center">
@@ -654,6 +730,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   $(".guided-input-sample-count").val("0");
   $("#subjects-table").css("display", "flex");
 });
+
 const createSubjectFolder = (event, subjectNameInput) => {
   if (event.which == 13) {
     try {
@@ -677,32 +754,38 @@ const createSubjectFolder = (event, subjectNameInput) => {
             </div>
           `;
       if (subjectName.length > 0) {
-        const subjectIdCellToAddNameTo = subjectNameInput.parent();
-        subjectIdCellToAddNameTo.html(subjectNameElement);
+        if (subSamInputIsValid(subjectName)) {
+          removeWarningMessageIfExists(subjectNameInput);
+          const subjectIdCellToAddNameTo = subjectNameInput.parent();
+          subjectIdCellToAddNameTo.html(subjectNameElement);
 
-        subjectTargetFolder = getRecursivePath(
-          ["primary"],
-          datasetStructureJSONObj
-        ).folders;
-        //Check to see if input has prev-name data attribute
-        //Added when renaming a subject
-        if (subjectNameInput.attr("data-prev-name")) {
-          //get the name of the subject being renamed
-          const subjectFolderToRename = subjectNameInput.attr("data-prev-name");
-          //create a temp copy of the folder to be renamed
-          copiedFolderToRename = subjectTargetFolder[subjectFolderToRename];
-          //set the copied obj from the prev name to the new obj name
-          subjectTargetFolder[subjectName] = copiedFolderToRename;
-          //delete the temp copy of the folder that was renamed
-          delete subjectTargetFolder[subjectFolderToRename];
+          subjectTargetFolder = getRecursivePath(
+            ["primary"],
+            datasetStructureJSONObj
+          ).folders;
+          //Check to see if input has prev-name data attribute
+          //Added when renaming a subject
+          if (subjectNameInput.attr("data-prev-name")) {
+            //get the name of the subject being renamed
+            const subjectFolderToRename =
+              subjectNameInput.attr("data-prev-name");
+            //create a temp copy of the folder to be renamed
+            copiedFolderToRename = subjectTargetFolder[subjectFolderToRename];
+            //set the copied obj from the prev name to the new obj name
+            subjectTargetFolder[subjectName] = copiedFolderToRename;
+            //delete the temp copy of the folder that was renamed
+            delete subjectTargetFolder[subjectFolderToRename];
+          } else {
+            //Create an empty folder for the new subject
+            subjectTargetFolder[subjectName] = {
+              folders: {},
+              files: {},
+              type: "",
+              action: [],
+            };
+          }
         } else {
-          //Create an empty folder for the new subject
-          subjectTargetFolder[subjectName] = {
-            folders: {},
-            files: {},
-            type: "",
-            action: [],
-          };
+          generateWarningMessage(subjectNameInput);
         }
       }
     } catch (error) {
@@ -726,6 +809,9 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
       name="guided-subject-id"
       placeholder="Enter new subject ID"
       onkeyup="createSubjectFolder(event, $(this))"
+      data-input-set="guided-subjects-folder-tab"
+      data-warning="Subject IDs may not contain special characters"
+      data-alert-type="danger"
       data-prev-name="${prevSubjectName}"
     />
   `;
@@ -1575,34 +1661,10 @@ $(document).ready(() => {
     validateGuidedDatasetDescriptionInputs();
   });
 
-  const generateAlertElement = (alertType, warningMessageText) => {
-    return `
-      <div class="alert alert-${alertType} guided--alert" role="alert">
-        ${warningMessageText}
-      </div>
-    `;
-    disableProgressButton();
-  };
-  const generateWarningMessage = (elementIdToWarn) => {
-    const elementToWarn = $(`#${elementIdToWarn}`);
-    const warningMessage = elementToWarn.data("warning");
-    const alertType = elementToWarn.data("alert-type");
-    if (!elementToWarn.next().hasClass("alert")) {
-      elementToWarn.after(generateAlertElement(alertType, warningMessage));
-    }
-    enableProgressButton();
-  };
-  const removeWarningMessageIfExists = (elementIdToCheck) => {
-    const elementToCheck = $(`#${elementIdToCheck}`);
-    const warningMessageToRemove = elementToCheck.next();
-    console.log(warningMessageToRemove);
-    if (warningMessageToRemove.hasClass("alert")) {
-      console.log("removing alert");
-      elementToCheck.next().remove();
-    }
-  };
   const validateInputSet = (inputElementToValidate) => {
+    /*
     inputSetID = inputElementToValidate.data("input-set");
+    console.log(inputSetID);
 
     if (inputSetID === "guided-basic-description-tab") {
       let nameIsValid = false;
@@ -1613,10 +1675,8 @@ $(document).ready(() => {
         .value.trim();
       if (name !== "") {
         if (check_forbidden_characters_bf(name)) {
-          generateWarningMessage("guided-dataset-name-input");
-        } else {
-          removeWarningMessageIfExists("guided-dataset-name-input");
-          nameIsValid = true;
+          generateWarningMessage(inputElementToValidate);
+          console.log("name invalid");
         }
       }
 
@@ -1625,9 +1685,12 @@ $(document).ready(() => {
         .value.trim();
       if (subtitle !== "") {
         if (subtitle.length > 255) {
-          generateWarningMessage(`guided-dataset-subtitle-input`);
+          generateWarningMessage(inputElementToValidate);
+          console.log("subtitle valid");
         } else {
-          removeWarningMessageIfExists(`guided-dataset-subtitle-input`);
+          removeWarningMessageIfExists(inputElementToValidate);
+          console.log("subtitle invalid");
+
           subtitleIsValid = true;
         }
       }
@@ -1636,9 +1699,9 @@ $(document).ready(() => {
         subtitleIsValid == true &&
         nameIsValid == true
       ) {
-        generateWarningMessage(`guided-button-add-banner-image`);
+        generateWarningMessage($("#guided-button-add-banner-image"));
       } else {
-        removeWarningMessageIfExists(`guided-button-add-banner-image`);
+        removeWarningMessageIfExists($("#guided-button-add-banner-image"));
         bannerImageIsValid = true;
       }
 
@@ -1657,20 +1720,23 @@ $(document).ready(() => {
         const createSubjectsTableButton = document.getElementById(
           "guided-button-generate-subjects-table"
         );
-        if (!isNumber(numSubjects, 1, 500)) {
-          generateWarningMessage("guided-number-of-subjects-input");
+        if (!isNumber(numSubjects, 1, 1000)) {
+          generateWarningMessage(inputElementToValidate);
           createSubjectsTableButton.disabled = true;
         } else {
-          removeWarningMessageIfExists("guided-number-of-subjects-input");
+          removeWarningMessageIfExists(inputElementToValidate);
           createSubjectsTableButton.disabled = false;
           numSubjectsIsValid = true;
         }
       }
-    }
+    }*/
   };
-  $(`[data-input-set]`).on("keyup", function () {
+
+  //adds an event listener to all elements with a data-input-set attribute
+  //that runes the validation function when clicked/input is modified
+  /*$(`[data-input-set]`).on("keyup", function () {
     validateInputSet($(this));
-  });
+  });*/
 
   $("#guided-dataset-subtitle-input").on("keyup", () => {
     const guidedDatasetSubtitleCharCount = document.getElementById(
@@ -3320,7 +3386,7 @@ $(document).ready(() => {
       if (image_file_size < 5 * 1024 * 1024) {
         tempGuidedCroppedBannerImagePath = imagePath;
         $("#guided-banner-image-modal").modal("hide");
-        validateInputSet("guided-basic-description-tab");
+        /*validateInputSet($("#guided-button-add-banner-image"));*/
       } else {
         $("#guided-para-dataset-banner-image-status").html(
           "<span style='color: red;'> " +
