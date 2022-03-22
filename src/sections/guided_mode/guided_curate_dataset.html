@@ -231,6 +231,20 @@
               </div>
             </div>
             <div class="guided--question" id="guided-dataset-name-prompt">
+              <label class="guided--text-sub-step"
+                >Add a banner image to your dataset:
+              </label>
+              <button
+                class="btn_animated"
+                id="guided-button-add-banner-image"
+                data-warning="A banner image has not been added to your dataset. Please add one before you continue."
+                data-alert-type="secondary"
+                style="width: 180px; border: none !important"
+              >
+                Add banner image
+              </button>
+            </div>
+            <div class="guided--question">
               <label class="guided--form-label"
                 >Dataset name:
                 <i
@@ -247,6 +261,7 @@
                 id="guided-dataset-name-input"
                 data-page="guided-basic-description-tab"
                 data-warning="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
+                data-alert-type="danger"
                 type="text"
                 name="guided-dataset-name"
                 placeholder="Enter dataset name here"
@@ -281,33 +296,14 @@
                 id="guided-dataset-subtitle-input"
                 data-page="guided-basic-description-tab"
                 data-warning="A Pennsieve dataset subtitle must be under 255 characters."
+                data-alert-type="danger"
                 type="text"
                 name="guided-dataset-subtitle"
                 placeholder="Enter datset subtitle here"
                 style="height: 7.5em; padding-bottom: 20px"
               ></textarea>
             </div>
-            <div class="guided--question show">
-              <label class="guided--text-sub-step"
-                >Add a banner image to your dataset:
-              </label>
-              <div
-                class="field"
-                style="display: flex; justify-content: center; width: 100%"
-              >
-                <button
-                  id="guided-button-add-banner-image"
-                  class="btn_animated"
-                  style="
-                    width: 180px;
-                    border: none !important;
-                    margin-bottom: 15px;
-                  "
-                >
-                  Add banner image
-                </button>
-              </div>
-            </div>
+
             <div
               class="modal fade"
               id="guided-banner-image-modal"

@@ -306,26 +306,14 @@ function makeid(length) {
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
 /////////////////////////////////////////////////////////
-const validateGuidedBasicDescriptionInputs = () => {
-  //True if dataset name and dataset subtitle inputs are valid
-  if (
-    check_forbidden_characters_bf(
-      $("#guided-dataset-name-input").val().trim()
-    ) ||
-    $("#guided-dataset-name-input").val().trim().length == 0 ||
-    $("#guided-dataset-subtitle-input").val().trim().length == 0
-  ) {
-    disableProgressButton();
-  } else {
-    enableProgressButton();
-  }
-};
 
 const validateGuidedDatasetDescriptionInputs = () => {
   if (
     $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
     $("#guided-ds-description-data-collection").val().trim().length == 0 ||
-    $("#guided-ds-description-primary-conclusion").val().trim().length == 0
+    $("#guided-ds-description-primary-bannerImageIsValidconclusion")
+      .val()
+      .trim().length == 0
   ) {
     disableProgressButton();
   } else {
@@ -1281,7 +1269,18 @@ const setGuidedDatasetSubtitle = (newDatasetSubtitle) => {
 };
 
 const setGuidedBannerImage = (croppedImagePath) => {
-  sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
+  let datasetName = sodaJSONObj["digital-metadata"]["name"];
+  //Replace "temp" from old cropped image path with entered dataset name and then update
+  //the temp guided banner image path to be dataset-name specific
+  updatedCroppedImagePath = croppedImagePath.replace("temp", datasetName);
+  fs.rename(croppedImagePath, updatedCroppedImagePath, (error) => {
+    if (error) {
+      console.log(error);
+    }
+  });
+  //Update json obj to link to the new banner image path
+  sodaJSONObj["digital-metadata"]["banner-image-path"] =
+    updatedCroppedImagePath;
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
@@ -1567,24 +1566,10 @@ $(document).ready(() => {
   $(".guided--text-data-description").on("keyup", function () {
     validateGuidedDatasetDescriptionInputs();
   });
-  const validateGuidedBasicDescriptionInputs = () => {
-    //True if dataset name and dataset subtitle inputs are valid
-    if (
-      check_forbidden_characters_bf(
-        $("#guided-dataset-name-input").val().trim()
-      ) ||
-      $("#guided-dataset-name-input").val().trim().length == 0 ||
-      $("#guided-dataset-subtitle-input").val().trim().length == 0
-    ) {
-      disableProgressButton();
-    } else {
-      enableProgressButton();
-    }
-  };
 
-  const generateWarningMessageElement = (warningMessageText) => {
+  const generateAlertElement = (alertType, warningMessageText) => {
     return `
-      <div class="alert alert-danger guided--alert" role="alert">
+      <div class="alert alert-${alertType} guided--alert" role="alert">
         ${warningMessageText}
       </div>
     `;
@@ -1593,8 +1578,9 @@ $(document).ready(() => {
   const generateWarningMessage = (elementIdToWarn) => {
     const elementToWarn = $(`#${elementIdToWarn}`);
     const warningMessage = elementToWarn.data("warning");
+    const alertType = elementToWarn.data("alert-type");
     if (!elementToWarn.next().hasClass("alert")) {
-      elementToWarn.after(generateWarningMessageElement(warningMessage));
+      elementToWarn.after(generateAlertElement(alertType, warningMessage));
     }
     enableProgressButton();
   };
@@ -1604,9 +1590,11 @@ $(document).ready(() => {
       elementToCheck.next().remove();
     }
   };
-  const validatePage = (pageID) => {
-    let pageValid = false;
-    if (pageID === "guided-basic-description-tab") {
+  const validateInputSet = (inputSetID) => {
+    if (inputSetID === "guided-basic-description-tab") {
+      nameIsValid = false;
+      subtitleIsValid = false;
+      bannerImageIsValid = false;
       let name = document
         .getElementById(`guided-dataset-name-input`)
         .value.trim();
@@ -1615,7 +1603,7 @@ $(document).ready(() => {
           generateWarningMessage("guided-dataset-name-input");
         } else {
           removeWarningMessageIfExists("guided-dataset-name-input");
-          pageValid = true;
+          nameIsValid = true;
         }
       }
 
@@ -1627,17 +1615,71 @@ $(document).ready(() => {
           generateWarningMessage(`guided-dataset-subtitle-input`);
         } else {
           removeWarningMessageIfExists(`guided-dataset-subtitle-input`);
+          subtitleIsValid = true;
         }
       }
+      console.log(tempGuidedCroppedBannerImagePath);
+      if (tempGuidedCroppedBannerImagePath == "") {
+        generateWarningMessage(`guided-button-add-banner-image`);
+      } else {
+        removeWarningMessageIfExists(`guided-button-add-banner-image`);
+        bannerImageIsValid = true;
+      }
+      console.log(nameIsValid);
+      console.log(subtitleIsValid);
+      console.log(bannerImageIsValid);
+      if (nameIsValid && subtitleIsValid && bannerImageIsValid != "") {
+        enableProgressButton();
+      } else {
+        disableProgressButton();
+      }
     }
-    if (pageValid) {
-      enableProgressButton();
-    } else {
-      disableProgressButton();
+    if (inputSetID === "guided-basic-description-tab") {
+      nameIsValid = false;
+      subtitleIsValid = false;
+      bannerImageIsValid = false;
+      let name = document
+        .getElementById(`guided-dataset-name-input`)
+        .value.trim();
+      if (name !== "") {
+        if (check_forbidden_characters_bf(name)) {
+          generateWarningMessage("guided-dataset-name-input");
+        } else {
+          removeWarningMessageIfExists("guided-dataset-name-input");
+          nameIsValid = true;
+        }
+      }
+
+      let subtitle = document
+        .getElementById(`guided-dataset-subtitle-input`)
+        .value.trim();
+      if (subtitle !== "") {
+        if (subtitle.length > 255) {
+          generateWarningMessage(`guided-dataset-subtitle-input`);
+        } else {
+          removeWarningMessageIfExists(`guided-dataset-subtitle-input`);
+          subtitleIsValid = true;
+        }
+      }
+      console.log(tempGuidedCroppedBannerImagePath);
+      if (tempGuidedCroppedBannerImagePath == "") {
+        generateWarningMessage(`guided-button-add-banner-image`);
+      } else {
+        removeWarningMessageIfExists(`guided-button-add-banner-image`);
+        bannerImageIsValid = true;
+      }
+      console.log(nameIsValid);
+      console.log(subtitleIsValid);
+      console.log(bannerImageIsValid);
+      if (nameIsValid && subtitleIsValid && bannerImageIsValid != "") {
+        enableProgressButton();
+      } else {
+        disableProgressButton();
+      }
     }
   };
   $(`[data-page="guided-basic-description-tab"]`).on("keyup", () => {
-    validatePage("guided-basic-description-tab");
+    validateInputSet("guided-basic-description-tab");
   });
 
   $("#guided-dataset-subtitle-input").on("keyup", () => {
@@ -1648,7 +1690,6 @@ $(document).ready(() => {
       document.getElementById("guided-dataset-subtitle-input"),
       guidedDatasetSubtitleCharCount
     );
-    validateGuidedBasicDescriptionInputs();
   });
   $("#guided-button-add-license").on("click", function () {
     setGuidedLicense("Creative Commons Attribution (CC-BY)");
@@ -3261,13 +3302,12 @@ $(document).ready(() => {
 
   //Temp var used by guidedSaveBannerImage to hold the cropped image path
   //until it is passed into the sodaJSONObj
-  let guidedCroppedBannerImagePath = "";
-  const guidedSaveBannerImage = () => {
+  let tempGuidedCroppedBannerImagePath = "";
+  const guidedSaveBannerImageWithTempName = () => {
     $("#guided-para-dataset-banner-image-status").html("Please wait...");
     //Save cropped image locally and check size
     let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
     let imageType = "";
-    let datasetName = sodaJSONObj["digital-metadata"]["name"];
 
     if (!fs.existsSync(imageFolder)) {
       fs.mkdirSync(imageFolder, { recursive: true });
@@ -3281,15 +3321,16 @@ $(document).ready(() => {
 
     let imagePath = path.join(
       imageFolder,
-      datasetName + "-banner-image." + imageExtension
+      "temp-banner-image." + imageExtension
     );
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
       let image_file_size = fs.statSync(imagePath)["size"];
       if (image_file_size < 5 * 1024 * 1024) {
-        guidedCroppedBannerImagePath = imagePath;
+        tempGuidedCroppedBannerImagePath = imagePath;
         $("#guided-banner-image-modal").modal("hide");
+        validateInputSet("guided-basic-description-tab");
       } else {
         $("#guided-para-dataset-banner-image-status").html(
           "<span style='color: red;'> " +
@@ -3299,7 +3340,7 @@ $(document).ready(() => {
       }
     });
   };
-
+  /**************************************/
   $("#guided-save-banner-image").click((event) => {
     $("#guided-para-dataset-banner-image-status").html("");
     if (guidedBfViewImportedImage.src.length > 0) {
@@ -3340,11 +3381,11 @@ $(document).ready(() => {
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                guidedSaveBannerImage();
+                guidedSaveBannerImageWithTempName();
               }
             });
           } else {
-            guidedSaveBannerImage();
+            guidedSaveBannerImageWithTempName();
           }
         });
       } else {
@@ -3394,7 +3435,7 @@ $(document).ready(() => {
 
       setGuidedDatasetName($("#guided-dataset-name-input"));
       setGuidedDatasetSubtitle($("#guided-dataset-subtitle-input"));
-      setGuidedBannerImage(guidedCroppedBannerImagePath);
+      setGuidedBannerImage(tempGuidedCroppedBannerImagePath);
     }
     if (pageBeingLeftID === "guided-subjects-folder-tab") {
       renderSamplesTables();
@@ -3466,7 +3507,6 @@ $(document).ready(() => {
         }
       );
       sodaJSONObj["digital-metadata"]["tags"] = guidedTags;
-      console.log(guidedTags);
       guidedTags.length > 0 ? enableProgressButton() : disableProgressButton();
     }
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
