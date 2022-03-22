@@ -6595,7 +6595,6 @@ function initiate_generate() {
         file_counter
       );
 
-
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -7017,7 +7016,6 @@ const show_curation_shortcut = () => {
     }
   });
 };
-
 
 const get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
