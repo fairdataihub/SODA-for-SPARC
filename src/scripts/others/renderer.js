@@ -6560,9 +6560,12 @@ function initiate_generate() {
         }
       );
 
-      // log the curation errors to Google Analytics 
-      logCurationErrorsToAnalytics(main_total_generate_dataset_size, uploadedFiles, uploadedFilesSize)
-
+      // log the curation errors to Google Analytics
+      logCurationErrorsToAnalytics(
+        main_total_generate_dataset_size,
+        uploadedFiles,
+        uploadedFilesSize
+      );
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
