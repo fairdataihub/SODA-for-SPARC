@@ -238,7 +238,7 @@ def bf_add_account_api_key(keyname, key, secret):
         org_id = bf.context.id
 
         # CHANGE BACK
-        if org_id != 'N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0':
+        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             raise Exception(
                 "Error: Please check that your account is within the SPARC Consortium Organization"
             )
@@ -335,7 +335,7 @@ def bf_add_account_username(keyname, key, secret):
     try:
 
         # CHANGE BACK
-        if bf.context.id != 'N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0':
+        if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             raise Exception(
                 "Error: Please check that your account is within the SPARC Consortium Organization"
             )
@@ -446,7 +446,7 @@ def bf_get_accounts():
             ps = Pennsieve(account)
             acc_id = ps.context.id
 
-            if acc_id == 'N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0':
+            if acc_id == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
                 if not config.has_section("global"):
                     config.add_section("global")
 
@@ -1395,6 +1395,7 @@ def bf_add_permission(
         except Exception as e:
             raise e
 
+
 def bf_add_permission_team(
     selected_bfaccount, selected_bfdataset, selected_team, selected_role
 ):
@@ -1421,12 +1422,12 @@ def bf_add_permission_team(
 
     try:
         if selected_team == "SPARC Data Curation Team":
-            if bf.context.id != 'N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0':
+            if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
                 raise Exception(
                     "Error: Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team"
                 )
         if selected_team == "SPARC Embargoed Data Sharing Group":
-            if bf.context.id != 'N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0':
+            if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
                 raise Exception(
                     "Error: Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group"
                 )
