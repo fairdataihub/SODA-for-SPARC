@@ -1107,7 +1107,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1123,7 +1123,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1177,7 +1177,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   client.invoke(
     "api_save_subjects_file",
@@ -1269,7 +1269,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1285,7 +1285,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1339,7 +1339,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -1857,7 +1857,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2574,9 +2574,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6377,9 +6377,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -6587,9 +6587,6 @@ function initiate_generate() {
       );
 
       // when we fail we want to know the total amount of files we were trying to upload
-      // TODO: Consider sessionizing this as well?
-      // No I think i want to track this as is, and make the below call get a UUID so we can track how many failures there are for Pennsieve dataset uploads
-      // Doing this will be difficult given how my query is set up on the analytics side. It assumes the below log can't have a UUID - just everything except 'bf' and 'pennsieve'
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -6599,7 +6596,6 @@ function initiate_generate() {
       );
 
 
-      // TODO: Change the analytics side so that it peels out Dataset Ids after a session ID has been considered 
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -6631,31 +6627,58 @@ function initiate_generate() {
         }
       );
 
-      // TODO: LOcal dataset generation does not have a session ID. Make this conditional. 
-      // TODO: Check when an upload has started instead of assuming we fail on upload to Pennsieve
-      // TODO: Variable for the bucket size -- just need to decide where it should be placed
-      // some files have been successfully uploaded before the crash occurred. Reasonable to say half of the bucket.
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Number of Files",
-        `${datasetUploadSession.id}`,
-        (uploadedFiles += 250)
-      );
 
-      // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
-      // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one; 
-      // without an explicit log of a session failing with the amount of files that were attempted that this provides we couldn't answer
-      // the first question. 
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
-        `${datasetUploadSession.id}`,
-        file_counter
-      )
+      // log the Pennsieve upload session information
+      if (datasetLocation === "Pennsieve") {
+        // TODO: Local dataset generation does not have a session ID. Make this conditional. 
+        // TODO: Check when an upload has started instead of assuming we fail on upload to Pennsieve
+        // TODO: Variable for the bucket size -- just need to decide where it should be placed
+        // some files have been successfully uploaded before the crash occurred. Reasonable to say half of the bucket.
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE +
+          " - Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          (uploadedFiles += 250)
+        );
+
+        // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
+        // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one; 
+        // without an explicit log of a session failing with the amount of files that were attempted that this provides we couldn't answer
+        // the first question. 
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          PrepareDatasetsAnalyticsPrefix.CURATE +
+          " - Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          file_counter
+        )
+
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          // doesn't need to be incremented like uploadedFiles as this represents the final amount returned from the upload progress function;
+          // or just a little less
+          uploadedFilesSize
+        );
+
+
+        // log the size that was attempted to be uploaded for the given session
+        // as above this helps us answer how much was uploaded out of the total before the session failed
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          main_total_generate_dataset_size
+        );
+
+      }
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
@@ -6944,7 +6967,7 @@ function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -6954,7 +6977,7 @@ function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
             `${datasetUploadSession.id}`,
             uploadedFilesSize
           );
