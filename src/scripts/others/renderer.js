@@ -6982,24 +6982,20 @@ function initiate_generate() {
   }
 }
 
-// counts the amount of files in a local dataset's generation location 
-// FOR NOW ASSUME WE ARE ALWAYS HANDLING NEW GENERATION 
+// counts the amount of files in a local dataset's generation location
+// FOR NOW ASSUME WE ARE ALWAYS HANDLING NEW GENERATION
 const getLocallyGeneratedFileCount = async (generationLocation) => {
-  // TODO: make sure that the target location exists 
+  // TODO: make sure that the target location exists
 
-  // get the amount of files in the directory 
-  let generatedFiles = await fs.readdir(generationLocation)
+  // get the amount of files in the directory
+  let generatedFiles = await fs.readdir(generationLocation);
 
-  console.log("The amount of files generated is: ", generatedFiles)
+  console.log("The amount of files generated is: ", generatedFiles);
 
+  return generatedFiles;
+};
 
-  return generatedFiles
-
-}
-
-const getLocallyGeneratedDatasetSize = async (generationLocation) => {
-
-}
+const getLocallyGeneratedDatasetSize = async (generationLocation) => {};
 
 const show_curation_shortcut = () => {
   Swal.fire({
