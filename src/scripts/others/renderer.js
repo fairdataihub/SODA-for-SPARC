@@ -6598,8 +6598,7 @@ function initiate_generate() {
         file_counter
       );
 
-
-      // TODO: Change the analytics side so that it peels out Dataset Ids after a session ID has been considered 
+      // TODO: Change the analytics side so that it peels out Dataset Ids after a session ID has been considered
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -6631,7 +6630,7 @@ function initiate_generate() {
         }
       );
 
-      // TODO: LOcal dataset generation does not have a session ID. Make this conditional. 
+      // TODO: LOcal dataset generation does not have a session ID. Make this conditional.
       // TODO: Check when an upload has started instead of assuming we fail on upload to Pennsieve
       // TODO: Variable for the bucket size -- just need to decide where it should be placed
       // some files have been successfully uploaded before the crash occurred. Reasonable to say half of the bucket.
@@ -6645,17 +6644,17 @@ function initiate_generate() {
       );
 
       // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
-      // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one; 
+      // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one;
       // without an explicit log of a session failing with the amount of files that were attempted that this provides we couldn't answer
-      // the first question. 
+      // the first question.
       ipcRenderer.send(
         "track-event",
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+          " - Step 7 - Generate - Dataset - Number of Files",
         `${datasetUploadSession.id}`,
         file_counter
-      )
+      );
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
@@ -6994,7 +6993,6 @@ const show_curation_shortcut = () => {
     }
   });
 };
-
 
 const get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
