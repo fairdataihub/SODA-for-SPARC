@@ -23,7 +23,7 @@ const getLocallyGeneratedFileCount = async (generationLocation) => {
 // Has to be called after Step 6 
 const editingExistingLocalDataset = () => {
   let modifyExistingOptionCard = document.querySelector("#generate-dataset-replace-existing .option-card")
-  console.log("Option card: ", modifyExistingOptionCard )
+  console.log("Option card: ", modifyExistingOptionCard)
   return modifyExistingOptionCard.classList.contains("checked")
 }
 
@@ -31,7 +31,8 @@ const editingExistingLocalDataset = () => {
 const logCurationErrorsToAnalytics = async (
   main_total_generate_dataset_size,
   uploadedFiles,
-  uploadedFilesSize
+  uploadedFilesSize,
+  localDatasetFilesBeforeModification
 ) => {
   logCurationForAnalytics(
     "Error",
@@ -86,6 +87,15 @@ const logCurationErrorsToAnalytics = async (
     let filesGeneratedForDataset = await getLocallyGeneratedFileCount(
       datasetGenerationDirectory
     );
+
+    // check if the curation modified an existing local dataset 
+    if (localDatasetFilesBeforeModification !== undefined) {
+      // TODO: Handle if the user deleted files or otherwise started with less files than when they started
+
+
+      // generated files is the files before curation minues the amount of files after curation
+      filesGeneratedForDataset = filesGeneratedForDataset - localDatasetFilesBeforeModification
+    }
 
     // when we fail we want to know how many files were generated
     ipcRenderer.send(
@@ -310,4 +320,5 @@ const logCurationSuccessToAnalytics = async (
 module.exports = {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
+  editingExistingLocalDataset
 };
