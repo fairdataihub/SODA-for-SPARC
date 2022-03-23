@@ -18,14 +18,15 @@ const getLocallyGeneratedFileCount = async (generationLocation) => {
   return generatedFiles;
 };
 
-
 // check if the user is modifying an existing local dataset for Curation
-// Has to be called after Step 6 
+// Has to be called after Step 6
 const editingExistingLocalDataset = () => {
-  let modifyExistingOptionCard = document.querySelector("#generate-dataset-replace-existing .option-card")
-  console.log("Option card: ", modifyExistingOptionCard)
-  return modifyExistingOptionCard.classList.contains("checked")
-}
+  let modifyExistingOptionCard = document.querySelector(
+    "#generate-dataset-replace-existing .option-card"
+  );
+  console.log("Option card: ", modifyExistingOptionCard);
+  return modifyExistingOptionCard.classList.contains("checked");
+};
 
 // Sends detailed information about failures that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH
 const logCurationErrorsToAnalytics = async (
@@ -88,13 +89,13 @@ const logCurationErrorsToAnalytics = async (
       datasetGenerationDirectory
     );
 
-    // check if the curation modified an existing local dataset 
+    // check if the curation modified an existing local dataset
     if (localDatasetFilesBeforeModification !== undefined) {
       // TODO: Handle if the user deleted files or otherwise started with less files than when they started
 
-
       // generated files is the files before curation minues the amount of files after curation
-      filesGeneratedForDataset = filesGeneratedForDataset - localDatasetFilesBeforeModification
+      filesGeneratedForDataset =
+        filesGeneratedForDataset - localDatasetFilesBeforeModification;
     }
 
     // when we fail we want to know how many files were generated
@@ -147,7 +148,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -160,7 +161,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
@@ -320,5 +321,5 @@ const logCurationSuccessToAnalytics = async (
 module.exports = {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
-  editingExistingLocalDataset
+  editingExistingLocalDataset,
 };
