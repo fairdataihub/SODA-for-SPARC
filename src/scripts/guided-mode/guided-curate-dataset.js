@@ -1447,9 +1447,8 @@ $("#guided-button-no-docs-data").on("click", () => {
   }
 });
 
-$("#guided-dataset-name-input").val("test " + makeid(5));
-$("#guided-dataset-subtitle-input").val("test " + makeid(5));
-
+/*$("#guided-dataset-name-input").val("test " + makeid(5));
+$("#guided-dataset-subtitle-input").val("test " + makeid(5));*/
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
@@ -3566,7 +3565,11 @@ $(document).ready(() => {
         }
       }
       if (pageBeingLeftID === "guided-subjects-folder-tab") {
-        renderSamplesTables();
+        if ($("#guided-button-has-subjects").hasClass("selected")) {
+          renderSamplesTables();
+        } else {
+          $("#guided-samples-folder-tab").attr("data-skip-page", "true");
+        }
       }
       if (pageBeingLeftID === "guided-folder-importation-tab") {
       }
