@@ -3,10 +3,7 @@
              to justify keeping it outside of its own functions. 
 
 */
-
-const {
-  determineDatasetLocation,
-} = require("./scripts/others/analytics/utils");
+const { determineDatasetLocation } = require("./analytics-utils");
 
 // counts the amount of files in a local dataset's generation location
 // FOR NOW ASSUME WE ARE ALWAYS HANDLING NEW GENERATION
@@ -69,8 +66,16 @@ const logCurationErrorsToAnalytics = async (
 
   // log failed Local, Saved, or New dataset generation to Google Analytics
   if (datasetLocation !== "Pennsieve") {
+    // get the location the dataset was generated at
+    let datasetGenerationDirectory = document.querySelector(
+      "#input-destination-generate-dataset-locally"
+    ).value;
+
+    console.log("The generation directory is: ", datasetGenerationDirectory);
+
+    // TODO: Add code to handle editing existing datasets
     let filesGeneratedForDataset = await getLocallyGeneratedFileCount(
-      "TODO: Generation location"
+      datasetGenerationDirectory
     );
 
     // when we fail we want to know how many files were generated
