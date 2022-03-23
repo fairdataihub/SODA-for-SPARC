@@ -23,13 +23,12 @@ const getLocallyGeneratedFileCount = (generationDirectory, files) => {
 const getDirectorySize = async (generationDirectory) => {
   let totalSize = 0;
 
+  let diskSpace = (ize = await checkDiskSpace(generationDirectory));
 
-  let diskSpace = ize = await checkDiskSpace(generationDirectory)
+  totalSize = diskSpace.size;
 
-  totalSize = diskSpace.size
-
-  return totalSize
-}
+  return totalSize;
+};
 
 // check if the user is modifying an existing local dataset for Curation
 // Has to be called after Step 6
@@ -144,12 +143,14 @@ const logCurationErrorsToAnalytics = async (
       file_counter
     );
 
-
-    let sizeGeneratedForDataset = await getDirectorySize(datasetGenerationDirectory)
+    let sizeGeneratedForDataset = await getDirectorySize(
+      datasetGenerationDirectory
+    );
 
     if (localDatasetSizeBeforeModification !== undefined) {
       // TODO: Handle case where directory shrunk
-      sizeGeneratedForDataset = sizeGeneratedForDataset - localDatasetSizeBeforeModification
+      sizeGeneratedForDataset =
+        sizeGeneratedForDataset - localDatasetSizeBeforeModification;
     }
 
     // log the size that was successfully generated
@@ -159,8 +160,7 @@ const logCurationErrorsToAnalytics = async (
       "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
       datasetLocation,
       sizeGeneratedForDataset
-    )
-
+    );
 
     ipcRenderer.send(
       "track-event",
@@ -177,8 +177,6 @@ const logCurationErrorsToAnalytics = async (
       datasetLocation,
       main_total_generate_dataset_size
     );
-
-
   } else {
     // log the Pennsieve upload session information
     // TODO: Local dataset generation does not have a session ID. Make this conditional.
@@ -189,7 +187,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -202,7 +200,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
@@ -367,5 +365,5 @@ module.exports = {
   editingExistingLocalDataset,
   getLocallyGeneratedFileCount,
   editingExistingLocalDataset,
-  getDirectorySize
+  getDirectorySize,
 };

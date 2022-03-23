@@ -44,7 +44,7 @@ const {
   logCurationSuccessToAnalytics,
   getLocallyGeneratedFileCount,
   editingExistingLocalDataset,
-  getDirectorySize
+  getDirectorySize,
 } = require("./scripts/others/analytics/curation-analytics");
 const {
   determineDatasetLocation,
@@ -6519,7 +6519,7 @@ async function initiate_generate() {
 
   // tracks amount of files in a local dataset directory before it gets modified
   let localDatasetCurrentFileCount = undefined;
-  let localDatasetCurrentSize = undefined; 
+  let localDatasetCurrentSize = undefined;
 
   // determine where the dataset will be generated/uploaded
   if (determineDatasetLocation) {
@@ -6541,8 +6541,9 @@ async function initiate_generate() {
     let files = { count: 0 };
     getLocallyGeneratedFileCount(datasetGenerationDirectory, files);
     localDatasetCurrentFileCount = files.count;
-    localDatasetCurrentSize = await getDirectorySize(datasetGenerationDirectory)
-
+    localDatasetCurrentSize = await getDirectorySize(
+      datasetGenerationDirectory
+    );
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
