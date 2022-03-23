@@ -7,15 +7,15 @@ const { determineDatasetLocation } = require("./analytics-utils");
 
 // counts the amount of files in a local dataset's generation location
 // FOR NOW ASSUME WE ARE ALWAYS HANDLING NEW GENERATION
-const getLocallyGeneratedFileCount = async (generationLocation) => {
+const getLocallyGeneratedFileCount = (generationDirectory, files) => {
   // TODO: make sure that the target location exists
+  let directoryItems = fs.readdirSync(generationDirectory)
 
-  // get the amount of files in the directory
-  let generatedFiles = await fs.readdir(generationLocation);
-
-  console.log("The amount of files generated is: ", generatedFiles.length);
-
-  return generatedFiles.length;
+  for (const file of directoryItems) {
+    const Absolute = path.join(generationDirectory, file);
+    if (fs.statSync(Absolute).isDirectory()) return getLocallyGeneratedFileCount(Absolute, files);
+    files.count += 1
+  }
 };
 
 // check if the user is modifying an existing local dataset for Curation
@@ -155,7 +155,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -168,7 +168,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
