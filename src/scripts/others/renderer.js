@@ -1112,7 +1112,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1128,7 +1128,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1182,7 +1182,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   client.invoke(
     "api_save_subjects_file",
@@ -1274,7 +1274,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1290,7 +1290,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1344,7 +1344,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -1862,7 +1862,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2579,9 +2579,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6382,9 +6382,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -6488,8 +6488,9 @@ function initiate_generate() {
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
 
-  // create a dataset upload session
-  datasetUploadSession.startSession();
+
+
+  // get the amount of files 
 
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
@@ -6527,6 +6528,11 @@ function initiate_generate() {
         dataset_destination = "Pennsieve";
       }
     }
+  }
+
+  if (dataset_destination == "Pennsieve") {
+    // create a dataset upload session
+    datasetUploadSession.startSession();
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
@@ -6719,7 +6725,7 @@ function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -6729,7 +6735,7 @@ function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
             `${datasetUploadSession.id}`,
             uploadedFilesSize
           );
@@ -6744,9 +6750,11 @@ function initiate_generate() {
 
     let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000);
   }
+
+
 }
 
-const getLocallyGeneratedDatasetSize = async (generationLocation) => {};
+const getLocallyGeneratedDatasetSize = async (generationLocation) => { };
 
 const show_curation_shortcut = () => {
   Swal.fire({
