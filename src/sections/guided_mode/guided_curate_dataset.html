@@ -88,11 +88,10 @@
                 class="guided--capsule"
                 id="guided-subjects-folder-capsule"
               ></div>
-              <!--temp sample skip
               <div
                 class="guided--capsule"
                 id="guided-samples-folder-capsule"
-              ></div>-->
+              ></div>
               <div
                 class="guided--capsule"
                 id="guided-source-folder-capsule"
@@ -470,21 +469,18 @@
               </label>
               <div
                 class="guided--radio-button-container"
-                id="show-create-subjects-table-div-skip-samples"
                 style="margin-bottom: 7px"
               >
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-subjects"
                   data-next-question="guided-user-has-subjects-form"
-                  onclick="disableProgressButton()"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-no-subjects"
-                  onclick="enableProgressButton()"
                 >
                   No
                 </button>
@@ -509,19 +505,7 @@
                     onkeyup="validateInput($(this))"
                   />
                 </div>
-                <button
-                  id="guided-button-generate-subjects-table"
-                  class="btn_animated hidden"
-                  style="
-                    width: 160px;
-                    min-width: 160px;
-                    border: none !important;
-                    margin: 15px;
-                  "
-                >
-                  Create subjects table
-                </button>
-                <!--
+
                 <div class="guided--input-container" style="margin-top: 25px">
                   <label class="guided--form-label centered"
                     >Do all of your subjects have the same amount of samples?
@@ -559,6 +543,10 @@
                     placeholder="Enter number of samples"
                     id="guided-number-of-samples-input"
                     style="width: 400px; text-align: center"
+                    data-input-set="guided-subjects-folder-tab"
+                    data-warning="Please enter a valid number between 1 and 1000."
+                    data-alert-type="danger"
+                    onkeyup="validateInput($(this))"
                   />
                 </div>
                 <button
@@ -572,7 +560,7 @@
                   "
                 >
                   Create subjects table
-                </button>-->
+                </button>
               </div>
               <div
                 class="guided--panel hidden"
@@ -642,7 +630,7 @@
           </div>
           <div
             id="guided-samples-folder-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page-temp sample skip"
+            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
             <div id="sample-tables-container"></div>

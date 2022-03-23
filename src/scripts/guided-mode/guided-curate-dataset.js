@@ -369,18 +369,32 @@ const validateInput = (inputElementToValidate) => {
   if (inputID === "guided-number-of-subjects-input") {
     let numSubjects = inputElementToValidate.val().trim();
     if (numSubjects !== "") {
-      if (numSubjects !== "") {
-        const createSubjectsTableButton = document.getElementById(
-          "guided-button-generate-subjects-table"
-        );
-        if (isNumberBetween(numSubjects, 1, 1000)) {
-          removeWarningMessageIfExists(inputElementToValidate);
-          createSubjectsTableButton.disabled = false;
-          inputIsValid = true;
-        } else {
-          generateWarningMessage(inputElementToValidate);
-          createSubjectsTableButton.disabled = true;
-        }
+      const createSubjectsTableButton = document.getElementById(
+        "guided-button-generate-subjects-table"
+      );
+      if (isNumberBetween(numSubjects, 1, 1000)) {
+        removeWarningMessageIfExists(inputElementToValidate);
+        createSubjectsTableButton.disabled = false;
+        inputIsValid = true;
+      } else {
+        generateWarningMessage(inputElementToValidate);
+        createSubjectsTableButton.disabled = true;
+      }
+    }
+  }
+  if (inputID === "guided-number-of-samples-input") {
+    let numSamples = inputElementToValidate.val().trim();
+    if (numSamples !== "") {
+      const createSubjectsTableButton = document.getElementById(
+        "guided-button-generate-subjects-table"
+      );
+      if (isNumberBetween(numSamples, 1, 1000)) {
+        removeWarningMessageIfExists(inputElementToValidate);
+        createSubjectsTableButton.disabled = false;
+        inputIsValid = true;
+      } else {
+        generateWarningMessage(inputElementToValidate);
+        createSubjectsTableButton.disabled = true;
       }
     }
   }
@@ -437,9 +451,7 @@ const validateGuidedDatasetDescriptionInputs = () => {
   if (
     $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
     $("#guided-ds-description-data-collection").val().trim().length == 0 ||
-    $("#guided-ds-description-primary-bannerImageIsValidconclusion")
-      .val()
-      .trim().length == 0
+    $("#guided-ds-description-primary-conclusion").val().trim().length == 0
   ) {
     disableProgressButton();
   } else {
@@ -682,11 +694,6 @@ const updateFolderStructureUI = (pageDataObj) => {
 };
 
 //SUBJECT TABLE FUNCTIONS
-//TEMP function to skip samples prompt
-$("#show-create-subjects-table-div-skip-samples").on("click", () => {
-  $("#guided-button-generate-subjects-table").show();
-});
-
 const returnToTableFromFolderStructure = (clickedBackButton) => {
   previousFolderStructurePage = clickedBackButton.attr("data-prev-page");
   traverseToTab(previousFolderStructurePage);
@@ -772,8 +779,6 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   }
   guidedAddHighLevelFolderToDatasetStructureObj("primary");
   $("#number-of-subjects-prompt").hide();
-  // temp
-  $(".guided-input-sample-count").val("0");
   $("#subjects-table").css("display", "flex");
 });
 
@@ -1000,15 +1005,51 @@ const openSampleFolder = (clickedStructureButton) => {
     .text()
     .trim();
   let sampleID = clickedStructureButton.closest("tr").find(".sample-id").text();
-  $("#structure-return-destination-text").text("samples table");
+  /*
+  $("#structure-folder-header").text(
+    `Virtually structure ${subjectID}'s subject folder in the interface below.`
+  );
+  $("#structure-folder-contents").text(
+    `${subjectID}'s folder should contain lorem ipsum foo bar random instructional
+    text will go here`
+  );
+  $("#structure-return-destination-text").text("subjects table");
+  $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
+  $("#folder-structure-button-row-top").append(`
+    <button
+      class="ui secondary basic button small"
+      onclick="returnToTableFromFolderStructure($(this))"
+      data-prev-page="guided-subjects-folder-tab"
+    >
+      <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+      >Back to subjects table
+    </button>
+  `);*/
+  $("#structure-folder-header").text(
+    `Virtually structure ${sampleID}'s subject folder in the interface below.`
+  );
+  $("#structure-folder-contents").text(
+    `${sampleID}'s folder should contain lorem ipsum foo bar random instructional
+    text will go here`
+  );
+  $("#structure-return-destination-text").text("subjects table");
+
   $("#guided-input-global-path").val(
     `My_dataset_folder/primary/${subjectIdFromTable}/${sampleID}/`
   );
-  $("#guided-button-exit-folder-structure").data(
-    "prev-page",
-    "guided-samples-folder-tab"
-  );
+  $("#folder-structure-button-row-top").append(`
+    <button
+      class="ui secondary basic button small"
+      onclick="returnToTableFromFolderStructure($(this))"
+      data-prev-page="guided-samples-folder-tab"
+    >
+      <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+      >Back to samples table
+    </button>
+  `);
   traverseToTab("guided-structure-folder-tab");
+  setActiveCapsule("guided-samples-folder-tab");
+
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value =
     filtered.slice(0, filtered.length).join("/") + "/";
@@ -1386,6 +1427,8 @@ $("#guided-button-no-docs-data").on("click", () => {
 });
 
 $("#guided-dataset-name-input").val("test " + makeid(5));
+$("#guided-dataset-subtitle-input").val("test " + makeid(5));
+
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
@@ -2310,7 +2353,7 @@ $(document).ready(() => {
             });
             guidedIncreaseCurateProgressBar(5);
             console.log("added descr + " + res);
-            resolve(`Description added to ${datasetName}`);
+            resolve(`Description added to ${bfDataset}`);
           }
         }
       );
@@ -3624,6 +3667,7 @@ $(document).ready(() => {
 
       traverseToTab(targetPageID);
     } catch (errorArray) {
+      console.log(errorArray);
       errorArray.map((error) => {
         notyf.open({
           duration: "7000",
