@@ -18,9 +18,8 @@ const getLocallyGeneratedFileCount = async (generationLocation) => {
   return generatedFiles.length;
 };
 
-
 // check if the user is modifying an existing local dataset for Curation
-// Has to be called after Step 6 
+// Has to be called after Step 6
 const editingExistingLocalDataset = () => {
   // check if the dataset is being generated locally 
   if (sodaJSONObj["generate-dataset"]["destination"] !== "local") {
@@ -97,12 +96,13 @@ const logCurationErrorsToAnalytics = async (
       datasetGenerationDirectory
     );
 
-    // check if the curation modified an existing local dataset 
+    // check if the curation modified an existing local dataset
     if (localDatasetFilesBeforeModification !== undefined) {
       // TODO: Handle if the user deleted files or otherwise started with less files than when they started
 
       // generated files is the files before curation minues the amount of files after curation
-      filesGeneratedForDataset = filesGeneratedForDataset - localDatasetFilesBeforeModification
+      filesGeneratedForDataset =
+        filesGeneratedForDataset - localDatasetFilesBeforeModification;
     }
 
     // when we fail we want to know how many files were generated
@@ -155,7 +155,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -168,7 +168,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
