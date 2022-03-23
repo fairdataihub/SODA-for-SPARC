@@ -42,7 +42,11 @@ const {
 const {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
+  getLocallyGeneratedFileCount,
+  editingExistingLocalDataset
 } = require("./scripts/others/analytics/curation-analytics");
+const { determineDatasetLocation } = require("./scripts/others/analytics/analytics-utils");
+
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
@@ -6482,7 +6486,7 @@ let file_counter = 0;
 let folder_counter = 0;
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-function initiate_generate() {
+async function initiate_generate() {
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
@@ -6507,6 +6511,7 @@ function initiate_generate() {
     }
   }
   let dataset_destination = "";
+  let dataset_name = ""
 
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
@@ -6515,31 +6520,23 @@ function initiate_generate() {
   // tracks amount of files in a local dataset directory before it gets modified 
   let localDatasetCurrentFileCount = undefined
 
-  // determine if the dataset is being uploaded to Pennsieve or being generated locally
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
+  // determine where the dataset will be generated/uploaded
+  if(determineDatasetLocation) {
+    console.log("Defined funciton")
+  } else {
+    console.log("Undefined function")
   }
+  [dataset_name, dataset_destination] = determineDatasetDestination()
 
   if (dataset_destination == "Pennsieve") {
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
 
-  if(editingExistingLocalDataset()) {
+  if (editingExistingLocalDataset()) {
     // give local file count the amount of files in the target generation directory
+    let datasetGenerationDirectory = sodaJSONObj["starting-point"]["local-path"]
+    localDatasetCurrentFileCount = await getLocallyGeneratedFileCount(datasetGenerationDirectory)
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
@@ -6588,7 +6585,9 @@ function initiate_generate() {
       // log relevant curation details about the dataset generation/Upload to Google Analytics
       logCurationSuccessToAnalytics(
         manifest_files_requested,
-        main_total_generate_dataset_size
+        main_total_generate_dataset_size,
+        dataset_name, 
+        dataset_destination
       );
 
       client.invoke(

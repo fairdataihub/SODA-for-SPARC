@@ -13,18 +13,27 @@ const getLocallyGeneratedFileCount = async (generationLocation) => {
   // get the amount of files in the directory
   let generatedFiles = await fs.readdir(generationLocation);
 
-  console.log("The amount of files generated is: ", generatedFiles);
+  console.log("The amount of files generated is: ", generatedFiles.length);
 
-  return generatedFiles;
+  return generatedFiles.length;
 };
 
 
 // check if the user is modifying an existing local dataset for Curation
 // Has to be called after Step 6 
 const editingExistingLocalDataset = () => {
-  let modifyExistingOptionCard = document.querySelector("#generate-dataset-replace-existing .option-card")
-  console.log("Option card: ", modifyExistingOptionCard)
-  return modifyExistingOptionCard.classList.contains("checked")
+  // check if the dataset is being generated locally 
+  if (sodaJSONObj["generate-dataset"]["destination"] !== "local") {
+    return false
+  }
+
+  // check if the dataset has merge set as the value for handling existing files
+  if (sodaJSONObj["generate-dataset"]["if-existing"] === "merge") {
+    return true
+  }
+
+  // else this is a new local dataset generation
+  return false
 }
 
 // Sends detailed information about failures that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH
@@ -91,7 +100,6 @@ const logCurationErrorsToAnalytics = async (
     // check if the curation modified an existing local dataset 
     if (localDatasetFilesBeforeModification !== undefined) {
       // TODO: Handle if the user deleted files or otherwise started with less files than when they started
-
 
       // generated files is the files before curation minues the amount of files after curation
       filesGeneratedForDataset = filesGeneratedForDataset - localDatasetFilesBeforeModification
@@ -189,7 +197,9 @@ const logCurationErrorsToAnalytics = async (
 
 const logCurationSuccessToAnalytics = async (
   manifest_files_requested,
-  main_total_generate_dataset_size
+  main_total_generate_dataset_size,
+  dataset_name,
+  dataset_destination
 ) => {
   if (manifest_files_requested) {
     let high_level_folder_num = 0;
@@ -320,5 +330,7 @@ const logCurationSuccessToAnalytics = async (
 module.exports = {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
+  editingExistingLocalDataset,
+  getLocallyGeneratedFileCount,
   editingExistingLocalDataset
 };
