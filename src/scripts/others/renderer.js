@@ -6534,10 +6534,11 @@ async function initiate_generate() {
 
   if (editingExistingLocalDataset()) {
     // give local file count the amount of files in the target generation directory
-    let datasetGenerationDirectory = sodaJSONObj["starting-point"]["local-path"]
-    let files = {count: 0}
-    getLocallyGeneratedFileCount(datasetGenerationDirectory, files)
-    localDatasetCurrentFileCount = files.count
+    let datasetGenerationDirectory =
+      sodaJSONObj["starting-point"]["local-path"];
+    let files = { count: 0 };
+    getLocallyGeneratedFileCount(datasetGenerationDirectory, files);
+    localDatasetCurrentFileCount = files.count;
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')

@@ -9,12 +9,13 @@ const { determineDatasetLocation } = require("./analytics-utils");
 // FOR NOW ASSUME WE ARE ALWAYS HANDLING NEW GENERATION
 const getLocallyGeneratedFileCount = (generationDirectory, files) => {
   // TODO: make sure that the target location exists
-  let directoryItems = fs.readdirSync(generationDirectory)
+  let directoryItems = fs.readdirSync(generationDirectory);
 
   for (const file of directoryItems) {
     const Absolute = path.join(generationDirectory, file);
-    if (fs.statSync(Absolute).isDirectory()) return getLocallyGeneratedFileCount(Absolute, files);
-    files.count += 1
+    if (fs.statSync(Absolute).isDirectory())
+      return getLocallyGeneratedFileCount(Absolute, files);
+    files.count += 1;
   }
 };
 
@@ -155,7 +156,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -168,7 +169,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
