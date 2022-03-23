@@ -980,8 +980,10 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         ## check if agent is running in the background
         agent_running()
 
-        def calluploadfolder():
+        # upload 500 files at a time per folder    
+        BUCKET_SIZE = 500 
 
+        def calluploadfolder():
             try:
 
                 global submitdataprogress
@@ -1012,6 +1014,19 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
             except Exception as e:
                 raise e
+
+
+        def upload_dataset_in_buckets(): 
+            # TODO: upload root 
+
+            # top down scan through dataset to upload each file/folder
+            for root, dirs, files in os.walk(pathdataset, topdown=True):
+                if len(files) > BUCKET_SIZE:
+                    # upload the files into the current directory in buckets
+                    
+                # upload the directories  TODO: Bucket here too?
+                
+
 
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()
