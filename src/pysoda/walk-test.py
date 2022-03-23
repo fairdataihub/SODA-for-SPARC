@@ -8,11 +8,14 @@ for root, dirs, files in os.walk("C:\\Users\\CMarroquin\\status-barr-local", top
     print("Root is:", root)
     print("Dirs are: ", dirs)
     print("files are: ", files)
+
+    # upload the directories 
+    print("Uploading the following directories non-recursively: ", dirs)
+
     if len(files) > 500: 
         # bucket the upload 
         start_index = 0
         end_index = 499
-        print("Too many files, bucketing the upload as such: ", files[])
         # store the aggregate of the amount of files in the folder
         total_files = len(files)
 
@@ -34,7 +37,8 @@ for root, dirs, files in os.walk("C:\\Users\\CMarroquin\\status-barr-local", top
 
                 # upload the files
                 # bf_folder.upload(*upload_bucket)
-                print("Uploading these files: ", root, upload_bucket)
+                print("Bucketing these files: ", root, upload_bucket)
+                print("\n")
 
                 # update the global that tracks the amount of files that have been successfully uploaded
                 # main_curation_uploaded_files += BUCKET_SIZE
@@ -42,4 +46,9 @@ for root, dirs, files in os.walk("C:\\Users\\CMarroquin\\status-barr-local", top
                 # update the start_index to end_index + 1
                 start_index = end_index + 1
     else:
-        print("Uploading all the files in the current directory: ", root, files)
+        if len(files) > 0:
+            print("Uploading all the files in the current directory: ", root, files)
+            print("\n")
+        else:
+            print("No files to upload in this directory")
+            print("\n")
