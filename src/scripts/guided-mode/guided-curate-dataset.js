@@ -415,7 +415,7 @@ const checkIfEnableNextButton = (inputSetID) => {
       datasetSubtitle != "" &&
       tempGuidedCroppedBannerImagePath != "" &&
       ($("#guided-curate-new-dataset-card").hasClass("selected") ||
-        $("#guided-curate-existing-dataset-card").hasClass("selected"))
+        $("#guided-curate-existing-local-dataset-card").hasClass("selected"))
     ) {
       enableProgressButton();
     } else {
@@ -469,6 +469,8 @@ const populateGuidedModePages = (loadedJSONObj) => {
   if (completedTabs.includes("guided-basic-description-tab")) {
     let datasetName = loadedJSONObj["digital-metadata"]["name"];
     let datasetSubtitle = loadedJSONObj["digital-metadata"]["subtitle"];
+    tempGuidedCroppedBannerImagePath =
+      sodaJSONObj["digital-metadata"]["banner-image-path"];
     $("#guided-dataset-name-input").val(datasetName);
     $("#guided-dataset-subtitle-input").val(datasetSubtitle);
 
@@ -489,6 +491,25 @@ const populateGuidedModePages = (loadedJSONObj) => {
     console.log("contains banner image");
     lastCompletedTab = "guided-banner-image-addition-tab";
   }
+  if (completedTabs.includes("guided-subjects-folder-tab")) {
+    lastCompletedTab = "guided-subjects-folder-tab";
+  }
+  if (completedTabs.includes("guided-samples-folder-tab")) {
+    lastCompletedTab = "guided-samples-folder-tab";
+  }
+  if (completedTabs.includes("guided-source-folder-tab")) {
+    lastCompletedTab = "guided-source-folder-tab";
+  }
+  if (completedTabs.includes("guided-derivative-folder-tab")) {
+    lastCompletedTab = "guided-derivative-folder-tab";
+  }
+  if (completedTabs.includes("guided-code-folder-tab")) {
+    lastCompletedTab = "guided-code-folder-tab";
+  }
+  if (completedTabs.includes("guided-docs-folder-tab")) {
+    lastCompletedTab = "guided-docs-folder-tab";
+  }
+
   if (completedTabs.includes("guided-folder-importation-tab")) {
     let datasetLocation = loadedJSONObj["starting-point"]["local-path"];
     $(".guidedDatasetPath").text(datasetLocation);
@@ -1452,15 +1473,20 @@ const setGuidedBannerImage = (croppedImagePath) => {
   let datasetName = sodaJSONObj["digital-metadata"]["name"];
   //Replace "temp" from old cropped image path with entered dataset name and then update
   //the temp guided banner image path to be dataset-name specific
-  updatedCroppedImagePath = croppedImagePath.replace("temp", datasetName);
-  fs.rename(croppedImagePath, updatedCroppedImagePath, (error) => {
-    if (error) {
-      console.log(error);
-    }
-  });
-  //Update json obj to link to the new banner image path
-  sodaJSONObj["digital-metadata"]["banner-image-path"] =
-    updatedCroppedImagePath;
+
+  //check if croppedImagePath string has substring "temp"
+  if (croppedImagePath.includes("temp")) {
+    console.log("includes temp");
+    updatedCroppedImagePath = croppedImagePath.replace("temp", datasetName);
+    fs.rename(croppedImagePath, updatedCroppedImagePath, (error) => {
+      if (error) {
+        console.log(error);
+      }
+    });
+    //Update json obj to link to the new banner image path
+    sodaJSONObj["digital-metadata"]["banner-image-path"] =
+      updatedCroppedImagePath;
+  }
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
@@ -3484,7 +3510,7 @@ $(document).ready(() => {
           datasetSubtitle != "" &&
           tempGuidedCroppedBannerImagePath != "" &&
           ($("#guided-curate-new-dataset-card").hasClass("checked") ||
-            $("#guided-curate-existing-dataset-card").hasClass("checked"))
+            $("#guided-curate-existing-local-dataset-card").hasClass("checked"))
         ) {
           //If sodaJSONObj is empty, populate initial object properties
           if (Object.keys(sodaJSONObj).length === 0) {
@@ -3530,7 +3556,7 @@ $(document).ready(() => {
           }
           if (
             !$("#guided-curate-new-dataset-card").hasClass("checked") &&
-            !$("#guided-curate-existing-dataset-card").hasClass("checked")
+            !$("#guided-curate-existing-local-dataset-card").hasClass("checked")
           ) {
             basicDescriptionTabErrorMessage.push(
               "Please select a dataset start location"
