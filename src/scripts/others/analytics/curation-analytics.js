@@ -3,6 +3,7 @@
              to justify keeping it outside of its own functions. 
 
 */
+const { default: checkDiskSpace } = require("check-disk-space");
 const { determineDatasetLocation } = require("./analytics-utils");
 
 // counts the amount of files in a local dataset's generation location
@@ -18,6 +19,17 @@ const getLocallyGeneratedFileCount = (generationDirectory, files) => {
     files.count += 1;
   }
 };
+
+const getDirectorySize = async (generationDirectory) => {
+  let totalSize = 0;
+
+
+  let diskSpace = ize = await checkDiskSpace(generationDirectory)
+
+  totalSize = diskSpace.size
+
+  return totalSize
+}
 
 // check if the user is modifying an existing local dataset for Curation
 // Has to be called after Step 6
@@ -41,7 +53,8 @@ const logCurationErrorsToAnalytics = async (
   main_total_generate_dataset_size,
   uploadedFiles,
   uploadedFilesSize,
-  localDatasetFilesBeforeModification
+  localDatasetFilesBeforeModification,
+  localDatasetSizeBeforeModification
 ) => {
   logCurationForAnalytics(
     "Error",
@@ -131,6 +144,24 @@ const logCurationErrorsToAnalytics = async (
       file_counter
     );
 
+
+    let sizeGeneratedForDataset = await getDirectorySize(datasetGenerationDirectory)
+
+    if (localDatasetSizeBeforeModification !== undefined) {
+      // TODO: Handle case where directory shrunk
+      sizeGeneratedForDataset = sizeGeneratedForDataset - localDatasetSizeBeforeModification
+    }
+
+    // log the size that was successfully generated
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      datasetLocation,
+      sizeGeneratedForDataset
+    )
+
+
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -146,6 +177,8 @@ const logCurationErrorsToAnalytics = async (
       datasetLocation,
       main_total_generate_dataset_size
     );
+
+
   } else {
     // log the Pennsieve upload session information
     // TODO: Local dataset generation does not have a session ID. Make this conditional.
@@ -156,7 +189,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -169,7 +202,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
@@ -334,4 +367,5 @@ module.exports = {
   editingExistingLocalDataset,
   getLocallyGeneratedFileCount,
   editingExistingLocalDataset,
+  getDirectorySize
 };
