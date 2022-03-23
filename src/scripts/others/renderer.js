@@ -4091,13 +4091,13 @@ organizeDSbackButton.addEventListener("click", function () {
     // construct UI with files and folders
     $("#items").empty();
     already_created_elem = [];
-    let items = loadFileFolder(myPath);
+    let items = loadFileFolder(myPath); //array -
     let total_item_count = items[1].length + items[0].length;
     console.log("retrieved items count " + total_item_count);
     console.log(typeof items);
     console.log(items);
     //we have some items to display
-    add_items_to_view(items, 400);
+    add_items_to_view(items, 400, reset=true);
     organizeLandingUIEffect();
     // reconstruct div with new elements
     getInFolder(
@@ -4626,7 +4626,7 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let hidden_files_present = false;
   path = path.filter(
-    (file_path) =>
+    (file_path) => 
       fs.statSync(file_path).isFile() && !/(^|\/)\.[^\/\.]/g.test(file_path)
   );
   path.forEach((file_path) => {
@@ -4713,44 +4713,14 @@ ipcRenderer.on(
       }).then(async (result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          await Swal.fire({
-            title: "Importing items...",
-            html: "Please wait",
-            allowEscapeKey: true,
-            allowOutsideClick: true,
-            heightAuto: false,
-            showConfirmButton: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            timerProgressBar: false,
-            timer: 400,
-            didOpen: () => {
-              //creates the loading icon for SweetAlert
-              Swal.showLoading();
-            },
-          });
-          addFoldersfunction(
+          await addFoldersfunction(
             "replace",
             irregularFolderArray,
             pathElement,
             myPath
           );
         } else if (result.isDenied) {
-          await Swal.fire({
-            title: "Importing items...",
-            html: "Please wait",
-            allowEscapeKey: true,
-            allowOutsideClick: true,
-            heightAuto: false,
-            showConfirmButton: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            timerProgressBar: false,
-            timer: 400,
-            didOpen: () => {
-              //creates the loading icon for SweetAlert
-              Swal.showLoading();
-            },
-          });
-          addFoldersfunction(
+          await addFoldersfunction(
             "remove",
             irregularFolderArray,
             pathElement,
@@ -4759,27 +4729,12 @@ ipcRenderer.on(
         }
       });
     } else {
-      await Swal.fire({
-        title: "Importing items...",
-        html: "Please wait",
-        allowEscapeKey: true,
-        allowOutsideClick: true,
-        heightAuto: false,
-        showConfirmButton: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        timer: 400,
-        didOpen: () => {
-          //creates the loading icon for SweetAlert
-          Swal.showLoading();
-        },
-      });
-      addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+      await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
     }
   }
 );
 
-function addFoldersfunction(
+async function addFoldersfunction(
   action,
   nonallowedFolderArray,
   folderArray,
@@ -4903,13 +4858,8 @@ function addFoldersfunction(
         if (element !== importedFolders[element]["original-basename"]) {
           currentLocation["folders"][element]["action"].push("renamed");
         }
-        var appendString =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-          element +
-          "</div></div>";
-        $("#items").html(appendString);
       }
-      $("#items").empty();
+      // $("#items").empty();
       listItems(currentLocation, "#items", 400);
       getInFolder(
         ".single-item",
@@ -5001,23 +4951,6 @@ async function drop(ev) {
       } else {
         return;
       }
-      await Swal.fire({
-        title: "Importing items...",
-        html: "Please wait",
-        allowEscapeKey: true,
-        allowOutsideClick: true,
-        heightAuto: false,
-        showConfirmButton: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        timer: 400,
-        didOpen: async () => {
-          await Swal.showLoading();
-        },
-        willClose: () => {
-          Swal.clickConfirm();
-        },
-      });
       dropHelper(
         filesElement,
         targetElement,
@@ -5031,29 +4964,6 @@ async function drop(ev) {
       );
     });
   } else {
-    await Swal.fire({
-      title: "Importing items...",
-      html: "Please wait",
-      allowEscapeKey: true,
-      allowOutsideClick: true,
-      heightAuto: false,
-      showConfirmButton: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      timer: 400,
-      didOpen: async () => {
-        // console.log("didopen stage here");
-        //Swal.clickConfirm();
-        await Swal.showLoading();
-
-        // console.log("now we move forward");
-        //Swal.clickConfirm();
-      },
-      willClose: () => {
-        // console.log("will close?");
-        Swal.clickConfirm();
-      },
-    });
     dropHelper(
       filesElement,
       targetElement,
@@ -5809,8 +5719,9 @@ function sortObjByKeys(object) {
   return orderedObject;
 }
 
-function listItems(jsonObj, uiItem, amount_req) {
+async function listItems(jsonObj, uiItem, amount_req) {
   //allow amount to choose how many elements to create
+  //break elements into sets of 100
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -5880,6 +5791,7 @@ function listItems(jsonObj, uiItem, amount_req) {
         if (count === 100) {
           folder_elements.push(appendString);
           count = 0;
+          appendString = "";
           continue;
         }
       } else {
@@ -5897,18 +5809,21 @@ function listItems(jsonObj, uiItem, amount_req) {
         if (count === 100) {
           folder_elements.push(appendString);
           count = 0;
+          appendString = "";
           continue;
         }
       }
     }
     if (count < 100) {
-      if (!folder_elements.includes(appendString)) {
+      if (!folder_elements.includes(appendString) && appendString != "") {
         folder_elements.push(appendString);
         count = 0;
       }
     }
   }
+  //reset count and string for file elements
   count = 0;
+  appendString = "";
   if (Object.keys(sortedObj["files"]).length > 0) {
     for (var item in sortedObj["files"]) {
       count += 1;
@@ -6005,9 +5920,9 @@ function listItems(jsonObj, uiItem, amount_req) {
 
         appendString = appendString + elem_creation;
         if (count === 100) {
-          console.log("adding 200 elements to array");
           file_elements.push(appendString);
           count = 0;
+          appendString = "";
           continue;
         }
       } else {
@@ -6024,33 +5939,28 @@ function listItems(jsonObj, uiItem, amount_req) {
         if (count === 100) {
           file_elements.push(appendString);
           count = 0;
+          appendString = "";
           continue;
         }
       }
     }
     if (count < 100) {
-      console.log("count is less tha 100");
-      console.log(file_elements.includes(appendString));
-      if (!file_elements.includes(appendString)) {
-        console.log("not included so we push");
+      if (!file_elements.includes(appendString) && appendString != "") {
         file_elements.push(appendString);
         count = 0;
       }
       // continue;
     }
   }
-  // console.log(uiItem);
+  if (folder_elements[0] === "") {
+    folder_elements.splice(0, 1);
+  }
+  if (file_elements[0] === "") {
+    file_elements.splice(0, 1);
+  }
+  let items = [folder_elements, file_elements];
   if (amount_req != undefined) {
-    console.log("amount requested " + amount_req);
     //add items using a different function
-    if (folder_elements[0] === "") {
-      folder_elements.splice(0, 1);
-    }
-    if (file_elements[0] === "") {
-      file_elements.splice(0, 1);
-    }
-    let items = [folder_elements, file_elements];
-
     //want the initial files to be imported
     let itemDisplay = new Promise(async (resolved) => {
       await add_items_to_view(items, amount_req);
@@ -6058,8 +5968,11 @@ function listItems(jsonObj, uiItem, amount_req) {
     });
   } else {
     //load everything in place
-    $(uiItem).empty();
-    $(uiItem).html(appendString);
+    let itemDisplay = new Promise(async (resolved) => {
+      // $(uiItem).empty();
+      await add_items_to_view(items, 400);
+      resolved();
+    });
   }
 
   dragselect_area.stop();
@@ -6080,9 +5993,10 @@ function listItems(jsonObj, uiItem, amount_req) {
   drag_event_fired = false;
 }
 
-function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
+async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
+      console.log("enterig if statement in getInFoldr");
       var folderName = this.innerText;
       currentLocation.value = currentLocation.value + folderName + "/";
 
@@ -6104,7 +6018,8 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       console.log(items);
       //we have some items to display
       amount = 400;
-      add_items_to_view(items, 400);
+      console.log("add items called by getInfolder");
+      await add_items_to_view(items, 400);
       organizeLandingUIEffect();
       // reconstruct folders and files (child elements after emptying the Div)
       getInFolder(singleUIItem, uiItem, currentLocation, globalObj);

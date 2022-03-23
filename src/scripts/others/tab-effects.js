@@ -2916,6 +2916,7 @@ const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
       "</div></div>";
     $("#items").html(appendString);
 
+    //dont know here
     listItems(currentLocation, "#items");
     getInFolder(
       ".single-item",
@@ -3324,6 +3325,7 @@ const updateOverallJSONStructure = (id) => {
     }
     // 3rd
     datasetStructureJSONObj = newDatasetStructureJSONObj;
+    //dont know here
     listItems(datasetStructureJSONObj, "#items");
     getInFolder(
       ".single-item",

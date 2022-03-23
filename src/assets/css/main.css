@@ -1450,3 +1450,11 @@ button[data-id="bf_list_users_pi"] {
   cursor: pointer;
   box-shadow: 0 0 3px 0 var(--color-bg-plum);
 }
+
+#items_container {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+}
+
+

@@ -229,6 +229,7 @@ function delFolder(
         // update UI with updated jsonobj
         listItems(myPath, uiItem);
         getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
+        beginScrollListen();
       }
     });
   } else {
@@ -298,6 +299,7 @@ function delFolder(
             organizeCurrentLocation,
             inputGlobal
           );
+          beginScrollListen();
         }
       });
     } else {
@@ -355,6 +357,7 @@ function delFolder(
             organizeCurrentLocation,
             inputGlobal
           );
+          beginScrollListen();
         }
       });
     }
@@ -640,6 +643,7 @@ function renameFolder(
             organizeCurrentLocation,
             inputGlobal
           );
+          beginScrollListen();
         }
       }
     });
@@ -1882,7 +1886,7 @@ observeElement(dataset_path, "value", function () {
   if (dataset_path.value != "My_dataset_folder/") {
     console.log("got it");
     if (item_box.offsetHeight != 420) {
-      $("#items").empty();
+      // $("#items").empty();
       var filtered = getGlobalPath(
         document.getElementById("input-global-path")
       );
@@ -1926,22 +1930,61 @@ function observeElement(element, property, callback, delay = 0) {
 
 //add certain amount of items
 already_created_elem = [];
-async function add_items_to_view(list, amount_req) {
-  console.log(list);
-  console.log("amount in add_items" + amount_req);
+let listed_count = 0;
+let start = 0;
+async function add_items_to_view(list, amount_req, reset) {
+  console.log("items so far: " + listed_count);
+  console.log("total items to show" + already_created_elem.length);
+  start = listed_count;
+  listed_count = 0;
+  if(reset === true || document.getElementById("input-global-path").value === "My_dataset_folder/") {
+    $("#items").empty();
+    start = 0;
+  }
+  if(item_box.lastChild != undefined) {
+    if(item_box.lastChild.id === "items_container") {
+      item_box.removeChild(item_box.lastChild);
+    }
+  }
+  // let item_select = 400;
+  // let derender_count = amount_req / 400;
+  console.log("amount requested is: " + amount_req);
+  //every 1200 items remove 400
+  //1200 - 400-> 800
+  //2400 - 800 -> 1600
+  //4800 - 1200 -> 3600
+  //6000 - 1600 -> 5400
+  //6400 - 2000 -> 4400 
   uiItems = "#items";
   already_created_elem = list[0].concat(list[1]);
-  console.log(already_created_elem);
-  $(uiItems).empty();
-  for (let i = 0; i < amount_req / 100; i++) {
+  let load_spinner = `
+  <div id="items_container">
+    <div id="item_load" class="ui medium active inline loader icon-wrapper">
+    </div>
+  </div>`;
+
+  // $(uiItems).empty();
+  //% 12
+  let elements_req = amount_req/100;
+  console.log("listed count is not >= 8 apparently: " + listed_count);
+  
+  if(elements_req % 12 === 0) {
+    start = (elements_req/3) + 2;
+  }
+  console.log("start is at: " + start);
+  for (let i = start; i < elements_req; i++) {
     if (i < already_created_elem.length) {
-      $(uiItems).empty();
-      $(uiItems).html(already_created_elem[i]);
+      $(uiItems).append(already_created_elem[i]);
+      listed_count += 1;
     } else {
       break;
     }
   }
-  console.log($(uiItems));
+  listed_count += start;
+  console.log("listed count: " + listed_count);
+  if($(uiItems).children().length >= 400) {
+    $(uiItems).append(load_spinner);
+  }
 }
 
 var amount = 400;
@@ -1949,61 +1992,62 @@ var amount = 400;
 function beginScrollListen() {
   console.log("starting scroll listener");
   amount = 400;
-  scroll_box.addEventListener("scroll", function () {
-    let bottom_page = scroll_box.scrollHeight;
-    let total_items = already_created_elem.length;
-    console.log("items so far " + Math.ceil(item_box.childElementCount / 100));
-    console.log("total items to show" + total_items);
-    console.log(scroll_box.scrollTop + 400);
-    console.log(item_box.offsetHeight);
-    if (item_box.offsetHeight === 420) {
-      scroll_box.removeEventListener("scroll", () => {}, true);
-      amount = 400;
+  scroll_box.addEventListener("scroll", lazyLoad);
+}
+
+function lazyLoad() {
+  console.log("monitoring");
+  let total_items = already_created_elem.length;
+  // console.log(scroll_box.scrollTop + 260);
+  // console.log(item_box.offsetHeight);
+
+  //default height of item box is 420 px meaning not overflow
+  //lazy load not needed (turn off event listener)
+  if (item_box.offsetHeight === 420) {
+    console.log("item_box is size 420");
+    scroll_box.removeEventListener("scroll", lazyLoad);
+    amount = 400;
+  }
+
+  //all items have been fully rendered so remove event listener
+  if (listed_count === total_items) {
+    console.log("total rendered matches :" + listed_count + " with total items :" + total_items);
+    scroll_box.removeEventListener("scroll", lazyLoad);
+    //remove loading spinner
+    if(item_box.lastChild.id === "items_container") {
+      item_box.removeChild(item_box.lastChild);
     }
-    //bigger than default height
-    if (Math.ceil(item_box.childElementCount / 100) === total_items) {
-      console.log("all items have been displayed");
-      scroll_box.removeEventListener("scroll", function () {}, true);
-      return;
-    } else {
-      if (scroll_box.scrollTop + 400 > item_box.offsetHeight) {
-        console.log("load new elements");
-        //list next items
-        console.log("initial amount" + amount);
-        //new to only trigger once
-        let wait4items = new Promise(async (resolved) => {
-          var filtered = getGlobalPath(
-            document.getElementById("input-global-path")
-          );
-          var myPath = getRecursivePath(
-            filtered.slice(1),
-            datasetStructureJSONObj
-          );
-          scroll_box.removeEventListener("scroll", () => {});
-          listItems(myPath, "items", amount);
-          getInFolder(
-            ".single-item",
-            "#items",
-            dataset_path,
-            datasetStructureJSONObj
-          );
-          console.log("should have added now resolving");
-          // scroll_box
-          // beginScrollListen();
-          resolved();
-        }).then(() => {
-          if (Math.ceil(item_box.childElementCount / 100) != total_items)
-            amount += 400;
-          console.log("adding 400 to amount" + amount);
-        });
-      }
-      if (scroll_box.scrollTop > bottom_page) {
-        console.log("bottom of page");
-        console.log(bottom_page);
-        scroll_box.removeEventListener("scroll", () => {});
-      }
+    listed_count = 0;
+    return;
+  } else {
+    //more items to load once user scrolls close to end
+    if (scroll_box.scrollTop + 280 > item_box.offsetHeight) {
+      // scroll_box.removeEventListener("scroll", lazyLoad);
+      //check how many elements have been created to derender
+      console.log("initial amount" + amount);
+      let wait4items = new Promise(async (resolved) => {
+        var filtered = getGlobalPath(
+          document.getElementById("input-global-path")
+        );
+        var myPath = getRecursivePath(
+          filtered.slice(1),
+          datasetStructureJSONObj
+        );
+        amount += 400;
+        await listItems(myPath, "items", amount);
+        await getInFolder(
+          ".single-item",
+          "#items",
+          dataset_path,
+          datasetStructureJSONObj
+        );
+        resolved();
+      }).then(() => {
+        console.log("finished promise");
+        // beginScrollListen();
+      });
     }
-  });
+  }
 }
 
 ///// function to load details to show in display once
