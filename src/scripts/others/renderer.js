@@ -6572,7 +6572,10 @@ function initiate_generate() {
       log.info("Completed curate function");
 
       // log relevant curation details about the dataset generation/Upload to Google Analytics
-      logCurationSuccessToAnalytics(manifest_files_requested);
+      logCurationSuccessToAnalytics(
+        manifest_files_requested,
+        main_total_generate_dataset_size
+      );
 
       client.invoke(
         "api_bf_dataset_account",

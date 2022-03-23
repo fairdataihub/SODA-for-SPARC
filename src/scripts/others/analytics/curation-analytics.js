@@ -21,18 +21,56 @@ const getLocallyGeneratedFileCount = async (generationLocation) => {
   return generatedFiles;
 };
 
-    return generatedFiles
+// Sends detailed information about failures that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH
+const logCurationErrorsToAnalytics = async (
+  main_total_generate_dataset_size,
+  uploadedFiles,
+  uploadedFilesSize
+) => {
+  logCurationForAnalytics(
+    "Error",
+    PrepareDatasetsAnalyticsPrefix.CURATE,
+    AnalyticsGranularity.PREFIX,
+    [],
+    determineDatasetLocation()
+  );
 
-}
+  logCurationForAnalytics(
+    "Error",
+    PrepareDatasetsAnalyticsPrefix.CURATE,
+    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+    ["Step 7", "Generate", "dataset", `${dataset_destination}`],
+    determineDatasetLocation()
+  );
 
-// Sends detailed information about failures that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH 
-const logCurationErrorsToAnalytics = async (main_total_generate_dataset_size, uploadedFiles,  uploadedFilesSize) => {
-    logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.PREFIX,
-        [],
-        determineDatasetLocation()
+  file_counter = 0;
+  folder_counter = 0;
+  get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+
+  // when we fail we want to know the total amount of files we were trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
+  ipcRenderer.send(
+    "track-event",
+    "Error",
+    `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+    "Number of Files",
+    file_counter
+  );
+
+  // when we fail we want to know the total size that we are trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
+  ipcRenderer.send(
+    "track-event",
+    "Error",
+    "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+    "Size",
+    main_total_generate_dataset_size
+  );
+
+  let datasetLocation = determineDatasetLocation();
+
+  // log failed Local, Saved, or New dataset generation to Google Analytics
+  if (datasetLocation !== "Pennsieve") {
+    let filesGeneratedForDataset = await getLocallyGeneratedFileCount(
+      "TODO: Generation location"
     );
 
     // when we fail we want to know how many files were generated
@@ -125,18 +163,19 @@ const logCurationErrorsToAnalytics = async (main_total_generate_dataset_size, up
   }
 };
 
-// Sends detailed information about successful uploads that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH
-const logCurationSuccessToAnalytics = async (manifest_files_requested, main_total_generate_dataset_size) => {
-    if (manifest_files_requested) {
-        let high_level_folder_num = 0;
-        if ("dataset-structure" in sodaJSONObj) {
-            if ("folders" in sodaJSONObj["dataset-structure"]) {
-                for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-                    high_level_folder_num += 1;
-                }
-            }
+const logCurationSuccessToAnalytics = async (
+  manifest_files_requested,
+  main_total_generate_dataset_size
+) => {
+  if (manifest_files_requested) {
+    let high_level_folder_num = 0;
+    if ("dataset-structure" in sodaJSONObj) {
+      if ("folders" in sodaJSONObj["dataset-structure"]) {
+        for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+          high_level_folder_num += 1;
         }
       }
+    }
 
     // get dataset id if available
     let datasetLocation = determineDatasetLocation();
@@ -155,7 +194,7 @@ const logCurationSuccessToAnalytics = async (manifest_files_requested, main_tota
       datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
       high_level_folder_num
     );
-
+  }
 
   if (dataset_destination == "Pennsieve") {
     show_curation_shortcut();
