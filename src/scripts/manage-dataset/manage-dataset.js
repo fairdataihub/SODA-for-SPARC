@@ -713,8 +713,8 @@ $("#button-add-permission-team").click(() => {
 
 // Character count for subtitle //
 function countCharacters(textelement, pelement) {
-  var textEntered = textelement.value;
-  var counter = 255 - textEntered.length;
+  var textEntered = textelement.value.trim();
+  var counter = 256 - textEntered.length;
   if (counter < 0) {
     pelement.innerHTML = `${Math.abs(counter)} characters over limit`;
   } else {

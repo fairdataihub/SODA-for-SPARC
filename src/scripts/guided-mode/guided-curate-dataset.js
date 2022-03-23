@@ -50,6 +50,9 @@ const saveGuidedProgress = (guidedProgressFileName) => {
       ];
     }
   }
+  //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
+  //datasetStructureJsonObj when progress resumed
+  sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
   fs.writeFileSync(guidedFilePath, JSON.stringify(sodaJSONObj, null, 2));
 };
 const readDirAsync = async (path) => {
@@ -302,7 +305,7 @@ function makeid(length) {
   }
   return result;
 }
-const isNumber = (number, minVal, maxVal) => {
+const isNumberBetween = (number, minVal, maxVal) => {
   return (
     !isNaN(parseFloat(number)) &&
     isFinite(number) &&
@@ -355,7 +358,7 @@ const validateInput = (inputElementToValidate) => {
   if (inputID === "guided-dataset-subtitle-input") {
     let subtitle = inputElementToValidate.val().trim();
     if (subtitle !== "") {
-      if (subtitle.length < 255) {
+      if (subtitle.length < 257) {
         removeWarningMessageIfExists(inputElementToValidate);
         inputIsValid = true;
       } else {
@@ -370,7 +373,7 @@ const validateInput = (inputElementToValidate) => {
         const createSubjectsTableButton = document.getElementById(
           "guided-button-generate-subjects-table"
         );
-        if (isNumber(numSubjects, 1, 1000)) {
+        if (isNumberBetween(numSubjects, 1, 1000)) {
           removeWarningMessageIfExists(inputElementToValidate);
           createSubjectsTableButton.disabled = false;
           inputIsValid = true;
@@ -414,7 +417,7 @@ const checkIfEnableNextButton = (inputSetID) => {
       const createSubjectsTableButton = document.getElementById(
         "guided-button-generate-subjects-table"
       );
-      if (!isNumber(numSubjects, 1, 1000)) {
+      if (!isNumberBetween(numSubjects, 1, 1000)) {
         generateWarningMessage(inputElementToValidate);
         createSubjectsTableButton.disabled = true;
       } else {
@@ -526,6 +529,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     .html();
   const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
   sodaJSONObj = datasetResumeJsonObj;
+  datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
   populateGuidedModePages(sodaJSONObj);
 };
 
@@ -3423,6 +3427,7 @@ $(document).ready(() => {
   $("#guided-next-button").on("click", async () => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.attr("id");
+
     try {
       if (pageBeingLeftID === "guided-basic-description-tab") {
         let datasetName = document
@@ -3470,12 +3475,25 @@ $(document).ready(() => {
         } else {
           let basicDescriptionTabErrorMessage = [];
           if (datasetName == "") {
-            basicDescriptionTabErrorMessage.push("Dataset name invalid");
+            basicDescriptionTabErrorMessage.push("Please enter a dataset name");
           }
           if (datasetSubtitle == "") {
-            basicDescriptionTabErrorMessage.push("Dataset subtitle invalid");
+            basicDescriptionTabErrorMessage.push(
+              "Please enter a dataset subtitle"
+            );
           }
-          throw new Error(basicDescriptionTabErrorMessage.join("\r\n"));
+          if (tempGuidedCroppedBannerImagePath == "") {
+            basicDescriptionTabErrorMessage.push("Please add a banner image");
+          }
+          if (
+            !$("#guided-curate-new-dataset-card").hasClass("checked") &&
+            !$("#guided-curate-existing-dataset-card").hasClass("checked")
+          ) {
+            basicDescriptionTabErrorMessage.push(
+              "Please select a dataset start location"
+            );
+          }
+          throw basicDescriptionTabErrorMessage;
         }
       }
       if (pageBeingLeftID === "guided-subjects-folder-tab") {
@@ -3605,12 +3623,13 @@ $(document).ready(() => {
       let targetPageID = targetPage.attr("id");
 
       traverseToTab(targetPageID);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: error,
-        footer: '<a href="">Why do I have this issue?</a>',
+    } catch (errorArray) {
+      errorArray.map((error) => {
+        notyf.open({
+          duration: "7000",
+          type: "error",
+          message: error,
+        });
       });
     }
   });
