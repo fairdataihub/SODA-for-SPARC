@@ -1677,6 +1677,7 @@ async function addFilesfunction(
   singleUIItem,
   globalPathValue
 ) {
+  let start_time = performance.now();
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
@@ -1839,6 +1840,9 @@ async function addFilesfunction(
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
   if (Object.keys(regularFiles).length > 0) {
+    start = 0;
+    listed_count = 0;
+    $("#items").empty();
     for (var element in regularFiles) {
       currentLocation["files"][regularFiles[element]["basename"]] = {
         path: regularFiles[element]["path"],
@@ -1857,8 +1861,7 @@ async function addFilesfunction(
         ].push("renamed");
       }
     }
-
-    listItems(currentLocation, uiItem, 400);
+    await listItems(currentLocation, uiItem, 400);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
     // log the successful import
@@ -1869,6 +1872,8 @@ async function addFilesfunction(
       ["Step 3", "Import", "File"],
       determineDatasetLocation()
     );
+    let end_time = performance.now();
+    console.log(`Duration of addFilesfunction: ${end_time - start_time} milliseconds`);
   }
 }
 
@@ -1932,9 +1937,14 @@ function observeElement(element, property, callback, delay = 0) {
 already_created_elem = [];
 let listed_count = 0;
 let start = 0;
+let preprended_items = 0;
 async function add_items_to_view(list, amount_req, reset) {
+  let start_time = performance.now();
   console.log("items so far: " + listed_count);
   console.log("total items to show" + already_created_elem.length);
+  if(already_created_elem.length === 0) {
+    listed_count = already_created_elem.length;
+  }
   start = listed_count;
   listed_count = 0;
   if (
@@ -1972,11 +1982,23 @@ async function add_items_to_view(list, amount_req, reset) {
   console.log("listed count is not >= 8 apparently: " + listed_count);
 
   if (elements_req % 12 === 0) {
-    start = elements_req / 3 + 2;
+    // start = elements_req / 3 + 2;
+    //remove first 600 elements
+    preprended_items += 6;
+
+    let element_items = item_box.children;
+    let remove = 600;
+    for(let i = 0; i < remove; i++) {
+      console.log("removing element: " + i);
+      console.log(element_items[0]);
+      element_items[0].remove();
+    }
+    $(uiItems).prepend(load_spinner);
   }
   console.log("start is at: " + start);
   for (let i = start; i < elements_req; i++) {
     if (i < already_created_elem.length) {
+      console.log("placing array element: " + i);
       $(uiItems).append(already_created_elem[i]);
       listed_count += 1;
     } else {
@@ -1984,13 +2006,21 @@ async function add_items_to_view(list, amount_req, reset) {
     }
   }
   listed_count += start;
+  start = listed_count;
   console.log("listed count: " + listed_count);
   if ($(uiItems).children().length >= 400) {
     $(uiItems).append(load_spinner);
   }
+  let end_time = performance.now();
+  console.log(`Duration of add_items function: ${end_time - start_time} milliseconds`);
 }
 
 var amount = 400;
+const styles = ['color: blue', 'background: none'].join(';');
+
+
+// 3. Using the styles and message variable
+
 
 function beginScrollListen() {
   console.log("starting scroll listener");
@@ -1999,7 +2029,9 @@ function beginScrollListen() {
 }
 
 function lazyLoad() {
-  console.log("monitoring");
+  console.log('monitoring scroll position: %c%s', styles, scroll_box.scrollTop);
+
+  //position to monitor 254
   let total_items = already_created_elem.length;
   // console.log(scroll_box.scrollTop + 260);
   // console.log(item_box.offsetHeight);
@@ -2010,6 +2042,52 @@ function lazyLoad() {
     console.log("item_box is size 420");
     scroll_box.removeEventListener("scroll", lazyLoad);
     amount = 400;
+  }
+
+  if(item_box.children[0].id === "items_container") {
+    console.log("we have preprended the load spinner");
+    if(scroll_box.scrollTop < 254) {
+      //insert previous elements
+      let array_select = preprended_items - 1;
+      let load_spinner = `
+      <div id="items_container">
+        <div id="item_load" class="ui medium active inline loader icon-wrapper">
+        </div>
+      </div>`;
+      console.log("here we will preprend the initial elements");
+      console.log(array_select);
+      item_box.children[0].remove();
+      let remove_limit = 6
+      for(let i = 0; i < remove_limit; i++) {
+        console.log(array_select);
+        $("#items").prepend(already_created_elem[array_select]);
+        array_select--;
+      }
+      array_select += 1;
+      console.log("this is what array_select is after loop: " + array_select);
+
+      if(array_select != 0) {
+        $("#items").prepend(load_spinner);
+      } else {
+        //we have add all files from beginning
+        if(item_box.children[0].id === "items_container") {
+          item_box.children[0].remove();
+        }
+      }
+      //then remove 600 from the end
+      console.log("removing loading icon at the end");
+      if(item_box.lastChild.id === "items_container") {
+        item_box.lastChild.remove();
+      }
+      console.log("removing 600 elements at the end")
+      for(let i = 0; i < 602; i++) {
+        console.log("removing element at the end: " + i);
+        item_box.lastChild.remove();
+      }
+      listed_count -= 6;
+      start -= 6;
+      $("#items").append(load_spinner);
+    }
   }
 
   //all items have been fully rendered so remove event listener

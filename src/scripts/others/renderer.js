@@ -5722,6 +5722,7 @@ function sortObjByKeys(object) {
 async function listItems(jsonObj, uiItem, amount_req) {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
+  let start_time = performance.now();
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -5991,11 +5992,16 @@ async function listItems(jsonObj, uiItem, amount_req) {
     select_items_ctrl(items, event, isDragging);
   });
   drag_event_fired = false;
+  let end_time = performance.now();
+  console.log(`Duration of listItems function: ${end_time - start_time} milliseconds`);
 }
 
 async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
+      $("#items").empty();
+      start = 0;
+      listed_count = 0;
       console.log("enterig if statement in getInFoldr");
       var folderName = this.innerText;
       currentLocation.value = currentLocation.value + folderName + "/";
