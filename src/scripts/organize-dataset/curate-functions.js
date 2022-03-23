@@ -1889,9 +1889,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-      "manifest.xlsx"
+        "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
@@ -2327,7 +2327,7 @@ function determineDatasetDestination(dataset_name, dataset_destination) {
     }
   }
 
-  return [dataset_name, dataset_destination]
+  return [dataset_name, dataset_destination];
 }
 
 // module.exports = {determineDatasetDestination}

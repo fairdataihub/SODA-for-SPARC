@@ -21,19 +21,19 @@ const getLocallyGeneratedFileCount = async (generationLocation) => {
 // check if the user is modifying an existing local dataset for Curation
 // Has to be called after Step 6
 const editingExistingLocalDataset = () => {
-  // check if the dataset is being generated locally 
+  // check if the dataset is being generated locally
   if (sodaJSONObj["generate-dataset"]["destination"] !== "local") {
-    return false
+    return false;
   }
 
   // check if the dataset has merge set as the value for handling existing files
   if (sodaJSONObj["generate-dataset"]["if-existing"] === "merge") {
-    return true
+    return true;
   }
 
   // else this is a new local dataset generation
-  return false
-}
+  return false;
+};
 
 // Sends detailed information about failures that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH
 const logCurationErrorsToAnalytics = async (
@@ -332,5 +332,5 @@ module.exports = {
   logCurationSuccessToAnalytics,
   editingExistingLocalDataset,
   getLocallyGeneratedFileCount,
-  editingExistingLocalDataset
+  editingExistingLocalDataset,
 };
