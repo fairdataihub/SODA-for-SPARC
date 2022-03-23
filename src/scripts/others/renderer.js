@@ -43,10 +43,11 @@ const {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
   getLocallyGeneratedFileCount,
-  editingExistingLocalDataset
+  editingExistingLocalDataset,
 } = require("./scripts/others/analytics/curation-analytics");
-const { determineDatasetLocation } = require("./scripts/others/analytics/analytics-utils");
-
+const {
+  determineDatasetLocation,
+} = require("./scripts/others/analytics/analytics-utils");
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
@@ -6509,7 +6510,7 @@ async function initiate_generate() {
     }
   }
   let dataset_destination = "";
-  let dataset_name = ""
+  let dataset_name = "";
 
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
@@ -6519,12 +6520,12 @@ async function initiate_generate() {
   let localDatasetCurrentFileCount = undefined;
 
   // determine where the dataset will be generated/uploaded
-  if(determineDatasetLocation) {
-    console.log("Defined funciton")
+  if (determineDatasetLocation) {
+    console.log("Defined funciton");
   } else {
-    console.log("Undefined function")
+    console.log("Undefined function");
   }
-  [dataset_name, dataset_destination] = determineDatasetDestination()
+  [dataset_name, dataset_destination] = determineDatasetDestination();
 
   if (dataset_destination == "Pennsieve") {
     // create a dataset upload session
@@ -6586,7 +6587,7 @@ async function initiate_generate() {
       logCurationSuccessToAnalytics(
         manifest_files_requested,
         main_total_generate_dataset_size,
-        dataset_name, 
+        dataset_name,
         dataset_destination
       );
 
