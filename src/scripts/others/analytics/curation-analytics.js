@@ -18,6 +18,15 @@ const getLocallyGeneratedFileCount = async (generationLocation) => {
   return generatedFiles;
 };
 
+
+// check if the user is modifying an existing local dataset for Curation
+// Has to be called after Step 6 
+const editingExistingLocalDataset = () => {
+  let modifyExistingOptionCard = document.querySelector("#generate-dataset-replace-existing .option-card")
+  console.log("Option card: ", modifyExistingOptionCard )
+  return modifyExistingOptionCard.classList.contains("checked")
+}
+
 // Sends detailed information about failures that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH
 const logCurationErrorsToAnalytics = async (
   main_total_generate_dataset_size,
@@ -128,7 +137,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -141,7 +150,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );

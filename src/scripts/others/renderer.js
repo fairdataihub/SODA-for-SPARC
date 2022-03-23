@@ -6512,6 +6512,9 @@ function initiate_generate() {
   let uploadedFiles = 0;
   let uploadedFilesSize = 0;
 
+  // tracks amount of files in a local dataset directory before it gets modified 
+  let localDatasetCurrentFileCount = undefined
+
   // determine if the dataset is being uploaded to Pennsieve or being generated locally
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
@@ -6533,6 +6536,10 @@ function initiate_generate() {
   if (dataset_destination == "Pennsieve") {
     // create a dataset upload session
     datasetUploadSession.startSession();
+  }
+
+  if(editingExistingLocalDataset()) {
+    // give local file count the amount of files in the target generation directory
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
@@ -6570,7 +6577,8 @@ function initiate_generate() {
       logCurationErrorsToAnalytics(
         main_total_generate_dataset_size,
         uploadedFiles,
-        uploadedFilesSize
+        uploadedFilesSize,
+        localDatasetCurrentFileCount
       );
     } else {
       main_total_generate_dataset_size = res[1];
