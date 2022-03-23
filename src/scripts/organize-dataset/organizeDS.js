@@ -1937,12 +1937,15 @@ async function add_items_to_view(list, amount_req, reset) {
   console.log("total items to show" + already_created_elem.length);
   start = listed_count;
   listed_count = 0;
-  if(reset === true || document.getElementById("input-global-path").value === "My_dataset_folder/") {
+  if (
+    reset === true ||
+    document.getElementById("input-global-path").value === "My_dataset_folder/"
+  ) {
     $("#items").empty();
     start = 0;
   }
-  if(item_box.lastChild != undefined) {
-    if(item_box.lastChild.id === "items_container") {
+  if (item_box.lastChild != undefined) {
+    if (item_box.lastChild.id === "items_container") {
       item_box.removeChild(item_box.lastChild);
     }
   }
@@ -1954,7 +1957,7 @@ async function add_items_to_view(list, amount_req, reset) {
   //2400 - 800 -> 1600
   //4800 - 1200 -> 3600
   //6000 - 1600 -> 5400
-  //6400 - 2000 -> 4400 
+  //6400 - 2000 -> 4400
   uiItems = "#items";
   already_created_elem = list[0].concat(list[1]);
   let load_spinner = `
@@ -1965,11 +1968,11 @@ async function add_items_to_view(list, amount_req, reset) {
 
   // $(uiItems).empty();
   //% 12
-  let elements_req = amount_req/100;
+  let elements_req = amount_req / 100;
   console.log("listed count is not >= 8 apparently: " + listed_count);
-  
-  if(elements_req % 12 === 0) {
-    start = (elements_req/3) + 2;
+
+  if (elements_req % 12 === 0) {
+    start = elements_req / 3 + 2;
   }
   console.log("start is at: " + start);
   for (let i = start; i < elements_req; i++) {
@@ -1982,7 +1985,7 @@ async function add_items_to_view(list, amount_req, reset) {
   }
   listed_count += start;
   console.log("listed count: " + listed_count);
-  if($(uiItems).children().length >= 400) {
+  if ($(uiItems).children().length >= 400) {
     $(uiItems).append(load_spinner);
   }
 }
@@ -2011,10 +2014,15 @@ function lazyLoad() {
 
   //all items have been fully rendered so remove event listener
   if (listed_count === total_items) {
-    console.log("total rendered matches :" + listed_count + " with total items :" + total_items);
+    console.log(
+      "total rendered matches :" +
+        listed_count +
+        " with total items :" +
+        total_items
+    );
     scroll_box.removeEventListener("scroll", lazyLoad);
     //remove loading spinner
-    if(item_box.lastChild.id === "items_container") {
+    if (item_box.lastChild.id === "items_container") {
       item_box.removeChild(item_box.lastChild);
     }
     listed_count = 0;

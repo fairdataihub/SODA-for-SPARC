@@ -4097,7 +4097,7 @@ organizeDSbackButton.addEventListener("click", function () {
     console.log(typeof items);
     console.log(items);
     //we have some items to display
-    add_items_to_view(items, 400, reset=true);
+    add_items_to_view(items, 400, (reset = true));
     organizeLandingUIEffect();
     // reconstruct div with new elements
     getInFolder(
@@ -4626,7 +4626,7 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let hidden_files_present = false;
   path = path.filter(
-    (file_path) => 
+    (file_path) =>
       fs.statSync(file_path).isFile() && !/(^|\/)\.[^\/\.]/g.test(file_path)
   );
   path.forEach((file_path) => {
