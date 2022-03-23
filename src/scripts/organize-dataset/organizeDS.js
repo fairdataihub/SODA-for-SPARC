@@ -1873,7 +1873,9 @@ async function addFilesfunction(
       determineDatasetLocation()
     );
     let end_time = performance.now();
-    console.log(`Duration of addFilesfunction: ${end_time - start_time} milliseconds`);
+    console.log(
+      `Duration of addFilesfunction: ${end_time - start_time} milliseconds`
+    );
   }
 }
 
@@ -1942,7 +1944,7 @@ async function add_items_to_view(list, amount_req, reset) {
   let start_time = performance.now();
   console.log("items so far: " + listed_count);
   console.log("total items to show" + already_created_elem.length);
-  if(already_created_elem.length === 0) {
+  if (already_created_elem.length === 0) {
     listed_count = already_created_elem.length;
   }
   start = listed_count;
@@ -1988,7 +1990,7 @@ async function add_items_to_view(list, amount_req, reset) {
 
     let element_items = item_box.children;
     let remove = 600;
-    for(let i = 0; i < remove; i++) {
+    for (let i = 0; i < remove; i++) {
       console.log("removing element: " + i);
       console.log(element_items[0]);
       element_items[0].remove();
@@ -2012,15 +2014,15 @@ async function add_items_to_view(list, amount_req, reset) {
     $(uiItems).append(load_spinner);
   }
   let end_time = performance.now();
-  console.log(`Duration of add_items function: ${end_time - start_time} milliseconds`);
+  console.log(
+    `Duration of add_items function: ${end_time - start_time} milliseconds`
+  );
 }
 
 var amount = 400;
-const styles = ['color: blue', 'background: none'].join(';');
-
+const styles = ["color: blue", "background: none"].join(";");
 
 // 3. Using the styles and message variable
-
 
 function beginScrollListen() {
   console.log("starting scroll listener");
@@ -2029,7 +2031,7 @@ function beginScrollListen() {
 }
 
 function lazyLoad() {
-  console.log('monitoring scroll position: %c%s', styles, scroll_box.scrollTop);
+  console.log("monitoring scroll position: %c%s", styles, scroll_box.scrollTop);
 
   //position to monitor 254
   let total_items = already_created_elem.length;
@@ -2044,9 +2046,9 @@ function lazyLoad() {
     amount = 400;
   }
 
-  if(item_box.children[0].id === "items_container") {
+  if (item_box.children[0].id === "items_container") {
     console.log("we have preprended the load spinner");
-    if(scroll_box.scrollTop < 254) {
+    if (scroll_box.scrollTop < 254) {
       //insert previous elements
       let array_select = preprended_items - 1;
       let load_spinner = `
@@ -2057,8 +2059,8 @@ function lazyLoad() {
       console.log("here we will preprend the initial elements");
       console.log(array_select);
       item_box.children[0].remove();
-      let remove_limit = 6
-      for(let i = 0; i < remove_limit; i++) {
+      let remove_limit = 6;
+      for (let i = 0; i < remove_limit; i++) {
         console.log(array_select);
         $("#items").prepend(already_created_elem[array_select]);
         array_select--;
@@ -2066,21 +2068,21 @@ function lazyLoad() {
       array_select += 1;
       console.log("this is what array_select is after loop: " + array_select);
 
-      if(array_select != 0) {
+      if (array_select != 0) {
         $("#items").prepend(load_spinner);
       } else {
         //we have add all files from beginning
-        if(item_box.children[0].id === "items_container") {
+        if (item_box.children[0].id === "items_container") {
           item_box.children[0].remove();
         }
       }
       //then remove 600 from the end
       console.log("removing loading icon at the end");
-      if(item_box.lastChild.id === "items_container") {
+      if (item_box.lastChild.id === "items_container") {
         item_box.lastChild.remove();
       }
-      console.log("removing 600 elements at the end")
-      for(let i = 0; i < 602; i++) {
+      console.log("removing 600 elements at the end");
+      for (let i = 0; i < 602; i++) {
         console.log("removing element at the end: " + i);
         item_box.lastChild.remove();
       }

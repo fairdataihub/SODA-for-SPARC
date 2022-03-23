@@ -5993,7 +5993,9 @@ async function listItems(jsonObj, uiItem, amount_req) {
   });
   drag_event_fired = false;
   let end_time = performance.now();
-  console.log(`Duration of listItems function: ${end_time - start_time} milliseconds`);
+  console.log(
+    `Duration of listItems function: ${end_time - start_time} milliseconds`
+  );
 }
 
 async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
