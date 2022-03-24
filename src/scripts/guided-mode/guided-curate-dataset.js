@@ -1723,11 +1723,6 @@ $(document).ready(() => {
 
   function guidedShowTreePreview(new_dataset_name, targetElement) {
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
-    /*if (manifestFileCheck.checked) {
-      addManifestFilesForTreeView();
-    } else {
-      revertManifestForTreeView();
-    }*/
 
     var guidedJsTreePreviewData = create_child_node(
       datasetStructureJSONObj,
@@ -1740,6 +1735,7 @@ $(document).ready(() => {
       "",
       "preview"
     );
+    console.log(guidedJsTreePreviewData);
     $(targetElement).jstree(true).settings.core.data = guidedJsTreePreviewData;
     $(targetElement).jstree(true).refresh();
   }
@@ -2054,9 +2050,12 @@ $(document).ready(() => {
   $("#guided-button-preview-folder-structure").on("click", () => {
     Swal.fire({
       title: "Dataset tree preview",
-      html: `<div id="foo"></div>`,
+      width: 800,
+      html: `<div id="guided-folder-structure-preview" style="display: flex; justify-content: flex-start;"></div>`,
     });
-    var folderStructurePreview = document.getElementById("foo");
+    var folderStructurePreview = document.getElementById(
+      "guided-folder-structure-preview"
+    );
 
     $(folderStructurePreview).jstree({
       core: {
@@ -2122,15 +2121,27 @@ $(document).ready(() => {
       },
     });
     $(folderStructurePreview).on("open_node.jstree", function (event, data) {
+      console.log("open folder");
       data.instance.set_type(data.node, "folder open");
     });
     $(folderStructurePreview).on("close_node.jstree", function (event, data) {
+      console.log("close folder");
+      console.log(event);
+      console.log(data);
       data.instance.set_type(data.node, "folder closed");
     });
     guidedShowTreePreview(
       sodaJSONObj["digital-metadata"]["name"],
       folderStructurePreview
     );
+
+    const folderPage = CURRENT_PAGE.attr("id");
+    if (folderPage === "guided-subjects-folder-tab") {
+      //open jsTree to correct folder
+      $(folderStructurePreview)
+        .jstree(true)
+        .open_node($(folderStructurePreview).jstree(true).get_node("#"));
+    }
   });
 
   //const add_dataset_permission = async();
