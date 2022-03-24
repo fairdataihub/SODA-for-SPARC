@@ -590,6 +590,7 @@ const openSubjectFolder = (clickedStructureButton) => {
     </button>
   `);
   traverseToTab("guided-structure-folder-tab");
+  $("#guided-footer-div").hide();
   //Manually override active capsule to make it seem like they're still on the subjects tab
   setActiveCapsule("guided-subjects-folder-tab");
 
@@ -716,6 +717,7 @@ const updateFolderStructureUI = (pageDataObj) => {
 const returnToTableFromFolderStructure = (clickedBackButton) => {
   previousFolderStructurePage = clickedBackButton.attr("data-prev-page");
   traverseToTab(previousFolderStructurePage);
+  $("#guided-footer-div").css("display", "flex");
   clickedBackButton.remove();
 };
 
@@ -1021,26 +1023,7 @@ const openSampleFolder = (clickedStructureButton) => {
     .text()
     .trim();
   let sampleID = clickedStructureButton.closest("tr").find(".sample-id").text();
-  /*
-  $("#structure-folder-header").text(
-    `Virtually structure ${subjectID}'s subject folder in the interface below.`
-  );
-  $("#structure-folder-contents").text(
-    `${subjectID}'s folder should contain lorem ipsum foo bar random instructional
-    text will go here`
-  );
-  $("#structure-return-destination-text").text("subjects table");
-  $("#guided-input-global-path").val(`My_dataset_folder/primary/${subjectID}/`);
-  $("#folder-structure-button-row-top").append(`
-    <button
-      class="ui secondary basic button small"
-      onclick="returnToTableFromFolderStructure($(this))"
-      data-prev-page="guided-subjects-folder-tab"
-    >
-      <i class="fas fa-arrow-left" style="margin-right: 10px"></i
-      >Back to subjects table
-    </button>
-  `);*/
+
   $("#structure-folder-header").text(
     `Virtually structure ${sampleID}'s subject folder in the interface below.`
   );
@@ -1064,6 +1047,8 @@ const openSampleFolder = (clickedStructureButton) => {
     </button>
   `);
   traverseToTab("guided-structure-folder-tab");
+  $("#guided-footer-div").hide();
+
   setActiveCapsule("guided-samples-folder-tab");
 
   var filtered = getGlobalPath(organizeDSglobalPath);
@@ -2049,7 +2034,7 @@ $(document).ready(() => {
   };
   $("#guided-button-preview-folder-structure").on("click", () => {
     Swal.fire({
-      title: "Dataset tree preview",
+      title: "Dataset folder structure preview",
       width: 800,
       html: `<div id="guided-folder-structure-preview" style="display: flex; justify-content: flex-start;"></div>`,
     });
