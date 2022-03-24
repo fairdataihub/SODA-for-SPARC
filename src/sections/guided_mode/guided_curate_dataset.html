@@ -506,7 +506,11 @@
                   />
                 </div>
 
-                <div class="guided--input-container" style="margin-top: 25px">
+                <div
+                  class="guided--input-container hidden"
+                  id="guided-subjects-same-samples-amount-div"
+                  style="margin-top: 25px"
+                >
                   <label class="guided--form-label centered"
                     >Do all of your subjects have the same amount of samples?
                   </label>
@@ -528,26 +532,26 @@
                       No
                     </button>
                   </div>
-                </div>
-                <div
-                  class="guided--input-container hidden"
-                  id="guided-sample-count-same"
-                >
-                  <label class="guided--form-label centered"
-                    >How many samples does each subject have?
-                  </label>
-                  <input
-                    class="guided--input"
-                    type="text"
-                    name="guided-number-of-samples"
-                    placeholder="Enter number of samples"
-                    id="guided-number-of-samples-input"
-                    style="width: 400px; text-align: center"
-                    data-input-set="guided-subjects-folder-tab"
-                    data-warning="Please enter a valid number between 1 and 1000."
-                    data-alert-type="danger"
-                    onkeyup="validateInput($(this))"
-                  />
+                  <div
+                    class="guided--input-container hidden"
+                    id="guided-sample-count-same"
+                  >
+                    <label class="guided--form-label centered"
+                      >How many samples does each subject have?
+                    </label>
+                    <input
+                      class="guided--input"
+                      type="text"
+                      name="guided-number-of-samples"
+                      placeholder="Enter number of samples"
+                      id="guided-number-of-samples-input"
+                      style="width: 400px; text-align: center"
+                      data-input-set="guided-subjects-folder-tab"
+                      data-warning="Please enter a valid number between 1 and 1000."
+                      data-alert-type="danger"
+                      onkeyup="validateInput($(this))"
+                    />
+                  </div>
                 </div>
                 <button
                   id="guided-button-generate-subjects-table"

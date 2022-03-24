@@ -369,33 +369,32 @@ const validateInput = (inputElementToValidate) => {
   if (inputID === "guided-number-of-subjects-input") {
     let numSubjects = inputElementToValidate.val().trim();
     if (numSubjects !== "") {
-      const createSubjectsTableButton = document.getElementById(
-        "guided-button-generate-subjects-table"
-      );
       if (isNumberBetween(numSubjects, 1, 1000)) {
         removeWarningMessageIfExists(inputElementToValidate);
-        createSubjectsTableButton.disabled = false;
+        $("#guided-subjects-same-samples-amount-div").css("display", "flex");
         inputIsValid = true;
       } else {
         generateWarningMessage(inputElementToValidate);
-        createSubjectsTableButton.disabled = true;
+        $("#guided-subjects-same-samples-amount-div").hide();
       }
+    } else {
+      $("#guided-subjects-same-samples-amount-div").hide();
     }
   }
   if (inputID === "guided-number-of-samples-input") {
     let numSamples = inputElementToValidate.val().trim();
     if (numSamples !== "") {
-      const createSubjectsTableButton = document.getElementById(
-        "guided-button-generate-subjects-table"
-      );
       if (isNumberBetween(numSamples, 1, 1000)) {
         removeWarningMessageIfExists(inputElementToValidate);
-        createSubjectsTableButton.disabled = false;
+        $("#guided-button-generate-subjects-table").show();
+
         inputIsValid = true;
       } else {
         generateWarningMessage(inputElementToValidate);
-        createSubjectsTableButton.disabled = true;
+        $("#guided-button-generate-subjects-table").hide();
       }
+    } else {
+      $("#guided-button-generate-subjects-table").hide();
     }
   }
   return inputIsValid;
@@ -428,15 +427,10 @@ const checkIfEnableNextButton = (inputSetID) => {
       .getElementById(`guided-number-of-subjects-input`)
       .value.trim();
     if (numSubjects !== "") {
-      const createSubjectsTableButton = document.getElementById(
-        "guided-button-generate-subjects-table"
-      );
       if (!isNumberBetween(numSubjects, 1, 1000)) {
         generateWarningMessage(inputElementToValidate);
-        createSubjectsTableButton.disabled = true;
       } else {
         removeWarningMessageIfExists(inputElementToValidate);
-        createSubjectsTableButton.disabled = false;
         numSubjectsIsValid = true;
       }
     }
@@ -721,9 +715,6 @@ const returnToTableFromFolderStructure = (clickedBackButton) => {
   clickedBackButton.remove();
 };
 
-$("#show-create-subjects-table-div").on("click", () => {
-  $("#guided-button-generate-subjects-table").show();
-});
 //Click handler that sets the Subject's name after enter press in the table input
 $("#guided-button-generate-subjects-table").on("click", () => {
   let numSubjectRowsToCreate = parseInt(
@@ -1348,6 +1339,7 @@ $("#guided-button-no-derivative-data").on("click", () => {
 });
 
 /*********** Code page functions ***********/
+
 $("#guided-button-has-code-data").on("click", () => {
   if (datasetStructureJSONObj["folders"]["code"] == undefined)
     datasetStructureJSONObj["folders"]["code"] = {
@@ -1637,6 +1629,12 @@ $(document).ready(() => {
         $(`#${nextQuestionID}`).hide();
       }
     });
+  });
+  $("#guided-button-samples-not-same").on("click", () => {
+    $("#guided-button-generate-subjects-table").show();
+  });
+  $("#guided-button-samples-same").on("click", () => {
+    $("#guided-button-generate-subjects-table").hide();
   });
 
   /////////////////////////////////////////////////////////
