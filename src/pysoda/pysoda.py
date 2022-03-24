@@ -1016,20 +1016,91 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 raise e
 
         def upload_dataset_in_buckets():
-            # TODO: upload root
+            global submitdataprogress
+            global submitdatastatus
 
             # upload the directories  TODO: Bucket here too?
             myds = bf.get_dataset(bfdataset)
 
+            folders = {}
+
+            # create the root directory on Pennsieve and store it for later 
+            root_folder_name = os.path.basename(os.path.normpath(pathdataset))
+            root_pennsieve_folder = myds.create_collection(root_folder_name)
+            folders[root_folder_name] = root_pennsieve_folder
+
             # top down scan through dataset to upload each file/folder
-            for root, dirs, files in os.walk(pathdataset, topdown=True):
+            for dirpath, child_dirs, files in os.walk(pathdataset, topdown=True):
+                #  get the current root directory's name not its relative path
+                name_of_current_root = os.path.basename(os.path.normpath(dirpath))
 
-                # upload the directories to the dataset
-                myds.create_collection(root)
+                # get the current folder out of the pennsieve folders storage
+                current_folder = folders[name_of_current_root]
 
+                
+
+                # upload the current directory's child directories
+                for child_dir in child_dirs:
+                    child_dir_pennsieve = current_folder.create_collection(child_dir)
+                    # store the folders by their name so they can be accessed when we 
+                    # need to upload their children folders and files into their directory
+                    folders[child_dir] = child_dir_pennsieve
+
+                
+                # inform the user the files for the current folder are being uploaded
+               
+
+                # upload the current directories files in a bucket
                 if len(files) > BUCKET_SIZE:
-                    # upload the files into the current directory in buckets
-                    print("Stuff")
+                    # bucket the upload
+                    start_index = end_index = 0
+                    # store the aggregate of the amount of files in the folder
+                    total_files = len(files)
+
+                    # while startIndex < files.length
+                    while start_index < total_files:
+                        # set the endIndex to startIndex plus 750
+                        end_index = start_index + BUCKET_SIZE - 1
+
+                        # check if the endIndex is out of bounds
+                        if end_index >= total_files:
+                            # if so set end index to files.length - 1
+                            end_index = len(files) - 1
+
+                        # get the 750 files between startIndex and endIndex (inclusive of endIndex)
+                        upload_bucket = files[start_index : end_index + 1]
+
+                        # clear the pennsieve queue for successive batches
+                        clear_queue()
+
+                        # TODO: Construct path in dictionary for better information messages 
+                        submitdataprogress = (
+                            "Uploading folder '%s' to dataset '%s \n' "
+                            % (current_folder, bfdataset)
+                        )
+
+                        # upload the files
+                        current_folder.upload(*upload_bucket)
+
+                        # update the global that tracks the amount of files that have been successfully uploaded
+                        # main_curation_uploaded_files += BUCKET_SIZE
+
+                        # update the start_index to end_index + 1
+                        start_index = end_index + 1
+                else:
+                    if len(files) > 0:
+                        # TODO: Construct path in dictionary for better information messages 
+                        submitdataprogress = (
+                            "Uploading folder '%s' to dataset '%s \n' "
+                            % (current_folder, bfdataset)
+                        )
+
+                        current_folder.upload(*files)
+
+            # upload completed
+            submitdataprogress = "Success: COMPLETED!"
+            submitdatastatus = "Done"
+
 
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()
