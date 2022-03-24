@@ -82,6 +82,7 @@ submitdatastatus = " "
 submitprintstatus = " "
 total_file_size = 1
 uploaded_file_size = 0
+uploaded_files = 0
 start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, "SODA", "SODA_metadata")
@@ -1081,7 +1082,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             current_folder.upload(file_path)
 
                         # update the global that tracks the amount of files that have been successfully uploaded
-                        # main_curation_uploaded_files += BUCKET_SIZE
+                        # for this upload session
+                        uploaded_files += BUCKET_SIZE
 
                         # update the start_index to end_index + 1
                         start_index = end_index + 1
@@ -1096,6 +1098,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         for file in files:
                             file_path = join(dirpath, file)
                             current_folder.upload(file_path)
+                        
+                        uploaded_files += len(files)
 
             # upload completed
             submitdataprogress = "Success: COMPLETED!"
@@ -1120,6 +1124,22 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         raise e
 
+
+# sends back the current amount of files that have been uploaded by bf_submit_dataset
+def bf_submit_dataset_upload_details():
+    """
+    Function frequently called by front end to help keep track of the amount of files that have
+    been successfully uploaded to Pennsieve, and the size of the uploaded files
+    """
+    if start_submit == 1:
+        uploaded_file_size = bf_dataset_size() - initial_bfdataset_size_submit
+    else:
+        # upload hasn't started yet no details 
+        return (0, 0)
+    
+    
+    return (uploaded_files, uploaded_file_size)
+    
 
 def submit_dataset_progress():
     """
