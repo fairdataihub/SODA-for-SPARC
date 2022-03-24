@@ -1114,7 +1114,7 @@ const renderSamplesTables = () => {
   );
   //get the sample count from the number of samples input on the subjects page and
   //map the subjects to an array to create the sample tables
-  let sampleData = subjectsToMap.map((subject) => {
+  let sampleData = subjectsToMap.sort().map((subject) => {
     let subjectNumSamples = $(`.subject-id:contains("${subject}")`)
       .closest("tr")
       .find(".guided-input-sample-count")
@@ -3493,7 +3493,13 @@ $(document).ready(() => {
   $("#guided-next-button").on("click", async () => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.attr("id");
-
+    //add a bootstrap loader to the next button
+    $("#guided-next-button").html(
+      `
+        <div class="spinner-border" role="status" style="height: 14px; width: 14px;">
+        </div>
+      `
+    );
     try {
       if (pageBeingLeftID === "guided-basic-description-tab") {
         let datasetName = document
@@ -3697,12 +3703,17 @@ $(document).ready(() => {
       console.log(errorArray);
       errorArray.map((error) => {
         notyf.open({
-          duration: "7000",
+          duration: "5000",
           type: "error",
           message: error,
         });
       });
     }
+    $("#guided-next-button").html(
+      `
+        Next
+      `
+    );
   });
 
   //back button click handler
