@@ -1,7 +1,3 @@
-const {
-  datasetUploadSession,
-} = require("./scripts/others/analytics/upload-session-tracker");
-
 var forbidden_characters_bf = '/:*?"<>';
 
 const check_forbidden_characters_bf = (my_string) => {
@@ -2658,7 +2654,7 @@ $("#button-submit-dataset").click(async () => {
           `${datasetUploadSession.id}`,
           uploadedFilesSize
         );
-        
+
       }
     })
 
@@ -2669,7 +2665,8 @@ $("#button-submit-dataset").click(async () => {
         clearInterval(uploadDetailsTimer);
       }
     }
-};
+  };
+})
 
 const addRadioOption = (ul, text, val) => {
   let li = document.createElement("li");
@@ -2763,6 +2760,7 @@ $("#bf_list_dataset_status").on("change", () => {
   );
 });
 
+
 function showCurrentDatasetStatus(callback) {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
@@ -2852,3 +2850,4 @@ function showCurrentDatasetStatus(callback) {
     );
   }
 }
+
