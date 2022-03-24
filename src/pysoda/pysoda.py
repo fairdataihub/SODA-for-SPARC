@@ -1024,7 +1024,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
             folders = {}
 
-            # create the root directory on Pennsieve and store it for later 
+            # create the root directory on Pennsieve and store it for later
             root_folder_name = os.path.basename(os.path.normpath(pathdataset))
             root_pennsieve_folder = myds.create_collection(root_folder_name)
             folders[root_folder_name] = root_pennsieve_folder
@@ -1037,18 +1037,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 # get the current folder out of the pennsieve folders storage
                 current_folder = folders[name_of_current_root]
 
-                
-
                 # upload the current directory's child directories
                 for child_dir in child_dirs:
                     child_dir_pennsieve = current_folder.create_collection(child_dir)
-                    # store the folders by their name so they can be accessed when we 
+                    # store the folders by their name so they can be accessed when we
                     # need to upload their children folders and files into their directory
                     folders[child_dir] = child_dir_pennsieve
 
-                
                 # inform the user the files for the current folder are being uploaded
-               
 
                 # upload the current directories files in a bucket
                 if len(files) > BUCKET_SIZE:
@@ -1073,7 +1069,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # clear the pennsieve queue for successive batches
                         clear_queue()
 
-                        # TODO: Construct path in dictionary for better information messages 
+                        # TODO: Construct path in dictionary for better information messages
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
                             % (current_folder, bfdataset)
@@ -1089,7 +1085,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         start_index = end_index + 1
                 else:
                     if len(files) > 0:
-                        # TODO: Construct path in dictionary for better information messages 
+                        # TODO: Construct path in dictionary for better information messages
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
                             % (current_folder, bfdataset)
@@ -1100,7 +1096,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             # upload completed
             submitdataprogress = "Success: COMPLETED!"
             submitdatastatus = "Done"
-
 
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()

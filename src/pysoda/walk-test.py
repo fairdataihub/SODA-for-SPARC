@@ -14,7 +14,7 @@ norm_path = os.path.basename(os.path.normpath(path_dataset))
 
 print(norm_path)
 
-# create the root directory on Pennsieve and store it for later 
+# create the root directory on Pennsieve and store it for later
 root_folder_name = os.path.basename(norm_path)
 # root_pennsieve_folder = myds.create_collection(root_folder_name)
 folders[root_folder_name] = "Root Pennsieve Folder"
@@ -29,10 +29,9 @@ for dirpath, child_dirs, files in os.walk(path_dataset, topdown=True):
     # upload the current directory's child directories
     for child_dir in child_dirs:
         # child_dir_pennsieve = current_folder.create_collection(child_dir)
-        # store the folders by their name so they can be accessed when we 
+        # store the folders by their name so they can be accessed when we
         # need to upload their children folders and files into their directory
         folders[child_dir] = "A child folder"
-
 
     print("About to do child foldersa")
 
@@ -57,18 +56,18 @@ for dirpath, child_dirs, files in os.walk(path_dataset, topdown=True):
             # get the 750 files between startIndex and endIndex (inclusive of endIndex)
             upload_bucket = files[start_index : end_index + 1]
 
-                # clear the pennsieve queue for successive batches
-                # clear_queue()
+            # clear the pennsieve queue for successive batches
+            # clear_queue()
 
-                # upload the files
-                # bf_folder.upload(*upload_bucket)
+            # upload the files
+            # bf_folder.upload(*upload_bucket)
             print("Bucketing these files: ", dirpath, upload_bucket)
             print("\n")
 
-                # update the global that tracks the amount of files that have been successfully uploaded
-                # main_curation_uploaded_files += BUCKET_SIZE
+            # update the global that tracks the amount of files that have been successfully uploaded
+            # main_curation_uploaded_files += BUCKET_SIZE
 
-                # update the start_index to end_index + 1
+            # update the start_index to end_index + 1
             start_index = end_index + 1
     else:
         if len(files) > 0:
@@ -77,7 +76,6 @@ for dirpath, child_dirs, files in os.walk(path_dataset, topdown=True):
         else:
             print("No files to upload in this directory")
             print("\n")
-
 
 
 print("Done")
