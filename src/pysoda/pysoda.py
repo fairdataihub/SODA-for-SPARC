@@ -1097,7 +1097,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         for file in files:
                             file_path = join(dirpath, file)
                             current_folder.upload(file_path)
-                        
+
                         uploaded_files += len(files)
 
             # upload completed
@@ -1133,12 +1133,11 @@ def bf_submit_dataset_upload_details():
     if start_submit == 1:
         uploaded_file_size = bf_dataset_size() - initial_bfdataset_size_submit
     else:
-        # upload hasn't started yet no details 
+        # upload hasn't started yet no details
         return (0, 0)
-    
-    
+
     return (uploaded_files, uploaded_file_size)
-    
+
 
 def submit_dataset_progress():
     """
