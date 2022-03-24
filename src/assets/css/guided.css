@@ -595,7 +595,12 @@
 
 .guided--radio-button {
   margin: 5px 7px !important;
+  transition: all 0.2s ease-in-out;
 }
+.guided--radio-button:hover {
+  transform: scale(1.1);
+}
+
 .guided--radio-button.selected {
   opacity: 1 !important;
 }

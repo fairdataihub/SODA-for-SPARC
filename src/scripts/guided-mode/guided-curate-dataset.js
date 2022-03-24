@@ -264,6 +264,10 @@ const traverseToTab = (targetPageID) => {
     //Refresh select pickers so items can be selected
     $(".selectpicker").selectpicker("refresh");
   }
+
+  if (targetPageID === "guided-subjects-folder-tab") {
+    $("#guided-button-preview-folder-structure").show();
+  }
   let currentParentTab = CURRENT_PAGE.parent();
   let targetPage = $(`#${targetPageID}`);
   let targetPageParentTab = targetPage.parent();
@@ -1439,8 +1443,9 @@ $("#guided-button-no-docs-data").on("click", () => {
   }
 });
 
-/*$("#guided-dataset-name-input").val("test " + makeid(5));
-$("#guided-dataset-subtitle-input").val("test " + makeid(5));*/
+$("#guided-dataset-name-input").val("test " + makeid(5));
+$("#guided-dataset-subtitle-input").val("test " + makeid(5));
+tempGuidedCroppedBannerImagePath = "placeholder";
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
@@ -1640,9 +1645,11 @@ $(document).ready(() => {
   /////////////////////////////////////////////////////////
   //////////       GUIDED jsTree FUNCTIONS       //////////
   /////////////////////////////////////////////////////////
+
   var guidedJstreePreview = document.getElementById(
     "guided-div-dataset-tree-preview"
   );
+
   $(guidedJstreePreview).jstree({
     core: {
       check_callback: true,
@@ -1706,19 +1713,21 @@ $(document).ready(() => {
       },
     },
   });
+
   $(guidedJstreePreview).on("open_node.jstree", function (event, data) {
     data.instance.set_type(data.node, "folder open");
   });
   $(guidedJstreePreview).on("close_node.jstree", function (event, data) {
     data.instance.set_type(data.node, "folder closed");
   });
-  function guidedShowTreePreview(new_dataset_name) {
+
+  function guidedShowTreePreview(new_dataset_name, targetElement) {
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
-    if (manifestFileCheck.checked) {
+    /*if (manifestFileCheck.checked) {
       addManifestFilesForTreeView();
     } else {
       revertManifestForTreeView();
-    }
+    }*/
 
     var guidedJsTreePreviewData = create_child_node(
       datasetStructureJSONObj,
@@ -1731,9 +1740,8 @@ $(document).ready(() => {
       "",
       "preview"
     );
-    $(guidedJstreePreview).jstree(true).settings.core.data =
-      guidedJsTreePreviewData;
-    $(guidedJstreePreview).jstree(true).refresh();
+    $(targetElement).jstree(true).settings.core.data = guidedJsTreePreviewData;
+    $(targetElement).jstree(true).refresh();
   }
   /////////////////////////////////////////////////////////
   /////////  PENNSIEVE METADATA BUTTON HANDLERS   /////////
@@ -2043,6 +2051,87 @@ $(document).ready(() => {
     const result = await Promise.allSettled(promises);
     return result;
   };
+  $("#guided-button-preview-folder-structure").on("click", () => {
+    Swal.fire({
+      title: "Dataset tree preview",
+      html: `<div id="foo"></div>`,
+    });
+    var folderStructurePreview = document.getElementById("foo");
+
+    $(folderStructurePreview).jstree({
+      core: {
+        check_callback: true,
+        data: {},
+      },
+      plugins: ["types"],
+      types: {
+        folder: {
+          icon: "fas fa-folder fa-fw",
+        },
+        "folder open": {
+          icon: "fas fa-folder-open fa-fw",
+        },
+        "folder closed": {
+          icon: "fas fa-folder fa-fw",
+        },
+        "file xlsx": {
+          icon: "./assets/img/excel-file.png",
+        },
+        "file xls": {
+          icon: "./assets/img/excel-file.png",
+        },
+        "file png": {
+          icon: "./assets/img/png-file.png",
+        },
+        "file PNG": {
+          icon: "./assets/img/png-file.png",
+        },
+        "file pdf": {
+          icon: "./assets/img/pdf-file.png",
+        },
+        "file txt": {
+          icon: "./assets/img/txt-file.png",
+        },
+        "file csv": {
+          icon: "./assets/img/csv-file.png",
+        },
+        "file CSV": {
+          icon: "./assets/img/csv-file.png",
+        },
+        "file DOC": {
+          icon: "./assets/img/doc-file.png",
+        },
+        "file DOCX": {
+          icon: "./assets/img/doc-file.png",
+        },
+        "file docx": {
+          icon: "./assets/img/doc-file.png",
+        },
+        "file doc": {
+          icon: "./assets/img/doc-file.png",
+        },
+        "file jpeg": {
+          icon: "./assets/img/jpeg-file.png",
+        },
+        "file JPEG": {
+          icon: "./assets/img/jpeg-file.png",
+        },
+        "file other": {
+          icon: "./assets/img/other-file.png",
+        },
+      },
+    });
+    $(folderStructurePreview).on("open_node.jstree", function (event, data) {
+      data.instance.set_type(data.node, "folder open");
+    });
+    $(folderStructurePreview).on("close_node.jstree", function (event, data) {
+      data.instance.set_type(data.node, "folder closed");
+    });
+    guidedShowTreePreview(
+      sodaJSONObj["digital-metadata"]["name"],
+      folderStructurePreview
+    );
+  });
 
   //const add_dataset_permission = async();
 
@@ -3496,7 +3585,7 @@ $(document).ready(() => {
     //add a bootstrap loader to the next button
     $("#guided-next-button").html(
       `
-        <div class="spinner-border" role="status" style="height: 14px; width: 14px;">
+        <div class="spinner-border" role="status" style="height: 13px; width: 13px;">
         </div>
       `
     );
@@ -3655,7 +3744,10 @@ $(document).ready(() => {
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
       }
       if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
-        guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"]);
+        guidedShowTreePreview(
+          sodaJSONObj["digital-metadata"]["name"],
+          guidedJstreePreview
+        );
       }
 
       console.log(sodaJSONObj);
