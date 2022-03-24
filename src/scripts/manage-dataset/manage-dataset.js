@@ -2437,14 +2437,7 @@ $("#button-submit-dataset").click(async () => {
           defaultBfDatasetId
         );
 
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          " - size",
-          "Size",
-          totalFileSize
-        );
+        
 
         ipcRenderer.send(
           "track-event",
@@ -2627,6 +2620,7 @@ $("#button-submit-dataset").click(async () => {
         uploadedFiles = res[0];
         uploadedFilesSize = res[1];
 
+        // track the amount of files uploaded for the current bucket 
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -2636,25 +2630,15 @@ $("#button-submit-dataset").click(async () => {
           uploadedFiles
         );
 
-        // use the session id as the label -- this will help with aggregating the number of files uploaded per session
         ipcRenderer.send(
           "track-event",
           "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Number of Files",
-          `${datasetUploadSession.id}`,
-          uploadedFiles
-        );
-
-        // use the session id as the label -- this will help with aggregating the size of the given upload session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE +
-          " - Step 7 - Generate - Dataset - Size",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          " - size",
           `${datasetUploadSession.id}`,
           uploadedFilesSize
         );
+        
       }
     })
 
