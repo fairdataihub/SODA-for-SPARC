@@ -1,12 +1,10 @@
 import os
 
-
 BUCKET_SIZE = 500
 
+#   "C:\\Users\\CMarroquin\\status-barr-local"
 # top down scan through dataset to upload each file/folder
-for root, dirs, files in os.walk(
-    "C:\\Users\\CMarroquin\\status-barr-local", topdown=True
-):
+for root, dirs, files in os.walk("/Users/aaronm/Desktop/react-electron", topdown=True):
     print("Root is:", root)
     print("Dirs are: ", dirs)
     print("files are: ", files)
@@ -14,10 +12,9 @@ for root, dirs, files in os.walk(
     # upload the directories
     print("Uploading the following directories non-recursively: ", dirs)
 
-    if len(files) > 500:
+    if len(files) > BUCKET_SIZE:
         # bucket the upload
-        start_index = 0
-        end_index = 499
+        start_index = end_index =  0
         # store the aggregate of the amount of files in the folder
         total_files = len(files)
 
@@ -54,3 +51,5 @@ for root, dirs, files in os.walk(
         else:
             print("No files to upload in this directory")
             print("\n")
+
+

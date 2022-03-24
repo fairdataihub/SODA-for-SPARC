@@ -1019,12 +1019,20 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         def upload_dataset_in_buckets(): 
             # TODO: upload root 
 
+            # upload the directories  TODO: Bucket here too?
+            myds = bf.get_dataset(bfdataset)
+
             # top down scan through dataset to upload each file/folder
             for root, dirs, files in os.walk(pathdataset, topdown=True):
+
+                # upload the directories to the dataset
+                myds.create_collection(root)
+
+
                 if len(files) > BUCKET_SIZE:
                     # upload the files into the current directory in buckets
-                    
-                # upload the directories  TODO: Bucket here too?
+                    print("Stuff")
+           
                 
 
 
@@ -1033,7 +1041,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         initial_bfdataset_size_submit = bf_dataset_size()
         start_submit = 1
         gev = []
-        gev.append(gevent.spawn(calluploadfolder))
+        gev.append(gevent.spawn(upload_dataset_in_buckets))
         gevent.sleep(0)
         gevent.joinall(gev)
         submitdatastatus = "Done"
