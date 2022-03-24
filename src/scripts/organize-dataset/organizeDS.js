@@ -7,11 +7,11 @@ function showTooltips(ev) {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
+      popup: "animate__animated animate__fadeInDown animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate_fastest",
-    },
+      popup: "animate__animated animate__fadeOutUp animate_fastest"
+    }
   });
 }
 
@@ -109,11 +109,11 @@ function delFolder(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       });
       return;
     }
@@ -125,11 +125,11 @@ function delFolder(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       });
       return;
     }
@@ -146,11 +146,11 @@ function delFolder(
       backdrop: "rgba(0,0,0, 0.4)",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+        popup: "animate__animated animate__zoomOut animate__faster"
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         let itemToRestore = itemToDelete;
@@ -171,11 +171,11 @@ function delFolder(
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
+                popup: "animate__animated animate__zoomIn animate__faster"
               },
               hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
+                popup: "animate__animated animate__zoomOut animate__faster"
+              }
             });
             return;
           }
@@ -246,11 +246,11 @@ function delFolder(
         cancelButtonText: "Cancel",
         reverseButtons: reverseSwalButtons,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           var filtered = getGlobalPath(organizeCurrentLocation);
@@ -315,11 +315,11 @@ function delFolder(
         cancelButtonText: "Cancel",
         reverseButtons: reverseSwalButtons,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           /// get current location of folders or files
@@ -387,7 +387,7 @@ function checkValidRenameInput(
     ".nii.gz",
     ".mgh.gz",
     ".tar.gz",
-    ".bcl.gz",
+    ".bcl.gz"
   ];
 
   var duplicate = false;
@@ -421,7 +421,7 @@ function checkValidRenameInput(
         icon: "error",
         text: `The file name: ${newName} already exists, please rename to a different name!`,
         backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
+        heightAuto: false
       });
       newName = "";
       // log the error
@@ -451,7 +451,7 @@ function checkValidRenameInput(
         icon: "error",
         text: `The folder name: ${newName} already exists, please rename to a different name!`,
         backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
+        heightAuto: false
       });
       newName = "";
 
@@ -498,7 +498,7 @@ function renameFolder(
     ".nii.gz",
     ".mgh.gz",
     ".tar.gz",
-    ".bcl.gz",
+    ".bcl.gz"
   ];
 
   if (highLevelFolders.includes(currentName)) {
@@ -537,11 +537,11 @@ function renameFolder(
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+        popup: "animate__animated animate__zoomOut animate__faster"
+      }
     });
   } else {
     Swal.fire({
@@ -557,10 +557,10 @@ function renameFolder(
       cancelButtonText: "Cancel",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
+        popup: "animate__animated animate__fadeInDown animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
+        popup: "animate__animated animate__fadeOutUp animate__faster"
       },
       didOpen: () => {
         $(".swal2-input").attr("id", "rename-folder-input");
@@ -582,7 +582,7 @@ function renameFolder(
       didDestroy: () => {
         $(".swal2-confirm").attr("id", "");
         $(".swal2-input").attr("id", "");
-      },
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         var returnedName = checkValidRenameInput(
@@ -601,11 +601,11 @@ function renameFolder(
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showClass: {
-              popup: "animate__animated animate__fadeInDown animate__faster",
+              popup: "animate__animated animate__fadeInDown animate__faster"
             },
             hideClass: {
-              popup: "animate__animated animate__fadeOutUp animate__faster",
-            },
+              popup: "animate__animated animate__fadeOutUp animate__faster"
+            }
           });
 
           // log the success
@@ -723,7 +723,7 @@ function loadFileFolder(myPath) {
           "xls",
           "csv",
           "png",
-          "PNG",
+          "PNG"
         ].includes(extension)
       ) {
         extension = "other";
@@ -853,10 +853,10 @@ function showParentSwal(duplicateArray) {
     showCloseButton: true,
     customClass: "wide-swal-auto",
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
+      popup: "animate__animated animate__zoomIn animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
+      popup: "animate__animated animate__zoomOut animate__faster"
     },
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
@@ -876,7 +876,7 @@ function showParentSwal(duplicateArray) {
       newList +
       `')">Import Duplicates</button>
       <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-      </div>`,
+      </div>`
   });
 }
 
@@ -960,8 +960,8 @@ function handleDuplicateImports(btnId, duplicateArray) {
         icon: {
           className: "fas fa-check-circle",
           tagName: "i",
-          color: "white",
-        },
+          color: "white"
+        }
         //duration: 3000,
       },
       {
@@ -970,10 +970,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
         icon: {
           className: "fas fa-times-circle",
           tagName: "i",
-          color: "white",
-        },
-      },
-    ],
+          color: "white"
+        }
+      }
+    ]
   });
 
   //SKIP OPTION
@@ -1011,10 +1011,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
       focusConfirm: false,
       showCancelButton: true,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate__animated animate__zoomOut animate__faster"
       },
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -1068,7 +1068,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             confirm_button[0].disabled = true;
           }
         });
-      },
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         let container = document.getElementById("container");
@@ -1136,10 +1136,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
           showCloseButton: true,
           customClass: "wide-swal-auto",
           showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
+            popup: "animate__animated animate__zoomIn animate__faster"
           },
           hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
+            popup: "animate__animated animate__zoomOut animate__faster"
           },
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -1159,7 +1159,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             newList +
             `')">Import Duplicates</button>
             <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-            </div>`,
+            </div>`
         });
       }
     });
@@ -1196,10 +1196,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
         showCancelButton: true,
         backdrop: "rgba(0, 0, 0, 0.4)",
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate_animated animate_zoomout animate__faster",
+          popup: "animate_animated animate_zoomout animate__faster"
         },
         html: container,
         didOpen: () => {
@@ -1367,7 +1367,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   folders: myPath["folders"][tempFile[index]].folders,
                   path: myPath["folders"][tempFile[index]].path,
                   type: "local",
-                  action: ["new", "renamed"],
+                  action: ["new", "renamed"]
                 };
                 listItems(myPath, "#items");
                 getInFolder(
@@ -1402,7 +1402,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   type: "local",
                   description: "",
                   "additional-metadata": "",
-                  action: ["new", "renamed"],
+                  action: ["new", "renamed"]
                 };
                 var appendString =
                   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
@@ -1420,7 +1420,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
               }
             }
           }
-        },
+        }
       })
       .then((result) => {
         if (result.isConfirmed) {
@@ -1445,7 +1445,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
           }
           toastUpdate.open({
             type: "file_updated",
-            message: "Successfully Imported and Renamed!",
+            message: "Successfully Imported and Renamed!"
           });
         }
         if (!result.isConfirmed) {
@@ -1493,10 +1493,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
       cancelButtonText: "Cancel",
       showCancelButton: true,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate__animated animate__zoomOut animate__faster"
       },
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -1550,7 +1550,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             confirm_button[0].disabled = true;
           }
         });
-      },
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         container = document.getElementById("container");
@@ -1577,7 +1577,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 folders: myPath["folders"][tempFile[index]].folders,
                 path: temp[index],
                 type: "local",
-                action: ["new", "updated"],
+                action: ["new", "updated"]
               };
               for (let j = 0; j < nodes.length; j++) {
                 if (nodes[j].innerText === fileName) {
@@ -1606,7 +1606,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 type: "local",
                 description: "",
                 "additional-metadata": "",
-                action: ["new", "updated"],
+                action: ["new", "updated"]
               };
               for (let j = 0; j < nodes.length; j++) {
                 if (nodes[j].innerText === fileName) {
@@ -1646,18 +1646,18 @@ function handleDuplicateImports(btnId, duplicateArray) {
           if (removeExt === -1) {
             toastUpdate.open({
               type: "file_updated",
-              message: "Updated Folder(s)",
+              message: "Updated Folder(s)"
             });
           } else {
             toastUpdate.open({
               type: "file_updated",
-              message: "Updated File(s)",
+              message: "Updated File(s)"
             });
           }
         } else {
           toastUpdate.open({
             type: "no_selection",
-            message: "No selection was made",
+            message: "No selection was made"
           });
         }
       }
@@ -1691,7 +1691,7 @@ async function addFilesfunction(
         icon: "error",
         html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
+        backdrop: "rgba(0,0,0, 0.4)"
       });
       // log the error
       logCurationForAnalytics(
@@ -1710,7 +1710,7 @@ async function addFilesfunction(
         //regular files object key with path, and basename
         regularFiles[path.parse(fileName).base] = {
           path: fileName,
-          basename: path.parse(fileName).base,
+          basename: path.parse(fileName).base
         };
       } else {
         //check file name in key of regular files (search for duplicate)
@@ -1728,7 +1728,7 @@ async function addFilesfunction(
             //not in there or regular files so store?
             regularFiles[path.parse(fileName).base] = {
               path: fileName,
-              basename: path.parse(fileName).base,
+              basename: path.parse(fileName).base
             };
           }
         }
@@ -1760,7 +1760,7 @@ async function addFilesfunction(
                 //store in regular files
                 regularFiles[path.parse(fileName).base] = {
                   path: fileName,
-                  basename: path.parse(fileName).base,
+                  basename: path.parse(fileName).base
                 };
               }
             }
@@ -1813,10 +1813,10 @@ async function addFilesfunction(
       showCloseButton: true,
       customClass: "wide-swal-auto",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate__animated animate__zoomOut animate__faster"
       },
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -1832,7 +1832,7 @@ async function addFilesfunction(
         <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing ${html_word}</button>
         <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
         <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-        </div>`,
+        </div>`
     });
     //return console.log("this is when there are duplicates");
   }
@@ -1849,7 +1849,7 @@ async function addFilesfunction(
         type: "local",
         description: "",
         "additional-metadata": "",
-        action: ["new"],
+        action: ["new"]
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(
@@ -1883,33 +1883,7 @@ async function addFilesfunction(
 const scroll_box = document.querySelector("#organize-dataset-tab");
 const item_box = document.querySelector("#items");
 const dataset_path = document.getElementById("input-global-path");
-
-observeElement(dataset_path, "value", function () {
-  console.log(dataset_path.value);
-  if (dataset_path.value === "My_dataset_folder/") {
-    console.log("removing");
-    scroll_box.removeEventListener("scroll", function () {}, true);
-  }
-  if (dataset_path.value != "My_dataset_folder/") {
-    console.log("got it");
-    if (item_box.offsetHeight != 420) {
-      // $("#items").empty();
-      var filtered = getGlobalPath(
-        document.getElementById("input-global-path")
-      );
-      var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-      amount = 400;
-      listItems(myPath, "items", 400);
-      getInFolder(
-        ".single-item",
-        "#items",
-        dataset_path,
-        datasetStructureJSONObj
-      );
-      beginScrollListen();
-    }
-  }
-});
+const loading_items_spinner = document.getElementById("items_loading_container");
 
 function observeElement(element, property, callback, delay = 0) {
   let elementPrototype = Object.getPrototypeOf(element);
@@ -1930,94 +1904,38 @@ function observeElement(element, property, callback, delay = 0) {
           setTimeout(callback.bind(this, oldValue, newValue), delay);
         }
         return newValue;
-      },
+      }
     });
   }
 }
 
-//add certain amount of items
-already_created_elem = [];
-let listed_count = 0;
-let start = 0;
-let preprended_items = 0;
-async function add_items_to_view(list, amount_req, reset) {
-  let start_time = performance.now();
-  console.log("items so far: " + listed_count);
-  console.log("total items to show" + already_created_elem.length);
-  if (already_created_elem.length === 0) {
-    listed_count = already_created_elem.length;
+function check_dataset_value() {
+  console.log(dataset_path.value);
+  if (dataset_path.value === "My_dataset_folder/") {
+    // console.log("removing");
+    scroll_box.removeEventListener("scroll", lazyLoad, true);
   }
-  start = listed_count;
-  listed_count = 0;
-  if (
-    reset === true ||
-    document.getElementById("input-global-path").value === "My_dataset_folder/"
-  ) {
-    $("#items").empty();
-    start = 0;
-  }
-  if (item_box.lastChild != undefined) {
-    if (item_box.lastChild.id === "items_container") {
-      item_box.removeChild(item_box.lastChild);
+  if (dataset_path.value != "My_dataset_folder/") {
+    if (item_box.offsetHeight != 420) {
+      // $("#items").empty();
+      var filtered = getGlobalPath(
+        document.getElementById("input-global-path")
+      );
+      var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+      amount = 400;
+      listItems(myPath, "items", 400);
+      getInFolder(
+        ".single-item",
+        "#items",
+        dataset_path,
+        datasetStructureJSONObj
+      );
+      beginScrollListen();
     }
   }
-  // let item_select = 400;
-  // let derender_count = amount_req / 400;
-  console.log("amount requested is: " + amount_req);
-  //every 1200 items remove 400
-  //1200 - 400-> 800
-  //2400 - 800 -> 1600
-  //4800 - 1200 -> 3600
-  //6000 - 1600 -> 5400
-  //6400 - 2000 -> 4400
-  uiItems = "#items";
-  already_created_elem = list[0].concat(list[1]);
-  let load_spinner = `
-  <div id="items_container">
-    <div id="item_load" class="ui medium active inline loader icon-wrapper">
-    </div>
-  </div>`;
-
-  // $(uiItems).empty();
-  //% 12
-  let elements_req = amount_req / 100;
-  console.log("listed count is not >= 8 apparently: " + listed_count);
-
-  if (elements_req % 12 === 0) {
-    // start = elements_req / 3 + 2;
-    //remove first 600 elements
-    preprended_items += 6;
-
-    let element_items = item_box.children;
-    let remove = 600;
-    for (let i = 0; i < remove; i++) {
-      console.log("removing element: " + i);
-      console.log(element_items[0]);
-      element_items[0].remove();
-    }
-    $(uiItems).prepend(load_spinner);
-  }
-  console.log("start is at: " + start);
-  for (let i = start; i < elements_req; i++) {
-    if (i < already_created_elem.length) {
-      console.log("placing array element: " + i);
-      $(uiItems).append(already_created_elem[i]);
-      listed_count += 1;
-    } else {
-      break;
-    }
-  }
-  listed_count += start;
-  start = listed_count;
-  console.log("listed count: " + listed_count);
-  if ($(uiItems).children().length >= 400) {
-    $(uiItems).append(load_spinner);
-  }
-  let end_time = performance.now();
-  console.log(
-    `Duration of add_items function: ${end_time - start_time} milliseconds`
-  );
 }
+observeElement(dataset_path, "value", check_dataset_value);
+
 
 var amount = 400;
 const styles = ["color: blue", "background: none"].join(";");
@@ -2031,63 +1949,64 @@ function beginScrollListen() {
 }
 
 function lazyLoad() {
-  console.log("monitoring scroll position: %c%s", styles, scroll_box.scrollTop);
+  // console.log("monitoring scroll position: %c%s", styles, scroll_box.scrollTop);
+  console.log("monitoring");
 
-  //position to monitor 254
   let total_items = already_created_elem.length;
-  // console.log(scroll_box.scrollTop + 260);
-  // console.log(item_box.offsetHeight);
-
-  //default height of item box is 420 px meaning not overflow
-  //lazy load not needed (turn off event listener)
+  //item_box height is at 420 when there is no overflow
   if (item_box.offsetHeight === 420) {
-    console.log("item_box is size 420");
     scroll_box.removeEventListener("scroll", lazyLoad);
     amount = 400;
   }
 
+  //load spinner is prepended to beginning to elements if any de-rendered
   if (item_box.children[0].id === "items_container") {
-    console.log("we have preprended the load spinner");
     if (scroll_box.scrollTop < 254) {
-      //insert previous elements
+      //monitors when user scrolls back up to prepend elements
       let array_select = preprended_items - 1;
+      let remove_limit = 6; //only prepend 600 elements at a time
       let load_spinner = `
       <div id="items_container">
         <div id="item_load" class="ui medium active inline loader icon-wrapper">
         </div>
       </div>`;
-      console.log("here we will preprend the initial elements");
-      console.log(array_select);
-      item_box.children[0].remove();
-      let remove_limit = 6;
+      console.log("here we will preprend this many elements: " + preprended_items);
+
+      item_box.children[0].remove(); //remove loading spinner
+      //add elements back to top of item_box
       for (let i = 0; i < remove_limit; i++) {
-        console.log(array_select);
-        $("#items").prepend(already_created_elem[array_select]);
+        $(uiItems).prepend(already_created_elem[array_select]);
         array_select--;
       }
       array_select += 1;
-      console.log("this is what array_select is after loop: " + array_select);
 
       if (array_select != 0) {
-        $("#items").prepend(load_spinner);
+        $(uiItems).prepend(load_spinner);
       } else {
-        //we have add all files from beginning
+        //we have re-rendered all files from beginning
         if (item_box.children[0].id === "items_container") {
           item_box.children[0].remove();
         }
       }
+
       //then remove 600 from the end
-      console.log("removing loading icon at the end");
       if (item_box.lastChild.id === "items_container") {
+        console.log("removing loading icon at the end");
         item_box.lastChild.remove();
       }
-      console.log("removing 600 elements at the end");
-      for (let i = 0; i < 602; i++) {
-        console.log("removing element at the end: " + i);
+      console.log("removing 800 elements at the end");
+      for (let i = 0; i < 804; i++) {
         item_box.lastChild.remove();
       }
-      listed_count -= 6;
-      start -= 6;
+      //reset placement of already_.. array
+      listed_count -= 8;
+      start -= 8;
+      amount -= 800;
+      preprended_items -= 6;
+      console.log("we will start on position: " + start);
+      console.log("listed count is also at: " + listed_count);
+      console.log("this is the amount we will be requesting: " + amount);
+      //attach loading spinner at the end if user decides to scroll back down
       $("#items").append(load_spinner);
     }
   }
@@ -2095,9 +2014,9 @@ function lazyLoad() {
   //all items have been fully rendered so remove event listener
   if (listed_count === total_items) {
     console.log(
-      "total rendered matches :" +
+      "total rendered matches: " +
         listed_count +
-        " with total items :" +
+        " with total items: " +
         total_items
     );
     scroll_box.removeEventListener("scroll", lazyLoad);
@@ -2110,6 +2029,7 @@ function lazyLoad() {
   } else {
     //more items to load once user scrolls close to end
     if (scroll_box.scrollTop + 280 > item_box.offsetHeight) {
+
       // scroll_box.removeEventListener("scroll", lazyLoad);
       //check how many elements have been created to derender
       console.log("initial amount" + amount);
@@ -2123,6 +2043,7 @@ function lazyLoad() {
         );
         amount += 400;
         await listItems(myPath, "items", amount);
+        // add_items_to_view(already_created_elem, 400);
         await getInFolder(
           ".single-item",
           "#items",
@@ -2136,6 +2057,84 @@ function lazyLoad() {
       });
     }
   }
+}
+
+//add certain amount of items
+already_created_elem = [];
+let listed_count = 0;
+let start = 0;
+let preprended_items = 0;
+async function add_items_to_view(list, amount_req, reset) {
+  //every 1200 items remove 400
+  //1200 - 400-> 800
+  //2400 - 800 -> 1600
+  //4800 - 1200 -> 3600
+  //6000 - 1600 -> 5400
+  //6400 - 2000 -> 4400
+
+  let start_time = performance.now();
+  uiItems = "#items";
+  let elements_req = amount_req / 100;  //array stores 100 elements per index
+  let load_spinner = `
+  <div id="items_container">
+    <div id="item_load" class="ui medium active inline loader icon-wrapper">
+    </div>
+  </div>`;
+  if (already_created_elem.length === 0) {
+    listed_count = already_created_elem.length;
+  }
+  start = listed_count;
+  listed_count = 0;
+  if (
+    reset === true ||
+    dataset_path === "My_dataset_folder/"
+  ) {
+    $(uiItems).empty();
+    start = 0;
+  }
+
+  //remove loading spinner before adding more files
+  if (item_box.lastChild != undefined) {
+    if (item_box.lastChild.id === "items_container") {
+      item_box.removeChild(item_box.lastChild);
+    }
+  }
+  //join together folders and files into one array
+  already_created_elem = list[0].concat(list[1]);
+
+  if (elements_req % 12 === 0) {
+    //remove first 600 elements
+    preprended_items += 6;
+    preprended_items = preprended_items + (elements_req % 12);
+    let element_items = item_box.children;
+    //always remove 600 plus the extra before the next set of 12 (0-1100 items)
+    let remove = 600 + ((elements_req % 12) * 100);
+
+    console.log("removing this many elements from the beginning: " + remove);
+    for (let i = 0; i < remove; i++) {
+      element_items[0].remove();
+    }
+    $(uiItems).prepend(load_spinner);
+  }
+  console.log("will begin adding elements from position: " + start);
+  for (let i = start; i < elements_req; i++) {
+    if (i < already_created_elem.length) {
+      $(uiItems).append(already_created_elem[i]);
+      listed_count += 1;
+    } else {
+      break;
+    }
+  }
+  listed_count += start;
+  start = listed_count;
+  console.log("listed count after appending is at: " + listed_count);
+  if ($(uiItems).children().length >= 400) {
+    $(uiItems).append(load_spinner);
+  }
+  let end_time = performance.now();
+  console.log(
+    `Duration of add_items function: ${end_time - start_time} milliseconds`
+  );
 }
 
 ///// function to load details to show in display once

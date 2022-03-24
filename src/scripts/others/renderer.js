@@ -4666,6 +4666,7 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
     //   },
     // });
     //waiting for add files to be completed
+    loading_items_spinner.style.display = "block";
     await addFilesfunction(
       path,
       myPath,
@@ -4674,6 +4675,7 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
       ".single-item",
       datasetStructureJSONObj
     );
+    loading_items_spinner.style.display = "none";
   }
 });
 

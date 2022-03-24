@@ -1456,3 +1456,11 @@ button[data-id="bf_list_users_pi"] {
   justify-content: center;
   margin: 10px;
 }
+
+#items_loading_container {
+  position: absolute;
+  left: 89px;
+  bottom: 69px;
+  margin: 10px;
+  display: none;
+}
