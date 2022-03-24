@@ -980,8 +980,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         ## check if agent is running in the background
         agent_running()
 
-        # upload 500 files at a time per folder    
-        BUCKET_SIZE = 500 
+        # upload 500 files at a time per folder
+        BUCKET_SIZE = 500
 
         def calluploadfolder():
             try:
@@ -1015,9 +1015,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             except Exception as e:
                 raise e
 
-
-        def upload_dataset_in_buckets(): 
-            # TODO: upload root 
+        def upload_dataset_in_buckets():
+            # TODO: upload root
 
             # upload the directories  TODO: Bucket here too?
             myds = bf.get_dataset(bfdataset)
@@ -1028,13 +1027,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 # upload the directories to the dataset
                 myds.create_collection(root)
 
-
                 if len(files) > BUCKET_SIZE:
                     # upload the files into the current directory in buckets
                     print("Stuff")
-           
-                
-
 
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()

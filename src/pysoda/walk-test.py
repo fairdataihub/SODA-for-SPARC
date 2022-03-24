@@ -14,7 +14,7 @@ for root, dirs, files in os.walk("/Users/aaronm/Desktop/react-electron", topdown
 
     if len(files) > BUCKET_SIZE:
         # bucket the upload
-        start_index = end_index =  0
+        start_index = end_index = 0
         # store the aggregate of the amount of files in the folder
         total_files = len(files)
 
@@ -51,5 +51,3 @@ for root, dirs, files in os.walk("/Users/aaronm/Desktop/react-electron", topdown
         else:
             print("No files to upload in this directory")
             print("\n")
-
-
