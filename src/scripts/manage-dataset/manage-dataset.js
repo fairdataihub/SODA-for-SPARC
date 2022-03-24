@@ -2414,6 +2414,26 @@ $("#button-submit-dataset").click(async () => {
           totalFileSize
         );
 
+        // even when the upload fails we want to know how many files were uploaded and their size 
+        // for the current upload session
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          ` - Number of Files`,
+          `${datasetUploadSession.id}`,
+          uploadedFiles += 250
+        );
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          " - size",
+          `${datasetUploadSession.id}`,
+          uploadedFilesSize
+        );
+
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
           behavior: "smooth",
           block: "start",
@@ -2437,8 +2457,8 @@ $("#button-submit-dataset").click(async () => {
           defaultBfDatasetId
         );
 
-        
 
+        // TODO: Remove?
         ipcRenderer.send(
           "track-event",
           "Success",
