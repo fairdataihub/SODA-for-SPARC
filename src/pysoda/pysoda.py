@@ -1045,7 +1045,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                     # need to upload their children folders and files into their directory
                     folders[child_dir] = child_dir_pennsieve
 
-
                 # upload the current directories files in a bucket
                 if len(files) > BUCKET_SIZE:
                     # bucket the upload
@@ -1076,7 +1075,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         )
 
                         # upload the files
-                        for file in upload_bucket: 
+                        for file in upload_bucket:
                             # add the Absolute path so the Agent can find the file
                             file_path = join(dirpath, file)
                             current_folder.upload(file_path)
@@ -1090,7 +1089,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 else:
                     if len(files) > 0:
                         clear_queue()
-                        # TODO: Construct path in dictionary for better information messages 
+                        # TODO: Construct path in dictionary for better information messages
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
                             % (current_folder, bfdataset)
