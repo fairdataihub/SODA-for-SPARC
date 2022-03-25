@@ -2627,7 +2627,6 @@ $("#button-submit-dataset").click(async () => {
   let uploadErrorChildren = document.querySelector("#para-progress-bar-error-status").childNodes
 
   const monitorBucketUpload = () => {
-    console.log("Interval happening")
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_bf_submit_dataset_upload_details", (err, res) => {
       // check if the amount of successfully uploaded files has increased
@@ -2662,7 +2661,6 @@ $("#button-submit-dataset").click(async () => {
 
       if (countDone > 1) {
         clearInterval(uploadDetailsTimer);
-        console.log("Interval Cleared")
       }
     }
   };
