@@ -1842,7 +1842,7 @@ def generate_dataset_locally(soda_json_structure):
 
     except Exception as e:
         raise e
-    
+
     # gev = []
     # gev.append(gevent.spawn(generate, soda_json_structure))
     # gevent.sleep(0)
