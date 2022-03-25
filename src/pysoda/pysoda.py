@@ -1080,7 +1080,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             current_folder.upload(file_path)
 
-
                         # update the global that tracks the amount of files that have been successfully uploaded
                         # for this upload session
                         uploaded_files += BUCKET_SIZE
