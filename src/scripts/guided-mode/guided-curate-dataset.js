@@ -1,6 +1,7 @@
 //Temp variables used for data storage until put into sodaJSONObj on next button press
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
+
 //Temp var used by guidedSaveBannerImage to hold the cropped image path
 //until it is passed into the sodaJSONObj
 let tempGuidedCroppedBannerImagePath = "";
@@ -4230,8 +4231,6 @@ $(document).ready(() => {
       });
     }
   });
-  //TODO
-  //MAYBE TRY CHANGING THE SELECTOR LOCATION FOR GUIDEDSUBMISSIONTAGSTAGIFY
   const validateCreateSubmissionMetadata = () => {
     if (
       $("#guided-submission-sparc-award").val().trim().length === 0 ||
