@@ -83,8 +83,8 @@ submitprintstatus = " "
 total_file_size = 1
 uploaded_file_size = 0
 uploaded_files = 0
-did_upload = False 
-did_fail = False 
+did_upload = False
+did_fail = False
 start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, "SODA", "SODA_metadata")
@@ -892,8 +892,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global myds
     global start_submit
     global initial_bfdataset_size_submit
-    global did_upload 
-    global did_fail 
+    global did_upload
+    global did_fail
 
     submitdataprogress = " "
     submitdatastatus = " "
@@ -902,14 +902,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     start_time_bf_upload = 0
     initial_bfdataset_size_submit = 0
     start_submit = 0
-    did_upload = False 
+    did_upload = False
 
     try:
         bf = Pennsieve(accountname)
     except Exception as e:
         submitdatastatus = "Done"
-        did_fail = True 
-        did_upload = False 
+        did_fail = True
+        did_upload = False
         error = "Error: Please select a valid Pennsieve account"
         raise Exception(error)
 
@@ -918,16 +918,16 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
         submitdatastatus = "Done"
-        did_fail = True 
-        did_upload = False 
+        did_fail = True
+        did_upload = False
         error = error + "Error: Please select a valid Pennsieve dataset" + "<br>"
         c += 1
 
     if not isdir(pathdataset):
         submitdatastatus = "Done"
         error = error + "Error: Please select a valid local dataset folder" + "<br>"
-        did_fail = True 
-        did_upload = False 
+        did_fail = True
+        did_upload = False
         c += 1
 
     if c > 0:
@@ -967,8 +967,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             error
             + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://github.com/bvhpatel/SODA/wiki/Issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
         )
-        did_fail = True 
-        did_upload = False 
+        did_fail = True
+        did_upload = False
         raise Exception(error)
 
     total_file_size = total_file_size - 1
@@ -979,16 +979,16 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error = (
             "Error: You don't have permissions for uploading to this Pennsieve dataset"
         )
-        did_fail = True 
-        did_upload = False 
+        did_fail = True
+        did_upload = False
         raise Exception(error)
 
     ## check if agent is installed
     try:
         validate_agent_installation(Settings())
     except AgentError:
-        did_fail = True 
-        did_upload = False 
+        did_fail = True
+        did_upload = False
         raise AgentError(
             "The Pennsieve agent is not installed on your computer. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions."
         )
@@ -1037,12 +1037,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             global submitdataprogress
             global submitdatastatus
             global uploaded_files
-            global did_upload 
+            global did_upload
 
-            # reset uploaded file counter 
+            # reset uploaded file counter
             uploaded_files = 0
 
-            # tells the front end if 
+            # tells the front end if
             did_upload = False
 
             myds = bf.get_dataset(bfdataset)
@@ -1152,7 +1152,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     except Exception as e:
         submitdatastatus = "Done"
-        did_fail = True 
+        did_fail = True
         raise e
 
 
@@ -1162,7 +1162,7 @@ def bf_submit_dataset_upload_details():
     Function frequently called by front end to help keep track of the amount of files that have
     been successfully uploaded to Pennsieve, and the size of the uploaded files
 
-    Return did_fail and did_upload to inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions 
+    Return did_fail and did_upload to inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions
     correctly
     """
     if start_submit == 1:
