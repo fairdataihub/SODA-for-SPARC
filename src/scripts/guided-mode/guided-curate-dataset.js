@@ -274,7 +274,13 @@ const traverseToTab = (targetPageID) => {
     );
     //Create a sodajson object property for each subject to store metadata from forms in
     for (let subject of subjectsArray) {
-      sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
+      //check to see if subject already has data in the sodajsonObj
+      if (
+        sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] ===
+        undefined
+      ) {
+        sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
+      }
     }
     renderSubjectsMetadataTable(subjectsArray);
   }
@@ -758,7 +764,6 @@ const renderSubjectsMetadataTable = (subjects) => {
           <button
             type="button"
             class="btn btn-primary btn-sm"
-            style="background-color: var(--color-light-green) !important"
             onclick="openCopySubjectMetadataPopup($(this))"
           >
             Copy metadata
@@ -3182,9 +3187,7 @@ $(document).ready(() => {
       );
     }
   };
-  $("#guided-generate-submission-file").on("click", () => {
-    guidedSaveSubmissionFile();
-  });
+
   function guidedGenerateRCFilesHelper(type) {
     var textValue = $(`#guided-textarea-create-${type}`).val().trim();
     if (textValue === "") {
@@ -3289,6 +3292,12 @@ $(document).ready(() => {
       }
     });
   }
+  $("#guided-generate-subjects-file").on("click", () => {
+    guidedSaveSubjectsFile();
+  });
+  $("#guided-generate-submission-file").on("click", () => {
+    guidedSaveSubmissionFile();
+  });
   $("#guided-generate-readme-file").on("click", () => {
     guidedSaveRCFile("readme");
   });

@@ -1199,7 +1199,6 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
       Swal.showLoading();
     },
   }).then((result) => {});
-
   client.invoke(
     "api_save_subjects_file",
     uploadBFBoolean,
