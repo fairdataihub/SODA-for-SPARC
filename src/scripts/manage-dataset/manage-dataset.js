@@ -2374,6 +2374,8 @@ $("#button-submit-dataset").click(async () => {
   // start the upload session
   datasetUploadSession.startSession();
 
+  console.log("Start of session here is the session id: ", datasetUploadSession.id)
+
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2448,28 +2450,6 @@ $("#button-submit-dataset").click(async () => {
               );
             }
           }
-        );
-
-
-
-        // even when the upload fails we want to know how many files were uploaded and their size
-        // for the current upload session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Files`,
-          `${datasetUploadSession.id}`,
-          (uploadedFiles += 250)
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          " - size",
-          `${datasetUploadSession.id}`,
-          uploadedFilesSize
         );
 
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
@@ -2667,25 +2647,62 @@ $("#button-submit-dataset").click(async () => {
       if (res[0] > uploadedFiles) {
         uploadedFiles = res[0];
         uploadedFilesSize = res[1];
+        let didFail = res[2]
+        let didUpload = res[3]
 
-        // track the amount of files uploaded for the current bucket
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Files`,
-          `${datasetUploadSession.id}`,
-          uploadedFiles
-        );
+        console.log("Did fail values are: ", didFail, didUpload)
 
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          " - size",
-          `${datasetUploadSession.id}`,
-          uploadedFilesSize
-        );
+        // failed to upload a bucket, but did upload some files
+        if (didFail && didUpload) {
+          // if there is no tracked upload size then no files were uploaded to Pennsieve
+          console.log("Local dataset failed to upload here is the session id: ", datasetUploadSession.id)
+          console.log("Local dataset failed to upload here is the amount of files we will log: ", uploadedFiles + 250)
+          console.log("Local dataset failed to upload here is the amount of files we will log: ", uploadedFilesSize)
+
+          // even when the upload fails we want to know how many files were uploaded and their size
+          // for the current upload session
+          // ipcRenderer.send(
+          //   "track-event",
+          //   "Success",
+          //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          //   ` - Number of Files`,
+          //   `${datasetUploadSession.id}`,
+          //   (uploadedFiles += 250)
+          // );
+
+          // ipcRenderer.send(
+          //   "track-event",
+          //   "Success",
+          //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          //   " - size",
+          //   `${datasetUploadSession.id}`,
+          //   uploadedFilesSize
+          // );
+
+          return 
+        }
+
+        console.log("Amount of files being uploaded: ", uploadedFiles)
+        console.log("Size of files: ", uploadedFilesSize)
+
+        // // track the amount of files uploaded for the current bucket
+        // ipcRenderer.send(
+        //   "track-event",
+        //   "Success",
+        //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+        //   ` - Number of Files`,
+        //   `${datasetUploadSession.id}`,
+        //   uploadedFiles
+        // );
+
+        // ipcRenderer.send(
+        //   "track-event",
+        //   "Success",
+        //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+        //   " - size",
+        //   `${datasetUploadSession.id}`,
+        //   uploadedFilesSize
+        // );
       }
     });
 
@@ -2698,7 +2715,7 @@ $("#button-submit-dataset").click(async () => {
       }
     }
   };
-  var uploadDetailsTimer = setInterval(monitorBucketUpload, 5000);
+  var uploadDetailsTimer = setInterval(monitorBucketUpload, 1000);
 });
 
 const addRadioOption = (ul, text, val) => {
