@@ -264,9 +264,10 @@ const traverseToTab = (targetPageID) => {
     //Refresh select pickers so items can be selected
     $(".selectpicker").selectpicker("refresh");
   }
-
   if (targetPageID === "guided-subjects-folder-tab") {
     $("#guided-button-preview-folder-structure").show();
+  }
+  if (targetPageID === "guided-create-subjects-metadata-tab") {
   }
   let currentParentTab = CURRENT_PAGE.parent();
   let targetPage = $(`#${targetPageID}`);
