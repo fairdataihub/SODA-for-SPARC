@@ -268,6 +268,7 @@ const traverseToTab = (targetPageID) => {
     $("#guided-button-preview-folder-structure").show();
   }
   if (targetPageID === "guided-create-subjects-metadata-tab") {
+    renderSubjectsMetadataTable();
   }
   let currentParentTab = CURRENT_PAGE.parent();
   let targetPage = $(`#${targetPageID}`);
@@ -619,6 +620,7 @@ const openSubjectFolder = (clickedStructureButton) => {
     datasetStructureJSONObj
   );
 };
+
 //TODO CLEAN UP
 const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
   datasetStructureJSONObj["folders"][highLevelFolderName] = {
@@ -720,6 +722,62 @@ const returnToTableFromFolderStructure = (clickedBackButton) => {
   traverseToTab(previousFolderStructurePage);
   $("#guided-footer-div").css("display", "flex");
   clickedBackButton.remove();
+};
+
+const renderSubjectsMetadataTable = () => {
+  //get subjects from the datasetStructureJSONObj
+  let subjectsToMap = Object.keys(
+    datasetStructureJSONObj.folders.primary.folders
+  );
+
+  let subjectMetadataRows = subjectsToMap.sort().map((subject, index) => {
+    let tableIndex = index + 1;
+    return `
+      <tr>
+        <td class="middle aligned collapsing text-center">
+          <span class="subject-metadata-table-index">${tableIndex}</span>
+        </td>
+        <td class="middle aligned subject-metadata-id-cell">
+          <span class="subject-metadata-id">${subject}</span>
+        </td>
+        <td class="middle aligned collapsing text-center" style="min-width: 130px">
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            style="background-color: var(--color-light-green) !important; margin-right: 5px"
+            onclick="openModifySubjectMetadataPage($(this))"
+          >
+            Add metadata
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            style="background-color: var(--color-light-green) !important"
+            onclick="openCopySubjectMetadataPopup($(this))"
+          >
+            Copy metadata
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+  let subjectsMetadataContainer = document.getElementById(
+    "subjects-metadata-table-container"
+  );
+  subjectsMetadataContainer.innerHTML = subjectMetadataRows.join("\n");
+};
+const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
+  let subjectMetadataID = clickedSubjectAddMetadataButton
+    .closest("tr")
+    .find(".subject-metadata-id")
+    .text();
+  traverseToTab("guided-subject-metadata-tab");
+  $("#guided-footer-div").hide();
+};
+const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {
+  swal.fire({
+    title: "Copy metadata from subject",
+  });
 };
 
 //Click handler that sets the Subject's name after enter press in the table input
@@ -1724,6 +1782,12 @@ $(document).ready(() => {
     console.log(guidedJsTreePreviewData);
     $(targetElement).jstree(true).settings.core.data = guidedJsTreePreviewData;
     $(targetElement).jstree(true).refresh();
+    //Open Jstree element with passed in folder node name
+    const openFolder = (folderName) => {
+      var tree = $("#jstree").jstree(true);
+      var node = tree.get_node(folderName);
+      tree.open_node(node);
+    };
   }
   /////////////////////////////////////////////////////////
   /////////  PENNSIEVE METADATA BUTTON HANDLERS   /////////
@@ -3580,12 +3644,8 @@ $(document).ready(() => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.attr("id");
     //add a bootstrap loader to the next button
-    $("#guided-next-button").html(
-      `
-        <div class="spinner-border" role="status" style="height: 13px; width: 13px;">
-        </div>
-      `
-    );
+    $("#guided-next-button").addClass("elastic loading");
+
     try {
       if (pageBeingLeftID === "guided-basic-description-tab") {
         let datasetName = document
@@ -3798,11 +3858,7 @@ $(document).ready(() => {
         });
       });
     }
-    $("#guided-next-button").html(
-      `
-        Next
-      `
-    );
+    $("#guided-next-button").removeClass("elastic loading");
   });
 
   //back button click handler
