@@ -2374,7 +2374,10 @@ $("#button-submit-dataset").click(async () => {
   // start the upload session
   datasetUploadSession.startSession();
 
-  console.log("Start of session here is the session id: ", datasetUploadSession.id)
+  console.log(
+    "Start of session here is the session id: ",
+    datasetUploadSession.id
+  );
 
   client.invoke(
     "api_bf_submit_dataset",
@@ -2647,17 +2650,26 @@ $("#button-submit-dataset").click(async () => {
       if (res[0] > uploadedFiles) {
         uploadedFiles = res[0];
         uploadedFilesSize = res[1];
-        let didFail = res[2]
-        let didUpload = res[3]
+        let didFail = res[2];
+        let didUpload = res[3];
 
-        console.log("Did fail values are: ", didFail, didUpload)
+        console.log("Did fail values are: ", didFail, didUpload);
 
         // failed to upload a bucket, but did upload some files
         if (didFail && didUpload) {
           // if there is no tracked upload size then no files were uploaded to Pennsieve
-          console.log("Local dataset failed to upload here is the session id: ", datasetUploadSession.id)
-          console.log("Local dataset failed to upload here is the amount of files we will log: ", uploadedFiles + 250)
-          console.log("Local dataset failed to upload here is the amount of files we will log: ", uploadedFilesSize)
+          console.log(
+            "Local dataset failed to upload here is the session id: ",
+            datasetUploadSession.id
+          );
+          console.log(
+            "Local dataset failed to upload here is the amount of files we will log: ",
+            uploadedFiles + 250
+          );
+          console.log(
+            "Local dataset failed to upload here is the amount of files we will log: ",
+            uploadedFilesSize
+          );
 
           // even when the upload fails we want to know how many files were uploaded and their size
           // for the current upload session
@@ -2679,11 +2691,11 @@ $("#button-submit-dataset").click(async () => {
           //   uploadedFilesSize
           // );
 
-          return 
+          return;
         }
 
-        console.log("Amount of files being uploaded: ", uploadedFiles)
-        console.log("Size of files: ", uploadedFilesSize)
+        console.log("Amount of files being uploaded: ", uploadedFiles);
+        console.log("Size of files: ", uploadedFilesSize);
 
         // // track the amount of files uploaded for the current bucket
         // ipcRenderer.send(
