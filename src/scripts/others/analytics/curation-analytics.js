@@ -53,7 +53,8 @@ const logCurationErrorsToAnalytics = async (
   uploadedFiles,
   uploadedFilesSize,
   localDatasetFilesBeforeModification,
-  localDatasetSizeBeforeModification
+  localDatasetSizeBeforeModification,
+  datasetUploadSession
 ) => {
   logCurationForAnalytics(
     "Error",
@@ -85,6 +86,7 @@ const logCurationErrorsToAnalytics = async (
   );
 
   // when we fail we want to know the total size that we are trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
+  // does not need to be logged for Success as that isn't a good way to log the size of the aggregate successful uploads
   ipcRenderer.send(
     "track-event",
     "Error",
@@ -187,7 +189,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -200,7 +202,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
@@ -230,9 +232,17 @@ const logCurationErrorsToAnalytics = async (
 const logCurationSuccessToAnalytics = async (
   manifest_files_requested,
   main_total_generate_dataset_size,
-  dataset_name,
-  dataset_destination
+  datasetName,
+  dataset_destination,
+  datasetUploadSession
 ) => {
+
+  console.log("Dataset destination is: ", dataset_destination)
+  console.log("Upload session is: ", datasetUploadSession)
+
+  // get dataset id if available
+  let datasetLocation = determineDatasetLocation();
+
   if (manifest_files_requested) {
     let high_level_folder_num = 0;
     if ("dataset-structure" in sodaJSONObj) {
@@ -243,8 +253,6 @@ const logCurationSuccessToAnalytics = async (
       }
     }
 
-    // get dataset id if available
-    let datasetLocation = determineDatasetLocation();
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -262,6 +270,8 @@ const logCurationSuccessToAnalytics = async (
     );
   }
 
+
+
   if (dataset_destination == "Pennsieve") {
     show_curation_shortcut();
   }
@@ -270,6 +280,7 @@ const logCurationSuccessToAnalytics = async (
   folder_counter = 0;
   get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
+  // track that a successful upload has occurred
   logCurationForAnalytics(
     "Success",
     PrepareDatasetsAnalyticsPrefix.CURATE,
@@ -278,6 +289,34 @@ const logCurationSuccessToAnalytics = async (
     determineDatasetLocation()
   );
 
+  // uploaded to Pennsieve so use an upload session ID
+  logCurationForAnalytics(
+    "Success",
+    PrepareDatasetsAnalyticsPrefix.CURATE,
+    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+    ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
+    datasetLocation
+  );
+
+  // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
+    datasetLocation,
+    main_total_generate_dataset_size
+  );
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
+    datasetLocation,
+    file_counter
+  );
+
+
+  // log the dataset name if it was locally generated
   if (dataset_destination === "Local") {
     // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
     let datasetName = document.querySelector("#inputNewNameDataset").value;
@@ -289,49 +328,46 @@ const logCurationSuccessToAnalytics = async (
     );
   }
 
-  logCurationForAnalytics(
-    "Success",
-    PrepareDatasetsAnalyticsPrefix.CURATE,
-    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-    ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
-    determineDatasetLocation()
-  );
 
-  let datasetLocation = determineDatasetLocation();
-  // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-    datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-    main_total_generate_dataset_size
-  );
+  if (dataset_destination !== "Pennsieve") {
+    // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      datasetLocation,
+      main_total_generate_dataset_size
+    );
 
-  // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-    datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-    main_total_generate_dataset_size
-  );
+    // track amount of files for datasets by ID or Local
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+      datasetLocation,
+      file_counter
+    );
+  } else {
+    // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      `${datasetUploadSession.id}`,
+      main_total_generate_dataset_size
+    );
 
-  // track amount of files for datasets by ID or Local
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-    datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-    file_counter
-  );
+    // track amount of files for datasets by ID or Local
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+      `${datasetUploadSession.id}`,
+      file_counter
+    );
+  }
 
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-    datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-    file_counter
-  );
+
 
   // log the preview card instructions for any files and folders being generated on Pennsieve
   Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
