@@ -1016,11 +1016,10 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             except Exception as e:
                 raise e
 
-        def upload_dataset_in_buckets():
+        def upload_folder_in_buckets():
             global submitdataprogress
             global submitdatastatus
 
-            # upload the directories  TODO: Bucket here too?
             myds = bf.get_dataset(bfdataset)
 
             folders = {}
@@ -1109,7 +1108,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         initial_bfdataset_size_submit = bf_dataset_size()
         start_submit = 1
         gev = []
-        gev.append(gevent.spawn(upload_dataset_in_buckets))
+        gev.append(gevent.spawn(upload_folder_in_buckets))
         gevent.sleep(0)
         gevent.joinall(gev)
         submitdatastatus = "Done"
