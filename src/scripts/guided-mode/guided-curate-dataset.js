@@ -268,7 +268,15 @@ const traverseToTab = (targetPageID) => {
     $("#guided-button-preview-folder-structure").show();
   }
   if (targetPageID === "guided-create-subjects-metadata-tab") {
-    renderSubjectsMetadataTable();
+    //get subjects from the datasetStructureJSONObj
+    let subjectsArray = Object.keys(
+      datasetStructureJSONObj.folders.primary.folders
+    );
+    //Create a sodajson object property for each subject to store metadata from forms in
+    for (let subject of subjectsArray) {
+      sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
+    }
+    renderSubjectsMetadataTable(subjectsArray);
   }
   let currentParentTab = CURRENT_PAGE.parent();
   let targetPage = $(`#${targetPageID}`);
@@ -724,13 +732,11 @@ const returnToTableFromFolderStructure = (clickedBackButton) => {
   clickedBackButton.remove();
 };
 
-const renderSubjectsMetadataTable = () => {
-  //get subjects from the datasetStructureJSONObj
-  let subjectsToMap = Object.keys(
-    datasetStructureJSONObj.folders.primary.folders
-  );
-
-  let subjectMetadataRows = subjectsToMap.sort().map((subject, index) => {
+const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
+  traverseToTab("guided-create-subjects-metadata-tab");
+};
+const renderSubjectsMetadataTable = (subjects) => {
+  let subjectMetadataRows = subjects.sort().map((subject, index) => {
     let tableIndex = index + 1;
     return `
       <tr>
@@ -772,6 +778,8 @@ const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
     .find(".subject-metadata-id")
     .text();
   traverseToTab("guided-subject-metadata-tab");
+  //Manually override active capsule to make it seem like they're still on the subjects tab
+  setActiveCapsule("guided-create-subjects-metadata-tab");
   $("#guided-footer-div").hide();
 };
 const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {

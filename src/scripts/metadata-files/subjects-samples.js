@@ -1264,12 +1264,14 @@ async function copy_current_subject_id(ev) {
     if (message !== "") {
       Swal.fire(message, "", "warning");
     } else {
+      console.log(res);
       var res = addNewIDToTable(newSubject, null, "subjects");
       // add new subject_id to JSON
       // 1. copy from current ev.id (the whole array)
       var currentRow = $(ev).parents()[2];
       var id = currentRow.cells[1].innerText;
       // 2. append that to the end of matrix
+      console.log(subjectsTableData);
       for (var subArr of subjectsTableData.slice(1)) {
         if (subArr[0] === id) {
           var ind = subjectsTableData.indexOf(subArr);

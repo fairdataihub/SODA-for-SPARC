@@ -1,4 +1,3 @@
-**Study Purpose:** sp
-**Data Collection:** dc
-**Primary Conclusion:** pc
-asdfafaefaef
+**Study Purpose:** 
+**Data Collection:** 
+**Primary Conclusion:**
