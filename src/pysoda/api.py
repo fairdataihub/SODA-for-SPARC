@@ -34,6 +34,7 @@ from pysoda import (
     check_agent_install,
     get_pennsieve_api_key_secret,
     SODA_SPARC_API_KEY,
+    bf_submit_dataset_upload_details
 )
 
 from disseminate import (
@@ -286,9 +287,17 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
+    
     def api_bf_submit_dataset(self, accountname, bfdataset, pathdataset):
         try:
             return bf_submit_dataset(accountname, bfdataset, pathdataset)
+        except Exception as e:
+            raise e
+    
+    # get upload information for logging while bf_submit_dataset runs
+    def api_bf_submit_dataset_upload_details(self):
+        try:
+            return bf_submit_dataset_upload_details()
         except Exception as e:
             raise e
 

@@ -1019,6 +1019,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         def upload_folder_in_buckets():
             global submitdataprogress
             global submitdatastatus
+            global uploaded_files
 
             myds = bf.get_dataset(bfdataset)
 
@@ -1070,7 +1071,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # TODO: Construct path in dictionary for better information messages
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
-                            % (current_folder, bfdataset)
+                            % (dirpath, bfdataset)
                         )
 
                         # upload the files
@@ -1078,6 +1079,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             # add the Absolute path so the Agent can find the file
                             file_path = join(dirpath, file)
                             current_folder.upload(file_path)
+
 
                         # update the global that tracks the amount of files that have been successfully uploaded
                         # for this upload session
@@ -1091,7 +1093,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # TODO: Construct path in dictionary for better information messages
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
-                            % (current_folder, bfdataset)
+                            % (dirpath, bfdataset)
                         )
                         for file in files:
                             file_path = join(dirpath, file)
