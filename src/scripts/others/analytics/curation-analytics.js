@@ -189,7 +189,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += 250)
     );
@@ -202,7 +202,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-      " - Step 7 - Generate - Dataset - Number of Files",
+        " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
@@ -236,9 +236,8 @@ const logCurationSuccessToAnalytics = async (
   dataset_destination,
   datasetUploadSession
 ) => {
-
-  console.log("Dataset destination is: ", dataset_destination)
-  console.log("Upload session is: ", datasetUploadSession)
+  console.log("Dataset destination is: ", dataset_destination);
+  console.log("Upload session is: ", datasetUploadSession);
 
   // get dataset id if available
   let datasetLocation = determineDatasetLocation();
@@ -269,8 +268,6 @@ const logCurationSuccessToAnalytics = async (
       high_level_folder_num
     );
   }
-
-
 
   if (dataset_destination == "Pennsieve") {
     show_curation_shortcut();
@@ -315,7 +312,6 @@ const logCurationSuccessToAnalytics = async (
     file_counter
   );
 
-
   // log the dataset name if it was locally generated
   if (dataset_destination === "Local") {
     // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
@@ -327,7 +323,6 @@ const logCurationSuccessToAnalytics = async (
       datasetName
     );
   }
-
 
   if (dataset_destination !== "Pennsieve") {
     // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
@@ -366,8 +361,6 @@ const logCurationSuccessToAnalytics = async (
       file_counter
     );
   }
-
-
 
   // log the preview card instructions for any files and folders being generated on Pennsieve
   Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
