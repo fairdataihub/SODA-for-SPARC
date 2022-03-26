@@ -2379,6 +2379,9 @@ $("#button-submit-dataset").click(async () => {
     datasetUploadSession.id
   );
 
+  // Questions logs need to answer:
+  // Which sessions failed? How many files were they attempting to upload per session? How many files were uploaded?
+  // How many pennsieve datasets were involved in a failed upload? Successful upload?
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2477,26 +2480,6 @@ $("#button-submit-dataset").click(async () => {
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
           defaultBfDatasetId
-        );
-
-        // log the dataset's total size for the given upload session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - size",
-          `${datasetUploadSession.id}`,
-          uploadedFilesSize
-        );
-
-        // log the files uploaded for the given session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Number of Files`,
-          `${datasetUploadSession.id}`,
-          uploadedFiles
         );
 
         client.invoke(
@@ -2691,6 +2674,10 @@ $("#button-submit-dataset").click(async () => {
           //   uploadedFilesSize
           // );
 
+          return;
+        } else if (didFail && !didUpload) {
+          // there is no session information to log outside of the general information logged in the
+          // error for api_bf_submit
           return;
         }
 
