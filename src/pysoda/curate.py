@@ -1712,7 +1712,7 @@ def generate_dataset_locally(soda_json_structure):
     global start_generate
     global main_curation_uploaded_files
 
-    main_curation_uploaded_files = 0 
+    main_curation_uploaded_files = 0
 
     try:
 
