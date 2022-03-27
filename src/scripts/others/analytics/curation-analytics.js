@@ -25,7 +25,9 @@ const editingExistingLocalDataset = () => {
 // Sends detailed information about failures that occur when using the Organize Dataset's upload/generation feature to Analytics; Used for providing usage numbers to NIH
 const logCurationErrorsToAnalytics = async (
   uploadedFiles,
-  uploadedFilesSize
+  uploadedFilesSize,
+  dataset_destination,
+  mainTotalGenerateDatasetSize
 ) => {
   logCurationForAnalytics(
     "Error",
@@ -63,41 +65,20 @@ const logCurationErrorsToAnalytics = async (
     "Error",
     "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
     "Size",
-    main_total_generate_dataset_size
+    mainTotalGenerateDatasetSize
   );
 
   let datasetLocation = determineDatasetLocation();
 
   // log failed Local, Saved, or New dataset generation to Google Analytics
   if (datasetLocation !== "Pennsieve") {
-    // get the location the dataset was generated at
-    let datasetGenerationDirectory = document.querySelector(
-      "#input-destination-generate-dataset-locally"
-    ).value;
-
-    console.log("The generation directory is: ", datasetGenerationDirectory);
-
-    // TODO: Add code to handle editing existing datasets
-    let filesGeneratedForDataset = await getLocallyGeneratedFileCount(
-      datasetGenerationDirectory
-    );
-
-    // check if the curation modified an existing local dataset
-    if (localDatasetFilesBeforeModification !== undefined) {
-      // TODO: Handle if the user deleted files or otherwise started with less files than when they started
-
-      // generated files is the files before curation minues the amount of files after curation
-      filesGeneratedForDataset =
-        filesGeneratedForDataset - localDatasetFilesBeforeModification;
-    }
-
     // when we fail we want to know how many files were generated
     ipcRenderer.send(
       "track-event",
       "Success",
       `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
       datasetLocation,
-      filesGeneratedForDataset
+      uploadedFiles
     );
 
     ipcRenderer.send(
@@ -116,30 +97,20 @@ const logCurationErrorsToAnalytics = async (
       file_counter
     );
 
-    let sizeGeneratedForDataset = await getDirectorySize(
-      datasetGenerationDirectory
-    );
-
-    if (localDatasetSizeBeforeModification !== undefined) {
-      // TODO: Handle case where directory shrunk
-      sizeGeneratedForDataset =
-        sizeGeneratedForDataset - localDatasetSizeBeforeModification;
-    }
-
     // log the size that was successfully generated
     ipcRenderer.send(
       "track-event",
       "Success",
       "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
       datasetLocation,
-      sizeGeneratedForDataset
+      uploadedFilesSize
     );
 
     ipcRenderer.send(
       "track-event",
       "Error",
       "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-      main_total_generate_dataset_size
+      mainTotalGenerateDatasetSize
     );
 
     // get dataset id if available
@@ -148,7 +119,7 @@ const logCurationErrorsToAnalytics = async (
       "Error",
       `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
       datasetLocation,
-      main_total_generate_dataset_size
+      mainTotalGenerateDatasetSize
     );
   } else {
     // log the Pennsieve upload session information
@@ -169,14 +140,14 @@ const logCurationErrorsToAnalytics = async (
     // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one;
     // without an explicit log of a session failing with the amount of files that were attempted that this provides we couldn't answer
     // the first question.
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
-      `${datasetUploadSession.id}`,
-      file_counter
-    );
+    // ipcRenderer.send(
+    //   "track-event",
+    //   "Error",
+    //   PrepareDatasetsAnalyticsPrefix.CURATE +
+    //     " - Step 7 - Generate - Dataset - Number of Files",
+    //   `${datasetUploadSession.id}`,
+    //   file_counter
+    // );
 
     ipcRenderer.send(
       "track-event",
@@ -190,13 +161,13 @@ const logCurationErrorsToAnalytics = async (
 
     // log the size that was attempted to be uploaded for the given session
     // as above this helps us answer how much was uploaded out of the total before the session failed
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-      `${datasetUploadSession.id}`,
-      main_total_generate_dataset_size
-    );
+    // ipcRenderer.send(
+    //   "track-event",
+    //   "Error",
+    //   "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+    //   `${datasetUploadSession.id}`,
+    //   main_total_generate_dataset_size
+    // );
   }
 };
 
