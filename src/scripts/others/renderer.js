@@ -6557,7 +6557,12 @@ async function initiate_generate() {
       );
 
       // log the curation errors to Google Analytics
-      logCurationErrorsToAnalytics(uploadedFiles, uploadedFilesSize);
+      logCurationErrorsToAnalytics(
+        uploadedFiles,
+        uploadedFilesSize,
+        dataset_destination,
+        main_total_generate_dataset_size
+      );
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
