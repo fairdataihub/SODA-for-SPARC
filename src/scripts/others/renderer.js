@@ -6522,28 +6522,11 @@ async function initiate_generate() {
   let localDatasetCurrentSize = undefined;
 
   // determine where the dataset will be generated/uploaded
-  if (determineDatasetLocation) {
-    console.log("Defined funciton");
-  } else {
-    console.log("Undefined function");
-  }
   [dataset_name, dataset_destination] = determineDatasetDestination();
 
   if (dataset_destination == "Pennsieve") {
     // create a dataset upload session
     datasetUploadSession.startSession();
-  }
-
-  if (editingExistingLocalDataset()) {
-    // give local file count the amount of files in the target generation directory
-    let datasetGenerationDirectory =
-      sodaJSONObj["starting-point"]["local-path"];
-    let files = { count: 0 };
-    getLocallyGeneratedFileCount(datasetGenerationDirectory, files);
-    localDatasetCurrentFileCount = files.count;
-    localDatasetCurrentSize = await getDirectorySize(
-      datasetGenerationDirectory
-    );
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
@@ -6578,13 +6561,7 @@ async function initiate_generate() {
       );
 
       // log the curation errors to Google Analytics
-      logCurationErrorsToAnalytics(
-        main_total_generate_dataset_size,
-        uploadedFiles,
-        uploadedFilesSize,
-        localDatasetCurrentFileCount,
-        localDatasetCurrentSize
-      );
+      logCurationErrorsToAnalytics(uploadedFiles, uploadedFilesSize);
     } else {
       main_total_generate_dataset_size = res[1];
       $("#sidebarCollapse").prop("disabled", false);
@@ -6595,7 +6572,8 @@ async function initiate_generate() {
         manifest_files_requested,
         main_total_generate_dataset_size,
         dataset_name,
-        dataset_destination
+        dataset_destination,
+        uploadedFiles
       );
 
       client.invoke(
@@ -6723,48 +6701,50 @@ async function initiate_generate() {
   // and their aggregate size
   // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
   //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
-  if (dataset_destination === "bf") {
-    // inform analytics when files have been uploaded to Pennsieve
-    const checkForBucketUpload = () => {
-      // ask the server for the amount of files uploaded in the current session
-      client.invoke("api_main_curate_get_uploaded_files", (err, res) => {
-        // TODO : Handle the error case
+  // inform analytics when files have been uploaded to Pennsieve
+  const checkForBucketUpload = () => {
+    // ask the server for the amount of files uploaded in the current session
+    client.invoke("api_main_curate_get_uploaded_files", (err, res) => {
+      // TODO : Handle the error case
 
-        // check if the amount of successfully uploaded files has increased
-        if (res > uploadedFiles) {
-          uploadedFiles = res[0];
-          uploadedFilesSize = res[1];
+      // check if the amount of successfully uploaded files has increased
+      if (res > uploadedFiles) {
+        uploadedFiles = res[0];
+        uploadedFilesSize = res[1];
 
-          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Number of Files",
-            `${datasetUploadSession.id}`,
-            uploadedFiles
-          );
+        console.log("The amount of uploaded files: ", uploadedFiles);
+        console.log("The size of the uploaded files: ", uploadedFilesSize);
+        console.log("The session ID: ", datasetUploadSession.id);
 
-          // use the session id as the label -- this will help with aggregating the size of the given upload session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Size",
-            `${datasetUploadSession.id}`,
-            uploadedFilesSize
-          );
-        }
-      });
+        // use the session id as the label -- this will help with aggregating the number of files uploaded per session
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE +
+            " - Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          uploadedFiles
+        );
 
-      //stop the inteval when the upload is complete
-      if (main_curate_status === "Done") {
-        clearInterval(timerCheckForBucketUpload);
+        // use the session id as the label -- this will help with aggregating the size of the given upload session
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE +
+            " - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          uploadedFilesSize
+        );
       }
-    };
+    });
 
-    let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000);
-  }
+    //stop the inteval when the upload is complete
+    if (main_curate_status === "Done") {
+      clearInterval(timerCheckForBucketUpload);
+    }
+  };
+
+  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000);
 }
 
 const getLocallyGeneratedDatasetSize = async (generationLocation) => {};
