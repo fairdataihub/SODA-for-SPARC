@@ -1710,6 +1710,9 @@ def generate_dataset_locally(soda_json_structure):
     global progress_percentage
     global main_total_generate_dataset_size
     global start_generate
+    global main_curation_uploaded_files
+
+    main_curation_uploaded_files = 0 
 
     try:
 
@@ -1825,7 +1828,9 @@ def generate_dataset_locally(soda_json_structure):
             main_curate_progress_message = (
                 "Copying file " + str(srcfile) + " to " + str(distfile)
             )
+            # track amount of copied files for loggin purposes
             mycopyfile_with_metadata(srcfile, distfile)
+            main_curation_uploaded_files += 1
 
         # 7. Delete manifest folder and original folder if merge requested and rename new folder
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
@@ -3293,6 +3298,7 @@ main_generate_destination = ""
 main_initial_bfdataset_size = 0
 bf = ""
 myds = ""
+
 # a global that tracks the amount of files that have been uploaded in an upload session;
 # is reset once the session ends by success, or failure (is implicitly reset in case of Pennsieve Agent freeze by the user closing SODA)
 main_curation_uploaded_files = 0
@@ -3620,11 +3626,11 @@ def main_curate_function_upload_details():
     """
     Function frequently called by front end to help keep track of the amount of files that have
     been successfully uploaded to Pennsieve, and the size of the uploaded files
+    Also tells us how many files have been copied (double usage of both variables) to a destination folder
+    for local dataset generation.
     """
-    if main_generate_destination == "bf":
-        main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size
 
-    return (main_curation_uploaded_files, main_generated_dataset_size)
+    return (main_curation_uploaded_files, main_total_generate_dataset_size)
 
 
 def preview_dataset(soda_json_structure):
