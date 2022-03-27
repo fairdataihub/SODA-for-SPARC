@@ -215,10 +215,6 @@ const logCurationSuccessToAnalytics = async (
     show_curation_shortcut();
   }
 
-  file_counter = 0;
-  folder_counter = 0;
-  get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
   // track that a successful upload has occurred
   logCurationForAnalytics(
     "Success",
@@ -251,7 +247,7 @@ const logCurationSuccessToAnalytics = async (
     "Success",
     `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
     datasetLocation,
-    file_counter
+    uploadedFiles
   );
 
   // log the dataset name if it was locally generated
@@ -267,69 +263,23 @@ const logCurationSuccessToAnalytics = async (
   }
 
   if (dataset_destination !== "Pennsieve") {
-    // log for a modified dataset or for a new dataset generation
-    if (localDatasetCurrentFileCount && localDatasetCurrentSize) {
-      console.log(
-        "Local dataset editing file size before edits: ",
-        localDatasetCurrentSize
-      );
-      console.log(
-        "Local dataset editing files before edits: ",
-        localDatasetCurrentFileCount
-      );
+    // for tracking the total size of all the "saved", "new", "local" datasets by category
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      datasetLocation,
+      main_total_generate_dataset_size
+    );
 
-      // get the files and file size information post dataset edits
-      let datasetGenerationDirectory =
-        sodaJSONObj["starting-point"]["local-path"];
-      let files = { count: 0 };
-      getLocallyGeneratedFileCount(datasetGenerationDirectory, files);
-      let localDatasetSizePostEdit = await getDirectorySize(
-        datasetGenerationDirectory
-      );
-      console.log(
-        "Local dataset editing file size after edits: ",
-        localDatasetCurrentSize
-      );
-      console.log(
-        "Local dataset editing file count after edits: ",
-        localDatasetCurrentFileCount
-      );
-
-      // calculate the change in file and size
-      let filesGeneratedInEdit = Math.abs(
-        files.count - localDatasetCurrentFileCount
-      );
-      let sizeGeneratedInEdit = Math.abs(
-        localDatasetSizePostEdit - localDatasetCurrentSize
-      );
-
-      // log actual generation details
-      console.log("Files generated in edit is: ");
-    } else {
-      // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      // track amount of files for datasets by ID or Local
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        datasetLocation,
-        file_counter
-      );
-
-      console.log(
-        "Local dataset generation file size logged: ",
-        main_total_generate_dataset_size
-      );
-      console.log("Local dataset generation files logged: ", file_counter);
-    }
+    // track amount of files for datasets by ID or Local
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+      datasetLocation,
+      uploadedFiles
+    );
   } else {
     // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
     ipcRenderer.send(
