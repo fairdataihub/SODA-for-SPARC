@@ -54,6 +54,7 @@ from curate import (
     main_curate_function_progress,
     generate_manifest_file_locally,
     check_JSON_size,
+    main_curate_function_upload_details
 )
 
 from prepare_metadata import (
@@ -478,6 +479,12 @@ class SodaApi(object):
     def api_main_curate_function_progress(self):
         try:
             return main_curate_function_progress()
+        except Exception as e:
+            raise e
+    
+    def api_main_curate_function_upload_details(self):
+        try:
+            return main_curate_function_upload_details()
         except Exception as e:
             raise e
 
