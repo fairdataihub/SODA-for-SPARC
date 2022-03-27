@@ -6527,7 +6527,7 @@ async function initiate_generate() {
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 
-  client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
+  client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
     if (error) {
       $("#sidebarCollapse").prop("disabled", false);
       var emessage = userError(error);
@@ -6556,8 +6556,11 @@ async function initiate_generate() {
         }
       );
 
-      if (uploadedFiles === undefined || uploadedFilesSize === undefined) {
-        wait(10000);
+      // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
+      // if they stay zero that means nothing was uploaded
+      if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+        console.log("Waiting");
+        await wait(2000);
       }
 
       // log the curation errors to Google Analytics
@@ -6712,11 +6715,11 @@ async function initiate_generate() {
   // IMP: Two reasons this exists:
   //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
   //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
-  const checkForBucketUpload = () => {
+  const checkForBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_main_curate_function_upload_details", (err, res) => {
       // check if the amount of successfully uploaded files has increased
-      if (res > uploadedFiles) {
+      if (res[0] > uploadedFiles) {
         uploadedFiles = res[0];
         uploadedFilesSize = res[1];
 
