@@ -6757,8 +6757,6 @@ async function initiate_generate() {
   let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000);
 }
 
-const getLocallyGeneratedDatasetSize = async (generationLocation) => {};
-
 const show_curation_shortcut = () => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
