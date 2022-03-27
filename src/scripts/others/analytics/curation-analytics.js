@@ -263,6 +263,8 @@ const logCurationSuccessToAnalytics = async (
   }
 
   if (dataset_destination !== "Pennsieve") {
+    console.log("Amount of files generated: ", uploadedFiles);
+    console.log("Size of files generated: ", main_total_generate_dataset_size);
     // for tracking the total size of all the "saved", "new", "local" datasets by category
     ipcRenderer.send(
       "track-event",
@@ -329,8 +331,4 @@ const logCurationSuccessToAnalytics = async (
 module.exports = {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
-  editingExistingLocalDataset,
-  getLocallyGeneratedFileCount,
-  editingExistingLocalDataset,
-  getDirectorySize,
 };
