@@ -6556,6 +6556,10 @@ async function initiate_generate() {
         }
       );
 
+      if (uploadedFiles === undefined || uploadedFilesSize === undefined) {
+        wait(10000);
+      }
+
       // log the curation errors to Google Analytics
       logCurationErrorsToAnalytics(
         uploadedFiles,
@@ -6565,6 +6569,8 @@ async function initiate_generate() {
       );
     } else {
       main_total_generate_dataset_size = res[1];
+      uploadedFiles = res[2];
+
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
 
@@ -6708,9 +6714,7 @@ async function initiate_generate() {
   //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
   const checkForBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
-    client.invoke("api_main_curate_get_uploaded_files", (err, res) => {
-      // TODO : Handle the error case
-
+    client.invoke("api_main_curate_function_upload_details", (err, res) => {
       // check if the amount of successfully uploaded files has increased
       if (res > uploadedFiles) {
         uploadedFiles = res[0];
@@ -6754,7 +6758,7 @@ async function initiate_generate() {
     }
   };
 
-  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 5000);
+  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
 }
 
 const show_curation_shortcut = () => {
