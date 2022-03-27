@@ -6517,10 +6517,6 @@ async function initiate_generate() {
   let uploadedFiles = 0;
   let uploadedFilesSize = 0;
 
-  // tracks amount of files in a local dataset directory before it gets modified
-  let localDatasetCurrentFileCount = undefined;
-  let localDatasetCurrentSize = undefined;
-
   // determine where the dataset will be generated/uploaded
   [dataset_name, dataset_destination] = determineDatasetDestination();
 
@@ -6698,10 +6694,13 @@ async function initiate_generate() {
   }
 
   // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
-  // and their aggregate size
+  // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
+  // files copied and their aggregate size.
   // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
   //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
-  // inform analytics when files have been uploaded to Pennsieve
+  // IMP: Two reasons this exists:
+  //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
+  //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
   const checkForBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_main_curate_get_uploaded_files", (err, res) => {
@@ -6716,25 +6715,31 @@ async function initiate_generate() {
         console.log("The size of the uploaded files: ", uploadedFilesSize);
         console.log("The session ID: ", datasetUploadSession.id);
 
-        // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
-          `${datasetUploadSession.id}`,
-          uploadedFiles
-        );
+        // log the aggregate file count and size values when uploading to Pennsieve
+        if (
+          dataset_destination === "bf" ||
+          dataset_destination === "Pennsieve"
+        ) {
+          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE +
+              " - Step 7 - Generate - Dataset - Number of Files",
+            `${datasetUploadSession.id}`,
+            uploadedFiles
+          );
 
-        // use the session id as the label -- this will help with aggregating the size of the given upload session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Size",
-          `${datasetUploadSession.id}`,
-          uploadedFilesSize
-        );
+          // use the session id as the label -- this will help with aggregating the size of the given upload session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE +
+              " - Step 7 - Generate - Dataset - Size",
+            `${datasetUploadSession.id}`,
+            uploadedFilesSize
+          );
+        }
       }
     });
 
