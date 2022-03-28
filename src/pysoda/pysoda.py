@@ -993,7 +993,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             "The Pennsieve agent is not installed on your computer. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions."
         )
 
-    clear_queue()
     try:
         ## check if agent is running in the background
         agent_running()
@@ -1052,6 +1051,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             # create the root directory on Pennsieve and store it for later
             root_folder_name = os.path.basename(os.path.normpath(pathdataset))
             root_pennsieve_folder = myds.create_collection(root_folder_name)
+            myds.update()
             folders[root_folder_name] = root_pennsieve_folder
 
             # top down scan through dataset to upload each file/folder
@@ -1065,6 +1065,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 # upload the current directory's child directories
                 for child_dir in child_dirs:
                     child_dir_pennsieve = current_folder.create_collection(child_dir)
+                    current_folder.update()
+                    myds.update()
                     # store the folders by their name so they can be accessed when we
                     # need to upload their children folders and files into their directory
                     folders[child_dir] = child_dir_pennsieve
@@ -1089,9 +1091,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # get the 750 files between startIndex and endIndex (inclusive of endIndex)
                         upload_bucket = files[start_index : end_index + 1]
 
-                        # clear the pennsieve queue for successive batches
-                        clear_queue()
-
                         # TODO: Construct path in dictionary for better information messages
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
@@ -1106,8 +1105,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
+                        # clear the pennsieve queue for successive batches
+                        clear_queue()
+
+
                         # upload the current bucket
                         current_folder.upload(*files_with_destination)
+                        current_folder.update()
 
                         # update the global that tracks the amount of files that have been successfully uploaded
                         # for this upload session
@@ -1118,8 +1122,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # update the start_index to end_index + 1
                         start_index = end_index + 1
                 else:
-                    clear_queue()
-
                     if len(files) > 0:
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
@@ -1132,8 +1134,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
+                        clear_queue()
+
                         # upload the files
                         current_folder.upload(*files_with_destination)
+                        current_folder.update()
+                        myds.update()
 
                         uploaded_files += len(files)
 

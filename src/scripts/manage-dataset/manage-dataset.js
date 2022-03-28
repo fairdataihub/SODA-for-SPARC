@@ -2544,14 +2544,6 @@ $("#button-submit-dataset").click(async () => {
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );
       } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
-          defaultBfDatasetId
-        );
-
         completionStatus = res[1];
         let submitprintstatus = res[2];
         totalFileSize = res[3];
@@ -2618,6 +2610,14 @@ $("#button-submit-dataset").click(async () => {
 
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Progress track`,
+          defaultBfDatasetId
+        );
       }
     }
   }
