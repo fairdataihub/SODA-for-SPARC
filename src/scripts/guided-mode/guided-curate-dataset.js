@@ -1262,7 +1262,7 @@ const renderSamplesTables = () => {
               "
             >
               <span class="sample-table-name">
-                ${subject.subjectName}'s sample table
+                ${subject.subjectName}
               </span>
               <button
                 class="ui primary basic button small"
