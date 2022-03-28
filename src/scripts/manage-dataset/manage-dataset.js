@@ -2658,7 +2658,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Number of Files`,
+              ` - Number of Files`,
             `${datasetUploadSession.id}`,
             (uploadedFiles += 250)
           );
@@ -2667,7 +2667,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - size",
+              " - size",
             `${datasetUploadSession.id}`,
             uploadedFilesSize
           );
@@ -2686,7 +2686,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Number of Files`,
+              ` - Number of Files`,
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -2695,7 +2695,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - size",
+              " - size",
             `${datasetUploadSession.id}`,
             uploadedFilesSize
           );
