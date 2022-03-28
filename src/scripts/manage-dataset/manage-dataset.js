@@ -2636,8 +2636,6 @@ $("#button-submit-dataset").click(async () => {
         let didFail = res[2];
         let didUpload = res[3];
 
-        console.log("Did fail values are: ", didFail, didUpload);
-
         // failed to upload a bucket, but did upload some files
         if (didFail && didUpload) {
           // if there is no tracked upload size then no files were uploaded to Pennsieve

@@ -1110,8 +1110,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
                         did_upload = True
 
-                        raise Exception("Testing a failed upload on purpose")
-
                         # update the start_index to end_index + 1
                         start_index = end_index + 1
                 else:
@@ -1128,8 +1126,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         uploaded_files += len(files)
 
                         did_upload = True
-
-                        raise Exception("Testing a failed upload on purpose")
 
             # upload completed
             submitdataprogress = "Success: COMPLETED!"
