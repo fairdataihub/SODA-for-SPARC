@@ -745,6 +745,7 @@ const returnToTableFromFolderStructure = (clickedBackButton) => {
 
 const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
   traverseToTab("guided-create-subjects-metadata-tab");
+  $("#guided-footer-div").css("display", "flex");
 };
 const renderSubjectsMetadataTable = (subjects) => {
   let subjectMetadataRows = subjects.sort().map((subject, index) => {
@@ -818,50 +819,7 @@ $("#guided-button-generate-subjects-table").on("click", () => {
     .fill(0)
     .map((subject, index) => {
       let tableIndex = index + 1;
-      return `
-        <tr>
-          <td class="middle aligned collapsing text-center"><span class="subject-table-index">${tableIndex}</span></td>
-          <td class="middle aligned subject-id-cell">
-            <input
-              class="guided--input"
-              type="text"
-              name="guided-subject-id"
-              placeholder="Enter subject ID and press enter"
-              onkeyup="createSubjectFolder(event, $(this))"
-              data-input-set="guided-subjects-folder-tab"
-              data-warning="Subject IDs may not contain special characters"
-              data-alert-type="danger"
-            />
-          </td>
-          <td class="middle aligned collapsing text-center">
-            ${numberOfSamplesInput}
-          </td>
-          <td
-            class="middle aligned collapsing text-center"
-            style="min-width: 130px"
-          >
-            <button
-              type="button"
-              class="btn btn-primary btn-sm"
-              style="
-                background-color: var(--color-light-green) !important;
-              "
-              onclick="openSubjectFolder($(this))"
-            >
-              Add files
-            </button>
-          </td>
-          <td
-            class="middle aligned collapsing text-center"
-          >
-            <i
-              class="far fa-trash-alt"
-              style="color: red; cursor: pointer;"
-              onclick="deleteSubjectFolder($(this))"
-            ></i>
-          </td>
-        </tr>
-      `;
+      return generateSubjectRowElement(tableIndex, numberOfSamplesInput);
     });
   subjectsTableBody.innerHTML = subjectRows.join("\n");
   if ($("#guided-button-samples-same").hasClass("selected")) {
@@ -971,6 +929,49 @@ const updateGuidedTableIndices = (tableIndexClass) => {
     let newIndex = index + 1;
     indexElement.innerHTML = newIndex;
   });
+};
+generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
+  return `
+    <tr>
+      <td class="middle aligned collapsing text-center">
+        <span class="subject-table-index">${subjectIndex}</span>
+      </td>
+      <td class="middle aligned subject-id-cell">
+        <input
+          class="guided--input"
+          type="text"
+          name="guided-subject-id"
+          placeholder="Enter subject ID and press enter"
+          onkeyup="createSubjectFolder(event, $(this))"
+          data-input-set="guided-subjects-folder-tab"
+          data-warning="Subject IDs may not contain special characters"
+          data-alert-type="danger"
+        />
+      </td>
+      <td class="middle aligned collapsing text-center">${subjectNumSamples}</td>
+      <td class="middle aligned collapsing text-center" style="min-width: 130px">
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          style="background-color: var(--color-light-green) !important"
+          onclick="openSubjectFolder($(this))"
+        >
+          Add files
+        </button>
+      </td>
+      <td class="middle aligned collapsing text-center">
+        <i
+          class="far fa-trash-alt"
+          style="color: red; cursor: pointer"
+          onclick="deleteSubjectFolder($(this))"
+        ></i>
+      </td>
+    </tr>
+  `;
+};
+const addSubjectFolder = (subjectDeleteButton) => {
+  $("#subjects-table-body").append(generateSubjectRowElement("", ""));
+  updateGuidedTableIndices("subject-table-index");
 };
 //Deletes the entered subject folder from dsJSONObj and updates UI
 const deleteSubjectFolder = (subjectDeleteButton) => {
@@ -1152,51 +1153,47 @@ const openSampleFolder = (clickedStructureButton) => {
     datasetStructureJSONObj
   );
 };
+const generateSampleRowElement = (sampleIndex) => {
+  return `
+    <tr>
+      <td class="middle aligned collapsing text-center">
+        <span class="sample-table-index">${sampleIndex}</span>
+      </td>
+      <td class="middle aligned sample-id-cell">
+        <input
+          class="guided--input"
+          type="text"
+          name="guided-sample-id"
+          placeholder="Enter sample ID and press enter"
+          onkeyup="createSampleFolder(event, $(this))"
+        />
+      </td>
+      <td class="middle aligned collapsing text-center" style="min-width: 130px">
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          style="background-color: var(--color-light-green) !important"
+          onclick="openSampleFolder($(this))"
+        >
+          Add files
+        </button>
+      </td>
+      <td class="middle aligned collapsing text-center">
+        <i
+          class="far fa-trash-alt"
+          style="color: red; cursor: pointer"
+          onclick="deleteSampleFolder($(this))"
+        ></i>
+      </td>
+    </tr>
+  `;
+};
 
 const addSampleFolder = (sampleAddButton) => {
   sampleAddButton
     .closest("thead")
     .siblings("tbody")
-    .append(
-      `
-      <tr>
-        <td class="middle aligned collapsing text-center">
-          <span class="sample-table-index"></span>
-        </td>
-        <td class="middle aligned sample-id-cell">
-          <input
-            class="guided--input"
-            type="text"
-            name="guided-sample-id"
-            placeholder="Enter sample ID and press enter"
-            onkeyup="createSampleFolder(event, $(this))"
-          />
-        </td>
-        <td
-          class="middle aligned collapsing text-center"
-          style="min-width: 130px"
-        >
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            style="
-                    background-color: var(--color-light-green) !important;
-                  "
-            onclick="openSampleFolder($(this))"
-          >
-            Add files
-          </button>
-        </td>
-        <td class="middle aligned collapsing text-center">
-          <i
-            class="far fa-trash-alt"
-            style="color: red; cursor: pointer"
-            onclick="deleteSampleFolder($(this))"
-          ></i>
-        </td>
-      </tr>
-      `
-    );
+    .append(generateSampleRowElement("x"));
   updateGuidedTableIndices("sample-table-index");
 };
 const deleteSampleFolder = (sampleDeleteButton) => {
@@ -1242,46 +1239,10 @@ const renderSamplesTables = () => {
       .fill(0)
       .map((subject, index) => {
         let tableIndex = index + 1;
-        return `
-          <tr>
-            <td class="middle aligned collapsing text-center">
-              <span class="sample-table-index">${tableIndex}</span>
-            </td>
-            <td class="middle aligned sample-id-cell">
-              <input
-                class="guided--input"
-                type="text"
-                name="guided-sample-id"
-                placeholder="Enter sample ID and press enter"
-                onkeyup="createSampleFolder(event, $(this))"
-              />
-            </td>
-            <td
-              class="middle aligned collapsing text-center"
-              style="min-width: 130px"
-            >
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                style="
-                        background-color: var(--color-light-green) !important;
-                      "
-                onclick="openSampleFolder($(this))"
-              >
-                Add files
-              </button>
-            </td>
-            <td class="middle aligned collapsing text-center">
-              <i
-                class="far fa-trash-alt"
-                style="color: red; cursor: pointer"
-                onclick="deleteSampleFolder($(this))"
-              ></i>
-            </td>
-          </tr>
-     `;
+        return generateSampleRowElement(tableIndex);
       })
       .join("\n");
+    console.log(sampleRows);
 
     return `
       <table class="ui celled striped table" style="margin-bottom: 25px; min-width: 900px;">
@@ -1298,7 +1259,7 @@ const renderSamplesTables = () => {
               "
             >
               <span class="sample-table-name">
-                ${subject.subjectName}
+                ${subject.subjectName}'s sample table
               </span>
               <button
                 class="ui primary basic button small"

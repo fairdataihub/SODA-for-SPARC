@@ -112,6 +112,7 @@
                 class="ui yellow basic button"
                 id="guided-button-preview-folder-structure"
                 style="
+                  z-index: 2001;
                   position: absolute;
                   top: 75px;
                   left: 0px;
@@ -588,11 +589,41 @@
                 <thead>
                   <tr>
                     <th
+                      colspan="5"
+                      class="text-center"
+                      style="
+                        z-index: 2;
+                        height: 50px;
+                        position: sticky !important;
+                        top: -10px !important;
+                      "
+                    >
+                      <span> Subjects Table </span>
+                      <button
+                        class="ui primary basic button small"
+                        style="
+                          position: absolute;
+                          right: 20px;
+                          top: 50%;
+                          transform: translateY(-50%);
+                        "
+                        onclick="addSubjectFolder($(this))"
+                      >
+                        <i
+                          class="fas fa-folder-plus"
+                          style="margin-right: 7px"
+                        ></i
+                        >Add subject
+                      </button>
+                    </th>
+                  </tr>
+                  <tr>
+                    <th
                       class="center aligned"
                       style="
                         z-index: 2;
                         position: sticky !important;
-                        top: -10px !important;
+                        top: 40px !important;
                       "
                     >
                       Index
@@ -601,7 +632,7 @@
                       style="
                         z-index: 2;
                         position: sticky !important;
-                        top: -10px !important;
+                        top: 40px !important;
                       "
                     >
                       Subject ID
@@ -610,7 +641,7 @@
                       style="
                         z-index: 2;
                         position: sticky !important;
-                        top: -10px !important;
+                        top: 40px !important;
                       "
                     >
                       Number of samples
@@ -620,7 +651,7 @@
                       style="
                         z-index: 2;
                         position: sticky !important;
-                        top: -10px !important;
+                        top: 40px !important;
                       "
                     >
                       Specify data files for the subject
@@ -630,7 +661,7 @@
                       style="
                         z-index: 2;
                         position: sticky !important;
-                        top: -10px !important;
+                        top: 40px !important;
                       "
                     >
                       Delete
