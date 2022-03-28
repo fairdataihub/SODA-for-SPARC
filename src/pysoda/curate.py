@@ -249,6 +249,10 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
+# a global that tracks the amount of files that have been uploaded in an upload session;
+# is reset once the session ends by success, or failure (is implicitly reset in case of Pennsieve Agent freeze by the user closing SODA)
+main_curation_uploaded_files = 0
+
 DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 
 # once pysoda has been packaged with pyinstaller
@@ -2791,6 +2795,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
+    global main_curation_uploaded_files
     # global progress_percentage
     # global progress_percentage_array
 
@@ -3243,6 +3248,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 bf_folder.upload(*list_upload)
                 bf_folder.update()
 
+                main_curation_uploaded_files += len(list_upload)
+
                 # rename to final name
                 for index, projected_name in enumerate(list_projected_names):
                     final_name = list_final_names[index]
@@ -3299,9 +3306,7 @@ main_initial_bfdataset_size = 0
 bf = ""
 myds = ""
 
-# a global that tracks the amount of files that have been uploaded in an upload session;
-# is reset once the session ends by success, or failure (is implicitly reset in case of Pennsieve Agent freeze by the user closing SODA)
-main_curation_uploaded_files = 0
+
 
 
 def bf_check_dataset_files_validity(soda_json_structure, bf):

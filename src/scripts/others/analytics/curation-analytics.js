@@ -29,6 +29,8 @@ const logCurationErrorsToAnalytics = async (
   dataset_destination,
   mainTotalGenerateDatasetSize
 ) => {
+  console.log("Uploaded files: ", uploadedFiles);
+  console.log("Uploaded files size: ", uploadedFilesSize);
   logCurationForAnalytics(
     "Error",
     PrepareDatasetsAnalyticsPrefix.CURATE,
