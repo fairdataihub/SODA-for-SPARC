@@ -1108,7 +1108,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # clear the pennsieve queue for successive batches
                         clear_queue()
 
-
                         # upload the current bucket
                         current_folder.upload(*files_with_destination)
                         current_folder.update()
