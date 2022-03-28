@@ -257,7 +257,6 @@ const guidedLoadSavedProgressFiles = async () => {
   }
 };
 const traverseToTab = (targetPageID) => {
-  console.log(targetPageID);
   if (
     targetPageID === "guided-designate-pi-owner-tab" ||
     "guided-designate-permissions-tab"
@@ -269,21 +268,26 @@ const traverseToTab = (targetPageID) => {
     $("#guided-button-preview-folder-structure").show();
   }
   if (targetPageID === "guided-create-subjects-metadata-tab") {
-    //get subjects from the datasetStructureJSONObj
-    let subjectsArray = Object.keys(
-      datasetStructureJSONObj.folders.primary.folders
-    );
-    //Create a sodajson object property for each subject to store metadata from forms in
-    for (let subject of subjectsArray) {
-      //check to see if subject already has data in the sodajsonObj
-      if (
-        sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] ===
-        undefined
-      ) {
-        sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
+    //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
+    try {
+      let subjectsArray = [];
+      subjectsArray = Object.keys(
+        datasetStructureJSONObj.folders.primary.folders
+      );
+      for (let subject of subjectsArray) {
+        //check to see if subject already has data in the sodajsonObj
+        if (
+          sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] ===
+          undefined
+        ) {
+          sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] = {};
+        }
       }
+      renderSubjectsMetadataTable(subjectsArray);
+    } catch {
+      traverseToTab("guided-create-samples-metadata-tab");
+      throw "subjectsArray not defined, going to samples metadata tab";
     }
-    renderSubjectsMetadataTable(subjectsArray);
   }
   let currentParentTab = CURRENT_PAGE.parent();
   let targetPage = $(`#${targetPageID}`);
@@ -1148,6 +1152,53 @@ const openSampleFolder = (clickedStructureButton) => {
     datasetStructureJSONObj
   );
 };
+
+const addSampleFolder = (sampleAddButton) => {
+  sampleAddButton
+    .closest("thead")
+    .siblings("tbody")
+    .append(
+      `
+      <tr>
+        <td class="middle aligned collapsing text-center">
+          <span class="sample-table-index"></span>
+        </td>
+        <td class="middle aligned sample-id-cell">
+          <input
+            class="guided--input"
+            type="text"
+            name="guided-sample-id"
+            placeholder="Enter sample ID and press enter"
+            onkeyup="createSampleFolder(event, $(this))"
+          />
+        </td>
+        <td
+          class="middle aligned collapsing text-center"
+          style="min-width: 130px"
+        >
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            style="
+                    background-color: var(--color-light-green) !important;
+                  "
+            onclick="openSampleFolder($(this))"
+          >
+            Add files
+          </button>
+        </td>
+        <td class="middle aligned collapsing text-center">
+          <i
+            class="far fa-trash-alt"
+            style="color: red; cursor: pointer"
+            onclick="deleteSampleFolder($(this))"
+          ></i>
+        </td>
+      </tr>
+      `
+    );
+  updateGuidedTableIndices("sample-table-index");
+};
 const deleteSampleFolder = (sampleDeleteButton) => {
   const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
   let samplesParentSubject = sampleDeleteButton
@@ -1255,8 +1306,8 @@ const renderSamplesTables = () => {
                   right: 20px;
                   top: 50%;
                   transform: translateY(-50%);"
-                onclick="addSampleFolder($(this))"
-              >
+                  onclick="addSampleFolder($(this))"
+                >
                 <i class="fas fa-folder-plus" style="margin-right: 7px"></i
                 >Add ${subject.subjectName} sample
               </button>
@@ -3662,7 +3713,7 @@ $(document).ready(() => {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.attr("id");
     //add a bootstrap loader to the next button
-    $("#guided-next-button").addClass("elastic loading");
+    $("#guided-next-button").addClass("loading");
 
     try {
       if (pageBeingLeftID === "guided-basic-description-tab") {
@@ -3866,17 +3917,21 @@ $(document).ready(() => {
       let targetPageID = targetPage.attr("id");
 
       traverseToTab(targetPageID);
-    } catch (errorArray) {
-      console.log(errorArray);
-      errorArray.map((error) => {
-        notyf.open({
-          duration: "5000",
-          type: "error",
-          message: error,
+    } catch (error) {
+      //check to see if the type of error is array
+      if (Array.isArray(error)) {
+        errorArray.map((error) => {
+          notyf.open({
+            duration: "5000",
+            type: "error",
+            message: error,
+          });
         });
-      });
+      } else {
+        console.log("error: ", error);
+      }
     }
-    $("#guided-next-button").removeClass("elastic loading");
+    $("#guided-next-button").removeClass("loading");
   });
 
   //back button click handler
