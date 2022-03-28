@@ -1098,11 +1098,16 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             % (dirpath, bfdataset)
                         )
 
-                        # upload the files
+                        files_with_destination = []
+
+                        # construct upload destination for current bucket
                         for file in upload_bucket:
                             # add the Absolute path so the Agent can find the file
                             file_path = join(dirpath, file)
-                            current_folder.upload(file_path)
+                            files_with_destination.append(file_path)
+                        
+                        # upload the current bucket
+                        current_folder.upload(*files_with_destination)
 
                         # update the global that tracks the amount of files that have been successfully uploaded
                         # for this upload session
@@ -1113,15 +1118,22 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # update the start_index to end_index + 1
                         start_index = end_index + 1
                 else:
+                    clear_queue()
+                    
                     if len(files) > 0:
-                        clear_queue()
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
                             % (dirpath, bfdataset)
                         )
+
+                        files_with_destination = []
+
                         for file in files:
                             file_path = join(dirpath, file)
-                            current_folder.upload(file_path)
+                            files_with_destination.append(file_path)
+                        
+                        # upload the files
+                        current_folder.upload(*files_with_destination)
 
                         uploaded_files += len(files)
 
