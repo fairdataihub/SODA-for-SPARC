@@ -1801,7 +1801,7 @@ function createSpeciesAutocomplete(id) {
   });
 }
 
-function createStrain(id, type) {
+function createStrain(id, type, curationMode) {
   var autoCompleteJS4 = new autoComplete({
     selector: "#" + id,
     data: {
@@ -1842,7 +1842,13 @@ function createStrain(id, type) {
           info.setAttribute("class", "no_results_species");
           info.setAttribute(
             "onclick",
-            "populateRRID('" + data.query + "', '" + type + "')"
+            "populateRRID('" +
+              data.query +
+              "', '" +
+              type +
+              "', '" +
+              curationMode +
+              "')"
           );
           info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
         }
@@ -1860,7 +1866,7 @@ function createStrain(id, type) {
     document.querySelector("#" + id).value = selection;
     var strain = $("#sweetalert-" + type + "-strain").val();
     if (strain !== "") {
-      populateRRID(strain, type);
+      populateRRID(strain, type, curationMode);
     }
     autoCompleteJS4.input.value = selection;
   });

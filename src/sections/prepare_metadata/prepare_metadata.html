@@ -5283,7 +5283,7 @@
                     />
                     <button
                       class="button-add-species"
-                      onclick="addSpecies(this, 'subject')"
+                      onclick="addSpecies(this, 'subject', 'free-form')"
                       id="button-add-species-subject"
                     >
                       <svg
@@ -6126,7 +6126,7 @@
           <div
             class="ui secondary submit button"
             style="margin: 20px"
-            onclick="addCustomField('subjects')"
+            onclick="addCustomField('subjects', 'free-form')"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -7693,7 +7693,10 @@
                   font-size: 14px;
                 "
               >
-                <a onclick="preliminaryProtocolStep('samples')" target="_blank">
+                <a
+                  onclick="preliminaryProtocolStep('samples', 'free-form')"
+                  target="_blank"
+                >
                   Click here to import my protocol information
                 </a>
                 <i
@@ -7973,7 +7976,7 @@
           <div
             class="ui secondary submit button"
             style="margin: 20px"
-            onclick="addCustomField('samples')"
+            onclick="addCustomField('samples', 'free-form')"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

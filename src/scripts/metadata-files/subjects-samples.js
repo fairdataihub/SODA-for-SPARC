@@ -6,6 +6,10 @@ var samplesTableData = [];
 var samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
+let guidedHeadersArrSubjects = [];
+let guidedHeadersArrSamples = [];
+let guidedSubjectsTableData = [];
+let guidedSamplesTableData = [];
 
 function showForm(type, editBoolean) {
   if (type !== "edit") {
@@ -456,8 +460,13 @@ function addSubjectIDToJSON(subjectID) {
 }
 
 /// function to add Species - subjects + samples
-async function addSpecies(ev, type) {
-  $("#bootbox-" + type + "-species").val("");
+async function addSpecies(ev, type, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+
+  $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val("");
   const { value: value } = await Swal.fire({
     title: "Add/Edit a species",
     html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
@@ -470,44 +479,64 @@ async function addSpecies(ev, type) {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-species");
-      createSpeciesAutocomplete("sweetalert-" + type + "-species");
+      createSpeciesAutocomplete(`sweetalert-${type}-species`);
     },
     preConfirm: () => {
-      if (
-        document.getElementById("sweetalert-" + type + "-species").value === ""
-      ) {
+      if (document.getElementById(`sweetalert-${type}-species`).value === "") {
         Swal.showValidationMessage("Please enter a species.");
       }
-      return document.getElementById("sweetalert-" + type + "-species").value;
+      return document.getElementById(`sweetalert-${type}-species`).value;
     },
   });
   if (value) {
     if (value !== "") {
-      $("#bootbox-" + type + "-species").val(value);
-      switchSpeciesStrainInput("species", "edit");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val(value);
+      switchSpeciesStrainInput("species", "edit", curationMode);
     }
   } else {
-    switchSpeciesStrainInput("species", "add");
+    switchSpeciesStrainInput("species", "add", curationMode);
   }
 }
 
-function switchSpeciesStrainInput(type, mode) {
+function switchSpeciesStrainInput(type, mode, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   if (mode === "add") {
-    $("#button-add-" + type + "-subject").html(
+    $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${type}`
     );
-    $(`#bootbox-subject-${type}`).css("display", "none");
-    $(`#bootbox-subject-${type}`).val("");
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
+      "display",
+      "none"
+    );
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).val("");
   } else if (mode === "edit") {
-    $(`#bootbox-subject-${type}`).css("display", "block");
-    $(`#bootbox-subject-${type}`).attr("readonly", true);
-    $(`#bootbox-subject-${type}`).css("background", "#f5f5f5");
-    $("#button-add-" + type + "-subject").html("<i class='pen icon'></i>Edit");
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
+      "display",
+      "block"
+    );
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).attr(
+      "readonly",
+      true
+    );
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
+      "background",
+      "#f5f5f5"
+    );
+    $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
+      "<i class='pen icon'></i>Edit"
+    );
   }
 }
 
-async function addStrain(ev, type) {
-  $("#bootbox-" + type + "-strain").val("");
+async function addStrain(ev, type, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+  $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
   const { value: value } = await Swal.fire({
     title: "Add/Edit a strain",
     html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
@@ -520,7 +549,7 @@ async function addStrain(ev, type) {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-strain");
-      createStrain("sweetalert-" + type + "-strain", type);
+      createStrain("sweetalert-" + type + "-strain", type, curationMode);
     },
     preConfirm: () => {
       if (
@@ -533,16 +562,20 @@ async function addStrain(ev, type) {
   });
   if (value) {
     if (value !== "") {
-      $("#bootbox-" + type + "-strain").val(value);
-      switchSpeciesStrainInput("strain", "edit");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
+      switchSpeciesStrainInput("strain", "edit", curationMode);
     }
   } else {
-    switchSpeciesStrainInput("strain", "add");
+    switchSpeciesStrainInput("strain", "add", curationMode);
   }
 }
 
 // populate RRID
-function populateRRID(strain, type) {
+function populateRRID(strain, type, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   var rridHostname = "scicrunch.org";
   // this is to handle spaces and other special characters in strain name
   var encodedStrain = encodeURIComponent(strain);
@@ -581,30 +614,46 @@ function populateRRID(strain, type) {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
-          $("#bootbox-" + type + "-strain").val("");
-          $("#bootbox-" + type + "-strain-RRID").val("");
-          $("#bootbox-" + type + "-strain").css("display", "none");
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val(
+            ""
+          );
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
+            "display",
+            "none"
+          );
           if (type.includes("subject")) {
-            $("#button-add-strain-subject").html(
+            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
               `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
             );
           } else {
-            $("#button-add-strain-sample").html(
+            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
               `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
             );
           }
         } else {
-          $("#bootbox-" + type + "-strain").val(strain);
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
           $("#btn-confirm-strain").removeClass("confirm-disabled");
-          $("#bootbox-" + type + "-strain").css("display", "block");
-          $("#bootbox-" + type + "-strain").attr("readonly", true);
-          $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
+            "display",
+            "block"
+          );
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr(
+            "readonly",
+            true
+          );
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
+            "background",
+            "#f5f5f5"
+          );
           if (type.includes("subject")) {
-            $("#button-add-strain-subject").html(
+            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
               "<i class='pen icon'></i>Edit"
             );
           } else {
-            $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit");
+            $(`#${curationModeSelectorPrefix}button-add-strain-sample`).html(
+              "<i class='pen icon'></i>Edit"
+            );
           }
           Swal.fire({
             title: `Successfully retrieved the RRID for "${strain}".`,
@@ -615,8 +664,8 @@ function populateRRID(strain, type) {
         }
       });
     } else {
-      $("#bootbox-" + type + "-strain").val("");
-      $("#bootbox-" + type + "-strain-RRID").val("");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
       Swal.fire({
         title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
         text: "Please check your Internet Connection or contact us at sodasparc@gmail.com",
@@ -905,10 +954,10 @@ function populateForms(subjectID, type) {
           } else if (field.name === "Species" && infoJson[i] !== "") {
             $("#bootbox-subject-species").val(infoJson[i]);
             // manipulate the Add Strains/Species UI accordingly
-            switchSpeciesStrainInput("species", "edit");
+            switchSpeciesStrainInput("species", "edit", "free-form");
           } else if (field.name === "Strain" && infoJson[i] !== "") {
             $("#bootbox-subject-strain").val(infoJson[i]);
-            switchSpeciesStrainInput("strain", "edit");
+            switchSpeciesStrainInput("strain", "edit", "free-form");
           } else {
             if (type === "import") {
               if (field.name === "subject id") {
@@ -1851,11 +1900,24 @@ function resetSamples() {
 }
 
 // functions below are to show/add/cancel a custom header
-async function addCustomField(type) {
+async function addCustomField(type, curationMode) {
+  let subjectsHeaderArray = null;
+  let samplesHeaderArray = null;
+  if (curationMode == "free-form") {
+    subjectsHeaderArray = headersArrSubjects;
+    samplesHeaderArray = headersArrSamples;
+  }
+  if (curationMode == "guided") {
+    subjectsHeaderArray = guidedHeadersArrSubjects;
+    samplesHeaderArray = guidedHeadersArrSamples;
+  }
   if (type === "subjects") {
-    var lowercaseCasedArray = $.map(headersArrSubjects, function (item, index) {
-      return item.toLowerCase();
-    });
+    var lowercaseCasedArray = $.map(
+      subjectsHeaderArray,
+      function (item, index) {
+        return item.toLowerCase();
+      }
+    );
     const { value: customField } = await Swal.fire({
       title: "Enter a custom field:",
       input: "text",
@@ -1874,10 +1936,10 @@ async function addCustomField(type) {
       },
     });
     if (customField) {
-      addCustomHeader("subjects", customField);
+      addCustomHeader("subjects", customField, curationMode);
     }
   } else if (type === "samples") {
-    var lowercaseCasedArray = $.map(headersArrSamples, function (item, index) {
+    var lowercaseCasedArray = $.map(samplesHeaderArray, function (item, index) {
       return item.toLowerCase();
     });
     const { value: customField } = await Swal.fire({
@@ -1891,19 +1953,23 @@ async function addCustomField(type) {
         if (!value) {
           return "Please enter a custom field";
         } else {
-          if (headersArrSamples.includes(value.toLowerCase())) {
+          if (samplesHeaderArray.includes(value.toLowerCase())) {
             return "Duplicate field name! <br> You entered a custom field that is already listed.";
           }
         }
       },
     });
     if (customField) {
-      addCustomHeader("samples", customField);
+      addCustomHeader("samples", customField, curationMode);
     }
   }
 }
 
-function addCustomHeader(type, customHeaderValue) {
+function addCustomHeader(type, customHeaderValue, curationMode) {
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   var customName = customHeaderValue.trim();
   if (type === "subjects") {
     var divElement =
@@ -1916,11 +1982,25 @@ function addCustomHeader(type, customHeaderValue) {
       '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
       customName +
       '\', 0)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
-    $("#accordian-custom-fields").append(divElement);
-    headersArrSubjects.push(customName);
-    // add empty entries for all of the other sub_ids to normalize the size of matrix
-    for (var subId of subjectsTableData.slice(1, subjectsTableData.length)) {
-      subId.push("");
+    $(`#${curationModeSelectorPrefix}accordian-custom-fields`).append(
+      divElement
+    );
+    if (curationMode == "free-form") {
+      headersArrSubjects.push(customName);
+      // add empty entries for all of the other sub_ids to normalize the size of matrix
+      for (var subId of subjectsTableData.slice(1, subjectsTableData.length)) {
+        subId.push("");
+      }
+    }
+    if (curationMode == "guided") {
+      guidedHeadersArrSubjects.push(customName);
+      // add empty entries for all of the other sub_ids to normalize the size of matrix
+      for (var subId of guidedSubjectsTableData.slice(
+        1,
+        guidedSubjectsTableData.length
+      )) {
+        subId.push("");
+      }
     }
   } else if (type === "samples") {
     var divElement =
@@ -1933,11 +2013,24 @@ function addCustomHeader(type, customHeaderValue) {
       '"></input></div></div><div class="tooltipnew demo-controls-end"><svg onclick="deleteCustomField(this, \'' +
       customName +
       '\', 1)" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></div></div>';
-    $("#accordian-custom-fields-samples").append(divElement);
-    headersArrSamples.push(customName);
-    // add empty entries for all of the other sub_ids to normalize the size of matrix
-    for (var sampleId of samplesTableData.slice(1, samplesTableData.length)) {
-      sampleId.push("");
+    $(`#${curationModeSelectorPrefix}accordian-custom-fields-samples`).append(
+      divElement
+    );
+    if (curationMode == "free-form") {
+      headersArrSamples.push(customName);
+      // add empty entries for all of the other sub_ids to normalize the size of matrix
+      for (var sampleId of samplesTableData.slice(1, samplesTableData.length)) {
+        sampleId.push("");
+      }
+    }
+    if (curationMode == "guided") {
+      guidedHeadersArrSamples.push(customName);
+      for (var sampleId of guidedSamplesTableData.slice(
+        1,
+        guidedSamplesTableData.length
+      )) {
+        sampleId.push("");
+      }
     }
   }
 }
@@ -2586,7 +2679,8 @@ function loadDataFrametoUISamples(type) {
   }
 }
 
-function preliminaryProtocolStep(type) {
+function preliminaryProtocolStep(type, curationMode) {
+  //TODO - add guided mode functionality
   var credentials = loadExistingProtocolInfo();
   if (credentials[0]) {
     // show email for protocol account
