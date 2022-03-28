@@ -805,31 +805,25 @@ $("#guided-button-generate-subjects-table").on("click", () => {
     $("#guided-number-of-subjects-input").val().trim()
   );
   // gets amount of samples to fill all number of sample input boxes
-  let numberOfSamplesInput = `
-    <input
-      class="guided--input guided-input-sample-count"
-      type="text"
-      name="guided-number-of-samples"
-      placeholder="Quantity"
-      style="width: 120px; text-align: center;"
-    />
-  `;
+  let numSamplesIfAllSubjectsSameNumSamples = "";
+  if ($("#guided-button-samples-same").hasClass("selected")) {
+    numSamplesIfAllSubjectsSameNumSamples = parseInt(
+      $("#guided-number-of-samples-input").val().trim()
+    );
+  }
+  console.log(numSamplesIfAllSubjectsSameNumSamples);
   let subjectsTableBody = document.getElementById("subjects-table-body");
   const subjectRows = Array(numSubjectRowsToCreate)
     .fill(0)
     .map((subject, index) => {
       let tableIndex = index + 1;
-      return generateSubjectRowElement(tableIndex, numberOfSamplesInput);
+      return generateSubjectRowElement(
+        tableIndex,
+        numSamplesIfAllSubjectsSameNumSamples
+      );
     });
   subjectsTableBody.innerHTML = subjectRows.join("\n");
-  if ($("#guided-button-samples-same").hasClass("selected")) {
-    let numSamplesIfAllSubjectsSameNumSamples = $(
-      "#guided-number-of-samples-input"
-    )
-      .val()
-      .trim();
-    $(".guided-input-sample-count").val(numSamplesIfAllSubjectsSameNumSamples);
-  }
+
   guidedAddHighLevelFolderToDatasetStructureObj("primary");
   $("#number-of-subjects-prompt").hide();
   $("#subjects-table").css("display", "flex");
@@ -948,7 +942,16 @@ generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
           data-alert-type="danger"
         />
       </td>
-      <td class="middle aligned collapsing text-center">${subjectNumSamples}</td>
+      <td class="middle aligned collapsing text-center">
+        <input
+          class="guided--input guided-input-sample-count"
+          type="text"
+          name="guided-number-of-samples"
+          placeholder="Quantity"
+          style="width: 120px; text-align: center;"
+          value="${subjectNumSamples}"
+        />
+      </td>
       <td class="middle aligned collapsing text-center" style="min-width: 130px">
         <button
           type="button"
