@@ -5,7 +5,7 @@
 */
 const { determineDatasetLocation } = require("./analytics-utils");
 
-const BUCKET_SIZE = 500
+const BUCKET_SIZE = 500;
 
 // check if the user is modifying an existing local dataset for Curation
 // Has to be called after Step 6
