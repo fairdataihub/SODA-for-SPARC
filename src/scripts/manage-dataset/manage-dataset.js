@@ -2654,23 +2654,23 @@ $("#button-submit-dataset").click(async () => {
 
           // even when the upload fails we want to know how many files were uploaded and their size
           // for the current upload session
-          // ipcRenderer.send(
-          //   "track-event",
-          //   "Success",
-          //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          //   ` - Number of Files`,
-          //   `${datasetUploadSession.id}`,
-          //   (uploadedFiles += 250)
-          // );
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Number of Files`,
+            `${datasetUploadSession.id}`,
+            (uploadedFiles += 250)
+          );
 
-          // ipcRenderer.send(
-          //   "track-event",
-          //   "Success",
-          //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          //   " - size",
-          //   `${datasetUploadSession.id}`,
-          //   uploadedFilesSize
-          // );
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            " - size",
+            `${datasetUploadSession.id}`,
+            uploadedFilesSize
+          );
 
           return;
         } else if (didFail && !didUpload) {
@@ -2681,24 +2681,24 @@ $("#button-submit-dataset").click(async () => {
           console.log("Amount of files being uploaded: ", uploadedFiles);
           console.log("Size of files: ", uploadedFilesSize);
 
-          // // track the amount of files uploaded for the current bucket
-          // ipcRenderer.send(
-          //   "track-event",
-          //   "Success",
-          //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          //   ` - Number of Files`,
-          //   `${datasetUploadSession.id}`,
-          //   uploadedFiles
-          // );
+          // track the amount of files uploaded for the current bucket
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Number of Files`,
+            `${datasetUploadSession.id}`,
+            uploadedFiles
+          );
 
-          // ipcRenderer.send(
-          //   "track-event",
-          //   "Success",
-          //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          //   " - size",
-          //   `${datasetUploadSession.id}`,
-          //   uploadedFilesSize
-          // );
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            " - size",
+            `${datasetUploadSession.id}`,
+            uploadedFilesSize
+          );
         }
       }
     });
