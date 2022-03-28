@@ -6714,6 +6714,7 @@ async function initiate_generate() {
   const checkForBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_main_curate_function_upload_details", (err, res) => {
+      console.log("Respponse from server: ", res[0], res[1], res[2], res[3] )
       // check if the amount of successfully uploaded files has increased
       if (res[0] > uploadedFiles) {
         uploadedFiles = res[0];
