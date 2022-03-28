@@ -3589,7 +3589,11 @@ def main_curate_function(soda_json_structure):
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
 
-    return main_curate_progress_message, main_total_generate_dataset_size, main_curation_uploaded_files
+    return (
+        main_curate_progress_message,
+        main_total_generate_dataset_size,
+        main_curation_uploaded_files,
+    )
 
 
 def main_curate_function_progress():
