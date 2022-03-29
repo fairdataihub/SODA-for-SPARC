@@ -179,6 +179,11 @@ const logCurationSuccessToAnalytics = async (
   dataset_destination,
   uploadedFiles
 ) => {
+  console.log("Dataset destination is: ", dataset_destination);
+  console.log("Upload session is: ", datasetUploadSession);
+  console.log("Uploaded files is: ", uploadedFiles);
+  console.log("Uploaded size is: ", main_total_generate_dataset_size);
+
   // get dataset id if available
   let datasetLocation = determineDatasetLocation();
 
