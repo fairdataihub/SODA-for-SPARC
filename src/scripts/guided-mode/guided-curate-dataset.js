@@ -787,6 +787,7 @@ const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
     .closest("tr")
     .find(".subject-metadata-id")
     .text();
+  $("#guided-metadata-subject-id").text(subjectMetadataID);
   traverseToTab("guided-subject-metadata-tab");
   //Manually override active capsule to make it seem like they're still on the subjects tab
   setActiveCapsule("guided-create-subjects-metadata-tab");

@@ -201,14 +201,20 @@ function confirmSample() {
 }
 
 // for "Done adding" button - subjects
-function addSubject() {
-  var subjectID = $("#bootbox-subject-id").val();
-  addSubjectIDtoDataBase(subjectID);
-  if (subjectsTableData.length !== 0) {
-    $("#div-import-primary-folder-subjects").hide();
+function addSubject(curationMode) {
+  let subjectID = "";
+  if (curationMode === "free-form") {
+    subjectID = $("#bootbox-subject-id").val();
+    addSubjectIDtoDataBase(subjectID);
+    if (subjectsTableData.length !== 0) {
+      $("#div-import-primary-folder-subjects").hide();
+    }
+    if (subjectsTableData.length === 2) {
+      onboardingMetadata("subject");
+    }
   }
-  if (subjectsTableData.length === 2) {
-    onboardingMetadata("subject");
+  if (curationMode === "guided") {
+    subjectID === $("#guided-metadata-subject-id").val();
   }
 }
 
@@ -2610,6 +2616,7 @@ function loadDataFrametoUI(type) {
     .find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());
   }
+  alert(fieldSubjectEntries);
   // separate regular headers and custom headers
   const lowercasedHeaders = subjectsTableData[0].map((header) =>
     header.toLowerCase()
