@@ -3307,8 +3307,6 @@ bf = ""
 myds = ""
 
 
-
-
 def bf_check_dataset_files_validity(soda_json_structure, bf):
     """
     Function to check that the bf data files and folders specified in the dataset are valid

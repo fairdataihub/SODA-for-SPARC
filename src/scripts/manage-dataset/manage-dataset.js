@@ -2544,14 +2544,6 @@ $("#button-submit-dataset").click(async () => {
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );
       } else {
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
-          defaultBfDatasetId
-        );
-
         completionStatus = res[1];
         let submitprintstatus = res[2];
         totalFileSize = res[3];
@@ -2618,6 +2610,14 @@ $("#button-submit-dataset").click(async () => {
 
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Progress track`,
+          defaultBfDatasetId
+        );
       }
     }
   }
@@ -2635,8 +2635,6 @@ $("#button-submit-dataset").click(async () => {
         uploadedFilesSize = res[1];
         let didFail = res[2];
         let didUpload = res[3];
-
-        console.log("Did fail values are: ", didFail, didUpload);
 
         // failed to upload a bucket, but did upload some files
         if (didFail && didUpload) {
@@ -2656,52 +2654,52 @@ $("#button-submit-dataset").click(async () => {
 
           // even when the upload fails we want to know how many files were uploaded and their size
           // for the current upload session
-          // ipcRenderer.send(
-          //   "track-event",
-          //   "Success",
-          //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          //   ` - Number of Files`,
-          //   `${datasetUploadSession.id}`,
-          //   (uploadedFiles += 250)
-          // );
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Number of Files`,
+            `${datasetUploadSession.id}`,
+            (uploadedFiles += 250)
+          );
 
-          // ipcRenderer.send(
-          //   "track-event",
-          //   "Success",
-          //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          //   " - size",
-          //   `${datasetUploadSession.id}`,
-          //   uploadedFilesSize
-          // );
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              " - size",
+            `${datasetUploadSession.id}`,
+            uploadedFilesSize
+          );
 
           return;
         } else if (didFail && !didUpload) {
           // there is no session information to log outside of the general information logged in the
           // error for api_bf_submit
           return;
+        } else {
+          console.log("Amount of files being uploaded: ", uploadedFiles);
+          console.log("Size of files: ", uploadedFilesSize);
+
+          // track the amount of files uploaded for the current bucket
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Number of Files`,
+            `${datasetUploadSession.id}`,
+            uploadedFiles
+          );
+
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              " - size",
+            `${datasetUploadSession.id}`,
+            uploadedFilesSize
+          );
         }
-
-        console.log("Amount of files being uploaded: ", uploadedFiles);
-        console.log("Size of files: ", uploadedFilesSize);
-
-        // // track the amount of files uploaded for the current bucket
-        // ipcRenderer.send(
-        //   "track-event",
-        //   "Success",
-        //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-        //   ` - Number of Files`,
-        //   `${datasetUploadSession.id}`,
-        //   uploadedFiles
-        // );
-
-        // ipcRenderer.send(
-        //   "track-event",
-        //   "Success",
-        //   ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-        //   " - size",
-        //   `${datasetUploadSession.id}`,
-        //   uploadedFilesSize
-        // );
       }
     });
 

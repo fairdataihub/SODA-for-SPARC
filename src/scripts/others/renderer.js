@@ -42,9 +42,6 @@ const {
 const {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
-  getLocallyGeneratedFileCount,
-  editingExistingLocalDataset,
-  getDirectorySize,
 } = require("./scripts/others/analytics/curation-analytics");
 const {
   determineDatasetLocation,
@@ -6559,7 +6556,6 @@ async function initiate_generate() {
       // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
       // if they stay zero that means nothing was uploaded
       if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-        console.log("Waiting");
         await wait(2000);
       }
 

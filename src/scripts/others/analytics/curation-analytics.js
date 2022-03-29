@@ -5,6 +5,8 @@
 */
 const { determineDatasetLocation } = require("./analytics-utils");
 
+const BUCKET_SIZE = 500;
+
 // check if the user is modifying an existing local dataset for Curation
 // Has to be called after Step 6
 const editingExistingLocalDataset = () => {
@@ -29,8 +31,6 @@ const logCurationErrorsToAnalytics = async (
   dataset_destination,
   mainTotalGenerateDatasetSize
 ) => {
-  console.log("Uploaded files: ", uploadedFiles);
-  console.log("Uploaded files size: ", uploadedFilesSize);
   logCurationForAnalytics(
     "Error",
     PrepareDatasetsAnalyticsPrefix.CURATE,
@@ -112,6 +112,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      datasetLocation,
       mainTotalGenerateDatasetSize
     );
 
@@ -125,9 +126,7 @@ const logCurationErrorsToAnalytics = async (
     );
   } else {
     // log the Pennsieve upload session information
-    // TODO: Local dataset generation does not have a session ID. Make this conditional.
     // TODO: Check when an upload has started instead of assuming we fail on upload to Pennsieve
-    // TODO: Variable for the bucket size -- just need to decide where it should be placed
     // some files have been successfully uploaded before the crash occurred. Reasonable to say half of the bucket.
     ipcRenderer.send(
       "track-event",
@@ -135,21 +134,21 @@ const logCurationErrorsToAnalytics = async (
       PrepareDatasetsAnalyticsPrefix.CURATE +
         " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
-      (uploadedFiles += 250)
+      (uploadedFiles += BUCKET_SIZE / 2)
     );
 
     // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
     // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one;
     // without an explicit log of a session failing with the amount of files that were attempted that this provides we couldn't answer
     // the first question.
-    // ipcRenderer.send(
-    //   "track-event",
-    //   "Error",
-    //   PrepareDatasetsAnalyticsPrefix.CURATE +
-    //     " - Step 7 - Generate - Dataset - Number of Files",
-    //   `${datasetUploadSession.id}`,
-    //   file_counter
-    // );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      PrepareDatasetsAnalyticsPrefix.CURATE +
+        " - Step 7 - Generate - Dataset - Number of Files",
+      `${datasetUploadSession.id}`,
+      file_counter
+    );
 
     ipcRenderer.send(
       "track-event",
@@ -163,13 +162,13 @@ const logCurationErrorsToAnalytics = async (
 
     // log the size that was attempted to be uploaded for the given session
     // as above this helps us answer how much was uploaded out of the total before the session failed
-    // ipcRenderer.send(
-    //   "track-event",
-    //   "Error",
-    //   "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-    //   `${datasetUploadSession.id}`,
-    //   main_total_generate_dataset_size
-    // );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      `${datasetUploadSession.id}`,
+      main_total_generate_dataset_size
+    );
   }
 };
 
