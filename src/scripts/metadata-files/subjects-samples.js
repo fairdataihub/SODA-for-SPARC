@@ -214,7 +214,8 @@ function addSubject(curationMode) {
     }
   }
   if (curationMode === "guided") {
-    subjectID === $("#guided-metadata-subject-id").val();
+    subjectID === $("#guided-metadata-subject-id").text();
+    addTheRestSubjectEntriesToJSON("guided");
   }
 }
 
@@ -461,7 +462,7 @@ function clearAllSubjectFormFields(form) {
 // add new subject ID to JSON file (main file to be converted to excel)
 function addSubjectIDToJSON(subjectID) {
   if ($("#form-add-a-subject").length > 0) {
-    addTheRestSubjectEntriesToJSON();
+    addTheRestSubjectEntriesToJSON("free-form");
   }
 }
 
@@ -683,11 +684,20 @@ function populateRRID(strain, type, curationMode) {
   });
 }
 
-function addTheRestSubjectEntriesToJSON() {
-  var dataLength = subjectsTableData.length;
+function addTheRestSubjectEntriesToJSON(curationMode) {
+  let curationModeSelectorPrefix = "";
+  let dataLength = "";
+  if (curationMode === "free-form") {
+    curationModeSelectorPrefix = "";
+    dataLength = subjectsTableData.length;
+  }
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+    dataLength = guidedSubjectsTableData.length;
+  }
   var valuesArr = [];
   headersArrSubjects = [];
-  for (var field of $("#form-add-a-subject")
+  for (var field of $(`#${curationModeSelectorPrefix}form-add-a-subject`)
     .children()
     .find(".subjects-form-entry")) {
     if (
@@ -701,10 +711,15 @@ function addTheRestSubjectEntriesToJSON() {
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
       if (
-        $("#bootbox-subject-age-info").val() !== "Select" &&
-        $("#bootbox-subject-age-info").val() !== "N/A"
+        $(`${curationModeSelectorPrefix}#bootbox-subject-age-info`).val() !==
+          "Select" &&
+        $(`${curationModeSelectorPrefix}#bootbox-subject-age-info`).val() !==
+          "N/A"
       ) {
-        field.value = field.value + " " + $("#bootbox-subject-age-info").val();
+        field.value =
+          field.value +
+          " " +
+          $(`${curationModeSelectorPrefix}#bootbox-subject-age-info`).val();
       } else {
         field.value = field.value;
       }
@@ -712,11 +727,25 @@ function addTheRestSubjectEntriesToJSON() {
     valuesArr.push(field.value);
   }
   subjectsTableData[0] = headersArrSubjects;
+  guidedSubjectsTableData[0] = headersArrSubjects;
+  guidedSubjectsTableData[0].unshift("subject id");
   if (valuesArr !== undefined && valuesArr.length !== 0) {
-    if (subjectsTableData[dataLength] !== undefined) {
-      subjectsTableData[dataLength + 1] = valuesArr;
-    } else {
-      subjectsTableData[dataLength] = valuesArr;
+    if (curationMode === "free-form") {
+      if (subjectsTableData[dataLength] !== undefined) {
+        subjectsTableData[dataLength + 1] = valuesArr;
+      } else {
+        subjectsTableData[dataLength] = valuesArr;
+      }
+    }
+    if (curationMode === "guided") {
+      currSubjectID = $("#guided-metadata-subject-id").text();
+      if (guidedSubjectsTableData[dataLength] !== undefined) {
+        guidedSubjectsTableData[dataLength + 1] = valuesArr;
+        guidedSubjectsTableData[dataLength + 1].unshift(currSubjectID);
+      } else {
+        guidedSubjectsTableData[dataLength] = valuesArr;
+        guidedSubjectsTableData[dataLength].unshift(currSubjectID);
+      }
     }
   }
   $("#table-subjects").css("display", "block");

@@ -2529,7 +2529,10 @@
             >
               TEMP BUTTON RETURN TO SUBJECT METADATATA TABLE
             </button>
-            <div class="ui styled fluid accordion guided--accordion">
+            <div
+              class="ui styled fluid accordion guided--accordion"
+              id="guided-form-add-a-subject"
+            >
               <div class="title active">
                 <i class="dropdown icon active"></i>
                 Experimental Setup
@@ -3628,6 +3631,7 @@
               id="guided-generate-subjects-file"
               class="btn_animated"
               style="width: 180px; border: none !important"
+              onclick="addSubject('guided')"
             >
               Generate subjects file
             </button>

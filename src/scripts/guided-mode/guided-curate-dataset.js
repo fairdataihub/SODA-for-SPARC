@@ -3354,10 +3354,10 @@ $(document).ready(() => {
         });
       }
     });
-  }
+  } /*
   $("#guided-generate-subjects-file").on("click", () => {
     guidedSaveSubjectsFile();
-  });
+  });*/
   $("#guided-generate-submission-file").on("click", () => {
     guidedSaveSubmissionFile();
   });
