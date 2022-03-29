@@ -3411,6 +3411,7 @@ def main_curate_function(soda_json_structure):
     global main_initial_bfdataset_size
     # global progress_percentage
     # global progress_percentage_array
+    global main_curation_uploaded_files
 
     global bf
     global myds
@@ -3422,6 +3423,7 @@ def main_curate_function(soda_json_structure):
     main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 1
     main_generated_dataset_size = 0
+    main_curation_uploaded_files = 0
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
@@ -3639,7 +3641,7 @@ def main_curate_function_upload_details():
     for local dataset generation.
     """
 
-    return (main_curation_uploaded_files, main_total_generate_dataset_size)
+    return (main_curation_uploaded_files, main_generated_dataset_size)
 
 
 def preview_dataset(soda_json_structure):
