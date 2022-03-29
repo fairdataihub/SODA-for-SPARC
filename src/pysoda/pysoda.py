@@ -1144,7 +1144,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
                         uploaded_files += len(files)
                         did_upload = True
-                        raise Exception("Whoop")
 
             # upload completed
             submitdataprogress = "Success: COMPLETED!"
