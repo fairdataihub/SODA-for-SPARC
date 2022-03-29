@@ -839,7 +839,7 @@ const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {
     width: 900,
     html: copyMetadataElement,
     showCancelButton: true,
-    reverseSwalButtons: true,
+    reverseButtons: reverseSwalButtons,
     confirmButtonColor: "Copy",
     focusCancel: true,
   });
