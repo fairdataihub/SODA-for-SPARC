@@ -3421,7 +3421,7 @@ def main_curate_function(soda_json_structure):
     main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 1
     main_generated_dataset_size = 0
-    main_curation_uploaded_files = 0 
+    main_curation_uploaded_files = 0
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
