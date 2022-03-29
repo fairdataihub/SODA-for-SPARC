@@ -2648,7 +2648,7 @@ $("#button-submit-dataset").click(async () => {
             uploadedFiles + 250
           );
           console.log(
-            "Local dataset failed to upload here is the amount of files we will log: ",
+            "Local dataset failed to upload here is the size of files we will log: ",
             uploadedFilesSize
           );
 
@@ -2676,6 +2676,7 @@ $("#button-submit-dataset").click(async () => {
         } else if (didFail && !didUpload) {
           // there is no session information to log outside of the general information logged in the
           // error for api_bf_submit
+          console.log("Failed broski");
           return;
         } else {
           console.log("Amount of files being uploaded: ", uploadedFiles);
