@@ -9,22 +9,36 @@ import subprocess
 # iterate through directory
 path_to_files = "C:\\Users\\CMarroquin\\upload-tests\\upload-limit-6000\\fgh"
 
-bf = Pennsieve("SODA-Pennsieve")
-
 # for each file queue up the Pennsieve Agent with Upload
 file_paths = []
 
-for (dir, files, something) in os.walk(path_to_files):
+
+for root, dirs, files in os.walk(path_to_files, topdown=True):
     # join all files with absolute path 
     for file in files:
-        file_paths.append(os.path.join(path_to_files, file))
+        file_paths.append(os.path.normpath(os.path.join(path_to_files, file)))
 
 
+altered_paths = []
+for file in file_paths:
+    # add string characters to each element 
+    altered_paths.append(file)
 
 # upload all of the files to the Pennsieve CLI individually
-for file in file_paths:
-    subprocess.run(["pennsieve", file, "--dataset", "N:dataset:b36df1dc-792f-45a3-a17d-bf811b91a1f8", "folder", "upload-testing"])
+a = altered_paths[0: 500]
+
+print(a)
+
+b = "N:dataset:b36df1dc-792f-45a3-a17d-bf811b91a1f8"
+c = "upload-testing"
+
+print(a)
+
+try:
+    sub = subprocess.Popen(["pennsieve", "upload", *a, "--dataset", b, "--folder", c])
+except Exception as e:
+    print("Exception")
+    print(e)
+
 
 print("All files should be being queued now")
-
-
