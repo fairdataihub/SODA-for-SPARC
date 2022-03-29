@@ -903,6 +903,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     initial_bfdataset_size_submit = 0
     start_submit = 0
     did_upload = False
+    did_fail = False 
 
     try:
         bf = Pennsieve(accountname)
@@ -1121,6 +1122,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         # update the start_index to end_index + 1
                         start_index = end_index + 1
                 else:
+                    
                     if len(files) > 0:
                         submitdataprogress = (
                             "Uploading folder '%s' to dataset '%s \n' "
@@ -1141,8 +1143,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         myds.update()
 
                         uploaded_files += len(files)
-
                         did_upload = True
+                        raise Exception("Whoop")
+                        
+
+                        
 
             # upload completed
             submitdataprogress = "Success: COMPLETED!"
@@ -1161,6 +1166,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         try:
             return gev[0].get()
         except Exception as e:
+            did_fail = True 
             raise e
 
     except Exception as e:
