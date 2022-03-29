@@ -270,8 +270,7 @@ const traverseToTab = (targetPageID) => {
   if (targetPageID === "guided-create-subjects-metadata-tab") {
     //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
     try {
-      let subjectsArray = [];
-      subjectsArray = Object.keys(
+      let subjectsArray = Object.keys(
         datasetStructureJSONObj.folders.primary.folders
       );
       for (let subject of subjectsArray) {
@@ -794,8 +793,55 @@ const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
   $("#guided-footer-div").hide();
 };
 const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {
+  let subjectsArray = Object.keys(
+    datasetStructureJSONObj.folders.primary.folders
+  );
+  const copyFromMetadata = subjectsArray
+    .map((subject) => {
+      return `
+      <div class="field text-left">
+        <div class="ui radio checkbox">
+          <input type="radio" name="copy-from">
+          <label>${subject}</label>
+        </div>
+      </div>`;
+    })
+    .join("\n");
+  const copyToMetadata = subjectsArray
+    .map((subject) => {
+      return `
+      <div class="field text-left">
+        <div class="ui checkbox">
+          <input type="checkbox" name="copy-to">
+          <label>${subject}</label>
+        </div>
+      </div>`;
+    })
+    .join("\n");
+
+  const copyMetadataElement = `
+  <div class="space-between">
+    <div class="ui form">
+      <div class="grouped fields">
+        <label class="guided--form-label text-left">Which subject would you like to copy metadata from?</label>
+        ${copyFromMetadata}
+      </div>
+    </div>
+    <div class="ui form">
+      <div class="grouped fields">
+        <label class="guided--form-label text-left">Which subjects would you like to copy metadata to?</label>
+        ${copyToMetadata}
+      </div>
+    </div>
+  </div>
+  `;
   swal.fire({
-    title: "Copy metadata from subject",
+    width: 900,
+    html: copyMetadataElement,
+    showCancelButton: true,
+    reverseSwalButtons: true,
+    confirmButtonColor: "Copy",
+    focusCancel: true,
   });
 };
 
