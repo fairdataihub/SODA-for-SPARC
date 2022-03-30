@@ -744,7 +744,7 @@ const returnToTableFromFolderStructure = (clickedBackButton) => {
 
 const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
   //Clear metadata form inputs
-  clearAllSubjectFormFields($("#guided-form-add-a-subject"));
+  clearAllSubjectFormFields(guidedSubjectsFormDiv);
   traverseToTab("guided-create-subjects-metadata-tab");
   $("#guided-footer-div").css("display", "flex");
 };

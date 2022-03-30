@@ -1,4 +1,7 @@
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
+var guidedSubjectsFormDiv = document.getElementById(
+  "guided-form-add-a-subject"
+);
 var samplesFormDiv = document.getElementById("form-add-a-sample");
 var subjectsTableData = [];
 var subjectsFileData = [];
@@ -162,7 +165,7 @@ function promptImportPrevInfoSubject(arr1) {
     if (result.isConfirmed) {
       if ($("#previous-subject-single").val() !== "Select") {
         prevSubIDSingle = $("#previous-subject-single").val();
-        populateForms(prevSubIDSingle, "import");
+        populateForms(prevSubIDSingle, "import", "free-form");
       }
     } else {
       hideForm("subject");
@@ -215,7 +218,7 @@ function addSubject(curationMode) {
   }
   if (curationMode === "guided") {
     subjectID === $("#guided-metadata-subject-id").text();
-    addTheRestSubjectEntriesToJSON("guided");
+    addSubjectMetadataEntriesIntoJSON("guided");
   }
 }
 
@@ -462,7 +465,7 @@ function clearAllSubjectFormFields(form) {
 // add new subject ID to JSON file (main file to be converted to excel)
 function addSubjectIDToJSON(subjectID) {
   if ($("#form-add-a-subject").length > 0) {
-    addTheRestSubjectEntriesToJSON("free-form");
+    addSubjectMetadataEntriesIntoJSON("free-form");
   }
 }
 
@@ -684,7 +687,7 @@ function populateRRID(strain, type, curationMode) {
   });
 }
 
-function addTheRestSubjectEntriesToJSON(curationMode) {
+function addSubjectMetadataEntriesIntoJSON(curationMode) {
   let curationModeSelectorPrefix = "";
   let dataLength = "";
   if (curationMode === "free-form") {
@@ -741,11 +744,8 @@ function addTheRestSubjectEntriesToJSON(curationMode) {
       subjectID = $("#guided-metadata-subject-id").text();
       guidedSubjectsTableData[0].unshift("subject id");
       valuesArr.unshift(subjectID);
-      console.log(valuesArr); // ["sub-1", "pool-2", "group-3"...]
-      console.log(headersArrSubjects); // ["subject-id", "pool id", "group"...]
-      console.log(guidedSubjectsTableData);
       //Check to see if the subject ID is already in the table
-      //If so, overwrite current subject metadata
+      //If so, set duplicateSubjectIndex as the index of matching subject id
       let duplicateSubjectIndex = null;
       for (let i = 1; i < guidedSubjectsTableData.length; i++) {
         if (guidedSubjectsTableData[i][0] === subjectID) {
@@ -753,6 +753,7 @@ function addTheRestSubjectEntriesToJSON(curationMode) {
         }
       }
       if (duplicateSubjectIndex !== null) {
+        //If the subject ID is already in the table, update old subject metadata with new
         guidedSubjectsTableData[duplicateSubjectIndex] = valuesArr;
       } else {
         if (guidedSubjectsTableData[dataLength] !== undefined) {
@@ -953,7 +954,7 @@ function loadSubjectInformation(ev, subjectID) {
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
   clearAllSubjectFormFields(subjectsFormDiv);
-  populateForms(subjectID, "");
+  populateForms(subjectID, "", "free-form");
   $("#btn-edit-subject").unbind("click");
   $("#btn-edit-subject").click(function () {
     editSubject(ev, subjectID);
@@ -968,9 +969,16 @@ function loadSubjectInformation(ev, subjectID) {
   });
 }
 
-function populateForms(subjectID, type) {
-  if (subjectID !== "clear" && subjectID.trim() !== "") {
-    var infoJson = [];
+function populateForms(subjectID, type, curationMode) {
+  //Initialize variables shared between different curation modes and set them
+  //based on curationMode passed in as parameter
+  let fieldArr;
+  let curationModeSelectorPrefix;
+
+  if (curationMode === "free-form") {
+    curationModeSelectorPrefix = "";
+    fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry");
+
     if (subjectsTableData.length > 1) {
       for (var i = 1; i < subjectsTableData.length; i++) {
         if (subjectsTableData[i][0] === subjectID) {
@@ -979,8 +987,25 @@ function populateForms(subjectID, type) {
         }
       }
     }
+  }
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+    fieldArr = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
+
+    if (guidedSubjectsTableData.length > 1) {
+      for (var i = 1; i < guidedSubjectsTableData.length; i++) {
+        if (guidedSubjectsTableData[i][0] === subjectID) {
+          infoJson = guidedSubjectsTableData[i];
+          //remove first infoJson item because fieldArr does not contain a subject id input
+          infoJson.shift();
+          break;
+        }
+      }
+    }
+  }
+
+  if (subjectID !== "clear" && subjectID.trim() !== "") {
     // populate form
-    var fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry");
     var emptyEntries = ["nan", "nat"];
     var c = fieldArr.map(function (i, field) {
       if (infoJson[i]) {
@@ -993,24 +1018,34 @@ function populateForms(subjectID, type) {
             for (var unit of unitArr) {
               if (fullAge[1]) {
                 if (unit.includes(fullAge[1].toLowerCase())) {
-                  $("#bootbox-subject-age-info").val(unit);
+                  $(
+                    `#${curationModeSelectorPrefix}bootbox-subject-age-info`
+                  ).val(unit);
                   breakBoolean = true;
                   break;
                 }
                 if (!breakBoolean) {
-                  $("#bootbox-subject-age-info").val("N/A");
+                  $(
+                    `#${curationModeSelectorPrefix}bootbox-subject-age-info`
+                  ).val("N/A");
                 }
               } else {
-                $("#bootbox-subject-age-info").val("N/A");
+                $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val(
+                  "N/A"
+                );
               }
             }
           } else if (field.name === "Species" && infoJson[i] !== "") {
-            $("#bootbox-subject-species").val(infoJson[i]);
+            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(
+              infoJson[i]
+            );
             // manipulate the Add Strains/Species UI accordingly
-            switchSpeciesStrainInput("species", "edit", "free-form");
+            switchSpeciesStrainInput("species", "edit", curationMode);
           } else if (field.name === "Strain" && infoJson[i] !== "") {
-            $("#bootbox-subject-strain").val(infoJson[i]);
-            switchSpeciesStrainInput("strain", "edit", "free-form");
+            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(
+              infoJson[i]
+            );
+            switchSpeciesStrainInput("strain", "edit", curationMode);
           } else {
             if (type === "import") {
               if (field.name === "subject id") {
