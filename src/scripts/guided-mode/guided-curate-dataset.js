@@ -784,11 +784,22 @@ const renderSubjectsMetadataTable = (subjects) => {
   );
   subjectsMetadataContainer.innerHTML = subjectMetadataRows.join("\n");
 };
+const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
+  //loop through all guidedSubjectsTableData elements besides the first one
+  for (let i = 1; i < guidedSubjectsTableData.length; i++) {
+    if (guidedSubjectsTableData[i][0] === subjectMetadataId) {
+      //if the id matches, load the metadata into the form
+      populateForms(subjectMetadataId, "", "guided");
+      return;
+    }
+  }
+};
 const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
   let subjectMetadataID = clickedSubjectAddMetadataButton
     .closest("tr")
     .find(".subject-metadata-id")
     .text();
+  guidedLoadSubjectMetadataIfExists(subjectMetadataID);
   $("#guided-metadata-subject-id").text(subjectMetadataID);
   $("#guided-generate-subjects-file").text(
     `Save ${subjectMetadataID} metadata`

@@ -991,12 +991,11 @@ function populateForms(subjectID, type, curationMode) {
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
     fieldArr = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
-
     if (guidedSubjectsTableData.length > 1) {
       for (var i = 1; i < guidedSubjectsTableData.length; i++) {
         if (guidedSubjectsTableData[i][0] === subjectID) {
-          infoJson = guidedSubjectsTableData[i];
-          //remove first infoJson item because fieldArr does not contain a subject id input
+          //Create a copy of matched table element as infoJson and remove the first element
+          infoJson = guidedSubjectsTableData[i].slice();
           infoJson.shift();
           break;
         }
