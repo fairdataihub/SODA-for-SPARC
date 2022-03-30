@@ -743,6 +743,8 @@ const returnToTableFromFolderStructure = (clickedBackButton) => {
 };
 
 const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
+  //Clear metadata form inputs
+  clearAllSubjectFormFields($("#guided-form-add-a-subject"));
   traverseToTab("guided-create-subjects-metadata-tab");
   $("#guided-footer-div").css("display", "flex");
 };
@@ -764,7 +766,7 @@ const renderSubjectsMetadataTable = (subjects) => {
             style="background-color: var(--color-light-green) !important; margin-right: 5px"
             onclick="openModifySubjectMetadataPage($(this))"
           >
-            Add metadata
+            Edit metadata
           </button>
           <button
             type="button"
@@ -840,7 +842,7 @@ const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {
   </div>
   `;
   swal.fire({
-    width: 900,
+    width: 950,
     html: copyMetadataElement,
     showCancelButton: true,
     reverseButtons: reverseSwalButtons,
@@ -1295,8 +1297,6 @@ const renderSamplesTables = () => {
         return generateSampleRowElement(tableIndex);
       })
       .join("\n");
-    console.log(sampleRows);
-
     return `
       <table class="ui celled striped table" style="margin-bottom: 25px; min-width: 900px;">
         <thead>

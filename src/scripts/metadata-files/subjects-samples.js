@@ -728,7 +728,7 @@ function addTheRestSubjectEntriesToJSON(curationMode) {
   }
   subjectsTableData[0] = headersArrSubjects;
   guidedSubjectsTableData[0] = headersArrSubjects;
-  guidedSubjectsTableData[0].unshift("subject id");
+
   if (valuesArr !== undefined && valuesArr.length !== 0) {
     if (curationMode === "free-form") {
       if (subjectsTableData[dataLength] !== undefined) {
@@ -738,14 +738,32 @@ function addTheRestSubjectEntriesToJSON(curationMode) {
       }
     }
     if (curationMode === "guided") {
-      currSubjectID = $("#guided-metadata-subject-id").text();
-      if (guidedSubjectsTableData[dataLength] !== undefined) {
-        guidedSubjectsTableData[dataLength + 1] = valuesArr;
-        guidedSubjectsTableData[dataLength + 1].unshift(currSubjectID);
-      } else {
-        guidedSubjectsTableData[dataLength] = valuesArr;
-        guidedSubjectsTableData[dataLength].unshift(currSubjectID);
+      subjectID = $("#guided-metadata-subject-id").text();
+      guidedSubjectsTableData[0].unshift("subject id");
+      valuesArr.unshift(subjectID);
+      console.log(valuesArr); // ["sub-1", "pool-2", "group-3"...]
+      console.log(headersArrSubjects); // ["subject-id", "pool id", "group"...]
+      console.log(guidedSubjectsTableData);
+      //Check to see if the subject ID is already in the table
+      //If so, overwrite current subject metadata
+      let duplicateSubjectIndex = null;
+      for (let i = 1; i < guidedSubjectsTableData.length; i++) {
+        if (guidedSubjectsTableData[i][0] === subjectID) {
+          duplicateSubjectIndex = i;
+        }
       }
+      if (duplicateSubjectIndex !== null) {
+        guidedSubjectsTableData[duplicateSubjectIndex] = valuesArr;
+      } else {
+        if (guidedSubjectsTableData[dataLength] !== undefined) {
+          guidedSubjectsTableData[dataLength + 1] = valuesArr;
+          console.log("guidedSubjectsTableData not undefined");
+        } else {
+          guidedSubjectsTableData[dataLength] = valuesArr;
+          console.log("guidedSubjectsTableData  undefined");
+        }
+      }
+      console.log(guidedSubjectsTableData);
     }
   }
   $("#table-subjects").css("display", "block");

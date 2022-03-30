@@ -1442,7 +1442,7 @@
           >
             <table
               class="ui celled striped table"
-              style="margin-bottom: 25px; width: 700px"
+              style="margin-bottom: 25px; width: 900px"
             >
               <thead>
                 <tr>
@@ -2524,11 +2524,7 @@
               id="guided-metadata-subject-id"
             >
             </label>
-            <button
-              onclick="returnToSubjectMetadataTableFromSubjectMetadataForm()"
-            >
-              TEMP BUTTON RETURN TO SUBJECT METADATATA TABLE
-            </button>
+
             <div
               class="ui styled fluid accordion guided--accordion"
               id="guided-form-add-a-subject"
@@ -3627,14 +3623,23 @@
                 </div>
               </div>
             </div>
-            <button
-              id="guided-generate-subjects-file"
-              class="btn_animated"
-              style="width: 180px; border: none !important"
-              onclick="addSubject('guided')"
-            >
-              Generate subjects file
-            </button>
+            <div class="space-between">
+              <button
+                class="ui secondary basic button small"
+                onclick="returnToSubjectMetadataTableFromSubjectMetadataForm()"
+              >
+                <i class="fas fa-arrow-left" style="margin-right: 10px"></i>
+                Return to subject metadata table
+              </button>
+              <button
+                id="guided-generate-subjects-file"
+                class="btn_animated"
+                style="width: 180px; border: none !important"
+                onclick="addSubject('guided')"
+              >
+                Generate subjects file
+              </button>
+            </div>
           </div>
         </div>
 
