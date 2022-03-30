@@ -36,8 +36,12 @@ c = "upload-testing"
 # print(a)
 
 try:
-    sub = subprocess.Popen(["pennsieve", "upload", *a, "--dataset", b, "--folder", c], stdout=PIPE, stdin=PIPE)
-    sub.communicate(input=b'y')[0]
+    sub = subprocess.Popen(
+        ["pennsieve", "upload", *a, "--dataset", b, "--folder", c],
+        stdout=PIPE,
+        stdin=PIPE,
+    )
+    sub.communicate(input=b"y")[0]
 except Exception as e:
     print("Exception")
     print(e)
