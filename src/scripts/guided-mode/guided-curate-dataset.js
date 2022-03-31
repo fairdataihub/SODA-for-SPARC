@@ -1360,14 +1360,14 @@ const generateSampleRowElement = (sampleIndex) => {
     </tr>
   `;
 };
-const generateSampleMetadataRowElement = (tableIndex) => {
+const generateSampleMetadataRowElement = (tableIndex, sampleName) => {
   return `
     <tr>
       <td class="middle aligned collapsing text-center">
         <span class="sample-metadata-table-index">${tableIndex}</span>
       </td>
       <td class="middle aligned sample-metadata-id-cell">
-        <span class="sample-metadata-id">ratatat</span>
+        <span class="sample-metadata-id">${sampleName}</span>
       </td>
       <td class="middle aligned collapsing text-center" style="min-width: 130px">
         <button
@@ -1521,7 +1521,7 @@ const renderSampleMetadataTables = () => {
     let sampleMetadataRows = getSubjectSamples(subject)
       .map((sample, index) => {
         let tableIndex = index + 1;
-        return generateSampleMetadataRowElement(tableIndex);
+        return generateSampleMetadataRowElement(tableIndex, sample);
       })
       .join("\n");
     return `
