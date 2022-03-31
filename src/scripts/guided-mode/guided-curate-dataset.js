@@ -18,6 +18,16 @@ const enableProgressButton = () => {
 const disableProgressButton = () => {
   $("#guided-next-button").prop("disabled", true);
 };
+
+const getSubjects = () => {
+  return Object.keys(
+    sodaJSONObj["dataset-metadata"]["subject-sample-structure"]
+  );
+};
+getSubjectSamples = (subject) => {
+  return sodaJSONObj["dataset-metadata"]["subject-sample-structure"][subject];
+};
+
 const saveGuidedProgress = (guidedProgressFileName) => {
   //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
@@ -270,9 +280,7 @@ const traverseToTab = (targetPageID) => {
   if (targetPageID === "guided-create-subjects-metadata-tab") {
     //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
     try {
-      let subjectsArray = Object.keys(
-        sodaJSONObj["dataset-metadata"]["subject-sample-structure"]
-      );
+      let subjectsArray = getSubjects();
       for (let subject of subjectsArray) {
         //check to see if subject already has data in the sodajsonObj
         if (
@@ -810,12 +818,23 @@ const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
   setActiveCapsule("guided-create-subjects-metadata-tab");
   $("#guided-footer-div").hide();
 };
+const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
+  let sampleMetadataID = clickedSampleAddMetadataButton
+    .closest("tr")
+    .find(".sample-metadata-id")
+    .text();
+  guidedLoadSubjectMetadataIfExists(subjectMetadataID);
+  $("#guided-metadata-sample-id").text(subjectMetadataID);
+  $("#guided-generate-samples-file").text(`Save ${subjectMetadataID} metadata`);
+  traverseToTab("guided-sample-metadata-tab");
+  //Manually override active capsule to make it seem like they're still on the subjects tab
+  setActiveCapsule("guided-create-sample-metadata-tab");
+  $("#guided-footer-div").hide();
+};
 const openCopySubjectMetadataPopup = async (
   clickedSubjectCopyMetadataButton
 ) => {
-  let subjectsArray = Object.keys(
-    datasetStructureJSONObj.folders.primary.folders
-  );
+  let subjectsArray = getSubjects();
   const copyFromMetadata = subjectsArray
     .map((subject) => {
       return `
@@ -1335,6 +1354,38 @@ const generateSampleRowElement = (sampleIndex) => {
     </tr>
   `;
 };
+const generateSampleMetadataRowElement = (tableIndex) => {
+  return `
+    <tr>
+      <td class="middle aligned collapsing text-center">
+        <span class="sample-metadata-table-index">${tableIndex}</span>
+      </td>
+      <td class="middle aligned sample-metadata-id-cell">
+        <span class="sample-metadata-id">ratatat</span>
+      </td>
+      <td class="middle aligned collapsing text-center" style="min-width: 130px">
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          style="
+            background-color: var(--color-light-green) !important;
+            margin-right: 5px;
+          "
+          onclick="openModifySampleMetadataPage($(this))"
+        >
+          Edit metadata
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          onclick="openCopySampleMetadataPopup($(this))"
+        >
+          Copy metadata
+        </button>
+      </td>
+    </tr>
+  `;
+};
 
 const addSampleFolder = (sampleAddButton) => {
   sampleAddButton
@@ -1372,9 +1423,7 @@ const deleteSampleFolder = (sampleDeleteButton) => {
 };
 const renderSamplesTables = () => {
   //get subjects from the datasetStructureJSONObj
-  let subjectsToMap = Object.keys(
-    datasetStructureJSONObj.folders.primary.folders
-  );
+  let subjectsToMap = getSubjects();
   //get the sample count from the number of samples input on the subjects page and
   //map the subjects to an array to create the sample tables
   let sampleData = subjectsToMap.sort().map((subject) => {
@@ -1459,6 +1508,54 @@ const renderSamplesTables = () => {
     "sample-tables-container"
   );
   sampleTablesContainer.innerHTML = sampleTables.join("\n");
+};
+const renderSampleMetadataTables = () => {
+  let subjectsToMap = getSubjects();
+  let sampleMetadataTables = subjectsToMap.map((subject) => {
+    let sampleMetadataRows = getSubjectSamples(subject)
+      .map((sample, index) => {
+        let tableIndex = index + 1;
+        return generateSampleMetadataRowElement(tableIndex);
+      })
+      .join("\n");
+    console.log(sampleMetadataRows);
+    return `
+      <table
+        class="ui celled striped table"
+        style="margin-bottom: 25px; width: 900px"
+      >
+        <thead>
+          <tr>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: -10px !important"
+            >
+              Index
+            </th>
+            <th
+              style="z-index: 2; position: sticky !important; top: -10px !important"
+            >
+              sample ID
+            </th>
+
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: -10px !important"
+            >
+              Modify metadata
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sampleMetadataRows}
+        </tbody>
+      </table>
+    `;
+  });
+  let sampleMetadataTablesContainer = document.getElementById(
+    "sample-metadata-tables-container"
+  );
+  sampleMetadataTablesContainer.innerHTML = sampleMetadataTables.join("\n");
 };
 
 /*********** Source page functions ***********/

@@ -1,35 +1,30 @@
-<tr>
-  <td class="middle aligned collapsing text-center">
-    <span class="subject-table-index">${subjectIndex}</span>
-  </td>
-  <td class="middle aligned subject-id-cell">
-    <input
-      class="guided--input"
-      type="text"
-      name="guided-subject-id"
-      placeholder="Enter subject ID and press enter"
-      onkeyup="createSubjectFolder(event, $(this))"
-      data-input-set="guided-subjects-folder-tab"
-      data-warning="Subject IDs may not contain special characters"
-      data-alert-type="danger"
-    />
-  </td>
-  <td class="middle aligned collapsing text-center">${subjectNumSamples}</td>
-  <td class="middle aligned collapsing text-center" style="min-width: 130px">
-    <button
-      type="button"
-      class="btn btn-primary btn-sm"
-      style="background-color: var(--color-light-green) !important"
-      onclick="openSubjectFolder($(this))"
-    >
-      Add files
-    </button>
-  </td>
-  <td class="middle aligned collapsing text-center">
-    <i
-      class="far fa-trash-alt"
-      style="color: red; cursor: pointer"
-      onclick="deleteSubjectFolder($(this))"
-    ></i>
-  </td>
-</tr>
+<table
+  class="ui celled striped table"
+  style="margin-bottom: 25px; width: 900px"
+>
+  <thead>
+    <tr>
+      <th
+        class="center aligned"
+        style="z-index: 2; position: sticky !important; top: -10px !important"
+      >
+        Index
+      </th>
+      <th
+        style="z-index: 2; position: sticky !important; top: -10px !important"
+      >
+        Subject ID
+      </th>
+
+      <th
+        class="center aligned"
+        style="z-index: 2; position: sticky !important; top: -10px !important"
+      >
+        Modify metadata
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    ${sampleMetadataRows}
+  </tbody>
+</table>
