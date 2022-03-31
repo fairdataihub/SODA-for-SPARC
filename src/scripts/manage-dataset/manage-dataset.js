@@ -2626,15 +2626,20 @@ $("#button-submit-dataset").click(async () => {
     "#para-progress-bar-error-status"
   ).childNodes;
 
+  let uploadedFolders = 0
+
   const monitorBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_bf_submit_dataset_upload_details", (err, res) => {
+      // console.log("Results: ", res)
       // check if the amount of successfully uploaded files has increased
-      if (res[0] > uploadedFiles) {
+      if (res[0] > 0 && res[4] > uploadedFolders) {
+        console.log("Final size: ", res[5])
         uploadedFiles = res[0];
         uploadedFilesSize = res[1];
         let didFail = res[2];
         let didUpload = res[3];
+        uploadedFolders = res[4]
 
         // failed to upload a bucket, but did upload some files
         if (didFail && didUpload) {

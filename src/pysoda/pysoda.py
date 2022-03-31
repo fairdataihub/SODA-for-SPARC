@@ -85,6 +85,7 @@ uploaded_file_size = 0
 uploaded_files = 0
 did_upload = False
 did_fail = False
+upload_folder_count = 0
 start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, "SODA", "SODA_metadata")
@@ -870,6 +871,7 @@ def agent_version(settings):
         )
 
 
+
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
     Associated with 'Submit dataset' button in 'Submit new dataset' section
@@ -894,6 +896,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global initial_bfdataset_size_submit
     global did_upload
     global did_fail
+    global upload_folder_count 
 
     submitdataprogress = " "
     submitdatastatus = " "
@@ -904,6 +907,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     start_submit = 0
     did_upload = False
     did_fail = False
+    upload_folder_count = 0
 
     try:
         bf = Pennsieve(accountname)
@@ -1038,9 +1042,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             global submitdatastatus
             global uploaded_files
             global did_upload
+            global upload_folder_count
 
             # reset uploaded file counter
             uploaded_files = 0
+            upload_folder_count = 0
 
             # tells the front end if
             did_upload = False
@@ -1115,9 +1121,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
                         # update the global that tracks the amount of files that have been successfully uploaded
                         # for this upload session
-                        uploaded_files += BUCKET_SIZE
+                        uploaded_files = BUCKET_SIZE
 
                         did_upload = True
+
+                        upload_folder_count += 1
 
                         # update the start_index to end_index + 1
                         start_index = end_index + 1
@@ -1142,7 +1150,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                         current_folder.update()
                         myds.update()
 
-                        uploaded_files += len(files)
+                        uploaded_files = len(files)
+                        upload_folder_count += 1
                         did_upload = True
 
             # upload completed
@@ -1180,13 +1189,23 @@ def bf_submit_dataset_upload_details():
     Return did_fail and did_upload to inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions
     correctly
     """
+    global uploaded_file_size
+    global uploaded_files
+    global did_fail 
+    global did_upload 
+
+    # uploaded_file_size is our total increase in dataset size; this represents the previous 
+    previous_total_increase_in_size = uploaded_file_size
+    increment_in_size = 0
+
     if start_submit == 1:
         uploaded_file_size = bf_dataset_size() - initial_bfdataset_size_submit
+        increment_in_size = uploaded_file_size - previous_total_increase_in_size
     else:
         # upload hasn't started yet no details
-        return (0, 0)
+        return (0, 0, 0, 0, 0)
 
-    return (uploaded_files, uploaded_file_size, did_fail, did_upload)
+    return (uploaded_files, increment_in_size, did_fail, did_upload, upload_folder_count, uploaded_file_size )
 
 
 def submit_dataset_progress():
