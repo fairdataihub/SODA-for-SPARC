@@ -1144,33 +1144,39 @@ const createSampleFolder = (event, sampleNameInput) => {
           </i>
         </div>
       `;
-      if (sampleName.length > 0) {
-        const sampleIdCellToAddNameTo = sampleNameInput.parent();
-        sampleIdCellToAddNameTo.html(sampleNameElement);
 
-        sampleTargetFolder = getRecursivePath(
-          ["primary", sampleParentSubjectName],
-          datasetStructureJSONObj
-        ).folders;
-        //Check to see if input has prev-name data attribute
-        //Added when renaming sample
-        if (sampleNameInput.attr("data-prev-name")) {
-          //get the name of the sample being renamed
-          const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
-          //create a temp copy of the folder to be renamed
-          copiedFolderToRename = sampleTargetFolder[sampleFolderToRename];
-          //set the copied obj from the prev name to the new obj name
-          sampleTargetFolder[sampleName] = copiedFolderToRename;
-          //delete the temp copy of the folder that was renamed
-          delete sampleTargetFolder[sampleFolderToRename];
+      if (sampleName.length > 0) {
+        if (subSamInputIsValid(sampleName)) {
+          removeWarningMessageIfExists(sampleNameInput);
+          const sampleIdCellToAddNameTo = sampleNameInput.parent();
+          sampleIdCellToAddNameTo.html(sampleNameElement);
+
+          sampleTargetFolder = getRecursivePath(
+            ["primary", sampleParentSubjectName],
+            datasetStructureJSONObj
+          ).folders;
+          //Check to see if input has prev-name data attribute
+          //Added when renaming sample
+          if (sampleNameInput.attr("data-prev-name")) {
+            //get the name of the sample being renamed
+            const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
+            //create a temp copy of the folder to be renamed
+            copiedFolderToRename = sampleTargetFolder[sampleFolderToRename];
+            //set the copied obj from the prev name to the new obj name
+            sampleTargetFolder[sampleName] = copiedFolderToRename;
+            //delete the temp copy of the folder that was renamed
+            delete sampleTargetFolder[sampleFolderToRename];
+          } else {
+            //Create an empty folder for the new sample
+            sampleTargetFolder[sampleName] = {
+              folders: {},
+              files: {},
+              type: "",
+              action: [],
+            };
+          }
         } else {
-          //Create an empty folder for the new sample
-          sampleTargetFolder[sampleName] = {
-            folders: {},
-            files: {},
-            type: "",
-            action: [],
-          };
+          generateWarningMessage(sampleNameInput);
         }
       }
     } catch (error) {
@@ -1192,6 +1198,9 @@ const openSampleRenameInput = (subjectNameEditButton) => {
       name="guided-sample-id"
       placeholder="Enter new subject ID"
       onkeyup="createSampleFolder(event, $(this))"
+      data-input-set="guided-samples-folder-tab"
+      data-warning="Sample IDs may not contain special characters"
+      data-alert-type="danger"
       data-prev-name="${prevSampleName}"
     />
   `;
@@ -1270,6 +1279,9 @@ const generateSampleRowElement = (sampleIndex) => {
           name="guided-sample-id"
           placeholder="Enter sample ID and press enter"
           onkeyup="createSampleFolder(event, $(this))"
+          data-input-set="guided-samples-folder-tab"
+          data-warning="Sample IDs may not contain special characters"
+          data-alert-type="danger"
         />
       </td>
       <td class="middle aligned collapsing text-center" style="min-width: 130px">
