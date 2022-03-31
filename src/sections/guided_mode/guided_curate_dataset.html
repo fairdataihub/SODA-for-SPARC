@@ -1019,7 +1019,7 @@
             <div class="guided--container-data-display">
               <div
                 class="guided--card-dataset-info"
-                id="guided-designated-PI"
+                id="guided-designated-PI-info"
                 data-input-set="guided-designate-pi-owner-tab"
                 data-warning="You will retain dataset ownership unless you designate another PI below."
                 data-alert-type="warning"
@@ -1102,7 +1102,10 @@
             class="guided--panel hidden"
           >
             <div class="guided--container-data-display">
-              <div class="guided--card-dataset-info">
+              <div
+                class="guided--card-dataset-info"
+                id="guided-designated-user-permissions-info"
+              >
                 <div class="guided--dataset-description-container">
                   <h5 class="guided--dataset-description">
                     Designated user permissions:
@@ -1113,7 +1116,14 @@
                   id="guided-dataset-user-permissions"
                 ></div>
               </div>
-              <div class="guided--card-dataset-info">
+              <div class="alert alert-warning guided--alert" role="alert">
+                To grant a user access to the dataset, select the user in the
+                dropdown, select their role, and press designate permission.
+              </div>
+              <div
+                class="guided--card-dataset-info"
+                id="guided-designated-team-permissions-info"
+              >
                 <div class="guided--dataset-description-container">
                   <h5 class="guided--dataset-description">
                     Designated team permissions:
@@ -1122,6 +1132,10 @@
                 <div
                   class="guided--container-dataset-info guidedDatasetTeamPermissions"
                 ></div>
+              </div>
+              <div class="alert alert-warning guided--alert" role="alert">
+                To grant a team access to the dataset, select the team in the
+                dropdown, select their role, and press designate permission.
               </div>
             </div>
 

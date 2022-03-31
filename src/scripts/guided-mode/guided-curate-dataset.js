@@ -887,12 +887,11 @@ const openCopySubjectMetadataPopup = async (
         console.log(copyFromSubjectData);
         for (var i = 1; i < guidedSubjectsTableData.length; i++) {
           if (selectedCopyToSubjects.includes(guidedSubjectsTableData[i][0])) {
+            //Remove all subject data elements besides the name
             guidedSubjectsTableData[i] = [guidedSubjectsTableData[i][0]];
-            console.log(guidedSubjectsTableData[i]);
-            console.log(copyFromSubjectData);
+            //copy subject data elements from the copy from element to the copy to element
             guidedSubjectsTableData[i] =
               guidedSubjectsTableData[i].concat(copyFromSubjectData);
-            console.log(guidedSubjectsTableData[i]);
           }
         }
         console.log(guidedSubjectsTableData);
@@ -1670,7 +1669,7 @@ const setGuidedBannerImage = (croppedImagePath) => {
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
-  removeWarningMessageIfExists($("#guided-designated-PI"));
+  removeWarningMessageIfExists($("#guided-designated-PI-info"));
   $(".guidedDatasetOwner").text(newPiOwnerObj.userString);
   sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["pi-owner"]["userString"] =
@@ -1782,6 +1781,7 @@ $(document).ready(() => {
       UUID: $("#guided_bf_list_users").val().trim(),
       permission: $("#select-permission-list-3").val(),
     };
+    removeWarningMessageIfExists($("#guided-designated-user-permissions-info"));
     guidedAddUserPermission(newUserPermission);
   });
 
@@ -1790,6 +1790,7 @@ $(document).ready(() => {
       teamString: $("#guided_bf_list_teams").val().trim(),
       permission: $("#select-permission-list-4").val(),
     };
+    removeWarningMessageIfExists($("#guided-designated-team-permissions-info"));
     guidedAddTeamPermission(newTeamPermissionObj);
   });
 
@@ -3830,7 +3831,7 @@ $(document).ready(() => {
               name: `${user["firstName"]} ${user["lastName"]}`,
             };
             setGuidedDatasetPiOwner(originalDatasetCreator);
-            generateWarningMessage($("#guided-designated-PI"));
+            generateWarningMessage($("#guided-designated-PI-info"));
           }
 
           setGuidedDatasetName(datasetName);
