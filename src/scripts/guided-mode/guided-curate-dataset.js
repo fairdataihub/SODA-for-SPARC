@@ -757,6 +757,12 @@ const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
   traverseToTab("guided-create-subjects-metadata-tab");
   $("#guided-footer-div").css("display", "flex");
 };
+const returnToSampleMetadataTableFromSampleMetadataForm = () => {
+  //Clear metadata form inputs
+  clearAllSubjectFormFields(guidedSamplesFormDiv);
+  traverseToTab("guided-create-samples-metadata-tab");
+  $("#guided-footer-div").css("display", "flex");
+};
 const renderSubjectsMetadataTable = (subjects) => {
   let subjectMetadataRows = subjects.sort().map((subject, index) => {
     let tableIndex = index + 1;
@@ -823,12 +829,12 @@ const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
     .closest("tr")
     .find(".sample-metadata-id")
     .text();
-  guidedLoadSubjectMetadataIfExists(subjectMetadataID);
-  $("#guided-metadata-sample-id").text(subjectMetadataID);
-  $("#guided-generate-samples-file").text(`Save ${subjectMetadataID} metadata`);
+  guidedLoadSampleMetadataIfExists(sampleMetadataID);
+  $("#guided-metadata-sample-id").text(sampleMetadataID);
+  $("#guided-generate-samples-file").text(`Save ${sampleMetadataID} metadata`);
   traverseToTab("guided-sample-metadata-tab");
   //Manually override active capsule to make it seem like they're still on the subjects tab
-  setActiveCapsule("guided-create-sample-metadata-tab");
+  setActiveCapsule("guided-create-samples-metadata-capsule");
   $("#guided-footer-div").hide();
 };
 const openCopySubjectMetadataPopup = async (
@@ -1518,7 +1524,6 @@ const renderSampleMetadataTables = () => {
         return generateSampleMetadataRowElement(tableIndex);
       })
       .join("\n");
-    console.log(sampleMetadataRows);
     return `
       <table
         class="ui celled striped table"
@@ -1527,20 +1532,33 @@ const renderSampleMetadataTables = () => {
         <thead>
           <tr>
             <th
+              colspan="3"
+              class="text-center"
+              style="
+                z-index: 2;
+                height: 50px;
+                position: sticky !important;
+                top: -10px !important;
+              "
+            >
+              <span>${subject}'s sample metadata table</span>
+            </th>
+          </tr>
+          <tr>
+            <th
               class="center aligned"
-              style="z-index: 2; position: sticky !important; top: -10px !important"
+              style="z-index: 2; position: sticky !important; top: 40px !important;"
             >
               Index
             </th>
             <th
-              style="z-index: 2; position: sticky !important; top: -10px !important"
+              style="z-index: 2; position: sticky !important; top: 40px !important;"
             >
               sample ID
             </th>
-
             <th
               class="center aligned"
-              style="z-index: 2; position: sticky !important; top: -10px !important"
+              style="z-index: 2; position: sticky !important; top: 40px !important;"
             >
               Modify metadata
             </th>

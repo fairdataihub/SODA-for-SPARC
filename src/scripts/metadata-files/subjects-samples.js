@@ -3,6 +3,7 @@ var guidedSubjectsFormDiv = document.getElementById(
   "guided-form-add-a-subject"
 );
 var samplesFormDiv = document.getElementById("form-add-a-sample");
+var guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
 var subjectsTableData = [];
 var subjectsFileData = [];
 var samplesTableData = [];
