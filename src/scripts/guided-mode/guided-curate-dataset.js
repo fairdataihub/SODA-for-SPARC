@@ -809,7 +809,9 @@ const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
   setActiveCapsule("guided-create-subjects-metadata-tab");
   $("#guided-footer-div").hide();
 };
-const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {
+const openCopySubjectMetadataPopup = async (
+  clickedSubjectCopyMetadataButton
+) => {
   let subjectsArray = Object.keys(
     datasetStructureJSONObj.folders.primary.folders
   );
@@ -818,7 +820,7 @@ const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {
       return `
       <div class="field text-left">
         <div class="ui radio checkbox">
-          <input type="radio" name="copy-from">
+          <input type="radio" name="copy-from" value="${subject}">
           <label>${subject}</label>
         </div>
       </div>`;
@@ -829,7 +831,7 @@ const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {
       return `
       <div class="field text-left">
         <div class="ui checkbox">
-          <input type="checkbox" name="copy-to">
+          <input type="checkbox" name="copy-to" value="${subject}">
           <label>${subject}</label>
         </div>
       </div>`;
@@ -852,14 +854,50 @@ const openCopySubjectMetadataPopup = (clickedSubjectCopyMetadataButton) => {
     </div>
   </div>
   `;
-  swal.fire({
-    width: 950,
-    html: copyMetadataElement,
-    showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
-    confirmButtonColor: "Copy",
-    focusCancel: true,
-  });
+  swal
+    .fire({
+      width: 950,
+      html: copyMetadataElement,
+      showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
+      confirmButtonColor: "Copy",
+      focusCancel: true,
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        const selectedCopyFromSubject = $(
+          "input[name='copy-from']:checked"
+        ).val();
+        console.log(selectedCopyFromSubject);
+        //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
+        let selectedCopyToSubjects = [];
+        $("input[name='copy-to']:checked").each(function () {
+          selectedCopyToSubjects.push($(this).val());
+        });
+        console.log(selectedCopyToSubjects);
+
+        let copyFromSubjectData = [];
+        let copyToSubjectData = [];
+        for (var i = 1; i < guidedSubjectsTableData.length; i++) {
+          if (guidedSubjectsTableData[i][0] === selectedCopyFromSubject) {
+            //copy all elements from matching array except the first one
+            copyFromSubjectData = guidedSubjectsTableData[i].slice(1);
+          }
+        }
+        console.log(copyFromSubjectData);
+        for (var i = 1; i < guidedSubjectsTableData.length; i++) {
+          if (selectedCopyToSubjects.includes(guidedSubjectsTableData[i][0])) {
+            guidedSubjectsTableData[i] = [guidedSubjectsTableData[i][0]];
+            console.log(guidedSubjectsTableData[i]);
+            console.log(copyFromSubjectData);
+            guidedSubjectsTableData[i] =
+              guidedSubjectsTableData[i].concat(copyFromSubjectData);
+            console.log(guidedSubjectsTableData[i]);
+          }
+        }
+        console.log(guidedSubjectsTableData);
+      }
+    });
 };
 
 //Click handler that sets the Subject's name after enter press in the table input
@@ -3368,10 +3406,11 @@ $(document).ready(() => {
         });
       }
     });
-  } /*
+  }
   $("#guided-generate-subjects-file").on("click", () => {
-    guidedSaveSubjectsFile();
-  });*/
+    addSubject("guided");
+    returnToSubjectMetadataTableFromSubjectMetadataForm();
+  });
   $("#guided-generate-submission-file").on("click", () => {
     guidedSaveSubmissionFile();
   });
