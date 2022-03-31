@@ -350,7 +350,7 @@ function delFolder(
             delete myPath[type][itemToDelete];
           }
           // update UI with updated jsonobj
-          listItems(myPath, uiItem);
+          listItems(myPath, uiItem, 500, reset=true);
           getInFolder(
             singleUIItem,
             uiItem,
@@ -618,7 +618,9 @@ function renameFolder(
           );
 
           /// assign new name to folder or file in the UI
-          event1.parentElement.parentElement.innerText = returnedName;
+          event1.parentElement.children[1].innerText = returnedName
+          // event1.parentElement.parentElement.children[1].innerText = returnedName;
+          // console.log(event1.parentElement.parentElement.children[1]);
           /// get location of current file or folder in JSON obj
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
@@ -636,14 +638,15 @@ function renameFolder(
             myPath[type][returnedName]["action"].push("renamed");
           }
           /// list items again with updated JSON obj
-          listItems(myPath, uiItem);
-          getInFolder(
-            singleUIItem,
-            uiItem,
-            organizeCurrentLocation,
-            inputGlobal
-          );
-          beginScrollListen();
+          // start = 0;
+          // listItems(myPath, "#items", 500);
+          // getInFolder(
+          //   singleUIItem,
+          //   uiItem,
+          //   organizeCurrentLocation,
+          //   inputGlobal
+          // );
+          // beginScrollListen();
         }
       }
     });
@@ -1861,7 +1864,7 @@ async function addFilesfunction(
         ].push("renamed");
       }
     }
-    await listItems(currentLocation, uiItem, 400);
+    await listItems(currentLocation, uiItem, 500);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
     // log the successful import
@@ -1912,20 +1915,19 @@ function observeElement(element, property, callback, delay = 0) {
 }
 
 function check_dataset_value() {
-  console.log(dataset_path.value);
   if (dataset_path.value === "My_dataset_folder/") {
     // console.log("removing");
     scroll_box.removeEventListener("scroll", lazyLoad, true);
   }
   if (dataset_path.value != "My_dataset_folder/") {
-    if (item_box.offsetHeight != 420) {
+    // if (item_box.offsetHeight != 420) {
       // $("#items").empty();
       var filtered = getGlobalPath(
         document.getElementById("input-global-path")
       );
       var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-      amount = 400;
-      listItems(myPath, "items", 400);
+      amount = 500;
+      listItems(myPath, "items", 500);
       getInFolder(
         ".single-item",
         "#items",
@@ -1933,118 +1935,122 @@ function check_dataset_value() {
         datasetStructureJSONObj
       );
       beginScrollListen();
-    }
+    // }
   }
 }
 observeElement(dataset_path, "value", check_dataset_value);
 
-var amount = 400;
-const styles = ["color: blue", "background: none"].join(";");
-
-// 3. Using the styles and message variable
+var amount = 500;
 
 function beginScrollListen() {
-  console.log("starting scroll listener");
-  amount = 400;
+  amount = 500;
   scroll_box.addEventListener("scroll", lazyLoad);
 }
 
-function lazyLoad() {
+async function lazyLoad() {
   // console.log("monitoring scroll position: %c%s", styles, scroll_box.scrollTop);
-  console.log("monitoring");
 
   let total_items = already_created_elem.length;
+  let filtered = getGlobalPath(
+    document.getElementById("input-global-path")
+  );
+  let myPath = getRecursivePath(
+    filtered.slice(1),
+    datasetStructureJSONObj
+  );
   //item_box height is at 420 when there is no overflow
   if (item_box.offsetHeight === 420) {
     scroll_box.removeEventListener("scroll", lazyLoad);
-    amount = 400;
+    amount = 500;
   }
 
   //load spinner is prepended to beginning to elements if any de-rendered
-  if (item_box.children[0].id === "items_container") {
-    if (scroll_box.scrollTop < 254) {
-      //monitors when user scrolls back up to prepend elements
-      let array_select = preprended_items - 1;
-      let remove_limit = 6; //only prepend 600 elements at a time
-      let load_spinner = `
-      <div id="items_container">
-        <div id="item_load" class="ui medium active inline loader icon-wrapper">
-        </div>
-      </div>`;
-      console.log(
-        "here we will preprend this many elements: " + preprended_items
-      );
-
-      item_box.children[0].remove(); //remove loading spinner
-      //add elements back to top of item_box
-      for (let i = 0; i < remove_limit; i++) {
-        $(uiItems).prepend(already_created_elem[array_select]);
-        array_select--;
-      }
-      array_select += 1;
-
-      if (array_select != 0) {
-        $(uiItems).prepend(load_spinner);
-      } else {
-        //we have re-rendered all files from beginning
-        if (item_box.children[0].id === "items_container") {
-          item_box.children[0].remove();
+  if(item_box.childElementCount != 0) {
+    if (item_box.children[0].id === "items_container") {
+      if (scroll_box.scrollTop < 260) {
+        //monitors when user scrolls back up to prepend elements
+        let array_select = preprended_items - 1;
+        let remove_limit = 5; //only prepend 600 elements at a time
+        let load_spinner = `
+        <div id="items_container">
+          <div id="item_load" class="ui medium active inline loader icon-wrapper">
+          </div>
+        </div>`;
+  
+        item_box.children[0].remove(); //remove loading spinner
+        //add elements back to top of item_box
+        for (let i = 0; i < remove_limit; i++) {
+          $(uiItems).prepend(already_created_elem[array_select]);
+          array_select--;
         }
+        array_select += 1;
+  
+        if (array_select != 0) {
+          $(uiItems).prepend(load_spinner);
+        } else {
+          //we have re-rendered all files from beginning
+          if (item_box.children[0].id === "items_container") {
+            item_box.children[0].remove();
+          }
+        }
+        await getInFolder(
+          ".single-item",
+          "#items",
+          dataset_path,
+          datasetStructureJSONObj
+        );
+  
+        if (item_box.lastChild.id === "items_container") {
+          console.log("removing loading icon at the end");
+          item_box.lastChild.remove();
+        }
+        //need to have 500 items
+        for (let i = 0; i <= 500; i++) {
+          item_box.lastChild.remove();
+        }
+        console.log(item_box.lastChild);
+        console.log("this is how many elements remain: " + item_box.childElementCount);
+        if(item_box.childElementCount > 1001) {
+          console.log("guess we had an extra, now removing");
+          while(item_box.childElementCount > 1001) {
+            item_box.lastChild.remove();
+          }
+          if(item_box.children[0].id != "items_container") {
+            item_box.lastChild.remove();
+          }
+        }
+        //reset placement of already_.. array
+        listed_count -= 5;
+        start -= 5;
+        amount -= 500;
+        preprended_items -= 5;
+        console.log("we will start on position: " + start);
+        console.log("listed count is also at: " + listed_count);
+        console.log("this is the amount we will be requesting: " + amount);
+  
+        $("#items").append(load_spinner);
       }
-
-      //then remove 600 from the end
-      if (item_box.lastChild.id === "items_container") {
-        console.log("removing loading icon at the end");
-        item_box.lastChild.remove();
-      }
-      console.log("removing 800 elements at the end");
-      for (let i = 0; i < 804; i++) {
-        item_box.lastChild.remove();
-      }
-      //reset placement of already_.. array
-      listed_count -= 8;
-      start -= 8;
-      amount -= 800;
-      preprended_items -= 6;
-      console.log("we will start on position: " + start);
-      console.log("listed count is also at: " + listed_count);
-      console.log("this is the amount we will be requesting: " + amount);
-      //attach loading spinner at the end if user decides to scroll back down
-      $("#items").append(load_spinner);
     }
   }
 
   //all items have been fully rendered so remove event listener
   if (listed_count === total_items) {
-    console.log(
-      "total rendered matches: " +
-        listed_count +
-        " with total items: " +
-        total_items
-    );
-    scroll_box.removeEventListener("scroll", lazyLoad);
+    // scroll_box.removeEventListener("scroll", lazyLoad);
     //remove loading spinner
-    if (item_box.lastChild.id === "items_container") {
-      item_box.removeChild(item_box.lastChild);
+    if(item_box.childElementCount != 0) {
+      if (item_box.lastChild.id === "items_container") {
+        item_box.removeChild(item_box.lastChild);
+      }
     }
-    listed_count = 0;
-    return;
+    // listed_count = 0;
   } else {
     //more items to load once user scrolls close to end
     if (scroll_box.scrollTop + 280 > item_box.offsetHeight) {
       // scroll_box.removeEventListener("scroll", lazyLoad);
       //check how many elements have been created to derender
-      console.log("initial amount" + amount);
       let wait4items = new Promise(async (resolved) => {
-        var filtered = getGlobalPath(
-          document.getElementById("input-global-path")
-        );
-        var myPath = getRecursivePath(
-          filtered.slice(1),
-          datasetStructureJSONObj
-        );
-        amount += 400;
-        await listItems(myPath, "items", amount);
+        amount += 500;
+        await listItems(myPath, uiItems, amount);
         // add_items_to_view(already_created_elem, 400);
         await getInFolder(
           ".single-item",
@@ -2053,9 +2059,6 @@ function lazyLoad() {
           datasetStructureJSONObj
         );
         resolved();
-      }).then(() => {
-        console.log("finished promise");
-        // beginScrollListen();
       });
     }
   }
@@ -2073,10 +2076,10 @@ async function add_items_to_view(list, amount_req, reset) {
   //4800 - 1200 -> 3600
   //6000 - 1600 -> 5400
   //6400 - 2000 -> 4400
-
   let start_time = performance.now();
   uiItems = "#items";
   let elements_req = amount_req / 100; //array stores 100 elements per index
+  let element_items = item_box.childElementCount;
   let load_spinner = `
   <div id="items_container">
     <div id="item_load" class="ui medium active inline loader icon-wrapper">
@@ -2085,12 +2088,15 @@ async function add_items_to_view(list, amount_req, reset) {
   if (already_created_elem.length === 0) {
     listed_count = already_created_elem.length;
   }
+  if (reset === true || dataset_path === "My_dataset_folder/") {
+    $("#items").empty();
+
+    start = 0;
+    listed_count = 0;
+    element_items = item_box.childElementCount;
+  }
   start = listed_count;
   listed_count = 0;
-  if (reset === true || dataset_path === "My_dataset_folder/") {
-    $(uiItems).empty();
-    start = 0;
-  }
 
   //remove loading spinner before adding more files
   if (item_box.lastChild != undefined) {
@@ -2098,24 +2104,30 @@ async function add_items_to_view(list, amount_req, reset) {
       item_box.removeChild(item_box.lastChild);
     }
   }
+  if(item_box.children[0] != undefined) {
+    if(item_box.children[0].id === "items_container") {
+      item_box.children[0].remove();
+      //removing spinner in the beginninng
+    }
+  }
   //join together folders and files into one array
   already_created_elem = list[0].concat(list[1]);
 
-  if (elements_req % 12 === 0) {
+  if (element_items >= 1001) {
+    console.log("over 1000 items so we delete")
+    //hit 1000 so remove 500
     //remove first 600 elements
-    preprended_items += 6;
-    preprended_items = preprended_items + (elements_req % 12);
-    let element_items = item_box.children;
+    preprended_items += 5;
+    // let element_items = item_box.children;
     //always remove 600 plus the extra before the next set of 12 (0-1100 items)
-    let remove = 600 + (elements_req % 12) * 100;
 
-    console.log("removing this many elements from the beginning: " + remove);
-    for (let i = 0; i < remove; i++) {
-      element_items[0].remove();
+    console.log("removing this many elements from the beginning: " + 500);
+    for (let i = 0; i < 500; i++) {
+      item_box.children[0].remove();
     }
     $(uiItems).prepend(load_spinner);
   }
-  console.log("will begin adding elements from position: " + start);
+
   for (let i = start; i < elements_req; i++) {
     if (i < already_created_elem.length) {
       $(uiItems).append(already_created_elem[i]);
@@ -2126,8 +2138,7 @@ async function add_items_to_view(list, amount_req, reset) {
   }
   listed_count += start;
   start = listed_count;
-  console.log("listed count after appending is at: " + listed_count);
-  if ($(uiItems).children().length >= 400) {
+  if ($(uiItems).children().length >= 500) {
     $(uiItems).append(load_spinner);
   }
   let end_time = performance.now();

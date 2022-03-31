@@ -4063,7 +4063,7 @@ var highLevelFolderToolTip = {
     "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
-listItems(datasetStructureJSONObj, "#items");
+listItems(datasetStructureJSONObj, "#items", 500);
 getInFolder(
   ".single-item",
   "#items",
@@ -4089,6 +4089,7 @@ organizeDSbackButton.addEventListener("click", function () {
       myPath = myPath["folders"][item];
     }
     // construct UI with files and folders
+    console.log(myPath);
     $("#items").empty();
     already_created_elem = [];
     let items = loadFileFolder(myPath); //array -
@@ -4097,7 +4098,7 @@ organizeDSbackButton.addEventListener("click", function () {
     console.log(typeof items);
     console.log(items);
     //we have some items to display
-    add_items_to_view(items, 400, (reset = true));
+    listItems(myPath, "#items", 500, reset=true);
     organizeLandingUIEffect();
     // reconstruct div with new elements
     getInFolder(
@@ -4105,7 +4106,7 @@ organizeDSbackButton.addEventListener("click", function () {
       "#items",
       organizeDSglobalPath,
       datasetStructureJSONObj
-    );
+      );
   }
 });
 
@@ -4181,13 +4182,13 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               determineDatasetLocation()
             );
           } else {
-            var appendString = "";
-            appendString =
-              appendString +
-              '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-              newFolderName +
-              "</div></div>";
-            $(appendString).appendTo("#items");
+            // var appendString = "";
+            // appendString =
+            //   appendString +
+            //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+            //   newFolderName +
+            //   "</div></div>";
+            // $(appendString).appendTo("#items");
 
             /// update datasetStructureJSONObj
             var currentPath = organizeDSglobalPath.value;
@@ -4206,7 +4207,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               action: ["new"],
             };
 
-            listItems(myPath, "#items");
+            listItems(myPath, "#items", 500, reset=true);
             getInFolder(
               ".single-item",
               "#items",
@@ -4862,7 +4863,7 @@ async function addFoldersfunction(
         }
       }
       // $("#items").empty();
-      listItems(currentLocation, "#items", 400);
+      listItems(currentLocation, "#items", 500, reset=true);
       getInFolder(
         ".single-item",
         "#items",
@@ -5222,7 +5223,7 @@ function dropHelper(
         "</div></div>";
       $(appendString).appendTo(ev2);
     }
-    listItems(myPath, "#items");
+    listItems(myPath, "#items", 500, reset=true);
     // getInFolder(
     //   ".single-item",
     //   "#items",
@@ -5265,7 +5266,7 @@ function dropHelper(
       $("#placeholder_element").remove();
       $(appendString).appendTo(ev2);
     }
-    listItems(myPath, "#items");
+    listItems(myPath, "#items", 500, reset=true);
     getInFolder(
       ".single-item",
       "#items",
@@ -5721,10 +5722,9 @@ function sortObjByKeys(object) {
   return orderedObject;
 }
 
-async function listItems(jsonObj, uiItem, amount_req) {
+async function listItems(jsonObj, uiItem, amount_req, reset) {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
-  let start_time = performance.now();
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -5966,14 +5966,19 @@ async function listItems(jsonObj, uiItem, amount_req) {
     //add items using a different function
     //want the initial files to be imported
     let itemDisplay = new Promise(async (resolved) => {
-      await add_items_to_view(items, amount_req);
-      resolved();
+      if(reset != undefined) {
+        await add_items_to_view(items, amount_req, reset);
+        resolved();
+      } else {
+        await add_items_to_view(items, amount_req);
+        resolved();
+      }
     });
   } else {
     //load everything in place
     let itemDisplay = new Promise(async (resolved) => {
       // $(uiItem).empty();
-      await add_items_to_view(items, 400);
+      await add_items_to_view(items, 500);
       resolved();
     });
   }
@@ -5994,19 +5999,15 @@ async function listItems(jsonObj, uiItem, amount_req) {
     select_items_ctrl(items, event, isDragging);
   });
   drag_event_fired = false;
-  let end_time = performance.now();
-  console.log(
-    `Duration of listItems function: ${end_time - start_time} milliseconds`
-  );
 }
 
 async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
-      $("#items").empty();
       start = 0;
       listed_count = 0;
-      console.log("enterig if statement in getInFoldr");
+      amount = 0;
+      console.log("entering if statement in getInFoldr");
       var folderName = this.innerText;
       currentLocation.value = currentLocation.value + folderName + "/";
 
@@ -6015,24 +6016,21 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       var filtered = jsonPathArray.slice(1).filter(function (el) {
         return el.trim() != "";
       });
+      console.log(filtered);
       var myPath = getRecursivePath(filtered, globalObj);
+      console.log(myPath);
+      console.log(currentPath);
       let amount_of_items = Object.keys(myPath["files"]).length;
       amount_of_items = amount_of_items + Object.keys(myPath["folders"]).length;
-      console.log(amount_of_items);
       $("#items").empty();
       already_created_elem = [];
       let items = loadFileFolder(myPath);
       let total_item_count = items[1].length + items[0].length;
-      console.log("retrieved items count " + total_item_count);
-      console.log(typeof items);
-      console.log(items);
-      //we have some items to display
-      amount = 400;
-      console.log("add items called by getInfolder");
-      await add_items_to_view(items, 400);
+      //we have some items to display 
+      listItems(myPath, "#items", 500, reset=true);
       organizeLandingUIEffect();
       // reconstruct folders and files (child elements after emptying the Div)
-      getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
+      // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
     }
   });
 }

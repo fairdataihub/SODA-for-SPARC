@@ -2017,6 +2017,9 @@ async function moveItems(ev, category) {
           } else if ($(ev).hasClass("myFol")) {
             itemType = "folders";
           }
+
+          console.log(ev.parentElement);
+          ev.parentElement.remove();
           moveItemsHelper(itemToMove, selectedPath, itemType);
         }
       }
@@ -2096,6 +2099,8 @@ function moveItemsHelper(item, destination, category) {
   }
   //delete item from the original location
   delete myPath[category][item];
+  console.log(item);
+  console.log(destination);
   listItems(myPath, "#items");
   getInFolder(
     ".single-item",
