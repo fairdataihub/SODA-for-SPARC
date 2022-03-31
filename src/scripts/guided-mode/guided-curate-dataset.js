@@ -271,7 +271,7 @@ const traverseToTab = (targetPageID) => {
     //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
     try {
       let subjectsArray = Object.keys(
-        datasetStructureJSONObj.folders.primary.folders
+        sodaJSONObj["dataset-metadata"]["subject-sample-structure"]
       );
       for (let subject of subjectsArray) {
         //check to see if subject already has data in the sodajsonObj
@@ -658,6 +658,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["metadata-files"] = {};
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["subject-sample-structure"] = {};
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
@@ -954,6 +955,10 @@ const createSubjectFolder = (event, subjectNameInput) => {
       if (subjectName.length > 0) {
         if (subSamInputIsValid(subjectName)) {
           removeWarningMessageIfExists(subjectNameInput);
+          //Add subject to subject-sample-structrure
+          sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+            subjectName
+          ] = [];
           const subjectIdCellToAddNameTo = subjectNameInput.parent();
           subjectIdCellToAddNameTo.html(subjectNameElement);
 
@@ -967,6 +972,18 @@ const createSubjectFolder = (event, subjectNameInput) => {
             //get the name of the subject being renamed
             const subjectFolderToRename =
               subjectNameInput.attr("data-prev-name");
+            //Rename the previous subject name in sodaJSONObj["dataset-metadata"]["subject-sample-structure"] to new subjectName
+            copiedSubjectToRename =
+              sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+                subjectFolderToRename
+              ];
+            sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+              subjectName
+            ] = copiedSubjectToRename;
+            //Remove the subject folder from sodajsonObj
+            delete sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+              subjectFolderToRename
+            ];
             //create a temp copy of the folder to be renamed
             copiedFolderToRename = subjectTargetFolder[subjectFolderToRename];
             //set the copied obj from the prev name to the new obj name
@@ -1084,9 +1101,10 @@ const deleteSubjectFolder = (subjectDeleteButton) => {
   subjectIdCellToDelete.remove();
   //Update subject table row indices
   updateGuidedTableIndices("subject-table-index");
-  console.log(
-    datasetStructureJSONObj["folders"]["primary"]["folders"][subjectIdToDelete]
-  );
+  //delete the subject folder from sodaJSONobj
+  delete sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+    subjectIdToDelete
+  ];
   //delete the subject folder from the dataset structure obj
   delete datasetStructureJSONObj["folders"]["primary"]["folders"][
     subjectIdToDelete
@@ -1147,6 +1165,11 @@ const createSampleFolder = (event, sampleNameInput) => {
       if (sampleName.length > 0) {
         if (subSamInputIsValid(sampleName)) {
           removeWarningMessageIfExists(sampleNameInput);
+          //Add sample to sodaJSONobj
+          sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+            sampleParentSubjectName
+          ].push(sampleName);
+
           const sampleIdCellToAddNameTo = sampleNameInput.parent();
           sampleIdCellToAddNameTo.html(sampleNameElement);
 
@@ -1159,6 +1182,15 @@ const createSampleFolder = (event, sampleNameInput) => {
           if (sampleNameInput.attr("data-prev-name")) {
             //get the name of the sample being renamed
             const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
+            //Remove old sample in sodaJSONobj
+            sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+              sampleParentSubjectName
+            ] = sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+              sampleParentSubjectName
+            ].filter((sample) => {
+              return sample !== sampleFolderToRename;
+            });
+
             //create a temp copy of the folder to be renamed
             copiedFolderToRename = sampleTargetFolder[sampleFolderToRename];
             //set the copied obj from the prev name to the new obj name
@@ -1320,8 +1352,14 @@ const deleteSampleFolder = (sampleDeleteButton) => {
     .text()
     .trim();
   const sampleIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
-  console.log(samplesParentSubject);
-  console.log(sampleIdToDelete);
+  //delte the sample from sodaJSONobj
+  sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+    samplesParentSubject
+  ] = sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+    samplesParentSubject
+  ].filter((sample) => {
+    return sample !== sampleIdToDelete;
+  });
   //delete the table row element in the UI
   sampleIdCellToDelete.remove();
   //Update sample table row indices
