@@ -1670,7 +1670,7 @@ const setGuidedBannerImage = (croppedImagePath) => {
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
-  console.log(newPiOwnerObj);
+  removeWarningMessageIfExists($("#guided-designated-PI"));
   $(".guidedDatasetOwner").text(newPiOwnerObj.userString);
   sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["pi-owner"]["userString"] =
@@ -3830,6 +3830,7 @@ $(document).ready(() => {
               name: `${user["firstName"]} ${user["lastName"]}`,
             };
             setGuidedDatasetPiOwner(originalDatasetCreator);
+            generateWarningMessage($("#guided-designated-PI"));
           }
 
           setGuidedDatasetName(datasetName);
