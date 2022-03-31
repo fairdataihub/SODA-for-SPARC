@@ -829,7 +829,7 @@ const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
     .closest("tr")
     .find(".sample-metadata-id")
     .text();
-  guidedLoadSampleMetadataIfExists(sampleMetadataID);
+  //guidedLoadSampleMetadataIfExists(sampleMetadataID);
   $("#guided-metadata-sample-id").text(sampleMetadataID);
   $("#guided-generate-samples-file").text(`Save ${sampleMetadataID} metadata`);
   traverseToTab("guided-sample-metadata-tab");
