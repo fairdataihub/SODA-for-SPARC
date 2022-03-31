@@ -4098,7 +4098,7 @@ organizeDSbackButton.addEventListener("click", function () {
     console.log(typeof items);
     console.log(items);
     //we have some items to display
-    listItems(myPath, "#items", 500, reset=true);
+    listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
     // reconstruct div with new elements
     getInFolder(
@@ -4106,7 +4106,7 @@ organizeDSbackButton.addEventListener("click", function () {
       "#items",
       organizeDSglobalPath,
       datasetStructureJSONObj
-      );
+    );
   }
 });
 
@@ -4207,7 +4207,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               action: ["new"],
             };
 
-            listItems(myPath, "#items", 500, reset=true);
+            listItems(myPath, "#items", 500, (reset = true));
             getInFolder(
               ".single-item",
               "#items",
@@ -4863,7 +4863,7 @@ async function addFoldersfunction(
         }
       }
       // $("#items").empty();
-      listItems(currentLocation, "#items", 500, reset=true);
+      listItems(currentLocation, "#items", 500, (reset = true));
       getInFolder(
         ".single-item",
         "#items",
@@ -5223,7 +5223,7 @@ function dropHelper(
         "</div></div>";
       $(appendString).appendTo(ev2);
     }
-    listItems(myPath, "#items", 500, reset=true);
+    listItems(myPath, "#items", 500, (reset = true));
     // getInFolder(
     //   ".single-item",
     //   "#items",
@@ -5266,7 +5266,7 @@ function dropHelper(
       $("#placeholder_element").remove();
       $(appendString).appendTo(ev2);
     }
-    listItems(myPath, "#items", 500, reset=true);
+    listItems(myPath, "#items", 500, (reset = true));
     getInFolder(
       ".single-item",
       "#items",
@@ -5966,7 +5966,7 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
     //add items using a different function
     //want the initial files to be imported
     let itemDisplay = new Promise(async (resolved) => {
-      if(reset != undefined) {
+      if (reset != undefined) {
         await add_items_to_view(items, amount_req, reset);
         resolved();
       } else {
@@ -6026,8 +6026,8 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       already_created_elem = [];
       let items = loadFileFolder(myPath);
       let total_item_count = items[1].length + items[0].length;
-      //we have some items to display 
-      listItems(myPath, "#items", 500, reset=true);
+      //we have some items to display
+      listItems(myPath, "#items", 500, (reset = true));
       organizeLandingUIEffect();
       // reconstruct folders and files (child elements after emptying the Div)
       // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
