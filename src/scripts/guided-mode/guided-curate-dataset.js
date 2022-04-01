@@ -260,7 +260,6 @@ const guidedLoadSavedProgressFiles = async () => {
     const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
     );
-    console.log(progressFileData);
     renderProgressCards(progressFileData);
   } else {
     console.log("No guided save files found");
@@ -276,6 +275,9 @@ const traverseToTab = (targetPageID) => {
   }
   if (targetPageID === "guided-subjects-folder-tab") {
     $("#guided-button-preview-folder-structure").show();
+  }
+  if (targetPageID === "guided-samples-folder-tab") {
+    renderSamplesTables();
   }
   if (targetPageID === "guided-create-subjects-metadata-tab") {
     //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
@@ -296,6 +298,10 @@ const traverseToTab = (targetPageID) => {
       throw "subjectsArray not defined, going to samples metadata tab";
     }
   }
+  if (targetPageID === "guided-create-samples-metadata-tab") {
+    renderSampleMetadataTables();
+  }
+
   let currentParentTab = CURRENT_PAGE.parent();
   let targetPage = $(`#${targetPageID}`);
   let targetPageParentTab = targetPage.parent();
@@ -3944,6 +3950,7 @@ $(document).ready(() => {
     pageBeingLeftID = CURRENT_PAGE.attr("id");
     //add a bootstrap loader to the next button
     $("#guided-next-button").addClass("loading");
+    let errorArray = [];
 
     try {
       if (pageBeingLeftID === "guided-basic-description-tab") {
@@ -3991,34 +3998,88 @@ $(document).ready(() => {
           setGuidedDatasetSubtitle(datasetSubtitle);
           setGuidedBannerImage(tempGuidedCroppedBannerImagePath);
         } else {
-          let basicDescriptionTabErrorMessage = [];
           if (datasetName == "") {
-            basicDescriptionTabErrorMessage.push("Please enter a dataset name");
+            errorArray.push({
+              type: "notyf",
+              message: "Please enter a dataset name",
+            });
           }
           if (datasetSubtitle == "") {
-            basicDescriptionTabErrorMessage.push(
-              "Please enter a dataset subtitle"
-            );
+            errorArray.push({
+              type: "notyf",
+              message: "Please enter a dataset subtitle",
+            });
           }
           if (tempGuidedCroppedBannerImagePath == "") {
-            basicDescriptionTabErrorMessage.push("Please add a banner image");
+            errorArray.push({
+              type: "notyf",
+              message: "Please add a banner image",
+            });
           }
           if (
             !$("#guided-curate-new-dataset-card").hasClass("checked") &&
             !$("#guided-curate-existing-local-dataset-card").hasClass("checked")
           ) {
-            basicDescriptionTabErrorMessage.push(
-              "Please select a dataset start location"
-            );
+            errorArray.push({
+              type: "notyf",
+              message: "Please select a dataset start location",
+            });
           }
-          throw basicDescriptionTabErrorMessage;
+          throw errorArray;
         }
       }
       if (pageBeingLeftID === "guided-subjects-folder-tab") {
-        if ($("#guided-button-has-subjects").hasClass("selected")) {
-          renderSamplesTables();
-        } else {
+        const skipSubSamFolderAndMetadataPages = () => {
           $("#guided-samples-folder-tab").attr("data-skip-page", "true");
+          $("#guided-create-subjects-metadata-tab").attr(
+            "data-skip-page",
+            "true"
+          );
+          $("#guided-create-samples-metadata-tab").attr(
+            "data-skip-page",
+            "true"
+          );
+        };
+        const unSkipSubSamFolderAndMetadataPages = () => {
+          $("#guided-samples-folder-tab").attr("data-skip-page", "false");
+          $("#guided-create-subjects-metadata-tab").attr(
+            "data-skip-page",
+            "false"
+          );
+          $("#guided-create-samples-metadata-tab").attr(
+            "data-skip-page",
+            "false"
+          );
+        };
+        //If the user indicated they had subjects however left the subjects table page,
+        //Ask the user if they would like to go back to subjects table, and if not, skip
+        //to the source folder
+        if (getSubjects().length == 0) {
+          Swal.fire({
+            title: "Continue without adding subjects?",
+            text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "I want to add subjects into the subject table",
+            cancelButtonText: "I do not have any subjects",
+          }).then((result) => {
+            //If the user indicates they do not have any subjects, skip to source folder
+            if (!result.isConfirmed) {
+              skipSubSamFolderAndMetadataPages();
+              traverseToTab("guided-source-folder-tab");
+            }
+          });
+          //Throw error to exit next button click handler
+          errorArray.push({
+            type: "",
+            message: "User chose to back to subject page to add subjects",
+          });
+          throw errorArray;
+        } else {
+          console.log("unskipping subsamPages");
+          unSkipSubSamFolderAndMetadataPages();
         }
       }
       if (pageBeingLeftID === "guided-folder-importation-tab") {
@@ -4150,17 +4211,16 @@ $(document).ready(() => {
       traverseToTab(targetPageID);
     } catch (error) {
       //check to see if the type of error is array
-      if (Array.isArray(error)) {
-        errorArray.map((error) => {
+      errorArray.map((error) => {
+        if (error.type === "notyf") {
           notyf.open({
             duration: "5000",
             type: "error",
-            message: error,
+            message: error.message,
           });
-        });
-      } else {
-        console.log("error: ", error);
-      }
+        }
+        errorArray = [];
+      });
     }
     $("#guided-next-button").removeClass("loading");
   });
