@@ -4201,6 +4201,15 @@ $(document).ready(() => {
             .next()
             .children(".guided--panel")
             .first();
+          if (
+            nextPage.attr("data-skip-page") &&
+            nextPage.attr("data-skip-page") == "true"
+          ) {
+            return getNextPageNotSkipped(nextPage);
+          } else {
+            //element is valid and not to be skipped
+            return nextPage;
+          }
           return nextPage;
         }
       };
@@ -4256,17 +4265,17 @@ $(document).ready(() => {
       } else {
         //previous element was the last element in the container.
         //go to the next page-set and return the first page to be transitioned to.
-        console.log("back to prev parent tab");
         prevPage = startingPage
           .parent()
           .prev()
           .children(".guided--panel")
           .last();
-        if (prevPage.data("skip-page")) {
-          console.log("recursive back");
+        if (
+          prevPage.attr("data-skip-page") &&
+          prevPage.attr("data-skip-page") == "true"
+        ) {
           return getPrevPageNotSkipped(prevPage);
         } else {
-          console.log("regular back");
           //element is valid and not to be skipped
           return prevPage;
         }
