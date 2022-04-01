@@ -136,7 +136,7 @@ const logCurationErrorsToAnalytics = async (
       PrepareDatasetsAnalyticsPrefix.CURATE +
         " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
-      (Math.floor(BUCKET_SIZE / 2))
+      Math.floor(BUCKET_SIZE / 2)
     );
 
     // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
@@ -181,7 +181,6 @@ const logCurationSuccessToAnalytics = async (
   dataset_destination,
   uploadedFiles
 ) => {
-
   // get dataset id if available
   let datasetLocation = determineDatasetLocation();
 
