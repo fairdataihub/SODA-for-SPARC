@@ -14,7 +14,7 @@ const { fstat } = require("fs");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = "beta";
+autoUpdater.channel = "latest";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
