@@ -766,18 +766,14 @@ function loadFileFolder(myPath) {
 
 function getRecursivePath(filteredList, inputObj) {
   var myPath = inputObj;
-  console.log(inputObj);
   for (var item of filteredList) {
     if (item.trim() !== "") {
       myPath = myPath["folders"][item];
     }
   }
-  console.log(myPath);
-  console.log(filteredList);
   if (myPath === undefined) {
     myPath = inputObj;
     filteredList.pop();
-    console.log(filteredList);
     for (var item of filteredList) {
       if (item.trim() !== "") {
         myPath = myPath["folders"][item];
@@ -786,7 +782,6 @@ function getRecursivePath(filteredList, inputObj) {
     let items = [myPath, filteredList];
     return items;
   } else {
-    console.log(myPath.length);
     return myPath;
   }
 }
@@ -1702,7 +1697,6 @@ async function addFilesfunction(
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
 
-  console.log(fileArray);
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
     // check if dataset structure level is at high level folder
@@ -1893,10 +1887,6 @@ async function addFilesfunction(
       ["Step 3", "Import", "File"],
       determineDatasetLocation()
     );
-    let end_time = performance.now();
-    console.log(
-      `Duration of addFilesfunction: ${end_time - start_time} milliseconds`
-    );
   }
 }
 
@@ -1965,7 +1955,6 @@ function beginScrollListen() {
 
 async function lazyLoad() {
   // console.log("monitoring scroll position: %c%s", styles, scroll_box.scrollTop);
-
   let total_items = already_created_elem.length;
   let filtered = getGlobalPath(document.getElementById("input-global-path"));
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -1978,7 +1967,7 @@ async function lazyLoad() {
   //load spinner is prepended to beginning to elements if any de-rendered
   if (item_box.childElementCount != 0) {
     if (item_box.children[0].id === "items_container") {
-      if (scroll_box.scrollTop < 260) {
+      if (scroll_box.scrollTop < 300) {
         //monitors when user scrolls back up to prepend elements
         let array_select = preprended_items - 1;
         let remove_limit = 5; //only prepend 600 elements at a time
@@ -1995,7 +1984,7 @@ async function lazyLoad() {
           array_select--;
         }
         array_select += 1;
-
+        console.log(array_select);
         if (array_select != 0) {
           $(uiItems).prepend(load_spinner);
         } else {
@@ -2012,19 +2001,13 @@ async function lazyLoad() {
         );
 
         if (item_box.lastChild.id === "items_container") {
-          console.log("removing loading icon at the end");
           item_box.lastChild.remove();
         }
         //need to have 500 items
         for (let i = 0; i <= 500; i++) {
           item_box.lastChild.remove();
         }
-        console.log(item_box.lastChild);
-        console.log(
-          "this is how many elements remain: " + item_box.childElementCount
-        );
         if (item_box.childElementCount > 1001) {
-          console.log("guess we had an extra, now removing");
           while (item_box.childElementCount > 1001) {
             item_box.lastChild.remove();
           }
@@ -2037,10 +2020,6 @@ async function lazyLoad() {
         start -= 5;
         amount -= 500;
         preprended_items -= 5;
-        console.log("we will start on position: " + start);
-        console.log("listed count is also at: " + listed_count);
-        console.log("this is the amount we will be requesting: " + amount);
-
         $("#items").append(load_spinner);
       }
     }
@@ -2058,7 +2037,10 @@ async function lazyLoad() {
     // listed_count = 0;
   } else {
     //more items to load once user scrolls close to end
-    if (scroll_box.scrollTop + 280 > item_box.offsetHeight) {
+    if (
+      scroll_box.scrollTop + 280 >
+      scroll_box.scrollHeight - scroll_box.offsetHeight
+    ) {
       // scroll_box.removeEventListener("scroll", lazyLoad);
       //check how many elements have been created to derender
       let wait4items = new Promise(async (resolved) => {
@@ -2127,14 +2109,12 @@ async function add_items_to_view(list, amount_req, reset) {
   already_created_elem = list[0].concat(list[1]);
 
   if (element_items >= 1001) {
-    console.log("over 1000 items so we delete");
     //hit 1000 so remove 500
     //remove first 600 elements
     preprended_items += 5;
     // let element_items = item_box.children;
     //always remove 600 plus the extra before the next set of 12 (0-1100 items)
 
-    console.log("removing this many elements from the beginning: " + 500);
     for (let i = 0; i < 500; i++) {
       item_box.children[0].remove();
     }
@@ -2154,10 +2134,6 @@ async function add_items_to_view(list, amount_req, reset) {
   if ($(uiItems).children().length >= 500) {
     $(uiItems).append(load_spinner);
   }
-  let end_time = performance.now();
-  console.log(
-    `Duration of add_items function: ${end_time - start_time} milliseconds`
-  );
 }
 
 ///// function to load details to show in display once
