@@ -132,7 +132,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       (uploadedFiles += BUCKET_SIZE / 2)
     );
@@ -145,7 +145,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
@@ -179,10 +179,10 @@ const logCurationSuccessToAnalytics = async (
   dataset_destination,
   uploadedFiles
 ) => {
-  console.log("Dataset destination is: ", dataset_destination);
-  console.log("Upload session is: ", datasetUploadSession);
-  console.log("Uploaded files is: ", uploadedFiles);
-  console.log("Uploaded size is: ", main_total_generate_dataset_size);
+  // console.log("Dataset destination is: ", dataset_destination);
+  // console.log("Upload session is: ", datasetUploadSession);
+  // console.log("Uploaded files is: ", uploadedFiles);
+  // console.log("Uploaded size is: ", main_total_generate_dataset_size);
 
   // get dataset id if available
   let datasetLocation = determineDatasetLocation();
@@ -285,26 +285,8 @@ const logCurationSuccessToAnalytics = async (
       datasetLocation,
       uploadedFiles
     );
-  } else {
-    console.log("FInal values for upload are: ", uploadedFiles, main_total_generate_dataset_size)
-    // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-      `${datasetUploadSession.id}`,
-      main_total_generate_dataset_size
-    );
-
-    // track amount of files for datasets by ID or Local
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-      `${datasetUploadSession.id}`,
-      uploadedFiles
-    );
   }
+
 
   // log the preview card instructions for any files and folders being generated on Pennsieve
   Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {

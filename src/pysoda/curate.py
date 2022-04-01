@@ -76,6 +76,7 @@ curateprintstatus = " "
 total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
+uploaded_folder_counter = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -2796,8 +2797,11 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global start_generate
     global main_initial_bfdataset_size
     global main_curation_uploaded_files
+    global uploaded_folder_counter
     # global progress_percentage
     # global progress_percentage_array
+
+    uploaded_folder_counter = 0 
 
     try:
 
@@ -3202,7 +3206,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     bf_folder.update()
 
                     # update the global that tracks the amount of files that have been successfully uploaded
-                    main_curation_uploaded_files += BUCKET_SIZE
+                    main_curation_uploaded_files = BUCKET_SIZE
+                    uploaded_folder_counter += 1
 
                     # handle renaming to final names
                     for index, projected_name in enumerate(
@@ -3248,7 +3253,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 bf_folder.upload(*list_upload)
                 bf_folder.update()
 
-                main_curation_uploaded_files += len(list_upload)
+                main_curation_uploaded_files = len(list_upload)
+                uploaded_folder_counter += 1
 
                 # rename to final name
                 for index, projected_name in enumerate(list_projected_names):
@@ -3305,6 +3311,10 @@ main_generate_destination = ""
 main_initial_bfdataset_size = 0
 bf = ""
 myds = ""
+
+
+#TODO: Add the folder tracker  and use it on the front end
+#TODO: Make sure copying as we do for the local case is fine. I believe it is since there is no freeze. Just make that case wait for the success or fail to log. Get the result from the backend in the fail case. 
 
 
 def bf_check_dataset_files_validity(soda_json_structure, bf):
@@ -3410,6 +3420,7 @@ def main_curate_function(soda_json_structure):
     # global progress_percentage
     # global progress_percentage_array
     global main_curation_uploaded_files
+    global uploaded_folder_counter
 
     global bf
     global myds
@@ -3422,6 +3433,7 @@ def main_curate_function(soda_json_structure):
     main_total_generate_dataset_size = 1
     main_generated_dataset_size = 0
     main_curation_uploaded_files = 0
+    uploaded_folder_counter = 0
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
@@ -3638,8 +3650,13 @@ def main_curate_function_upload_details():
     Also tells us how many files have been copied (double usage of both variables) to a destination folder
     for local dataset generation.
     """
+    global main_curation_uploaded_files
+    global main_generated_dataset_size
+    global uploaded_folder_counter
 
-    return (main_curation_uploaded_files, main_generated_dataset_size)
+
+
+    return (main_curation_uploaded_files, main_generated_dataset_size, uploaded_folder_counter)
 
 
 def preview_dataset(soda_json_structure):

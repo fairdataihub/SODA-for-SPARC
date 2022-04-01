@@ -2665,7 +2665,7 @@ $("#button-submit-dataset").click(async () => {
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
               ` - Number of Files`,
             `${datasetUploadSession.id}`,
-            (uploadedFiles += 250)
+            250
           );
 
           ipcRenderer.send(
