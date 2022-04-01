@@ -265,13 +265,25 @@ const guidedLoadSavedProgressFiles = async () => {
     console.log("No guided save files found");
   }
 };
-const traverseToTab = (targetPageID) => {
+const traverseToTab = async (targetPageID) => {
   if (
     targetPageID === "guided-designate-pi-owner-tab" ||
     "guided-designate-permissions-tab"
   ) {
     //Refresh select pickers so items can be selected
     $(".selectpicker").selectpicker("refresh");
+    if (targetPageID === "guided-designate-pi-owner-tab") {
+      if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
+        let user = await getUserInformation();
+        const originalDatasetCreator = {
+          userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+          UUID: user["id"],
+          name: `${user["firstName"]} ${user["lastName"]}`,
+        };
+        setGuidedDatasetPiOwner(originalDatasetCreator);
+        generateWarningMessage($("#guided-designated-PI-info"));
+      }
+    }
   }
   if (targetPageID === "guided-subjects-folder-tab") {
     $("#guided-button-preview-folder-structure").show();
@@ -1804,7 +1816,6 @@ $("#guided-button-no-docs-data").on("click", () => {
 
 $("#guided-dataset-name-input").val("test " + makeid(5));
 $("#guided-dataset-subtitle-input").val("test " + makeid(5));
-tempGuidedCroppedBannerImagePath = "placeholder";
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
@@ -3999,18 +4010,6 @@ $(document).ready(() => {
               sodaJSONObj["starting-point"]["type"] = "local";
             }
           }
-
-          if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
-            let user = await getUserInformation();
-            const originalDatasetCreator = {
-              userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-              UUID: user["id"],
-              name: `${user["firstName"]} ${user["lastName"]}`,
-            };
-            setGuidedDatasetPiOwner(originalDatasetCreator);
-            generateWarningMessage($("#guided-designated-PI-info"));
-          }
-
           setGuidedDatasetName(datasetName);
           setGuidedDatasetSubtitle(datasetSubtitle);
           setGuidedBannerImage(tempGuidedCroppedBannerImagePath);

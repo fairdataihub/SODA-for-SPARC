@@ -89,6 +89,7 @@
 
 .guided--text-area {
   height: 5em;
+  resize: none;
 }
 .guided--text-area-tall {
   height: 15em;
