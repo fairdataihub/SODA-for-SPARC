@@ -2641,28 +2641,9 @@ $("#button-submit-dataset").click(async () => {
         let didFail = res[2];
         let didUpload = res[3];
         uploadedFolders = res[4];
-        console.log("Size of the dataset being uploaded: ", totalFileSize);
-        console.log("Total file size created so far: ", uploadedFileSize);
-        console.log("PRevious file size: ", previousUploadedFileSize);
-        incrementInFileSize = uploadedFileSize - previousUploadedFileSize;
-        console.log("Incremented file size is: ", incrementInFileSize);
 
         // failed to upload a bucket, but did upload some files
         if (didFail && didUpload) {
-          // if there is no tracked upload size then no files were uploaded to Pennsieve
-          console.log(
-            "Local dataset failed to upload here is the session id: ",
-            datasetUploadSession.id
-          );
-          console.log(
-            "Local dataset failed to upload here is the amount of files we will log: ",
-            uploadedFiles + 250
-          );
-          console.log(
-            "Local dataset failed to upload here is the size of files we will log: ",
-            incrementInFileSize
-          );
-
           // even when the upload fails we want to know how many files were uploaded and their size
           // for the current upload session
           ipcRenderer.send(
@@ -2687,12 +2668,8 @@ $("#button-submit-dataset").click(async () => {
         } else if (didFail && !didUpload) {
           // there is no session information to log outside of the general information logged in the
           // error for api_bf_submit
-          console.log("Failed broski");
           return;
         } else {
-          // console.log("Amount of files being uploaded: ", uploadedFiles);
-          // console.log("Size of files: ", incrementInFileSize);
-
           // track the amount of files uploaded for the current bucket
           ipcRenderer.send(
             "track-event",
