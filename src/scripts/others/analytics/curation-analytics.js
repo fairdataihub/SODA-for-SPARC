@@ -29,7 +29,8 @@ const logCurationErrorsToAnalytics = async (
   uploadedFiles,
   uploadedFilesSize,
   dataset_destination,
-  mainTotalGenerateDatasetSize
+  mainTotalGenerateDatasetSize,
+  increaseInFileSize
 ) => {
   logCurationForAnalytics(
     "Error",
@@ -135,7 +136,7 @@ const logCurationErrorsToAnalytics = async (
       PrepareDatasetsAnalyticsPrefix.CURATE +
         " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
-      (uploadedFiles += BUCKET_SIZE / 2)
+      (Math.floor(BUCKET_SIZE / 2))
     );
 
     // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
@@ -158,7 +159,7 @@ const logCurationErrorsToAnalytics = async (
       `${datasetUploadSession.id}`,
       // doesn't need to be incremented like uploadedFiles as this represents the final amount returned from the upload progress function;
       // or just a little less
-      uploadedFilesSize
+      increaseInFileSize
     );
 
     // log the size that was attempted to be uploaded for the given session
@@ -180,10 +181,6 @@ const logCurationSuccessToAnalytics = async (
   dataset_destination,
   uploadedFiles
 ) => {
-  // console.log("Dataset destination is: ", dataset_destination);
-  // console.log("Upload session is: ", datasetUploadSession);
-  // console.log("Uploaded files is: ", uploadedFiles);
-  // console.log("Uploaded size is: ", main_total_generate_dataset_size);
 
   // get dataset id if available
   let datasetLocation = determineDatasetLocation();
@@ -267,8 +264,6 @@ const logCurationSuccessToAnalytics = async (
   }
 
   if (dataset_destination !== "Pennsieve") {
-    console.log("Amount of files generated: ", uploadedFiles);
-    console.log("Size of files generated: ", main_total_generate_dataset_size);
     // for tracking the total size of all the "saved", "new", "local" datasets by category
     ipcRenderer.send(
       "track-event",
