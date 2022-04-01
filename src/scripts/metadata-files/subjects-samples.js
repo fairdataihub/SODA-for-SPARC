@@ -1453,7 +1453,7 @@ function importPrimaryFolderSubjects(folderPath) {
         var stats = fs.statSync(path.join(folderPath, folder));
         if (stats.isDirectory()) {
           subjectsFileData[0] = folder;
-          for (var i = 1; i < 26; i++) {
+          for (var i = 1; i < 27; i++) {
             subjectsFileData.push("");
           }
           subjectsTableData[j] = subjectsFileData;

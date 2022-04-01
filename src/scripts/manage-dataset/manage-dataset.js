@@ -2343,18 +2343,62 @@ $("#button-submit-dataset").click(async () => {
   $("#para-please-wait-manage-dataset").html(
     "Please wait while we verify a few things..."
   );
+  let progressSubmit = document.getElementById("div-progress-submit");
+  let navContainer = document.getElementById("nav-items");
+  let progressError = document.getElementById("para-progress-bar-error-status");
 
+  var progressClone = progressSubmit.cloneNode(true);
+  let cloneHeader = progressClone.children[0];
+  progressClone.children[2].remove();
+  cloneHeader.style = "margin: 0;";
+  let cloneMeter = progressClone.children[1];
+  let cloneStatus = progressClone.children[2];
+  var navError = progressError.cloneNode(true);
+  let organizeDatasetButton = document.getElementById("button-generate");
+  let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
+
+  progressClone.style =
+    "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
+  cloneMeter.setAttribute("id", "clone-progress-bar-upload-bf");
+  cloneMeter.className = "nav-status-bar";
+  cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
+  cloneStatus.style =
+    "overflow-x: hidden; margin-bottom: 3px; margin-top: 5px;";
+  progressClone.setAttribute("id", "nav-progress-submit");
+  let returnButton = document.createElement("button");
+  returnButton.type = "button";
+  returnButton.id = "returnButton";
+  returnButton.innerHTML = "Return to progress";
+  let returnPage = document.getElementById("upload_local_dataset_btn");
+  returnButton.onclick = function () {
+    document.getElementById("upload_local_dataset_progress_div").style.display =
+      "flex";
+    returnPage.click();
+  };
+  progressClone.appendChild(returnButton);
+  organizeDatasetButton.disabled = true;
+  organizeDatasetButton.className = "disabled-generate-button";
+  organizeDatasetButton.style = "background-color: #f6f6f6";
+  organzieDatasetButtonDiv.className = "disabled-animated-div";
+
+  //console.log(cloneStatus);
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
   }
 
   var totalFileSize;
+  let uploadedFiles = 0;
+  let incrementInFileSize = 0;
+  let uploadedFolders = 0;
+  let uploadedFileSize = 0;
+  let previousUploadedFileSize = 0;
 
   $("#para-please-wait-manage-dataset").html("Please wait...");
   $("#para-progress-bar-error-status").html("");
 
   progressBarUploadBf.value = 0;
+  cloneMeter.value = 0;
 
   $("#button-submit-dataset").prop("disabled", true);
   $("#selected-local-dataset-submit").prop("disabled", true);
@@ -2363,12 +2407,26 @@ $("#button-submit-dataset").click(async () => {
 
   var err = false;
   var completionStatus = "Solving";
+  var success_upload = true;
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
 
   log.info("Files selected for upload:");
   logFilesForUpload(pathSubmitDataset.placeholder);
 
+  // start the upload session
+  datasetUploadSession.startSession();
+
+  // Questions logs need to answer:
+  // Which sessions failed? How many files were they attempting to upload per session? How many files were uploaded?
+  // How many pennsieve datasets were involved in a failed upload? Successful upload?
+  navContainer.appendChild(progressClone);
+  cloneStatus.innerHTML = "Please wait...";
+  document.getElementById("para-progress-bar-status").innerHTML = "";
+  let navbar = document.getElementById("main-nav");
+  if (navbar.classList.contains("active")) {
+    document.getElementById("sidebarCollapse").click();
+  }
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2380,17 +2438,44 @@ $("#button-submit-dataset").click(async () => {
 
         $("#para-please-wait-manage-dataset").html("");
         $("#para-progress-bar-status").html("");
+        cloneStatus.innerHTML = "";
         $("#div-progress-submit").css("display", "none");
-        $("#para-progress-bar-error-status").html(
+        //progressClone.remove();
+        /*$("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
-        );
+        );*/
+        document.getElementById("para-progress-bar-error-status").style =
+          "color: red";
+        document.getElementById("para-progress-bar-error-status").innerHTML =
+          emessage;
+        success_upload = false;
+        organizeDatasetButton.disabled = false;
+        organizeDatasetButton.className = "btn_animated generate-btn";
+        organizeDatasetButton.style =
+          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
+        Swal.fire({
+          icon: "error",
+          title: "There was an issue uploading your dataset",
+          html: emessage,
+          allowOutsideClick: false,
+        }).then((result) => {
+          progressClone.remove();
+          if (result.isConfirmed) {
+            returnPage.click();
+          }
+        });
 
+        //progressClone.remove();
         progressBarUploadBf.value = 0;
+        cloneMeter.value = 0;
 
         err = true;
         log.error(error);
         console.error(error);
 
+        // while sessions are used for tracking file count and file size for an upload
+        // we still want to know what dataset didn't upload by its pennsieve ID
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -2398,6 +2483,7 @@ $("#button-submit-dataset").click(async () => {
           defaultBfDatasetId
         );
 
+        // get total size of the dataset that failed to upload
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -2405,6 +2491,41 @@ $("#button-submit-dataset").click(async () => {
             " - size",
           "Size",
           totalFileSize
+        );
+
+        client.invoke(
+          "api_get_number_of_files_and_folders_locally",
+          pathSubmitDataset.placeholder,
+          (error, res) => {
+            if (error) {
+              log.error(error);
+              console.error(error);
+            } else {
+              let num_of_files = res[0];
+              let num_of_folders = res[1];
+
+              // log amount of folders uploaded in the given session
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+                  ` - Number of Folders`,
+                "Number of folders local dataset",
+                num_of_folders
+              );
+
+              // track total amount of files being uploaded
+              // makes it easy to see aggregate amount of files we failed to upload in Local Dataset
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+                  ` - Number of Files`,
+                "Number of files local dataset",
+                num_of_files
+              );
+            }
+          }
         );
 
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
@@ -2423,29 +2544,12 @@ $("#button-submit-dataset").click(async () => {
         log.info("Completed submit function");
         console.log("Completed submit function");
 
+        // can tell us how many successful upload sessions a dataset ID had (the value is implicitly set to 1 via Total Events query in Analytics) within a given timeframe
         ipcRenderer.send(
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
           defaultBfDatasetId
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - size",
-          "Size",
-          totalFileSize
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - name - size",
-          defaultBfDatasetId,
-          totalFileSize
         );
 
         client.invoke(
@@ -2460,46 +2564,20 @@ $("#button-submit-dataset").click(async () => {
                 "Error",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - Number of Folders`,
-                defaultBfDatasetId
+                `${datasetUploadSession.id}`
               );
             } else {
               let num_of_files = res[0];
               let num_of_folders = res[1];
 
+              // log amount of folders uploaded in the given session
               ipcRenderer.send(
                 "track-event",
                 "Success",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
                   ` - Number of Folders`,
-                "Number of folders local dataset",
+                `${datasetUploadSession.id}`,
                 num_of_folders
-              );
-
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                  ` - name - Number of Folders`,
-                defaultBfDatasetId,
-                num_of_folders
-              );
-
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                  ` - Number of Files`,
-                "Number of files local dataset",
-                num_of_files
-              );
-
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                  ` - name - Number of Files`,
-                defaultBfDatasetId,
-                num_of_files
               );
             }
           }
@@ -2532,12 +2610,28 @@ $("#button-submit-dataset").click(async () => {
             ` - Progress track`,
           defaultBfDatasetId
         );
+        organizeDatasetButton.disabled = false;
+        organizeDatasetButton.className = "btn_animated generate-btn";
+        organizeDatasetButton.style =
+          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
 
         $("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );
+        Swal.fire({
+          icon: "error",
+          title: "An error occurred",
+          html: "Please return to progress page to see full error",
+        }).then((result) => {
+          progressClone.remove();
+          if (result.isConfirmed) {
+            returnPage.click();
+          }
+        });
       } else {
         statusMessage = res[0];
+
         completionStatus = res[1];
         let submitprintstatus = res[2];
         totalFileSize = res[3];
@@ -2548,13 +2642,16 @@ $("#button-submit-dataset").click(async () => {
 
           if (res[0].includes("Success: COMPLETED!")) {
             progressBarUploadBf.value = 100;
+            cloneMeter.value = 100;
 
             $("#para-please-wait-manage-dataset").html("");
             $("#para-progress-bar-status").html(res[0] + smileyCan);
+            cloneStatus.innerHTML = res[0] + smileyCan;
           } else {
             var value = (uploadedFileSize / totalFileSize) * 100;
 
             progressBarUploadBf.value = value;
+            cloneMeter.value = value;
 
             if (totalFileSize < displaySize) {
               var totalSizePrint = totalFileSize.toFixed(2) + " B";
@@ -2578,6 +2675,8 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
+            //console.log(res[0]);
+            cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
                 "Progress: " +
@@ -2598,6 +2697,19 @@ $("#button-submit-dataset").click(async () => {
       if (countDone > 1) {
         log.info("Done submit track");
         console.log("Done submit track");
+        if (success_upload === true) {
+          organizeDatasetButton.disabled = false;
+          organizeDatasetButton.className = "btn_animated generate-btn";
+          organizeDatasetButton.style =
+            "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+          organzieDatasetButtonDiv.className = "btn_animated-inside";
+          uploadComplete.open({
+            type: "success",
+            message: "Upload to Pennsieve completed",
+          });
+          dismissStatus(progressClone.id);
+          progressClone.remove();
+        }
 
         if (statusMessage.includes("Success: COMPLETED")) {
           ipcRenderer.send(
@@ -2615,9 +2727,95 @@ $("#button-submit-dataset").click(async () => {
 
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Progress track`,
+          defaultBfDatasetId
+        );
       }
     }
   }
+
+  let uploadErrorChildren = document.querySelector(
+    "#para-progress-bar-error-status"
+  ).childNodes;
+
+  const monitorBucketUpload = () => {
+    // ask the server for the amount of files uploaded in the current session
+    client.invoke("api_bf_submit_dataset_upload_details", (err, res) => {
+      // console.log("Results: ", res)
+      // check if the amount of successfully uploaded files has increased
+      if (res[0] > 0 && res[4] > uploadedFolders) {
+        uploadedFiles = res[0];
+        previousUploadedFileSize = uploadedFileSize;
+        uploadedFileSize = res[1];
+        let didFail = res[2];
+        let didUpload = res[3];
+        uploadedFolders = res[4];
+
+        // failed to upload a bucket, but did upload some files
+        if (didFail && didUpload) {
+          // even when the upload fails we want to know how many files were uploaded and their size
+          // for the current upload session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Number of Files`,
+            `${datasetUploadSession.id}`,
+            250
+          );
+
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              " - size",
+            `${datasetUploadSession.id}`,
+            incrementInFileSize
+          );
+
+          return;
+        } else if (didFail && !didUpload) {
+          // there is no session information to log outside of the general information logged in the
+          // error for api_bf_submit
+          return;
+        } else {
+          // track the amount of files uploaded for the current bucket
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Number of Files`,
+            `${datasetUploadSession.id}`,
+            uploadedFiles
+          );
+
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              " - size",
+            `${datasetUploadSession.id}`,
+            incrementInFileSize
+          );
+        }
+      }
+    });
+
+    // if completion status was not set to done clear interval when the error span gets an error message
+    if (completionStatus === "Done" || uploadErrorChildren.length > 0) {
+      countDone++;
+
+      if (countDone > 1) {
+        clearInterval(uploadDetailsTimer);
+      }
+    }
+  };
+  var uploadDetailsTimer = setInterval(monitorBucketUpload, 1000);
 });
 
 const addRadioOption = (ul, text, val) => {
