@@ -871,7 +871,6 @@ def agent_version(settings):
         )
 
 
-
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
     Associated with 'Submit dataset' button in 'Submit new dataset' section
@@ -896,7 +895,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global initial_bfdataset_size_submit
     global did_upload
     global did_fail
-    global upload_folder_count 
+    global upload_folder_count
 
     submitdataprogress = " "
     submitdatastatus = " "
@@ -1191,10 +1190,10 @@ def bf_submit_dataset_upload_details():
     """
     global uploaded_file_size
     global uploaded_files
-    global did_fail 
-    global did_upload 
+    global did_fail
+    global did_upload
 
-    # uploaded_file_size is our total increase in dataset size; this represents the previous 
+    # uploaded_file_size is our total increase in dataset size; this represents the previous
     previous_total_increase_in_size = uploaded_file_size
     increment_in_size = 0
 
@@ -1205,7 +1204,14 @@ def bf_submit_dataset_upload_details():
         # upload hasn't started yet no details
         return (0, 0, 0, 0, 0)
 
-    return (uploaded_files, increment_in_size, did_fail, did_upload, upload_folder_count, uploaded_file_size )
+    return (
+        uploaded_files,
+        increment_in_size,
+        did_fail,
+        did_upload,
+        upload_folder_count,
+        uploaded_file_size,
+    )
 
 
 def submit_dataset_progress():

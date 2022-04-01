@@ -2801,7 +2801,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     # global progress_percentage
     # global progress_percentage_array
 
-    uploaded_folder_counter = 0 
+    uploaded_folder_counter = 0
 
     try:
 
@@ -3313,8 +3313,8 @@ bf = ""
 myds = ""
 
 
-#TODO: Add the folder tracker  and use it on the front end
-#TODO: Make sure copying as we do for the local case is fine. I believe it is since there is no freeze. Just make that case wait for the success or fail to log. Get the result from the backend in the fail case. 
+# TODO: Add the folder tracker  and use it on the front end
+# TODO: Make sure copying as we do for the local case is fine. I believe it is since there is no freeze. Just make that case wait for the success or fail to log. Get the result from the backend in the fail case.
 
 
 def bf_check_dataset_files_validity(soda_json_structure, bf):
@@ -3654,9 +3654,11 @@ def main_curate_function_upload_details():
     global main_generated_dataset_size
     global uploaded_folder_counter
 
-
-
-    return (main_curation_uploaded_files, main_generated_dataset_size, uploaded_folder_counter)
+    return (
+        main_curation_uploaded_files,
+        main_generated_dataset_size,
+        uploaded_folder_counter,
+    )
 
 
 def preview_dataset(soda_json_structure):
