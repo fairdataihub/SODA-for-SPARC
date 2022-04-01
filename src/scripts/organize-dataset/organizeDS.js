@@ -350,7 +350,7 @@ function delFolder(
             delete myPath[type][itemToDelete];
           }
           // update UI with updated jsonobj
-          listItems(myPath, uiItem, 500, reset=true);
+          listItems(myPath, uiItem, 500, (reset = true));
           getInFolder(
             singleUIItem,
             uiItem,
@@ -618,7 +618,7 @@ function renameFolder(
           );
 
           /// assign new name to folder or file in the UI
-          event1.parentElement.children[1].innerText = returnedName
+          event1.parentElement.children[1].innerText = returnedName;
           // event1.parentElement.parentElement.children[1].innerText = returnedName;
           // console.log(event1.parentElement.parentElement.children[1]);
           /// get location of current file or folder in JSON obj
@@ -1939,20 +1939,18 @@ function check_dataset_value() {
   }
   if (dataset_path.value != "My_dataset_folder/") {
     // if (item_box.offsetHeight != 420) {
-      // $("#items").empty();
-      var filtered = getGlobalPath(
-        document.getElementById("input-global-path")
-      );
-      var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-      amount = 500;
-      listItems(myPath, "items", 500);
-      getInFolder(
-        ".single-item",
-        "#items",
-        dataset_path,
-        datasetStructureJSONObj
-      );
-      beginScrollListen();
+    // $("#items").empty();
+    var filtered = getGlobalPath(document.getElementById("input-global-path"));
+    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+    amount = 500;
+    listItems(myPath, "items", 500);
+    getInFolder(
+      ".single-item",
+      "#items",
+      dataset_path,
+      datasetStructureJSONObj
+    );
+    beginScrollListen();
     // }
   }
 }
@@ -1969,13 +1967,8 @@ async function lazyLoad() {
   // console.log("monitoring scroll position: %c%s", styles, scroll_box.scrollTop);
 
   let total_items = already_created_elem.length;
-  let filtered = getGlobalPath(
-    document.getElementById("input-global-path")
-  );
-  let myPath = getRecursivePath(
-    filtered.slice(1),
-    datasetStructureJSONObj
-  );
+  let filtered = getGlobalPath(document.getElementById("input-global-path"));
+  let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   //item_box height is at 420 when there is no overflow
   if (item_box.offsetHeight === 420) {
     scroll_box.removeEventListener("scroll", lazyLoad);
@@ -1983,7 +1976,7 @@ async function lazyLoad() {
   }
 
   //load spinner is prepended to beginning to elements if any de-rendered
-  if(item_box.childElementCount != 0) {
+  if (item_box.childElementCount != 0) {
     if (item_box.children[0].id === "items_container") {
       if (scroll_box.scrollTop < 260) {
         //monitors when user scrolls back up to prepend elements
@@ -1994,7 +1987,7 @@ async function lazyLoad() {
           <div id="item_load" class="ui medium active inline loader icon-wrapper">
           </div>
         </div>`;
-  
+
         item_box.children[0].remove(); //remove loading spinner
         //add elements back to top of item_box
         for (let i = 0; i < remove_limit; i++) {
@@ -2002,7 +1995,7 @@ async function lazyLoad() {
           array_select--;
         }
         array_select += 1;
-  
+
         if (array_select != 0) {
           $(uiItems).prepend(load_spinner);
         } else {
@@ -2017,7 +2010,7 @@ async function lazyLoad() {
           dataset_path,
           datasetStructureJSONObj
         );
-  
+
         if (item_box.lastChild.id === "items_container") {
           console.log("removing loading icon at the end");
           item_box.lastChild.remove();
@@ -2027,13 +2020,15 @@ async function lazyLoad() {
           item_box.lastChild.remove();
         }
         console.log(item_box.lastChild);
-        console.log("this is how many elements remain: " + item_box.childElementCount);
-        if(item_box.childElementCount > 1001) {
+        console.log(
+          "this is how many elements remain: " + item_box.childElementCount
+        );
+        if (item_box.childElementCount > 1001) {
           console.log("guess we had an extra, now removing");
-          while(item_box.childElementCount > 1001) {
+          while (item_box.childElementCount > 1001) {
             item_box.lastChild.remove();
           }
-          if(item_box.children[0].id != "items_container") {
+          if (item_box.children[0].id != "items_container") {
             item_box.lastChild.remove();
           }
         }
@@ -2045,7 +2040,7 @@ async function lazyLoad() {
         console.log("we will start on position: " + start);
         console.log("listed count is also at: " + listed_count);
         console.log("this is the amount we will be requesting: " + amount);
-  
+
         $("#items").append(load_spinner);
       }
     }
@@ -2055,7 +2050,7 @@ async function lazyLoad() {
   if (listed_count === total_items) {
     // scroll_box.removeEventListener("scroll", lazyLoad);
     //remove loading spinner
-    if(item_box.childElementCount != 0) {
+    if (item_box.childElementCount != 0) {
       if (item_box.lastChild.id === "items_container") {
         item_box.removeChild(item_box.lastChild);
       }
@@ -2122,8 +2117,8 @@ async function add_items_to_view(list, amount_req, reset) {
       item_box.removeChild(item_box.lastChild);
     }
   }
-  if(item_box.children[0] != undefined) {
-    if(item_box.children[0].id === "items_container") {
+  if (item_box.children[0] != undefined) {
+    if (item_box.children[0].id === "items_container") {
       item_box.children[0].remove();
       //removing spinner in the beginninng
     }
@@ -2132,7 +2127,7 @@ async function add_items_to_view(list, amount_req, reset) {
   already_created_elem = list[0].concat(list[1]);
 
   if (element_items >= 1001) {
-    console.log("over 1000 items so we delete")
+    console.log("over 1000 items so we delete");
     //hit 1000 so remove 500
     //remove first 600 elements
     preprended_items += 5;

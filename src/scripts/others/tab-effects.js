@@ -574,14 +574,15 @@ const nextPrev = (n) => {
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
-  if(x[currentTab].id === "high-level-folders-tab") {
+  if (x[currentTab].id === "high-level-folders-tab") {
     $("#items").empty();
     $("#items").append(already_created_elem);
     getInFolder(
       ".single-item",
       "#items",
       dataset_path,
-      datasetStructureJSONObj);
+      datasetStructureJSONObj
+    );
   }
   if (
     x[currentTab].id === "high-level-folders-tab" ||
