@@ -806,9 +806,9 @@ const renderSubjectsMetadataTable = (subjects) => {
   subjectsMetadataContainer.innerHTML = subjectMetadataRows.join("\n");
 };
 const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
-  //loop through all guidedSubjectsTableData elements besides the first one
-  for (let i = 1; i < guidedSubjectsTableData.length; i++) {
-    if (guidedSubjectsTableData[i][0] === subjectMetadataId) {
+  //loop through all subjectsTableData elements besides the first one
+  for (let i = 1; i < subjectsTableData.length; i++) {
+    if (subjectsTableData[i][0] === subjectMetadataId) {
       //if the id matches, load the metadata into the form
       populateForms(subjectMetadataId, "", "guided");
       return;
@@ -927,23 +927,23 @@ const openCopySubjectMetadataPopup = async (
 
         let copyFromSubjectData = [];
         let copyToSubjectData = [];
-        for (var i = 1; i < guidedSubjectsTableData.length; i++) {
-          if (guidedSubjectsTableData[i][0] === selectedCopyFromSubject) {
+        for (var i = 1; i < subjectsTableData.length; i++) {
+          if (subjectsTableData[i][0] === selectedCopyFromSubject) {
             //copy all elements from matching array except the first one
-            copyFromSubjectData = guidedSubjectsTableData[i].slice(1);
+            copyFromSubjectData = subjectsTableData[i].slice(1);
           }
         }
         console.log(copyFromSubjectData);
-        for (var i = 1; i < guidedSubjectsTableData.length; i++) {
-          if (selectedCopyToSubjects.includes(guidedSubjectsTableData[i][0])) {
+        for (var i = 1; i < subjectsTableData.length; i++) {
+          if (selectedCopyToSubjects.includes(subjectsTableData[i][0])) {
             //Remove all subject data elements besides the name
-            guidedSubjectsTableData[i] = [guidedSubjectsTableData[i][0]];
+            subjectsTableData[i] = [subjectsTableData[i][0]];
             //copy subject data elements from the copy from element to the copy to element
-            guidedSubjectsTableData[i] =
-              guidedSubjectsTableData[i].concat(copyFromSubjectData);
+            subjectsTableData[i] =
+              subjectsTableData[i].concat(copyFromSubjectData);
           }
         }
-        console.log(guidedSubjectsTableData);
+        console.log(subjectsTableData);
       }
     });
 };

@@ -12,7 +12,6 @@ var headersArrSubjects = [];
 var headersArrSamples = [];
 let guidedHeadersArrSubjects = [];
 let guidedHeadersArrSamples = [];
-let guidedSubjectsTableData = [];
 let guidedSamplesTableData = [];
 
 function showForm(type, editBoolean) {
@@ -697,7 +696,7 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
   }
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
-    dataLength = guidedSubjectsTableData.length;
+    dataLength = subjectsTableData.length;
   }
   var valuesArr = [];
   headersArrSubjects = [];
@@ -731,7 +730,6 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     valuesArr.push(field.value);
   }
   subjectsTableData[0] = headersArrSubjects;
-  guidedSubjectsTableData[0] = headersArrSubjects;
 
   if (valuesArr !== undefined && valuesArr.length !== 0) {
     if (curationMode === "free-form") {
@@ -743,29 +741,29 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     }
     if (curationMode === "guided") {
       subjectID = $("#guided-metadata-subject-id").text();
-      guidedSubjectsTableData[0].unshift("subject id");
+      subjectsTableData[0].unshift("subject id");
       valuesArr.unshift(subjectID);
       //Check to see if the subject ID is already in the table
       //If so, set duplicateSubjectIndex as the index of matching subject id
       let duplicateSubjectIndex = null;
-      for (let i = 1; i < guidedSubjectsTableData.length; i++) {
-        if (guidedSubjectsTableData[i][0] === subjectID) {
+      for (let i = 1; i < subjectsTableData.length; i++) {
+        if (subjectsTableData[i][0] === subjectID) {
           duplicateSubjectIndex = i;
         }
       }
       if (duplicateSubjectIndex !== null) {
         //If the subject ID is already in the table, update old subject metadata with new
-        guidedSubjectsTableData[duplicateSubjectIndex] = valuesArr;
+        subjectsTableData[duplicateSubjectIndex] = valuesArr;
       } else {
-        if (guidedSubjectsTableData[dataLength] !== undefined) {
-          guidedSubjectsTableData[dataLength + 1] = valuesArr;
-          console.log("guidedSubjectsTableData not undefined");
+        if (subjectsTableData[dataLength] !== undefined) {
+          subjectsTableData[dataLength + 1] = valuesArr;
+          console.log("subjectsTableData not undefined");
         } else {
-          guidedSubjectsTableData[dataLength] = valuesArr;
-          console.log("guidedSubjectsTableData  undefined");
+          subjectsTableData[dataLength] = valuesArr;
+          console.log("subjectsTableData  undefined");
         }
       }
-      console.log(guidedSubjectsTableData);
+      console.log(subjectsTableData);
     }
   }
   $("#table-subjects").css("display", "block");
@@ -992,11 +990,11 @@ function populateForms(subjectID, type, curationMode) {
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
     fieldArr = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
-    if (guidedSubjectsTableData.length > 1) {
-      for (var i = 1; i < guidedSubjectsTableData.length; i++) {
-        if (guidedSubjectsTableData[i][0] === subjectID) {
+    if (subjectsTableData.length > 1) {
+      for (var i = 1; i < subjectsTableData.length; i++) {
+        if (subjectsTableData[i][0] === subjectID) {
           //Create a copy of matched table element as infoJson and remove the first element
-          infoJson = guidedSubjectsTableData[i].slice();
+          infoJson = subjectsTableData[i].slice();
           infoJson.shift();
           break;
         }
@@ -2083,10 +2081,7 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
     if (curationMode == "guided") {
       guidedHeadersArrSubjects.push(customName);
       // add empty entries for all of the other sub_ids to normalize the size of matrix
-      for (var subId of guidedSubjectsTableData.slice(
-        1,
-        guidedSubjectsTableData.length
-      )) {
+      for (var subId of subjectsTableData.slice(1, subjectsTableData.length)) {
         subId.push("");
       }
     }
