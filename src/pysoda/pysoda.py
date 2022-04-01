@@ -239,10 +239,10 @@ def bf_add_account_api_key(keyname, key, secret):
 
     # Check that the Pennsieve account is in the SPARC Consortium organization
     try:
-        acc_details = bf.context.name
+        org_id = bf.context.id
 
         # CHANGE BACK
-        if acc_details.find("SPARC Consortium") == -1:
+        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             raise Exception(
                 "Error: Please check that your account is within the SPARC Consortium Organization"
             )
@@ -337,10 +337,9 @@ def bf_add_account_username(keyname, key, secret):
 
     # Check that the Pennsieve account is in the SPARC Consortium organization
     try:
-        acc_details = bf.context.name
 
         # CHANGE BACK
-        if acc_details.find("SPARC Consortium") == -1:
+        if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             raise Exception(
                 "Error: Please check that your account is within the SPARC Consortium Organization"
             )
@@ -449,8 +448,9 @@ def bf_get_accounts():
     else:
         for account in accountname:
             ps = Pennsieve(account)
-            acc_details = ps.context.name
-            if acc_details.find("SPARC Consortium") != -1:
+            acc_id = ps.context.id
+
+            if acc_id == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
                 if not config.has_section("global"):
                     config.add_section("global")
 
@@ -830,7 +830,7 @@ def agent_running():
             raise e
     else:
         raise AgentError(
-            "The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://github.com/bvhpatel/SODA/wiki/The-Pennsieve-agent-is-already-running' target='_blank'>here</a>."
+            "The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>here</a>."
         )
 
 
@@ -852,7 +852,7 @@ def check_agent_install():
         return agent_version(Settings())
     except AgentError:
         raise AgentError(
-            "We highly recommend installing the Pennsieve agent and restarting SODA before you upload any files. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions."
+            "We highly recommend installing the Pennsieve agent and restarting SODA before you upload any files. Click <a href='https://docs.sodaforsparc.io/docs/common-errors/installing-the-pennsieve-agent' target='_blank'>here</a> for installation instructions."
         )
 
 
@@ -969,7 +969,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         error = (
             error
-            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://github.com/bvhpatel/SODA/wiki/Issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
+            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://docs.sodaforsparc.io/docs/common-errors/issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
         )
         did_fail = True
         did_upload = False
@@ -994,7 +994,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_fail = True
         did_upload = False
         raise AgentError(
-            "The Pennsieve agent is not installed on your computer. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions."
+            "The Pennsieve agent is not installed on your computer. Click <a href='https://docs.sodaforsparc.io/docs/common-errors/installing-the-pennsieve-agent' target='_blank'>here</a> for installation instructions."
         )
 
     try:
@@ -1592,12 +1592,12 @@ def bf_add_permission_team(
 
     try:
         if selected_team == "SPARC Data Curation Team":
-            if bf.context.name != "SPARC Consortium":
+            if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
                 raise Exception(
                     "Error: Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team"
                 )
         if selected_team == "SPARC Embargoed Data Sharing Group":
-            if bf.context.name != "SPARC Consortium":
+            if bf.context.id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
                 raise Exception(
                     "Error: Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group"
                 )

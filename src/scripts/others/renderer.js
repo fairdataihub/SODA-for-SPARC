@@ -4997,6 +4997,7 @@ function dropHelper(
     }
     /// check for File duplicate
     if (statsObj.isFile()) {
+      var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
@@ -5018,20 +5019,26 @@ function dropHelper(
           };
         } else {
           //check if fileName is in to-be-imported object keys
-          if (originalFileName in importedFiles) {
+          if (importedFiles.hasOwnProperty(originalFileName)) {
             nonAllowedDuplicate = true;
             nonAllowedDuplicateFiles.push(itemPath);
             continue;
           } else {
             //check if filename is in already-imported object keys
-            if (originalFileName in myPath["files"]) {
+            if (myPath["files"].hasOwnProperty(originalFileName)) {
               nonAllowedDuplicate = true;
               nonAllowedDuplicateFiles.push(itemPath);
               continue;
             } else {
-              for (var objectKey in myPath["files"]) {
+              if (Object.keys(myPath["files"]).length === 0) {
+                importedFiles[originalFileName] = {
+                  path: itemPath,
+                  basename: originalFileName,
+                };
+              }
+              for (let objectKey in myPath["files"]) {
                 if (objectKey !== undefined) {
-                  var nonAllowedDuplicate = false;
+                  nonAllowedDuplicate = false;
                   //just checking if paths are the same
                   if (itemPath === myPath["files"][objectKey]["path"]) {
                     nonAllowedDuplicateFiles.push(itemPath);
@@ -5050,6 +5057,7 @@ function dropHelper(
           }
         }
       }
+      //console.log(nonAllowedDuplicateFiles);
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
@@ -5078,18 +5086,20 @@ function dropHelper(
             };
           }
         } else {
-          if (itemName in myPath["folders"]) {
+          if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
             folderPath.push(itemPath);
+            continue;
           } else {
-            if (itemName in importedFolders) {
+            if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
               folderPath.push(itemPath);
+              continue;
             } else {
               //folder is in neither so write
-              importedFolders[renamedFolderName] = {
+              importedFolders[originalFolderName] = {
                 path: itemPath,
                 "original-basename": originalFolderName,
               };
@@ -6309,6 +6319,9 @@ const divGenerateProgressBar = document.getElementById(
   "div-new-curate-meter-progress"
 );
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
+var progressStatus = document.getElementById(
+  "para-new-curate-progress-bar-status"
+);
 
 document
   .getElementById("button-generate")
@@ -6324,7 +6337,7 @@ document
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
       "flex";
-    $("#sidebarCollapse").prop("disabled", true);
+    $("#sidebarCollapse").prop("disabled", false);
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
@@ -6354,9 +6367,9 @@ document
 
     generateProgressBar.value = 0;
 
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "Please wait while we verify a few things...";
+    progressStatus.innerHTML = "Please wait while we verify a few things...";
 
+    statusText = "Please wait while we verify a few things...";
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
@@ -6371,8 +6384,7 @@ document
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
     ).innerHTML = "";
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "";
+    progressStatus.innerHTML = "";
     document.getElementById("div-new-curate-progress").style.display = "none";
 
     progressBarNewCurate.value = 0;
@@ -6415,6 +6427,7 @@ document
           log.info("Continue with curate");
           var message = "";
           error_files = res[0];
+          //bring duplicate outside
           error_folders = res[1];
 
           if (error_files.length > 0) {
@@ -6481,8 +6494,34 @@ const delete_imported_manifest = () => {
   }
 };
 
+function dismissStatus(id) {
+  document.getElementById(id).style = "display: none;";
+  //document.getElementById("dismiss-status-bar").style = "display: none;";
+}
+
 let file_counter = 0;
 let folder_counter = 0;
+var uploadComplete = new Notyf({
+  position: { x: "right", y: "bottom" },
+  ripple: true,
+  dismissible: true,
+  ripple: false,
+  types: [
+    {
+      type: "success",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 4000,
+    },
+  ],
+});
+
+//const remote = require("electron").remote;
+//child.setPosition(position[0], position[1]);
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 async function initiate_generate() {
@@ -6491,14 +6530,69 @@ async function initiate_generate() {
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
 
-  // get the amount of files
 
+  // get the amount of files
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
+
+  progressStatus.innerHTML = "Preparing files ...";
+
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
 
+  let organizeDataset = document.getElementById("organize_dataset_btn");
+  let uploadLocally = document.getElementById("upload_local_dataset_btn");
+  let statusBarContainer = document.getElementById("div-new-curate-progress");
+  var statusBarClone = statusBarContainer.cloneNode(true);
+  let navContainer = document.getElementById("nav-items");
+  let statusText = statusBarClone.children[2];
+  let statusMeter = statusBarClone.getElementsByClassName("progresstrack")[0];
+  let returnButton = document.createElement("button");
+
+  statusBarClone.id = "status-bar-curate-progress";
+  statusText.setAttribute("id", "nav-curate-progress-bar-status");
+  statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
+  statusMeter.className = "nav-status-bar";
+  statusBarClone.appendChild(returnButton);
+  uploadLocally.disabled = true;
+  organizeDataset.disabled = true;
+  organizeDataset.className = "disabled-content-button";
+  uploadLocally.className = "disabled-content-button";
+  organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
+  uploadLocally.style = "background-color: #f6f6f6; border: #fff;";
+
+  returnButton.type = "button";
+  returnButton.id = "returnButton";
+  returnButton.innerHTML = "Return to progress";
+
+  returnButton.onclick = function () {
+    organizeDataset.disabled = false;
+    organizeDataset.className = "content-button is-selected";
+    organizeDataset.style = "background-color: #fff";
+    organizeDataset.click();
+    let button = document.getElementById("button-generate");
+    $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("start-over-btn").style.display = "none";
+    document.getElementById("div-vertical-progress-bar").style.display = "none";
+    document.getElementById("div-generate-comeback").style.display = "none";
+    document.getElementById("generate-dataset-progress-tab").style.display =
+      "flex";
+    organizeDataset.disabled = true;
+    organizeDataset.className = "disabled-content-button";
+    organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
+  };
+
+  //document.body.appendChild(statusBarClone);
+
+  navContainer.appendChild(statusBarClone);
+  let navbar = document.getElementById("main-nav");
+  if (navbar.classList.contains("active")) {
+    document.getElementById("sidebarCollapse").click();
+  }
+
+  //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["manifest-files"]) {
       if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
@@ -6537,8 +6631,35 @@ async function initiate_generate() {
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-      document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-        "";
+      uploadLocally.disabled = false;
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+      Swal.fire({
+        icon: "error",
+        title: "An error occurred",
+        html: "Please return to progress page to see full error",
+      }).then((result) => {
+        statusBarClone.remove();
+        if (result.isConfirmed) {
+          organizeDataset.disabled = false;
+          organizeDataset.className = "content-button is-selected";
+          organizeDataset.style = "background-color: #fff";
+          organizeDataset.click();
+          let button = document.getElementById("button-generate");
+          $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+          document.getElementById("prevBtn").style.display = "none";
+          document.getElementById("start-over-btn").style.display = "none";
+          document.getElementById("div-vertical-progress-bar").style.display =
+            "none";
+          document.getElementById("div-generate-comeback").style.display =
+            "none";
+          document.getElementById(
+            "generate-dataset-progress-tab"
+          ).style.display = "flex";
+        }
+      });
+      progressStatus.innerHTML = "";
+      statusText.innerHTML = "";
       document.getElementById("div-new-curate-progress").style.display = "none";
       generateProgressBar.value = 0;
       log.error(error);
@@ -6589,7 +6710,6 @@ async function initiate_generate() {
         dataset_destination,
         uploadedFiles
       );
-
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
@@ -6611,6 +6731,7 @@ async function initiate_generate() {
   // Progress tracking function for main curate
   var countDone = 0;
   var timerProgress = setInterval(main_progressfunction, 1000);
+  var successful = false;
   function main_progressfunction() {
     client.invoke("api_main_curate_function_progress", (error, res) => {
       if (error) {
@@ -6619,6 +6740,33 @@ async function initiate_generate() {
           "para-new-curate-progress-bar-error-status"
         ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
         log.error(error);
+        organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
+        Swal.fire({
+          icon: "error",
+          title: "An error occurred",
+          html: "An error occurred",
+        }).then((result) => {
+          //statusBarClone.remove();
+          if (result.isConfirmed) {
+            document.getElementById("organize_dataset_btn").click();
+            let button = document.getElementById("button-generate");
+            $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+            document.getElementById("prevBtn").style.display = "none";
+            document.getElementById("start-over-btn").style.display = "none";
+            document.getElementById("div-vertical-progress-bar").style.display =
+              "none";
+            document.getElementById("div-generate-comeback").style.display =
+              "none";
+            document.getElementById(
+              "generate-dataset-progress-tab"
+            ).style.display = "flex";
+          }
+        });
         console.error(error);
       } else {
         main_curate_status = res[0];
@@ -6632,14 +6780,16 @@ async function initiate_generate() {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
             generateProgressBar.value = 100;
-            document.getElementById(
-              "para-new-curate-progress-bar-status"
-            ).innerHTML = main_curate_status + smileyCan;
+            statusMeter.value = 100;
+            progressStatus.innerHTML = main_curate_status + smileyCan;
+            statusText.innerHTML = main_curate_status + smileyCan;
+            successful = true;
           } else {
             var value =
               (main_generated_dataset_size / main_total_generate_dataset_size) *
               100;
             generateProgressBar.value = value;
+            statusMeter.value = value;
             if (main_total_generate_dataset_size < displaySize) {
               var totalSizePrint =
                 main_total_generate_dataset_size.toFixed(2) + " B";
@@ -6670,7 +6820,11 @@ async function initiate_generate() {
                 ).toFixed(2) + " GB";
             }
             var progressMessage = "";
+            var statusProgressMessage = "";
             progressMessage += main_curate_progress_message + "<br>";
+            statusProgressMessage += main_curate_progress_message + "<br>";
+            statusProgressMessage +=
+              "Progress: " + value.toFixed(2) + "%" + "<br>";
             progressMessage +=
               "Progress: " +
               value.toFixed(2) +
@@ -6680,15 +6834,18 @@ async function initiate_generate() {
               ") " +
               "<br>";
             progressMessage +=
-              "Elaspsed time: " + elapsed_time_formatted + "<br>";
-            document.getElementById(
-              "para-new-curate-progress-bar-status"
-            ).innerHTML = progressMessage;
+              "Elapsed time: " + elapsed_time_formatted + "<br>";
+            progressStatus.innerHTML = progressMessage;
+            statusText.innerHTML = statusProgressMessage;
           }
         } else {
-          document.getElementById(
-            "para-new-curate-progress-bar-status"
-          ).innerHTML =
+          statusText.innerHTML =
+            main_curate_progress_message +
+            "<br>" +
+            "Elapsed time: " +
+            elapsed_time_formatted +
+            "<br>";
+          progressStatus.innerHTML =
             main_curate_progress_message +
             "<br>" +
             "Elapsed time: " +
@@ -6703,6 +6860,19 @@ async function initiate_generate() {
       countDone++;
       if (countDone > 1) {
         log.info("Done curate track");
+        statusBarClone.remove();
+        if (successful === true) {
+          organizeDataset.disabled = false;
+          organizeDataset.className = "content-button is-selected";
+          organizeDataset.style = "background-color: #fff";
+          uploadLocally.disabled = false;
+          uploadLocally.className = "content-button is-selected";
+          uploadLocally.style = "background-color: #fff";
+          uploadComplete.open({
+            type: "success",
+            message: "Dataset created successfully",
+          });
+        }
         // then show the sidebar again
         // forceActionSidebar("show");
         clearInterval(timerProgress);
@@ -6782,6 +6952,7 @@ const show_curation_shortcut = () => {
     confirmButtonText: "Yes, I want to share it",
     heightAuto: false,
     icon: "success",
+    allowOutsideClick: false,
     reverseButtons: reverseSwalButtons,
     showCancelButton: true,
     text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
@@ -6792,6 +6963,16 @@ const show_curation_shortcut = () => {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
   }).then((result) => {
+    //dismissStatus("status-bar-curate-progress");
+    uploadComplete.open({
+      type: "success",
+      message: "Upload to Pennsieve completed",
+    });
+    let statusBarContainer = document.getElementById(
+      "status-bar-curate-progress"
+    );
+    //statusBarContainer.remove();
+
     if (result.isConfirmed) {
       $("#disseminate_dataset_tab").click();
       $("#share_curation_team_btn").click();
@@ -9013,3 +9194,16 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
+
+document
+  .getElementById("direct-to-feedback")
+  .addEventListener("click", function () {
+    if (
+      !document.getElementById("feedback-wrapper").classList.contains("is-open")
+    ) {
+      document.getElementById("feedback-btn").click();
+    }
+    document.querySelector("#feedback-btn").scrollIntoView({
+      behavior: "smooth",
+    });
+  });

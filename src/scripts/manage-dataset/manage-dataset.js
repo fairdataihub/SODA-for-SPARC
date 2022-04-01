@@ -2343,7 +2343,45 @@ $("#button-submit-dataset").click(async () => {
   $("#para-please-wait-manage-dataset").html(
     "Please wait while we verify a few things..."
   );
+  let progressSubmit = document.getElementById("div-progress-submit");
+  let navContainer = document.getElementById("nav-items");
+  let progressError = document.getElementById("para-progress-bar-error-status");
 
+  var progressClone = progressSubmit.cloneNode(true);
+  let cloneHeader = progressClone.children[0];
+  progressClone.children[2].remove();
+  cloneHeader.style = "margin: 0;";
+  let cloneMeter = progressClone.children[1];
+  let cloneStatus = progressClone.children[2];
+  var navError = progressError.cloneNode(true);
+  let organizeDatasetButton = document.getElementById("button-generate");
+  let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
+
+  progressClone.style =
+    "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
+  cloneMeter.setAttribute("id", "clone-progress-bar-upload-bf");
+  cloneMeter.className = "nav-status-bar";
+  cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
+  cloneStatus.style =
+    "overflow-x: hidden; margin-bottom: 3px; margin-top: 5px;";
+  progressClone.setAttribute("id", "nav-progress-submit");
+  let returnButton = document.createElement("button");
+  returnButton.type = "button";
+  returnButton.id = "returnButton";
+  returnButton.innerHTML = "Return to progress";
+  let returnPage = document.getElementById("upload_local_dataset_btn");
+  returnButton.onclick = function () {
+    document.getElementById("upload_local_dataset_progress_div").style.display =
+      "flex";
+    returnPage.click();
+  };
+  progressClone.appendChild(returnButton);
+  organizeDatasetButton.disabled = true;
+  organizeDatasetButton.className = "disabled-generate-button";
+  organizeDatasetButton.style = "background-color: #f6f6f6";
+  organzieDatasetButtonDiv.className = "disabled-animated-div";
+
+  //console.log(cloneStatus);
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
@@ -2360,6 +2398,7 @@ $("#button-submit-dataset").click(async () => {
   $("#para-progress-bar-error-status").html("");
 
   progressBarUploadBf.value = 0;
+  cloneMeter.value = 0;
 
   $("#button-submit-dataset").prop("disabled", true);
   $("#selected-local-dataset-submit").prop("disabled", true);
@@ -2368,6 +2407,7 @@ $("#button-submit-dataset").click(async () => {
 
   var err = false;
   var completionStatus = "Solving";
+  var success_upload = true;
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
 
@@ -2377,14 +2417,16 @@ $("#button-submit-dataset").click(async () => {
   // start the upload session
   datasetUploadSession.startSession();
 
-  console.log(
-    "Start of session here is the session id: ",
-    datasetUploadSession.id
-  );
-
   // Questions logs need to answer:
   // Which sessions failed? How many files were they attempting to upload per session? How many files were uploaded?
   // How many pennsieve datasets were involved in a failed upload? Successful upload?
+  navContainer.appendChild(progressClone);
+  cloneStatus.innerHTML = "Please wait...";
+  document.getElementById("para-progress-bar-status").innerHTML = "";
+  let navbar = document.getElementById("main-nav");
+  if (navbar.classList.contains("active")) {
+    document.getElementById("sidebarCollapse").click();
+  }
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2396,12 +2438,37 @@ $("#button-submit-dataset").click(async () => {
 
         $("#para-please-wait-manage-dataset").html("");
         $("#para-progress-bar-status").html("");
+        cloneStatus.innerHTML = "";
         $("#div-progress-submit").css("display", "none");
-        $("#para-progress-bar-error-status").html(
+        //progressClone.remove();
+        /*$("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
-        );
+        );*/
+        document.getElementById("para-progress-bar-error-status").style =
+          "color: red";
+        document.getElementById("para-progress-bar-error-status").innerHTML =
+          emessage;
+        success_upload = false;
+        organizeDatasetButton.disabled = false;
+        organizeDatasetButton.className = "btn_animated generate-btn";
+        organizeDatasetButton.style =
+          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
+        Swal.fire({
+          icon: "error",
+          title: "There was an issue uploading your dataset",
+          html: emessage,
+          allowOutsideClick: false,
+        }).then((result) => {
+          progressClone.remove();
+          if (result.isConfirmed) {
+            returnPage.click();
+          }
+        });
 
+        //progressClone.remove();
         progressBarUploadBf.value = 0;
+        cloneMeter.value = 0;
 
         err = true;
         log.error(error);
@@ -2521,6 +2588,7 @@ $("#button-submit-dataset").click(async () => {
 
   var countDone = 0;
   var timerProgress = setInterval(progressfunction, 1000);
+  let statusMessage = "Error";
 
   function progressfunction() {
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
@@ -2542,11 +2610,28 @@ $("#button-submit-dataset").click(async () => {
             ` - Progress track`,
           defaultBfDatasetId
         );
+        organizeDatasetButton.disabled = false;
+        organizeDatasetButton.className = "btn_animated generate-btn";
+        organizeDatasetButton.style =
+          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
 
         $("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
         );
+        Swal.fire({
+          icon: "error",
+          title: "An error occurred",
+          html: "Please return to progress page to see full error",
+        }).then((result) => {
+          progressClone.remove();
+          if (result.isConfirmed) {
+            returnPage.click();
+          }
+        });
       } else {
+        statusMessage = res[0];
+
         completionStatus = res[1];
         let submitprintstatus = res[2];
         totalFileSize = res[3];
@@ -2557,13 +2642,16 @@ $("#button-submit-dataset").click(async () => {
 
           if (res[0].includes("Success: COMPLETED!")) {
             progressBarUploadBf.value = 100;
+            cloneMeter.value = 100;
 
             $("#para-please-wait-manage-dataset").html("");
             $("#para-progress-bar-status").html(res[0] + smileyCan);
+            cloneStatus.innerHTML = res[0] + smileyCan;
           } else {
             var value = (uploadedFileSize / totalFileSize) * 100;
 
             progressBarUploadBf.value = value;
+            cloneMeter.value = value;
 
             if (totalFileSize < displaySize) {
               var totalSizePrint = totalFileSize.toFixed(2) + " B";
@@ -2587,6 +2675,8 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
+            //console.log(res[0]);
+            cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
                 "Progress: " +
@@ -2600,12 +2690,36 @@ $("#button-submit-dataset").click(async () => {
         }
       }
     });
+
     if (completionStatus === "Done") {
       countDone++;
 
       if (countDone > 1) {
         log.info("Done submit track");
         console.log("Done submit track");
+        if (success_upload === true) {
+          organizeDatasetButton.disabled = false;
+          organizeDatasetButton.className = "btn_animated generate-btn";
+          organizeDatasetButton.style =
+            "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+          organzieDatasetButtonDiv.className = "btn_animated-inside";
+          uploadComplete.open({
+            type: "success",
+            message: "Upload to Pennsieve completed",
+          });
+          dismissStatus(progressClone.id);
+          progressClone.remove();
+        }
+
+        if (statusMessage.includes("Success: COMPLETED")) {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Progress track`,
+            defaultBfDatasetId
+          );
+        }
 
         clearInterval(timerProgress);
 

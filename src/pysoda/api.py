@@ -55,6 +55,7 @@ from curate import (
     generate_manifest_file_locally,
     check_JSON_size,
     main_curate_function_upload_details,
+    create_high_level_manifest_files_existing_local_starting_point,
 )
 
 from prepare_metadata import (
@@ -78,7 +79,8 @@ from organize_datasets import generate_dataset_locally, bf_get_dataset_files_fol
 import sys
 import zerorpc
 
-MIN_SODA_VERSION = "5.3.2"
+
+MIN_SODA_VERSION = "5.3.1"
 
 
 class SodaApi(object):
@@ -229,6 +231,16 @@ class SodaApi(object):
     def api_validate_dataset(self, validator_input):
         try:
             return validate_dataset(validator_input)
+        except Exception as e:
+            raise e
+
+    def api_create_high_level_manifest_files_existing_local_starting_point(
+        self, dataset_path
+    ):
+        try:
+            return create_high_level_manifest_files_existing_local_starting_point(
+                dataset_path
+            )
         except Exception as e:
             raise e
 
