@@ -4082,7 +4082,7 @@ $(document).ready(() => {
         }
       }
       if (pageBeingLeftID === "guided-samples-folder-tab") {
-        /*const skipSampleMetadataPages = () => {
+        const skipSampleMetadataPages = () => {
           $("#guided-create-samples-metadata-tab").attr(
             "data-skip-page",
             "true"
@@ -4097,32 +4097,40 @@ $(document).ready(() => {
         //If the user indicated they had subjects however left the subjects table page,
         //Ask the user if they would like to go back to subjects table, and if not, skip
         //to the source folder
-        if (getSubjects().length == 0) {
+
+        //get combined length of arrays for properties in sodaJSONObj["subjects-samples-structure"]
+
+        let numSamples = 0;
+        for (let i = 0; i < getSubjects().length; i++) {
+          numSamples = numSamples + getSubjectSamples(getSubjects()[i]).length;
+        }
+
+        if (numSamples == 0) {
           Swal.fire({
-            title: "Continue without adding subjects?",
-            text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
+            title: "Continue without adding samples?",
+            text: "You indicated that your dataset contained samples, however, you did not add any samples to your samples table.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "I want to add subjects into the subject table",
-            cancelButtonText: "I do not have any subjects",
+            confirmButtonText: "I want to add samples into the sample table",
+            cancelButtonText: "I do not have any samples",
           }).then((result) => {
-            //If the user indicates they do not have any subjects, skip to source folder
+            //If the user indicates they do not have any samples, skip to source folder
             if (!result.isConfirmed) {
-              skipSubSamFolderAndMetadataPages();
+              skipSampleMetadataPages();
               traverseToTab("guided-source-folder-tab");
             }
           });
           //Throw error to exit next button click handler
           errorArray.push({
             type: "",
-            message: "User chose to back to subject page to add subjects",
+            message: "User chose to back to sample page to add samples",
           });
           throw errorArray;
         } else {
-          unSkipSubSamFolderAndMetadataPages();
-        }*/
+          unSkipSampleMetadataPages();
+        }
       }
       if (pageBeingLeftID === "guided-source-folder-tab") {
         if (
