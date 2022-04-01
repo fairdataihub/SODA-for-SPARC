@@ -2392,7 +2392,7 @@ $("#button-submit-dataset").click(async () => {
   let incrementInFileSize = 0;
   let uploadedFolders = 0;
   let uploadedFileSize = 0;
-  let previouUploadedFileSize = 0;
+  let previousUploadedFileSize = 0;
 
   $("#para-please-wait-manage-dataset").html("Please wait...");
   $("#para-progress-bar-error-status").html("");
