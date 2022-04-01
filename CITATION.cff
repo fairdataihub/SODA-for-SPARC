@@ -41,4 +41,4 @@ repository-artifact: https://fairdataihub.org/sodaforsparc
 repository-code: https://github.com/fairdataihub/SODA-for-SPARC
 title: SODA (Software to Organize Data Automatically) for SPARC
 type: software
-version: 5.3.2
+version: 5.3.1
