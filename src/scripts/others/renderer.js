@@ -6902,11 +6902,6 @@ async function initiate_generate() {
         // log the increase in the file size
         increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
 
-        console.log("The amount of uploaded files: ", uploadedFiles);
-        console.log("The size of the uploaded files: ", uploadedFilesSize);
-        console.log("The incremented size is: ", increaseInFileSize);
-        console.log("The session ID: ", datasetUploadSession.id);
-
         // log the aggregate file count and size values when uploading to Pennsieve
         if (
           dataset_destination === "bf" ||
