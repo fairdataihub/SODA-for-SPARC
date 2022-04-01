@@ -1839,8 +1839,6 @@ def generate_dataset_locally(soda_json_structure):
             # track amount of copied files for loggin purposes
             mycopyfile_with_metadata(srcfile, distfile)
             main_curation_uploaded_files += 1
-        
-        raise Exception("ASSs")
 
         # 7. Delete manifest folder and original folder if merge requested and rename new folder
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
