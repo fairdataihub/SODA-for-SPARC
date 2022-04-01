@@ -70,7 +70,6 @@ from pysoda import (
 from organize_datasets import bf_get_dataset_files_folders
 
 
-
 ### Global variables
 curateprogress = " "
 curatestatus = " "
@@ -3210,7 +3209,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     # update the files
                     bf_folder.update()
 
-                    for file in upload_bucket: 
+                    for file in upload_bucket:
                         current_size_of_uploaded_files += getsize(file)
 
                     # update the global that tracks the amount of files that have been successfully uploaded
