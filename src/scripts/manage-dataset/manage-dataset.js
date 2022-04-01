@@ -2353,8 +2353,8 @@ $("#button-submit-dataset").click(async () => {
   let uploadedFiles = 0;
   let incrementInFileSize = 0;
   let uploadedFolders = 0;
-  let uploadedFileSize = 0 
-  let previouUploadedFileSize = 0 
+  let uploadedFileSize = 0;
+  let previouUploadedFileSize = 0;
 
   $("#para-please-wait-manage-dataset").html("Please wait...");
   $("#para-progress-bar-error-status").html("");
@@ -2629,7 +2629,6 @@ $("#button-submit-dataset").click(async () => {
     "#para-progress-bar-error-status"
   ).childNodes;
 
-
   const monitorBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_bf_submit_dataset_upload_details", (err, res) => {
@@ -2637,16 +2636,16 @@ $("#button-submit-dataset").click(async () => {
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[4] > uploadedFolders) {
         uploadedFiles = res[0];
-        previousUploadedFileSize = uploadedFileSize
+        previousUploadedFileSize = uploadedFileSize;
         uploadedFileSize = res[1];
         let didFail = res[2];
         let didUpload = res[3];
         uploadedFolders = res[4];
-        console.log("Size of the dataset being uploaded: ", totalFileSize)
+        console.log("Size of the dataset being uploaded: ", totalFileSize);
         console.log("Total file size created so far: ", uploadedFileSize);
-        console.log("PRevious file size: ", previousUploadedFileSize)
-        incrementInFileSize = uploadedFileSize - previousUploadedFileSize
-        console.log("Incremented file size is: ", incrementInFileSize)
+        console.log("PRevious file size: ", previousUploadedFileSize);
+        incrementInFileSize = uploadedFileSize - previousUploadedFileSize;
+        console.log("Incremented file size is: ", incrementInFileSize);
 
         // failed to upload a bucket, but did upload some files
         if (didFail && didUpload) {
