@@ -6703,8 +6703,8 @@ async function initiate_generate() {
     }
   }
 
-  let foldersUploaded = 0 
-  let previousUploadedFileSize = 0 
+  let foldersUploaded = 0;
+  let previousUploadedFileSize = 0;
   // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
   // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
   // files copied and their aggregate size.
@@ -6718,17 +6718,17 @@ async function initiate_generate() {
     client.invoke("api_main_curate_function_upload_details", (err, res) => {
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[2] > foldersUploaded) {
-        previousUploadedFileSize = uploadedFilesSize
+        previousUploadedFileSize = uploadedFilesSize;
         uploadedFiles = res[0];
         uploadedFilesSize = res[1];
-        foldersUploaded = res[2]
+        foldersUploaded = res[2];
 
-        // log the increase in the file size 
-        let increaseInFileSize = uploadedFilesSize - previousUploadedFileSize
+        // log the increase in the file size
+        let increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
 
         console.log("The amount of uploaded files: ", uploadedFiles);
         console.log("The size of the uploaded files: ", uploadedFilesSize);
-        console.log("The incremented size is: ", increaseInFileSize)
+        console.log("The incremented size is: ", increaseInFileSize);
         console.log("The session ID: ", datasetUploadSession.id);
 
         // log the aggregate file count and size values when uploading to Pennsieve
