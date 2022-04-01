@@ -69,6 +69,8 @@ from pysoda import (
 
 from organize_datasets import bf_get_dataset_files_folders
 
+
+
 ### Global variables
 curateprogress = " "
 curatestatus = " "
@@ -77,6 +79,7 @@ total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
 uploaded_folder_counter = 0
+current_size_of_uploaded_files = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -1836,6 +1839,8 @@ def generate_dataset_locally(soda_json_structure):
             # track amount of copied files for loggin purposes
             mycopyfile_with_metadata(srcfile, distfile)
             main_curation_uploaded_files += 1
+        
+        raise Exception("ASSs")
 
         # 7. Delete manifest folder and original folder if merge requested and rename new folder
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
@@ -2798,10 +2803,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global main_initial_bfdataset_size
     global main_curation_uploaded_files
     global uploaded_folder_counter
+    global current_size_of_uploaded_files
     # global progress_percentage
     # global progress_percentage_array
 
     uploaded_folder_counter = 0
+    current_size_of_uploaded_files = 0
 
     try:
 
@@ -3205,6 +3212,9 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     # update the files
                     bf_folder.update()
 
+                    for file in upload_bucket: 
+                        current_size_of_uploaded_files += getsize(file)
+
                     # update the global that tracks the amount of files that have been successfully uploaded
                     main_curation_uploaded_files = BUCKET_SIZE
                     uploaded_folder_counter += 1
@@ -3255,6 +3265,9 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
                 main_curation_uploaded_files = len(list_upload)
                 uploaded_folder_counter += 1
+
+                for file in list_upload:
+                    current_size_of_uploaded_files += getsize(file)
 
                 # rename to final name
                 for index, projected_name in enumerate(list_projected_names):
@@ -3313,7 +3326,6 @@ bf = ""
 myds = ""
 
 
-# TODO: Add the folder tracker  and use it on the front end
 # TODO: Make sure copying as we do for the local case is fine. I believe it is since there is no freeze. Just make that case wait for the success or fail to log. Get the result from the backend in the fail case.
 
 
@@ -3653,10 +3665,11 @@ def main_curate_function_upload_details():
     global main_curation_uploaded_files
     global main_generated_dataset_size
     global uploaded_folder_counter
+    global current_size_of_uploaded_files
 
     return (
         main_curation_uploaded_files,
-        main_generated_dataset_size,
+        current_size_of_uploaded_files,
         uploaded_folder_counter,
     )
 
