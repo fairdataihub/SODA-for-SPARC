@@ -6019,13 +6019,13 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       });
       console.log(filtered);
       var myPath = getRecursivePath(filtered, globalObj);
-      if(myPath.length === 2) {
+      if (myPath.length === 2) {
         filtered = myPath[1];
-        document.getElementById("input-global-path").value = "My_dataset_folder/" + filtered.join("/") + "/";
+        document.getElementById("input-global-path").value =
+          "My_dataset_folder/" + filtered.join("/") + "/";
       }
       console.log(typeof myPath);
-      if(myPath)
-      console.log(myPath);
+      if (myPath) console.log(myPath);
       console.log(currentPath);
       let amount_of_items = Object.keys(myPath["files"]).length;
       amount_of_items = amount_of_items + Object.keys(myPath["folders"]).length;

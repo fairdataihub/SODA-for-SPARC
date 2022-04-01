@@ -774,7 +774,7 @@ function getRecursivePath(filteredList, inputObj) {
   }
   console.log(myPath);
   console.log(filteredList);
-  if(myPath === undefined) {
+  if (myPath === undefined) {
     myPath = inputObj;
     filteredList.pop();
     console.log(filteredList);
