@@ -2017,9 +2017,6 @@ async function moveItems(ev, category) {
           } else if ($(ev).hasClass("myFol")) {
             itemType = "folders";
           }
-
-          console.log(ev.parentElement);
-          ev.parentElement.remove();
           moveItemsHelper(itemToMove, selectedPath, itemType);
         }
       }

@@ -766,12 +766,29 @@ function loadFileFolder(myPath) {
 
 function getRecursivePath(filteredList, inputObj) {
   var myPath = inputObj;
+  console.log(inputObj);
   for (var item of filteredList) {
     if (item.trim() !== "") {
       myPath = myPath["folders"][item];
     }
   }
-  return myPath;
+  console.log(myPath);
+  console.log(filteredList);
+  if(myPath === undefined) {
+    myPath = inputObj;
+    filteredList.pop();
+    console.log(filteredList);
+    for (var item of filteredList) {
+      if (item.trim() !== "") {
+        myPath = myPath["folders"][item];
+      }
+    }
+    let items = [myPath, filteredList];
+    return items;
+  } else {
+    console.log(myPath.length);
+    return myPath;
+  }
 }
 
 /// check if an array contains another array
@@ -1685,6 +1702,7 @@ async function addFilesfunction(
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
 
+  console.log(fileArray);
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
     // check if dataset structure level is at high level folder
