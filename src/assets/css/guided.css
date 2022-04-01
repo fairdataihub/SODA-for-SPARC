@@ -395,7 +395,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   padding: 0px 15px;
 }
