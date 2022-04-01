@@ -1115,7 +1115,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1131,7 +1131,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1185,7 +1185,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   client.invoke(
     "api_save_subjects_file",
@@ -1277,7 +1277,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1293,7 +1293,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1347,7 +1347,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -1865,7 +1865,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2582,9 +2582,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6385,9 +6385,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -6484,6 +6484,7 @@ const delete_imported_manifest = () => {
 let file_counter = 0;
 let folder_counter = 0;
 
+
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 async function initiate_generate() {
   // Initiate curation by calling Python function
@@ -6513,11 +6514,18 @@ async function initiate_generate() {
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
   let uploadedFilesSize = 0;
+  let foldersUploaded = 0;
+  let previousUploadedFileSize = 0;
+  let increaseInFileSize = 0 
+
 
   // determine where the dataset will be generated/uploaded
-  [dataset_name, dataset_destination] = determineDatasetDestination();
+  let nameDestinationPair = determineDatasetDestination();
+  dataset_destination = nameDestinationPair[1]
+  dataset_name = nameDestinationPair[0]
 
-  if (dataset_destination == "Pennsieve") {
+  if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+    console.log("Starting session")
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
@@ -6564,7 +6572,9 @@ async function initiate_generate() {
         uploadedFiles,
         uploadedFilesSize,
         dataset_destination,
-        main_total_generate_dataset_size
+        main_total_generate_dataset_size, 
+        increaseInFileSize,
+        datasetUploadSession
       );
     } else {
       main_total_generate_dataset_size = res[1];
@@ -6703,8 +6713,7 @@ async function initiate_generate() {
     }
   }
 
-  let foldersUploaded = 0;
-  let previousUploadedFileSize = 0;
+
   // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
   // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
   // files copied and their aggregate size.
@@ -6715,6 +6724,7 @@ async function initiate_generate() {
   //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
   const checkForBucketUpload = async () => {
     // ask the server for the amount of files uploaded in the current session
+    // nothing to log for uploads where a user is solely deleting files in this section 
     client.invoke("api_main_curate_function_upload_details", (err, res) => {
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[2] > foldersUploaded) {
@@ -6724,7 +6734,7 @@ async function initiate_generate() {
         foldersUploaded = res[2];
 
         // log the increase in the file size
-        let increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
+        increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
 
         console.log("The amount of uploaded files: ", uploadedFiles);
         console.log("The size of the uploaded files: ", uploadedFilesSize);
@@ -6741,7 +6751,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -6751,7 +6761,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
             `${datasetUploadSession.id}`,
             increaseInFileSize
           );
@@ -6806,6 +6816,24 @@ const get_num_files_and_folders = (dataset_folders) => {
   }
   return;
 };
+
+function determineDatasetDestination() {
+  console.log(sodaJSONObj)
+  if(sodaJSONObj["generate-dataset"]) {
+    if(sodaJSONObj["generate-dataset"]["destination"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"]
+
+      if(destination === "bf" || destination === "Pennsieve") {
+        console.log("Going to return pennsieve")
+        return [sodaJSONObj["bf-dataset-selected"]["dataset-name"], "Pennsieve"]
+      } else {
+        return "local"
+      }
+    }
+  } else {
+    return "local"
+  }
+}
 
 function backend_to_frontend_warning_message(error_array) {
   if (error_array.length > 1) {
