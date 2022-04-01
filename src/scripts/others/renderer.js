@@ -34,6 +34,18 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+// TODO: Test with a build
+const {
+  datasetUploadSession,
+} = require("./scripts/others/analytics/upload-session-tracker");
+
+const {
+  logCurationErrorsToAnalytics,
+  logCurationSuccessToAnalytics,
+} = require("./scripts/others/analytics/curation-analytics");
+const {
+  determineDatasetLocation,
+} = require("./scripts/others/analytics/analytics-utils");
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
@@ -6511,13 +6523,19 @@ var uploadComplete = new Notyf({
 //const remote = require("electron").remote;
 //child.setPosition(position[0], position[1]);
 
-function initiate_generate() {
+// Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
+async function initiate_generate() {
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
 
+  // get the amount of files
+  document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+    "Preparing files ...";
+
   progressStatus.innerHTML = "Preparing files ...";
+
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
@@ -6582,31 +6600,30 @@ function initiate_generate() {
       }
     }
   }
-
-  let dataset_name = "";
   let dataset_destination = "";
-  // let dataset_id = ""
+  let dataset_name = "";
 
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
+  // track the amount of files that have been uploaded/generated
+  let uploadedFiles = 0;
+  let uploadedFilesSize = 0;
+  let foldersUploaded = 0;
+  let previousUploadedFileSize = 0;
+  let increaseInFileSize = 0;
+
+  // determine where the dataset will be generated/uploaded
+  let nameDestinationPair = determineDatasetDestination();
+  dataset_destination = nameDestinationPair[1];
+  dataset_name = nameDestinationPair[0];
+
+  if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+    console.log("Starting session");
+    // create a dataset upload session
+    datasetUploadSession.startSession();
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 
-  client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
+  client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
     if (error) {
       $("#sidebarCollapse").prop("disabled", false);
       var emessage = userError(error);
@@ -6646,76 +6663,6 @@ function initiate_generate() {
       generateProgressBar.value = 0;
       log.error(error);
       console.error(error);
-      // forceActionSidebar('show');
-
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.PREFIX,
-        [],
-        determineDatasetLocation()
-      );
-
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 7", "Generate", "dataset", `${dataset_destination}`],
-        determineDatasetLocation()
-      );
-
-      file_counter = 0;
-      folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        "Size",
-        main_total_generate_dataset_size
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        main_total_generate_dataset_size
-      );
-
-      // get dataset id if available
-      let datasetLocation = determineDatasetLocation();
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        "Number of Files",
-        file_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        file_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        file_counter
-      );
 
       client.invoke(
         "api_bf_dataset_account",
@@ -6731,161 +6678,36 @@ function initiate_generate() {
           }
         }
       );
+
+      // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
+      // if they stay zero that means nothing was uploaded
+      if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+        await wait(2000);
+      }
+
+      // log the curation errors to Google Analytics
+      logCurationErrorsToAnalytics(
+        uploadedFiles,
+        uploadedFilesSize,
+        dataset_destination,
+        main_total_generate_dataset_size,
+        increaseInFileSize,
+        datasetUploadSession
+      );
     } else {
       main_total_generate_dataset_size = res[1];
+      uploadedFiles = res[2];
+
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
-      if (manifest_files_requested) {
-        let high_level_folder_num = 0;
-        if ("dataset-structure" in sodaJSONObj) {
-          if ("folders" in sodaJSONObj["dataset-structure"]) {
-            for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-              high_level_folder_num += 1;
-            }
-          }
-        }
 
-        // get dataset id if available
-        let datasetLocation = determineDatasetLocation();
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest",
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          high_level_folder_num
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest - ${dataset_destination}`,
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          high_level_folder_num
-        );
-      }
-
-      if (dataset_destination == "Pennsieve") {
-        show_curation_shortcut();
-      }
-
-      file_counter = 0;
-      folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-      logCurationForAnalytics(
-        "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.PREFIX,
-        [],
-        determineDatasetLocation()
-      );
-
-      if (dataset_destination === "Local") {
-        // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
-        let datasetName = document.querySelector("#inputNewNameDataset").value;
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Local",
-          datasetName
-        );
-      }
-
-      // for tracking the total size of all datasets ever created on SODA
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        "Size",
-        main_total_generate_dataset_size
-      );
-
-      logCurationForAnalytics(
-        "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
-        determineDatasetLocation()
-      );
-
-      let datasetLocation = determineDatasetLocation();
-      // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      // track amount of files for all datasets
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        "Number of Files",
-        file_counter
-      );
-
-      // track amount of files for datasets by ID or Local
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        file_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        file_counter
-      );
-
-      // log the preview card instructions for any files and folders being generated on Pennsieve
-      Array.from(document.querySelectorAll(".generate-preview")).forEach(
-        (card) => {
-          let header = card.querySelector("h5");
-          if (header.textContent.includes("folders")) {
-            let instruction = card.querySelector("p");
-            // log the folder instructions to analytics
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent}`,
-              datasetLocation === "Pennsieve"
-                ? defaultBfDatasetId
-                : datasetLocation,
-              1
-            );
-          } else if (header.textContent.includes("existing files")) {
-            let instruction = card.querySelector("p");
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent} `,
-              datasetLocation === "Pennsieve"
-                ? defaultBfDatasetId
-                : datasetLocation,
-              1
-            );
-          }
-        }
+      // log relevant curation details about the dataset generation/Upload to Google Analytics
+      logCurationSuccessToAnalytics(
+        manifest_files_requested,
+        main_total_generate_dataset_size,
+        dataset_name,
+        dataset_destination,
+        uploadedFiles
       );
       client.invoke(
         "api_bf_dataset_account",
@@ -7057,6 +6879,69 @@ function initiate_generate() {
       }
     }
   }
+
+  // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
+  // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
+  // files copied and their aggregate size.
+  // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
+  //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
+  // IMP: Two reasons this exists:
+  //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
+  //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
+  const checkForBucketUpload = async () => {
+    // ask the server for the amount of files uploaded in the current session
+    // nothing to log for uploads where a user is solely deleting files in this section
+    client.invoke("api_main_curate_function_upload_details", (err, res) => {
+      // check if the amount of successfully uploaded files has increased
+      if (res[0] > 0 && res[2] > foldersUploaded) {
+        previousUploadedFileSize = uploadedFilesSize;
+        uploadedFiles = res[0];
+        uploadedFilesSize = res[1];
+        foldersUploaded = res[2];
+
+        // log the increase in the file size
+        increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
+
+        console.log("The amount of uploaded files: ", uploadedFiles);
+        console.log("The size of the uploaded files: ", uploadedFilesSize);
+        console.log("The incremented size is: ", increaseInFileSize);
+        console.log("The session ID: ", datasetUploadSession.id);
+
+        // log the aggregate file count and size values when uploading to Pennsieve
+        if (
+          dataset_destination === "bf" ||
+          dataset_destination === "Pennsieve"
+        ) {
+          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE +
+              " - Step 7 - Generate - Dataset - Number of Files",
+            `${datasetUploadSession.id}`,
+            uploadedFiles
+          );
+
+          // use the session id as the label -- this will help with aggregating the size of the given upload session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE +
+              " - Step 7 - Generate - Dataset - Size",
+            `${datasetUploadSession.id}`,
+            increaseInFileSize
+          );
+        }
+      }
+    });
+
+    //stop the inteval when the upload is complete
+    if (main_curate_status === "Done") {
+      clearInterval(timerCheckForBucketUpload);
+    }
+  };
+
+  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
 }
 
 const show_curation_shortcut = () => {
@@ -7108,6 +6993,27 @@ const get_num_files_and_folders = (dataset_folders) => {
   }
   return;
 };
+
+function determineDatasetDestination() {
+  console.log(sodaJSONObj);
+  if (sodaJSONObj["generate-dataset"]) {
+    if (sodaJSONObj["generate-dataset"]["destination"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"];
+
+      if (destination === "bf" || destination === "Pennsieve") {
+        console.log("Going to return pennsieve");
+        return [
+          sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+          "Pennsieve",
+        ];
+      } else {
+        return "local";
+      }
+    }
+  } else {
+    return "local";
+  }
+}
 
 function backend_to_frontend_warning_message(error_array) {
   if (error_array.length > 1) {
@@ -7968,49 +7874,6 @@ function logCurationForAnalytics(
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
-}
-
-function determineDatasetLocation() {
-  let location = "";
-
-  if ("starting-point" in sodaJSONObj) {
-    // determine if the local dataset was saved or brought imported
-    if ("type" in sodaJSONObj["starting-point"]) {
-      //if save-progress exists then the user is curating a previously saved dataset
-      if ("save-progress" in sodaJSONObj) {
-        location = Destinations.SAVED;
-        return location;
-      } else {
-        location = sodaJSONObj["starting-point"]["type"];
-        // bf === blackfynn the old name for Pennsieve; bf means dataset was imported from Pennsieve
-        if (location === "bf") {
-          return Destinations.PENNSIEVE;
-        } else if (location === "local") {
-          // imported from the user's machine
-          return Destinations.LOCAL;
-        } else {
-          // if none of the above then the dataset is new
-          return Destinations.NEW;
-        }
-      }
-    }
-  }
-
-  // determine if we are using a local or Pennsieve dataset
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    location = Destinations.PENNSIEVE;
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      location = sodaJSONObj["generate-dataset"]["destination"];
-      if (location.toUpperCase() === "LOCAL") {
-        location = Destinations.LOCAL;
-      } else if (location.toUpperCase() === "PENNSIEVE") {
-        location = Destinations.SAVED;
-      }
-    }
-  }
-
-  return location;
 }
 
 function getMetadataFileNameFromStatus(metadataFileStatus) {

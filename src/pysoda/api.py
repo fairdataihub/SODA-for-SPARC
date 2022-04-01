@@ -34,6 +34,7 @@ from pysoda import (
     check_agent_install,
     get_pennsieve_api_key_secret,
     SODA_SPARC_API_KEY,
+    bf_submit_dataset_upload_details,
 )
 
 from disseminate import (
@@ -53,6 +54,7 @@ from curate import (
     main_curate_function_progress,
     generate_manifest_file_locally,
     check_JSON_size,
+    main_curate_function_upload_details,
     create_high_level_manifest_files_existing_local_starting_point,
 )
 
@@ -76,6 +78,7 @@ from organize_datasets import generate_dataset_locally, bf_get_dataset_files_fol
 
 import sys
 import zerorpc
+
 
 MIN_SODA_VERSION = "5.3.1"
 
@@ -303,6 +306,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
+    # get upload information for logging while bf_submit_dataset runs
+    def api_bf_submit_dataset_upload_details(self):
+        try:
+            return bf_submit_dataset_upload_details()
+        except Exception as e:
+            raise e
+
     def api_submit_dataset_progress(self):
         try:
             return submit_dataset_progress()
@@ -481,6 +491,12 @@ class SodaApi(object):
     def api_main_curate_function_progress(self):
         try:
             return main_curate_function_progress()
+        except Exception as e:
+            raise e
+
+    def api_main_curate_function_upload_details(self):
+        try:
+            return main_curate_function_upload_details()
         except Exception as e:
             raise e
 
