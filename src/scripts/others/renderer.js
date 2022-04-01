@@ -4089,14 +4089,10 @@ organizeDSbackButton.addEventListener("click", function () {
       myPath = myPath["folders"][item];
     }
     // construct UI with files and folders
-    console.log(myPath);
     $("#items").empty();
     already_created_elem = [];
     let items = loadFileFolder(myPath); //array -
     let total_item_count = items[1].length + items[0].length;
-    console.log("retrieved items count " + total_item_count);
-    console.log(typeof items);
-    console.log(items);
     //we have some items to display
     listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
@@ -6007,9 +6003,7 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       start = 0;
       listed_count = 0;
       amount = 0;
-      console.log("entering if statement in getInFoldr");
       var folderName = this.innerText;
-      console.log(folderName);
       currentLocation.value = currentLocation.value + folderName + "/";
 
       var currentPath = currentLocation.value;
@@ -6017,22 +6011,15 @@ async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
       var filtered = jsonPathArray.slice(1).filter(function (el) {
         return el.trim() != "";
       });
-      console.log(filtered);
       var myPath = getRecursivePath(filtered, globalObj);
       if (myPath.length === 2) {
         filtered = myPath[1];
         document.getElementById("input-global-path").value =
           "My_dataset_folder/" + filtered.join("/") + "/";
       }
-      console.log(typeof myPath);
-      if (myPath) console.log(myPath);
-      console.log(currentPath);
-      let amount_of_items = Object.keys(myPath["files"]).length;
-      amount_of_items = amount_of_items + Object.keys(myPath["folders"]).length;
       $("#items").empty();
       already_created_elem = [];
       let items = loadFileFolder(myPath);
-      let total_item_count = items[1].length + items[0].length;
       //we have some items to display
       listItems(myPath, "#items", 500, (reset = true));
       organizeLandingUIEffect();

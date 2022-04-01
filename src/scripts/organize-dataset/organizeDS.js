@@ -1898,6 +1898,7 @@ const loading_items_spinner = document.getElementById(
   "items_loading_container"
 );
 
+//will observe if property of element changes to decide of eventListener is needed
 function observeElement(element, property, callback, delay = 0) {
   let elementPrototype = Object.getPrototypeOf(element);
   if (elementPrototype.hasOwnProperty(property)) {
@@ -1922,14 +1923,12 @@ function observeElement(element, property, callback, delay = 0) {
   }
 }
 
+//when on top layer of dataset eventListener is removed
 function check_dataset_value() {
   if (dataset_path.value === "My_dataset_folder/") {
-    // console.log("removing");
     scroll_box.removeEventListener("scroll", lazyLoad, true);
   }
   if (dataset_path.value != "My_dataset_folder/") {
-    // if (item_box.offsetHeight != 420) {
-    // $("#items").empty();
     var filtered = getGlobalPath(document.getElementById("input-global-path"));
     var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     amount = 500;
@@ -1941,7 +1940,6 @@ function check_dataset_value() {
       datasetStructureJSONObj
     );
     beginScrollListen();
-    // }
   }
 }
 observeElement(dataset_path, "value", check_dataset_value);
@@ -1954,10 +1952,10 @@ function beginScrollListen() {
 }
 
 async function lazyLoad() {
-  // console.log("monitoring scroll position: %c%s", styles, scroll_box.scrollTop);
   let total_items = already_created_elem.length;
   let filtered = getGlobalPath(document.getElementById("input-global-path"));
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+
   //item_box height is at 420 when there is no overflow
   if (item_box.offsetHeight === 420) {
     scroll_box.removeEventListener("scroll", lazyLoad);
@@ -1967,10 +1965,10 @@ async function lazyLoad() {
   //load spinner is prepended to beginning to elements if any de-rendered
   if (item_box.childElementCount != 0) {
     if (item_box.children[0].id === "items_container") {
-      if (scroll_box.scrollTop < 300) {
+      if (scroll_box.scrollTop < 280) {
         //monitors when user scrolls back up to prepend elements
         let array_select = preprended_items - 1;
-        let remove_limit = 5; //only prepend 600 elements at a time
+        let remove_limit = 5; //only prepend 500 elements at a time
         let load_spinner = `
         <div id="items_container">
           <div id="item_load" class="ui medium active inline loader icon-wrapper">
@@ -1984,9 +1982,9 @@ async function lazyLoad() {
           array_select--;
         }
         array_select += 1;
-        console.log(array_select);
         if (array_select != 0) {
           $(uiItems).prepend(load_spinner);
+          item_box.children[0].style.setProperty("margin-top", "20px");
         } else {
           //we have re-rendered all files from beginning
           if (item_box.children[0].id === "items_container") {
@@ -2003,7 +2001,7 @@ async function lazyLoad() {
         if (item_box.lastChild.id === "items_container") {
           item_box.lastChild.remove();
         }
-        //need to have 500 items
+        //remove 500 items from the end of item_box list
         for (let i = 0; i <= 500; i++) {
           item_box.lastChild.remove();
         }
@@ -2015,34 +2013,30 @@ async function lazyLoad() {
             item_box.lastChild.remove();
           }
         }
-        //reset placement of already_.. array
         listed_count -= 5;
         start -= 5;
         amount -= 500;
         preprended_items -= 5;
         $("#items").append(load_spinner);
+        item_box.lastChild.style.setProperty("margin-top", "5px");
+        item_box.lastChild.style.setProperty("margin-bottom", "30px");
       }
     }
   }
 
-  //all items have been fully rendered so remove event listener
+  //all items have been fully rendered
   if (listed_count === total_items) {
-    // scroll_box.removeEventListener("scroll", lazyLoad);
-    //remove loading spinner
     if (item_box.childElementCount != 0) {
       if (item_box.lastChild.id === "items_container") {
         item_box.removeChild(item_box.lastChild);
       }
     }
-    // listed_count = 0;
   } else {
-    //more items to load once user scrolls close to end
     if (
-      scroll_box.scrollTop + 280 >
+      scroll_box.scrollTop + 50 >
       scroll_box.scrollHeight - scroll_box.offsetHeight
     ) {
-      // scroll_box.removeEventListener("scroll", lazyLoad);
-      //check how many elements have been created to derender
+      //user scrolls down, render more items if available
       let wait4items = new Promise(async (resolved) => {
         amount += 500;
         await listItems(myPath, uiItems, amount);
@@ -2059,18 +2053,11 @@ async function lazyLoad() {
   }
 }
 
-//add certain amount of items
 already_created_elem = [];
 let listed_count = 0;
 let start = 0;
 let preprended_items = 0;
 async function add_items_to_view(list, amount_req, reset) {
-  //every 1200 items remove 400
-  //1200 - 400-> 800
-  //2400 - 800 -> 1600
-  //4800 - 1200 -> 3600
-  //6000 - 1600 -> 5400
-  //6400 - 2000 -> 4400
   let start_time = performance.now();
   uiItems = "#items";
   let elements_req = amount_req / 100; //array stores 100 elements per index
@@ -2093,7 +2080,7 @@ async function add_items_to_view(list, amount_req, reset) {
   start = listed_count;
   listed_count = 0;
 
-  //remove loading spinner before adding more files
+  //remove loading spinners before adding more files
   if (item_box.lastChild != undefined) {
     if (item_box.lastChild.id === "items_container") {
       item_box.removeChild(item_box.lastChild);
@@ -2102,23 +2089,21 @@ async function add_items_to_view(list, amount_req, reset) {
   if (item_box.children[0] != undefined) {
     if (item_box.children[0].id === "items_container") {
       item_box.children[0].remove();
-      //removing spinner in the beginninng
     }
   }
-  //join together folders and files into one array
+
+  //folders and files stored in one array
   already_created_elem = list[0].concat(list[1]);
 
   if (element_items >= 1001) {
-    //hit 1000 so remove 500
-    //remove first 600 elements
+    //at most we want 1000 items rendered
     preprended_items += 5;
-    // let element_items = item_box.children;
-    //always remove 600 plus the extra before the next set of 12 (0-1100 items)
 
     for (let i = 0; i < 500; i++) {
       item_box.children[0].remove();
     }
     $(uiItems).prepend(load_spinner);
+    item_box.children[0].style.setProperty("margin-top", "20px");
   }
 
   for (let i = start; i < elements_req; i++) {
@@ -2133,6 +2118,8 @@ async function add_items_to_view(list, amount_req, reset) {
   start = listed_count;
   if ($(uiItems).children().length >= 500) {
     $(uiItems).append(load_spinner);
+    item_box.lastChild.style.setProperty("margin-top", "5px");
+    item_box.lastChild.style.setProperty("margin-bottom", "30px");
   }
 }
 
