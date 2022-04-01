@@ -100,6 +100,7 @@ const logCurationErrorsToAnalytics = async (
     );
 
     // log the size that was successfully generated
+    // TODO: Make this the last uploaded chunk
     ipcRenderer.send(
       "track-event",
       "Success",
