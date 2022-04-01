@@ -1,1 +1,99 @@
-{"@context": "https://doi.org/10.5063/schema/codemeta-2.0", "@type": "SoftwareSourceCode", "license": "https://spdx.org/licenses/MIT", "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC", "dateCreated": "2021-10-08T22:52:27Z", "dateModified": "2022-04-01T20:39:04.395Z", "downloadUrl": "https://fairdataihub.org/sodaforsparc", "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues", "name": "SODA (Software to Organize Data Automatically) for SPARC", "version": "5.3.2", "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative", "applicationCategory": "Scientific", "funding": "OT2OD030213", "developmentStatus": "active", "referencePublication": "https://doi.org/10.1101/2021.02.10.430563", "funder": {"@type": "Organization", "@name": "National Institutes of Health (NIH)"}, "keywords": ["curation", "mac", "sparc-dataset", "ubuntu", "windows"], "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS", "Jupyter Notebook"], "operatingSystem": ["Windows 10", "Big Sur (macOS 11)", "Catalina (macOS 10.15)", "Windows 11", "Ubuntu"], "relatedLink": ["https://fairdataihub.org/sodaforsparc"], "author": [{"@type": "Person", "givenName": "Bhavesh", "familyName": "Patel", "email": "bpatel@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}, {"@type": "Person", "givenName": "Tram", "familyName": "Ngo", "email": "tno@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}, {"@type": "Person", "givenName": "Sanjay", "familyName": "Soundarajan", "email": "ssoundarajan@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}, {"@type": "Person", "givenName": "Aaron", "familyName": "Marroquin", "email": "cmarroquin@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}, {"@type": "Person", "givenName": "Jacob", "familyName": "Clark", "email": "jclark@calmi2.org", "affiliation": {"@type": "Organization", "name": "California Medical Innovations Institute"}}, {"@type": "Person", "givenName": "Dorian", "familyName": "Portillo", "email": "dportillo@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}]}
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
+  "dateCreated": "2021-10-08T22:52:27Z",
+  "dateModified": "2022-04-01T20:39:04.395Z",
+  "downloadUrl": "https://fairdataihub.org/sodaforsparc",
+  "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
+  "name": "SODA (Software to Organize Data Automatically) for SPARC",
+  "version": "5.3.2",
+  "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
+  "applicationCategory": "Scientific",
+  "funding": "OT2OD030213",
+  "developmentStatus": "active",
+  "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
+  "funder": {
+    "@type": "Organization",
+    "@name": "National Institutes of Health (NIH)"
+  },
+  "keywords": ["curation", "mac", "sparc-dataset", "ubuntu", "windows"],
+  "programmingLanguage": [
+    "JavaScript",
+    "HTML",
+    "Python",
+    "CSS",
+    "Jupyter Notebook"
+  ],
+  "operatingSystem": [
+    "Windows 10",
+    "Big Sur (macOS 11)",
+    "Catalina (macOS 10.15)",
+    "Windows 11",
+    "Ubuntu"
+  ],
+  "relatedLink": ["https://fairdataihub.org/sodaforsparc"],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Bhavesh",
+      "familyName": "Patel",
+      "email": "bpatel@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Tram",
+      "familyName": "Ngo",
+      "email": "tno@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Sanjay",
+      "familyName": "Soundarajan",
+      "email": "ssoundarajan@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Aaron",
+      "familyName": "Marroquin",
+      "email": "cmarroquin@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Jacob",
+      "familyName": "Clark",
+      "email": "jclark@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "California Medical Innovations Institute"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Dorian",
+      "familyName": "Portillo",
+      "email": "dportillo@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    }
+  ]
+}
