@@ -6530,7 +6530,6 @@ async function initiate_generate() {
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
 
-
   // get the amount of files
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
