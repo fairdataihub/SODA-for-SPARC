@@ -2351,7 +2351,10 @@ $("#button-submit-dataset").click(async () => {
 
   var totalFileSize;
   let uploadedFiles = 0;
-  let uploadedFilesSize = 0;
+  let incrementInFileSize = 0;
+  let uploadedFolders = 0;
+  let uploadedFileSize = 0 
+  let previouUploadedFileSize = 0 
 
   $("#para-please-wait-manage-dataset").html("Please wait...");
   $("#para-progress-bar-error-status").html("");
@@ -2626,7 +2629,6 @@ $("#button-submit-dataset").click(async () => {
     "#para-progress-bar-error-status"
   ).childNodes;
 
-  let uploadedFolders = 0;
 
   const monitorBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
@@ -2634,12 +2636,17 @@ $("#button-submit-dataset").click(async () => {
       // console.log("Results: ", res)
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[4] > uploadedFolders) {
-        console.log("Final size: ", res[5]);
         uploadedFiles = res[0];
-        uploadedFilesSize = res[1];
+        previousUploadedFileSize = uploadedFileSize
+        uploadedFileSize = res[1];
         let didFail = res[2];
         let didUpload = res[3];
         uploadedFolders = res[4];
+        console.log("Size of the dataset being uploaded: ", totalFileSize)
+        console.log("Total file size created so far: ", uploadedFileSize);
+        console.log("PRevious file size: ", previousUploadedFileSize)
+        incrementInFileSize = uploadedFileSize - previousUploadedFileSize
+        console.log("Incremented file size is: ", incrementInFileSize)
 
         // failed to upload a bucket, but did upload some files
         if (didFail && didUpload) {
@@ -2654,7 +2661,7 @@ $("#button-submit-dataset").click(async () => {
           );
           console.log(
             "Local dataset failed to upload here is the size of files we will log: ",
-            uploadedFilesSize
+            incrementInFileSize
           );
 
           // even when the upload fails we want to know how many files were uploaded and their size
@@ -2674,7 +2681,7 @@ $("#button-submit-dataset").click(async () => {
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
               " - size",
             `${datasetUploadSession.id}`,
-            uploadedFilesSize
+            incrementInFileSize
           );
 
           return;
@@ -2684,8 +2691,8 @@ $("#button-submit-dataset").click(async () => {
           console.log("Failed broski");
           return;
         } else {
-          console.log("Amount of files being uploaded: ", uploadedFiles);
-          console.log("Size of files: ", uploadedFilesSize);
+          // console.log("Amount of files being uploaded: ", uploadedFiles);
+          // console.log("Size of files: ", incrementInFileSize);
 
           // track the amount of files uploaded for the current bucket
           ipcRenderer.send(
@@ -2703,7 +2710,7 @@ $("#button-submit-dataset").click(async () => {
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
               " - size",
             `${datasetUploadSession.id}`,
-            uploadedFilesSize
+            incrementInFileSize
           );
         }
       }
