@@ -846,8 +846,21 @@ const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
 const openCopySubjectMetadataPopup = async (
   clickedSubjectCopyMetadataButton
 ) => {
+  const copyFromSubjectMetadataID = clickedSubjectCopyMetadataButton
+    .closest("tr")
+    .find(".subject-metadata-id")
+    .text();
   let subjectsArray = getSubjects();
+  const initialCopyFromMetadata = `
+    <div class="field text-left">
+      <div class="ui radio checkbox">
+        <input type="radio" name="copy-from" value="${copyFromSubjectMetadataID}" checked="checked">
+        <label>${copyFromSubjectMetadataID}</label>
+      </div>
+    </div>
+  `;
   const copyFromMetadata = subjectsArray
+    .filter((subject) => subject !== copyFromSubjectMetadataID)
     .map((subject) => {
       return `
       <div class="field text-left">
@@ -858,6 +871,8 @@ const openCopySubjectMetadataPopup = async (
       </div>`;
     })
     .join("\n");
+
+  const selectedCopyFromMetadata = ``;
   const copyToMetadata = subjectsArray
     .map((subject) => {
       return `
@@ -875,12 +890,14 @@ const openCopySubjectMetadataPopup = async (
     <div class="ui form">
       <div class="grouped fields">
         <label class="guided--form-label text-left">Which subject would you like to copy metadata from?</label>
+        ${initialCopyFromMetadata}
         ${copyFromMetadata}
       </div>
     </div>
     <div class="ui form">
       <div class="grouped fields">
         <label class="guided--form-label text-left">Which subjects would you like to copy metadata to?</label>
+        ${selectedCopyFromMetadata}
         ${copyToMetadata}
       </div>
     </div>
@@ -1482,7 +1499,7 @@ const renderSamplesTables = () => {
                   onclick="addSampleFolder($(this))"
                 >
                 <i class="fas fa-folder-plus" style="margin-right: 7px"></i
-                >Add ${subject.subjectName} sample
+                >Add ${subject.subjectName} sample row
               </button>
             </th>
           </tr>
