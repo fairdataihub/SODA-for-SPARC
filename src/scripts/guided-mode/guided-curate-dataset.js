@@ -4081,6 +4081,97 @@ $(document).ready(() => {
           unSkipSubSamFolderAndMetadataPages();
         }
       }
+      if (pageBeingLeftID === "guided-samples-folder-tab") {
+        /*const skipSampleMetadataPages = () => {
+          $("#guided-create-samples-metadata-tab").attr(
+            "data-skip-page",
+            "true"
+          );
+        };
+        const unSkipSampleMetadataPages = () => {
+          $("#guided-create-samples-metadata-tab").attr(
+            "data-skip-page",
+            "false"
+          );
+        };
+        //If the user indicated they had subjects however left the subjects table page,
+        //Ask the user if they would like to go back to subjects table, and if not, skip
+        //to the source folder
+        if (getSubjects().length == 0) {
+          Swal.fire({
+            title: "Continue without adding subjects?",
+            text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "I want to add subjects into the subject table",
+            cancelButtonText: "I do not have any subjects",
+          }).then((result) => {
+            //If the user indicates they do not have any subjects, skip to source folder
+            if (!result.isConfirmed) {
+              skipSubSamFolderAndMetadataPages();
+              traverseToTab("guided-source-folder-tab");
+            }
+          });
+          //Throw error to exit next button click handler
+          errorArray.push({
+            type: "",
+            message: "User chose to back to subject page to add subjects",
+          });
+          throw errorArray;
+        } else {
+          unSkipSubSamFolderAndMetadataPages();
+        }*/
+      }
+      if (pageBeingLeftID === "guided-source-folder-tab") {
+        if (
+          !$("#guided-button-has-source-data").hasClass("selected") &&
+          !$("#guided-button-no-source-data").hasClass("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if your dataset contains source data",
+          });
+          throw errorArray;
+        }
+      }
+      if (pageBeingLeftID === "guided-derivative-folder-tab") {
+        if (
+          !$("#guided-button-has-derivative-data").hasClass("selected") &&
+          !$("#guided-button-no-derivative-data").hasClass("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if your dataset contains derivative data",
+          });
+          throw errorArray;
+        }
+      }
+      if (pageBeingLeftID === "guided-code-folder-tab") {
+        if (
+          !$("#guided-button-has-code-data").hasClass("selected") &&
+          !$("#guided-button-no-code-data").hasClass("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if your dataset contains code data",
+          });
+          throw errorArray;
+        }
+      }
+      if (pageBeingLeftID === "guided-docs-folder-tab") {
+        if (
+          !$("#guided-button-has-docs-data").hasClass("selected") &&
+          !$("#guided-button-no-docs-data").hasClass("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if your dataset contains docs data",
+          });
+          throw errorArray;
+        }
+      }
       if (pageBeingLeftID === "guided-folder-importation-tab") {
       }
       if (pageBeingLeftID === "guided-designate-pi-owner-tab") {
@@ -4225,7 +4316,7 @@ $(document).ready(() => {
       errorArray.map((error) => {
         if (error.type === "notyf") {
           notyf.open({
-            duration: "5000",
+            duration: "4000",
             type: "error",
             message: error.message,
           });
