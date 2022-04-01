@@ -4078,7 +4078,6 @@ $(document).ready(() => {
           });
           throw errorArray;
         } else {
-          console.log("unskipping subsamPages");
           unSkipSubSamFolderAndMetadataPages();
         }
       }
@@ -4185,7 +4184,10 @@ $(document).ready(() => {
           //if not, check if it has the data-attribute skip-page
           //if so, recurse back until a page without the skip-page attribute is found
           let nextPage = startingPage.next();
-          if (nextPage.data("skip-page")) {
+          if (
+            nextPage.attr("data-skip-page") &&
+            nextPage.attr("data-skip-page") == "true"
+          ) {
             return getNextPageNotSkipped(nextPage);
           } else {
             //element is valid and not to be skipped
@@ -4240,7 +4242,10 @@ $(document).ready(() => {
         //if not, check if it has the data-attribute skip-page
         //if so, recurse back until a page without the skip-page attribute is found
         let prevPage = startingPage.prev();
-        if (prevPage.data("skip-page")) {
+        if (
+          prevPage.attr("data-skip-page") &&
+          prevPage.attr("data-skip-page") == "true"
+        ) {
           console.log("recursive back");
           return getPrevPageNotSkipped(prevPage);
         } else {
