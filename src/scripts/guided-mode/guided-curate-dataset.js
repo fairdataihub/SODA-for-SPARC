@@ -982,24 +982,30 @@ const createSubjectFolder = (event, subjectNameInput) => {
   if (event.which == 13) {
     try {
       const subjectName = subjectNameInput.val().trim();
+      const subjectNameElement = `
+        <div class="space-between">
+          <span class="subject-id">${subjectName}</span>
+          <i
+            class="far fa-edit jump-back"
+            style="cursor: pointer;"
+            onclick="openSubjectRenameInput($(this))"
+          >
+          </i>
+        </div>
+      `;
+      const subjectIdCellToAddNameTo = subjectNameInput.parent();
       let existingSubjectNames = Object.keys(
         datasetStructureJSONObj.folders.primary.folders
       );
       //Throw error if entered subject name is duplicate
       if (existingSubjectNames.includes(subjectName)) {
+        //Change input back to the previous name but throw an error to abort following logic
+        if (subjectNameInput.attr("data-prev-name") === subjectName) {
+          subjectIdCellToAddNameTo.html(subjectNameElement);
+        }
         throw new Error("Subject name already exists");
       }
-      const subjectNameElement = `
-            <div class="space-between">
-              <span class="subject-id">${subjectName}</span>
-              <i
-                class="far fa-edit jump-back"
-                style="cursor: pointer;"
-                onclick="openSubjectRenameInput($(this))"
-              >
-              </i>
-            </div>
-          `;
+
       if (subjectName.length > 0) {
         if (subSamInputIsValid(subjectName)) {
           removeWarningMessageIfExists(subjectNameInput);
@@ -1007,7 +1013,6 @@ const createSubjectFolder = (event, subjectNameInput) => {
           sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
             subjectName
           ] = [];
-          const subjectIdCellToAddNameTo = subjectNameInput.parent();
           subjectIdCellToAddNameTo.html(subjectNameElement);
 
           subjectTargetFolder = getRecursivePath(
@@ -1176,6 +1181,18 @@ const createSampleFolder = (event, sampleNameInput) => {
   if (event.which == 13) {
     try {
       const sampleName = sampleNameInput.val().trim();
+      const sampleNameElement = `
+        <div class="space-between">
+          <span class="sample-id">${sampleName}</span>
+          <i
+            class="far fa-edit jump-back"
+            style="cursor: pointer"
+            onclick="openSampleRenameInput($(this))"
+          >
+          </i>
+        </div>
+      `;
+      const sampleIdCellToAddNameTo = sampleNameInput.parent();
       const sampleParentSubjectName = sampleNameInput
         .closest("tbody")
         .siblings()
@@ -1196,19 +1213,12 @@ const createSampleFolder = (event, sampleNameInput) => {
       );
       //Throw error if entered sample name is duplicate
       if (sampleNameArray.includes(sampleName)) {
+        //Change input back to the previous name but throw an error to abort following logic
+        if (sampleNameInput.attr("data-prev-name") === sampleName) {
+          sampleIdCellToAddNameTo.html(sampleNameElement);
+        }
         throw new Error("Sample name already exists");
       }
-      const sampleNameElement = `
-        <div class="space-between">
-          <span class="sample-id">${sampleName}</span>
-          <i
-            class="far fa-edit jump-back"
-            style="cursor: pointer"
-            onclick="openSampleRenameInput($(this))"
-          >
-          </i>
-        </div>
-      `;
 
       if (sampleName.length > 0) {
         if (subSamInputIsValid(sampleName)) {
@@ -1218,7 +1228,6 @@ const createSampleFolder = (event, sampleNameInput) => {
             sampleParentSubjectName
           ].push(sampleName);
 
-          const sampleIdCellToAddNameTo = sampleNameInput.parent();
           sampleIdCellToAddNameTo.html(sampleNameElement);
 
           sampleTargetFolder = getRecursivePath(
