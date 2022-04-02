@@ -19,12 +19,12 @@ const disableProgressButton = () => {
   $("#guided-next-button").prop("disabled", true);
 };
 
-const getSubjects = () => {
+const guidedGetSubjects = () => {
   return Object.keys(
     sodaJSONObj["dataset-metadata"]["subject-sample-structure"]
   );
 };
-getSubjectSamples = (subject) => {
+guidedguidedGetSubjectSamples = (subject) => {
   return sodaJSONObj["dataset-metadata"]["subject-sample-structure"][subject];
 };
 
@@ -282,7 +282,7 @@ const traverseToTab = (targetPageID) => {
   if (targetPageID === "guided-create-subjects-metadata-tab") {
     //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
     try {
-      let subjectsArray = getSubjects();
+      let subjectsArray = guidedGetSubjects();
       for (let subject of subjectsArray) {
         //check to see if subject already has data in the sodajsonObj
         if (
@@ -850,7 +850,7 @@ const openCopySubjectMetadataPopup = async (
     .closest("tr")
     .find(".subject-metadata-id")
     .text();
-  let subjectsArray = getSubjects();
+  let subjectsArray = guidedGetSubjects();
   const initialCopyFromMetadata = `
     <div class="field text-left">
       <div class="ui radio checkbox">
@@ -1461,7 +1461,7 @@ const deleteSampleFolder = (sampleDeleteButton) => {
 };
 const renderSamplesTables = () => {
   //get subjects from the datasetStructureJSONObj
-  let subjectsToMap = getSubjects();
+  let subjectsToMap = guidedGetSubjects();
   //get the sample count from the number of samples input on the subjects page and
   //map the subjects to an array to create the sample tables
   let sampleData = subjectsToMap.sort().map((subject) => {
@@ -1548,9 +1548,9 @@ const renderSamplesTables = () => {
   sampleTablesContainer.innerHTML = sampleTables.join("\n");
 };
 const renderSampleMetadataTables = () => {
-  let subjectsToMap = getSubjects();
+  let subjectsToMap = guidedGetSubjects();
   let sampleMetadataTables = subjectsToMap.map((subject) => {
-    let sampleMetadataRows = getSubjectSamples(subject)
+    let sampleMetadataRows = guidedguidedGetSubjectSamples(subject)
       .map((sample, index) => {
         let tableIndex = index + 1;
         return generateSampleMetadataRowElement(tableIndex, sample);
@@ -4080,7 +4080,7 @@ $(document).ready(() => {
         //If the user indicated they had subjects however left the subjects table page,
         //Ask the user if they would like to go back to subjects table, and if not, skip
         //to the source folder
-        if (getSubjects().length == 0) {
+        if (guidedGetSubjects().length == 0) {
           Swal.fire({
             title: "Continue without adding subjects?",
             text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
@@ -4127,8 +4127,10 @@ $(document).ready(() => {
         //get combined length of arrays for properties in sodaJSONObj["subjects-samples-structure"]
 
         let numSamples = 0;
-        for (let i = 0; i < getSubjects().length; i++) {
-          numSamples = numSamples + getSubjectSamples(getSubjects()[i]).length;
+        for (let i = 0; i < guidedGetSubjects().length; i++) {
+          numSamples =
+            numSamples +
+            guidedguidedGetSubjectSamples(guidedGetSubjects()[i]).length;
         }
 
         if (numSamples == 0) {
