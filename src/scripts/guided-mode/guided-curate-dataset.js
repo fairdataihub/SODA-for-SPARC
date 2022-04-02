@@ -265,25 +265,13 @@ const guidedLoadSavedProgressFiles = async () => {
     console.log("No guided save files found");
   }
 };
-const traverseToTab = async (targetPageID) => {
+const traverseToTab = (targetPageID) => {
   if (
     targetPageID === "guided-designate-pi-owner-tab" ||
     "guided-designate-permissions-tab"
   ) {
     //Refresh select pickers so items can be selected
     $(".selectpicker").selectpicker("refresh");
-    if (targetPageID === "guided-designate-pi-owner-tab") {
-      if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
-        let user = await getUserInformation();
-        const originalDatasetCreator = {
-          userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-          UUID: user["id"],
-          name: `${user["firstName"]} ${user["lastName"]}`,
-        };
-        setGuidedDatasetPiOwner(originalDatasetCreator);
-        generateWarningMessage($("#guided-designated-PI-info"));
-      }
-    }
   }
   if (targetPageID === "guided-subjects-folder-tab") {
     $("#guided-button-preview-folder-structure").show();
@@ -4010,6 +3998,19 @@ $(document).ready(() => {
               sodaJSONObj["starting-point"]["type"] = "local";
             }
           }
+
+          //Get the users information and set them as PI if a PI has not been designated yet
+          if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
+            let user = await getUserInformation();
+            const originalDatasetCreator = {
+              userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+              UUID: user["id"],
+              name: `${user["firstName"]} ${user["lastName"]}`,
+            };
+            setGuidedDatasetPiOwner(originalDatasetCreator);
+            generateWarningMessage($("#guided-designated-PI-info"));
+          }
+
           setGuidedDatasetName(datasetName);
           setGuidedDatasetSubtitle(datasetSubtitle);
           setGuidedBannerImage(tempGuidedCroppedBannerImagePath);
