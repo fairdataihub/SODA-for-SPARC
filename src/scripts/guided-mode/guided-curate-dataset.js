@@ -923,24 +923,28 @@ const openCopySubjectMetadataPopup = async (
         $("input[name='copy-to']:checked").each(function () {
           selectedCopyToSubjects.push($(this).val());
         });
-        console.log(selectedCopyToSubjects);
 
         let copyFromSubjectData = [];
-        let copyToSubjectData = [];
         for (var i = 1; i < subjectsTableData.length; i++) {
           if (subjectsTableData[i][0] === selectedCopyFromSubject) {
             //copy all elements from matching array except the first one
             copyFromSubjectData = subjectsTableData[i].slice(1);
           }
         }
-        console.log(copyFromSubjectData);
-        for (var i = 1; i < subjectsTableData.length; i++) {
-          if (selectedCopyToSubjects.includes(subjectsTableData[i][0])) {
-            //Remove all subject data elements besides the name
-            subjectsTableData[i] = [subjectsTableData[i][0]];
-            //copy subject data elements from the copy from element to the copy to element
-            subjectsTableData[i] =
-              subjectsTableData[i].concat(copyFromSubjectData);
+        for (subject of selectedCopyToSubjects) {
+          //initialize copyToSubjectHasMetadata as false, set to True if the subject being copied to has existing metadat
+          //If not, add the subject to the subjectsTable and add metadata being copied
+          let copyToSubjectHasMetadata = false;
+          subjectsTableData.forEach((subjectData, index) => {
+            if (subjectData[0] === subject) {
+              subjectData = [subjectData[0]];
+              subjectData = subjectData.concat(copyFromSubjectData);
+              subjectsTableData[index] = subjectData;
+            }
+          });
+          if (!copyToSubjectHasMetadata) {
+            newSubjectData = [subject].concat(copyFromSubjectData);
+            subjectsTableData.push(newSubjectData);
           }
         }
         console.log(subjectsTableData);
@@ -2858,6 +2862,40 @@ $(document).ready(() => {
     });
   };
 
+  const guided_add_metadata = async (bfAccount, bfDataset) => {
+    return new Promise((resolve, reject) => {
+      client.invoke(
+        "api_bf_add_description",
+        bfAccount,
+        bfDataset,
+        readMe,
+        (error, res) => {
+          if (error) {
+            notyf.open({
+              duration: "5000",
+              type: "error",
+              message: "Failed to add description",
+            });
+            log.error(error);
+            console.error(error);
+            let emessage = userError(error);
+            reject(error);
+          } else {
+            console.log(res);
+            notyf.open({
+              duration: "5000",
+              type: "success",
+              message: "Added description to dataset",
+            });
+            guidedIncreaseCurateProgressBar(5);
+            console.log("added descr + " + res);
+            resolve(`Description added to ${bfDataset}`);
+          }
+        }
+      );
+    });
+  };
+
   const guided_add_tags = async (bfDataset, tagsArray) => {
     // Add tags to dataset
     try {
@@ -2954,6 +2992,7 @@ $(document).ready(() => {
         guided_add_description(guidedBfAccount, guidedDatasetName, guidedReadMe)
       )
       .then(guided_main_curate())
+      /*.then(guided_add_metadata(guidedBfAccount, guidedDatasetName))*/
       /*
       .then((res) => {
         guided_add_PI_owner(guidedBfAccount, guidedDatasetName, guidedPIOwner);//this will need to change as PI owner obj changed
@@ -3473,8 +3512,8 @@ $(document).ready(() => {
         }
       }
       json_str = JSON.stringify(json_arr);
-      sodaJSONObj["dataset-metadata"]["submission-metadata"] = json_str
-      
+      sodaJSONObj["dataset-metadata"]["submission-metadata"] = json_str;
+
       /*client.invoke(
         "api_save_submission_file",
         false,
@@ -4096,7 +4135,7 @@ $(document).ready(() => {
             //If the user indicates they do not have any subjects, skip to source folder
             if (!result.isConfirmed) {
               skipSubSamFolderAndMetadataPages();
-              $("#guided-next-button").click()
+              traverseToTab("guided-source-folder-tab");
             }
           });
           //Throw error to exit next button click handler
@@ -4131,8 +4170,7 @@ $(document).ready(() => {
         let numSamples = 0;
         for (let i = 0; i < guidedGetSubjects().length; i++) {
           numSamples =
-            numSamples +
-            guidedGetSubjectSamples(guidedGetSubjects()[i]).length;
+            numSamples + guidedGetSubjectSamples(guidedGetSubjects()[i]).length;
         }
 
         if (numSamples == 0) {
@@ -4149,7 +4187,7 @@ $(document).ready(() => {
             //If the user indicates they do not have any samples, skip to source folder
             if (!result.isConfirmed) {
               skipSampleMetadataPages();
-              $("#guided-next-button").click()
+              traverseToTab("guided-source-folder-tab");
             }
           });
           //Throw error to exit next button click handler
