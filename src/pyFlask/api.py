@@ -97,18 +97,18 @@ def api_validate_dataset_pipeline():
     return json.dumps(errors, cls=DequeEncoder)
     
 
-    # validate the dataset
-    validation_result = None 
-    try:
-        # validate and get dictionary back
-        validation_result = val_dataset_local_pipeline(path)
-    except:
-        return "Critical validation error!", 400
+    # # validate the dataset
+    # validation_result = None 
+    # try:
+    #     # validate and get dictionary back
+    #     validation_result = val_dataset_local_pipeline(path)
+    # except:
+    #     return "Critical validation error!", 400
     
-    errors = validation_result.get('errors')
+    # errors = validation_result.get('errors')
 
-    # for now encode the dequeue object as a list
-    return json.dumps(errors, cls=DequeEncoder)
+    # # for now encode the dequeue object as a list
+    # return json.dumps(errors, cls=DequeEncoder)
 
 
 
