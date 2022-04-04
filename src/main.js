@@ -9,7 +9,7 @@ require("v8-compile-cache");
 const { ipcMain } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
-const { trackEvent } = require("./scripts/others/analytics");
+const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
 
 log.transports.console.level = false;
