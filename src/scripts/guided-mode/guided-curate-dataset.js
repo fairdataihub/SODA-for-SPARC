@@ -1554,12 +1554,22 @@ const renderSamplesTables = () => {
 const renderSampleMetadataTables = () => {
   let subjectsToMap = guidedGetSubjects();
   let sampleMetadataTables = subjectsToMap.map((subject) => {
-    let sampleMetadataRows = guidedGetSubjectSamples(subject)
-      .map((sample, index) => {
-        let tableIndex = index + 1;
-        return generateSampleMetadataRowElement(tableIndex, sample);
-      })
-      .join("\n");
+    let samples = guidedGetSubjectSamples(subject);
+    let sampleMetadataRows;
+    if (samples.length > 0) {
+      sampleMetadataRows = guidedGetSubjectSamples(subject)
+        .map((sample, index) => {
+          let tableIndex = index + 1;
+          return generateSampleMetadataRowElement(tableIndex, sample);
+        })
+        .join("\n");
+    } else {
+      sampleMetadataRows = `<div>a</div>`; /*generateAlertElement(
+        "warning",
+        "Subject contains no samples"
+      );*/
+    }
+    console.log(sampleMetadataRows);
     return `
       <table
         class="ui celled striped table"
