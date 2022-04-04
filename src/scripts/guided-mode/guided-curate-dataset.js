@@ -4,7 +4,7 @@ let guidedTeamPermissions = [];
 
 //Temp var used by guidedSaveBannerImage to hold the cropped image path
 //until it is passed into the sodaJSONObj
-let tempGuidedCroppedBannerImagePath = "";
+let tempGuidedCroppedBannerImagePath = "a";
 
 //main nav variables initialized to first page of guided mode
 let CURRENT_PAGE = $("#guided-basic-description-tab");
@@ -24,7 +24,7 @@ const guidedGetSubjects = () => {
     sodaJSONObj["dataset-metadata"]["subject-sample-structure"]
   );
 };
-guidedguidedGetSubjectSamples = (subject) => {
+guidedGetSubjectSamples = (subject) => {
   return sodaJSONObj["dataset-metadata"]["subject-sample-structure"][subject];
 };
 
@@ -1550,7 +1550,7 @@ const renderSamplesTables = () => {
 const renderSampleMetadataTables = () => {
   let subjectsToMap = guidedGetSubjects();
   let sampleMetadataTables = subjectsToMap.map((subject) => {
-    let sampleMetadataRows = guidedguidedGetSubjectSamples(subject)
+    let sampleMetadataRows = guidedGetSubjectSamples(subject)
       .map((sample, index) => {
         let tableIndex = index + 1;
         return generateSampleMetadataRowElement(tableIndex, sample);
@@ -3473,7 +3473,9 @@ $(document).ready(() => {
         }
       }
       json_str = JSON.stringify(json_arr);
-      client.invoke(
+      sodaJSONObj["dataset-metadata"]["submission-metadata"] = json_str
+      
+      /*client.invoke(
         "api_save_submission_file",
         false,
         "None",
@@ -3496,7 +3498,7 @@ $(document).ready(() => {
             $("#guided-generate-submission-file").text("Edit submission file");
           }
         }
-      );
+      );*/
     }
   };
 
@@ -4094,7 +4096,7 @@ $(document).ready(() => {
             //If the user indicates they do not have any subjects, skip to source folder
             if (!result.isConfirmed) {
               skipSubSamFolderAndMetadataPages();
-              traverseToTab("guided-source-folder-tab");
+              $("#guided-next-button").click()
             }
           });
           //Throw error to exit next button click handler
@@ -4130,7 +4132,7 @@ $(document).ready(() => {
         for (let i = 0; i < guidedGetSubjects().length; i++) {
           numSamples =
             numSamples +
-            guidedguidedGetSubjectSamples(guidedGetSubjects()[i]).length;
+            guidedGetSubjectSamples(guidedGetSubjects()[i]).length;
         }
 
         if (numSamples == 0) {
@@ -4147,7 +4149,7 @@ $(document).ready(() => {
             //If the user indicates they do not have any samples, skip to source folder
             if (!result.isConfirmed) {
               skipSampleMetadataPages();
-              traverseToTab("guided-source-folder-tab");
+              $("#guided-next-button").click()
             }
           });
           //Throw error to exit next button click handler
