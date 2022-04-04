@@ -1811,8 +1811,6 @@ $("#guided-button-no-docs-data").on("click", () => {
   }
 });
 
-$("#guided-dataset-name-input").val("test " + makeid(5));
-$("#guided-dataset-subtitle-input").val("test " + makeid(5));
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
