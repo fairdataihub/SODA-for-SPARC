@@ -1563,11 +1563,13 @@ const renderSampleMetadataTables = () => {
           return generateSampleMetadataRowElement(tableIndex, sample);
         })
         .join("\n");
+      console.log(sampleMetadataRows);
     } else {
-      sampleMetadataRows = `<div>a</div>`; /*generateAlertElement(
+      const emptyRowWarning = generateAlertElement(
         "warning",
         "Subject contains no samples"
-      );*/
+      );
+      sampleMetadataRows = `<tr><td colspan="3">${emptyRowWarning}</td></tr>`;
     }
     console.log(sampleMetadataRows);
     return `
