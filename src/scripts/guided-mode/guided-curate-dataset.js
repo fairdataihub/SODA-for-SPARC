@@ -1567,7 +1567,7 @@ const renderSampleMetadataTables = () => {
     } else {
       const emptyRowWarning = generateAlertElement(
         "warning",
-        "Subject contains no samples"
+        `No samples were added to the sample ${subject}. If you would like to add samples to ${subject}, return to the samples table`
       );
       sampleMetadataRows = `<tr><td colspan="3">${emptyRowWarning}</td></tr>`;
     }
