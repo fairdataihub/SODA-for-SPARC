@@ -817,13 +817,19 @@ const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
 };
 const guidedLoadSampleMetadataIfExists = (
   sampleMetadataId,
-  subjectMetadataID
+  subjectMetadataId
 ) => {
+  console.log(sampleMetadataId);
+  console.log(subjectMetadataId);
   //loop through all samplesTableData elemenents besides the first one
   for (let i = 1; i < samplesTableData.length; i++) {
-    if (samplesTableData[i][0] === sampleMetadataId) {
+    if (
+      samplesTableData[i][0] === subjectMetadataId &&
+      samplesTableData[i][1] === sampleMetadataId
+    ) {
       //if the id matches, load the metadata into the form
-      populateFormsSamples(subjectMetadataID, sampleMetadataId, "", "guided");
+      console.log("populating forms");
+      populateFormsSamples(subjectMetadataId, sampleMetadataId, "", "guided");
       return;
     }
   }
@@ -853,7 +859,7 @@ const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
     .siblings()
     .find(".sample-subject-metadata-id")
     .text();
-  /*guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);*/
+  guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
   $("#guided-metadata-sample-id").text(sampleMetadataID);
   $("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
   $("#guided-generate-samples-file").text(`Save ${sampleMetadataID} metadata`);
@@ -1582,7 +1588,6 @@ const renderSampleMetadataTables = () => {
           return generateSampleMetadataRowElement(tableIndex, sample);
         })
         .join("\n");
-      console.log(sampleMetadataRows);
     } else {
       const emptyRowWarning = generateAlertElement(
         "warning",
@@ -1590,7 +1595,6 @@ const renderSampleMetadataTables = () => {
       );
       sampleMetadataRows = `<tr><td colspan="3">${emptyRowWarning}</td></tr>`;
     }
-    console.log(sampleMetadataRows);
     return `
       <table
         class="ui celled striped table"
