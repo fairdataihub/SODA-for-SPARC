@@ -1199,7 +1199,13 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
       Swal.showLoading();
     },
   }).then((result) => {});
+  console.log(uploadBFBoolean); //true if upload to Pennsieve
+  console.log(defaultBfAccount); //SODA-Pennsieve
+  console.log(console.log($("#bf_dataset_load_subjects").text().trim())); //Dataset name (test jalke)
+  console.log(subjectsDestinationPath); //undefined
+  console.log(subjectsTableData); //(3) [Array(27),Array(27),Array(27)]
   client.invoke(
+    /*def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):*/
     "api_save_subjects_file",
     uploadBFBoolean,
     defaultBfAccount,
