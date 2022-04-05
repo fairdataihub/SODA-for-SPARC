@@ -109,6 +109,13 @@ def get_target_errors(error_path_report):
   for k in keys:
     prefix = get_path_prefix(k)
 
+    # check if the current path has inputs as a substring
+    if prefix.find("inputs") != -1:
+      # as per Tom ignore inputs paths' so
+      # remove the given prefix with 'inputs' in its path
+      del user_errors[k]
+      continue 
+
     # check for a suffix indicator in the prefix (aka a forward slash at the end of the prefix)
     if prefix[-1] == "/":
       # if so remove the suffix and check if the resulting prefix is an existing path key
