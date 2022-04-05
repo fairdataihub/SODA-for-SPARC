@@ -576,10 +576,10 @@
 }
 .guided--form-label {
   width: 100%;
-  margin: 0 0 0.4rem 0;
+  margin: 0 0 0.45rem 0;
   color: black;
   font-weight: 600;
-  font-size: 1.2em !important;
+  font-size: 1.5em !important;
 }
 .guided--form-label.centered {
   text-align: center;
@@ -590,7 +590,7 @@
   align-items: center;
 }
 .guided--help-text {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   max-width: 650px;
 }
 

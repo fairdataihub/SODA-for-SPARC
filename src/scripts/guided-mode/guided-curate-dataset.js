@@ -4328,17 +4328,6 @@ $(document).ready(() => {
 
         $("#guided-next-button").css("visibility", "hidden");
       }
-      if (pageBeingLeftID === "add-edit-tags-tab") {
-        const guidedTags = Array.from(guidedDatasetTagsTagify.getTagElms()).map(
-          (tag) => {
-            return tag.textContent;
-          }
-        );
-        sodaJSONObj["digital-metadata"]["tags"] = guidedTags;
-        guidedTags.length > 0
-          ? enableProgressButton()
-          : disableProgressButton();
-      }
       if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
       }
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
