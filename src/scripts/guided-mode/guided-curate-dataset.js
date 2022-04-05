@@ -815,6 +815,16 @@ const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
     }
   }
 };
+const guidedLoadSampleMetadataIfExists = (sampleMetadataId) => {
+  //loop through all samplesTableData elemenents besides the first one
+  for (let i = 1; i < samplesTableData.length; i++) {
+    if (samplesTableData[i][0] === sampleMetadataId) {
+      //if the id matches, load the metadata into the form
+      populateForms(sampleMetadataId, "", "guided");
+      return;
+    }
+  }
+};
 const openModifySubjectMetadataPage = (clickedSubjectAddMetadataButton) => {
   let subjectMetadataID = clickedSubjectAddMetadataButton
     .closest("tr")
@@ -835,7 +845,7 @@ const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
     .closest("tr")
     .find(".sample-metadata-id")
     .text();
-  //guidedLoadSampleMetadataIfExists(sampleMetadataID);
+  guidedLoadSampleMetadataIfExists(sampleMetadataID);
   $("#guided-metadata-sample-id").text(sampleMetadataID);
   $("#guided-generate-samples-file").text(`Save ${sampleMetadataID} metadata`);
   traverseToTab("guided-sample-metadata-tab");
@@ -2856,7 +2866,6 @@ $(document).ready(() => {
             });
             log.error(error);
             console.error(error);
-            let emessage = userError(error);
             reject(error);
           } else {
             console.log(res);

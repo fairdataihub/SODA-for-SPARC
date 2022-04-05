@@ -714,15 +714,15 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
       if (
-        $(`${curationModeSelectorPrefix}#bootbox-subject-age-info`).val() !==
+        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
           "Select" &&
-        $(`${curationModeSelectorPrefix}#bootbox-subject-age-info`).val() !==
+        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
           "N/A"
       ) {
         field.value =
           field.value +
           " " +
-          $(`${curationModeSelectorPrefix}#bootbox-subject-age-info`).val();
+          $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val();
       } else {
         field.value = field.value;
       }
@@ -1063,64 +1063,89 @@ function populateForms(subjectID, type, curationMode) {
   }
 }
 
-function populateFormsSamples(subjectID, sampleID, type) {
-  if (sampleID !== "clear" && sampleID.trim() !== "") {
-    var infoJson = [];
+function populateFormsSamples(subjectID, sampleID, type, curationMode) {
+  //Initialize variables shared between different curation modes and set them
+  //based on curationMode passed in as parameter
+  let fieldArr;
+  let curationModeSelectorPrefix;
+
+  if (curationMode === "free-form") {
+    curationModeSelectorPrefix = "";
+    fieldArr = $(samplesFormDiv).children().find(".samples-form-entry");
+    if (sampleID !== "clear" && sampleID.trim() !== "") {
+      if (samplesTableData.length > 1) {
+        for (var i = 1; i < samplesTableData.length; i++) {
+          if (
+            samplesTableData[i][0] === subjectID &&
+            samplesTableData[i][1] === sampleID
+          ) {
+            infoJson = samplesTableData[i];
+            break;
+          }
+        }
+      }
+    }
+  }
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+    fieldArr = $(guidedSamplesFormDiv)
+      .children()
+      .find(".guided-samples-form-entry");
     if (samplesTableData.length > 1) {
       for (var i = 1; i < samplesTableData.length; i++) {
         if (
           samplesTableData[i][0] === subjectID &&
           samplesTableData[i][1] === sampleID
         ) {
-          infoJson = samplesTableData[i];
+          //Create a copy of matched table element as infoJson and remove the first 2 elements
+          infoJson = samplesTableData[i].splice(0, 2);
           break;
         }
       }
     }
-    // populate form
-    var fieldArr = $(samplesFormDiv).children().find(".samples-form-entry");
-    var emptyEntries = ["nan", "nat"];
-    var c = fieldArr.map(function (i, field) {
-      if (infoJson[i]) {
-        if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
-          if (field.name === "Age") {
-            var fullAge = infoJson[i].split(" ");
-            var unitArr = ["hours", "days", "weeks", "months", "years"];
-            var breakBoolean = false;
-            field.value = fullAge[0];
-            if (fullAge[1]) {
-              for (var unit of unitArr) {
-                if (unit.includes(fullAge[1].toLowerCase())) {
-                  $("#bootbox-sample-age-info").val(unit);
-                  breakBoolean = true;
-                  break;
-                }
-                if (!breakBoolean) {
-                  $("#bootbox-sample-age-info").val("N/A");
-                }
+  }
+  // populate form
+  var emptyEntries = ["nan", "nat"];
+  var c = fieldArr.map(function (i, field) {
+    if (infoJson[i]) {
+      if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
+        if (field.name === "Age") {
+          var fullAge = infoJson[i].split(" ");
+          var unitArr = ["hours", "days", "weeks", "months", "years"];
+          var breakBoolean = false;
+          field.value = fullAge[0];
+          if (fullAge[1]) {
+            for (var unit of unitArr) {
+              if (unit.includes(fullAge[1].toLowerCase())) {
+                $(`#${curationModePrefix}bootbox-sample-age-info`).val(unit);
+                breakBoolean = true;
+                break;
               }
-            } else {
-              $("#bootbox-sample-age-info").val("N/A");
+              if (!breakBoolean) {
+                $(`#${curationModePrefix}bootbox-sample-age-info`).val("N/A");
+              }
             }
           } else {
-            if (type === "import") {
-              if (field.name === "subject id") {
-                field.value = "";
-              } else if (field.name === "sample id") {
-                field.value = "";
-              } else {
-                field.value = infoJson[i];
-              }
+            $(`#${curationModePrefix}bootbox-sample-age-info`).val("N/A");
+          }
+        } else {
+          if (type === "import") {
+            if (field.name === "subject id") {
+              field.value = "";
+            } else if (field.name === "sample id") {
+              field.value = "";
             } else {
               field.value = infoJson[i];
             }
+          } else {
+            field.value = infoJson[i];
           }
-        } else {
-          field.value = "";
         }
+      } else {
+        field.value = "";
       }
-    });
-  }
+    }
+  });
 }
 
 function loadSampleInformation(ev, subjectID, sampleID) {
