@@ -1567,7 +1567,7 @@ const renderSampleMetadataTables = () => {
     } else {
       const emptyRowWarning = generateAlertElement(
         "warning",
-        `No samples were added to the sample ${subject}. If you would like to add samples to ${subject}, return to the samples table`
+        `No samples were added to the subject ${subject}. If you would like to add samples to ${subject}, return to the samples table.`
       );
       sampleMetadataRows = `<tr><td colspan="3">${emptyRowWarning}</td></tr>`;
     }
@@ -1589,7 +1589,7 @@ const renderSampleMetadataTables = () => {
                 top: -10px !important;
               "
             >
-              <span>${subject}'s sample metadata table</span>
+              <span>${subject}'s sample metadata</span>
             </th>
           </tr>
           <tr>
@@ -4148,6 +4148,8 @@ $(document).ready(() => {
             if (!result.isConfirmed) {
               skipSubSamFolderAndMetadataPages();
               traverseToTab("guided-source-folder-tab");
+            } else {
+              $("#guided-button-has-subjects").click();
             }
           });
           //Throw error to exit next button click handler
@@ -4200,6 +4202,8 @@ $(document).ready(() => {
             if (!result.isConfirmed) {
               skipSampleMetadataPages();
               traverseToTab("guided-source-folder-tab");
+            } else {
+              $("#guided-button-has-samples").click();
             }
           });
           //Throw error to exit next button click handler
