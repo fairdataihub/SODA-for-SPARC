@@ -815,12 +815,15 @@ const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
     }
   }
 };
-const guidedLoadSampleMetadataIfExists = (sampleMetadataId) => {
+const guidedLoadSampleMetadataIfExists = (
+  sampleMetadataId,
+  subjectMetadataID
+) => {
   //loop through all samplesTableData elemenents besides the first one
   for (let i = 1; i < samplesTableData.length; i++) {
     if (samplesTableData[i][0] === sampleMetadataId) {
       //if the id matches, load the metadata into the form
-      populateForms(sampleMetadataId, "", "guided");
+      populateFormsSamples(subjectMetadataID, sampleMetadataId, "", "guided");
       return;
     }
   }
@@ -845,8 +848,14 @@ const openModifySampleMetadataPage = (clickedSampleAddMetadataButton) => {
     .closest("tr")
     .find(".sample-metadata-id")
     .text();
-  guidedLoadSampleMetadataIfExists(sampleMetadataID);
+  let sampleMetadataSubjectID = clickedSampleAddMetadataButton
+    .closest("tbody")
+    .siblings()
+    .find(".sample-subject-metadata-id")
+    .text();
+  /*guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);*/
   $("#guided-metadata-sample-id").text(sampleMetadataID);
+  $("#guided-metadata-sample-subject-id").text(sampleMetadataSubjectID);
   $("#guided-generate-samples-file").text(`Save ${sampleMetadataID} metadata`);
   traverseToTab("guided-sample-metadata-tab");
   //Manually override active capsule to make it seem like they're still on the subjects tab
@@ -1599,7 +1608,7 @@ const renderSampleMetadataTables = () => {
                 top: -10px !important;
               "
             >
-              <span>${subject}'s sample metadata</span>
+              <span class="sample-subject-metadata-id">${subject}</span>'s sample metadata
             </th>
           </tr>
           <tr>
@@ -3669,6 +3678,10 @@ $(document).ready(() => {
   $("#guided-generate-subjects-file").on("click", () => {
     addSubject("guided");
     returnToSubjectMetadataTableFromSubjectMetadataForm();
+  });
+  $("#guided-generate-samples-file").on("click", () => {
+    addSample("guided");
+    returnToSampleMetadataTableFromSampleMetadataForm();
   });
   $("#guided-generate-submission-file").on("click", () => {
     guidedSaveSubmissionFile();

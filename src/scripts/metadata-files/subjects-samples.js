@@ -77,7 +77,7 @@ function promptImportPrevInfoSamples(arr1, arr2) {
         $("#previous-subject").val() !== "Select" &&
         $("#previous-sample").val() !== "Select"
       ) {
-        populateFormsSamples(prevSubID, prevSamID, "import");
+        populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
       }
     } else {
       hideForm("sample");
@@ -217,21 +217,27 @@ function addSubject(curationMode) {
     }
   }
   if (curationMode === "guided") {
-    subjectID === $("#guided-metadata-subject-id").text();
     addSubjectMetadataEntriesIntoJSON("guided");
   }
 }
 
 // for "Done adding" button - samples
-function addSample() {
-  var sampleID = $("#bootbox-sample-id").val();
-  var subjectID = $("#bootbox-subject-id-samples").val();
-  addSampleIDtoDataBase(sampleID, subjectID);
-  if (samplesTableData.length !== 0) {
-    $("#div-import-primary-folder-samples").hide();
+function addSample(curationMode) {
+  let sampleID = "";
+  let subjectID = "";
+  if (curationMode === "free-form") {
+    sampleID = $("#bootbox-sample-id").val();
+    subjectID = $("#bootbox-subject-id-samples").val();
+    addSampleIDtoDataBase(sampleID, subjectID);
+    if (samplesTableData.length !== 0) {
+      $("#div-import-primary-folder-samples").hide();
+    }
+    if (samplesTableData.length === 2) {
+      onboardingMetadata("sample");
+    }
   }
-  if (samplesTableData.length === 2) {
-    onboardingMetadata("sample");
+  if (curationMode === "guided") {
+    addSampleMetadataEntriesIntoJSON("guided");
   }
 }
 
@@ -689,14 +695,12 @@ function populateRRID(strain, type, curationMode) {
 
 function addSubjectMetadataEntriesIntoJSON(curationMode) {
   let curationModeSelectorPrefix = "";
-  let dataLength = "";
+  let dataLength = subjectsTableData.length;
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
-    dataLength = subjectsTableData.length;
   }
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
-    dataLength = subjectsTableData.length;
   }
   var valuesArr = [];
   headersArrSubjects = [];
@@ -740,7 +744,7 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       }
     }
     if (curationMode === "guided") {
-      subjectID = $("#guided-metadata-subject-id").text();
+      let subjectID = $("#guided-metadata-subject-id").text();
       subjectsTableData[0].unshift("subject id");
       valuesArr.unshift(subjectID);
       //Check to see if the subject ID is already in the table
@@ -757,26 +761,33 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       } else {
         if (subjectsTableData[dataLength] !== undefined) {
           subjectsTableData[dataLength + 1] = valuesArr;
-          console.log("subjectsTableData not undefined");
         } else {
           subjectsTableData[dataLength] = valuesArr;
-          console.log("subjectsTableData  undefined");
         }
       }
       console.log(subjectsTableData);
     }
   }
-  $("#table-subjects").css("display", "block");
-  $("#button-generate-subjects").css("display", "block");
-  clearAllSubjectFormFields(subjectsFormDiv);
-  hideForm("subject");
+  if (curationMode === "free-form") {
+    $("#table-subjects").css("display", "block");
+    $("#button-generate-subjects").css("display", "block");
+    clearAllSubjectFormFields(subjectsFormDiv);
+    hideForm("subject");
+  }
 }
 
-function addTheRestSampleEntriesToJSON() {
+function addSampleMetadataEntriesIntoJSON(curationMode) {
+  let curationModeSelectorPrefix = "";
   var dataLength = samplesTableData.length;
+  if (curationMode === "free-form") {
+    curationModeSelectorPrefix = "";
+  }
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
   var valuesArr = [];
   headersArrSamples = [];
-  for (var field of $("#form-add-a-sample")
+  for (var field of $(`#${curationModeSelectorPrefix}form-add-a-sample`)
     .children()
     .find(".samples-form-entry")) {
     if (
@@ -790,10 +801,15 @@ function addTheRestSampleEntriesToJSON() {
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
       if (
-        $("#bootbox-sample-age-info").val() !== "Select" &&
-        $("#bootbox-sample-age-info").val() !== "N/A"
+        $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
+          "Select" &&
+        $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
+          "N/A"
       ) {
-        field.value = field.value + " " + $("#bootbox-sample-age-info").val();
+        field.value =
+          field.value +
+          " " +
+          $(`#${curationModeSelectorPrefix}#bootbox-sample-age-info`).val();
       } else {
         field.value = field.value;
       }
@@ -802,21 +818,47 @@ function addTheRestSampleEntriesToJSON() {
   }
   samplesTableData[0] = headersArrSamples;
   if (valuesArr !== undefined && valuesArr.length !== 0) {
-    if (samplesTableData[dataLength] !== undefined) {
-      samplesTableData[dataLength + 1] = valuesArr;
-    } else {
-      samplesTableData[dataLength] = valuesArr;
+    if (curationMode === "free-form") {
+      if (samplesTableData[dataLength] !== undefined) {
+        samplesTableData[dataLength + 1] = valuesArr;
+      } else {
+        samplesTableData[dataLength] = valuesArr;
+      }
     }
   }
-  $("#table-samples").css("display", "block");
-  $("#button-generate-samples").css("display", "block");
-  clearAllSubjectFormFields(samplesFormDiv);
-  hideForm("sample");
+  if (curationMode === "guided") {
+    let subjectID = $("#guided-metadata-sample-subject-id").text();
+    let sampleID = $("#guided-metadata-sample-id").text();
+    samplesTableData[0].unshift("subject id", "sample id");
+    valuesArr.unshift(subjectID, sampleID);
+    let duplicateSampleIndex = null;
+    for (let i = 1; i < samplesTableData.length; i++) {
+      if (samplesTableData[i][1] === sampleID) {
+        duplicateSampleIndex = i;
+      }
+    }
+    if (duplicateSampleIndex !== null) {
+      //If the sample ID is already in the table, update old sample metadata with new
+      samplesTableData[duplicateSampleIndex] = valuesArr;
+    } else {
+      if (samplesTableData[dataLength] !== undefined) {
+        samplesTableData[dataLength + 1] = valuesArr;
+      } else {
+        samplesTableData[dataLength] = valuesArr;
+      }
+    }
+  }
+  if (curationMode === "free-form") {
+    $("#table-samples").css("display", "block");
+    $("#button-generate-samples").css("display", "block");
+    clearAllSubjectFormFields(samplesFormDiv);
+    hideForm("sample");
+  }
 }
 
 function addSampleIDtoJSON(sampleID) {
   if ($("#form-add-a-sample").length > 0) {
-    addTheRestSampleEntriesToJSON();
+    addSampleMetadataEntriesIntoJSON("free-form");
   }
 }
 
@@ -1154,7 +1196,7 @@ function loadSampleInformation(ev, subjectID, sampleID) {
   $("#btn-edit-sample").css("display", "inline-block");
   $("#btn-add-sample").css("display", "none");
   clearAllSubjectFormFields(samplesFormDiv);
-  populateFormsSamples(subjectID, sampleID, "");
+  populateFormsSamples(subjectID, sampleID, "", "free-form");
   $("#btn-edit-sample").unbind("click");
   $("#btn-edit-sample").click(function () {
     editSample(ev, sampleID);
