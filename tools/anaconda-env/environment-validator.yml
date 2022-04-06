@@ -6,6 +6,7 @@ dependencies:
 - python = 3.7.0
 - PyInstaller = 4.9
 - nodejs = 10.13.0
+- pywin32 = 223
 - git = 2.20.1
 - pip
 - pip:
