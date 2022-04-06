@@ -1,3 +1,4 @@
+from pint import get_application_registry
 import werkzeug
 from validator import val_dataset_local_pipeline
 from flask import Flask, jsonify, request, json
@@ -11,15 +12,14 @@ from sparcur.config import auth
 from sparcur.simple.utils import backend_pennsieve
 # project_id = auth.get('remote-organization')
 userpath = expanduser("~")
-from pprint import pprint
 from sparcur.config import auth
 from sparcur.simple.utils import backend_pennsieve
 from sparcur.paths import Path as SparCurPath
 from configparser import ConfigParser
 import sys
 import yaml
-import pprint
 from sparcur.utils import PennsieveId
+from validatorUtils import error_path_report_parser
 
 # project_id = auth.get('remote-organization')
 # PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
@@ -76,14 +76,6 @@ def api_validate_dataset_pipeline():
     # convert to Path object for Validator to function properly
     norm_ds_path = Path(joined_path)
 
-    for i in range(0, 1000000): 
-        pass
-
-    # return jsonify([{"message": "sahahshas", "validator": "required"}])
-
-    print(norm_ds_path)
-
-    # path = Path(userpath +  "\\Pennsieve-dataset-114-version-2\\files")
     path = Path(ds_path)
 
     blob = validate(norm_ds_path)
@@ -94,22 +86,27 @@ def api_validate_dataset_pipeline():
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
 
-    pprint.pprint(blob.get('errors'))
+    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
+    parsed_path_error_report = error_path_report_parser.get_target_errors(path_error_report)
 
     # get the validation errors out of the error report 
-    
-
-    path_error_report = json.dumps(path_error_report, indent=4, default=str)
+    parsed_path_error_report = json.dumps(parsed_path_error_report, indent=4, default=str)
 
     # write blob to a local file
     with open("validation-result.txt", 'w') as file: 
-        file.write(path_error_report)
-
+        file.write(parsed_path_error_report)
 
     # return json.dumps(blob, cls=DequeEncoder)
     errors = blob.get('errors')
 
-    return json.dumps(errors, cls=DequeEncoder)
+    errors = json.dumps(errors, indent=4, default=str)
+
+    with open("validation-results-errors.txt", 'w') as file: 
+        file.write(errors)
+
+
+    return parsed_path_error_report
+    # return json.dumps(errors, cls=DequeEncoder)
     
 
     # # validate the dataset
