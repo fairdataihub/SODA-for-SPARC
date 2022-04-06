@@ -581,6 +581,9 @@
   font-weight: 600;
   font-size: 1.5em !important;
 }
+.guided--form-label {
+  font-size: 1.2em !important;
+}
 .guided--form-label.centered {
   text-align: center;
 }
