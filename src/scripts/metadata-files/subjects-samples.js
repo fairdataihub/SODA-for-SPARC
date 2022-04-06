@@ -1138,10 +1138,8 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
         ) {
           //Create a copy of matched table element as infoJson and remove the first 2 elements
           infoJson = samplesTableData[i].slice();
-          console.log(infoJson);
           infoJson.shift();
           infoJson.shift();
-          console.log(infoJson);
           break;
         }
       }

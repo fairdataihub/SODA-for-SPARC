@@ -24,8 +24,15 @@ const guidedGetSubjects = () => {
     sodaJSONObj["dataset-metadata"]["subject-sample-structure"]
   );
 };
-guidedGetSubjectSamples = (subject) => {
+const guidedGetSubjectSamples = (subject) => {
   return sodaJSONObj["dataset-metadata"]["subject-sample-structure"][subject];
+};
+const guidedGetSamplesSubject = (sample) => {
+  for (const subject of guidedGetSubjects()) {
+    if (guidedGetSubjectSamples(subject).includes(sample)) {
+      return subject;
+    }
+  }
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -961,32 +968,41 @@ const openCopySampleMetadataPopup = async (clickedSampleCopyMetadataButton) => {
           "input[name='copy-from']:checked"
         ).val();
         //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
-        let selectedCopyToSamples = [];
+        let selectedCopyToSamples = []; //["sam2","sam3"]
         $("input[name='copy-to']:checked").each(function () {
           selectedCopyToSamples.push($(this).val());
         });
 
-        let copyFromSampleData = [];
+        let copyFromSampleData = []; //["input1","input2"]
         //Add the data from the selected copy fro sample to cpoyFromSampleData array
         for (var i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
             //copy all elements from matching array except the first one
             copyFromSampleData = samplesTableData[i].slice(2);
+            console.log(copyFromSampleData);
           }
         }
         for (sample of selectedCopyToSamples) {
-          let copyToSubjectHasMetadata = false;
+          let copyToSampleHasMetadata = false;
           samplesTableData.forEach((sampleData, index) => {
+            console.log(sampleData);
             if (sampleData[1] === sample) {
-              copyToSubjectHasmetadata = true;
-              sampleData = [sampleData[0]];
+              console.log(samplesTableData);
+              copyToSampleHasMetadata = true;
+              sampleData = [sampleData[0], sampleData[1]];
               sampleData = sampleData.concat(copyFromSampleData);
               samplesTableData[index] = sampleData;
+              console.log(samplesTableData);
             }
           });
-          if (!copyToSubjectHasMetadata) {
-            newsampleData = [subject].concat(copyFromSampleData);
+          if (!copyToSampleHasMetadata) {
+            console.log(samplesTableData);
+
+            newsampleData = [guidedGetSamplesSubject(sample), sample].concat(
+              copyFromSampleData
+            );
             samplesTableData.push(newsampleData);
+            console.log(samplesTableData);
           }
         }
       }
@@ -1080,11 +1096,12 @@ const openCopySubjectMetadataPopup = async (
           }
         }
         for (subject of selectedCopyToSubjects) {
-          //initialize copyToSubjectHasMetadata as false, set to True if the subject being copied to has existing metadat
+          //initialize copyToSubjectHasMetadata as false, set to True if the subject being copied to has existing metadata
           //If not, add the subject to the subjectsTable and add metadata being copied
           let copyToSubjectHasMetadata = false;
           subjectsTableData.forEach((subjectData, index) => {
             if (subjectData[0] === subject) {
+              copyToSubjectHasMetadata = true;
               subjectData = [subjectData[0]];
               subjectData = subjectData.concat(copyFromSubjectData);
               subjectsTableData[index] = subjectData;
@@ -1095,6 +1112,7 @@ const openCopySubjectMetadataPopup = async (
             subjectsTableData.push(newSubjectData);
           }
         }
+
         console.log(subjectsTableData);
       }
     });
