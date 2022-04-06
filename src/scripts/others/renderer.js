@@ -5889,6 +5889,16 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
         if (deleted_file) {
           cloud_item = " pennsieve_file_deleted";
         }
+        console.log(appendString);
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+        console.log(element_creation);
       }
 
       if (
