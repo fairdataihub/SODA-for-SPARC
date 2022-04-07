@@ -370,18 +370,17 @@ const generateAlertElement = (alertType, warningMessageText) => {
     `;
   disableProgressButton();
 };
-const generateWarningMessage = (elementToWarn) => {
-  const warningMessage = elementToWarn.data("warning");
+const generateAlertMessage = (elementToWarn) => {
+  const alertMessage = elementToWarn.data("alert-message");
   const alertType = elementToWarn.data("alert-type");
   if (!elementToWarn.next().hasClass("alert")) {
-    elementToWarn.after(generateAlertElement(alertType, warningMessage));
+    elementToWarn.after(generateAlertElement(alertType, alertMessage));
   }
   enableProgressButton();
 };
-const removeWarningMessageIfExists = (elementToCheck) => {
-  const warningMessageToRemove = elementToCheck.next();
-  if (warningMessageToRemove.hasClass("alert")) {
-    console.log("removing alert");
+const removeAlertMessageIfExists = (elementToCheck) => {
+  const alertMessageToRemove = elementToCheck.next();
+  if (alertMessageToRemove.hasClass("alert")) {
     elementToCheck.next().remove();
   }
 };
@@ -393,10 +392,10 @@ const validateInput = (inputElementToValidate) => {
     let name = inputElementToValidate.val().trim();
     if (name !== "") {
       if (!check_forbidden_characters_bf(name)) {
-        removeWarningMessageIfExists(inputElementToValidate);
+        removeAlertMessageIfExists(inputElementToValidate);
         inputIsValid = true;
       } else {
-        generateWarningMessage(inputElementToValidate);
+        generateAlertMessage(inputElementToValidate);
       }
     }
   }
@@ -404,10 +403,10 @@ const validateInput = (inputElementToValidate) => {
     let subtitle = inputElementToValidate.val().trim();
     if (subtitle !== "") {
       if (subtitle.length < 257) {
-        removeWarningMessageIfExists(inputElementToValidate);
+        removeAlertMessageIfExists(inputElementToValidate);
         inputIsValid = true;
       } else {
-        generateWarningMessage(inputElementToValidate);
+        generateAlertMessage(inputElementToValidate);
       }
     }
   }
@@ -415,11 +414,11 @@ const validateInput = (inputElementToValidate) => {
     let numSubjects = inputElementToValidate.val().trim();
     if (numSubjects !== "") {
       if (isNumberBetween(numSubjects, 1, 1000)) {
-        removeWarningMessageIfExists(inputElementToValidate);
+        removeAlertMessageIfExists(inputElementToValidate);
         $("#guided-subjects-same-samples-amount-div").css("display", "flex");
         inputIsValid = true;
       } else {
-        generateWarningMessage(inputElementToValidate);
+        generateAlertMessage(inputElementToValidate);
         $("#guided-subjects-same-samples-amount-div").hide();
       }
     } else {
@@ -430,12 +429,12 @@ const validateInput = (inputElementToValidate) => {
     let numSamples = inputElementToValidate.val().trim();
     if (numSamples !== "") {
       if (isNumberBetween(numSamples, 1, 1000)) {
-        removeWarningMessageIfExists(inputElementToValidate);
+        removeAlertMessageIfExists(inputElementToValidate);
         $("#guided-button-generate-subjects-table").show();
 
         inputIsValid = true;
       } else {
-        generateWarningMessage(inputElementToValidate);
+        generateAlertMessage(inputElementToValidate);
         $("#guided-button-generate-subjects-table").hide();
       }
     } else {
@@ -473,9 +472,9 @@ const checkIfEnableNextButton = (inputSetID) => {
       .value.trim();
     if (numSubjects !== "") {
       if (!isNumberBetween(numSubjects, 1, 1000)) {
-        generateWarningMessage(inputElementToValidate);
+        generateAlertMessage(inputElementToValidate);
       } else {
-        removeWarningMessageIfExists(inputElementToValidate);
+        removeAlertMessageIfExists(inputElementToValidate);
         numSubjectsIsValid = true;
       }
     }
@@ -1178,7 +1177,7 @@ const createSubjectFolder = (event, subjectNameInput) => {
 
       if (subjectName.length > 0) {
         if (subSamInputIsValid(subjectName)) {
-          removeWarningMessageIfExists(subjectNameInput);
+          removeAlertMessageIfExists(subjectNameInput);
           //Add subject to subject-sample-structrure
           sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
             subjectName
@@ -1223,7 +1222,7 @@ const createSubjectFolder = (event, subjectNameInput) => {
             };
           }
         } else {
-          generateWarningMessage(subjectNameInput);
+          generateAlertMessage(subjectNameInput);
         }
       }
     } catch (error) {
@@ -1392,7 +1391,7 @@ const createSampleFolder = (event, sampleNameInput) => {
 
       if (sampleName.length > 0) {
         if (subSamInputIsValid(sampleName)) {
-          removeWarningMessageIfExists(sampleNameInput);
+          removeAlertMessageIfExists(sampleNameInput);
           //Add sample to sodaJSONobj
           sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
             sampleParentSubjectName
@@ -1434,7 +1433,7 @@ const createSampleFolder = (event, sampleNameInput) => {
             };
           }
         } else {
-          generateWarningMessage(sampleNameInput);
+          generateAlertMessage(sampleNameInput);
         }
       }
     } catch (error) {
@@ -2033,7 +2032,7 @@ const setGuidedBannerImage = (croppedImagePath) => {
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
-  removeWarningMessageIfExists($("#guided-designated-PI-info"));
+  removeAlertMessageIfExists($("#guided-designated-PI-info"));
   $(".guidedDatasetOwner").text(newPiOwnerObj.userString);
   sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["pi-owner"]["userString"] =
@@ -2145,7 +2144,7 @@ $(document).ready(() => {
       UUID: $("#guided_bf_list_users").val().trim(),
       permission: $("#select-permission-list-3").val(),
     };
-    removeWarningMessageIfExists($("#guided-designated-user-permissions-info"));
+    removeAlertMessageIfExists($("#guided-designated-user-permissions-info"));
     guidedAddUserPermission(newUserPermission);
   });
 
@@ -2154,7 +2153,7 @@ $(document).ready(() => {
       teamString: $("#guided_bf_list_teams").val().trim(),
       permission: $("#select-permission-list-4").val(),
     };
-    removeWarningMessageIfExists($("#guided-designated-team-permissions-info"));
+    removeAlertMessageIfExists($("#guided-designated-team-permissions-info"));
     guidedAddTeamPermission(newTeamPermissionObj);
   });
 
@@ -4083,9 +4082,9 @@ $(document).ready(() => {
   };
 
   $("#guided-generate-dataset-button").on("click", async function () {
-    enableProgressButton();
-    $("#guided-next-button").click();
+    traverseToTab("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
+    $("#guided-footer-div").hide();
   });
 
   const guidedSaveBannerImageWithTempName = () => {
@@ -4237,7 +4236,7 @@ $(document).ready(() => {
               name: `${user["firstName"]} ${user["lastName"]}`,
             };
             setGuidedDatasetPiOwner(originalDatasetCreator);
-            generateWarningMessage($("#guided-designated-PI-info"));
+            generateAlertMessage($("#guided-designated-PI-info"));
           }
 
           setGuidedDatasetName(datasetName);
