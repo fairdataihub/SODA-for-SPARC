@@ -20,6 +20,7 @@ import sys
 import yaml
 from sparcur.utils import PennsieveId
 from validatorUtils import error_path_report_parser
+import subprocess
 
 # project_id = auth.get('remote-organization')
 # PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
@@ -233,23 +234,66 @@ def add_orthauth_yaml(ps_account):
     return "Valid"
 
 
+# hardcode for now 
+path_source_dir =  "C:\\Users\\CMarroquin\\temp-datasets"  # Path('~/temp-datasets').expanduser().resolve()
+
+print(dir(path_source_dir))
 
 
+def argv_simple_retrieve(dataset_id):
+    return [
+        sys.executable,
+        '-m',
+        'sparcur.simple.retrieve',
+        '--sparse-limit',
+        '-1',
+        '--dataset-id',
+        dataset_id,
+        '--parent-parent-path',
+        path_source_dir]
 
-# from sparcur.paths import Path
-# from sparcur.utils import PennsieveId
-# from sparcur.simple.retrieve import main as retrieve
 
-# check_prerequisites("SODA-Pennsieve")
+argv_spc_find_meta = [
+    sys.executable,
+    '-m',
+    'sparcur.cli',
+    "find",
+    "--name", "*.xlsx",
+    "--name", "*.xml",
+    "--name", "submission*",
+    "--name", "code_description*",
+    "--name", "dataset_description*",
+    "--name", "subjects*",
+    "--name", "samples*",
+    "--name", "manifest*",
+    "--name", "resources*",
+    "--name", "README*",
+    '--no-network',
+    "--limit", "-1",
+    "--fetch"]
+
+argv_spc_export = [
+    sys.executable,
+    '-m',
+    'sparcur.cli',
+    'export',
+    '--no-network']
 
 
-# p = PennsieveId('N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0')
-# d = PennsieveId('N:dataset:ada590fe-3556-4fa4-8476-0f085a00d781')
-# ppp = Path('~/temp-datasets').expanduser().resolve()
+dataset_id = "N:dataset:ada590fe-3556-4fa4-8476-0f085a00d781"
 
-# local_dataset = retrieve(id=d, dataset_id=d, project_id=p, parent_parent_path=ppp)
+execute_me_to_retrieve = argv_simple_retrieve(dataset_id)
+print(execute_me_to_retrieve)
 
-# validate(Path(local_dataset))
+try:
+    p1 = subprocess.Popen(argv_simple_retrieve(dataset_id))
+    out1 = p1.communicate()
+    if p1.returncode != 0:
+        raise Exception(f'oops return code was {p1.returncode}')
+except KeyboardInterrupt as e:
+    p1.send_signal(signal.SIGINT)
+    print(e)
+
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5001)
