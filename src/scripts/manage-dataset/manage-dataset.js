@@ -2420,6 +2420,8 @@ $("#button-submit-dataset").click(async () => {
   // Questions logs need to answer:
   // Which sessions failed? How many files were they attempting to upload per session? How many files were uploaded?
   // How many pennsieve datasets were involved in a failed upload? Successful upload?
+  let sparc_logo = document.getElementById("sparc-logo-container");
+  sparc_logo.style.display = "none";
   navContainer.appendChild(progressClone);
   cloneStatus.innerHTML = "Please wait...";
   document.getElementById("para-progress-bar-status").innerHTML = "";
@@ -2461,6 +2463,7 @@ $("#button-submit-dataset").click(async () => {
           allowOutsideClick: false,
         }).then((result) => {
           progressClone.remove();
+          sparc_logo.style.display = "inline";
           if (result.isConfirmed) {
             returnPage.click();
           }
@@ -2625,6 +2628,7 @@ $("#button-submit-dataset").click(async () => {
           html: "Please return to progress page to see full error",
         }).then((result) => {
           progressClone.remove();
+          sparc_logo.style.display = "inline";
           if (result.isConfirmed) {
             returnPage.click();
           }
@@ -2709,6 +2713,7 @@ $("#button-submit-dataset").click(async () => {
           });
           dismissStatus(progressClone.id);
           progressClone.remove();
+          sparc_logo.style.display = "inline";
         }
 
         if (statusMessage.includes("Success: COMPLETED")) {
