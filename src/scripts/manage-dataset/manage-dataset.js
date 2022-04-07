@@ -299,9 +299,9 @@ $("#button-rename-dataset").click(() => {
               "Error",
               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
               `${defaultBfDatasetId}: ` +
-                currentDatasetName +
-                " to " +
-                renamedDatasetName
+              currentDatasetName +
+              " to " +
+              renamedDatasetName
             );
           } else {
             log.info("Dataset rename success");
@@ -326,9 +326,9 @@ $("#button-rename-dataset").click(() => {
               "Success",
               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
               `${defaultBfDatasetId}: ` +
-                currentDatasetName +
-                " to " +
-                renamedDatasetName
+              currentDatasetName +
+              " to " +
+              renamedDatasetName
             );
 
             // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
@@ -477,48 +477,48 @@ const showCurrentPermission = () => {
 
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
-  if (selectedBfDataset != null) {
-    if (selectedBfDataset === "Select dataset") {
-      currentDatasetPermission.innerHTML = "None";
-      currentAddEditDatasetPermission.innerHTML = "None";
-    } else {
-      client.invoke(
-        "api_bf_get_permission",
-        selectedBfAccount,
-        selectedBfDataset,
-        (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-          } else {
-            let permissionList = "";
-            let datasetOwner = "";
 
-            for (let i in res) {
-              permissionList = permissionList + res[i] + "<br>";
+  if (selectedBfDataset === null) {
+    return
+  }
 
-              if (res[i].indexOf("owner") != -1) {
-                let first_position = res[i].indexOf(":");
-                let second_position = res[i].indexOf(",");
-
-                datasetOwner = res[i].substring(
-                  first_position + 2,
-                  second_position
-                );
-              }
-            }
-
-            currentDatasetPermission.innerHTML = datasetOwner;
-            currentAddEditDatasetPermission.innerHTML = permissionList;
-
-            curation_consortium_check();
-          }
-        }
-      );
-    }
-  } else {
+  if (selectedBfDataset === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     currentAddEditDatasetPermission.innerHTML = "None";
+  } else {
+    client.invoke(
+      "api_bf_get_permission",
+      selectedBfAccount,
+      selectedBfDataset,
+      (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+        } else {
+          let permissionList = "";
+          let datasetOwner = "";
+
+          for (let i in res) {
+            permissionList = permissionList + res[i] + "<br>";
+
+            if (res[i].indexOf("owner") != -1) {
+              let first_position = res[i].indexOf(":");
+              let second_position = res[i].indexOf(",");
+
+              datasetOwner = res[i].substring(
+                first_position + 2,
+                second_position
+              );
+            }
+          }
+
+          currentDatasetPermission.innerHTML = datasetOwner;
+          currentAddEditDatasetPermission.innerHTML = permissionList;
+
+          curation_consortium_check();
+        }
+      }
+    );
   }
 };
 
@@ -817,7 +817,11 @@ const showCurrentSubtitle = () => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
-  if (selectedBfDataset === "Select dataset" || selectedBfDataset === null) {
+  if (selectedBfDataset === null) {
+    return
+  }
+
+  if (selectedBfDataset === "Select dataset") {
     $("#bf-dataset-subtitle").val("");
   } else {
     document.getElementById("ds-description").innerHTML = "Loading...";
@@ -884,7 +888,7 @@ const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  if (selectedBfDataset === "Select dataset") {
+  if (selectedBfDataset === "Select dataset" || selectedBfDataset === null) {
     return;
   }
 
@@ -897,114 +901,109 @@ const showCurrentDescription = async () => {
 
   // get the dataset readme
   let readme;
-  if (selectedBfDataset != null) {
-    try {
-      console.log(selectedBfDataset);
-      readme = await getDatasetReadme(selectedBfDataset);
-    } catch (error) {
-      log.error(error);
-      console.error(error);
+  try {
+    readme = await getDatasetReadme(selectedBfDataset);
+  } catch (error) {
+    log.error(error);
+    console.error(error);
 
-      logGeneralOperationsForAnalytics(
-        "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-        AnalyticsGranularity.ALL_LEVELS,
-        ["Get Readme"]
-      );
-      return;
-    }
     logGeneralOperationsForAnalytics(
-      "Success",
+      "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      AnalyticsGranularity.ACTION,
+      AnalyticsGranularity.ALL_LEVELS,
       ["Get Readme"]
     );
+    return;
+  }
+  logGeneralOperationsForAnalytics(
+    "Success",
+    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    AnalyticsGranularity.ACTION,
+    ["Get Readme"]
+  );
 
-    // create the parsed dataset read me object
-    let parsedReadme;
-    console.log(readme);
-    if (readme != undefined) {
-      try {
-        parsedReadme = createParsedReadme(readme);
-        console.log(parsedReadme);
-      } catch (error) {
-        // log the error and send it to analytics
-        log.error(error);
-        console.error(error);
-
-        logGeneralOperationsForAnalytics(
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-          AnalyticsGranularity.ALL_LEVELS,
-          ["Parse Readme"]
-        );
-        return;
-      }
-    }
+  // create the parsed dataset read me object
+  let parsedReadme;
+  try {
+    parsedReadme = createParsedReadme(readme);
+  } catch (error) {
+    // log the error and send it to analytics
+    log.error(error);
+    console.error(error);
 
     logGeneralOperationsForAnalytics(
-      "Success",
+      "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      AnalyticsGranularity.ACTION,
+      AnalyticsGranularity.ALL_LEVELS,
       ["Parse Readme"]
     );
-
-    // check if any of the fields have data
-    if (
-      parsedReadme[requiredSections.studyPurpose] ||
-      parsedReadme[requiredSections.dataCollection] ||
-      parsedReadme[requiredSections.primaryConclusion]
-    ) {
-      //if so make the button say edit description
-      $("#button-add-description > .btn_animated-inside").html(
-        "Edit description"
-      );
-    } else {
-      //make the button say add description
-      $("#button-add-description > .btn_animated-inside").html(
-        "Add description"
-      );
-    }
-
-    // remove any text that was already in the section
-    $("#ds-description-study-purpose").val("");
-    $("#ds-description-data-collection").val("");
-    $("#ds-description-primary-conclusion").val("");
-
-    // place the text into the text area for that field
-    $("#ds-description-study-purpose").val(
-      parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "")
-    );
-
-    // place the text into the text area for that field
-    $("#ds-description-data-collection").val(
-      parsedReadme[requiredSections.dataCollection].replace(/\r?\n|\r/g, "")
-    );
-
-    // place the text into the text area for that field
-    $("#ds-description-primary-conclusion").val(
-      parsedReadme[requiredSections.primaryConclusion].replace(/\r?\n|\r/g, "")
-    );
-
-    // check if there is any invalid text remaining
-    if (parsedReadme[requiredSections.invalidText]) {
-      // show the UI warning message
-      // that informs the user their invalid data has been added to
-      // the first section so they can place it in the correct section
-      $("#ds-isa-warning").css("display", "flex");
-
-      // make the study purpose section visible instead of whatever section the user has open
-      // this ensures when they come back to the description after loading a dataset in a different card
-      // that the warning is visible
-      $("#dd-accordion").accordion("open", 0);
-
-      // if so add it to the first section
-      $("#ds-description-study-purpose").val(
-        parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "") +
-          parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
-      );
-    }
+    return;
   }
+
+
+  logGeneralOperationsForAnalytics(
+    "Success",
+    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    AnalyticsGranularity.ACTION,
+    ["Parse Readme"]
+  );
+
+  // check if any of the fields have data
+  if (
+    parsedReadme[requiredSections.studyPurpose] ||
+    parsedReadme[requiredSections.dataCollection] ||
+    parsedReadme[requiredSections.primaryConclusion]
+  ) {
+    //if so make the button say edit description
+    $("#button-add-description > .btn_animated-inside").html(
+      "Edit description"
+    );
+  } else {
+    //make the button say add description
+    $("#button-add-description > .btn_animated-inside").html(
+      "Add description"
+    );
+  }
+
+  // remove any text that was already in the section
+  $("#ds-description-study-purpose").val("");
+  $("#ds-description-data-collection").val("");
+  $("#ds-description-primary-conclusion").val("");
+
+  // place the text into the text area for that field
+  $("#ds-description-study-purpose").val(
+    parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "")
+  );
+
+  // place the text into the text area for that field
+  $("#ds-description-data-collection").val(
+    parsedReadme[requiredSections.dataCollection].replace(/\r?\n|\r/g, "")
+  );
+
+  // place the text into the text area for that field
+  $("#ds-description-primary-conclusion").val(
+    parsedReadme[requiredSections.primaryConclusion].replace(/\r?\n|\r/g, "")
+  );
+
+  // check if there is any invalid text remaining
+  if (parsedReadme[requiredSections.invalidText]) {
+    // show the UI warning message
+    // that informs the user their invalid data has been added to
+    // the first section so they can place it in the correct section
+    $("#ds-isa-warning").css("display", "flex");
+
+    // make the study purpose section visible instead of whatever section the user has open
+    // this ensures when they come back to the description after loading a dataset in a different card
+    // that the warning is visible
+    $("#dd-accordion").accordion("open", 0);
+
+    // if so add it to the first section
+    $("#ds-description-study-purpose").val(
+      parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "") +
+      parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
+    );
+  }
+
 };
 
 $("#button-add-description").click(() => {
@@ -1322,13 +1321,13 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     readme.search(`[*][*]${requiredSections.studyPurpose}[ ]*:[*][*]`) !== -1 ||
     readme.search(`[*][*]${requiredSections.studyPurpose}[*][*][ ]*:`) !== -1 ||
     readme.search(`[*][*]${requiredSections.dataCollection}[ ]*:[*][*]`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.dataCollection}[*][*][ ]*:`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.primaryConclusion}[ ]*:[*][*]`) !==
-      -1 ||
+    -1 ||
     readme.search(`[*][*]${requiredSections.primaryConclusion}[*][*][ ]*:`) !==
-      -1
+    -1
   ) {
     throw new Error("There was a problem with reading your description file.");
   }
@@ -1456,7 +1455,7 @@ const showDatasetDescription = () => {
             "track-event",
             "Error",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE +
-              " - Get Subtitle",
+            " - Get Subtitle",
             defaultBfDatasetId
           );
         } else {
@@ -1464,7 +1463,7 @@ const showDatasetDescription = () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE +
-              " - Get Subtitle",
+            " - Get Subtitle",
             defaultBfDatasetId
           );
           $("#ds-description").html(res);
@@ -1673,7 +1672,7 @@ const uploadBannerImage = () => {
               "track-event",
               "Success",
               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                " - Size",
+              " - Size",
               "Size",
               image_file_size
             );
@@ -1683,7 +1682,7 @@ const uploadBannerImage = () => {
               "track-event",
               "Success",
               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER +
-                " - Size",
+              " - Size",
               defaultBfDatasetId,
               image_file_size
             );
@@ -1696,8 +1695,8 @@ const uploadBannerImage = () => {
     } else {
       $("#para-dataset-banner-image-status").html(
         "<span style='color: red;'> " +
-          "Final image size must be less than 5 MB" +
-          "</span>"
+        "Final image size must be less than 5 MB" +
+        "</span>"
       );
     }
   });
@@ -1753,8 +1752,8 @@ $("#save-banner-image").click((event) => {
     } else {
       $("#para-dataset-banner-image-status").html(
         "<span style='color: red;'> " +
-          "Dimensions of cropped area must be at least 512 px" +
-          "</span>"
+        "Dimensions of cropped area must be at least 512 px" +
+        "</span>"
       );
     }
   } else {
@@ -1921,7 +1920,11 @@ const showCurrentBannerImage = () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  if (selectedBfDataset === "Select dataset" || selectedBfDataset === null) {
+  if (selectedBfDataset === null) {
+    return
+  }
+
+  if (selectedBfDataset === "Select dataset") {
     $("#banner_image_loader").hide();
 
     bfCurrentBannerImg.src = "";
@@ -2011,7 +2014,7 @@ $("#button-add-tags").click(async () => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
   const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
@@ -2081,6 +2084,10 @@ const showCurrentTags = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+  if (selectedBfDataset === null) {
+    return
+  }
+
   if (selectedBfDataset === "Select dataset") {
     // this code executes when the pencil icon that allows a user to select a dataset is clicked in the tags section
     // for now do nothing
@@ -2093,51 +2100,50 @@ const showCurrentTags = async () => {
 
     // get the tags from the Pennsieve API
     let tags;
-    if (selectedBfDataset != null) {
-      try {
-        tags = await get_dataset_tags(selectedBfDataset);
-        if (tags === undefined || tags.length == 0) {
-          //if so make the button say add tags
-          $("#button-add-tags").html("Add tags");
-        } else {
-          //make the button say edit tags
-          $("#button-add-tags").html("Edit tags");
-        }
-      } catch (e) {
-        // log the error
-        log.error(e);
-        console.error(e);
-        // alert the user of the error
-        Swal.fire({
-          title: "Failed to retrieve your selected dataset!",
-          icon: "error",
-          text: e.message,
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-
-        logGeneralOperationsForAnalytics(
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-          AnalyticsGranularity.ALL_LEVELS,
-          ["Get Tags"]
-        );
-
-        // stop the loader -- no data can be fetched for this dataset
-        datasetTagsTagify.loading(false);
-
-        // halt execution
-        return;
+    try {
+      tags = await get_dataset_tags(selectedBfDataset);
+      if (tags === undefined || tags.length == 0) {
+        //if so make the button say add tags
+        $("#button-add-tags").html("Add tags");
+      } else {
+        //make the button say edit tags
+        $("#button-add-tags").html("Edit tags");
       }
+    } catch (e) {
+      // log the error
+      log.error(e);
+      console.error(e);
+      // alert the user of the error
+      Swal.fire({
+        title: "Failed to retrieve your selected dataset!",
+        icon: "error",
+        text: e.message,
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
 
-      // stop displaying the tag loading spinner
+      logGeneralOperationsForAnalytics(
+        "Error",
+        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+        AnalyticsGranularity.ALL_LEVELS,
+        ["Get Tags"]
+      );
+
+      // stop the loader -- no data can be fetched for this dataset
       datasetTagsTagify.loading(false);
 
-      // display the retrieved tags
-      datasetTagsTagify.addTags(tags);
+      // halt execution
+      return;
     }
+
+    // stop displaying the tag loading spinner
+    datasetTagsTagify.loading(false);
+
+    // display the retrieved tags
+    datasetTagsTagify.addTags(tags);
   }
+
 };
 
 // Add license //
@@ -2219,47 +2225,50 @@ const showCurrentLicense = () => {
   var selectedBfDataset = defaultBfDataset;
 
   currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
-  if (selectedBfDataset != null) {
-    if (selectedBfDataset === "Select dataset") {
-      currentDatasetLicense.innerHTML = "None";
-    } else {
-      client.invoke(
-        "api_bf_get_license",
-        selectedBfAccount,
-        selectedBfDataset,
-        (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            logGeneralOperationsForAnalytics(
-              "Error",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-              AnalyticsGranularity.ALL_LEVELS,
-              ["Get License"]
-            );
-          } else {
-            currentDatasetLicense.innerHTML = res;
-            if (res === "Creative Commons Attribution") {
-              $("#button-add-license").hide();
-              $("#assign-a-license-header").hide();
-              if ($("#add_license-section").hasClass("is-shown")) {
-                Swal.fire({
-                  title:
-                    "You are all set. This dataset already has the correct license assigned.",
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  heightAuto: false,
-                  showConfirmButton: true,
-                  icon: "success",
-                });
-              }
-            } else {
-              $("#button-add-license").show();
-              $("#assign-a-license-header").show();
+
+  if (selectedBfDataset === null) {
+    return
+  }
+
+  if (selectedBfDataset === "Select dataset") {
+    currentDatasetLicense.innerHTML = "None";
+  } else {
+    client.invoke(
+      "api_bf_get_license",
+      selectedBfAccount,
+      selectedBfDataset,
+      (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          logGeneralOperationsForAnalytics(
+            "Error",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+            AnalyticsGranularity.ALL_LEVELS,
+            ["Get License"]
+          );
+        } else {
+          currentDatasetLicense.innerHTML = res;
+          if (res === "Creative Commons Attribution") {
+            $("#button-add-license").hide();
+            $("#assign-a-license-header").hide();
+            if ($("#add_license-section").hasClass("is-shown")) {
+              Swal.fire({
+                title:
+                  "You are all set. This dataset already has the correct license assigned.",
+                backdrop: "rgba(0,0,0, 0.4)",
+                heightAuto: false,
+                showConfirmButton: true,
+                icon: "success",
+              });
             }
+          } else {
+            $("#button-add-license").show();
+            $("#assign-a-license-header").show();
           }
         }
-      );
-    }
+      }
+    );
   }
 };
 
@@ -2488,7 +2497,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - size",
+          " - size",
           "Size",
           totalFileSize
         );
@@ -2520,7 +2529,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - size",
+          " - size",
           "Size",
           totalFileSize
         );
@@ -2529,7 +2538,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            " - name - size",
+          " - name - size",
           defaultBfDatasetId,
           totalFileSize
         );
@@ -2545,7 +2554,7 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Error",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                  ` - Number of Folders`,
+                ` - Number of Folders`,
                 defaultBfDatasetId
               );
             } else {
@@ -2556,7 +2565,7 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Success",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                  ` - Number of Folders`,
+                ` - Number of Folders`,
                 "Number of folders local dataset",
                 num_of_folders
               );
@@ -2565,7 +2574,7 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Success",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                  ` - name - Number of Folders`,
+                ` - name - Number of Folders`,
                 defaultBfDatasetId,
                 num_of_folders
               );
@@ -2574,7 +2583,7 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Success",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                  ` - Number of Files`,
+                ` - Number of Files`,
                 "Number of files local dataset",
                 num_of_files
               );
@@ -2583,7 +2592,7 @@ $("#button-submit-dataset").click(async () => {
                 "track-event",
                 "Success",
                 ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-                  ` - name - Number of Files`,
+                ` - name - Number of Files`,
                 defaultBfDatasetId,
                 num_of_files
               );
@@ -2615,7 +2624,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
+          ` - Progress track`,
           defaultBfDatasetId
         );
         organizeDatasetButton.disabled = false;
@@ -2686,12 +2695,12 @@ $("#button-submit-dataset").click(async () => {
             cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
-                "Progress: " +
-                value.toFixed(2) +
-                "%" +
-                " (total size: " +
-                totalSizePrint +
-                ")"
+              "Progress: " +
+              value.toFixed(2) +
+              "%" +
+              " (total size: " +
+              totalSizePrint +
+              ")"
             );
           }
         }
@@ -2723,7 +2732,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Progress track`,
+            ` - Progress track`,
             defaultBfDatasetId
           );
         }
@@ -2835,90 +2844,93 @@ function showCurrentDatasetStatus(callback) {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
-  if (selectedBfDataset != null) {
-    if (selectedBfDataset === "Select dataset") {
-      $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-      $("#bf-dataset-status-spinner").css("display", "none");
+  if (selectedBfDataset === null) {
+    return
+  }
 
-      removeOptions(bfListDatasetStatus);
-      removeRadioOptions("dataset_status_ul");
+  if (selectedBfDataset === "Select dataset") {
+    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+    $("#bf-dataset-status-spinner").css("display", "none");
 
-      bfListDatasetStatus.style.color = "black";
-    } else {
-      client.invoke(
-        "api_bf_get_dataset_status",
-        selectedBfAccount,
-        selectedBfDataset,
-        (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
+    removeOptions(bfListDatasetStatus);
+    removeRadioOptions("dataset_status_ul");
 
-            let emessage = userError(error);
+    bfListDatasetStatus.style.color = "black";
+  } else {
+    client.invoke(
+      "api_bf_get_dataset_status",
+      selectedBfAccount,
+      selectedBfDataset,
+      (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
 
-            Swal.fire({
-              title: "Failed to change dataset status!",
-              text: emessage,
-              icon: "error",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
+          let emessage = userError(error);
 
-            logGeneralOperationsForAnalytics(
-              "Error",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
-              AnalyticsGranularity.ALL_LEVELS,
-              ["Get Dataset Status"]
+          Swal.fire({
+            title: "Failed to change dataset status!",
+            text: emessage,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+
+          logGeneralOperationsForAnalytics(
+            "Error",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+            AnalyticsGranularity.ALL_LEVELS,
+            ["Get Dataset Status"]
+          );
+
+          $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+          $("#bf-dataset-status-spinner").css("display", "none");
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
+            ` - Get dataset Status`,
+            defaultBfDatasetId
+          );
+
+          removeOptions(bfListDatasetStatus);
+          removeRadioOptions("dataset_status_ul");
+
+          for (let item in res[0]) {
+            let option = document.createElement("option");
+
+            option.textContent = res[0][item]["displayName"];
+            option.value = res[0][item]["name"];
+            option.style.color = res[0][item]["color"];
+
+            bfListDatasetStatus.appendChild(option);
+
+            addRadioOption(
+              "dataset_status_ul",
+              res[0][item]["displayName"],
+              res[0][item]["name"]
             );
+          }
+          bfListDatasetStatus.value = res[1];
 
-            $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-            $("#bf-dataset-status-spinner").css("display", "none");
-          } else {
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS +
-                ` - Get dataset Status`,
-              defaultBfDatasetId
-            );
+          $(`input[name=dataset_status_radio][value=${res[1]}]`).prop(
+            "checked",
+            true
+          );
 
-            removeOptions(bfListDatasetStatus);
-            removeRadioOptions("dataset_status_ul");
+          selectOptionColor(bfListDatasetStatus);
 
-            for (let item in res[0]) {
-              let option = document.createElement("option");
+          $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+          $("#bf-dataset-status-spinner").css("display", "none");
 
-              option.textContent = res[0][item]["displayName"];
-              option.value = res[0][item]["name"];
-              option.style.color = res[0][item]["color"];
-
-              bfListDatasetStatus.appendChild(option);
-
-              addRadioOption(
-                "dataset_status_ul",
-                res[0][item]["displayName"],
-                res[0][item]["name"]
-              );
-            }
-            bfListDatasetStatus.value = res[1];
-
-            $(`input[name=dataset_status_radio][value=${res[1]}]`).prop(
-              "checked",
-              true
-            );
-
-            selectOptionColor(bfListDatasetStatus);
-
-            $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-            $("#bf-dataset-status-spinner").css("display", "none");
-
-            if (callback !== undefined) {
-              callback();
-            }
+          if (callback !== undefined) {
+            callback();
           }
         }
-      );
-    }
+      }
+    );
+
   }
 }
