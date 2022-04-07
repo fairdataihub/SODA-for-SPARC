@@ -478,6 +478,10 @@ const showCurrentPermission = () => {
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
 
+  if (selectedBfDataset === null) {
+    return;
+  }
+
   if (selectedBfDataset === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     currentAddEditDatasetPermission.innerHTML = "None";
@@ -813,6 +817,10 @@ const showCurrentSubtitle = () => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
+  if (selectedBfDataset === null) {
+    return;
+  }
+
   if (selectedBfDataset === "Select dataset") {
     $("#bf-dataset-subtitle").val("");
   } else {
@@ -880,7 +888,7 @@ const showCurrentDescription = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  if (selectedBfDataset === "Select dataset") {
+  if (selectedBfDataset === "Select dataset" || selectedBfDataset === null) {
     return;
   }
 
@@ -907,7 +915,6 @@ const showCurrentDescription = async () => {
     );
     return;
   }
-
   logGeneralOperationsForAnalytics(
     "Success",
     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
@@ -1909,6 +1916,10 @@ const showCurrentBannerImage = () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+  if (selectedBfDataset === null) {
+    return;
+  }
+
   if (selectedBfDataset === "Select dataset") {
     $("#banner_image_loader").hide();
 
@@ -2069,6 +2080,10 @@ const showCurrentTags = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
+  if (selectedBfDataset === null) {
+    return;
+  }
+
   if (selectedBfDataset === "Select dataset") {
     // this code executes when the pencil icon that allows a user to select a dataset is clicked in the tags section
     // for now do nothing
@@ -2205,6 +2220,10 @@ const showCurrentLicense = () => {
   var selectedBfDataset = defaultBfDataset;
 
   currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
+
+  if (selectedBfDataset === null) {
+    return;
+  }
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
@@ -2918,6 +2937,10 @@ $("#bf_list_dataset_status").on("change", () => {
 function showCurrentDatasetStatus(callback) {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
+
+  if (selectedBfDataset === null) {
+    return;
+  }
 
   if (selectedBfDataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
