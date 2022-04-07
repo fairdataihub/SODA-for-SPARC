@@ -6,7 +6,7 @@ const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
 const remote = require("electron").remote;
 const { Notyf } = require("notyf");
@@ -9204,3 +9204,12 @@ document
       behavior: "smooth",
     });
   });
+
+function open_sparc_site() {
+  console.log("logo clicked");
+  const BrowserWindow = electron.remote.BrowserWindow;
+  const win = new BrowserWindow({ width: 1000, height: 700 });
+
+  // Load a remote URL
+  win.loadURL("https://sparc.science/");
+}
