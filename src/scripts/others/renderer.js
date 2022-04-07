@@ -6585,7 +6585,7 @@ async function initiate_generate() {
 
   //document.body.appendChild(statusBarClone);
   let sparc_container = document.getElementById("sparc-logo-container");
-  sparc_container.style.dispay = "none";
+  sparc_container.style.display = "none";
   navContainer.appendChild(statusBarClone);
   let navbar = document.getElementById("main-nav");
   if (navbar.classList.contains("active")) {
@@ -6640,7 +6640,7 @@ async function initiate_generate() {
         html: "Please return to progress page to see full error",
       }).then((result) => {
         statusBarClone.remove();
-        sparc_container.style.dispay = "inline";
+        sparc_container.style.display = "inline";
         if (result.isConfirmed) {
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
@@ -6862,7 +6862,7 @@ async function initiate_generate() {
       if (countDone > 1) {
         log.info("Done curate track");
         statusBarClone.remove();
-        sparc_container.style.dispay = "inline";
+        sparc_container.style.display = "inline";
         if (successful === true) {
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
