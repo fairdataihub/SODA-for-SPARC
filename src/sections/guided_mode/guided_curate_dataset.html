@@ -4773,12 +4773,138 @@
           </div>
 
           <div id="guided-dataset-generation-tab" class="guided--panel hidden">
+            <div class="guided--container-data-display">
+              <div
+                style="
+                  display: flex;
+                  width: 100%;
+                  flex-direction: column;
+                  justify-content: flex-start;
+                  align-items: flex-start;
+                "
+              >
+                <label
+                  class="guided--form-label"
+                  style="text-align: left; margin-top: 10px; margin-bottom: 5px"
+                  >Current dataset structure:</label
+                >
+                <div id="guided-div-dataset-tree-preview">
+                  guided js tree here.
+                </div>
+              </div>
+              <div class="guided--card-dataset-info">
+                <label
+                  class="guided--form-label"
+                  style="
+                    text-align: center;
+                    margin-top: 10px;
+                    margin-bottom: 5px;
+                  "
+                  >Other dataset info:</label
+                >
+              </div>
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container">
+                  <h5 class="guided--dataset-description">Dataset Name:</h5>
+                </div>
+                <div class="guided--dataset-content-container">
+                  <h5 class="guided--dataset-content guidedDatasetName">
+                    None
+                  </h5>
+                  <i
+                    class="far fa-edit jump-back guided-change-dataset-name"
+                    style="color: #000"
+                  ></i>
+                </div>
+              </div>
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container">
+                  <h5 class="guided--dataset-description">Dataset subtitle:</h5>
+                </div>
+                <div class="guided--dataset-content-container">
+                  <h5 class="guided--dataset-content guidedDatasetSubtitle">
+                    None
+                  </h5>
+                  <i
+                    class="far fa-edit jump-back guided-change-dataset-subtitle"
+                    style="color: #000"
+                  ></i>
+                </div>
+              </div>
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container">
+                  <h5 class="guided--dataset-description">
+                    Designated PI owner:
+                  </h5>
+                </div>
+                <div class="guided--dataset-content-container">
+                  <h5 class="guided--dataset-content guidedDatasetOwner"></h5>
+                  <i class="far fa-edit jump-back" style="color: #000"></i>
+                </div>
+              </div>
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container">
+                  <h5 class="guided--dataset-description">
+                    Designated user permissions:
+                  </h5>
+                </div>
+                <div
+                  class="guided--container-dataset-info guidedDatasetUserPermissions"
+                ></div>
+              </div>
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container">
+                  <h5 class="guided--dataset-description">
+                    Designated team permissions:
+                  </h5>
+                </div>
+                <div
+                  class="guided--container-dataset-info guidedDatasetTeamPermissions"
+                ></div>
+              </div>
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container">
+                  <h5 class="guided--dataset-description">Dataset Tags:</h5>
+                </div>
+                <div class="guided--dataset-content-container">
+                  <h5
+                    class="guided--dataset-content guidedDatasetTags"
+                    style="white-space: pre-wrap"
+                  ></h5>
+                  <i class="far fa-edit jump-back" style="color: #000"></i>
+                </div>
+              </div>
+              <div class="guided--card-dataset-info">
+                <div class="guided--dataset-description-container">
+                  <h5 class="guided--dataset-description">
+                    Designated license:
+                  </h5>
+                </div>
+                <div class="guided--dataset-content-container">
+                  <h5 class="guided--dataset-content guidedBfLicense"></h5>
+                </div>
+              </div>
+            </div>
             <progress
               class="progresstrack"
               id="guided-progress-bar-new-curate"
               max="100"
               value="0"
             ></progress>
+            <div
+              id="guided-dataset-name-upload-container"
+              class="guided--question"
+              style="height: 100px"
+            >
+              <label class="guided--form-label">Dataset name: </label>
+              <div
+                class="ui blue progress w-100"
+                style="margin: 0px"
+                id="guided-dataset-name-upload-bar"
+              >
+                <div class="bar"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -368,7 +368,6 @@ const generateAlertElement = (alertType, warningMessageText) => {
         ${warningMessageText}
       </div>
     `;
-  disableProgressButton();
 };
 const generateAlertMessage = (elementToWarn) => {
   const alertMessage = elementToWarn.data("alert-message");
@@ -2543,12 +2542,28 @@ $(document).ready(() => {
 
   //FETCH FUNCTIONS//
   //fetch
+  const guidedUpdateUploadStatus = (uploadContainerElement, status) => {
+    if (status === "uploading") {
+      uploadContainerElement.classList.add("uploading");
+      uploadContainerElement.classList.remove("uploaded");
+      uploadContainerElement.classList.remove("error");
+    } else if (status === "uploaded") {
+      uploadContainerElement.classList.add("uploaded");
+      uploadContainerElement.classList.remove("uploading");
+      uploadContainerElement.classList.remove("error");
+    } else if (status === "error") {
+      uploadContainerElement.classList.add("error");
+      uploadContainerElement.classList.remove("uploading");
+      uploadContainerElement.classList.remove("uploaded");
+    }
+  };
   const create_dataset = async (
     dataset_name,
     dataset_subtitle,
     dataset_tags,
     dataset_license
   ) => {
+    $("#guided-dataset-name-upload-bar").addClass("sliding indeterminate");
     // get the access token so the user can access the Pennsieve api
     let jwt = await get_access_token();
 
@@ -2579,10 +2594,17 @@ $(document).ready(() => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
       throw new Error(message);
+    } else {
+      $("#guided-dataset-name-upload-bar").removeClass("sliding indeterminate");
+      $("#guided-dataset-name-upload-bar").css("background-color", "green");
+      $("#guided-dataset-name-upload-container").append(
+        generateAlertElement(
+          "success",
+          "Dataset name successfully added to your dataset on Pennsieve"
+        )
+      );
     }
-
     const createDatasetResponseJson = response.json();
-    console.log(createDatasetResponseJson);
     return createDatasetResponseJson;
   };
 
