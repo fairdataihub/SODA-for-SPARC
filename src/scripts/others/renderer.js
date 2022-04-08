@@ -9243,7 +9243,6 @@ document
   });
 
 function open_sparc_site() {
-  console.log("logo clicked");
   const BrowserWindow = electron.remote.BrowserWindow;
   const win = new BrowserWindow({ width: 1000, height: 700 });
 
