@@ -2,7 +2,16 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5639796.svg)](https://doi.org/10.5281/zenodo.5639796)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6407403.svg)](https://doi.org/10.5281/zenodo.6407403)
+
+[contributors-shield]: https://img.shields.io/github/contributors/bvhpatel/SODA.svg?style=flat-square
+[contributors-url]: https://github.com/fairdataihub/SODA-for-SPARC/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/bvhpatel/SODA.svg?style=flat-square
+[stars-url]: https://github.com/fairdataihub/SODA-for-SPARC/stargazers
+[issues-shield]: https://img.shields.io/github/issues/bvhpatel/SODA.svg?style=flat-square
+[issues-url]: https://github.com/fairdataihub/SODA-for-SPARC/issues
+[license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
+[license-url]: https://github.com/fairdataihub/SODA-for-SPARC/blob/main/LICENSE
 
 <!-- HEADER -->
 <br />
@@ -115,15 +124,6 @@ SODA uses Google Analytics to track user interactions with the application. Trac
   - Alison Moss (Thomas Jefferson University)
   - Anna Rietsch (Cleveland Clinic, Cleveland OH)
   - Joseph Sassoon (Integrated Medical Systems Laboratory - New York Institute of Technology)
-
-[contributors-shield]: https://img.shields.io/github/contributors/bvhpatel/SODA.svg?style=flat-square
-[contributors-url]: https://github.com/fairdataihub/SODA-for-SPARC/graphs/contributors
-[stars-shield]: https://img.shields.io/github/stars/bvhpatel/SODA.svg?style=flat-square
-[stars-url]: https://github.com/fairdataihub/SODA-for-SPARC/stargazers
-[issues-shield]: https://img.shields.io/github/issues/bvhpatel/SODA.svg?style=flat-square
-[issues-url]: https://github.com/fairdataihub/SODA-for-SPARC/issues
-[license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
-[license-url]: https://github.com/fairdataihub/SODA-for-SPARC/blob/main/LICENSE
 
 ## Developers
 
