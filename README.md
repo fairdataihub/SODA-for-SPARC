@@ -125,8 +125,6 @@ SODA uses Google Analytics to track user interactions with the application. Trac
   - Anna Rietsch (Cleveland Clinic, Cleveland OH)
   - Joseph Sassoon (Integrated Medical Systems Laboratory - New York Institute of Technology)
 
-
-
 ## Developers
 
 - Bhavesh Patel (California Medical Innovations Institute)
