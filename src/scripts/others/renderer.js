@@ -6619,7 +6619,6 @@ async function initiate_generate() {
 
 
   if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
-    console.log("YEs starting session")
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
@@ -6917,9 +6916,6 @@ async function initiate_generate() {
           dataset_destination === "bf" ||
           dataset_destination === "Pennsieve"
         ) {
-          console.log("Yes this is a local to Pennsieve")
-          console.log("The uploaded files are: ", uploadedFiles)
-          console.log("The uploaded files size is: ", increaseInFileSize)
           // use the session id as the label -- this will help with aggregating the number of files uploaded per session
           ipcRenderer.send(
             "track-event",
@@ -6945,9 +6941,6 @@ async function initiate_generate() {
       generated_dataset_id = res[3]
       // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
       if (!loggedDatasetNameToIdMapping && generated_dataset_id !== null && generated_dataset_id !== undefined) {
-        console.log("Dataset is being logged once to the mapping")
-        console.log("Dataset name is: ", dataset_name)
-        console.log("Dataset ID is: ", generated_dataset_id)
         ipcRenderer.send(
           "track-event",
           "Dataset ID to Dataset Name Map",
