@@ -6935,7 +6935,11 @@ async function initiate_generate() {
 
       generated_dataset_id = res[3];
       // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
-      if (!loggedDatasetNameToIdMapping && generated_dataset_id !== null && generated_dataset_id !== undefined) {
+      if (
+        !loggedDatasetNameToIdMapping &&
+        generated_dataset_id !== null &&
+        generated_dataset_id !== undefined
+      ) {
         ipcRenderer.send(
           "track-event",
           "Dataset ID to Dataset Name Map",
