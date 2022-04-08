@@ -4,13 +4,13 @@
 [![MIT License][license-shield]][license-url]
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6407403.svg)](https://doi.org/10.5281/zenodo.6407403)
 
-[contributors-shield]: https://img.shields.io/github/contributors/bvhpatel/SODA.svg?style=flat-square
+[contributors-shield]: https://img.shields.io/github/contributors/fairdataihub/SODA-for-SPARC.svg?style=flat-square
 [contributors-url]: https://github.com/fairdataihub/SODA-for-SPARC/graphs/contributors
-[stars-shield]: https://img.shields.io/github/stars/bvhpatel/SODA.svg?style=flat-square
+[stars-shield]: https://img.shields.io/github/stars/fairdataihub/SODA-for-SPARC.svg?style=flat-square
 [stars-url]: https://github.com/fairdataihub/SODA-for-SPARC/stargazers
-[issues-shield]: https://img.shields.io/github/issues/bvhpatel/SODA.svg?style=flat-square
+[issues-shield]: https://img.shields.io/github/issues/fairdataihub/SODA-for-SPARC.svg?style=flat-square
 [issues-url]: https://github.com/fairdataihub/SODA-for-SPARC/issues
-[license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
+[license-shield]: https://img.shields.io/github/license/fairdataihub/SODA-for-SPARC.svg?style=flat-square
 [license-url]: https://github.com/fairdataihub/SODA-for-SPARC/blob/main/LICENSE
 
 <!-- HEADER -->
