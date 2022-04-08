@@ -2597,16 +2597,10 @@ $(document).ready(() => {
     dataset_tags,
     dataset_license
   ) => {
-    guidedUploadStatusIcon("guided-dataset-name-upload-status-icon", "loading");
-    guidedUploadStatusIcon(
-      "guided-dataset-subtitle-upload-status-icon",
-      "loading"
-    );
-    guidedUploadStatusIcon(
-      "guided-dataset-license-upload-status-icon",
-      "loading"
-    );
-    guidedUploadStatusIcon("guided-dataset-tags-upload-status-icon", "loading");
+    guidedUploadStatusIcon("guided-dataset-name-upload-status", "loading");
+    guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
+    guidedUploadStatusIcon("guided-dataset-license-upload-status", "loading");
+    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "loading");
     // get the access token so the user can access the Pennsieve api
     let jwt = await get_access_token();
 
@@ -2636,34 +2630,19 @@ $(document).ready(() => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
-      guidedUploadStatusIcon("guided-dataset-name-upload-status-icon", "error");
-      guidedUploadStatusIcon(
-        "guided-dataset-subtitle-upload-status-icon",
-        "error"
-      );
-      guidedUploadStatusIcon(
-        "guided-dataset-license-upload-status-icon",
-        "error"
-      );
-      guidedUploadStatusIcon("guided-dataset-tags-upload-status-icon", "error");
+      guidedUploadStatusIcon("guided-dataset-name-upload-status", "error");
+      guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
+      guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
+      guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
       throw new Error(message);
     } else {
+      guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
       guidedUploadStatusIcon(
-        "guided-dataset-name-upload-status-icon",
+        "guided-dataset-subtitle-upload-status",
         "success"
       );
-      guidedUploadStatusIcon(
-        "guided-dataset-subtitle-upload-status-icon",
-        "success"
-      );
-      guidedUploadStatusIcon(
-        "guided-dataset-license-upload-status-icon",
-        "success"
-      );
-      guidedUploadStatusIcon(
-        "guided-dataset-tags-upload-status-icon",
-        "success"
-      );
+      guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
+      guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
     }
     const createDatasetResponseJson = response.json();
     return createDatasetResponseJson;
@@ -2923,6 +2902,10 @@ $(document).ready(() => {
     pathToCroppedImage
   ) => {
     return new Promise((resolve, reject) => {
+      guidedUploadStatusIcon(
+        "guided-dataset-banner-image-upload-status",
+        "loading"
+      );
       client.invoke(
         "api_bf_add_banner_image",
         bfAccount,
@@ -2930,22 +2913,19 @@ $(document).ready(() => {
         pathToCroppedImage,
         (error, res) => {
           if (error) {
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Failed to add banner image",
-            });
+            guidedUploadStatusIcon(
+              "guided-dataset-banner-image-upload-status",
+              "error"
+            );
             log.error(error);
             console.error(error);
             let emessage = userError(error);
             reject(error);
           } else {
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: "Banner Image added",
-            });
-            guidedIncreaseCurateProgressBar(5);
+            guidedUploadStatusIcon(
+              "guided-dataset-banner-image-upload-status",
+              "success"
+            );
             console.log("Banner image added + " + res);
             resolve(`Banner image added` + res);
           }
@@ -2957,6 +2937,10 @@ $(document).ready(() => {
   const guided_add_user = (bfAccount, datasetName, userUUID, selectedRole) => {
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a user on a dataset");
+      guidedUploadStatusIcon(
+        "guided-dataset-user-permissions-upload-status",
+        "loading"
+      );
       client.invoke(
         "api_bf_add_permission",
         bfAccount,
@@ -2965,23 +2949,20 @@ $(document).ready(() => {
         selectedRole,
         (error, res) => {
           if (error) {
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Failed to add user permission",
-            });
+            guidedUploadStatusIcon(
+              "guided-dataset-user-permissions-upload-status",
+              "error"
+            );
             log.error(error);
             console.error(error);
             let emessage = userError(error);
             reject(error);
           } else {
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: "User permission added",
-            });
+            guidedUploadStatusIcon(
+              "guided-dataset-user-permissions-upload-status",
+              "success"
+            );
             log.info("Dataset permission added");
-            guidedIncreaseCurateProgressBar(5);
             console.log("permission added + " + res);
 
             resolve(
@@ -3001,6 +2982,10 @@ $(document).ready(() => {
   ) => {
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a team on a dataset");
+      guidedUploadStatusIcon(
+        "guided-dataset-user-permissions-upload-status",
+        "loading"
+      );
       client.invoke(
         "api_bf_add_permission_team",
         bfAccount,
@@ -3009,25 +2994,21 @@ $(document).ready(() => {
         selectedRole,
         (error, res) => {
           if (error) {
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Failed to add team permission",
-            });
+            guidedUploadStatusIcon(
+              "guided-dataset-user-permissions-upload-status",
+              "error"
+            );
             log.error(error);
             console.error(error);
             let emessage = userError(error);
             reject(error);
           } else {
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: "Team permission added",
-            });
+            guidedUploadStatusIcon(
+              "guided-dataset-user-permissions-upload-status",
+              "success"
+            );
             log.info("Dataset permission added");
-            guidedIncreaseCurateProgressBar(5);
             console.log("permission added + " + res);
-
             resolve(
               `${teamString} added as ${selectedRole} to ${datasetName} dataset`
             );
@@ -3088,6 +3069,10 @@ $(document).ready(() => {
 
   const guided_add_description = async (bfAccount, bfDataset, readMe) => {
     return new Promise((resolve, reject) => {
+      guidedUploadStatusIcon(
+        "guided-dataset-description-upload-status",
+        "loading"
+      );
       client.invoke(
         "api_bf_add_description",
         bfAccount,
@@ -3095,22 +3080,19 @@ $(document).ready(() => {
         readMe,
         (error, res) => {
           if (error) {
-            notyf.open({
-              duration: "5000",
-              type: "error",
-              message: "Failed to add description",
-            });
+            guidedUploadStatusIcon(
+              "guided-dataset-description-upload-status",
+              "error"
+            );
             log.error(error);
             console.error(error);
             reject(error);
           } else {
             console.log(res);
-            notyf.open({
-              duration: "5000",
-              type: "success",
-              message: "Added description to dataset",
-            });
-            guidedIncreaseCurateProgressBar(5);
+            guidedUploadStatusIcon(
+              "guided-dataset-description-upload-status",
+              "success"
+            );
             console.log("added descr + " + res);
             resolve(`Description added to ${bfDataset}`);
           }

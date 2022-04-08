@@ -26,7 +26,7 @@
   flex-direction: column;
   align-items: center;
 }
-.guided--container-upload-status-icon {
+.guided--container-upload-status {
   height: 35px;
   display: flex;
   justify-content: center;
