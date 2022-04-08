@@ -4271,6 +4271,41 @@ $(document).ready(() => {
               guidedCreateSodaJSONObj();
               sodaJSONObj["starting-point"]["type"] = "local";
             }
+          } else {
+            //If sodaJSONObj is not empty, update the object properties
+            if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
+              if (sodaJSONObj["starting-point"]["type"] === "local") {
+                let result = await Swal.fire({
+                  title: "Continue?",
+                  text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
+                  icon: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085D6",
+                  confirmButtonText:
+                    "I want to add subjects into the subject table",
+                  cancelButtonText: "I do not have any subjects",
+                });
+                console.log("start");
+                //If the user indicates they do not have any subjects, skip to source folder
+                if (result.isConfirmed) {
+                  skipSubSamFolderAndMetadataPages();
+                  traverseToTab("guided-source-folder-tab");
+                  return;
+                } else {
+                  console.log("bing");
+                }
+                console.log("foo");
+              }
+            }
+            if (
+              $("#guided-curate-existing-local-dataset-card").hasClass(
+                "checked"
+              )
+            ) {
+              if (sodaJSONObj["starting-point"]["type"] === "new") {
+                alert("overwrite here");
+              }
+            }
           }
 
           //Get the users information and set them as PI if a PI has not been designated yet
@@ -4342,34 +4377,29 @@ $(document).ready(() => {
             "false"
           );
         };
-        //If the user indicated they had subjects however left the subjects table page,
+        //If the user indicated they had subjects however left the subjects table page without adding any,
         //Ask the user if they would like to go back to subjects table, and if not, skip
         //to the source folder
         if (guidedGetSubjects().length == 0) {
-          Swal.fire({
-            title: "Continue without adding subjects?",
+          let result = await Swal.fire({
+            title: "Continue?",
             text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#3085D6",
             confirmButtonText: "I want to add subjects into the subject table",
             cancelButtonText: "I do not have any subjects",
-          }).then((result) => {
-            //If the user indicates they do not have any subjects, skip to source folder
-            if (!result.isConfirmed) {
-              skipSubSamFolderAndMetadataPages();
-              traverseToTab("guided-source-folder-tab");
-            } else {
-              $("#guided-button-has-subjects").click();
-            }
           });
-          //Throw error to exit next button click handler
-          errorArray.push({
-            type: "",
-            message: "User chose to back to subject page to add subjects",
-          });
-          throw errorArray;
+          //If the user indicates they do not have any subjects, skip to source folder
+          if (result.isConfirmed) {
+            $("#guided-next-button").removeClass("loading");
+            return;
+          } else {
+            skipSubSamFolderAndMetadataPages();
+            traverseToTab("guided-source-folder-tab");
+            $("#guided-next-button").removeClass("loading");
+            return;
+          }
         } else {
           unSkipSubSamFolderAndMetadataPages();
         }
@@ -4400,7 +4430,7 @@ $(document).ready(() => {
         }
 
         if (numSamples == 0) {
-          Swal.fire({
+          let result = await Swal.fire({
             title: "Continue without adding samples?",
             text: "You indicated that your dataset contained samples, however, you did not add any samples to your samples table.",
             icon: "warning",
@@ -4409,21 +4439,17 @@ $(document).ready(() => {
             cancelButtonColor: "#d33",
             confirmButtonText: "I want to add samples into the sample table",
             cancelButtonText: "I do not have any samples",
-          }).then((result) => {
-            //If the user indicates they do not have any samples, skip to source folder
-            if (!result.isConfirmed) {
-              skipSampleMetadataPages();
-              traverseToTab("guided-source-folder-tab");
-            } else {
-              $("#guided-button-has-samples").click();
-            }
           });
-          //Throw error to exit next button click handler
-          errorArray.push({
-            type: "",
-            message: "User chose to back to sample page to add samples",
-          });
-          throw errorArray;
+          //If the user indicates they do not have any samples, skip to source folder
+          if (result.isConfirmed) {
+            $("#guided-next-button").removeClass("loading");
+            return;
+          } else {
+            skipSampleMetadataPages();
+            traverseToTab("guided-source-folder-tab");
+            $("#guided-next-button").removeClass("loading");
+            return;
+          }
         } else {
           unSkipSampleMetadataPages();
         }
