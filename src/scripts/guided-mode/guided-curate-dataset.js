@@ -1279,7 +1279,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
       placeholder="Enter new subject ID"
       onkeyup="createSubjectFolder(event, $(this))"
       data-input-set="guided-subjects-folder-tab"
-      data-warning="Subject IDs may not contain special characters"
+      data-alert-message="Subject IDs may not contain special characters"
       data-alert-type="danger"
       data-prev-name="${prevSubjectName}"
     />
@@ -1309,7 +1309,7 @@ generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
           placeholder="Enter subject ID and press enter"
           onkeyup="createSubjectFolder(event, $(this))"
           data-input-set="guided-subjects-folder-tab"
-          data-warning="Subject IDs may not contain special characters"
+          data-alert-message="Subject IDs may not contain special characters"
           data-alert-type="danger"
         />
       </td>
@@ -1488,7 +1488,7 @@ const openSampleRenameInput = (subjectNameEditButton) => {
       placeholder="Enter new subject ID"
       onkeyup="createSampleFolder(event, $(this))"
       data-input-set="guided-samples-folder-tab"
-      data-warning="Sample IDs may not contain special characters"
+      data-alert-message="Sample IDs may not contain special characters"
       data-alert-type="danger"
       data-prev-name="${prevSampleName}"
     />
@@ -1569,7 +1569,7 @@ const generateSampleRowElement = (sampleIndex) => {
           placeholder="Enter sample ID and press enter"
           onkeyup="createSampleFolder(event, $(this))"
           data-input-set="guided-samples-folder-tab"
-          data-warning="Sample IDs may not contain special characters"
+          data-alert-message="Sample IDs may not contain special characters"
           data-alert-type="danger"
         />
       </td>
