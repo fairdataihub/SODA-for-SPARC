@@ -9249,3 +9249,4 @@ function open_sparc_site() {
   // Load a remote URL
   win.loadURL("https://sparc.science/");
 }
+

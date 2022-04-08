@@ -93,16 +93,6 @@ button:focus {
   align-self: center;
 }
 
-.btn-text {
-  padding: 0;
-  border: none;
-  background-color: inherit;
-  color: #4183c4;
-  text-decoration: underline;
-  text-underline-position: under;
-  display: inline-block;
-}
-
 .selectAll-container {
   margin-top: 5px;
   margin-bottom: 0px;

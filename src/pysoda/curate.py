@@ -1723,6 +1723,7 @@ def generate_dataset_locally(soda_json_structure):
 
     main_curation_uploaded_files = 0
 
+    # def generate(soda_json_structure):
     try:
 
         def recursive_dataset_scan(
@@ -1855,6 +1856,16 @@ def generate_dataset_locally(soda_json_structure):
 
     except Exception as e:
         raise e
+
+    # gev = []
+    # gev.append(gevent.spawn(generate, soda_json_structure))
+    # gevent.sleep(0)
+    # gevent.joinall(gev)
+
+    # try:
+    #     return gev[0].get()
+    # except Exception as e:
+    #      raise e
 
 
 def mymovefile_with_metadata(src, dst):

@@ -38,7 +38,7 @@
         "dmg",
         "zip"
       ],
-      "icon": "assets/app-icon/mac/icon.icns",
+      "icon": "assets/app-icon/png/icon.png",
       "darkModeSupport": false,
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
