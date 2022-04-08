@@ -2,7 +2,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5639796.svg)](https://doi.org/10.5281/zenodo.5639796)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6426258.svg)](https://doi.org/10.5281/zenodo.6426258)
 
 <!-- HEADER -->
 <br />
