@@ -79,6 +79,8 @@ curated_dataset_size = 0
 start_time = 0
 uploaded_folder_counter = 0
 current_size_of_uploaded_files = 0
+generated_dataset_id = None
+
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -3466,6 +3468,7 @@ def main_curate_function(soda_json_structure):
 
     global bf
     global myds
+    global generated_dataset_id
 
     start_generate = 0
     generate_start_time = time.time()
@@ -3476,6 +3479,7 @@ def main_curate_function(soda_json_structure):
     main_generated_dataset_size = 0
     main_curation_uploaded_files = 0
     uploaded_folder_counter = 0
+    generated_dataset_id = None
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
@@ -3628,6 +3632,7 @@ def main_curate_function(soda_json_structure):
                             "dataset-name"
                         ]
                         myds = bf_create_new_dataset(dataset_name, bf)
+                        generated_dataset_id = myds.id 
                     bf_generate_new_dataset(soda_json_structure, bf, myds)
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
@@ -3696,11 +3701,15 @@ def main_curate_function_upload_details():
     global main_generated_dataset_size
     global uploaded_folder_counter
     global current_size_of_uploaded_files
+    # when the user creates a new Pennsieve dataset return back their new dataset id
+    global generated_dataset_id
+    
 
     return (
         main_curation_uploaded_files,
         current_size_of_uploaded_files,
         uploaded_folder_counter,
+        generated_dataset_id
     )
 
 
