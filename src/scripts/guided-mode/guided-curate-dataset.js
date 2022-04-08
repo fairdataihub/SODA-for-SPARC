@@ -4,7 +4,7 @@ let guidedTeamPermissions = [];
 
 //Temp var used by guidedSaveBannerImage to hold the cropped image path
 //until it is passed into the sodaJSONObj
-let tempGuidedCroppedBannerImagePath = "a";
+let tempGuidedCroppedBannerImagePath = "";
 
 //main nav variables initialized to first page of guided mode
 let CURRENT_PAGE = $("#guided-basic-description-tab");
@@ -2022,8 +2022,8 @@ $("#guided-button-no-docs-data").on("click", () => {
   }
 });
 
-$("#guided-dataset-name-input").val("test " + makeid(5));
-$("#guided-dataset-subtitle-input").val("test " + makeid(5));
+/*$("#guided-dataset-name-input").val("test " + makeid(5));
+$("#guided-dataset-subtitle-input").val("test " + makeid(5));*/
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
@@ -2597,10 +2597,6 @@ $(document).ready(() => {
     dataset_tags,
     dataset_license
   ) => {
-    guidedUploadStatusIcon("guided-dataset-name-upload-status", "loading");
-    guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
-    guidedUploadStatusIcon("guided-dataset-license-upload-status", "loading");
-    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "loading");
     // get the access token so the user can access the Pennsieve api
     let jwt = await get_access_token();
 
@@ -2902,10 +2898,6 @@ $(document).ready(() => {
     pathToCroppedImage
   ) => {
     return new Promise((resolve, reject) => {
-      guidedUploadStatusIcon(
-        "guided-dataset-banner-image-upload-status",
-        "loading"
-      );
       client.invoke(
         "api_bf_add_banner_image",
         bfAccount,
@@ -2937,10 +2929,6 @@ $(document).ready(() => {
   const guided_add_user = (bfAccount, datasetName, userUUID, selectedRole) => {
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a user on a dataset");
-      guidedUploadStatusIcon(
-        "guided-dataset-user-permissions-upload-status",
-        "loading"
-      );
       client.invoke(
         "api_bf_add_permission",
         bfAccount,
@@ -2982,10 +2970,6 @@ $(document).ready(() => {
   ) => {
     return new Promise((resolve, reject) => {
       log.info("Adding a permission for a team on a dataset");
-      guidedUploadStatusIcon(
-        "guided-dataset-user-permissions-upload-status",
-        "loading"
-      );
       client.invoke(
         "api_bf_add_permission_team",
         bfAccount,
@@ -3069,10 +3053,6 @@ $(document).ready(() => {
 
   const guided_add_description = async (bfAccount, bfDataset, readMe) => {
     return new Promise((resolve, reject) => {
-      guidedUploadStatusIcon(
-        "guided-dataset-description-upload-status",
-        "loading"
-      );
       client.invoke(
         "api_bf_add_description",
         bfAccount,
