@@ -87,6 +87,14 @@ def api_validate_dataset_pipeline():
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
 
+    path_error_report = json.dumps(path_error_report, indent=4, default=str)
+
+    # write blob to a local file
+    with open("validation-result.txt", 'w') as file: 
+        file.write(path_error_report)
+
+    return json.dumps(path_error_report, indent=4, default=str)
+
     # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
     parsed_path_error_report = error_path_report_parser.get_target_errors(path_error_report)
 
@@ -280,19 +288,19 @@ argv_spc_export = [
     '--no-network']
 
 
-dataset_id = "N:dataset:ada590fe-3556-4fa4-8476-0f085a00d781"
+# dataset_id = "N:dataset:ada590fe-3556-4fa4-8476-0f085a00d781"
 
-execute_me_to_retrieve = argv_simple_retrieve(dataset_id)
-print(execute_me_to_retrieve)
+# execute_me_to_retrieve = argv_simple_retrieve(dataset_id)
+# print(execute_me_to_retrieve)
 
-try:
-    p1 = subprocess.Popen(argv_simple_retrieve(dataset_id))
-    out1 = p1.communicate()
-    if p1.returncode != 0:
-        raise Exception(f'oops return code was {p1.returncode}')
-except KeyboardInterrupt as e:
-    p1.send_signal(signal.SIGINT)
-    print(e)
+# try:
+#     p1 = subprocess.Popen(argv_simple_retrieve(dataset_id))
+#     out1 = p1.communicate()
+#     if p1.returncode != 0:
+#         raise Exception(f'oops return code was {p1.returncode}')
+# except KeyboardInterrupt as e:
+#     p1.send_signal(signal.SIGINT)
+#     print(e)
 
 
 if __name__ == "__main__":
