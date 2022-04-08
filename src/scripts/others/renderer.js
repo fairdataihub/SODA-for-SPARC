@@ -6609,14 +6609,12 @@ async function initiate_generate() {
   let foldersUploaded = 0;
   let previousUploadedFileSize = 0;
   let increaseInFileSize = 0;
-  let generated_dataset_id = undefined
-
+  let generated_dataset_id = undefined;
 
   // determine where the dataset will be generated/uploaded
   let nameDestinationPair = determineDatasetDestination();
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
-
 
   if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
     // create a dataset upload session
@@ -6882,11 +6880,9 @@ async function initiate_generate() {
     }
   }
 
-
-
-  // when generating a new dataset we need to add its ID to the ID -> Name mapping 
+  // when generating a new dataset we need to add its ID to the ID -> Name mapping
   // we need to do this only once
-  let loggedDatasetNameToIdMapping = false
+  let loggedDatasetNameToIdMapping = false;
 
   // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
   // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
@@ -6906,7 +6902,6 @@ async function initiate_generate() {
         uploadedFiles = res[0];
         uploadedFilesSize = res[1];
         foldersUploaded = res[2];
-        
 
         // log the increase in the file size
         increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
@@ -6938,7 +6933,7 @@ async function initiate_generate() {
         }
       }
 
-      generated_dataset_id = res[3]
+      generated_dataset_id = res[3];
       // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
       if (!loggedDatasetNameToIdMapping && generated_dataset_id !== null && generated_dataset_id !== undefined) {
         ipcRenderer.send(
@@ -6949,15 +6944,13 @@ async function initiate_generate() {
         );
 
         // don't log this again for the current upload session
-        loggedDatasetNameToIdMapping = true
+        loggedDatasetNameToIdMapping = true;
       }
     });
 
     //stop the inteval when the upload is complete
     if (main_curate_status === "Done") {
       clearInterval(timerCheckForBucketUpload);
-
-
     }
   };
 
@@ -7035,24 +7028,18 @@ function determineDatasetDestination() {
       } else {
         // replacing files in an existing local dataset
         if (sodaJSONObj["generate-dataset"]["dataset-name"]) {
-          return [
-            sodaJSONObj["generate-dataset"]["dataset-name"],
-            "Local"
-          ]
+          return [sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
         } else {
           // creating a new dataset from an existing local dataset
           return [
             document.querySelector("#inputNewNameDataset").value,
-            "Local"
-          ]
+            "Local",
+          ];
         }
       }
     }
   } else {
-    return [
-      document.querySelector("#inputNewNameDataset").value,
-      "Local"
-    ];
+    return [document.querySelector("#inputNewNameDataset").value, "Local"];
   }
 }
 

@@ -3632,7 +3632,7 @@ def main_curate_function(soda_json_structure):
                             "dataset-name"
                         ]
                         myds = bf_create_new_dataset(dataset_name, bf)
-                        generated_dataset_id = myds.id 
+                        generated_dataset_id = myds.id
                     bf_generate_new_dataset(soda_json_structure, bf, myds)
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
@@ -3703,13 +3703,12 @@ def main_curate_function_upload_details():
     global current_size_of_uploaded_files
     # when the user creates a new Pennsieve dataset return back their new dataset id
     global generated_dataset_id
-    
 
     return (
         main_curation_uploaded_files,
         current_size_of_uploaded_files,
         uploaded_folder_counter,
-        generated_dataset_id
+        generated_dataset_id,
     )
 
 
