@@ -603,6 +603,39 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   populateGuidedModePages(sodaJSONObj);
 };
 
+//Add  spinner to element
+const guidedUploadStatusIcon = (elementID, status) => {
+  let element = document.querySelector(`#${elementID}`);
+  element.innerHTML = ``;
+  let spinner = `
+    <div class="spinner-border" role="status" style="
+      height: 24px;
+      width: 24px;
+    "></div>`;
+
+  if (status === "loading") {
+    element.innerHTML = spinner;
+  }
+  if (status === "success") {
+    lottie.loadAnimation({
+      container: element,
+      animationData: successCheck,
+      renderer: "svg",
+      loop: false,
+      autoplay: true,
+    });
+  }
+  if (status === "error") {
+    lottie.loadAnimation({
+      container: element,
+      animationData: errorMark,
+      renderer: "svg",
+      loop: false,
+      autoplay: true,
+    });
+  }
+};
+
 //FOLDER STRUCTURE UTIL FUNCTIONS
 const openSubjectFolder = (clickedStructureButton) => {
   let subjectID = clickedStructureButton
@@ -2543,6 +2576,7 @@ $(document).ready(() => {
   //FETCH FUNCTIONS//
   //fetch
   const guidedUpdateUploadStatus = (uploadContainerElement, status) => {
+    i;
     if (status === "uploading") {
       uploadContainerElement.classList.add("uploading");
       uploadContainerElement.classList.remove("uploaded");
@@ -2563,7 +2597,16 @@ $(document).ready(() => {
     dataset_tags,
     dataset_license
   ) => {
-    $("#guided-dataset-name-upload-bar").addClass("sliding indeterminate");
+    guidedUploadStatusIcon("guided-dataset-name-upload-status-icon", "loading");
+    guidedUploadStatusIcon(
+      "guided-dataset-subtitle-upload-status-icon",
+      "loading"
+    );
+    guidedUploadStatusIcon(
+      "guided-dataset-license-upload-status-icon",
+      "loading"
+    );
+    guidedUploadStatusIcon("guided-dataset-tags-upload-status-icon", "loading");
     // get the access token so the user can access the Pennsieve api
     let jwt = await get_access_token();
 
@@ -2593,15 +2636,33 @@ $(document).ready(() => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+      guidedUploadStatusIcon("guided-dataset-name-upload-status-icon", "error");
+      guidedUploadStatusIcon(
+        "guided-dataset-subtitle-upload-status-icon",
+        "error"
+      );
+      guidedUploadStatusIcon(
+        "guided-dataset-license-upload-status-icon",
+        "error"
+      );
+      guidedUploadStatusIcon("guided-dataset-tags-upload-status-icon", "error");
       throw new Error(message);
     } else {
-      $("#guided-dataset-name-upload-bar").removeClass("sliding indeterminate");
-      $("#guided-dataset-name-upload-bar").css("background-color", "green");
-      $("#guided-dataset-name-upload-container").append(
-        generateAlertElement(
-          "success",
-          "Dataset name successfully added to your dataset on Pennsieve"
-        )
+      guidedUploadStatusIcon(
+        "guided-dataset-name-upload-status-icon",
+        "success"
+      );
+      guidedUploadStatusIcon(
+        "guided-dataset-subtitle-upload-status-icon",
+        "success"
+      );
+      guidedUploadStatusIcon(
+        "guided-dataset-license-upload-status-icon",
+        "success"
+      );
+      guidedUploadStatusIcon(
+        "guided-dataset-tags-upload-status-icon",
+        "success"
       );
     }
     const createDatasetResponseJson = response.json();
