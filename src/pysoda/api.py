@@ -80,7 +80,7 @@ import sys
 import zerorpc
 
 
-MIN_SODA_VERSION = "5.3.2"
+MIN_SODA_VERSION = "5.3.3"
 
 
 class SodaApi(object):

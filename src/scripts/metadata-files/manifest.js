@@ -1267,6 +1267,9 @@ function createManifestLocally(editBoolean, originalDataset) {
     homeDirectory,
     "SODA"
   );
+  if (originalDataset === "") {
+    localDatasetFolderPath = sodaJSONObj["manifest-files"]["local-destination"];
+  }
   client.invoke(
     "api_generate_manifest_file_locally",
     "edit-manifest",
