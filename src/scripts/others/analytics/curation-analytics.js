@@ -253,12 +253,11 @@ const logCurationSuccessToAnalytics = async (
   // log the dataset name if it was locally generated
   if (dataset_destination === "Local") {
     // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
-    let datasetName = document.querySelector("#inputNewNameDataset").value;
     ipcRenderer.send(
       "track-event",
       "Success",
       "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Local",
-      datasetName
+      dataset_name
     );
   }
 

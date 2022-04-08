@@ -6610,14 +6610,14 @@ async function initiate_generate() {
   let foldersUploaded = 0;
   let previousUploadedFileSize = 0;
   let increaseInFileSize = 0;
+  let generated_dataset_id = undefined;
 
   // determine where the dataset will be generated/uploaded
   let nameDestinationPair = determineDatasetDestination();
-  dataset_destination = nameDestinationPair[1];
   dataset_name = nameDestinationPair[0];
+  dataset_destination = nameDestinationPair[1];
 
   if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
-    console.log("Starting session");
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
@@ -6883,6 +6883,10 @@ async function initiate_generate() {
     }
   }
 
+  // when generating a new dataset we need to add its ID to the ID -> Name mapping
+  // we need to do this only once
+  let loggedDatasetNameToIdMapping = false;
+
   // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
   // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
   // files copied and their aggregate size.
@@ -6930,6 +6934,24 @@ async function initiate_generate() {
             increaseInFileSize
           );
         }
+      }
+
+      generated_dataset_id = res[3];
+      // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
+      if (
+        !loggedDatasetNameToIdMapping &&
+        generated_dataset_id !== null &&
+        generated_dataset_id !== undefined
+      ) {
+        ipcRenderer.send(
+          "track-event",
+          "Dataset ID to Dataset Name Map",
+          generated_dataset_id,
+          dataset_name
+        );
+
+        // don't log this again for the current upload session
+        loggedDatasetNameToIdMapping = true;
       }
     });
 
@@ -6993,23 +7015,38 @@ const get_num_files_and_folders = (dataset_folders) => {
 };
 
 function determineDatasetDestination() {
-  console.log(sodaJSONObj);
   if (sodaJSONObj["generate-dataset"]) {
     if (sodaJSONObj["generate-dataset"]["destination"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
-
       if (destination === "bf" || destination === "Pennsieve") {
-        console.log("Going to return pennsieve");
-        return [
-          sodaJSONObj["bf-dataset-selected"]["dataset-name"],
-          "Pennsieve",
-        ];
+        // updating an existing dataset on Pennsieve
+        if (sodaJSONObj["bf-dataset-selected"]) {
+          return [
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+            "Pennsieve",
+          ];
+        } else {
+          return [
+            // get dataset name,
+            document.querySelector("#inputNewNameDataset").value,
+            "Pennsieve",
+          ];
+        }
       } else {
-        return "local";
+        // replacing files in an existing local dataset
+        if (sodaJSONObj["generate-dataset"]["dataset-name"]) {
+          return [sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
+        } else {
+          // creating a new dataset from an existing local dataset
+          return [
+            document.querySelector("#inputNewNameDataset").value,
+            "Local",
+          ];
+        }
       }
     }
   } else {
-    return "local";
+    return [document.querySelector("#inputNewNameDataset").value, "Local"];
   }
 }
 
