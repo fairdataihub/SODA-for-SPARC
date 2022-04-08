@@ -30,7 +30,7 @@ function handleSectionTrigger(event) {
   const sectionId = `${event.target.dataset.section}-section`;
   // Render guided mode resume progress cards if guided mode section is chosen
   if (sectionId === "guided_mode-section") {
-    guidedLoadSavedProgressFiles();
+    guidedRenderHomeScreen();
     organizeDSglobalPath = document.getElementById("guided-input-global-path");
     $(".shared-folder-structure-element").appendTo(
       $("#guided-folder-structure-container")

@@ -521,10 +521,7 @@
   transition: visibility 0s 0s linear, opacity 0.36s ease-out,
     transform 0.36s ease-out;
 }
-.content-button:hover {
-  transform: scale(2);
-  transition: transform 0.5s ease-in-out;
-}
+
 .guided-section {
   /* display: none; */
   position: absolute;
@@ -550,6 +547,11 @@
 
 .remove-left-border {
   border-left: none !important;
+}
+.justify-center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 .space-between {
   display: flex;

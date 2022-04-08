@@ -34,6 +34,15 @@ const guidedGetSamplesSubject = (sample) => {
     }
   }
 };
+//Move guided_create_new_bf_dataset_btn to the left with duration of 3 seconds on click
+$("#guided_create_new_bf_dataset_btn").click(function () {
+  $("#guided_create_new_bf_dataset_btn").animate(
+    {
+      left: "-=200px",
+    },
+    500
+  );
+});
 
 const saveGuidedProgress = (guidedProgressFileName) => {
   //create a Guided-Progress folder if one does not yet exist
@@ -255,7 +264,7 @@ $(".dataset-info-button").on("click", () => {
   });
 });
 
-const guidedLoadSavedProgressFiles = async () => {
+const guidedRenderHomeScreen = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath);
@@ -263,13 +272,12 @@ const guidedLoadSavedProgressFiles = async () => {
   //Get files in Guided-Progress folder
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
-  if (guidedSavedProgressFiles.length > 0) {
+  if (guidedSavedProgressFiles.length == 0) {
+  } else {
     const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
     );
     renderProgressCards(progressFileData);
-  } else {
-    console.log("No guided save files found");
   }
 };
 const traverseToTab = (targetPageID) => {
