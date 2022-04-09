@@ -256,7 +256,6 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   margin-bottom: 10px;
 }
@@ -544,7 +543,18 @@
   display: flex;
   flex-direction: column;
 }
-
+.container--dashed {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px;
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+}
+.container--dashed:hover {
+  background-color: whitesmoke;
+}
 .remove-left-border {
   border-left: none !important;
 }

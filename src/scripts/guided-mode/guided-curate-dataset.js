@@ -272,8 +272,18 @@ const guidedRenderHomeScreen = async () => {
   //Get files in Guided-Progress folder
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
-  if (guidedSavedProgressFiles.length == 0) {
+  if (guidedSavedProgressFiles.length /*==0*/) {
+    lottie.loadAnimation({
+      container: document.querySelector("#new-dataset-lottie-container"),
+      animationData: newDataset,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+    $("#curate-new-home").css("display", "flex");
   } else {
+    $("curate-existing-home").css("display", "flex");
+
     const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
     );
@@ -2177,7 +2187,65 @@ const setGuidedLicense = (newLicense) => {
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
 
+const guidedSectionTransition = (fromSectionId, toSectionId) => {
+  $(`#${fromSectionId}`).removeClass("is-shown");
+  $(`#${toSectionId}`).addClass("is-shown");
+};
+
 $(document).ready(() => {
+  $("#guided-button-start-new-curate").on("click", () => {
+    $("#curate-new-home").hide();
+    $("#guided-basic-description-tab").css("display", "flex");
+  });
+  $("#guided-create-new-dataset").on("click", async () => {
+    $("#guided-create-new-dataset").addClass("loading");
+    let datasetName = document
+      .getElementById("guided-dataset-name-input")
+      .value.trim();
+    let datasetSubtitle = document
+      .getElementById("guided-dataset-subtitle-input")
+      .value.trim();
+    if (datasetName != "" && datasetSubtitle != "") {
+      //If sodaJSONObj is empty, populate initial object properties
+      guidedCreateSodaJSONObj();
+      sodaJSONObj["starting-point"]["type"] = "new";
+
+      //Get the users information and set them as PI if a PI has not been designated yet
+      if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
+        let user = await getUserInformation();
+        const originalDatasetCreator = {
+          userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+          UUID: user["id"],
+          name: `${user["firstName"]} ${user["lastName"]}`,
+        };
+        setGuidedDatasetPiOwner(originalDatasetCreator);
+        generateAlertMessage($("#guided-designated-PI-info"));
+      }
+      setGuidedDatasetName(datasetName);
+      setGuidedDatasetSubtitle(datasetSubtitle);
+      guidedSectionTransition(
+        "guided_mode-section",
+        "guided_curate_new_dataset-section"
+      );
+    } else {
+      if (datasetName == "") {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter a dataset name",
+        });
+      }
+      if (datasetSubtitle == "") {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter a dataset subtitle",
+        });
+      }
+      $("#guided-create-new-dataset").removeClass("loading");
+      throw errorArray;
+    }
+    $("#guided-create-new-dataset").removeClass("loading");
+  });
+
   $("#guided-button-add-permission-user").on("click", function () {
     //create user permissions object
     const newUserPermission = {
