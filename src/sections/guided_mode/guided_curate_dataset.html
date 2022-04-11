@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <template class="task-template">
   <section
-    id="guided_curate_new_dataset-section"
+    id="guided_mode-section"
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
     <div
       class="main-tabs show"
       id="guided_curate_dataset-tab"
-      style="display: flex; height: 100%; overflow-y: hidden"
+      style="height: 100%; overflow-y: hidden"
     >
-      <header class="guided--header">
+      <header id="guided-header-div" class="guided--header hidden">
         <div class="guided--progression-tab-container">
           <div
             class="guided--progression-tab guided--progression-tab-triangle selected-tab"
@@ -72,7 +72,116 @@
       </header>
 
       <div class="guided--body">
-        <div id="prepare-dataset-parent-tab" class="guided--parent-tab">
+        <div id="guided-home" class="guided--parent-tab">
+          <div class="guided--panel">
+            <div class="guided--question">
+              <h1 class="guided--text-sub-step">
+                Fill out some general details about your project here.
+              </h1>
+            </div>
+            <div
+              class="justify-center hidden"
+              id="curate-new-home"
+              style="align-items: center"
+            >
+              <div
+                class="container--dashed"
+                id="guided-button-start-new-curate"
+                style="width: 320px"
+              >
+                <div
+                  id="new-dataset-lottie-container"
+                  style="height: 150px; width: 150px"
+                ></div>
+                <h1 clas="guided--form-label">Begin curating a new dataset</h1>
+              </div>
+              <div
+                class="guided--panel hidden"
+                id="guided-new-dataset-info"
+                style="flex-grow: 1"
+              >
+                <div class="guided--question">
+                  <label class="guided--form-label"
+                    >Dataset name:
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative."
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i
+                  ></label>
+                  <input
+                    class="guided--input"
+                    id="guided-dataset-name-input"
+                    data-input-set="guided-basic-description-tab"
+                    data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
+                    data-alert-type="danger"
+                    type="text"
+                    name="guided-dataset-name"
+                    placeholder="Enter dataset name here"
+                    onkeyup="validateInput($(this))"
+                  />
+                </div>
+                <div class="guided--question">
+                  <label class="guided--form-label"
+                    >Dataset subtitle:
+                    <i
+                      class="fas fa-info-circle popover-tooltip"
+                      data-content="Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published."
+                      rel="popover"
+                      data-html="true"
+                      data-placement="right"
+                      data-trigger="hover"
+                    ></i
+                  ></label>
+                  <p style="height: 0px; margin: 0px">
+                    <span
+                      id="guided-subtitle-char-count"
+                      style="
+                        position: relative;
+                        top: 100px;
+                        color: rgb(117, 107, 107);
+                      "
+                    >
+                      256 characters left
+                    </span>
+                  </p>
+                  <textarea
+                    class="guided--input guided--text-area"
+                    id="guided-dataset-subtitle-input"
+                    data-input-set="guided-basic-description-tab"
+                    data-alert-message="A Pennsieve dataset subtitle must be under 255 characters."
+                    data-alert-type="danger"
+                    type="text"
+                    name="guided-dataset-subtitle"
+                    placeholder="Enter datset subtitle here"
+                    style="height: 7.5em; padding-bottom: 20px"
+                    onkeyup="validateInput($(this))"
+                  ></textarea>
+                </div>
+                <button
+                  class="ui primary button"
+                  id="guided-create-new-dataset"
+                >
+                  Create new dataset
+                </button>
+              </div>
+            </div>
+            <div class="guided--question" style="margin-top: 10px">
+              <h1 class="guided--text-sub-step">
+                After creating your first dataset, your progress will be saved
+                and can be found here.
+              </h1>
+              <div
+                class="guided--datasets-container"
+                id="resume-curation-container"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div id="prepare-dataset-parent-tab" class="guided--parent-tab hidden">
           <div class="guided--capsule-container">
             <div
               class="guided--capsule active"
@@ -4803,7 +4912,7 @@
           </div>
         </div>
       </div>
-      <footer class="guided--footer" id="guided-footer-div">
+      <footer class="guided--footer hidden" id="guided-footer-div">
         <button
           class="ui secondary basic button guided--button-footer"
           id="guided-back-button"

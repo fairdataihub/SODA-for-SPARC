@@ -2187,15 +2187,10 @@ const setGuidedLicense = (newLicense) => {
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
 
-const guidedSectionTransition = (fromSectionId, toSectionId) => {
-  $(`#${fromSectionId}`).removeClass("is-shown");
-  $(`#${toSectionId}`).addClass("is-shown");
-};
-
 $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
-    $("#curate-new-home").hide();
-    $("#guided-basic-description-tab").css("display", "flex");
+    var element = document.getElementById("guided-new-dataset-info");
+    element.classList.remove("hidden");
   });
   $("#guided-create-new-dataset").on("click", async () => {
     $("#guided-create-new-dataset").addClass("loading");
@@ -2223,10 +2218,11 @@ $(document).ready(() => {
       }
       setGuidedDatasetName(datasetName);
       setGuidedDatasetSubtitle(datasetSubtitle);
-      guidedSectionTransition(
-        "guided_mode-section",
-        "guided_curate_new_dataset-section"
-      );
+      //guidedTransitionFromHome()
+      $("#guided-home").hide();
+      $("#guided-header-div").css("display: flex");
+      $("#guided-footer-div").css("display", "flex");
+      $("#prepare-dataset-parent-tab").css("display", "flex");
     } else {
       if (datasetName == "") {
         errorArray.push({
