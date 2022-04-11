@@ -23,9 +23,11 @@ Takes a validation error and parses the features of the error to determine what 
          - A validation error from one of the Validator pipelines (either Pennsieve or Local)
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
-const validationErrorPipeline = (error, pipeline) => {
+const validationErrorPipeline = (error) => {
+  const {path, error} = error
+
   // get translated error message
-  let translatedErrorMessage = getTranslatedErrorMessage(error, pipeline);
+  let translatedErrorMessage = getTranslatedErrorMessage(path, error);
 
   console.log("Current translated error message: ", translatedErrorMessage);
 

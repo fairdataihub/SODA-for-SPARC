@@ -70,6 +70,8 @@ const validateLocalDataset = async () => {
     return handleAxiosValidationErrors(err);
   }
 
+  console.log(validationResponse.data)
+
   Swal.fire({
     title: `Your dataset has been successfully validated`,
     text: validationResponse.data.length
@@ -85,11 +87,11 @@ const validateLocalDataset = async () => {
 
   // console.log(JSON.stringify(validationResponse.data));
 
-  if (!validationErrorsOccurred(validationResponse.data)) {
-    return;
-  }
+  // if (!validationErrorsOccurred(validationResponse.data)) {
+  //   return;
+  // }
 
-  // display errors onto the page
+  // // display errors onto the page
   displayValidationErrors(validationResponse.data);
 
   // show the validation errors to the user
@@ -169,13 +171,19 @@ const displayValidationErrors = (errors) => {
   // get the table body
   let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
-  for (const error of errors) {
-    let { message, validator } = error;
+  for (const [key, value] of Object.entries(errors)) {
+   
+    let error = {
+      path: key,
+      error: value
+    }
 
-    let translatedMessage = translatePipelineError(error);
+    console.log(error)
+
+    // let translatedMessage = translatePipelineError(error);
 
     // add message and validator to the display
-    addValidationErrorToTable(tableBody, translatedMessage[0], validator[1]);
+    // addValidationErrorToTable(tableBody, translatedMessage[0], validator[1]);
   }
 };
 
