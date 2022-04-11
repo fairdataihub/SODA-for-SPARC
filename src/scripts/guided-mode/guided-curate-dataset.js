@@ -44,6 +44,20 @@ $("#guided_create_new_bf_dataset_btn").click(function () {
   );
 });
 
+const guidedTransitionFromHome = () => {
+  $("#guided-home").hide();
+  $("#guided-header-div").css("display: flex");
+  $("#guided-footer-div").css("display", "flex");
+  $("#prepare-dataset-parent-tab").css("display", "flex");
+};
+const guidedTransitionToHome = () => {
+  $("#guided-home").css("display", "flex");
+  $("#guided-header-div").hide();
+  $("#guided-footer-div").hide();
+  $("#prepare-dataset-parent-tab").hide();
+  guidedRenderHomeScreen();
+};
+
 const saveGuidedProgress = (guidedProgressFileName) => {
   //create a Guided-Progress folder if one does not yet exist
   //Destination: HOMEDIR/SODA/Guided-Progress
@@ -269,26 +283,43 @@ const guidedRenderHomeScreen = async () => {
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath);
   }
-  //Get files in Guided-Progress folder
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-  //render progress resumption cards from progress file array on first page of guided mode
-  if (guidedSavedProgressFiles.length /*==0*/) {
-    lottie.loadAnimation({
-      container: document.querySelector("#new-dataset-lottie-container"),
-      animationData: newDataset,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-    $("#curate-new-home").css("display", "flex");
-  } else {
-    $("curate-existing-home").css("display", "flex");
 
+  //Refresh Home page UI
+  //change guided-curate-new-header text
+
+  document.getElementById("guided-curate-new-header").textContent =
+    "Select 'Begin curating a new dataset' to start curating a new dataset.";
+  document.getElementById(
+    "guided-button-start-new-curate"
+  ).style.backgroundColor = "";
+  document.getElementById("guided-new-dataset-info").classList.add("hidden");
+  document.getElementById("guided-dataset-name-input").value = "";
+  document.getElementById("guided-dataset-subtitle-input").value = "";
+
+  //render progress resumption cards from progress file array on first page of guided mode
+  if (guidedSavedProgressFiles.length != 0) {
+    $("#guided-continue-curation-header").text(
+      "Select 'Continue curation' on a previously saved dataset to resume where you left off."
+    );
     const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
     );
     renderProgressCards(progressFileData);
+  } else {
+    $("#guided-continue-curation-header").text(
+      "After creating your dataset, your progress will be saved and be resumable below."
+    );
   }
+  //empty new-dataset-lottie-container div
+  document.getElementById("new-dataset-lottie-container").innerHTML = "";
+  lottie.loadAnimation({
+    container: document.querySelector("#new-dataset-lottie-container"),
+    animationData: newDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
 };
 const traverseToTab = (targetPageID) => {
   if (
@@ -2189,8 +2220,15 @@ const setGuidedLicense = (newLicense) => {
 
 $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
-    var element = document.getElementById("guided-new-dataset-info");
-    element.classList.remove("hidden");
+    $("#guided-button-start-new-curate").css("background-color", "whitesmoke");
+    const curateNewHeader = document.getElementById("guided-curate-new-header");
+    curateNewHeader.innerHTML =
+      "Give your dataset a name and subtitle, then click 'Create new dataset'";
+
+    const newDatasetInfoElement = document.getElementById(
+      "guided-new-dataset-info"
+    );
+    newDatasetInfoElement.classList.remove("hidden");
   });
   $("#guided-create-new-dataset").on("click", async () => {
     $("#guided-create-new-dataset").addClass("loading");
@@ -2218,11 +2256,9 @@ $(document).ready(() => {
       }
       setGuidedDatasetName(datasetName);
       setGuidedDatasetSubtitle(datasetSubtitle);
-      //guidedTransitionFromHome()
-      $("#guided-home").hide();
-      $("#guided-header-div").css("display: flex");
-      $("#guided-footer-div").css("display", "flex");
-      $("#prepare-dataset-parent-tab").css("display", "flex");
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+      guidedTransitionFromHome();
     } else {
       if (datasetName == "") {
         errorArray.push({
@@ -4721,6 +4757,11 @@ $(document).ready(() => {
   //back button click handler
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = CURRENT_PAGE.attr("id");
+
+    if (pageBeingLeftID === "guided-basic-description-tab") {
+      guidedTransitionToHome();
+      return;
+    }
 
     if (pageBeingLeftID === "guided-dataset-generation-confirmation-tab") {
       $("#guided-next-button").css("visibility", "visible");
