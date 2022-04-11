@@ -117,7 +117,7 @@
                   <input
                     class="guided--input"
                     id="guided-dataset-name-input"
-                    data-input-set="guided-basic-description-tab"
+                    data-input-set="guided-dataset-starting-point-tab"
                     data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
                     data-alert-type="danger"
                     type="text"
@@ -153,7 +153,7 @@
                   <textarea
                     class="guided--input guided--text-area"
                     id="guided-dataset-subtitle-input"
-                    data-input-set="guided-basic-description-tab"
+                    data-input-set="guided-dataset-starting-point-tab"
                     data-alert-message="A Pennsieve dataset subtitle must be under 255 characters."
                     data-alert-type="danger"
                     type="text"
@@ -191,7 +191,7 @@
           <div class="guided--capsule-container">
             <div
               class="guided--capsule active"
-              id="guided-basic-description-capsule"
+              id="guided-dataset-starting-point-capsule"
             ></div>
             <div
               class="guided--capsule-container-branch hidden"
@@ -247,7 +247,7 @@
             </div>
           </div>
 
-          <div id="guided-basic-description-tab" class="guided--panel">
+          <div id="guided-dataset-starting-point-tab" class="guided--panel">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Is your dataset organized according to SPARC's dataset
@@ -258,7 +258,7 @@
                   class="option-card radio-button dataset-info-button"
                   id="guided-curate-new-dataset-card"
                   data-branch-pages-group-class="starting-point-branch-page"
-                  data-input-set="guided-basic-description-tab"
+                  data-input-set="guided-dataset-starting-point-tab"
                 >
                   <div class="card-head"></div>
                   <div class="card-body">
@@ -311,6 +311,37 @@
                     <h2>
                       Yes, I would like to import an existing local dataset
                     </h2>
+                  </div>
+                </div>
+              </div>
+              <div
+                id="generate-dataset-destination-panels"
+                class="guided--panel"
+              >
+                <div
+                  id="guided-curate-new-dataset-panel"
+                  class="guided--panel hidden"
+                >
+                  <div class="guided--section m-3">
+                    <button
+                      class="ui primary button"
+                      id="guided-structure-new-dataset"
+                    >
+                      Start dataset structuring
+                    </button>
+                  </div>
+                </div>
+                <div
+                  id="guided-curate-existing-local-dataset-panel"
+                  class="guided--panel hidden"
+                >
+                  <div class="guided--section m-3">
+                    <button
+                      class="ui primary button"
+                      id="guided-import-existing-dataset"
+                    >
+                      Import existing dataset
+                    </button>
                   </div>
                 </div>
               </div>

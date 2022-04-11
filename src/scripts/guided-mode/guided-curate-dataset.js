@@ -7,7 +7,7 @@ let guidedTeamPermissions = [];
 let tempGuidedCroppedBannerImagePath = "";
 
 //main nav variables initialized to first page of guided mode
-let CURRENT_PAGE = $("#guided-basic-description-tab");
+let CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
 
 /////////////////////////////////////////////////////////
 /////////////       Util functions      /////////////////
@@ -34,15 +34,6 @@ const guidedGetSamplesSubject = (sample) => {
     }
   }
 };
-//Move guided_create_new_bf_dataset_btn to the left with duration of 3 seconds on click
-$("#guided_create_new_bf_dataset_btn").click(function () {
-  $("#guided_create_new_bf_dataset_btn").animate(
-    {
-      left: "-=200px",
-    },
-    500
-  );
-});
 
 const guidedTransitionFromHome = () => {
   $("#guided-home").hide();
@@ -271,13 +262,6 @@ const handlePageBranching = (selectedCardElement) => {
   }
 };
 
-//Scroll down to dataset name prompt when a dataset start location is selected.
-$(".dataset-info-button").on("click", () => {
-  $("#guided-dataset-name-prompt")[0].scrollIntoView({
-    behavior: "smooth",
-  });
-});
-
 const guidedRenderHomeScreen = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
@@ -489,7 +473,7 @@ const validateInput = (inputElementToValidate) => {
 };
 
 const checkIfEnableNextButton = (inputSetID) => {
-  if (inputSetID === "guided-basic-description-tab") {
+  if (inputSetID === "guided-dataset-starting-point-tab") {
     let datasetName = document
       .getElementById("guided-dataset-name-input")
       .value.trim();
@@ -548,7 +532,7 @@ const populateGuidedModePages = (loadedJSONObj) => {
   //the last completed page is rendered and next button clicked
   let lastCompletedTab = "none";
 
-  if (completedTabs.includes("guided-basic-description-tab")) {
+  if (completedTabs.includes("guided-dataset-starting-point-tab")) {
     let datasetName = loadedJSONObj["digital-metadata"]["name"];
     let datasetSubtitle = loadedJSONObj["digital-metadata"]["subtitle"];
     tempGuidedCroppedBannerImagePath =
@@ -559,13 +543,13 @@ const populateGuidedModePages = (loadedJSONObj) => {
     let startingPoint = loadedJSONObj["starting-point"]["type"];
     if (startingPoint == "new") {
       handlePageBranching($("#guided-curate-new-dataset-card"));
-      lastCompletedTab = "guided-basic-description-tab";
+      lastCompletedTab = "guided-dataset-starting-point-tab";
     }
     if (startingPoint == "local") {
       handlePageBranching($("#guided-curate-existing-local-dataset-card"));
-      lastCompletedTab = "guided-basic-description-tab";
+      lastCompletedTab = "guided-dataset-starting-point-tab";
     } else {
-      lastCompletedTab = "guided-basic-description-tab";
+      lastCompletedTab = "guided-dataset-starting-point-tab";
     }
   }
   if (completedTabs.includes("guided-banner-image-addition-tab")) {
@@ -2283,6 +2267,12 @@ $(document).ready(() => {
         errorArray = [];
       });
     }
+  });
+  $("#guided-structure-new-dataset").on("click", () => {
+    $("#guided-next-button").click();
+  });
+  $("#guided-import-existing-dataset").on("click", () => {
+    $("#guided-next-button").click();
   });
 
   $("#guided-button-add-permission-user").on("click", function () {
@@ -4358,114 +4348,24 @@ $(document).ready(() => {
     let errorArray = [];
 
     try {
-      if (pageBeingLeftID === "guided-basic-description-tab") {
-        let datasetName = document
-          .getElementById("guided-dataset-name-input")
-          .value.trim();
-        let datasetSubtitle = document
-          .getElementById("guided-dataset-subtitle-input")
-          .value.trim();
+      if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
         if (
-          datasetName != "" &&
-          datasetSubtitle != "" &&
-          tempGuidedCroppedBannerImagePath != "" &&
-          ($("#guided-curate-new-dataset-card").hasClass("checked") ||
-            $("#guided-curate-existing-local-dataset-card").hasClass("checked"))
+          $("#guided-curate-new-dataset-card").hasClass("checked") ||
+          $("#guided-curate-existing-local-dataset-card").hasClass("checked")
         ) {
-          //If sodaJSONObj is empty, populate initial object properties
-          if (Object.keys(sodaJSONObj).length === 0) {
-            if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-              guidedCreateSodaJSONObj();
-              sodaJSONObj["starting-point"]["type"] = "new";
-            }
-            if (
-              $("#guided-curate-existing-local-dataset-card").hasClass(
-                "checked"
-              )
-            ) {
-              guidedCreateSodaJSONObj();
-              sodaJSONObj["starting-point"]["type"] = "local";
-            }
-          } else {
-            //If sodaJSONObj is not empty, update the object properties
-            if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
-              if (sodaJSONObj["starting-point"]["type"] === "local") {
-                let result = await Swal.fire({
-                  title: "Continue?",
-                  text: "You indicated that your dataset contained subjects, however, you did not add any subjects to your subjects table.",
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#3085D6",
-                  confirmButtonText:
-                    "I want to add subjects into the subject table",
-                  cancelButtonText: "I do not have any subjects",
-                });
-                console.log("start");
-                //If the user indicates they do not have any subjects, skip to source folder
-                if (result.isConfirmed) {
-                  skipSubSamFolderAndMetadataPages();
-                  traverseToTab("guided-source-folder-tab");
-                  return;
-                } else {
-                  console.log("bing");
-                }
-                console.log("foo");
-              }
-            }
-            if (
-              $("#guided-curate-existing-local-dataset-card").hasClass(
-                "checked"
-              )
-            ) {
-              if (sodaJSONObj["starting-point"]["type"] === "new") {
-                alert("overwrite here");
-              }
-            }
-          }
-
-          //Get the users information and set them as PI if a PI has not been designated yet
-          if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
-            let user = await getUserInformation();
-            const originalDatasetCreator = {
-              userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-              UUID: user["id"],
-              name: `${user["firstName"]} ${user["lastName"]}`,
-            };
-            setGuidedDatasetPiOwner(originalDatasetCreator);
-            generateAlertMessage($("#guided-designated-PI-info"));
-          }
-
-          setGuidedDatasetName(datasetName);
-          setGuidedDatasetSubtitle(datasetSubtitle);
-          setGuidedBannerImage(tempGuidedCroppedBannerImagePath);
-        } else {
-          if (datasetName == "") {
-            errorArray.push({
-              type: "notyf",
-              message: "Please enter a dataset name",
-            });
-          }
-          if (datasetSubtitle == "") {
-            errorArray.push({
-              type: "notyf",
-              message: "Please enter a dataset subtitle",
-            });
-          }
-          if (tempGuidedCroppedBannerImagePath == "") {
-            errorArray.push({
-              type: "notyf",
-              message: "Please add a banner image",
-            });
+          if ($("#guided-curate-new-dataset-card").hasClass("checked")) {
+            sodaJSONObj["starting-point"]["type"] = "new";
           }
           if (
-            !$("#guided-curate-new-dataset-card").hasClass("checked") &&
-            !$("#guided-curate-existing-local-dataset-card").hasClass("checked")
+            $("#guided-curate-existing-local-dataset-card").hasClass("checked")
           ) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please select a dataset start location",
-            });
+            sodaJSONObj["starting-point"]["type"] = "local";
           }
+        } else {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select a dataset start location",
+          });
           throw errorArray;
         }
       }
@@ -4765,7 +4665,7 @@ $(document).ready(() => {
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = CURRENT_PAGE.attr("id");
 
-    if (pageBeingLeftID === "guided-basic-description-tab") {
+    if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
       guidedTransitionToHome();
       return;
     }
