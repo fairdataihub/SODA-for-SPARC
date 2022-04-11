@@ -443,14 +443,14 @@ const validateInput = (inputElementToValidate) => {
     if (numSubjects !== "") {
       if (isNumberBetween(numSubjects, 1, 1000)) {
         removeAlertMessageIfExists(inputElementToValidate);
-        $("#guided-subjects-same-samples-amount-div").css("display", "flex");
+        $("#guided-same-amount-samples-form").css("display", "flex");
         inputIsValid = true;
       } else {
         generateAlertMessage(inputElementToValidate);
-        $("#guided-subjects-same-samples-amount-div").hide();
+        $("#guided-same-amount-samples-form").hide();
       }
     } else {
-      $("#guided-subjects-same-samples-amount-div").hide();
+      $("#guided-same-amount-samples-form").hide();
     }
   }
   if (inputID === "guided-number-of-samples-input") {
@@ -470,43 +470,6 @@ const validateInput = (inputElementToValidate) => {
     }
   }
   return inputIsValid;
-};
-
-const checkIfEnableNextButton = (inputSetID) => {
-  if (inputSetID === "guided-dataset-starting-point-tab") {
-    let datasetName = document
-      .getElementById("guided-dataset-name-input")
-      .value.trim();
-    let datasetSubtitle = document
-      .getElementById("guided-dataset-subtitle-input")
-      .value.trim();
-
-    if (
-      datasetName != "" &&
-      datasetSubtitle != "" &&
-      tempGuidedCroppedBannerImagePath != "" &&
-      ($("#guided-curate-new-dataset-card").hasClass("selected") ||
-        $("#guided-curate-existing-local-dataset-card").hasClass("selected"))
-    ) {
-      enableProgressButton();
-    } else {
-      disableProgressButton();
-    }
-  }
-  if (inputSetID === "guided-subjects-folder-tab") {
-    let numSubjectsIsValid = false;
-    let numSubjects = document
-      .getElementById(`guided-number-of-subjects-input`)
-      .value.trim();
-    if (numSubjects !== "") {
-      if (!isNumberBetween(numSubjects, 1, 1000)) {
-        generateAlertMessage(inputElementToValidate);
-      } else {
-        removeAlertMessageIfExists(inputElementToValidate);
-        numSubjectsIsValid = true;
-      }
-    }
-  }
 };
 
 /////////////////////////////////////////////////////////
@@ -1308,7 +1271,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
       placeholder="Enter new subject ID"
       onkeyup="createSubjectFolder(event, $(this))"
       data-input-set="guided-subjects-folder-tab"
-      data-alert-message="Subject IDs may not contain special characters"
+      data-alert-message="Subject IDs may not contain spaces or special characters"
       data-alert-type="danger"
       data-prev-name="${prevSubjectName}"
     />
@@ -1338,7 +1301,7 @@ generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
           placeholder="Enter subject ID and press enter"
           onkeyup="createSubjectFolder(event, $(this))"
           data-input-set="guided-subjects-folder-tab"
-          data-alert-message="Subject IDs may not contain special characters"
+          data-alert-message="Subject IDs may not contain spaces or special characters"
           data-alert-type="danger"
         />
       </td>
@@ -1517,7 +1480,7 @@ const openSampleRenameInput = (subjectNameEditButton) => {
       placeholder="Enter new subject ID"
       onkeyup="createSampleFolder(event, $(this))"
       data-input-set="guided-samples-folder-tab"
-      data-alert-message="Sample IDs may not contain special characters"
+      data-alert-message="Sample IDs may not contain spaces or special characters"
       data-alert-type="danger"
       data-prev-name="${prevSampleName}"
     />
@@ -1598,7 +1561,7 @@ const generateSampleRowElement = (sampleIndex) => {
           placeholder="Enter sample ID and press enter"
           onkeyup="createSampleFolder(event, $(this))"
           data-input-set="guided-samples-folder-tab"
-          data-alert-message="Sample IDs may not contain special characters"
+          data-alert-message="Sample IDs may not contain spaces or special characters"
           data-alert-type="danger"
         />
       </td>
@@ -1713,7 +1676,7 @@ const renderSamplesTables = () => {
       })
       .join("\n");
     return `
-      <table class="ui celled striped table" style="margin-bottom: 25px; min-width: 900px;">
+      <table class="ui celled striped table" style="margin-bottom: 25px; min-width: 800px;">
         <thead>
           <tr>
             <th
@@ -1799,7 +1762,7 @@ const renderSampleMetadataTables = () => {
     return `
       <table
         class="ui celled striped table"
-        style="margin-bottom: 25px; width: 900px"
+        style="margin-bottom: 25px; min-width: 820px;"
       >
         <thead>
           <tr>
@@ -4254,10 +4217,7 @@ $(document).ready(() => {
       imageType = "image/jpeg";
     }
 
-    let imagePath = path.join(
-      imageFolder,
-      "temp-banner-image." + imageExtension
-    );
+    let imagePath = path.join(imageFolder + imageExtension);
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {

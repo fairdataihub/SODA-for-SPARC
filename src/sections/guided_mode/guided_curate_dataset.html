@@ -346,161 +346,6 @@
                 </div>
               </div>
             </div>
-
-            <div
-              class="modal fade"
-              id="guided-banner-image-modal"
-              tabindex="-1"
-              role="dialog"
-              data-backdrop="false"
-              style="
-                background-color: rgba(0, 0, 0, 0.5);
-                width: 100%;
-                height: 100%;
-              "
-            >
-              <div
-                class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
-                role="document"
-              >
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h4 class="modal-title" id="guided-edit_banner_image_title">
-                      Add a banner image
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
-                  <br/><br/>
-                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
-                        rel="popover"
-                        data-html="true"
-                        data-placement="bottom"
-                        data-trigger="hover"
-                      ></i>
-                    </h4>
-                    <button type="button" class="close" data-dismiss="modal">
-                      <i
-                        style="color: red; font-size: 25px"
-                        class="far fa-window-close"
-                      ></i>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <div
-                      id="guided-div-editbanner-img"
-                      style="display: flex; flex-direction: row"
-                    >
-                      <div
-                        id="guided-div-img-container-holder"
-                        class="img-container"
-                      >
-                        Imported image will be shown here. <br />You will be
-                        able to crop it before uploading.
-                      </div>
-
-                      <div
-                        id="guided-div-img-container"
-                        class="img-container"
-                        style="display: none; flex-direction: column"
-                      >
-                        <img
-                          id="guided-image-banner"
-                          class="banner-img"
-                          width="100%"
-                        />
-                        <p
-                          id="guided-para-path-image"
-                          style="
-                            margin-top: 0.5em;
-                            text-align: center;
-                            display: none;
-                          "
-                        ></p>
-                      </div>
-                    </div>
-                    <p
-                      id="guided-para-dataset-banner-image-status"
-                      style="
-                        text-align: center;
-                        font-weight: 400;
-                        color: var(--color-light-green);
-                        font-size: 15px;
-                      "
-                    ></p>
-                  </div>
-                  <div
-                    class="modal-footer"
-                    style="display: flex; justify-content: space-between"
-                  >
-                    <div
-                      style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: center;
-                      "
-                    >
-                      <div
-                        style="
-                          display: flex;
-                          flex-direction: column;
-                          justify-content: center;
-                          align-items: center;
-                          width: 100%;
-                        "
-                      >
-                        <button
-                          id="guided-button-import-banner-image"
-                          type="button"
-                          class="btn btn-primary"
-                          style="border-radius: 4px"
-                        >
-                          Import image
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="container-cropped-image">
-                      <div
-                        class="banner-image-size"
-                        style="width: 380px; text-align: center"
-                      >
-                        <span class="crop-image-text"
-                          >Cropped dimensions (must be between 512px and
-                          2048px):
-                        </span>
-                      </div>
-                      <input
-                        class="banner-image-size input"
-                        style="
-                          width: 70px;
-                          text-align: center;
-                          pointer-events: none;
-                        "
-                        id="guided-form-banner-height"
-                        type="text"
-                        readonly="readonly"
-                        size="7"
-                      />
-                      <div
-                        class="banner-image-size"
-                        style="width: 30px; text-align: center"
-                      >
-                        <span class="crop-image-text">px</span>
-                      </div>
-                    </div>
-
-                    <button
-                      id="guided-save-banner-image"
-                      type="button"
-                      class="btn btn-primary"
-                      style="border-radius: 4px; visibility: hidden"
-                    >
-                      Save changes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           <div
             id="guided-subjects-folder-tab"
@@ -550,7 +395,11 @@
                   />
                 </div>
 
-                <div class="guided--input-container" style="margin-top: 25px">
+                <div
+                  class="guided--input-container hidden"
+                  id="guided-same-amount-samples-form"
+                  style="margin-top: 25px"
+                >
                   <label class="guided--form-label centered"
                     >Do all of your subjects have the same amount of samples?
                   </label>
@@ -614,7 +463,7 @@
             <div class="guided--section hidden" id="subjects-table">
               <table
                 class="ui celled striped table"
-                style="margin-bottom: 25px; min-width: 900px"
+                style="margin-bottom: 25px; min-width: 800px"
               >
                 <thead>
                   <tr>
@@ -862,7 +711,7 @@
               <h1
                 class="guided--text-sub-step"
                 id="structure-folder-header"
-                style="max-width: 800px"
+                style="max-width: 820px"
               ></h1>
               <p
                 class="text-center medium"
@@ -1028,6 +877,7 @@
           class="guided--parent-tab hidden"
         >
           <div class="guided--capsule-container">
+            <div class="guided--capsule" id="guided-banner-image-capsule"></div>
             <div
               class="guided--capsule"
               id="guided-designate-pi-owner-capsule"
@@ -1045,7 +895,177 @@
               id="guided-assign-license-capsule"
             ></div>
           </div>
-          <div id="guided-designate-pi-owner-tab" class="guided--panel">
+          <div id="guided-banner-image-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                Add a banner image to your dataset below
+              </h1>
+              <button
+                class="btn_animated"
+                id="guided-button-add-banner-image"
+                data-alert-message="A banner image has not been added to your dataset. Please add one before you continue."
+                data-alert-type="warning"
+                style="width: 180px; border: none !important"
+              >
+                Add banner image
+              </button>
+            </div>
+            <div
+              class="modal fade"
+              id="guided-banner-image-modal"
+              tabindex="-1"
+              role="dialog"
+              data-backdrop="false"
+              style="
+                background-color: rgba(0, 0, 0, 0.5);
+                width: 100%;
+                height: 100%;
+              "
+            >
+              <div
+                class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+                role="document"
+              >
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title" id="guided-edit_banner_image_title">
+                      Add a banner image
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+                  <br/><br/>
+                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
+                        rel="popover"
+                        data-html="true"
+                        data-placement="bottom"
+                        data-trigger="hover"
+                      ></i>
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                      <i
+                        style="color: red; font-size: 25px"
+                        class="far fa-window-close"
+                      ></i>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div
+                      id="guided-div-editbanner-img"
+                      style="display: flex; flex-direction: row"
+                    >
+                      <div
+                        id="guided-div-img-container-holder"
+                        class="img-container"
+                      >
+                        Imported image will be shown here. <br />You will be
+                        able to crop it before uploading.
+                      </div>
+
+                      <div
+                        id="guided-div-img-container"
+                        class="img-container"
+                        style="display: none; flex-direction: column"
+                      >
+                        <img
+                          id="guided-image-banner"
+                          class="banner-img"
+                          width="100%"
+                        />
+                        <p
+                          id="guided-para-path-image"
+                          style="
+                            margin-top: 0.5em;
+                            text-align: center;
+                            display: none;
+                          "
+                        ></p>
+                      </div>
+                    </div>
+                    <p
+                      id="guided-para-dataset-banner-image-status"
+                      style="
+                        text-align: center;
+                        font-weight: 400;
+                        color: var(--color-light-green);
+                        font-size: 15px;
+                      "
+                    ></p>
+                  </div>
+                  <div
+                    class="modal-footer"
+                    style="display: flex; justify-content: space-between"
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+                      "
+                    >
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: column;
+                          justify-content: center;
+                          align-items: center;
+                          width: 100%;
+                        "
+                      >
+                        <button
+                          id="guided-button-import-banner-image"
+                          type="button"
+                          class="btn btn-primary"
+                          style="border-radius: 4px"
+                        >
+                          Import image
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="container-cropped-image">
+                      <div
+                        class="banner-image-size"
+                        style="width: 380px; text-align: center"
+                      >
+                        <span class="crop-image-text"
+                          >Cropped dimensions (must be between 512px and
+                          2048px):
+                        </span>
+                      </div>
+                      <input
+                        class="banner-image-size input"
+                        style="
+                          width: 70px;
+                          text-align: center;
+                          pointer-events: none;
+                        "
+                        id="guided-form-banner-height"
+                        type="text"
+                        readonly="readonly"
+                        size="7"
+                      />
+                      <div
+                        class="banner-image-size"
+                        style="width: 30px; text-align: center"
+                      >
+                        <span class="crop-image-text">px</span>
+                      </div>
+                    </div>
+
+                    <button
+                      id="guided-save-banner-image"
+                      type="button"
+                      class="btn btn-primary"
+                      style="border-radius: 4px; visibility: hidden"
+                    >
+                      Save changes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
             <div class="guided--container-data-display">
               <div
                 class="guided--card-dataset-info"
@@ -1330,7 +1350,7 @@
             </div>
           </div>
           <div id="add-edit-description-tags-tab" class="guided--panel hidden">
-            <div class="guided--section show">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Enter your descriptions in the section below
               </h1>
