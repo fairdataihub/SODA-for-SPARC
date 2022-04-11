@@ -172,18 +172,22 @@ const displayValidationErrors = (errors) => {
   let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
   for (const [key, value] of Object.entries(errors)) {
-   
+
     let error = {
       path: key,
       error: value
     }
 
-    console.log(error)
+    const { messages } = error.error
 
-    // let translatedMessage = translatePipelineError(error);
+    // some errors have multiple error messages
+    for (const message of messages) {
+      // get back a user friendly error message using the path and the message text
+      let translatedMessage = translatePipelineError(error.path, message);
 
-    // add message and validator to the display
-    // addValidationErrorToTable(tableBody, translatedMessage[0], validator[1]);
+      // add message and validator to the display
+      // addValidationErrorToTable(tableBody, translatedMessage[0], validator[1]);
+    }
   }
 };
 

@@ -23,11 +23,9 @@ Takes a validation error and parses the features of the error to determine what 
          - A validation error from one of the Validator pipelines (either Pennsieve or Local)
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
-const validationErrorPipeline = (error) => {
-  const {path, error} = error
-
+const validationErrorPipeline = (path, errorMessage) => {
   // get translated error message
-  let translatedErrorMessage = getTranslatedErrorMessage(path, error);
+  let translatedErrorMessage = getTranslatedErrorMessage(path, errorMessage);
 
   console.log("Current translated error message: ", translatedErrorMessage);
 
@@ -39,135 +37,7 @@ Parse features of the given error message to determine what kind of translation 
 @param object error: A validation error from the Validator. 
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
-const getTranslatedErrorMessage = (error, pipeline) => {
-  let translationKey = "";
-  const { message, path, validator } = error;
-  let translatedErrorMessage = "";
-
-  // check the required category if applicable
-  if (validator === VALIDATOR_CATEGORIES.REQUIRED) {
-    // get the name of the missing property
-    let missingProperty =
-      ValidationErrorParser.parseMissingRequiredFields(message);
-
-    // check if a field was returned
-    if (!missingProperty) {
-      // if not throw an error as the parser encountered an unexpected format for the
-      // 'required' validation category error message
-      throw Error(
-        `Could not find a field in the given error message: ${message}`
-      );
-    }
-
-    // determine what metadata file the given field belongs to
-    let metadataFile = MissingFieldNameToMetadataFileMap[missingProperty];
-
-    // catch any table misses caused by using different field name spelling than the validator
-    // and/or those caused when the missing property is a required metadata file and not a field
-    if (!metadataFile) {
-      // check to see if the missing field is a missing metadata file
-      // Tom models file names with _ but I use spaces e.g., dataset description vs dataset_description
-      missingProperty = missingProperty.replace("_", " ");
-
-      if (!Object.values(METADATA_FILES).includes(missingProperty)) {
-        throw Error(
-          `No metadata file/field associated with this key: ${missingProperty}`
-        );
-      }
-    }
-
-    // using the missing field and metadata file create an error message for the user
-    translatedErrorMessage =
-      ParsedErrorTranslator.translateMissingRequiredProperties(
-        metadataFile === undefined ? undefined : missingProperty,
-        metadataFile === undefined ? missingProperty : metadataFile
-      );
-  } else if (validator === VALIDATOR_CATEGORIES.PATTERN) {
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseIncorrectDatasetName(
-        message,
-        path,
-        validator,
-        pipeline
-      );
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidDatasetId(
-        message,
-        path,
-        validator,
-        pipeline
-      );
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidOrganization(
-        message,
-        path,
-        validator,
-        pipeline
-      );
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidSubjectIdPattern(path, validator);
-
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidContributorNamePattern(path, validator);
-  } else if (validator === VALIDATOR_CATEGORIES.MIN_ITEMS) {
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseMissingTechniqueValues(message, path);
-  } else if (validator === VALIDATOR_CATEGORIES.CONTAINS) {
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidContributorRole(message, validator);
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidContributorInformationContains(
-        path,
-        validator
-      );
-  } else if (validator === VALIDATOR_CATEGORIES.TYPE) {
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidSubjectIdType(path, validator);
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidFundingType(path, validator);
-
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidIdentifierDescriptionType(
-        path,
-        validator
-      );
-  } else if (validator === VALIDATOR_CATEGORIES.ANY_OF) {
-    console.log("Current error is: ", error);
-    console.log("Path is: ", path);
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidSpeciesAnyOf(path, validator);
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidContributorAffiliationAnyOf(
-        path,
-        validator
-      );
-  } else if (validator === VALIDATOR_CATEGORIES.ADDITIONAL_PROPERTIES) {
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseAdditionalPropertiesDatasetDescription(
-        path,
-        validator
-      );
-  } else if (validator === VALIDATOR_CATEGORIES.ENUM) {
-    translationKey =
-      translationKey ||
-      ValidationErrorParser.parseInvalidRelationTypeEnum(path, validator);
-  } else {
-    throw new Error("The given category wasn't accounted for: ", validator);
-  }
+const getTranslatedErrorMessage = (path, errorMessage) => {
 
   return translatedErrorMessage;
 };
