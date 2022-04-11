@@ -177,7 +177,7 @@ const displayValidationErrors = (errors) => {
       error: value,
     };
 
-    const { messages } = error.error
+    const { messages } = error.error;
 
     // some errors have multiple error messages
     for (const message of messages) {

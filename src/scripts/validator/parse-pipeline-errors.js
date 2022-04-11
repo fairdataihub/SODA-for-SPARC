@@ -38,7 +38,6 @@ Parse features of the given error message to determine what kind of translation 
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
 const getTranslatedErrorMessage = (path, errorMessage) => {
-
   return translatedErrorMessage;
 };
 
