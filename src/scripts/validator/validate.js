@@ -70,7 +70,7 @@ const validateLocalDataset = async () => {
     return handleAxiosValidationErrors(err);
   }
 
-  console.log(validationResponse.data)
+  console.log(validationResponse.data);
 
   Swal.fire({
     title: `Your dataset has been successfully validated`,
@@ -172,13 +172,12 @@ const displayValidationErrors = (errors) => {
   let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
   for (const [key, value] of Object.entries(errors)) {
-   
     let error = {
       path: key,
-      error: value
-    }
+      error: value,
+    };
 
-    console.log(error)
+    console.log(error);
 
     // let translatedMessage = translatePipelineError(error);
 

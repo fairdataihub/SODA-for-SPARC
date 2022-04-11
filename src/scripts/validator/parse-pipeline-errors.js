@@ -24,7 +24,7 @@ Takes a validation error and parses the features of the error to determine what 
 @param string pipeline: "pennsieve" when validating a Pennsieve dataset and "local" when validating a local dataset
 */
 const validationErrorPipeline = (error) => {
-  const {path, error} = error
+  const { path, error } = error;
 
   // get translated error message
   let translatedErrorMessage = getTranslatedErrorMessage(path, error);
