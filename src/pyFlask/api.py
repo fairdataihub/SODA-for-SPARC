@@ -87,16 +87,16 @@ def api_validate_dataset_pipeline():
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
 
+    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
+    parsed_path_error_report = error_path_report_parser.get_target_errors(path_error_report)
+
     path_error_report = json.dumps(path_error_report, indent=4, default=str)
 
     # write blob to a local file
     with open("validation-result.txt", 'w') as file: 
         file.write(path_error_report)
 
-    return json.dumps(path_error_report, indent=4, default=str)
 
-    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
-    parsed_path_error_report = error_path_report_parser.get_target_errors(path_error_report)
 
     # get the validation errors out of the error report 
     parsed_path_error_report = json.dumps(parsed_path_error_report, indent=4, default=str)
@@ -115,7 +115,6 @@ def api_validate_dataset_pipeline():
 
 
     return parsed_path_error_report
-    # return json.dumps(errors, cls=DequeEncoder)
     
 
     # # validate the dataset
