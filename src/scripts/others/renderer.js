@@ -9241,11 +9241,3 @@ document
       behavior: "smooth",
     });
   });
-
-function open_sparc_site() {
-  const BrowserWindow = electron.remote.BrowserWindow;
-  const win = new BrowserWindow({ width: 1000, height: 700 });
-
-  // Load a remote URL
-  win.loadURL("https://sparc.science/");
-}
