@@ -46,7 +46,7 @@ $("#guided_create_new_bf_dataset_btn").click(function () {
 
 const guidedTransitionFromHome = () => {
   $("#guided-home").hide();
-  $("#guided-header-div").css("display: flex");
+  $("#guided-header-div").css("display", "flex");
   $("#guided-footer-div").css("display", "flex");
   $("#prepare-dataset-parent-tab").css("display", "flex");
 };
@@ -286,21 +286,17 @@ const guidedRenderHomeScreen = async () => {
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
 
   //Refresh Home page UI
-  //change guided-curate-new-header text
 
-  document.getElementById("guided-curate-new-header").textContent =
-    "Select 'Begin curating a new dataset' to start curating a new dataset.";
-  document.getElementById(
-    "guided-button-start-new-curate"
-  ).style.backgroundColor = "";
+  $("#guided-button-start-new-curate").css("display", "flex");
   document.getElementById("guided-new-dataset-info").classList.add("hidden");
   document.getElementById("guided-dataset-name-input").value = "";
   document.getElementById("guided-dataset-subtitle-input").value = "";
+  $("#continue-curating-existing").css("display", "flex");
 
   //render progress resumption cards from progress file array on first page of guided mode
   if (guidedSavedProgressFiles.length != 0) {
     $("#guided-continue-curation-header").text(
-      "Select 'Continue curation' on a previously saved dataset to resume where you left off."
+      "Or continue curating a previously started dataset below."
     );
     const progressFileData = await getAllProgressFileData(
       guidedSavedProgressFiles
@@ -2220,62 +2216,73 @@ const setGuidedLicense = (newLicense) => {
 
 $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
-    $("#guided-button-start-new-curate").css("background-color", "whitesmoke");
-    const curateNewHeader = document.getElementById("guided-curate-new-header");
-    curateNewHeader.innerHTML =
-      "Give your dataset a name and subtitle, then click 'Create new dataset'";
-
     const newDatasetInfoElement = document.getElementById(
       "guided-new-dataset-info"
     );
     newDatasetInfoElement.classList.remove("hidden");
+    $("#guided-button-start-new-curate").hide();
+    $("#continue-curating-existing").hide();
   });
   $("#guided-create-new-dataset").on("click", async () => {
-    $("#guided-create-new-dataset").addClass("loading");
-    let datasetName = document
-      .getElementById("guided-dataset-name-input")
-      .value.trim();
-    let datasetSubtitle = document
-      .getElementById("guided-dataset-subtitle-input")
-      .value.trim();
-    if (datasetName != "" && datasetSubtitle != "") {
-      //If sodaJSONObj is empty, populate initial object properties
-      guidedCreateSodaJSONObj();
-      sodaJSONObj["starting-point"]["type"] = "new";
+    let errorArray = [];
+    try {
+      $("#guided-create-new-dataset").addClass("loading");
+      let datasetName = document
+        .getElementById("guided-dataset-name-input")
+        .value.trim();
+      let datasetSubtitle = document
+        .getElementById("guided-dataset-subtitle-input")
+        .value.trim();
+      if (datasetName != "" && datasetSubtitle != "") {
+        //If sodaJSONObj is empty, populate initial object properties
+        guidedCreateSodaJSONObj();
+        sodaJSONObj["starting-point"]["type"] = "new";
 
-      //Get the users information and set them as PI if a PI has not been designated yet
-      if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
-        let user = await getUserInformation();
-        const originalDatasetCreator = {
-          userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
-          UUID: user["id"],
-          name: `${user["firstName"]} ${user["lastName"]}`,
-        };
-        setGuidedDatasetPiOwner(originalDatasetCreator);
-        generateAlertMessage($("#guided-designated-PI-info"));
-      }
-      setGuidedDatasetName(datasetName);
-      setGuidedDatasetSubtitle(datasetSubtitle);
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        //Get the users information and set them as PI if a PI has not been designated yet
+        if (sodaJSONObj["digital-metadata"]["pi-owner"] == undefined) {
+          let user = await getUserInformation();
+          const originalDatasetCreator = {
+            userString: `${user["firstName"]} ${user["lastName"]} (${user["email"]})`,
+            UUID: user["id"],
+            name: `${user["firstName"]} ${user["lastName"]}`,
+          };
+          setGuidedDatasetPiOwner(originalDatasetCreator);
+          generateAlertMessage($("#guided-designated-PI-info"));
+        }
+        setGuidedDatasetName(datasetName);
+        setGuidedDatasetSubtitle(datasetSubtitle);
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
-      guidedTransitionFromHome();
-    } else {
-      if (datasetName == "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a dataset name",
-        });
-      }
-      if (datasetSubtitle == "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a dataset subtitle",
-        });
+        guidedTransitionFromHome();
+      } else {
+        if (datasetName == "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a dataset name",
+          });
+        }
+        if (datasetSubtitle == "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a dataset subtitle",
+          });
+        }
+        $("#guided-create-new-dataset").removeClass("loading");
+        throw errorArray;
       }
       $("#guided-create-new-dataset").removeClass("loading");
-      throw errorArray;
+    } catch (error) {
+      errorArray.map((error) => {
+        if (error.type === "notyf") {
+          notyf.open({
+            duration: "4000",
+            type: "error",
+            message: error.message,
+          });
+        }
+        errorArray = [];
+      });
     }
-    $("#guided-create-new-dataset").removeClass("loading");
   });
 
   $("#guided-button-add-permission-user").on("click", function () {

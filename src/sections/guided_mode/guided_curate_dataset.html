@@ -74,12 +74,6 @@
       <div class="guided--body">
         <div id="guided-home" class="guided--parent-tab">
           <div class="guided--panel">
-            <div class="guided--question">
-              <h1
-                class="guided--text-sub-step"
-                id="guided-curate-new-header"
-              ></h1>
-            </div>
             <div
               class="justify-center"
               id="curate-new-home"
@@ -103,7 +97,12 @@
                 id="guided-new-dataset-info"
                 style="flex-grow: 1"
               >
-                <div class="guided--question">
+                <div class="guided--section">
+                  <h1 class="guided--text-sub-step">
+                    Give your dataset a name and subtitle
+                  </h1>
+                </div>
+                <div class="guided--section">
                   <label class="guided--form-label"
                     >Dataset name:
                     <i
@@ -127,7 +126,7 @@
                     onkeyup="validateInput($(this))"
                   />
                 </div>
-                <div class="guided--question">
+                <div class="guided--section">
                   <label class="guided--form-label"
                     >Dataset subtitle:
                     <i
@@ -168,11 +167,15 @@
                   class="ui primary button"
                   id="guided-create-new-dataset"
                 >
-                  Create new dataset
+                  Start curating dataset
                 </button>
               </div>
             </div>
-            <div class="guided--question" style="margin-top: 20px">
+            <div
+              class="guided--section"
+              id="continue-curating-existing"
+              style="margin-top: 20px"
+            >
               <h1
                 class="guided--text-sub-step"
                 id="guided-continue-curation-header"
@@ -245,9 +248,10 @@
           </div>
 
           <div id="guided-basic-description-tab" class="guided--panel">
-            <div class="guided--question">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
-                Curate a new dataset or continue from existing??
+                Is your dataset organized according to SPARC's dataset
+                structure?
               </h1>
               <div class="guided--card-container">
                 <div
@@ -277,7 +281,7 @@
                         fill="#13716D"
                       />
                     </svg>
-                    <h2>Curate a new dataset</h2>
+                    <h2>No, I would like to structure a new dataset</h2>
                   </div>
                 </div>
 
@@ -304,7 +308,9 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>Continue curating an existing local dataset</h2>
+                    <h2>
+                      Yes, I would like to import an existing local dataset
+                    </h2>
                   </div>
                 </div>
               </div>
@@ -470,7 +476,7 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question" id="number-of-subjects-prompt">
+            <div class="guided--section" id="number-of-subjects-prompt">
               <label class="guided--form-label centered">
                 Does your dataset contain any subjects?
               </label>
@@ -574,7 +580,7 @@
                 id="guided-user-no-subjects-form"
               ></div>
             </div>
-            <div class="guided--question hidden" id="subjects-table">
+            <div class="guided--section hidden" id="subjects-table">
               <table
                 class="ui celled striped table"
                 style="margin-bottom: 25px; min-width: 900px"
@@ -677,7 +683,7 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question">
+            <div class="guided--section">
               <label class="guided--form-label centered"
                 >Does your dataset contain source data?
               </label>
@@ -713,7 +719,7 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question">
+            <div class="guided--section">
               <label class="guided--form-label centered"
                 >Does your dataset contain derivative data?
               </label>
@@ -748,7 +754,7 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question">
+            <div class="guided--section">
               <label class="guided--form-label centered"
                 >Does your dataset contain code data?
               </label>
@@ -784,7 +790,7 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--question">
+            <div class="guided--section">
               <label class="guided--form-label centered"
                 >Does your dataset contain docs data?
               </label>
@@ -821,7 +827,7 @@
             class="guided--panel hidden"
             data-skip-page="true"
           >
-            <div class="guided--question" id="structure-subjects-folder">
+            <div class="guided--section" id="structure-subjects-folder">
               <h1
                 class="guided--text-sub-step"
                 id="structure-folder-header"
@@ -953,7 +959,7 @@
                 </div>
               </div>
             </div>
-            <div class="guided--question show" id="guided_dataset_name_div">
+            <div class="guided--section show" id="guided_dataset_name_div">
               <label class="guided--text-sub-step"
                 >What is the location of the dataset?
                 <i
@@ -1030,7 +1036,7 @@
               </div>
             </div>
 
-            <div class="guided--question">
+            <div class="guided--section">
               <label class="guided--text-sub-step"
                 >Designate a PI Owner:
                 <i
@@ -1132,7 +1138,7 @@
               </div>
             </div>
 
-            <div class="guided--question">
+            <div class="guided--section">
               <label class="guided--text-sub-step"
                 >Designate user permissions:
                 <i
@@ -1210,7 +1216,7 @@
                 </button>
               </div>
             </div>
-            <div class="guided--question">
+            <div class="guided--section">
               <label
                 class="guided--text-sub-step"
                 style="margin-top: 18px !important"
@@ -1293,7 +1299,7 @@
             </div>
           </div>
           <div id="add-edit-description-tags-tab" class="guided--panel hidden">
-            <div class="guided--question show">
+            <div class="guided--section show">
               <h1 class="guided--text-sub-step">
                 Enter your descriptions in the section below
               </h1>
@@ -1361,7 +1367,7 @@
                 ></textarea>
               </div>
             </div>
-            <div class="guided--question show">
+            <div class="guided--section show">
               <h1 class="guided--text-sub-step">
                 Enter dataset tags below<i
                   class="fas fa-info-circle popover-tooltip"
@@ -1393,7 +1399,7 @@
                 </div>
               </div>
             </div>
-            <div class="guided--question show">
+            <div class="guided--section show">
               <h1 class="guided--text-sub-step">
                 Assign a license to your datset:
               </h1>
@@ -1504,7 +1510,7 @@
             id="guided-create-submission-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--question show">
+            <div class="guided--section show">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Fill out the submission information below:
               </h1>
@@ -1606,7 +1612,7 @@
             id="guided-create-description-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--question show">
+            <div class="guided--section show">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Fill out the description information below:
               </h1>
@@ -2210,7 +2216,7 @@
             id="guided-create-readme-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--question show">
+            <div class="guided--section show">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Draft your README file below:
                 <i
@@ -2244,7 +2250,7 @@
             id="guided-create-changes-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--question show">
+            <div class="guided--section show">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Draft your CHANGES file below:
                 <i
@@ -4147,7 +4153,7 @@
             id="guided-dataset-generate-location-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--question">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Where would you like to generate your dataset?
               </h1>
@@ -4317,7 +4323,7 @@
                 </div>
               </div>
             </div>
-            <div class="guided--question">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Which dataset would you like to generate on?
               </h1>
@@ -4445,7 +4451,7 @@
                   id="guided-generate-dataset-existing-panel"
                   class="guided--panel hidden"
                 >
-                  <div class="guided--question">
+                  <div class="guided--section">
                     <div class="ui form" style="width: 100%">
                       <div class="grouped fields">
                         <h1 class="guided--text-sub-step">
