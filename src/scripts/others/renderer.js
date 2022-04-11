@@ -3028,6 +3028,7 @@ const Cropper = require("cropperjs");
 const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
+const { background } = require("jimp");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4646,33 +4647,7 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
     });
   }
   if (path.length > 0) {
-    //await is needed for swal to display before continuing
-    // await Swal.fire({
-    //   title: "Importing items...",
-    //   html: "Please wait",
-    //   allowEscapeKey: true,
-    //   allowOutsideClick: true,
-    //   heightAuto: false,
-    //   showConfirmButton: false,
-    //   backdrop: "rgba(0,0,0, 0.4)",
-    //   timerProgressBar: false,
-    //   timer: 400,
-    //   didOpen: () => {
-    //     //creates the loading icon for SweetAlert
-    //     Swal.showLoading();
-    //   },
-    // });
-    //waiting for add files to be completed
-    let load_spinner_promise = new Promise(async (resolved) => {
-      loading_items_spinner.style.display = "block";
-      console.log(loading_items_spinner.style.display);
-      if (loading_items_spinner.style.display === "block") {
-        setTimeout(() => {
-          resolved();
-        }, 100);
-      }
-    }).then(async () => {
-      console.log("inside then");
+    if (path.length < 500) {
       await addFilesfunction(
         path,
         myPath,
@@ -4681,10 +4656,47 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
         ".single-item",
         datasetStructureJSONObj
       );
-      console.log("finished addFiles now changing css");
-      // Swal.close();
-      loading_items_spinner.style.display = "none";
-    });
+    } else {
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        await addFilesfunction(
+          path,
+          myPath,
+          organizeDSglobalPath,
+          "#items",
+          ".single-item",
+          datasetStructureJSONObj
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    }
   }
 });
 
@@ -4702,6 +4714,7 @@ ipcRenderer.on(
     for (var ele of pathElement) {
       detectIrregularFolders(path.basename(ele), ele);
     }
+    console.log(pathElement.length);
     if (irregularFolderArray.length > 0) {
       Swal.fire({
         title:
@@ -4724,23 +4737,142 @@ ipcRenderer.on(
       }).then(async (result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          await addFoldersfunction(
-            "replace",
-            irregularFolderArray,
-            pathElement,
-            myPath
-          );
+          if (pathElement.length > 500) {
+            let load_spinner_promise = new Promise(async (resolved) => {
+              let background = document.createElement("div");
+              let spinner_container = document.createElement("div");
+              let spinner_icon = document.createElement("div");
+              spinner_container.setAttribute("id", "items_loading_container");
+              spinner_icon.setAttribute("id", "item_load");
+              spinner_icon.setAttribute(
+                "class",
+                "ui large active inline loader icon-wrapper"
+              );
+              background.setAttribute("class", "loading-items-background");
+              background.setAttribute("id", "loading-items-background-overlay");
+
+              spinner_container.append(spinner_icon);
+              document.body.prepend(background);
+              document.body.prepend(spinner_container);
+              let loading_items_spinner = document.getElementById(
+                "items_loading_container"
+              );
+              loading_items_spinner.style.display = "block";
+              if (loading_items_spinner.style.display === "block") {
+                setTimeout(() => {
+                  resolved();
+                }, 100);
+              }
+            }).then(async () => {
+              await addFoldersfunction(
+                "replace",
+                irregularFolderArray,
+                pathElement,
+                myPath
+              );
+              document
+                .getElementById("loading-items-background-overlay")
+                .remove();
+              document.getElementById("items_loading_container").remove();
+            });
+          } else {
+            await addFoldersfunction(
+              "replace",
+              irregularFolderArray,
+              pathElement,
+              myPath
+            );
+          }
         } else if (result.isDenied) {
-          await addFoldersfunction(
-            "remove",
-            irregularFolderArray,
-            pathElement,
-            myPath
-          );
+          if (pathElement.length > 500) {
+            let load_spinner_promise = new Promise(async (resolved) => {
+              let background = document.createElement("div");
+              let spinner_container = document.createElement("div");
+              let spinner_icon = document.createElement("div");
+              spinner_container.setAttribute("id", "items_loading_container");
+              spinner_icon.setAttribute("id", "item_load");
+              spinner_icon.setAttribute(
+                "class",
+                "ui large active inline loader icon-wrapper"
+              );
+              background.setAttribute("class", "loading-items-background");
+              background.setAttribute("id", "loading-items-background-overlay");
+
+              spinner_container.append(spinner_icon);
+              document.body.prepend(background);
+              document.body.prepend(spinner_container);
+              let loading_items_spinner = document.getElementById(
+                "items_loading_container"
+              );
+              loading_items_spinner.style.display = "block";
+              if (loading_items_spinner.style.display === "block") {
+                setTimeout(() => {
+                  resolved();
+                }, 100);
+              }
+            }).then(async () => {
+              await addFoldersfunction(
+                "remove",
+                irregularFolderArray,
+                pathElement,
+                myPath
+              );
+              document
+                .getElementById("loading-items-background-overlay")
+                .remove();
+              document.getElementById("items_loading_container").remove();
+            });
+          } else {
+            await addFoldersfunction(
+              "remove",
+              irregularFolderArray,
+              pathElement,
+              myPath
+            );
+          }
         }
       });
     } else {
-      await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+      console.log(pathElement);
+      if (pathElement.length > 500) {
+        let load_spinner_promise = new Promise(async (resolved) => {
+          let background = document.createElement("div");
+          let spinner_container = document.createElement("div");
+          let spinner_icon = document.createElement("div");
+          spinner_container.setAttribute("id", "items_loading_container");
+          spinner_icon.setAttribute("id", "item_load");
+          spinner_icon.setAttribute(
+            "class",
+            "ui large active inline loader icon-wrapper"
+          );
+          background.setAttribute("class", "loading-items-background");
+          background.setAttribute("id", "loading-items-background-overlay");
+
+          spinner_container.append(spinner_icon);
+          document.body.prepend(background);
+          document.body.prepend(spinner_container);
+          let loading_items_spinner = document.getElementById(
+            "items_loading_container"
+          );
+          loading_items_spinner.style.display = "block";
+          if (loading_items_spinner.style.display === "block") {
+            setTimeout(() => {
+              resolved();
+            }, 100);
+          }
+        }).then(async () => {
+          await addFoldersfunction(
+            "",
+            irregularFolderArray,
+            pathElement,
+            myPath
+          );
+          document.getElementById("loading-items-background-overlay").remove();
+          document.getElementById("items_loading_container").remove();
+        });
+      } else {
+        await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+      }
     }
   }
 );
@@ -4962,10 +5094,113 @@ async function drop(ev) {
       } else {
         return;
       }
+      console.log(ev.dataTransfer.files.length);
+      if (ev.dataTranser.files.length > 500) {
+        let load_spinner_promise = new Promise(async (resolved) => {
+          let background = document.createElement("div");
+          let spinner_container = document.createElement("div");
+          let spinner_icon = document.createElement("div");
+          spinner_container.setAttribute("id", "items_loading_container");
+          spinner_icon.setAttribute("id", "item_load");
+          spinner_icon.setAttribute(
+            "class",
+            "ui large active inline loader icon-wrapper"
+          );
+          background.setAttribute("class", "loading-items-background");
+          background.setAttribute("id", "loading-items-background-overlay");
+
+          spinner_container.append(spinner_icon);
+          document.body.prepend(background);
+          document.body.prepend(spinner_container);
+          let loading_items_spinner = document.getElementById(
+            "items_loading_container"
+          );
+          loading_items_spinner.style.display = "block";
+          if (loading_items_spinner.style.display === "block") {
+            setTimeout(() => {
+              resolved();
+            }, 100);
+          }
+        }).then(async () => {
+          dropHelper(
+            filesElement,
+            targetElement,
+            action,
+            myPath,
+            importedFiles,
+            importedFolders,
+            nonAllowedDuplicateFiles,
+            uiFiles,
+            uiFolders
+          );
+          // Swal.close();
+          document.getElementById("loading-items-background-overlay").remove();
+          document.getElementById("items_loading_container").remove();
+          // background.remove();
+        });
+      } else {
+        dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+      }
+    });
+  } else {
+    if (ev.dataTransfer.files.length > 500) {
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    } else {
       dropHelper(
         filesElement,
         targetElement,
-        action,
+        "",
         myPath,
         importedFiles,
         importedFolders,
@@ -4973,19 +5208,7 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
-    });
-  } else {
-    dropHelper(
-      filesElement,
-      targetElement,
-      "",
-      myPath,
-      importedFiles,
-      importedFolders,
-      nonAllowedDuplicateFiles,
-      uiFiles,
-      uiFolders
-    );
+    }
   }
 }
 
@@ -5910,7 +6133,6 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
           '">' +
           item +
           "</div></div>";
-        console.log(element_creation);
       }
 
       if (

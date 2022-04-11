@@ -227,7 +227,7 @@ function delFolder(
         delete myPath[type][itemToRestore];
 
         // update UI with updated jsonobj
-        listItems(myPath, uiItem);
+        listItems(myPath, uiItem, 500, (reset = true));
         getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
         beginScrollListen();
       }
@@ -276,6 +276,7 @@ function delFolder(
                   myPath[type][itemToDelete],
                   "delete"
                 );
+                current_element.parentNode.remove();
               }
 
               if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
@@ -285,6 +286,10 @@ function delFolder(
                 let itemToDelete_new_key = itemToDelete + "-DELETED";
                 myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
                 delete myPath[type][itemToDelete];
+                let current_item = current_element.parentElement;
+                current_item.children[0].classList.add("deleted-file");
+                current_item.children[1].className =
+                  "folder_desc pennsieve_file";
               }
             } else {
               delete myPath[type][itemToDelete];
@@ -292,7 +297,7 @@ function delFolder(
           });
 
           // update UI with updated jsonobj
-          listItems(myPath, uiItem);
+          listItems(myPath, uiItem, 500, (reset = true));
           getInFolder(
             singleUIItem,
             uiItem,
@@ -1880,9 +1885,6 @@ async function addFilesfunction(
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
     let endTime = performance.now();
-    console.log(
-      `Duration of addFiles function: ${endTime - start_time} milliseconds`
-    );
     // log the successful import
     logCurationForAnalytics(
       "Success",
@@ -1898,9 +1900,6 @@ async function addFilesfunction(
 const scroll_box = document.querySelector("#organize-dataset-tab");
 const item_box = document.querySelector("#items");
 const dataset_path = document.getElementById("input-global-path");
-const loading_items_spinner = document.getElementById(
-  "items_loading_container"
-);
 
 //will observe if property of element changes to decide of eventListener is needed
 function observeElement(element, property, callback, delay = 0) {

@@ -2007,6 +2007,7 @@ async function moveItems(ev, category) {
                 itemType = "folders";
               }
               moveItemsHelper(itemToMove, selectedPath, itemType);
+              ev.parentElement.remove();
             });
           // only 1 file/folder
         } else {
@@ -2018,6 +2019,7 @@ async function moveItems(ev, category) {
             itemType = "folders";
           }
           moveItemsHelper(itemToMove, selectedPath, itemType);
+          ev.parentElement.remove();
         }
       }
     });
@@ -2096,8 +2098,6 @@ function moveItemsHelper(item, destination, category) {
   }
   //delete item from the original location
   delete myPath[category][item];
-  console.log(item);
-  console.log(destination);
   listItems(myPath, "#items");
   getInFolder(
     ".single-item",
