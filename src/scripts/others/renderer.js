@@ -4663,16 +4663,28 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
     //   },
     // });
     //waiting for add files to be completed
-    loading_items_spinner.style.display = "block";
-    await addFilesfunction(
-      path,
-      myPath,
-      organizeDSglobalPath,
-      "#items",
-      ".single-item",
-      datasetStructureJSONObj
-    );
-    loading_items_spinner.style.display = "none";
+    let load_spinner_promise = new Promise(async (resolved) => {
+      loading_items_spinner.style.display = "block";
+      console.log(loading_items_spinner.style.display);
+      if (loading_items_spinner.style.display === "block") {
+        setTimeout(() => {
+          resolved();
+        }, 100);
+      }
+    }).then(async () => {
+      console.log("inside then");
+      await addFilesfunction(
+        path,
+        myPath,
+        organizeDSglobalPath,
+        "#items",
+        ".single-item",
+        datasetStructureJSONObj
+      );
+      console.log("finished addFiles now changing css");
+      // Swal.close();
+      loading_items_spinner.style.display = "none";
+    });
   }
 });
 

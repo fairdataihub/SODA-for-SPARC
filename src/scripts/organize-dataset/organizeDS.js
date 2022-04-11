@@ -1879,6 +1879,10 @@ async function addFilesfunction(
     await listItems(currentLocation, uiItem, 500);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
+    let endTime = performance.now();
+    console.log(
+      `Duration of addFiles function: ${endTime - start_time} milliseconds`
+    );
     // log the successful import
     logCurationForAnalytics(
       "Success",
