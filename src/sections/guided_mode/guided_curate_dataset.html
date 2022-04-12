@@ -252,62 +252,23 @@
               <h1 class="guided--text-sub-step" style="margin-bottom: 5px">
                 SPARC dataset structure
               </h1>
-              <p class="guided--help-text">
-                SPARC dataset are organized into 6 different high-level folders
-                explained below. If your dataset does not already adhere to
-                SPARC's dataset structure guidelines, guided mode will walk you
-                through the process of structuring your dataset.
+              <p class="guided--help-text" style="max-width: 900px">
+                SPARC datasets are organized according to the SPARC Data
+                Structure 2.0. More details about the structure are available in
+                the dedicated SPARC help page. Briefly, the each SPARC dataset
+                must contain all or a subset of the following six folders
+                depending on the type of data: primary, ... (list all). A
+                specific organization under subjects and/or samples folder is
+                also expected within the primary folder. A sample structure is
+                presented in the figure below along with a brief description of
+                the content of each folder.
               </p>
-              <div class="space-between w-100" style="margin-top: 10px">
-                <div class="guided--container-sub">
-                  <img
-                    src="assets/img/sparc-dataset-structure-example.png"
-                    alt="SPARC dataset structure example"
-                    style="width: 100%"
-                  />
-                </div>
-                <div class="guided--container-sub" style="min-width: 360px">
-                  <h3
-                    class="guided--help-text text-center w-100"
-                    style="padding-bottom: 0px"
-                  >
-                    SPARC high level folders
-                  </h3>
-                  <p class="guided--help-text small w-100">
-                    <b>Code:</b> Contains the source code used in the study.
-                  </p>
-                  <p class="guided--help-text small w-100">
-                    <b>Code:</b> Contains the source code used in the study.
-                  </p>
-                  <p class="guided--help-text small w-100">
-                    <b>Derivative:</b> Contains data derived from the source
-                    file.
-                  </p>
-                  <p class="guided--help-text small w-100">
-                    <b>docs:</b> Contains all supporting documentation for the
-                    dataset. Docs may contain any type of file, including
-                    images, text, and video.
-                  </p>
-                  <p class="guided--help-text small w-100">
-                    <b>primary:</b> Contains all folders and files for
-                    experimental subjects and/or samples.
-                  </p>
-                  <p class="guided--help-text small w-100">
-                    <b>protocol:</b> Contains supplementary files to accompany
-                    the experimental protocols submitted to protocols.io.
-                  </p>
-                  <p class="guided--help-text small w-100">
-                    <b>source:</b> Contains unaltered, raw files from an
-                    experiment.
-                  </p>
-                  <p class="guided--help-text small w-100">
-                    More detailed information about the dataset structure can be
-                    found on
-                    <a href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT"
-                      >SPARC's website</a
-                    >
-                  </p>
-                </div>
+              <div class="guided--container-sub">
+                <img
+                  src="assets/img/sparc-dataset-structure-example.png"
+                  alt="SPARC dataset structure example"
+                  style="width: 50%"
+                />
               </div>
             </div>
             <div class="guided--section">
@@ -343,7 +304,7 @@
                         fill="#13716D"
                       />
                     </svg>
-                    <h2>No, I would like to structure a new dataset</h2>
+                    <h2>No</h2>
                   </div>
                 </div>
 
@@ -370,9 +331,7 @@
                         d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
                       />
                     </svg>
-                    <h2>
-                      Yes, I would like to import an existing local dataset
-                    </h2>
+                    <h2>Yes</h2>
                   </div>
                 </div>
               </div>
@@ -923,13 +882,14 @@
                 class="field"
                 style="display: flex; justify-content: center; width: 100%"
               >
-                <button
+                <input
+                  class="form-control"
+                  style="width: 6000px !important"
                   id="guided-input-destination-getting-started-locally"
-                  class="btn_animated"
-                  style="width: 210px; border: none !important"
-                >
-                  Browse here
-                </button>
+                  type="text"
+                  readonly
+                  placeholder="Browse here"
+                />
               </div>
               <p
                 class="hidden"
