@@ -182,10 +182,10 @@ const displayValidationErrors = (errors) => {
     // some errors have multiple error messages
     for (const message of messages) {
       // get back a user friendly error message using the path and the message text
-      let translatedMessage = translatePipelineError(error.path, message);
+      // let translatedMessage = translatePipelineError(error.path, message);
 
       // add message and validator to the display
-      // addValidationErrorToTable(tableBody, translatedMessage[0], validator[1]);
+      addValidationErrorToTable(tableBody, error.path, message );
     }
   }
 };
@@ -203,30 +203,33 @@ const addValidationErrorToTable = (
   let tableDataList = [
     document.createElement("td"),
     document.createElement("td"),
-    document.createElement("td"),
+    // document.createElement("td"),
   ];
 
   /// add the message to the first td
-  let div = document.createElement("div");
-  div.style = "width: 354px; overflow-wrap: break-word; text-align: left;";
-  div.textContent = errorMessage;
-  tableDataList[0].appendChild(div);
+  let pathDiv = document.createElement("div");
+  pathDiv.style = "width: 200px; overflow-wrap: break-word; text-align: left;";
+  pathDiv.textContent = errorMessage;
+  tableDataList[0].appendChild(pathDiv);
 
   // add the validator statement to the second td
-  tableDataList[1].textContent = validatorStatement;
+  let messageDiv = document.createElement("div")
+  messageDiv.style = "width: 250px; overflow-wrap: break-word; text-align: left;"
+  messageDiv.textContent = validatorStatement
+  tableDataList[1].appendChild(messageDiv)
 
   // add a dummy link to the last td
-  tableDataList[2].textContent = "Dummy Link";
+  // tableDataList[2].textContent = "Dummy Link";
 
   // add table data to the row
   row.appendChild(tableDataList[0]);
   row.appendChild(tableDataList[1]);
-  row.appendChild(tableDataList[2]);
+  // row.appendChild(tableDataList[2]);
 
   // append the row to the table body
   tableBody.appendChild(row);
 
-  console.log(row);
+  // console.log(row);
 };
 
 const validationErrorsOccurred = (validationResult) =>
