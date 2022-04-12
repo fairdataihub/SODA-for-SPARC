@@ -4714,7 +4714,6 @@ ipcRenderer.on(
     for (var ele of pathElement) {
       detectIrregularFolders(path.basename(ele), ele);
     }
-    console.log(pathElement.length);
     if (irregularFolderArray.length > 0) {
       Swal.fire({
         title:
@@ -4833,7 +4832,6 @@ ipcRenderer.on(
         }
       });
     } else {
-      console.log(pathElement);
       if (pathElement.length > 500) {
         let load_spinner_promise = new Promise(async (resolved) => {
           let background = document.createElement("div");
@@ -5094,7 +5092,6 @@ async function drop(ev) {
       } else {
         return;
       }
-      console.log(ev.dataTransfer.files.length);
       if (ev.dataTranser.files.length > 500) {
         let load_spinner_promise = new Promise(async (resolved) => {
           let background = document.createElement("div");
@@ -6124,7 +6121,6 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
         if (deleted_file) {
           cloud_item = " pennsieve_file_deleted";
         }
-        console.log(appendString);
         let element_creation =
           '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
           extension +
