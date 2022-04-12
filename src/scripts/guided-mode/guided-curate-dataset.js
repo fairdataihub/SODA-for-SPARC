@@ -39,7 +39,12 @@ const guidedTransitionFromHome = () => {
   $("#guided-home").hide();
   $("#guided-header-div").css("display", "flex");
   $("#guided-footer-div").css("display", "flex");
+  $("#guided-next-button").hide();
   $("#prepare-dataset-parent-tab").css("display", "flex");
+  const sidebar = document.getElementById("sidebarCollapse");
+  if (!sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
 };
 const guidedTransitionToHome = () => {
   guidedPrepareHomeScreen();
@@ -47,6 +52,12 @@ const guidedTransitionToHome = () => {
   $("#guided-header-div").hide();
   $("#guided-footer-div").hide();
   $("#prepare-dataset-parent-tab").hide();
+
+  //get element with id "sidebarCollapse"
+  const sidebar = document.getElementById("sidebarCollapse");
+  if (sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -4338,6 +4349,7 @@ $(document).ready(() => {
           ) {
             sodaJSONObj["starting-point"]["type"] = "local";
           }
+          $("#guided-next-button").show();
         } else {
           errorArray.push({
             type: "notyf",
@@ -4643,6 +4655,7 @@ $(document).ready(() => {
     pageBeingLeftID = CURRENT_PAGE.attr("id");
 
     if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
+      $("#guided-next-button").show();
       guidedTransitionToHome();
       return;
     }

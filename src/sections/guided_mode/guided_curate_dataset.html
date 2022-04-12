@@ -166,6 +166,7 @@
                 <button
                   class="ui primary button"
                   id="guided-create-new-dataset"
+                  style="background-color: var(--color-light-green) !important"
                 >
                   Start curating dataset
                 </button>
@@ -247,9 +248,71 @@
           </div>
 
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step" style="margin-bottom: 5px">
+                SPARC dataset structure
+              </h1>
+              <p class="guided--help-text">
+                SPARC dataset are organized into 6 different high-level folders
+                explained below. If your dataset does not already adhere to
+                SPARC's dataset structure guidelines, guided mode will walk you
+                through the process of structuring your dataset.
+              </p>
+              <div class="space-between w-100" style="margin-top: 10px">
+                <div class="guided--container-sub">
+                  <img
+                    src="assets/img/sparc-dataset-structure-example.png"
+                    alt="SPARC dataset structure example"
+                    style="width: 100%"
+                  />
+                </div>
+                <div class="guided--container-sub" style="min-width: 360px">
+                  <h3
+                    class="guided--help-text text-center w-100"
+                    style="padding-bottom: 0px"
+                  >
+                    SPARC high level folders
+                  </h3>
+                  <p class="guided--help-text small w-100">
+                    <b>Code:</b> Contains the source code used in the study.
+                  </p>
+                  <p class="guided--help-text small w-100">
+                    <b>Code:</b> Contains the source code used in the study.
+                  </p>
+                  <p class="guided--help-text small w-100">
+                    <b>Derivative:</b> Contains data derived from the source
+                    file.
+                  </p>
+                  <p class="guided--help-text small w-100">
+                    <b>docs:</b> Contains all supporting documentation for the
+                    dataset. Docs may contain any type of file, including
+                    images, text, and video.
+                  </p>
+                  <p class="guided--help-text small w-100">
+                    <b>primary:</b> Contains all folders and files for
+                    experimental subjects and/or samples.
+                  </p>
+                  <p class="guided--help-text small w-100">
+                    <b>protocol:</b> Contains supplementary files to accompany
+                    the experimental protocols submitted to protocols.io.
+                  </p>
+                  <p class="guided--help-text small w-100">
+                    <b>source:</b> Contains unaltered, raw files from an
+                    experiment.
+                  </p>
+                  <p class="guided--help-text small w-100">
+                    More detailed information about the dataset structure can be
+                    found on
+                    <a href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT"
+                      >SPARC's website</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
             <div class="guided--section">
               <h1 class="guided--text-sub-step">
-                Is your dataset organized according to SPARC's dataset
+                Is your dataset already organized according to SPARC's dataset
                 structure?
               </h1>
               <div class="guided--card-container">
@@ -325,6 +388,9 @@
                     <button
                       class="ui primary button"
                       id="guided-structure-new-dataset"
+                      style="
+                        background-color: var(--color-light-green) !important;
+                      "
                     >
                       Start dataset structuring
                     </button>
@@ -338,6 +404,9 @@
                     <button
                       class="ui primary button"
                       id="guided-import-existing-dataset"
+                      style="
+                        background-color: var(--color-light-green) !important;
+                      "
                     >
                       Import existing dataset
                     </button>
