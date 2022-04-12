@@ -42,11 +42,11 @@ const guidedTransitionFromHome = () => {
   $("#prepare-dataset-parent-tab").css("display", "flex");
 };
 const guidedTransitionToHome = () => {
+  guidedPrepareHomeScreen();
   $("#guided-home").css("display", "flex");
   $("#guided-header-div").hide();
   $("#guided-footer-div").hide();
   $("#prepare-dataset-parent-tab").hide();
-  guidedRenderHomeScreen();
 };
 
 const saveGuidedProgress = (guidedProgressFileName) => {
@@ -262,7 +262,16 @@ const handlePageBranching = (selectedCardElement) => {
   }
 };
 
-const guidedRenderHomeScreen = async () => {
+const guidedResetProgressVariables = () => {
+  sodaJSONObj = {};
+  datasetStructureJSONObj = {};
+  subjectsTableData = {};
+  samplesTableData = {};
+};
+
+const guidedPrepareHomeScreen = async () => {
+  //Wipe out existing progress if it exists
+  guidedResetProgressVariables();
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath);
@@ -301,6 +310,7 @@ const guidedRenderHomeScreen = async () => {
     autoplay: true,
   });
 };
+
 const traverseToTab = (targetPageID) => {
   if (
     targetPageID === "guided-designate-pi-owner-tab" ||
@@ -310,7 +320,14 @@ const traverseToTab = (targetPageID) => {
     $(".selectpicker").selectpicker("refresh");
   }
   if (targetPageID === "guided-subjects-folder-tab") {
-    $("#guided-button-preview-folder-structure").show();
+    //check it subjects exist in sodajsonObj
+    if (guidedGetSubjects().length === 0) {
+      $("#number-of-subjects-prompt").css("display", "flex");
+      $("#subjects-table").hide();
+    } else {
+      $("#number-of-subjects-prompt").hide();
+      $("#subjects-table").css("display", "flex");
+    }
   }
   if (targetPageID === "guided-samples-folder-tab") {
     renderSamplesTables();
