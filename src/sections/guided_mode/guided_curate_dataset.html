@@ -849,24 +849,7 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-existing-local-dataset-branch-page"
             data-skip-page="true"
           >
-            <div class="guided--container-data-display">
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">
-                    Local dataset location:
-                  </h5>
-                </div>
-                <div
-                  class="guided--dataset-content-container guided-change-dataset-name"
-                >
-                  <h5
-                    class="guided--dataset-content guidedDatasetPath"
-                    id="guided-dataset-path"
-                  ></h5>
-                </div>
-              </div>
-            </div>
-            <div class="guided--section show" id="guided_dataset_name_div">
+            <div class="guided--section" id="guided_dataset_name_div">
               <label class="guided--text-sub-step"
                 >What is the location of the dataset?
                 <i
@@ -884,7 +867,7 @@
               >
                 <input
                   class="form-control"
-                  style="width: 6000px !important"
+                  style="width: 600px !important; cursor: pointer"
                   id="guided-input-destination-getting-started-locally"
                   type="text"
                   readonly
@@ -929,14 +912,13 @@
                 Add a banner image to your dataset below
               </h1>
               <button
-                class="btn_animated"
+                class="ui primary button"
                 id="guided-button-add-banner-image"
-                data-alert-message="A banner image has not been added to your dataset. Please add one before you continue."
-                data-alert-type="warning"
-                style="width: 180px; border: none !important"
+                style="background-color: var(--color-light-green) !important"
               >
                 Add banner image
               </button>
+              <div class="guided--container-data-display">asdf</div>
             </div>
             <div
               class="modal fade"

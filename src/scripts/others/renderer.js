@@ -6387,110 +6387,106 @@ ipcRenderer.on(
       if (filepath != null) {
         sodaJSONObj["starting-point"]["local-path"] = "";
         sodaJSONObj["starting-point"]["type"] = "local";
-        $("#guided-input-destination-getting-started-locally").html(
-          "Select a new dataset location"
-        );
+
+        $("#guided-input-destination-getting-started-locally").val(filepath[0]);
         $(".guidedDatasetPath").text(filepath[0]);
-        if (
-          sodaJSONObj["starting-point"]["type"] === "local" &&
-          sodaJSONObj["starting-point"]["local-path"] == ""
-        ) {
-          valid_dataset = verify_sparc_folder($("#guided-dataset-path").text());
-          if (valid_dataset == true) {
-            var action = "";
-            irregularFolderArray = [];
-            detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
-            var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-            if (irregularFolderArray.length > 0) {
-              Swal.fire({
-                title:
-                  "The following folders contain non-allowed characters in their names. How should we handle them?",
-                html:
-                  "<div style='max-height:300px; overflow-y:auto'>" +
-                  irregularFolderArray.join("</br>") +
-                  "</div>",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: "Replace characters with (-)",
-                denyButtonText: "Remove characters",
-                cancelButtonText: "Cancel",
-                didOpen: () => {
-                  $(".swal-popover").popover();
-                },
-                footer: footer,
-              }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                  action = "replace";
-                } else if (result.isDenied) {
-                  action = "remove";
-                } else {
-                  $("#guided-input-destination-getting-started-locally").html(
-                    "Browse here"
-                  );
-                  sodaJSONObj["starting-point"]["local-path"] = "";
-                  $("#para-continue-location-dataset-getting-started").text("");
-                  return;
-                }
-                sodaJSONObj["starting-point"]["local-path"] = filepath[0];
 
-                let root_folder_path = $("#guided-dataset-path").text();
-
-                create_json_object(action, sodaJSONObj, root_folder_path);
-                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-                populate_existing_folders(datasetStructureJSONObj);
-                populate_existing_metadata(sodaJSONObj);
-                enableProgressButton();
-              });
-            } else {
-              action = "";
-              let root_folder_path = $("#guided-dataset-path").text();
+        valid_dataset = verify_sparc_folder(filepath[0]);
+        if (valid_dataset == true) {
+          var action = "";
+          irregularFolderArray = [];
+          detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+          var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+          if (irregularFolderArray.length > 0) {
+            Swal.fire({
+              title:
+                "The following folders contain non-allowed characters in their names. How should we handle them?",
+              html:
+                "<div style='max-height:300px; overflow-y:auto'>" +
+                irregularFolderArray.join("</br>") +
+                "</div>",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              showDenyButton: true,
+              showCancelButton: true,
+              confirmButtonText: "Replace characters with (-)",
+              denyButtonText: "Remove characters",
+              cancelButtonText: "Cancel",
+              didOpen: () => {
+                $(".swal-popover").popover();
+              },
+              footer: footer,
+            }).then((result) => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isConfirmed) {
+                action = "replace";
+              } else if (result.isDenied) {
+                action = "remove";
+              } else {
+                $("#guided-input-destination-getting-started-locally").val(
+                  "Browse here"
+                );
+                sodaJSONObj["starting-point"]["local-path"] = "";
+                $("#para-continue-location-dataset-getting-started").text("");
+                return;
+              }
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+
+              let root_folder_path = $(
+                "#guided-input-destination-getting-started-locally"
+              ).val();
+
               create_json_object(action, sodaJSONObj, root_folder_path);
               datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
               populate_existing_folders(datasetStructureJSONObj);
               populate_existing_metadata(sodaJSONObj);
-
               enableProgressButton();
-            }
+            });
           } else {
-            Swal.fire({
-              icon: "warning",
-              html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+            action = "";
+            let root_folder_path = $(
+              "#guided-input-destination-getting-started-locally"
+            ).val();
+            sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+            create_json_object(action, sodaJSONObj, root_folder_path);
+            datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+            populate_existing_folders(datasetStructureJSONObj);
+            populate_existing_metadata(sodaJSONObj);
+
+            enableProgressButton();
+          }
+        } else {
+          Swal.fire({
+            icon: "warning",
+            html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.
               <br/>
               If you are trying to create a new dataset folder, select the 'Prepare a new dataset' option.`,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showConfirmButton: false,
-              showCancelButton: true,
-              focusCancel: true,
-              cancelButtonText: "Okay",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-              } else {
-                $("#guided-input-destination-getting-started-locally").html(
-                  "Browse here"
-                );
-                $(".guidedDatasetPath").text("");
-                sodaJSONObj["starting-point"]["local-path"] = "";
-                $("#para-continue-location-dataset-getting-started").text("");
-              }
-            });
-          }
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: false,
+            showCancelButton: true,
+            focusCancel: true,
+            cancelButtonText: "Okay",
+            reverseButtons: reverseSwalButtons,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+            } else {
+              $("#guided-input-destination-getting-started-locally").val(
+                "Browse here"
+              );
+              $(".guidedDatasetPath").text("");
+              sodaJSONObj["starting-point"]["local-path"] = "";
+            }
+          });
         }
       }
     } else {
-      document.getElementById("nextBtn").disabled = true;
-      $("#para-continue-location-dataset-getting-started").text("");
     }
   }
 );

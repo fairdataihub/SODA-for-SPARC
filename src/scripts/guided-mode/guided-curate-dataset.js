@@ -4,7 +4,6 @@ let guidedTeamPermissions = [];
 
 //Temp var used by guidedSaveBannerImage to hold the cropped image path
 //until it is passed into the sodaJSONObj
-let tempGuidedCroppedBannerImagePath = "";
 
 //main nav variables initialized to first page of guided mode
 let CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
@@ -526,8 +525,7 @@ const populateGuidedModePages = (loadedJSONObj) => {
   if (completedTabs.includes("guided-dataset-starting-point-tab")) {
     let datasetName = loadedJSONObj["digital-metadata"]["name"];
     let datasetSubtitle = loadedJSONObj["digital-metadata"]["subtitle"];
-    tempGuidedCroppedBannerImagePath =
-      sodaJSONObj["digital-metadata"]["banner-image-path"];
+
     $("#guided-dataset-name-input").val(datasetName);
     $("#guided-dataset-subtitle-input").val(datasetSubtitle);
 
@@ -2065,23 +2063,7 @@ const setGuidedDatasetSubtitle = (datasetSubtitle) => {
 };
 
 const setGuidedBannerImage = (croppedImagePath) => {
-  let datasetName = sodaJSONObj["digital-metadata"]["name"];
-  //Replace "temp" from old cropped image path with entered dataset name and then update
-  //the temp guided banner image path to be dataset-name specific
-
-  //check if croppedImagePath string has substring "temp"
-  if (croppedImagePath.includes("temp")) {
-    console.log("includes temp");
-    updatedCroppedImagePath = croppedImagePath.replace("temp", datasetName);
-    fs.rename(croppedImagePath, updatedCroppedImagePath, (error) => {
-      if (error) {
-        console.log(error);
-      }
-    });
-    //Update json obj to link to the new banner image path
-    sodaJSONObj["digital-metadata"]["banner-image-path"] =
-      updatedCroppedImagePath;
-  }
+  sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
@@ -2191,10 +2173,9 @@ const setGuidedLicense = (newLicense) => {
 
 $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
-    const newDatasetInfoElement = document.getElementById(
-      "guided-new-dataset-info"
-    );
-    newDatasetInfoElement.classList.remove("hidden");
+    document
+      .getElementById("guided-new-dataset-info")
+      .classList.remove("hidden");
     $("#guided-button-start-new-curate").hide();
     $("#continue-curating-existing").hide();
   });
@@ -4229,7 +4210,7 @@ $(document).ready(() => {
     $("#guided-footer-div").hide();
   });
 
-  const guidedSaveBannerImageWithTempName = () => {
+  const guidedSaveBannerImage = () => {
     $("#guided-para-dataset-banner-image-status").html("Please wait...");
     //Save cropped image locally and check size
     let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
@@ -4244,16 +4225,19 @@ $(document).ready(() => {
     } else {
       imageType = "image/jpeg";
     }
-
-    let imagePath = path.join(imageFolder + imageExtension);
+    let datasetName = sodaJSONObj["digital-metadata"]["name"];
+    let imagePath = path.join(
+      imageFolder,
+      `${datasetName}-banner-image.` + imageExtension
+    );
     let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
     imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
       let image_file_size = fs.statSync(imagePath)["size"];
       if (image_file_size < 5 * 1024 * 1024) {
-        tempGuidedCroppedBannerImagePath = imagePath;
+        $("#guided-para-dataset-banner-image-status").html("");
+        setGuidedBannerImage(imagePath);
         $("#guided-banner-image-modal").modal("hide");
-        /*validateInputSet($("#guided-button-add-banner-image"));*/
       } else {
         $("#guided-para-dataset-banner-image-status").html(
           "<span style='color: red;'> " +
@@ -4304,11 +4288,11 @@ $(document).ready(() => {
               },
             }).then((result) => {
               if (result.isConfirmed) {
-                guidedSaveBannerImageWithTempName();
+                guidedSaveBannerImage();
               }
             });
           } else {
-            guidedSaveBannerImageWithTempName();
+            guidedSaveBannerImage();
           }
         });
       } else {
@@ -4507,6 +4491,26 @@ $(document).ready(() => {
         }
       }
       if (pageBeingLeftID === "guided-folder-importation-tab") {
+        if (
+          !$("#guided-input-destination-getting-started-locally").val() ||
+          $("#guided-input-destination-getting-started-locally").val() ===
+            "Browse here"
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select the location of your local datset",
+          });
+          throw errorArray;
+        }
+      }
+      if (pageBeingLeftID === "guided-banner-image-tab") {
+        if (sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add a banner image",
+          });
+          throw errorArray;
+        }
       }
       if (pageBeingLeftID === "guided-designate-pi-owner-tab") {
       }
