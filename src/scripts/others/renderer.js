@@ -6,7 +6,7 @@ const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
 const remote = require("electron").remote;
 const { Notyf } = require("notyf");
@@ -34,6 +34,18 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+// TODO: Test with a build
+const {
+  datasetUploadSession,
+} = require("./scripts/others/analytics/upload-session-tracker");
+
+const {
+  logCurationErrorsToAnalytics,
+  logCurationSuccessToAnalytics,
+} = require("./scripts/others/analytics/curation-analytics");
+const {
+  determineDatasetLocation,
+} = require("./scripts/others/analytics/analytics-utils");
 
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
@@ -6658,6 +6670,9 @@ const divGenerateProgressBar = document.getElementById(
   "div-new-curate-meter-progress"
 );
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
+var progressStatus = document.getElementById(
+  "para-new-curate-progress-bar-status"
+);
 
 document
   .getElementById("button-generate")
@@ -6673,7 +6688,7 @@ document
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
       "flex";
-    $("#sidebarCollapse").prop("disabled", true);
+    $("#sidebarCollapse").prop("disabled", false);
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
@@ -6703,9 +6718,9 @@ document
 
     generateProgressBar.value = 0;
 
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "Please wait while we verify a few things...";
+    progressStatus.innerHTML = "Please wait while we verify a few things...";
 
+    statusText = "Please wait while we verify a few things...";
     if (dataset_destination == "Pennsieve") {
       let supplementary_checks = await run_pre_flight_checks(false);
       if (!supplementary_checks) {
@@ -6720,8 +6735,7 @@ document
     document.getElementById(
       "para-new-curate-progress-bar-error-status"
     ).innerHTML = "";
-    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-      "";
+    progressStatus.innerHTML = "";
     document.getElementById("div-new-curate-progress").style.display = "none";
 
     progressBarNewCurate.value = 0;
@@ -6764,6 +6778,7 @@ document
           log.info("Continue with curate");
           var message = "";
           error_files = res[0];
+          //bring duplicate outside
           error_folders = res[1];
 
           if (error_files.length > 0) {
@@ -6830,21 +6845,105 @@ const delete_imported_manifest = () => {
   }
 };
 
+function dismissStatus(id) {
+  document.getElementById(id).style = "display: none;";
+  //document.getElementById("dismiss-status-bar").style = "display: none;";
+}
+
 let file_counter = 0;
 let folder_counter = 0;
+var uploadComplete = new Notyf({
+  position: { x: "right", y: "bottom" },
+  ripple: true,
+  dismissible: true,
+  ripple: false,
+  types: [
+    {
+      type: "success",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 4000,
+    },
+  ],
+});
 
-function initiate_generate() {
+//const remote = require("electron").remote;
+//child.setPosition(position[0], position[1]);
+
+// Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
+async function initiate_generate() {
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
 
+  // get the amount of files
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
+
+  progressStatus.innerHTML = "Preparing files ...";
+
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
 
+  let organizeDataset = document.getElementById("organize_dataset_btn");
+  let uploadLocally = document.getElementById("upload_local_dataset_btn");
+  let statusBarContainer = document.getElementById("div-new-curate-progress");
+  var statusBarClone = statusBarContainer.cloneNode(true);
+  let navContainer = document.getElementById("nav-items");
+  let statusText = statusBarClone.children[2];
+  let statusMeter = statusBarClone.getElementsByClassName("progresstrack")[0];
+  let returnButton = document.createElement("button");
+
+  statusBarClone.id = "status-bar-curate-progress";
+  statusText.setAttribute("id", "nav-curate-progress-bar-status");
+  statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
+  statusMeter.className = "nav-status-bar";
+  statusBarClone.appendChild(returnButton);
+  uploadLocally.disabled = true;
+  organizeDataset.disabled = true;
+  organizeDataset.className = "disabled-content-button";
+  uploadLocally.className = "disabled-content-button";
+  organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
+  uploadLocally.style = "background-color: #f6f6f6; border: #fff;";
+
+  returnButton.type = "button";
+  returnButton.id = "returnButton";
+  returnButton.innerHTML = "Return to progress";
+
+  returnButton.onclick = function () {
+    organizeDataset.disabled = false;
+    organizeDataset.className = "content-button is-selected";
+    organizeDataset.style = "background-color: #fff";
+    organizeDataset.click();
+    let button = document.getElementById("button-generate");
+    $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("start-over-btn").style.display = "none";
+    document.getElementById("div-vertical-progress-bar").style.display = "none";
+    document.getElementById("div-generate-comeback").style.display = "none";
+    document.getElementById("generate-dataset-progress-tab").style.display =
+      "flex";
+    organizeDataset.disabled = true;
+    organizeDataset.className = "disabled-content-button";
+    organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
+  };
+
+  //document.body.appendChild(statusBarClone);
+  let sparc_container = document.getElementById("sparc-logo-container");
+  sparc_container.style.display = "none";
+  navContainer.appendChild(statusBarClone);
+  let navbar = document.getElementById("main-nav");
+  if (navbar.classList.contains("active")) {
+    document.getElementById("sidebarCollapse").click();
+  }
+
+  //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["manifest-files"]) {
       if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
@@ -6853,113 +6952,70 @@ function initiate_generate() {
       }
     }
   }
-
-  let dataset_name = "";
   let dataset_destination = "";
-  // let dataset_id = ""
+  let dataset_name = "";
 
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
+  // track the amount of files that have been uploaded/generated
+  let uploadedFiles = 0;
+  let uploadedFilesSize = 0;
+  let foldersUploaded = 0;
+  let previousUploadedFileSize = 0;
+  let increaseInFileSize = 0;
+  let generated_dataset_id = undefined;
+
+  // determine where the dataset will be generated/uploaded
+  let nameDestinationPair = determineDatasetDestination();
+  dataset_name = nameDestinationPair[0];
+  dataset_destination = nameDestinationPair[1];
+
+  if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+    // create a dataset upload session
+    datasetUploadSession.startSession();
   }
 
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 
-  client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
+  client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
     if (error) {
       $("#sidebarCollapse").prop("disabled", false);
       var emessage = userError(error);
       document.getElementById(
         "para-new-curate-progress-bar-error-status"
       ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-      document.getElementById("para-new-curate-progress-bar-status").innerHTML =
-        "";
+      uploadLocally.disabled = false;
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+      Swal.fire({
+        icon: "error",
+        title: "An error occurred",
+        html: "Please return to progress page to see full error",
+      }).then((result) => {
+        statusBarClone.remove();
+        sparc_container.style.display = "inline";
+        if (result.isConfirmed) {
+          organizeDataset.disabled = false;
+          organizeDataset.className = "content-button is-selected";
+          organizeDataset.style = "background-color: #fff";
+          organizeDataset.click();
+          let button = document.getElementById("button-generate");
+          $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+          document.getElementById("prevBtn").style.display = "none";
+          document.getElementById("start-over-btn").style.display = "none";
+          document.getElementById("div-vertical-progress-bar").style.display =
+            "none";
+          document.getElementById("div-generate-comeback").style.display =
+            "none";
+          document.getElementById(
+            "generate-dataset-progress-tab"
+          ).style.display = "flex";
+        }
+      });
+      progressStatus.innerHTML = "";
+      statusText.innerHTML = "";
       document.getElementById("div-new-curate-progress").style.display = "none";
       generateProgressBar.value = 0;
       log.error(error);
       console.error(error);
-      // forceActionSidebar('show');
-
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.PREFIX,
-        [],
-        determineDatasetLocation()
-      );
-
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 7", "Generate", "dataset", `${dataset_destination}`],
-        determineDatasetLocation()
-      );
-
-      file_counter = 0;
-      folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        "Size",
-        main_total_generate_dataset_size
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        main_total_generate_dataset_size
-      );
-
-      // get dataset id if available
-      let datasetLocation = determineDatasetLocation();
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        "Number of Files",
-        file_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        file_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        file_counter
-      );
 
       client.invoke(
         "api_bf_dataset_account",
@@ -6975,163 +7031,37 @@ function initiate_generate() {
           }
         }
       );
+
+      // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
+      // if they stay zero that means nothing was uploaded
+      if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+        await wait(2000);
+      }
+
+      // log the curation errors to Google Analytics
+      logCurationErrorsToAnalytics(
+        uploadedFiles,
+        uploadedFilesSize,
+        dataset_destination,
+        main_total_generate_dataset_size,
+        increaseInFileSize,
+        datasetUploadSession
+      );
     } else {
       main_total_generate_dataset_size = res[1];
+      uploadedFiles = res[2];
+
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
-      if (manifest_files_requested) {
-        let high_level_folder_num = 0;
-        if ("dataset-structure" in sodaJSONObj) {
-          if ("folders" in sodaJSONObj["dataset-structure"]) {
-            for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-              high_level_folder_num += 1;
-            }
-          }
-        }
 
-        // get dataset id if available
-        let datasetLocation = determineDatasetLocation();
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest",
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          high_level_folder_num
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          `Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest - ${dataset_destination}`,
-          datasetLocation === "Pennsieve"
-            ? defaultBfDatasetId
-            : datasetLocation,
-          high_level_folder_num
-        );
-      }
-
-      if (dataset_destination == "Pennsieve") {
-        show_curation_shortcut();
-      }
-
-      file_counter = 0;
-      folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
-
-      logCurationForAnalytics(
-        "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.PREFIX,
-        [],
-        determineDatasetLocation()
+      // log relevant curation details about the dataset generation/Upload to Google Analytics
+      logCurationSuccessToAnalytics(
+        manifest_files_requested,
+        main_total_generate_dataset_size,
+        dataset_name,
+        dataset_destination,
+        uploadedFiles
       );
-
-      if (dataset_destination === "Local") {
-        // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
-        let datasetName = document.querySelector("#inputNewNameDataset").value;
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Local",
-          datasetName
-        );
-      }
-
-      // for tracking the total size of all datasets ever created on SODA
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        "Size",
-        main_total_generate_dataset_size
-      );
-
-      logCurationForAnalytics(
-        "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
-        determineDatasetLocation()
-      );
-
-      let datasetLocation = determineDatasetLocation();
-      // for tracking the total size of all the "saved", "new", "Pennsieve", "local" datasets by category
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      // track amount of files for all datasets
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        "Number of Files",
-        file_counter
-      );
-
-      // track amount of files for datasets by ID or Local
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        file_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        file_counter
-      );
-
-      // log the preview card instructions for any files and folders being generated on Pennsieve
-      Array.from(document.querySelectorAll(".generate-preview")).forEach(
-        (card) => {
-          let header = card.querySelector("h5");
-          if (header.textContent.includes("folders")) {
-            let instruction = card.querySelector("p");
-            // log the folder instructions to analytics
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent}`,
-              datasetLocation === "Pennsieve"
-                ? defaultBfDatasetId
-                : datasetLocation,
-              1
-            );
-          } else if (header.textContent.includes("existing files")) {
-            let instruction = card.querySelector("p");
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent} `,
-              datasetLocation === "Pennsieve"
-                ? defaultBfDatasetId
-                : datasetLocation,
-              1
-            );
-          }
-        }
-      );
-
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
@@ -7153,6 +7083,7 @@ function initiate_generate() {
   // Progress tracking function for main curate
   var countDone = 0;
   var timerProgress = setInterval(main_progressfunction, 1000);
+  var successful = false;
   function main_progressfunction() {
     client.invoke("api_main_curate_function_progress", (error, res) => {
       if (error) {
@@ -7161,6 +7092,33 @@ function initiate_generate() {
           "para-new-curate-progress-bar-error-status"
         ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
         log.error(error);
+        organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
+        Swal.fire({
+          icon: "error",
+          title: "An error occurred",
+          html: "An error occurred",
+        }).then((result) => {
+          //statusBarClone.remove();
+          if (result.isConfirmed) {
+            document.getElementById("organize_dataset_btn").click();
+            let button = document.getElementById("button-generate");
+            $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+            document.getElementById("prevBtn").style.display = "none";
+            document.getElementById("start-over-btn").style.display = "none";
+            document.getElementById("div-vertical-progress-bar").style.display =
+              "none";
+            document.getElementById("div-generate-comeback").style.display =
+              "none";
+            document.getElementById(
+              "generate-dataset-progress-tab"
+            ).style.display = "flex";
+          }
+        });
         console.error(error);
       } else {
         main_curate_status = res[0];
@@ -7174,14 +7132,16 @@ function initiate_generate() {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
             generateProgressBar.value = 100;
-            document.getElementById(
-              "para-new-curate-progress-bar-status"
-            ).innerHTML = main_curate_status + smileyCan;
+            statusMeter.value = 100;
+            progressStatus.innerHTML = main_curate_status + smileyCan;
+            statusText.innerHTML = main_curate_status + smileyCan;
+            successful = true;
           } else {
             var value =
               (main_generated_dataset_size / main_total_generate_dataset_size) *
               100;
             generateProgressBar.value = value;
+            statusMeter.value = value;
             if (main_total_generate_dataset_size < displaySize) {
               var totalSizePrint =
                 main_total_generate_dataset_size.toFixed(2) + " B";
@@ -7212,7 +7172,11 @@ function initiate_generate() {
                 ).toFixed(2) + " GB";
             }
             var progressMessage = "";
+            var statusProgressMessage = "";
             progressMessage += main_curate_progress_message + "<br>";
+            statusProgressMessage += main_curate_progress_message + "<br>";
+            statusProgressMessage +=
+              "Progress: " + value.toFixed(2) + "%" + "<br>";
             progressMessage +=
               "Progress: " +
               value.toFixed(2) +
@@ -7222,15 +7186,18 @@ function initiate_generate() {
               ") " +
               "<br>";
             progressMessage +=
-              "Elaspsed time: " + elapsed_time_formatted + "<br>";
-            document.getElementById(
-              "para-new-curate-progress-bar-status"
-            ).innerHTML = progressMessage;
+              "Elapsed time: " + elapsed_time_formatted + "<br>";
+            progressStatus.innerHTML = progressMessage;
+            statusText.innerHTML = statusProgressMessage;
           }
         } else {
-          document.getElementById(
-            "para-new-curate-progress-bar-status"
-          ).innerHTML =
+          statusText.innerHTML =
+            main_curate_progress_message +
+            "<br>" +
+            "Elapsed time: " +
+            elapsed_time_formatted +
+            "<br>";
+          progressStatus.innerHTML =
             main_curate_progress_message +
             "<br>" +
             "Elapsed time: " +
@@ -7245,6 +7212,20 @@ function initiate_generate() {
       countDone++;
       if (countDone > 1) {
         log.info("Done curate track");
+        statusBarClone.remove();
+        sparc_container.style.display = "inline";
+        if (successful === true) {
+          organizeDataset.disabled = false;
+          organizeDataset.className = "content-button is-selected";
+          organizeDataset.style = "background-color: #fff";
+          uploadLocally.disabled = false;
+          uploadLocally.className = "content-button is-selected";
+          uploadLocally.style = "background-color: #fff";
+          uploadComplete.open({
+            type: "success",
+            message: "Dataset created successfully",
+          });
+        }
         // then show the sidebar again
         // forceActionSidebar("show");
         clearInterval(timerProgress);
@@ -7252,6 +7233,86 @@ function initiate_generate() {
       }
     }
   }
+
+  // when generating a new dataset we need to add its ID to the ID -> Name mapping
+  // we need to do this only once
+  let loggedDatasetNameToIdMapping = false;
+
+  // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
+  // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
+  // files copied and their aggregate size.
+  // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
+  //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
+  // IMP: Two reasons this exists:
+  //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
+  //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
+  const checkForBucketUpload = async () => {
+    // ask the server for the amount of files uploaded in the current session
+    // nothing to log for uploads where a user is solely deleting files in this section
+    client.invoke("api_main_curate_function_upload_details", (err, res) => {
+      // check if the amount of successfully uploaded files has increased
+      if (res[0] > 0 && res[2] > foldersUploaded) {
+        previousUploadedFileSize = uploadedFilesSize;
+        uploadedFiles = res[0];
+        uploadedFilesSize = res[1];
+        foldersUploaded = res[2];
+
+        // log the increase in the file size
+        increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
+
+        // log the aggregate file count and size values when uploading to Pennsieve
+        if (
+          dataset_destination === "bf" ||
+          dataset_destination === "Pennsieve"
+        ) {
+          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE +
+              " - Step 7 - Generate - Dataset - Number of Files",
+            `${datasetUploadSession.id}`,
+            uploadedFiles
+          );
+
+          // use the session id as the label -- this will help with aggregating the size of the given upload session
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE +
+              " - Step 7 - Generate - Dataset - Size",
+            `${datasetUploadSession.id}`,
+            increaseInFileSize
+          );
+        }
+      }
+
+      generated_dataset_id = res[3];
+      // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
+      if (
+        !loggedDatasetNameToIdMapping &&
+        generated_dataset_id !== null &&
+        generated_dataset_id !== undefined
+      ) {
+        ipcRenderer.send(
+          "track-event",
+          "Dataset ID to Dataset Name Map",
+          generated_dataset_id,
+          dataset_name
+        );
+
+        // don't log this again for the current upload session
+        loggedDatasetNameToIdMapping = true;
+      }
+    });
+
+    //stop the inteval when the upload is complete
+    if (main_curate_status === "Done") {
+      clearInterval(timerCheckForBucketUpload);
+    }
+  };
+
+  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
 }
 
 const show_curation_shortcut = () => {
@@ -7261,6 +7322,7 @@ const show_curation_shortcut = () => {
     confirmButtonText: "Yes, I want to share it",
     heightAuto: false,
     icon: "success",
+    allowOutsideClick: false,
     reverseButtons: reverseSwalButtons,
     showCancelButton: true,
     text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
@@ -7271,6 +7333,16 @@ const show_curation_shortcut = () => {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
   }).then((result) => {
+    //dismissStatus("status-bar-curate-progress");
+    uploadComplete.open({
+      type: "success",
+      message: "Upload to Pennsieve completed",
+    });
+    let statusBarContainer = document.getElementById(
+      "status-bar-curate-progress"
+    );
+    //statusBarContainer.remove();
+
     if (result.isConfirmed) {
       $("#disseminate_dataset_tab").click();
       $("#share_curation_team_btn").click();
@@ -7292,6 +7364,42 @@ const get_num_files_and_folders = (dataset_folders) => {
   }
   return;
 };
+
+function determineDatasetDestination() {
+  if (sodaJSONObj["generate-dataset"]) {
+    if (sodaJSONObj["generate-dataset"]["destination"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"];
+      if (destination === "bf" || destination === "Pennsieve") {
+        // updating an existing dataset on Pennsieve
+        if (sodaJSONObj["bf-dataset-selected"]) {
+          return [
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+            "Pennsieve",
+          ];
+        } else {
+          return [
+            // get dataset name,
+            document.querySelector("#inputNewNameDataset").value,
+            "Pennsieve",
+          ];
+        }
+      } else {
+        // replacing files in an existing local dataset
+        if (sodaJSONObj["generate-dataset"]["dataset-name"]) {
+          return [sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
+        } else {
+          // creating a new dataset from an existing local dataset
+          return [
+            document.querySelector("#inputNewNameDataset").value,
+            "Local",
+          ];
+        }
+      }
+    }
+  } else {
+    return [document.querySelector("#inputNewNameDataset").value, "Local"];
+  }
+}
 
 function backend_to_frontend_warning_message(error_array) {
   if (error_array.length > 1) {
@@ -8152,49 +8260,6 @@ function logCurationForAnalytics(
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
-}
-
-function determineDatasetLocation() {
-  let location = "";
-
-  if ("starting-point" in sodaJSONObj) {
-    // determine if the local dataset was saved or brought imported
-    if ("type" in sodaJSONObj["starting-point"]) {
-      //if save-progress exists then the user is curating a previously saved dataset
-      if ("save-progress" in sodaJSONObj) {
-        location = Destinations.SAVED;
-        return location;
-      } else {
-        location = sodaJSONObj["starting-point"]["type"];
-        // bf === blackfynn the old name for Pennsieve; bf means dataset was imported from Pennsieve
-        if (location === "bf") {
-          return Destinations.PENNSIEVE;
-        } else if (location === "local") {
-          // imported from the user's machine
-          return Destinations.LOCAL;
-        } else {
-          // if none of the above then the dataset is new
-          return Destinations.NEW;
-        }
-      }
-    }
-  }
-
-  // determine if we are using a local or Pennsieve dataset
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    location = Destinations.PENNSIEVE;
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      location = sodaJSONObj["generate-dataset"]["destination"];
-      if (location.toUpperCase() === "LOCAL") {
-        location = Destinations.LOCAL;
-      } else if (location.toUpperCase() === "PENNSIEVE") {
-        location = Destinations.SAVED;
-      }
-    }
-  }
-
-  return location;
 }
 
 function getMetadataFileNameFromStatus(metadataFileStatus) {

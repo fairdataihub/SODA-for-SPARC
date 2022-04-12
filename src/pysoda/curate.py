@@ -69,6 +69,7 @@ from pysoda import (
 
 from organize_datasets import bf_get_dataset_files_folders
 
+
 ### Global variables
 curateprogress = " "
 curatestatus = " "
@@ -76,6 +77,10 @@ curateprintstatus = " "
 total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
+uploaded_folder_counter = 0
+current_size_of_uploaded_files = 0
+generated_dataset_id = None
+
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -248,6 +253,10 @@ initial_bfdataset_size_submit = 0
 
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
+
+# a global that tracks the amount of files that have been uploaded in an upload session;
+# is reset once the session ends by success, or failure (is implicitly reset in case of Pennsieve Agent freeze by the user closing SODA)
+main_curation_uploaded_files = 0
 
 DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 
@@ -1710,7 +1719,11 @@ def generate_dataset_locally(soda_json_structure):
     global progress_percentage
     global main_total_generate_dataset_size
     global start_generate
+    global main_curation_uploaded_files
 
+    main_curation_uploaded_files = 0
+
+    # def generate(soda_json_structure):
     try:
 
         def recursive_dataset_scan(
@@ -1825,7 +1838,9 @@ def generate_dataset_locally(soda_json_structure):
             main_curate_progress_message = (
                 "Copying file " + str(srcfile) + " to " + str(distfile)
             )
+            # track amount of copied files for loggin purposes
             mycopyfile_with_metadata(srcfile, distfile)
+            main_curation_uploaded_files += 1
 
         # 7. Delete manifest folder and original folder if merge requested and rename new folder
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
@@ -1841,6 +1856,16 @@ def generate_dataset_locally(soda_json_structure):
 
     except Exception as e:
         raise e
+
+    # gev = []
+    # gev.append(gevent.spawn(generate, soda_json_structure))
+    # gevent.sleep(0)
+    # gevent.joinall(gev)
+
+    # try:
+    #     return gev[0].get()
+    # except Exception as e:
+    #      raise e
 
 
 def mymovefile_with_metadata(src, dst):
@@ -2426,6 +2451,39 @@ def create_high_level_manifest_files_existing_bf(
         raise e
 
 
+def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
+    soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
+    # # create local folder to save manifest files temporarly (delete any existing one first)
+    # shutil.rmtree(soda_manifest_folder_path) if isdir(soda_manifest_folder_path) else 0
+    # makedirs(soda_manifest_folder_path)
+
+    for high_level_fol in listdir(dataset_path):
+
+        if high_level_fol in [
+            "primary",
+            "derivative",
+            "docs",
+            "code",
+            "source",
+            "protocol",
+        ]:
+            onlyfiles = [
+                join(dataset_path, high_level_fol, f)
+                for f in listdir(join(dataset_path, high_level_fol))
+                if isfile(join(dataset_path, high_level_fol, f))
+            ]
+
+            for file in onlyfiles:
+
+                p = pathlib.Path(file)
+                # create high-level folder at the temporary location
+                folderpath = join(soda_manifest_folder_path, high_level_fol)
+                # makedirs(folderpath)
+                if p.stem == "manifest":
+                    # make copy from this manifest path to folderpath
+                    shutil.copyfile(file, join(folderpath, p.name))
+
+
 def generate_relative_path(x, y):
     if x:
         relative_path = x + "/" + y
@@ -2786,8 +2844,14 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
+    global main_curation_uploaded_files
+    global uploaded_folder_counter
+    global current_size_of_uploaded_files
     # global progress_percentage
     # global progress_percentage_array
+
+    uploaded_folder_counter = 0
+    current_size_of_uploaded_files = 0
 
     try:
 
@@ -3061,6 +3125,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             relative_path,
         )
 
+        # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         ds.update()
         list_upload_metadata_files = []
@@ -3136,13 +3201,11 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 list_upload_manifest_files.append([[manifestpath], item])
                 main_total_generate_dataset_size += getsize(manifestpath)
 
-        # clear the pennsieve queue
-        clear_queue()
-
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
         for item in list_upload_files:
+            # main_curate_progress_message = "In file one"
             list_upload = item[0]
             bf_folder = item[1]
             list_projected_names = item[2]
@@ -3151,46 +3214,124 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             tracking_folder = item[5]
             relative_path = item[6]
 
-            # track block upload size for a more reactive progress bar
-            # progress_percentage = io.StringIO()
-            # total_size = 0
-            # progress_percentage_array.append({});
-            # progress_percentage_array[-1]["files"] = {}
-            # for file in list_upload:
-            # file_size = os.path.getsize(file)
-            # file_name = os.path.basename(file)
-            # progress_percentage_array[-1]["files"][file] = file_size
-            # total_size += file_size
-            # progress_percentage_array[-1]["output-stream"] = progress_percentage
-            # progress_percentage_array[-1].pop('completed-size', None)
-
             ## check if agent is running in the background
             agent_running()
 
-            # upload
-            main_curate_progress_message = "Uploading files in " + str(relative_path)
+            BUCKET_SIZE = 500
 
-            bf_folder.upload(*list_upload)
-            bf_folder.update()
+            # determine if the current folder's files exceeds 750 (past 750 is a breaking point atm)
+            # if so proceed to batch uploading
+            if len(list_upload) > BUCKET_SIZE:
+                # store the aggregate of the amount of files in the folder
+                total_files = len(list_upload)
 
-            # rename to final name
-            for index, projected_name in enumerate(list_projected_names):
-                final_name = list_final_names[index]
-                desired_name = list_desired_names[index]
-                if final_name != projected_name:
-                    bf_item_list = bf_folder.items
-                    (
-                        my_bf_existing_files,
-                        my_bf_existing_files_name,
-                        my_bf_existing_files_name_with_extension,
-                    ) = bf_get_existing_files_details(bf_folder)
-                    for item in my_bf_existing_files:
-                        if item.name == projected_name:
-                            item.name = final_name
-                            item.update()
-                            if "files" not in tracking_folder:
-                                tracking_folder["files"] = {}
-                            tracking_folder["files"][desired_name] = {"value": item}
+                # create a start index and an end index
+                start_index = end_index = 0
+
+                # while startIndex < files.length
+                while start_index < total_files:
+                    # set the endIndex to startIndex plus 750
+                    end_index = start_index + BUCKET_SIZE - 1
+
+                    # check if the endIndex is out of bounds
+                    if end_index >= total_files:
+                        # if so set end index to files.length - 1
+                        end_index = len(list_upload) - 1
+
+                    # get the 750 files between startIndex and endIndex (inclusive of endIndex)
+                    upload_bucket = list_upload[start_index : end_index + 1]
+
+                    # inform the user files are being uploaded
+                    main_curate_progress_message = "Uploading files in " + str(
+                        relative_path
+                    )
+
+                    # clear the pennsieve queue for successive batches
+                    clear_queue()
+
+                    # upload the files
+                    bf_folder.upload(*upload_bucket)
+
+                    # update the files
+                    bf_folder.update()
+
+                    for file in upload_bucket:
+                        current_size_of_uploaded_files += getsize(file)
+
+                    # update the global that tracks the amount of files that have been successfully uploaded
+                    main_curation_uploaded_files = BUCKET_SIZE
+                    uploaded_folder_counter += 1
+
+                    # handle renaming to final names
+                    for index, projected_name in enumerate(
+                        list_projected_names[start_index : end_index + 1]
+                    ):
+                        final_name = list_final_names[start_index : end_index + 1][
+                            index
+                        ]
+                        desired_name = list_desired_names[start_index : end_index + 1][
+                            index
+                        ]
+                        if final_name != projected_name:
+                            bf_item_list = bf_folder.items
+                            (
+                                my_bf_existing_files,
+                                my_bf_existing_files_name,
+                                my_bf_existing_files_name_with_extension,
+                            ) = bf_get_existing_files_details(bf_folder)
+                            for item in my_bf_existing_files[
+                                start_index : end_index + 1
+                            ]:
+                                if item.name == projected_name:
+                                    item.name = final_name
+                                    item.update()
+                                    if "files" not in tracking_folder:
+                                        tracking_folder["files"] = {}
+                                        tracking_folder["files"][desired_name] = {
+                                            "value": item
+                                        }
+
+                    # update the start_index to end_index + 1
+                    start_index = end_index + 1
+            else:
+                # clear the pennsieve queue
+                clear_queue()
+
+                # upload all files at once for the folder
+                main_curate_progress_message = "Uploading files in " + str(
+                    relative_path
+                )
+
+                # fails when a single folder has more than 750 files (at which point I'm not sure)
+                bf_folder.upload(*list_upload)
+                bf_folder.update()
+
+                main_curation_uploaded_files = len(list_upload)
+                uploaded_folder_counter += 1
+
+                for file in list_upload:
+                    current_size_of_uploaded_files += getsize(file)
+
+                # rename to final name
+                for index, projected_name in enumerate(list_projected_names):
+                    final_name = list_final_names[index]
+                    desired_name = list_desired_names[index]
+                    if final_name != projected_name:
+                        bf_item_list = bf_folder.items
+                        (
+                            my_bf_existing_files,
+                            my_bf_existing_files_name,
+                            my_bf_existing_files_name_with_extension,
+                        ) = bf_get_existing_files_details(bf_folder)
+                        for item in my_bf_existing_files:
+                            if item.name == projected_name:
+                                item.name = final_name
+                                item.update()
+                                if "files" not in tracking_folder:
+                                    tracking_folder["files"] = {}
+                                    tracking_folder["files"][desired_name] = {
+                                        "value": item
+                                    }
 
         if list_upload_metadata_files:
             main_curate_progress_message = (
@@ -3206,7 +3347,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     "Uploading manifest file in " + str(bf_folder.name) + " folder"
                 )
                 bf_folder.upload(*manifest_file)
-                # bf_folder.update()
+                bf_folder.update()
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
     except Exception as e:
@@ -3226,6 +3367,9 @@ main_generate_destination = ""
 main_initial_bfdataset_size = 0
 bf = ""
 myds = ""
+
+
+# TODO: Make sure copying as we do for the local case is fine. I believe it is since there is no freeze. Just make that case wait for the success or fail to log. Get the result from the backend in the fail case.
 
 
 def bf_check_dataset_files_validity(soda_json_structure, bf):
@@ -3330,9 +3474,12 @@ def main_curate_function(soda_json_structure):
     global main_initial_bfdataset_size
     # global progress_percentage
     # global progress_percentage_array
+    global main_curation_uploaded_files
+    global uploaded_folder_counter
 
     global bf
     global myds
+    global generated_dataset_id
 
     start_generate = 0
     generate_start_time = time.time()
@@ -3341,6 +3488,9 @@ def main_curate_function(soda_json_structure):
     main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 1
     main_generated_dataset_size = 0
+    main_curation_uploaded_files = 0
+    uploaded_folder_counter = 0
+    generated_dataset_id = None
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
@@ -3493,6 +3643,7 @@ def main_curate_function(soda_json_structure):
                             "dataset-name"
                         ]
                         myds = bf_create_new_dataset(dataset_name, bf)
+                        generated_dataset_id = myds.id
                     bf_generate_new_dataset(soda_json_structure, bf, myds)
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
@@ -3508,7 +3659,11 @@ def main_curate_function(soda_json_structure):
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
 
-    return main_curate_progress_message, main_total_generate_dataset_size
+    return (
+        main_curate_progress_message,
+        main_total_generate_dataset_size,
+        main_curation_uploaded_files,
+    )
 
 
 def main_curate_function_progress():
@@ -3543,6 +3698,28 @@ def main_curate_function_progress():
         main_total_generate_dataset_size,
         main_generated_dataset_size,
         elapsed_time_formatted,
+    )
+
+
+def main_curate_function_upload_details():
+    """
+    Function frequently called by front end to help keep track of the amount of files that have
+    been successfully uploaded to Pennsieve, and the size of the uploaded files
+    Also tells us how many files have been copied (double usage of both variables) to a destination folder
+    for local dataset generation.
+    """
+    global main_curation_uploaded_files
+    global main_generated_dataset_size
+    global uploaded_folder_counter
+    global current_size_of_uploaded_files
+    # when the user creates a new Pennsieve dataset return back their new dataset id
+    global generated_dataset_id
+
+    return (
+        main_curation_uploaded_files,
+        current_size_of_uploaded_files,
+        uploaded_folder_counter,
+        generated_dataset_id,
     )
 
 

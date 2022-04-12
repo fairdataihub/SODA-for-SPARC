@@ -93,16 +93,6 @@ button:focus {
   align-self: center;
 }
 
-.btn-text {
-  padding: 0;
-  border: none;
-  background-color: inherit;
-  color: #4183c4;
-  text-decoration: underline;
-  text-underline-position: under;
-  display: inline-block;
-}
-
 .selectAll-container {
   margin-top: 5px;
   margin-bottom: 0px;
@@ -557,7 +547,7 @@ button[data-id="bf_list_users_pi"] {
 }
 
 /*Pre publishing submission flow file viewer uses .single-item but allows a user to select a file UI element.
-  When the element is selected it adds styling. This sets it up to ignore the hover effect styling once selected.  
+  When the element is selected it adds styling. This sets it up to ignore the hover effect styling once selected.
 */
 .single-item:not(.pre-publishing-file-viewer-file-selected):hover {
   border: #c0c0c0;
@@ -1449,6 +1439,18 @@ button[data-id="bf_list_users_pi"] {
   border: 1px solid var(--color-bg-plum);
   cursor: pointer;
   box-shadow: 0 0 3px 0 var(--color-bg-plum);
+}
+#div-manifest-edit {
+  margin-top: 20px;
+}
+
+.sparc-logo {
+  margin: 5px;
+  position: absolute;
+  margin-left: 39px;
+  width: 146px;
+  padding-left: 6px;
+  bottom: 0;
 }
 
 #items_container {
