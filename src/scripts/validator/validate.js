@@ -185,7 +185,7 @@ const displayValidationErrors = (errors) => {
       // let translatedMessage = translatePipelineError(error.path, message);
 
       // add message and validator to the display
-      addValidationErrorToTable(tableBody, error.path, message );
+      addValidationErrorToTable(tableBody, error.path, message);
     }
   }
 };
@@ -213,10 +213,11 @@ const addValidationErrorToTable = (
   tableDataList[0].appendChild(pathDiv);
 
   // add the validator statement to the second td
-  let messageDiv = document.createElement("div")
-  messageDiv.style = "width: 250px; overflow-wrap: break-word; text-align: left;"
-  messageDiv.textContent = validatorStatement
-  tableDataList[1].appendChild(messageDiv)
+  let messageDiv = document.createElement("div");
+  messageDiv.style =
+    "width: 250px; overflow-wrap: break-word; text-align: left;";
+  messageDiv.textContent = validatorStatement;
+  tableDataList[1].appendChild(messageDiv);
 
   // add a dummy link to the last td
   // tableDataList[2].textContent = "Dummy Link";
