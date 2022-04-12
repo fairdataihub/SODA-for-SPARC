@@ -2,9 +2,6 @@
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
 
-//Temp var used by guidedSaveBannerImage to hold the cropped image path
-//until it is passed into the sodaJSONObj
-
 //main nav variables initialized to first page of guided mode
 let CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
 
@@ -2064,6 +2061,16 @@ const setGuidedDatasetSubtitle = (datasetSubtitle) => {
 
 const setGuidedBannerImage = (croppedImagePath) => {
   sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
+  guidedBannerImageElement = `
+    <img
+      src="${croppedImagePath}"
+      alt="Preview of banner image"
+      style="max-height: 300px;"
+    />
+  `;
+  document.getElementById("guided-banner-image-preview").innerHTML =
+    guidedBannerImageElement;
+  $("#guided-banner-image-preview-container").show();
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
@@ -4238,6 +4245,7 @@ $(document).ready(() => {
         $("#guided-para-dataset-banner-image-status").html("");
         setGuidedBannerImage(imagePath);
         $("#guided-banner-image-modal").modal("hide");
+        $("#guided-button-add-banner-image").text("Edit banner image");
       } else {
         $("#guided-para-dataset-banner-image-status").html(
           "<span style='color: red;'> " +
