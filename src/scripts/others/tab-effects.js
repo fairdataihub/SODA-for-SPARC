@@ -574,6 +574,16 @@ const nextPrev = (n) => {
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
+  if (x[currentTab].id === "high-level-folders-tab") {
+    $("#items").empty();
+    $("#items").append(already_created_elem);
+    getInFolder(
+      ".single-item",
+      "#items",
+      dataset_path,
+      datasetStructureJSONObj
+    );
+  }
   if (
     x[currentTab].id === "high-level-folders-tab" ||
     x[currentTab].id === "metadata-files-tab"
@@ -2916,6 +2926,7 @@ const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
       "</div></div>";
     $("#items").html(appendString);
 
+    //dont know here
     listItems(currentLocation, "#items");
     getInFolder(
       ".single-item",
@@ -3324,6 +3335,7 @@ const updateOverallJSONStructure = (id) => {
     }
     // 3rd
     datasetStructureJSONObj = newDatasetStructureJSONObj;
+    //dont know here
     listItems(datasetStructureJSONObj, "#items");
     getInFolder(
       ".single-item",
