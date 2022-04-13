@@ -271,7 +271,7 @@ const transitionToValidateQuestionTwo = async () => {
     localSection.style = "display: flex;";
 
     // show the confirm button if it was hidden
-    showConfirmButton()
+    showConfirmButton();
 
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
@@ -418,7 +418,9 @@ document
         }
 
         // remove prev from the question's class list
-        document.querySelector("#validate_dataset-question-2").classList.remove("prev")
+        document
+          .querySelector("#validate_dataset-question-2")
+          .classList.remove("prev");
 
         // get the folder path
         let folderPath = folderPaths[0];
