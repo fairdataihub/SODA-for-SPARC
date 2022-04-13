@@ -432,9 +432,9 @@ document
         // set the input's placeholder value to the local dataset path
         validationPathInput.value = folderPath;
 
-        hideQuestionThreeLocal()
+        hideQuestionThreeLocal();
 
-        showConfirmButton()
+        showConfirmButton();
       }
     );
   });
@@ -451,7 +451,7 @@ document
       "individual-question validate_dataset"
     );
 
-    showQuestionThreeLocal()
+    showQuestionThreeLocal();
   });
 
 // start dataset validation
@@ -463,7 +463,7 @@ document
     let validatingLocalDataset = localDatasetCard.checked;
 
     // hide the run validator button
-    hideQuestionThreeLocal()
+    hideQuestionThreeLocal();
 
     if (validatingLocalDataset) {
       await validateLocalDataset();
@@ -477,9 +477,8 @@ document
 document
   .querySelector("#confirm-dataset-selection--validator")
   .addEventListener("click", function () {
+    hideConfirmButton();
 
-    hideConfirmButton()
-    
     // transition to the next question
     transitionFreeFormMode(
       this,
@@ -628,16 +627,14 @@ const hideConfirmButton = () => {
     "#validator-confirm-local-dataset-btn"
   );
   confirmDatasetBtn.parentElement.style.display = "none";
-}
+};
 
 const showQuestionThreeLocal = () => {
   // set question 3's visibility to visible
-  document.querySelector("#validate_dataset-question-3").style.display =
-    "flex";
-}
+  document.querySelector("#validate_dataset-question-3").style.display = "flex";
+};
 
 const hideQuestionThreeLocal = () => {
   // set question 3's visibility to none
-  document.querySelector("#validate_dataset-question-3").style.display =
-    "none";
-}
+  document.querySelector("#validate_dataset-question-3").style.display = "none";
+};
