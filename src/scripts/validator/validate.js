@@ -76,7 +76,7 @@ const validateLocalDataset = async () => {
     title: `Your dataset has been successfully validated`,
     text:
       Object.getOwnPropertyNames(errors).length >= 1
-        ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
+        ? `Your dataset has been found to violate SPARC Guidelines. Please view the Validation Errors table to see what is non-conforming so that you may fix it.`
         : `Your dataset is valid according to SPARC guidelines.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
@@ -467,6 +467,8 @@ document
 
     if (validatingLocalDataset) {
       await validateLocalDataset();
+
+      scrollToElement("#validation-errors-container")
     } else {
       await validatePennsieveDataset();
     }
