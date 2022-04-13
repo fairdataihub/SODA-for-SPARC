@@ -72,19 +72,22 @@ const validateLocalDataset = async () => {
 
   let errors = validationResponse.data;
 
+  // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
+  let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1
+
   Swal.fire({
-    title: `Your dataset has been successfully validated`,
+    title: hasValidationErrors ? "Your dataset has validation errors" : `Your dataset has been successfully validated`,
     text:
-      // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
-      Object.getOwnPropertyNames(errors).length >= 1
+      hasValidationErrors
         ? `Your dataset has been found to violate SPARC Guidelines. Please view the Validation Errors table to see what is non-conforming so that you may fix it.`
-        : `Your dataset is valid according to SPARC guidelines.`,
+        : ``,
     allowEscapeKey: true,
     allowOutsideClick: false,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     timerProgressBar: false,
     showConfirmButton: true,
+    icon: hasValidationErrors ? "error" : "success"
   });
 
   if (!validationErrorsOccurred(errors)) {
