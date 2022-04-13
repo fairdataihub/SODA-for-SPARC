@@ -212,10 +212,11 @@ const addValidationErrorToTable = (
   tableDataList[0].appendChild(pathDiv);
 
   // add the validator statement to the second td
-  let messageDiv = document.createElement("div")
-  messageDiv.style = "width: 250px; overflow-wrap: break-word; text-align: left;"
-  messageDiv.textContent = validatorStatement
-  tableDataList[1].appendChild(messageDiv)
+  let messageDiv = document.createElement("div");
+  messageDiv.style =
+    "width: 250px; overflow-wrap: break-word; text-align: left;";
+  messageDiv.textContent = validatorStatement;
+  tableDataList[1].appendChild(messageDiv);
 
   // add a dummy link to the last td
   // tableDataList[2].textContent = "Dummy Link";
