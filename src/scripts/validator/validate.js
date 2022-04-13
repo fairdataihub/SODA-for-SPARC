@@ -468,7 +468,7 @@ document
     if (validatingLocalDataset) {
       await validateLocalDataset();
 
-      scrollToElement("#validation-errors-container")
+      scrollToElement("#validation-errors-container");
     } else {
       await validatePennsieveDataset();
     }
