@@ -390,7 +390,9 @@ document
       }
 
       // set the ccurrent section to active by removing prev
-      document.querySelector("#validate_dataset-question-2").classList.remove("prev")
+      document
+        .querySelector("#validate_dataset-question-2")
+        .classList.remove("prev");
 
       // reset validation table
       clearValidationResults();
