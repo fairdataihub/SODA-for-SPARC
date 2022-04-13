@@ -414,10 +414,6 @@ document
       questionThreeSection.classList.remove("show");
       questionThreeSection.classList.remove("prev");
 
-    } else {
-      // hide question 3
-      document.querySelector("#validate_dataset-question-3").style.visibility =
-        "hidden";
     }
 
     // open folder select dialog
@@ -426,7 +422,7 @@ document
     // listen for user's folder path
     ipcRenderer.on(
       "selected-validate-local-dataset",
-      (evtSender, folderPaths) => {
+      async (evtSender, folderPaths) => {
         // check if a folder was not selected
         if (!folderPaths.length) {
           return
@@ -440,6 +436,8 @@ document
 
         // set the input's placeholder value to the local dataset path
         validationPathInput.value = folderPath;
+
+        hideQuestionThreeLocal()
 
         showConfirmButton()
       }
@@ -458,18 +456,19 @@ document
       "individual-question validate_dataset"
     );
 
-    // set question 3's visibility to visible
-    document.querySelector("#validate_dataset-question-3").style.visibility =
-      "visible";
+    showQuestionThreeLocal()
   });
 
 // start dataset validation
 document
   .querySelector("#run_validator_btn")
-  .addEventListener("click", async (evt) => {
+  .addEventListener("click", async function (evt) {
     // check if validating a local or pennsieve dataset
     let localDatasetCard = document.querySelector("#validate-1-Local");
     let validatingLocalDataset = localDatasetCard.checked;
+
+    // hide the run validator button
+    hideQuestionThreeLocal()
 
     if (validatingLocalDataset) {
       await validateLocalDataset();
@@ -481,9 +480,9 @@ document
 document
   .querySelector("#confirm-dataset-selection--validator")
   .addEventListener("click", function () {
-    // hide the confirm button
-    this.style.visibility = "hidden";
 
+    hideConfirmButton()
+    
     // transition to the next question
     transitionFreeFormMode(
       this,
@@ -504,7 +503,7 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   }
 });
 
-// begin observing the dataset label inn question 2
+// begin observing the dataset label in question 2
 questionTwoDatasetSelectionObserver.observe(
   document.querySelector("#bf_dataset_load_validator"),
   { childList: true }
@@ -627,9 +626,21 @@ const showConfirmButton = () => {
 
 // TODO: Make it differentiate between local and pennsieve confirm buttons
 const hideConfirmButton = () => {
-    // hide the confirm button
-    let confirmDatasetBtn = document.querySelector(
-      "#validator-confirm-local-dataset-btn"
-    );
-    confirmDatasetBtn.parentElement.style.display = "none";
+  // hide the confirm button
+  let confirmDatasetBtn = document.querySelector(
+    "#validator-confirm-local-dataset-btn"
+  );
+  confirmDatasetBtn.parentElement.style.display = "none";
+}
+
+const showQuestionThreeLocal = () => {
+  // set question 3's visibility to visible
+  document.querySelector("#validate_dataset-question-3").style.display =
+    "flex";
+}
+
+const hideQuestionThreeLocal = () => {
+  // set question 3's visibility to none
+  document.querySelector("#validate_dataset-question-3").style.display =
+    "none";
 }
