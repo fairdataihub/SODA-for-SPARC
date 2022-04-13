@@ -1115,84 +1115,83 @@
             </div>
           </div>
           <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
-            <div class="guided--container-data-display">
-              <div
-                class="guided--card-dataset-info"
-                id="guided-designated-PI-info"
-                data-input-set="guided-designate-pi-owner-tab"
-                data-alert-message="You will retain dataset ownership unless you designate another PI below."
-                data-alert-type="warning"
-              >
-                <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">
-                    Designated PI owner:
-                  </h5>
-                </div>
-                <div
-                  class="guided--dataset-content-container guided-change-dataset-name"
-                >
-                  <h5 class="guided--dataset-content guidedDatasetOwner"></h5>
-                </div>
-              </div>
-            </div>
-
             <div class="guided--section">
-              <label class="guided--text-sub-step"
-                >Designate a PI Owner:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
+              <h1 class="guided--text-sub-step">Owner of dataset</h1>
+              <p class="guided--help-text" style="max-width: 900px">
+                SPARC curation rules require to set the PI of the SPARC award as
+                'owner' of the dataset before it is shared with the Curation
+                Team for review. This is to ensures that the PI is the only
+                person who can publish the dataset.
+              </p>
+              <label class="guided--form-label centered mt-md">
+                Who is the PI of the project associated with the dataset?
               </label>
-              <div class="guided--container-permissions">
-                <div style="flex-grow: 1">
-                  <div
-                    class="field"
-                    style="
-                      display: flex;
-                      width: 100%;
-                      justify-content: center;
-                      align-items: center;
-                      flex-direction: column;
-                    "
-                  >
+              <div
+                class="guided--radio-button-container"
+                style="margin-bottom: 7px"
+              >
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-designate-self-PI"
+                  data-next-question="guided-designate-self-PI"
+                >
+                  Myself
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-designate-other-PI"
+                  data-next-question="guided-designate-other-PI"
+                >
+                  Someone else
+                </button>
+              </div>
+              <div
+                class="guided--panel hidden"
+                id="guided-designate-self-PI"
+              ></div>
+              <div class="guided--panel hidden" id="guided-designate-other-PI">
+                <label class="guided--text-sub-step"
+                  >Designate another user as PI Owner:
+                </label>
+                <div class="guided--container-permissions">
+                  <div style="flex-grow: 1">
                     <div
-                      id="guided_pi_bootstrap_select_div"
+                      class="field"
                       style="
                         display: flex;
-                        flex-direction: row;
-                        justify-content: space-around;
                         width: 100%;
+                        justify-content: center;
+                        align-items: center;
+                        flex-direction: column;
                       "
                     >
-                      <select
-                        class="selectpicker"
-                        data-live-search="true"
+                      <div
+                        id="guided_pi_bootstrap_select_div"
                         style="
-                          padding: 8px 12px;
-                          margin-right: 30px;
-                          height: 38px;
-                          border-radius: 5px;
-                          border: 1px solid black;
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-around;
+                          width: 100%;
                         "
-                        id="guided_bf_list_users_pi"
                       >
-                        <option>Select PI</option>
-                      </select>
+                        <select
+                          class="selectpicker"
+                          data-live-search="true"
+                          style="
+                            padding: 8px 12px;
+                            margin-right: 30px;
+                            height: 38px;
+                            border-radius: 5px;
+                            border: 1px solid black;
+                          "
+                          id="guided_bf_list_users_pi"
+                        >
+                          <option>Select PI</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <button
-                  id="guided-button-add-permission-pi"
-                  class="btn_animated"
-                  style="width: 155px; border: none !important"
-                >
-                  Designate PI owner
-                </button>
               </div>
             </div>
           </div>
@@ -4254,7 +4253,7 @@
             class="guided--panel hidden"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
+              <h1 class="guided--text-sub-step mt-sm">
                 Where would you like to generate your dataset?
               </h1>
 

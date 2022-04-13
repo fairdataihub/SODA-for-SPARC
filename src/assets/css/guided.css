@@ -586,6 +586,15 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+.mt-sm {
+  margin-top: 7px !important;
+}
+.mt-md {
+  margin-top: 14px !important;
+}
+.mt-lg {
+  margin-top: 20px !important;
+}
 .space-between {
   display: flex;
   justify-content: space-between;

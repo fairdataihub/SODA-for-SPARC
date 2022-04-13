@@ -500,6 +500,32 @@ const validateInput = (inputElementToValidate) => {
 //////////       GUIDED FORM VALIDATORS       ///////////
 /////////////////////////////////////////////////////////
 
+const isPageValid = (pageID) => {
+  if (pageID === "guided-designate-pi-owner-tab") {
+    const designateSelfButton = document.getElementById(
+      "guided-button-designate-self-PI"
+    );
+    const designateOtherButton = document.getElementById(
+      "guided-button-designate-other-PI"
+    );
+
+    if (designateSelfButton.classList.contains("selected")) {
+      return true;
+    }
+    if (designateOtherButton.classList.contains("selected")) {
+      console.log($("#guided_bf_list_users_pi option:selected").text().trim());
+      if (
+        $("#guided_bf_list_users_pi option:selected").text().trim() !==
+        "Select PI"
+      ) {
+        return true;
+      }
+    }
+    //return false if neither button is selected
+    return false;
+  }
+};
+
 const validateGuidedDatasetDescriptionInputs = () => {
   if (
     $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
@@ -2060,7 +2086,6 @@ const setGuidedDatasetSubtitle = (datasetSubtitle) => {
 };
 
 const setGuidedBannerImage = (croppedImagePath) => {
-  alert("setting guided banner image");
   sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
   guidedBannerImageElement = `
     <img
@@ -2415,21 +2440,6 @@ $(document).ready(() => {
   /////////////////////////////////////////////////////////
   /////////  PENNSIEVE METADATA BUTTON HANDLERS   /////////
   /////////////////////////////////////////////////////////
-  $("#guided-button-add-permission-pi").on("click", function () {
-    let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
-      .text()
-      .trim();
-    // gets the text before the email address from the selected dropdown
-    let PiName = PiOwnerString.split("(")[0];
-    let PiUUID = $("#guided_bf_list_users_pi").val().trim();
-
-    const newPiOwner = {
-      userString: PiOwnerString,
-      UUID: PiUUID,
-      name: PiName,
-    };
-    setGuidedDatasetPiOwner(newPiOwner);
-  });
 
   $(".guided-change-dataset-subtitle").on("click", async function () {
     const { value: datasetSubtitle } = await Swal.fire({
@@ -4523,6 +4533,47 @@ $(document).ready(() => {
         }
       }
       if (pageBeingLeftID === "guided-designate-pi-owner-tab") {
+        if (isPageValid("guided-designate-pi-owner-tab")) {
+          let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
+            .text()
+            .trim();
+          // get the text before the email address from the selected dropdown
+          let PiName = PiOwnerString.split("(")[0];
+          let PiUUID = $("#guided_bf_list_users_pi").val().trim();
+
+          const newPiOwner = {
+            userString: PiOwnerString,
+            UUID: PiUUID,
+            name: PiName,
+          };
+          setGuidedDatasetPiOwner(newPiOwner);
+        } else {
+          const designateSelfButton = document.getElementById(
+            "guided-button-designate-self-PI"
+          );
+          const designateOtherButton = document.getElementById(
+            "guided-button-designate-other-PI"
+          );
+          if (
+            !designateSelfButton.classList.contains("selected") &&
+            !designateOtherButton.classList.contains("selected")
+          ) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please indicate who you would like to designate as the PI.",
+            });
+            throw errorArray;
+          }
+          if (designateOtherButton.classList.contains("selected")) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please select a user from the dropdown to designate as PI",
+            });
+            throw errorArray;
+          }
+        }
       }
       if (pageBeingLeftID === "guided-designate-permissions-tab") {
       }
