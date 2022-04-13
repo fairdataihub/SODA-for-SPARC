@@ -2060,6 +2060,7 @@ const setGuidedDatasetSubtitle = (datasetSubtitle) => {
 };
 
 const setGuidedBannerImage = (croppedImagePath) => {
+  alert("setting guided banner image");
   sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
   guidedBannerImageElement = `
     <img
@@ -2068,6 +2069,7 @@ const setGuidedBannerImage = (croppedImagePath) => {
       style="max-height: 300px;"
     />
   `;
+  document.getElementById("guided-banner-image-preview").innerHTML = "";
   document.getElementById("guided-banner-image-preview").innerHTML =
     guidedBannerImageElement;
   $("#guided-banner-image-preview-container").show();
