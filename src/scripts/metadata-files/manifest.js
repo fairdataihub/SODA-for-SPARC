@@ -189,6 +189,7 @@ $(document).ready(function () {
           Swal.hideLoading();
         },
       }).then((result) => {
+        $(jstreePreviewManifest).jstree().deselect_all(true);
         // sort the updated json object (since users might have added new columns)
         let manifestHeaders = table1.getHeaders().split(",");
         let manifestEntries = table1.getData();
@@ -1267,9 +1268,6 @@ function createManifestLocally(editBoolean, originalDataset) {
     homeDirectory,
     "SODA"
   );
-  if (originalDataset === "") {
-    localDatasetFolderPath = sodaJSONObj["manifest-files"]["local-destination"];
-  }
   client.invoke(
     "api_generate_manifest_file_locally",
     "edit-manifest",
@@ -1299,7 +1297,7 @@ function createManifestLocally(editBoolean, originalDataset) {
           //// else: create locally for the purpose of generating of manifest files locally
           client.invoke(
             "api_create_high_level_manifest_files_existing_local_starting_point",
-            localDatasetFolderPath,
+            sodaJSONObj["manifest-files"]["local-destination"],
             async (error, res) => {
               if (error) {
                 var emessage = userError(error);

@@ -4979,7 +4979,7 @@ async function addFoldersfunction(
               `
             <div class="caption">
               <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-            </div>  
+            </div>
             <div class="swal-button-container">
               <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
               list +
@@ -5382,7 +5382,7 @@ function dropHelper(
         `
       <div class="caption">
         <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-      </div>  
+      </div>
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
@@ -5427,7 +5427,7 @@ function dropHelper(
         `
       <div class="caption">
         <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-      </div>  
+      </div>
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
@@ -5814,6 +5814,18 @@ $(document).ready(function () {
     placement: "top",
     theme: "light",
   });
+  document
+    .getElementById("direct-to-feedback")
+    .addEventListener("click", function () {
+      if (
+        !document.getElementById("feedback-wrapper").classList.contains("is-open")
+      ) {
+        document.getElementById("feedback-btn").click();
+      }
+      document.querySelector("#feedback-btn").scrollIntoView({
+        behavior: "smooth",
+      });
+    });
 });
 
 // Trigger action when the contexmenu is about to be shown
@@ -9579,16 +9591,3 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
-
-document
-  .getElementById("direct-to-feedback")
-  .addEventListener("click", function () {
-    if (
-      !document.getElementById("feedback-wrapper").classList.contains("is-open")
-    ) {
-      document.getElementById("feedback-btn").click();
-    }
-    document.querySelector("#feedback-btn").scrollIntoView({
-      behavior: "smooth",
-    });
-  });
