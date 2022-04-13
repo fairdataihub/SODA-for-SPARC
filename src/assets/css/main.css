@@ -285,8 +285,7 @@ button[data-id="bf_list_roles_team"] {
 
 button[data-id="bf_list_users_pi"],
 button[data-id="guided_bf_list_users_pi"],
-button[data-id="guided_bf_list_users"],
-button[data-id="guided_bf_list_teams"] {
+button[data-id="guided_bf_list_users_and_teams"] {
   border: 1px solid rgba(34, 36, 38, 0.15);
   border-radius: 7px;
   height: 35px;
@@ -297,8 +296,7 @@ button[data-id="guided_bf_list_teams"] {
 }
 
 #guided_pi_bootstrap_select_div > .dropdown.bootstrap-select,
-#guided_user_bootstrap_select_div > .dropdown.bootstrap-select,
-#guided_team_bootstrap_select_div > .dropdown.bootstrap-select {
+#guided_permissions_select_div > .dropdown.bootstrap-select {
   width: 100%;
 }
 

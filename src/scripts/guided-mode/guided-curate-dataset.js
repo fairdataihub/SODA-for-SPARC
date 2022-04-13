@@ -339,6 +339,9 @@ const traverseToTab = (targetPageID) => {
   if (targetPageID === "guided-samples-folder-tab") {
     renderSamplesTables();
   }
+  if (targetPageID === "guided-designate-permissions-tab") {
+    renderPermissionsTable();
+  }
   if (targetPageID === "guided-create-subjects-metadata-tab") {
     //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
     try {
@@ -1860,6 +1863,105 @@ const renderSampleMetadataTables = () => {
   sampleMetadataTablesContainer.innerHTML = sampleMetadataTables.join("\n");
 };
 
+const createPermissionsTableRowElement = (name, permission) => {
+  return `
+    <tr>
+      <td class="middle aligned">${name}</td>
+      <td class="middle aligned">${permission}</td>
+      <td class="middle aligned">trash</td>
+    </tr>
+  `;
+};
+const renderPermissionsTable = () => {
+  /*
+  let permissionsTableElements = [];
+  const owner = sodaJSONObj["digital-medtadata"]["pi-owner"]["name"];
+  permissionsTableElements.push(
+    createPermissionsTableRowElement(owner, "owner")
+  );
+
+  /*let sampleData = subjectsToMap.sort().map((subject) => {
+    let subjectNumSamples = $(`.subject-id:contains("${subject}")`)
+      .closest("tr")
+      .find(".guided-input-sample-count")
+      .val();
+    return {
+      subjectName: subject,
+      sampleCount: subjectNumSamples,
+    };
+  });
+  let sampleTables = sampleData.map((subject) => {
+    let sampleRows = Array(parseInt(subject.sampleCount))
+      .fill(0)
+      .map((subject, index) => {
+        let tableIndex = index + 1;
+        return generateSampleRowElement(tableIndex);
+      })
+      .join("\n");
+    return `
+      <table class="ui celled striped table" style="margin-bottom: 25px; min-width: 800px;">
+        <thead>
+          <tr>
+            <th
+              colspan="4"
+              class="text-center"
+              style="
+                z-index: 2;
+                height: 50px;
+                position: sticky !important;
+                top: -10px !important;
+              "
+            >
+              <span class="sample-table-name">
+                ${subject.subjectName}
+              </span>
+              <button
+                class="ui primary basic button small"
+                style="position: absolute;
+                  right: 20px;
+                  top: 50%;
+                  transform: translateY(-50%);"
+                  onclick="addSampleFolder($(this))"
+                >
+                <i class="fas fa-folder-plus" style="margin-right: 7px"></i
+                >Add ${subject.subjectName} sample row
+              </button>
+            </th>
+          </tr>
+          <tr>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
+              Index
+            </th>
+            <th style="z-index: 2; position: sticky !important; top: 40px !important">
+              Sample ID
+            </th>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
+              Specify data files for the sample
+            </th>
+            <th
+              class="center aligned"
+              style="z-index: 2; position: sticky !important; top: 40px !important"
+            >
+              Delete
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sampleRows}
+        </tbody>
+      </table>
+    `;
+  });
+  let permissionsTableBody = document.getElementById("permissions-table-body");
+  permissionsTableBody.innerHTML = permissionsTableElements.join("\n");*/
+};
+
 /*********** Source page functions ***********/
 $("#guided-button-has-source-data").on("click", () => {
   if (datasetStructureJSONObj["folders"]["source"] == undefined)
@@ -2101,7 +2203,6 @@ const setGuidedBannerImage = (croppedImagePath) => {
 };
 
 const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
-  removeAlertMessageIfExists($("#guided-designated-PI-info"));
   $(".guidedDatasetOwner").text(newPiOwnerObj.userString);
   sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["pi-owner"]["userString"] =
@@ -4534,26 +4635,28 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-designate-pi-owner-tab") {
         if (isPageValid("guided-designate-pi-owner-tab")) {
-          let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
-            .text()
-            .trim();
-          // get the text before the email address from the selected dropdown
-          let PiName = PiOwnerString.split("(")[0];
-          let PiUUID = $("#guided_bf_list_users_pi").val().trim();
-
-          const newPiOwner = {
-            userString: PiOwnerString,
-            UUID: PiUUID,
-            name: PiName,
-          };
-          setGuidedDatasetPiOwner(newPiOwner);
-        } else {
           const designateSelfButton = document.getElementById(
             "guided-button-designate-self-PI"
           );
           const designateOtherButton = document.getElementById(
             "guided-button-designate-other-PI"
           );
+          if (designateOtherButton.classList.contains("selected")) {
+            let PiOwnerString = $("#guided_bf_list_users_pi option:selected")
+              .text()
+              .trim();
+            // get the text before the email address from the selected dropdown
+            let PiName = PiOwnerString.split("(")[0];
+            let PiUUID = $("#guided_bf_list_users_pi").val().trim();
+
+            const newPiOwner = {
+              userString: PiOwnerString,
+              UUID: PiUUID,
+              name: PiName,
+            };
+            setGuidedDatasetPiOwner(newPiOwner);
+          }
+        } else {
           if (
             !designateSelfButton.classList.contains("selected") &&
             !designateOtherButton.classList.contains("selected")

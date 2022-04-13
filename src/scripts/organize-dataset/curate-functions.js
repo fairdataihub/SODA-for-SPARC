@@ -804,22 +804,19 @@ $(document).ready(function () {
 
   $("#bf_list_users_pi").selectpicker();
   $("#bf_list_users_pi").selectpicker("refresh");
-  $("#guided_bf_list_users_pi").selectpicker();
-  $("#guided_bf_list_users_pi").selectpicker("refresh");
   $("#bf_list_users").selectpicker();
   $("#bf_list_users").selectpicker("refresh");
-  $("#guided_bf_list_users").selectpicker();
-  $("#guided_bf_list_users").selectpicker("refresh");
-  $("#guided_bf_list_users").selectpicker();
-  $("#guided_bf_list_users").selectpicker("refresh");
   $("#bf_list_roles_user").selectpicker();
   $("#bf_list_roles_user").selectpicker("refresh");
   $("#bf_list_teams").selectpicker();
   $("#bf_list_teams").selectpicker("refresh");
-  $("#guided_bf_list_teams").selectpicker();
-  $("#guided_bf_list_teams").selectpicker("refresh");
   $("#bf_list_roles_team").selectpicker();
   $("#bf_list_roles_team").selectpicker("refresh");
+
+  $("#guided_bf_list_users_pi").selectpicker();
+  $("#guided_bf_list_users_pi").selectpicker("refresh");
+  $("#guided_bf_list_users_and_teams").selectpicker();
+  $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
 
 const get_api_key = async (login, password, key_name) => {

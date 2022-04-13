@@ -1116,7 +1116,9 @@
           </div>
           <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">Owner of dataset</h1>
+              <h1 class="guided--text-sub-step">
+                Dataset user/team permissions
+              </h1>
               <p class="guided--help-text" style="max-width: 900px">
                 SPARC curation rules require to set the PI of the SPARC award as
                 'owner' of the dataset before it is shared with the Curation
@@ -1199,55 +1201,51 @@
             id="guided-designate-permissions-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--container-data-display">
-              <div
-                class="guided--card-dataset-info"
-                id="guided-designated-user-permissions-info"
-              >
-                <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">
-                    Designated user permissions:
-                  </h5>
-                </div>
-                <div
-                  class="guided--container-dataset-info guidedDatasetUserPermissions"
-                  id="guided-dataset-user-permissions"
-                ></div>
-              </div>
-              <div class="alert alert-warning guided--alert" role="alert">
-                To grant a user access to the dataset, select the user in the
-                dropdown, select their role, and press designate permission.
-              </div>
-              <div
-                class="guided--card-dataset-info"
-                id="guided-designated-team-permissions-info"
-              >
-                <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">
-                    Designated team permissions:
-                  </h5>
-                </div>
-                <div
-                  class="guided--container-dataset-info guidedDatasetTeamPermissions"
-                ></div>
-              </div>
-              <div class="alert alert-warning guided--alert" role="alert">
-                To grant a team access to the dataset, select the team in the
-                dropdown, select their role, and press designate permission.
-              </div>
-            </div>
-
             <div class="guided--section">
+              <h1 class="guided--text-sub-step">Owner of dataset</h1>
+              <p class="guided--help-text" style="max-width: 900px">
+                SPARC curation rules require to set the PI of the SPARC award as
+                'owner' of the dataset before it is shared with the Curation
+                Team for review. This is to ensures that the PI is the only
+                person who can publish the dataset.
+              </p>
+            </div>
+            <table
+              class="ui celled striped table"
+              style="margin-bottom: 25px; min-width: 800px"
+            >
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Permission</th>
+                  <th class="center aligned collapsing">Delete</th>
+                </tr>
+              </thead>
+              <tbody id="permissions-table-body"></tbody>
+            </table>
+            <label class="guided--form-label centered mt-md">
+              Would you like to add more permissions to your dataset?
+            </label>
+            <div class="guided--radio-button-container mb-sm">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-add-permissions"
+                data-next-question="guided-add-permissions"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-no-permissions"
+                data-next-question="guided-no-permissions"
+              >
+                No
+              </button>
+            </div>
+            <div class="guided--panel hidden" id="guided-add-permissions"></div>
+            <div class="guided--panel hidden" id="guided-no-permissions">
               <label class="guided--text-sub-step"
-                >Designate user permissions:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
+                >Designate permissions for users and teams:
               </label>
               <div class="guided--container-permissions">
                 <div style="flex-grow: 1">
@@ -1262,7 +1260,7 @@
                     "
                   >
                     <div
-                      id="guided_user_bootstrap_select_div"
+                      id="guided_permissions_select_div"
                       style="
                         display: flex;
                         flex-direction: row;
@@ -1280,120 +1278,13 @@
                           border-radius: 5px;
                           border: 1px solid black;
                         "
-                        id="guided_bf_list_users"
+                        id="guided_bf_list_users_and_teams"
                       >
-                        <option>Select user</option>
+                        <option>Select individuals or teams</option>
                       </select>
                     </div>
                   </div>
                 </div>
-                <select
-                  class="my-dropdown"
-                  style="
-                    width: 150px;
-                    margin: 0px 10px;
-                    cursor: pointer;
-                    height: 35px;
-                  "
-                  id="select-permission-list-3"
-                >
-                  <option value="Select role">Select role</option>
-                  <option value="viewer">viewer</option>
-                  <option value="manager">manager</option>
-                  <option value="editor">editor</option></select
-                ><button
-                  id="guided-button-add-permission-user"
-                  class="btn_animated"
-                  style="
-                    width: 160px;
-                    min-width: 160px;
-                    border: none !important;
-                    margin: 0px;
-                  "
-                >
-                  Designate permission
-                </button>
-              </div>
-            </div>
-            <div class="guided--section">
-              <label
-                class="guided--text-sub-step"
-                style="margin-top: 18px !important"
-                >Designate team permissions:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="See our associated <a href='https://fairdataihub.org/sodaforsparc/docs/manage-dataset/Add-edit-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
-              <div class="guided--container-permissions">
-                <div style="flex-grow: 1">
-                  <div
-                    class="field"
-                    style="
-                      display: flex;
-                      width: 100%;
-                      justify-content: center;
-                      align-items: center;
-                      flex-direction: column;
-                    "
-                  >
-                    <div
-                      id="guided_team_bootstrap_select_div"
-                      style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-around;
-                        width: 100%;
-                      "
-                    >
-                      <select
-                        class="selectpicker"
-                        data-live-search="true"
-                        style="
-                          padding: 8px 12px;
-                          margin-right: 30px;
-                          height: 38px;
-                          border-radius: 5px;
-                          border: 1px solid black;
-                        "
-                        id="guided_bf_list_teams"
-                      >
-                        <option>Select team</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <select
-                  class="my-dropdown"
-                  style="
-                    width: 150px;
-                    margin: 0px 10px;
-                    cursor: pointer;
-                    height: 35px;
-                  "
-                  id="select-permission-list-4"
-                >
-                  <option value="Select role">Select role</option>
-                  <option value="viewer">viewer</option>
-                  <option value="manager">manager</option>
-                  <option value="editor">editor</option>
-                </select>
-                <button
-                  id="guided-button-add-permission-team"
-                  class="btn_animated"
-                  style="
-                    width: 160px;
-                    min-width: 160px;
-                    border: none !important;
-                    margin: 0px;
-                  "
-                >
-                  Designate permission
-                </button>
               </div>
             </div>
           </div>

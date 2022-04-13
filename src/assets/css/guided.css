@@ -595,6 +595,15 @@
 .mt-lg {
   margin-top: 20px !important;
 }
+.mb-sm {
+  margin-bottom: 7px !important;
+}
+.mb-md {
+  margin-bottom: 14px !important;
+}
+.mb-lg {
+  margin-bottom: 20px !important;
+}
 .space-between {
   display: flex;
   justify-content: space-between;
