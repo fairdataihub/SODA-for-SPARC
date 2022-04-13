@@ -75,6 +75,7 @@ const validateLocalDataset = async () => {
   Swal.fire({
     title: `Your dataset has been successfully validated`,
     text:
+      // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
       Object.getOwnPropertyNames(errors).length >= 1
         ? `Your dataset has been found to violate SPARC Guidelines. Please view the Validation Errors table to see what is non-conforming so that you may fix it.`
         : `Your dataset is valid according to SPARC guidelines.`,
@@ -270,14 +271,7 @@ const transitionToValidateQuestionTwo = async () => {
     localSection.style = "display: flex;";
 
     // show the confirm button if it was hidden
-    let confirmDatasetBtn = document.querySelector(
-      "#validator-confirm-local-dataset-btn"
-    );
-
-    confirmDatasetBtn.parentElement.style.display = "none";
-
-    // hide the confirm dataset btn -- it will appear after the user selects a local folder
-    // confirmDatasetBtn.style.display = "none"
+    showConfirmButton()
 
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
@@ -422,6 +416,9 @@ document
         if (!folderPaths.length) {
           return;
         }
+
+        // remove prev from the question's class list
+        document.querySelector("#validate_dataset-question-2").classList.remove("prev")
 
         // get the folder path
         let folderPath = folderPaths[0];
