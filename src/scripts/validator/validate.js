@@ -70,11 +70,11 @@ const validateLocalDataset = async () => {
     return handleAxiosValidationErrors(err);
   }
 
-  console.log(validationResponse.data);
+  let errors = validationResponse.data
 
   Swal.fire({
     title: `Your dataset has been successfully validated`,
-    text: validationResponse.data.length
+    text: Object.getOwnPropertyNames(errors).length >= 1
       ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
       : `Your dataset is valid according to SPARC guidelines.`,
     allowEscapeKey: true,
@@ -85,14 +85,12 @@ const validateLocalDataset = async () => {
     showConfirmButton: true,
   });
 
-  // console.log(JSON.stringify(validationResponse.data));
+  if (!validationErrorsOccurred(errors)) {
+    return;
+  }
 
-  // if (!validationErrorsOccurred(validationResponse.data)) {
-  //   return;
-  // }
-
-  // // display errors onto the page
-  displayValidationErrors(validationResponse.data);
+  // display errors onto the page
+  displayValidationErrors(errors);
 
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visibility =
@@ -134,9 +132,11 @@ const validatePennsieveDataset = async () => {
     return handleAxiosValidationErrors(err);
   }
 
+  let errors = validationResponse.data
+
   Swal.fire({
     title: `Your dataset has been successfully validated`,
-    text: validationResponse.data.length
+    text: Object.getOwnPropertyNames(errors).length > 1
       ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
       : `Your dataset is valid according to SPARC guidelines.`,
     allowEscapeKey: true,
@@ -148,12 +148,12 @@ const validatePennsieveDataset = async () => {
   });
 
   // check if there are validation errors
-  if (!validationErrorsOccurred(validationResponse.data)) {
+  if (!validationErrorsOccurred(errors)) {
     return;
   }
 
   // display errors onto the page
-  displayValidationErrors(validationResponse.data);
+  displayValidationErrors(errors);
 
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visibility =
@@ -167,7 +167,6 @@ const validatePennsieveDataset = async () => {
 */
 
 const displayValidationErrors = (errors) => {
-  console.log(errors);
   // get the table body
   let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
@@ -185,7 +184,7 @@ const displayValidationErrors = (errors) => {
       // let translatedMessage = translatePipelineError(error.path, message);
 
       // add message and validator to the display
-      addValidationErrorToTable(tableBody, error.path, message );
+      addValidationErrorToTable(tableBody, error.path, message);
     }
   }
 };
@@ -232,12 +231,18 @@ const addValidationErrorToTable = (
   // console.log(row);
 };
 
-const validationErrorsOccurred = (validationResult) =>
-  validationResult.length ? true : false;
+const validationErrorsOccurred = (errors) =>
+  Object.getOwnPropertyNames(errors).length >= 1 ? true : false
+
+
+
+
+
+
 
 /*
 *******************************************************************************************************************
-// Presentation logic regarding transitioning from one question to another and/or resetting state upon user action 
+// Purpose: Presentation logic regarding transitioning from one question to another and/or resetting state upon user action in the validator
 *******************************************************************************************************************
 */
 
@@ -272,7 +277,10 @@ const transitionToValidateQuestionTwo = async () => {
       "#validator-confirm-local-dataset-btn"
     );
 
-    confirmDatasetBtn.parentElement.style.display = "flex";
+    confirmDatasetBtn.parentElement.style.display = "none";
+
+    // hide the confirm dataset btn -- it will appear after the user selects a local folder
+    // confirmDatasetBtn.style.display = "none"
 
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
@@ -393,6 +401,11 @@ document
       // clear the input value
       this.value = "";
 
+      // hide the run validator button
+      document
+        .querySelector("#validate_dataset-question-4")
+        .classList.remove("show");
+
       // hide the next section
       let questionThreeSection = document.querySelector(
         "#validate_dataset-question-3"
@@ -400,28 +413,10 @@ document
       questionThreeSection.classList.remove("show");
       questionThreeSection.classList.remove("prev");
 
-      // hide the run validator button
-      document
-        .querySelector("#validate_dataset-question-4")
-        .classList.remove("show");
-
-      // show the confirm button
-      let confirmDatasetBtn = document.querySelector(
-        "#validator-confirm-local-dataset-btn"
-      );
-      confirmDatasetBtn.parentElement.style.display = "flex";
     } else {
       // hide question 3
       document.querySelector("#validate_dataset-question-3").style.visibility =
         "hidden";
-
-      // show confirm button found under the input
-      let confirmDatasetBtn = document.querySelector(
-        "#validator-confirm-local-dataset-btn"
-      );
-
-      // set the field display property to none to remove the field margings
-      confirmDatasetBtn.parentElement.style.display = "flex";
     }
 
     // open folder select dialog
@@ -432,7 +427,9 @@ document
       "selected-validate-local-dataset",
       (evtSender, folderPaths) => {
         // check if a folder was not selected
-        if (!folderPaths.length) return;
+        if (!folderPaths.length) {
+          return
+        }
 
         // get the folder path
         let folderPath = folderPaths[0];
@@ -442,6 +439,8 @@ document
 
         // set the input's placeholder value to the local dataset path
         validationPathInput.value = folderPath;
+
+        showConfirmButton()
       }
     );
   });
@@ -615,3 +614,21 @@ const getValidationResultsCount = () => {
   // check if there are any validation results
   return validationErrorsTable.childElementCount;
 };
+
+// TODO: Make it differentiate between local and pennsieve confirm buttons
+const showConfirmButton = () => {
+  // show the confirm button
+  let confirmDatasetBtn = document.querySelector(
+    "#validator-confirm-local-dataset-btn"
+  );
+  confirmDatasetBtn.parentElement.style.display = "flex";
+}
+
+// TODO: Make it differentiate between local and pennsieve confirm buttons
+const hideConfirmButton = () => {
+    // hide the confirm button
+    let confirmDatasetBtn = document.querySelector(
+      "#validator-confirm-local-dataset-btn"
+    );
+    confirmDatasetBtn.parentElement.style.display = "none";
+}

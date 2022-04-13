@@ -386,52 +386,6 @@
         >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
-              <!-- <div class="field">
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    margin-top: 15px;
-                    height: auto;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: center;
-                      align-items: center;
-                    "
-                  >
-                    <p
-                      id="dataset_validator_status"
-                      style="margin-top: 10px; text-align: center"
-                    ></p>
-                    <br />
-                    <div
-                      id="dataset_validator_spinner"
-                      class="spinner validate_dataset"
-                      style="display: none"
-                    >
-                      <div class="rect1"></div>
-                      <div class="rect2"></div>
-                      <div class="rect3"></div>
-                      <div class="rect4"></div>
-                      <div class="rect5"></div>
-                    </div>
-                  </div>
-
-                  <div
-                    id="validation_error_accordion"
-                    class="ui accordion"
-                  ></div>
-                </div>
-              </div> -->
-
               <div
                 id="validation-errors-container"
                 style="
@@ -445,7 +399,7 @@
                   >Validation Errors
                   <i
                     class="fas fa-info-circle popover-tooltip"
-                    data-content="Your dataset does not conform to SPARC guidelines. View the table to understand each non-conforming element. Use the link in each row to navigate to the part of SODA where you can fix the error. "
+                    data-content="The path column indicates where the errors occurred. The message column provides an explanation of what the errors are."
                     rel="popover"
                     data-html="true"
                     data-placement="right"
