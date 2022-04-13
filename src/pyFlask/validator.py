@@ -12,6 +12,7 @@ import sys
 import shutil
 import yaml
 from pathlib import Path
+from validatorUtils import error_path_report_parser
 
 userpath = os.path.expanduser("~")
 configpath = os.path.join(userpath, '.pennsieve', 'config.ini')
@@ -26,16 +27,35 @@ def get_home_directory(folder):
     elif sys.platform == "darwin":
         return str(Path.home()) + "/AppData/Local/" + folder 
 
+
 # validate a local dataset at the target directory 
 def val_dataset_local_pipeline(ds_path):
+    # convert the path to absolute from user's home directory
+    joined_path = os.path.join(userpath, ds_path.strip())
+
+    # check that the directory exists 
+    valid_directory = os.path.isdir(joined_path)
+
+    # give user an error 
+    if not valid_directory:
+        raise OSError(f"The given directory does not exist: {joined_path}")
+
+    # convert to Path object for Validator to function properly
+    norm_ds_path = Path(joined_path)
+
     # validate the dataset
-    try:
-        validation_object = validate(ds_path)
-    except Exception as e:
-        print("Error is: ", e)
-        pass
-    # return the results 
-    return validation_object
+    blob = validate(norm_ds_path)
+
+    # peel out the status object 
+    status = blob.get('status')
+
+    # peel out the path_error_report object
+    path_error_report = status.get('path_error_report')
+
+    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
+    parsed_path_error_report = error_path_report_parser.parse(path_error_report)
+
+    return parsed_path_error_report
 
 local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
 sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"

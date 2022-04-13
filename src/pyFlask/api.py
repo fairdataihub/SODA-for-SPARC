@@ -19,13 +19,7 @@ from configparser import ConfigParser
 import sys
 import yaml
 from sparcur.utils import PennsieveId
-from validatorUtils import error_path_report_parser
 import subprocess
-
-# project_id = auth.get('remote-organization')
-# PennsieveRemote = backend_pennsieve("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
-# root = PennsieveRemote("N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0")
-# datasets = list(root.children)
 
 from json import JSONEncoder
 from collections import deque
@@ -70,44 +64,30 @@ def api_ps_retrieve_dataset():
 @app.route("/api_validate_dataset_pipeline")
 @app.errorhandler(werkzeug.exceptions.BadRequest)
 def api_validate_dataset_pipeline():
+
     # get the dataset relative path
     ds_path = request.args.get("dataset-path")
-    # convert the path to absolute from user's home directory
-    joined_path = os.path.join(userpath, ds_path.strip())
-    # convert to Path object for Validator to function properly
-    norm_ds_path = Path(joined_path)
 
-    path = Path(ds_path)
 
-    blob = validate(norm_ds_path)
+    validation_errors = None 
+    try:
+        # validate and get dictionary back
+        validation_errors = val_dataset_local_pipeline(ds_path)
+    except Exception as e:
+        print(type(e).__name__)
+        if type(e).__name__ == "OSError":
+            return str(e), 400
+        # currently the validator throws a name error
+        # do nothing as validation still works
+        elif type(e).__name__ == "NameError":
+            pass
+        else:
+            return "An error occurred while validating your dataset", 500
 
-    # peel out the status object 
-    status = blob.get('status')
+    # convert to JSON
+    validation_errors = json.dumps(validation_errors, indent=4, default=str)
 
-    # peel out the path_error_report object
-    path_error_report = status.get('path_error_report')
-
-    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
-    parsed_path_error_report = error_path_report_parser.get_target_errors(path_error_report)
-
-    # get the validation errors out of the error report 
-    parsed_path_error_report = json.dumps(parsed_path_error_report, indent=4, default=str)
-
-    return parsed_path_error_report
-    
-
-    # # validate the dataset
-    # validation_result = None 
-    # try:
-    #     # validate and get dictionary back
-    #     validation_result = val_dataset_local_pipeline(path)
-    # except:
-    #     return "Critical validation error!", 400
-    
-    # errors = validation_result.get('errors')
-
-    # # for now encode the dequeue object as a list
-    # return json.dumps(errors, cls=DequeEncoder)
+    return validation_errors
 
 
 
