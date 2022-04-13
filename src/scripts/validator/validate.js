@@ -270,8 +270,8 @@ const transitionToValidateQuestionTwo = async () => {
     // show local section
     localSection.style = "display: flex;";
 
-    // show the confirm button if it was hidden
-    showConfirmButton();
+    // hide the confirm button
+    hideConfirmButton();
 
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
@@ -385,6 +385,9 @@ document
         // user does not want to reset
         return;
       }
+
+      // set the ccurrent section to active by removing prev
+      document.querySelector("#validate_dataset-question-2").classList.remove("prev")
 
       // reset validation table
       clearValidationResults();
