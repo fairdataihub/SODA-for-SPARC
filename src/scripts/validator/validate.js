@@ -70,13 +70,14 @@ const validateLocalDataset = async () => {
     return handleAxiosValidationErrors(err);
   }
 
-  let errors = validationResponse.data
+  let errors = validationResponse.data;
 
   Swal.fire({
     title: `Your dataset has been successfully validated`,
-    text: Object.getOwnPropertyNames(errors).length >= 1
-      ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
-      : `Your dataset is valid according to SPARC guidelines.`,
+    text:
+      Object.getOwnPropertyNames(errors).length >= 1
+        ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
+        : `Your dataset is valid according to SPARC guidelines.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
     heightAuto: false,
@@ -132,13 +133,14 @@ const validatePennsieveDataset = async () => {
     return handleAxiosValidationErrors(err);
   }
 
-  let errors = validationResponse.data
+  let errors = validationResponse.data;
 
   Swal.fire({
     title: `Your dataset has been successfully validated`,
-    text: Object.getOwnPropertyNames(errors).length > 1
-      ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
-      : `Your dataset is valid according to SPARC guidelines.`,
+    text:
+      Object.getOwnPropertyNames(errors).length > 1
+        ? `Your dataset has been found to violate SPARC Guidelines. Please view the table below to see what is non-conforming so that you may fix it.`
+        : `Your dataset is valid according to SPARC guidelines.`,
     allowEscapeKey: true,
     allowOutsideClick: true,
     heightAuto: false,
@@ -233,13 +235,7 @@ const addValidationErrorToTable = (
 };
 
 const validationErrorsOccurred = (errors) =>
-  Object.getOwnPropertyNames(errors).length >= 1 ? true : false
-
-
-
-
-
-
+  Object.getOwnPropertyNames(errors).length >= 1 ? true : false;
 
 /*
 *******************************************************************************************************************
@@ -413,7 +409,6 @@ document
       );
       questionThreeSection.classList.remove("show");
       questionThreeSection.classList.remove("prev");
-
     } else {
       // hide question 3
       document.querySelector("#validate_dataset-question-3").style.visibility =
@@ -429,7 +424,7 @@ document
       (evtSender, folderPaths) => {
         // check if a folder was not selected
         if (!folderPaths.length) {
-          return
+          return;
         }
 
         // get the folder path
@@ -441,7 +436,7 @@ document
         // set the input's placeholder value to the local dataset path
         validationPathInput.value = folderPath;
 
-        showConfirmButton()
+        showConfirmButton();
       }
     );
   });
@@ -623,13 +618,13 @@ const showConfirmButton = () => {
     "#validator-confirm-local-dataset-btn"
   );
   confirmDatasetBtn.parentElement.style.display = "flex";
-}
+};
 
 // TODO: Make it differentiate between local and pennsieve confirm buttons
 const hideConfirmButton = () => {
-    // hide the confirm button
-    let confirmDatasetBtn = document.querySelector(
-      "#validator-confirm-local-dataset-btn"
-    );
-    confirmDatasetBtn.parentElement.style.display = "none";
-}
+  // hide the confirm button
+  let confirmDatasetBtn = document.querySelector(
+    "#validator-confirm-local-dataset-btn"
+  );
+  confirmDatasetBtn.parentElement.style.display = "none";
+};
