@@ -2491,12 +2491,13 @@ async function switchMetadataManifestQuestion() {
               files: {},
               type: "",
             };
+            $("#bf_dataset_create_manifest").text("None");
+            defaultBfDataset = "Select dataset";
             $("#input-manifest-local-folder-dataset").val("");
             $("#input-manifest-local-folder-dataset").attr(
               "placeholder",
               "Browse here"
             );
-            // $($("#div-confirm-manifest-local-folder-dataset").children()[0]).show();
             $("#div-confirm-manifest-local-folder-dataset").css(
               "display",
               "none"
