@@ -249,9 +249,7 @@
 
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
             <div class="guided--section w-100">
-              <h2 class="guided--text-sub-step" style="margin-bottom: 5px">
-                SPARC dataset structure
-              </h2>
+              <h1 class="guided--text-sub-step">SPARC dataset structure</h1>
               <p class="guided--help-text">
                 SPARC datasets are organized according to the SPARC Data
                 Structure 2.0. More details about the structure are available in
@@ -850,17 +848,9 @@
             data-skip-page="true"
           >
             <div class="guided--section" id="guided_dataset_name_div">
-              <label class="guided--text-sub-step"
-                >What is the location of the dataset?
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Dataset location text"
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
+              <h1 class="guided--text-sub-step">
+                Where is your dataset located?
+              </h1>
               <div
                 class="field"
                 style="display: flex; justify-content: center; width: 100%"
@@ -1423,40 +1413,27 @@
             </div>
           </div>
           <div id="guided-assign-license-tab" class="guided--panel hidden">
-            <div class="guided--container-data-display">
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">
-                    Designated license:
-                  </h5>
-                </div>
-                <div class="guided--dataset-content-container">
-                  <h5 class="guided--dataset-content guidedBfLicense"></h5>
-                </div>
-              </div>
-            </div>
-            <div class="guided--section show">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step">
                 Assign a license to your datset:
               </h1>
-              <div style="width: 450px; margin-bottom: 50px">
-                <p class="guided--text-info">
-                  As per SPARC rules, you must assign the Creative Commons
-                  Attribution (CC-BY) license to your SPARC dataset.
-                </p>
+              <p class="guided--help-text text-left">
+                As per SPARC policy, all datasets must be licensed under a
+                <b>Creative Commons Attribution (CC-BY)</b> license.
+              </p>
+              <p class="guided--help-text text-left">
+                The <b>Creative Commons Attribution license</b> allows reusers
+                to distribute, remix, adapt, and build upon the material in any
+                medium or format, so long as attribution is given to the
+                creator. The license allows for commercial use.
+              </p>
+              <div class="ui checkbox">
+                <input type="checkbox" name="license" />
+                <label
+                  >I agree to apply the Creative Commons Attribution to my
+                  dataset</label
+                >
               </div>
-              <button
-                id="guided-button-add-license"
-                class="btn_animated lg"
-                style="
-                  margin: 15 10px;
-                  width: 290px;
-                  height: 50px;
-                  font-size: 15px;
-                "
-              >
-                Assign Creative Commons Attribution (CC-BY) license
-              </button>
             </div>
           </div>
         </div>
@@ -1546,7 +1523,7 @@
             id="guided-create-submission-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--section show">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Fill out the submission information below:
               </h1>
@@ -1648,7 +1625,7 @@
             id="guided-create-description-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--section show">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Fill out the description information below:
               </h1>
@@ -2252,7 +2229,7 @@
             id="guided-create-readme-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--section show">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Draft your README file below:
                 <i
@@ -2286,7 +2263,7 @@
             id="guided-create-changes-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--section show">
+            <div class="guided--section">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Draft your CHANGES file below:
                 <i
