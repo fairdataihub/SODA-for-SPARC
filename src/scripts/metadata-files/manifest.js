@@ -1313,7 +1313,6 @@ function createManifestLocally(type, editBoolean, originalDataset) {
         $("#bf_dataset_create_manifest").text("None");
       } else {
         if (editBoolean) {
-          console.log(generatePath);
           //// else: create locally for the purpose of generating of manifest files locally
           client.invoke(
             "api_create_high_level_manifest_files_existing_local_starting_point",
