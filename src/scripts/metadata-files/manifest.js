@@ -1043,7 +1043,9 @@ function generateManifestOnPennsieve() {
 }
 
 function validateSPARCdataset() {
-  localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
+  localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr(
+    "placeholder"
+  );
   valid_dataset = verify_sparc_folder(localDatasetFolderPath);
   if (valid_dataset == true) {
     let action = "";
@@ -1281,13 +1283,9 @@ function createManifestLocally(type, editBoolean, originalDataset) {
     "SODA"
   );
   if (type === "local") {
-    generatePath = localDatasetFolderPath
+    generatePath = localDatasetFolderPath;
   } else {
-    generatePath = path.join(
-      homeDirectory,
-      "SODA",
-      "manifest_files"
-    );
+    generatePath = path.join(homeDirectory, "SODA", "manifest_files");
   }
   client.invoke(
     "api_generate_manifest_file_locally",
@@ -1315,7 +1313,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
         $("#bf_dataset_create_manifest").text("None");
       } else {
         if (editBoolean) {
-          console.log(generatePath)
+          console.log(generatePath);
           //// else: create locally for the purpose of generating of manifest files locally
           client.invoke(
             "api_create_high_level_manifest_files_existing_local_starting_point",
@@ -1368,7 +1366,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
               Swal.hideLoading();
             },
           }).then((result) => {});
-            localDatasetFolderPath = ""
+          localDatasetFolderPath = "";
         } else {
           // SODA Manifest Files folder
           let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
@@ -1399,7 +1397,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
                 Swal.hideLoading();
               },
             });
-              localDatasetFolderPath = ""
+            localDatasetFolderPath = "";
             //////////// Tracking analytics /////////////
             // log the manifest file creation to analytics
             logMetadataForAnalytics(
@@ -1414,7 +1412,6 @@ function createManifestLocally(type, editBoolean, originalDataset) {
       }
     }
   );
-
 }
 
 // helper function 2: Second, load dataset structure as preview tree

@@ -2456,17 +2456,12 @@ async function switchMetadataSubmissionQuestion() {
 
 // 5. manifest
 async function switchMetadataManifestQuestion() {
-  var userpath1 = path.join(
-    homeDirectory,
-    "SODA",
-    "SODA Manifest Files"
-  );
-  var userpath2 = path.join(
-    homeDirectory,
-    "SODA",
-    "manifest_files"
-  );
-  if ($("#Question-prepare-manifest-2").hasClass("show") || $("#Question-prepare-manifest-3").hasClass("show")) {
+  var userpath1 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+  var userpath2 = path.join(homeDirectory, "SODA", "manifest_files");
+  if (
+    $("#Question-prepare-manifest-2").hasClass("show") ||
+    $("#Question-prepare-manifest-3").hasClass("show")
+  ) {
     var { value: continueProgressManifest } = await Swal.fire({
       title:
         "This will reset your progress so far with the manifest.xlsx file. Are you sure you want to continue?",
@@ -2479,34 +2474,41 @@ async function switchMetadataManifestQuestion() {
     });
     if (continueProgressManifest) {
       // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
-      client.invoke("api_delete_manifest_dummy_folders", [userpath1, userpath2], (error, res) => {
-        if (error) {
-          return true;
-        } else {
-          sodaJSONObj = {
-            "starting-point": { type: "" },
-            "dataset-structure": {},
-            "metadata-files": {},
-          };
-          datasetStructureJSONObj = {
-            folders: {},
-            files: {},
-            type: "",
-          };
-          $("#input-manifest-local-folder-dataset").val("");
-          $("#input-manifest-local-folder-dataset").attr(
-            "placeholder",
-            "Browse here"
-          );
-          // $($("#div-confirm-manifest-local-folder-dataset").children()[0]).show();
-          $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
+      client.invoke(
+        "api_delete_manifest_dummy_folders",
+        [userpath1, userpath2],
+        (error, res) => {
+          if (error) {
+            return true;
+          } else {
+            sodaJSONObj = {
+              "starting-point": { type: "" },
+              "dataset-structure": {},
+              "metadata-files": {},
+            };
+            datasetStructureJSONObj = {
+              folders: {},
+              files: {},
+              type: "",
+            };
+            $("#input-manifest-local-folder-dataset").val("");
+            $("#input-manifest-local-folder-dataset").attr(
+              "placeholder",
+              "Browse here"
+            );
+            // $($("#div-confirm-manifest-local-folder-dataset").children()[0]).show();
+            $("#div-confirm-manifest-local-folder-dataset").css(
+              "display",
+              "none"
+            );
+          }
         }
-    })
-    return continueProgressManifest;
+      );
+      return continueProgressManifest;
+    }
+  } else {
+    return true;
   }
-} else {
-  return true;
-}
 }
 
 const reset_ui = () => {
