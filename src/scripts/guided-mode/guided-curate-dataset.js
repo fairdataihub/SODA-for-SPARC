@@ -516,7 +516,6 @@ const isPageValid = (pageID) => {
       return true;
     }
     if (designateOtherButton.classList.contains("selected")) {
-      console.log($("#guided_bf_list_users_pi option:selected").text().trim());
       if (
         $("#guided_bf_list_users_pi option:selected").text().trim() !==
         "Select PI"
@@ -606,7 +605,7 @@ const populateGuidedModePages = (loadedJSONObj) => {
 
     lastCompletedTab = "guided-designate-permissions-tab";
   }
-  if (completedTabs.includes("add-edit-description-tags-tab")) {
+  if (completedTabs.includes("guided-add-description-tab")) {
     let studyPurpose = loadedJSONObj["digital-metadata"]["study-purpose"];
     let dataCollection = loadedJSONObj["digital-metadata"]["data-collection"];
     let primaryConclusion =
@@ -617,7 +616,7 @@ const populateGuidedModePages = (loadedJSONObj) => {
     $("#guided-ds-description-primary-conclusion").val(primaryConclusion);
     guidedDatasetTagsTagify.addTags(datasetTags);
 
-    lastCompletedTab = "add-edit-description-tags-tab";
+    lastCompletedTab = "guided-add-description-tab";
   }
   if (completedTabs.includes("guided-assign-license-tab")) {
     // CURRENTLY NO UI UPDATES ON THIS TAB   TODO LATER
@@ -762,6 +761,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
   sodaJSONObj["digital-metadata"] = {};
+  sodaJSONObj["digital-metadata"]["user-permissions"] = [];
+  sodaJSONObj["digital-metadata"]["team-permissions"] = [];
   sodaJSONObj["completed-tabs"] = [];
   sodaJSONObj["last-modified"] = "";
   datasetStructureJSONObj = { folders: {}, files: {} };
@@ -1867,99 +1868,39 @@ const createPermissionsTableRowElement = (name, permission) => {
   return `
     <tr>
       <td class="middle aligned">${name}</td>
-      <td class="middle aligned">${permission}</td>
-      <td class="middle aligned">trash</td>
+      <td class="middle aligned remove-left-border">${permission}</td>
+      <td class="middle aligned text-center remove-left-border" style="width: 20px">
+        <i
+        class="far fa-trash-alt"
+        style="color: red; cursor: pointer"
+        onclick="removePermission($(this))"
+        ></i>
+      </td>
     </tr>
   `;
 };
 const renderPermissionsTable = () => {
-  /*
   let permissionsTableElements = [];
-  const owner = sodaJSONObj["digital-medtadata"]["pi-owner"]["name"];
+  const owner = sodaJSONObj["digital-metadata"]["pi-owner"]["name"];
+  const users = sodaJSONObj["digital-metadata"]["user-permissions"];
+  const teams = sodaJSONObj["digital-metadata"]["team-permissions"];
   permissionsTableElements.push(
     createPermissionsTableRowElement(owner, "owner")
   );
+  for (user of users) {
+    permissionsTableElements.push(
+      createPermissionsTableRowElement(user["userString"], user["permission"])
+    );
+  }
+  for (team of teams) {
+    permissionsTableElements.push(
+      createPermissionsTableRowElement(team["teamString"], team["permission"])
+    );
+  }
 
-  /*let sampleData = subjectsToMap.sort().map((subject) => {
-    let subjectNumSamples = $(`.subject-id:contains("${subject}")`)
-      .closest("tr")
-      .find(".guided-input-sample-count")
-      .val();
-    return {
-      subjectName: subject,
-      sampleCount: subjectNumSamples,
-    };
-  });
-  let sampleTables = sampleData.map((subject) => {
-    let sampleRows = Array(parseInt(subject.sampleCount))
-      .fill(0)
-      .map((subject, index) => {
-        let tableIndex = index + 1;
-        return generateSampleRowElement(tableIndex);
-      })
-      .join("\n");
-    return `
-      <table class="ui celled striped table" style="margin-bottom: 25px; min-width: 800px;">
-        <thead>
-          <tr>
-            <th
-              colspan="4"
-              class="text-center"
-              style="
-                z-index: 2;
-                height: 50px;
-                position: sticky !important;
-                top: -10px !important;
-              "
-            >
-              <span class="sample-table-name">
-                ${subject.subjectName}
-              </span>
-              <button
-                class="ui primary basic button small"
-                style="position: absolute;
-                  right: 20px;
-                  top: 50%;
-                  transform: translateY(-50%);"
-                  onclick="addSampleFolder($(this))"
-                >
-                <i class="fas fa-folder-plus" style="margin-right: 7px"></i
-                >Add ${subject.subjectName} sample row
-              </button>
-            </th>
-          </tr>
-          <tr>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
-            >
-              Index
-            </th>
-            <th style="z-index: 2; position: sticky !important; top: 40px !important">
-              Sample ID
-            </th>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
-            >
-              Specify data files for the sample
-            </th>
-            <th
-              class="center aligned"
-              style="z-index: 2; position: sticky !important; top: 40px !important"
-            >
-              Delete
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          ${sampleRows}
-        </tbody>
-      </table>
-    `;
-  });
+  let permissionsTable = permissionsTableElements.join("\n");
   let permissionsTableBody = document.getElementById("permissions-table-body");
-  permissionsTableBody.innerHTML = permissionsTableElements.join("\n");*/
+  permissionsTableBody.innerHTML = permissionsTable;
 };
 
 /*********** Source page functions ***********/
@@ -2212,95 +2153,21 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
-  //append created user to permissions array
-  guidedUserPermissions.push(newUserPermissionObj);
-
-  /*create user permissions element and append to all elements
-      with guidedDatasetUserPermissions class.*/
-  const newUserPermissionElement = $("<div>", {
-    class: "guided--dataset-content-container",
-    style: "width: 100%",
-  });
-  newUserPermissionElement.attr(
-    "data-user-string",
-    newUserPermissionObj.userString
+  sodaJSONObj["digital-metadata"]["user-permissions"].push(
+    newUserPermissionObj
   );
-  newUserPermissionElement.attr(
-    "data-user-permission",
-    newUserPermissionObj.permission
-  );
-  newUserPermissionElement.append(
-    $("<h5>", {
-      class: "guided--dataset-content",
-      text:
-        $("#guided_bf_list_users option:selected").text().trim() +
-        " : " +
-        $("#select-permission-list-3").val(),
-    })
-  );
-  newUserPermissionElement.append(
-    $("<i>", {
-      class: "fas fa-user-times guided-delete-permission-user",
-      style: "color: red",
-      onclick: `removeUserPermission($(this).closest(".guided--dataset-content-container"))`,
-    })
-  );
-  $(".guidedDatasetUserPermissions").append(newUserPermissionElement);
+  renderPermissionsTable();
 };
-const removeUserPermission = (userParentElement) => {
-  userStringToRemove = userParentElement.data("user-string");
-  guidedUserPermissions = guidedUserPermissions.filter(
-    (userPermission) => userPermission.userString != userStringToRemove
-  );
-  $(".guidedDatasetUserPermissions")
-    .children(`[data-user-string='${userStringToRemove}']`)
-    .remove();
-};
+const guidedRemoveUserPermission = (userParentElement) => {};
 
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
-  //append created team obj to array
-  guidedTeamPermissions.push(newTeamPermissionObj);
-  console.log(newTeamPermissionObj);
+  sodaJSONObj["digital-metadata"]["team-permissions"].push(
+    newTeamPermissionObj
+  );
+  renderPermissionsTable();
+};
+const guidedRemoveTeamPermission = (teamParentElement) => {};
 
-  const newTeamPermissionElement = $("<div>", {
-    class: "guided--dataset-content-container",
-    style: "width: 100%",
-  });
-  newTeamPermissionElement.attr(
-    "data-team-string",
-    newTeamPermissionObj.teamString
-  );
-  newTeamPermissionElement.attr(
-    "data-team-permission",
-    newTeamPermissionObj.permission
-  );
-  newTeamPermissionElement.append(
-    $("<h5>", {
-      class: "guided--dataset-content",
-      text:
-        $("#guided_bf_list_teams option:selected").text().trim() +
-        " : " +
-        $("#select-permission-list-4").val(),
-    })
-  );
-  newTeamPermissionElement.append(
-    $("<i>", {
-      class: "fas fa-user-times guided-delete-permission-team",
-      style: "color: red",
-      onclick: `removeTeamPermission($(this).closest(".guided--dataset-content-container"))`,
-    })
-  );
-  $(".guidedDatasetTeamPermissions").append(newTeamPermissionElement);
-};
-const removeTeamPermission = (teamParentElement) => {
-  teamStringToRemove = teamParentElement.data("team-string");
-  guidedTeamPermissions = guidedTeamPermissions.filter(
-    (teamPermission) => teamPermission.teamString != teamStringToRemove
-  );
-  $(".guidedDatasetTeamPermissions")
-    .children(`[data-team-string='${teamStringToRemove}']`)
-    .remove();
-};
 const setGuidedLicense = (newLicense) => {
   $(".guidedBfLicense").text(newLicense);
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
@@ -2382,12 +2249,64 @@ $(document).ready(() => {
     $("#guided-next-button").click();
   });
 
+  $("#guided-button-add-permission-user-or-team").on("click", function () {
+    try {
+      //get the selected permission element
+      const newPermissionElement = $(
+        "#guided_bf_list_users_and_teams option:selected"
+      );
+      const newPermissionRoleElement = $(
+        "#select-permission-list-users-and-teams"
+      );
+
+      //throw error if no user/team or role is selected
+      if (newPermissionElement.val().trim() === "Select individuals or teams") {
+        throw "Please select a user or team to designate a permission to";
+      }
+      if (newPermissionRoleElement.val().trim() === "Select role") {
+        throw "Please select a role for the user or team";
+      }
+
+      if (newPermissionElement[0].getAttribute("permission-type") == "user") {
+        //if the selected element is a user, add the user to the user permissions array
+        userString = newPermissionElement.text().trim();
+        userName = userString.split("(")[0].trim();
+        UUID = newPermissionElement.val().trim();
+        userPermission = newPermissionRoleElement.val().trim();
+        const newUserPermissionObj = {
+          userString: userString,
+          userName: userName,
+          UUID: UUID,
+          permission: userPermission,
+        };
+        guidedAddUserPermission(newUserPermissionObj);
+      }
+      if (newPermissionElement[0].getAttribute("permission-type") == "team") {
+        //if the selected element is a team, add the team to the team permissions array
+        const newTeamPermissionObj = {
+          teamString: newPermissionElement.text().trim(),
+          UUID: newPermissionElement.val().trim(),
+          permission: newPermissionRoleElement.val().trim(),
+        };
+        guidedAddTeamPermission(newTeamPermissionObj);
+      }
+      console.log($(this));
+      $(this)[0].scrollIntoView({
+        behavior: "smooth",
+      });
+    } catch (error) {
+      notyf.open({
+        duration: "4000",
+        type: "error",
+        message: error,
+      });
+    }
+  });
   $("#guided-button-add-permission-user").on("click", function () {
-    //create user permissions object
     const newUserPermission = {
       userString: $("#guided_bf_list_users option:selected").text().trim(),
       UUID: $("#guided_bf_list_users").val().trim(),
-      permission: $("#select-permission-list-3").val(),
+      permission: $("#select-permission-list-users-and-teams").val(),
     };
     removeAlertMessageIfExists($("#guided-designated-user-permissions-info"));
     guidedAddUserPermission(newUserPermission);
@@ -4680,7 +4599,7 @@ $(document).ready(() => {
       }
       if (pageBeingLeftID === "guided-designate-permissions-tab") {
       }
-      if (pageBeingLeftID === "add-edit-description-tags-tab") {
+      if (pageBeingLeftID === "guided-add-description-tab") {
         let studyPurpose = $("#guided-ds-description-study-purpose")
           .val()
           .trim();
@@ -4697,6 +4616,8 @@ $(document).ready(() => {
         $("#guided-textarea-create-readme").text(
           buildReadMeString(studyPurpose, dataCollection, primaryConclusion)
         );
+      }
+      if (pageBeingLeftID === "guided-add-tags-tab") {
         let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
         $(".guidedDatasetTags").text(datasetTags.join("\r\n"));
         sodaJSONObj["digital-metadata"]["dataset-tags"] = datasetTags;

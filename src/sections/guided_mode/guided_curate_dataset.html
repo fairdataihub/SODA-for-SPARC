@@ -88,9 +88,9 @@
                   id="new-dataset-lottie-container"
                   style="height: 150px; width: 150px"
                 ></div>
-                <h1 class="guided--text-sub-step">
+                <h2 class="guided--text-sub-step">
                   Begin curating a new dataset
-                </h1>
+                </h2>
               </div>
               <div
                 class="guided--panel hidden"
@@ -249,10 +249,10 @@
 
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step" style="margin-bottom: 5px">
+              <h2 class="guided--text-sub-step" style="margin-bottom: 5px">
                 SPARC dataset structure
-              </h1>
-              <p class="guided--help-text" style="max-width: 900px">
+              </h2>
+              <p class="guided--help-text">
                 SPARC datasets are organized according to the SPARC Data
                 Structure 2.0. More details about the structure are available in
                 the dedicated SPARC help page. Briefly, the each SPARC dataset
@@ -272,10 +272,10 @@
               </div>
             </div>
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
+              <h2 class="guided--text-sub-step">
                 Is your dataset already organized according to SPARC's dataset
                 structure?
-              </h1>
+              </h2>
               <div class="guided--card-container">
                 <div
                   class="option-card radio-button dataset-info-button"
@@ -903,8 +903,9 @@
             ></div>
             <div
               class="guided--capsule"
-              id="add-edit-description-tags-capsule"
+              id="guided-add-description-capsule"
             ></div>
+            <div class="guided--capsule" id="guided-add-tags-capsule"></div>
             <div
               class="guided--capsule"
               id="guided-assign-license-capsule"
@@ -1116,9 +1117,7 @@
           </div>
           <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Dataset user/team permissions
-              </h1>
+              <h1 class="guided--text-sub-step">Specify owner of dataset</h1>
               <p class="guided--help-text" style="max-width: 900px">
                 SPARC curation rules require to set the PI of the SPARC award as
                 'owner' of the dataset before it is shared with the Curation
@@ -1202,23 +1201,44 @@
             class="guided--panel hidden"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">Owner of dataset</h1>
-              <p class="guided--help-text" style="max-width: 900px">
-                SPARC curation rules require to set the PI of the SPARC award as
-                'owner' of the dataset before it is shared with the Curation
-                Team for review. This is to ensures that the PI is the only
-                person who can publish the dataset.
+              <h1 class="guided--text-sub-step">
+                Dataset user/team permissions
+              </h1>
+              <p class="guided--help-text text-left">
+                Dataset permissions control which users or teams can view, edit,
+                or manage the dataset. Read below for a breakdown of the
+                different types of dataset permissions:
+              </p>
+              <p class="guided--help-text text-left">
+                <b>Managers</b> can invite people and teams to a dataset, edit
+                and delete models, records and files, but cannot publish a
+                dataset.
+              </p>
+              <p class="guided--help-text text-left">
+                <b>Editors</b> can create, edit, or delete records and files in
+                a dataset.
+              </p>
+              <p class="guided--help-text text-left">
+                <b>Viewers</b> can view and browse all information in a dataset,
+                but have no other permissions.
               </p>
             </div>
             <table
               class="ui celled striped table"
-              style="margin-bottom: 25px; min-width: 800px"
+              style="margin-bottom: 25px; width: 800px"
             >
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Permission</th>
-                  <th class="center aligned collapsing">Delete</th>
+                  <th class="remove-left-border" style="width: 300px">
+                    Permission
+                  </th>
+                  <th
+                    class="center aligned remove-left-border"
+                    style="width: 30px"
+                  >
+                    Delete
+                  </th>
                 </tr>
               </thead>
               <tbody id="permissions-table-body"></tbody>
@@ -1243,9 +1263,9 @@
               </button>
             </div>
             <div class="guided--panel hidden" id="guided-add-permissions">
-              <label class="guided--text-sub-step"
-                >Designate permissions for users and teams:
-              </label>
+              <h1 class="guided--text-sub-step">
+                Designate permissions for users and teams:
+              </h1>
               <div class="guided--container-permissions">
                 <div style="flex-grow: 1">
                   <div
@@ -1284,28 +1304,60 @@
                     </div>
                   </div>
                 </div>
+                <select
+                  class="my-dropdown"
+                  style="
+                    width: 150px;
+                    margin: 0px 10px;
+                    cursor: pointer;
+                    height: 35px;
+                  "
+                  id="select-permission-list-users-and-teams"
+                >
+                  <option value="Select role">Select role</option>
+                  <option value="viewer">viewer</option>
+                  <option value="manager">manager</option>
+                  <option value="editor">editor</option></select
+                ><button
+                  class="ui primary button"
+                  id="guided-button-add-permission-user-or-team"
+                  style="
+                    height: 35px;
+                    background-color: var(--color-light-green) !important;
+                    padding: 0.7em 1.3em;
+                  "
+                >
+                  Designate permission
+                </button>
               </div>
             </div>
             <div class="guided--panel hidden" id="guided-no-permissions"></div>
           </div>
-          <div id="add-edit-description-tags-tab" class="guided--panel hidden">
+          <div id="guided-add-description-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Enter your descriptions in the section below
-              </h1>
-              <div class="guided--input-container">
-                <label class="guided--form-label"
-                  >Study purpose:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Enter a paragraph that explains the purpose of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                    style="margin-left: 5px; color: black"
-                  ></i>
-                </label>
+              <h1 class="guided--text-sub-step">Describe your dataset</h1>
+              <p class="guided--help-text text-left">
+                The dataset description is a brief summary of the dataset which
+                allows users to gain better insights into your work and enhance
+                your dataset's findability. A SPARC description is broken into
+                three main parts:
+              </p>
+              <p class="guided--help-text text-left">
+                <b>Study purpose:</b> Text that indicates the purpose of the
+                study. The study purpose helps give viewers a sense of what the
+                study is about.
+              </p>
+              <p class="guided--help-text text-left">
+                <b>Data collection:</b> Description of the study data collection
+                process for this dataset. Used to generate the structured
+                abstract.
+              </p>
+              <p class="guided--help-text text-left">
+                <b>Primary conclusion:</b> A description of the primary
+                conclusion drawn from the study for the structured abstract.
+              </p>
+              <div class="guided--input-container mt-sm">
+                <label class="guided--form-label">Study purpose:</label>
                 <textarea
                   class="guided--input guided--text-area guided--text-data-description"
                   type="text"
@@ -1313,20 +1365,14 @@
                   placeholder="Enter your study purpose here"
                   id="guided-ds-description-study-purpose"
                 ></textarea>
+                <p class="guided--text-input-instructions">
+                  Enter a paragraph that explains the purpose of your study. We
+                  will enter the title for this section to your readme for
+                  you.<br />Refrain from using markdown.
+                </p>
               </div>
               <div class="guided--input-container">
-                <label class="guided--form-label"
-                  >Data collection:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Enter a paragraph that explains the method you used for data collection below. We will enter the title for this section to your readme for you. Refrain from using markdown."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                    style="margin-left: 5px; color: black"
-                  ></i>
-                </label>
+                <label class="guided--form-label">Data collection:</label>
                 <textarea
                   class="guided--input guided--text-area guided--text-data-description"
                   type="text"
@@ -1334,20 +1380,14 @@
                   placeholder="Enter your data collection here"
                   id="guided-ds-description-data-collection"
                 ></textarea>
+                <p class="guided--text-input-instructions">
+                  Enter a paragraph that explains the method you used for data
+                  collection. We will enter the title for this section to your
+                  readme for you.<br />Refrain from using markdown.
+                </p>
               </div>
               <div class="guided--input-container">
-                <label class="guided--form-label"
-                  >Primary conclusion:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Enter a paragraph that explains the primary conclusion of your study below. We will enter the title for this section to your readme for you. Refrain from using markdown."
-                    rel="popover"
-                    data-placement="right"
-                    data-html="true"
-                    data-trigger="hover"
-                    style="margin-left: 5px; color: black"
-                  ></i>
-                </label>
+                <label class="guided--form-label">Primary conclusion:</label>
                 <textarea
                   class="guided--input guided--text-area guided--text-data-description"
                   type="text"
@@ -1355,25 +1395,31 @@
                   placeholder="Enter your primary conclusion here"
                   id="guided-ds-description-primary-conclusion"
                 ></textarea>
+                <p class="guided--text-input-instructions">
+                  Enter a paragraph that explains the primary conclusion of your
+                  study. We will enter the title for this section to your readme
+                  for you.<br />Refrain from using markdown.
+                </p>
               </div>
             </div>
-            <div class="guided--section show">
-              <h1 class="guided--text-sub-step">
-                Enter dataset tags below<i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Add, edit, or remive metadata tags that describe key elements of your research. This will make your datasets more easily searchable once published. Click the x to delete a tag. Double click an existing tag to edit its contents."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </h1>
+          </div>
+          <div id="guided-add-tags-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Enter dataset tags below</h1>
+              <p class="guided--help-text text-center mb-lg">
+                Dataset tags are keywords that indicate the key elements of your
+                research.
+              </p>
               <input
                 id="guided-tagify-dataset-tags"
                 name="guided-tags"
                 value=""
                 autofocus
               />
+              <p class="guided--text-input-instructions">
+                Enter a keyword and press enter to add it as a tag. Double click
+                a tag to edit its contents.
+              </p>
             </div>
           </div>
           <div id="guided-assign-license-tab" class="guided--panel hidden">
@@ -4220,9 +4266,9 @@
                   class="guided--panel hidden"
                 >
                   <div class="guided--input-container">
-                    <h1 class="guided--text-sub-step">
+                    <h2 class="guided--text-sub-step">
                       Is this your Pennsieve account?
-                    </h1>
+                    </h2>
                     <div class="guided--container-data-display">
                       <div class="guided--card-dataset-info">
                         <div class="guided--dataset-description-container">
@@ -4314,9 +4360,9 @@
               </div>
             </div>
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
+              <h2 class="guided--text-sub-step">
                 Which dataset would you like to generate on?
-              </h1>
+              </h2>
 
               <div class="guided--card-container">
                 <div
@@ -4444,10 +4490,10 @@
                   <div class="guided--section">
                     <div class="ui form" style="width: 100%">
                       <div class="grouped fields">
-                        <h1 class="guided--text-sub-step">
+                        <h2 class="guided--text-sub-step">
                           Which existing Pennsieve dataset would you like to
                           use?
-                        </h1>
+                        </h2>
                         <div
                           class="field"
                           style="margin: 15px auto; width: 450px"
@@ -4650,8 +4696,8 @@
                 "
               >
                 <label
-                  class="guided--form-label"
-                  style="text-align: left; margin-top: 10px; margin-bottom: 5px"
+                  class="guided--form-label mt-md mb-sm"
+                  style="text-align: left"
                   >Current dataset structure:</label
                 >
                 <div id="guided-div-dataset-tree-preview">
@@ -4660,12 +4706,8 @@
               </div>
               <div class="guided--card-dataset-info">
                 <label
-                  class="guided--form-label"
-                  style="
-                    text-align: center;
-                    margin-top: 10px;
-                    margin-bottom: 5px;
-                  "
+                  class="guided--form-label mt-md mb-sm"
+                  style="text-align: center"
                   >Other dataset info:</label
                 >
               </div>

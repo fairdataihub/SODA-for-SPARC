@@ -3834,9 +3834,9 @@ function refreshBfUsersList() {
           bfListUsersPI.appendChild(optionUser2);
           var optionUser3 = optionUser.cloneNode(true);
           guidedBfListUsersPi.appendChild(optionUser3);
-          var optionUser4 = optionUser.cloneNode(true);
-          guidedBfListUsersAndTeams.setAttribute("permission-type", "user");
-          guidedBfListUsersAndTeams.appendChild(optionUser4);
+          var guidedOptionUser = optionUser.cloneNode(true);
+          guidedOptionUser.setAttribute("permission-type", "user");
+          guidedBfListUsersAndTeams.appendChild(guidedOptionUser);
         }
       }
     });
@@ -3862,8 +3862,7 @@ function refreshBfTeamsList(teamList) {
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
         $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
-        $("#guided_bf_list_teams").selectpicker("refresh");
-        $("#guided_bf_list_teams").find("option:not(:first)").remove();
+        $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 
         $("#button-add-permission-team").hide();
         for (var myItem in res) {
@@ -3872,9 +3871,9 @@ function refreshBfTeamsList(teamList) {
           optionTeam.textContent = myTeam;
           optionTeam.value = myTeam;
           teamList.appendChild(optionTeam);
-          var optionTeam2 = optionTeam.cloneNode(true);
-          optionTeam2.setAttribute("permission-type", "team");
-          guidedBfListUsersAndTeams.appendChild(optionTeam2);
+          var guidedOptionTeam = optionTeam.cloneNode(true);
+          guidedOptionTeam.setAttribute("permission-type", "team");
+          guidedBfListUsersAndTeams.appendChild(guidedOptionTeam);
         }
         confirm_click_account_function();
       }

@@ -268,7 +268,7 @@
 }
 
 .guided--container-permissions {
-  width: 100%;
+  width: 800px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -380,6 +380,10 @@
   margin-bottom: 15px;
 }
 
+h1.guided--text-sub-step {
+  font-size: 25px;
+}
+
 .guided--text-info {
   display: block;
   font-size: 15px;
@@ -388,6 +392,11 @@
   font-weight: 700;
   margin-top: 9px !important;
   margin-bottom: 9px;
+}
+.guided--text-input-instructions {
+  width: 100%;
+  padding: 5px;
+  color: lightslategray !important;
 }
 
 .guided--label-accordion-field {
@@ -660,7 +669,8 @@
 }
 .guided--help-text {
   font-size: 1.2rem;
-  max-width: 650px;
+  width: 100%;
+  max-width: 900px;
 }
 .guided--help-text.small {
   font-size: 1rem;
