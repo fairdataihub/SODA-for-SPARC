@@ -3835,6 +3835,7 @@ function refreshBfUsersList() {
           var optionUser3 = optionUser.cloneNode(true);
           guidedBfListUsersPi.appendChild(optionUser3);
           var optionUser4 = optionUser.cloneNode(true);
+          guidedBfListUsersAndTeams.setAttribute("permission-type", "user");
           guidedBfListUsersAndTeams.appendChild(optionUser4);
         }
       }
@@ -3872,6 +3873,7 @@ function refreshBfTeamsList(teamList) {
           optionTeam.value = myTeam;
           teamList.appendChild(optionTeam);
           var optionTeam2 = optionTeam.cloneNode(true);
+          optionTeam2.setAttribute("permission-type", "team");
           guidedBfListUsersAndTeams.appendChild(optionTeam2);
         }
         confirm_click_account_function();
