@@ -695,6 +695,11 @@ async function generateDatasetDescription() {
     } else {
       return false;
     }
+  } else {
+    $("#dd-accordion").removeClass("active");
+    $("#dd-accordion").find(".title").removeClass("active");
+    $("#dd-accordion").find(".content").removeClass("active");
+    return true;
   }
 }
 
