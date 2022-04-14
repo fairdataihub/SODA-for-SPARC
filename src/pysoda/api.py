@@ -70,7 +70,7 @@ from prepare_metadata import (
     import_bf_metadata_file,
     import_bf_RC,
     upload_RC_file,
-    delete_manifest_dummy_folders
+    delete_manifest_dummy_folders,
 )
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
@@ -244,9 +244,7 @@ class SodaApi(object):
 
     def api_delete_manifest_dummy_folders(self, userpath):
         try:
-            return delete_manifest_dummy_folders(
-                userpath
-            )
+            return delete_manifest_dummy_folders(userpath)
         except Exception as e:
             raise e
 
