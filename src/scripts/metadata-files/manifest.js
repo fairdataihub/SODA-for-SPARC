@@ -189,6 +189,7 @@ $(document).ready(function () {
           Swal.hideLoading();
         },
       }).then((result) => {
+        $(jstreePreviewManifest).jstree().deselect_all(true);
         // sort the updated json object (since users might have added new columns)
         let manifestHeaders = table1.getHeaders().split(",");
         let manifestEntries = table1.getData();
