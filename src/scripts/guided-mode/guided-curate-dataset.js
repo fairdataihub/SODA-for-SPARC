@@ -357,9 +357,11 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-add-tags-tab") {
       //clear dataset tags
       guidedDatasetTagsTagify.removeAllTags();
-      const tags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-      if(sodaJSONObj["digital-metadata"]["dataset-tags"]){
-        guidedDatasetTagsTagify.addTags(tags);
+      //Add tags from jsonObj if they exist
+      const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
+      if (sodaJSONObj["digital-metadata"]["dataset-tags"]) {
+        guidedDatasetTagsTagify.addTags(datasetTags);
+      }
     }
     if (targetPageID === "guided-assign-license-tab") {
       const licenseCheckbox = document.getElementById(
