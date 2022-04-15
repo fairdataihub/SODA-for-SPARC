@@ -236,6 +236,7 @@ function addSample(curationMode) {
       onboardingMetadata("sample");
     }
   }
+
   if (curationMode === "guided") {
     addSampleMetadataEntriesIntoJSON("guided");
   }
@@ -696,6 +697,8 @@ function populateRRID(strain, type, curationMode) {
 function addSubjectMetadataEntriesIntoJSON(curationMode) {
   let curationModeSelectorPrefix = "";
   let dataLength = subjectsTableData.length;
+  console.log(subjectsTableData);
+  console.log(dataLength);
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
   }
@@ -759,6 +762,10 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
         //If the subject ID is already in the table, update old subject metadata with new
         subjectsTableData[duplicateSubjectIndex] = valuesArr;
       } else {
+        console.log(subjectsTableData);
+        console.log(valuesArr);
+        console.log(dataLength);
+        console.log(subjectsTableData[dataLength]);
         if (subjectsTableData[dataLength] !== undefined) {
           subjectsTableData[dataLength + 1] = valuesArr;
         } else {
