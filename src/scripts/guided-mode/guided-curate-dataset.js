@@ -622,17 +622,6 @@ const isPageValid = (pageID) => {
   }
 };
 
-const validateGuidedDatasetDescriptionInputs = () => {
-  if (
-    $("#guided-ds-description-study-purpose").val().trim().length == 0 ||
-    $("#guided-ds-description-data-collection").val().trim().length == 0 ||
-    $("#guided-ds-description-primary-conclusion").val().trim().length == 0
-  ) {
-    disableProgressButton();
-  } else {
-    enableProgressButton();
-  }
-};
 //populates user inputs from the completed-tabs array, and returns the last page
 //that the user completed
 const populateGuidedModePages = (loadedJSONObj) => {
@@ -2586,22 +2575,6 @@ $(document).ready(() => {
   /////////////////////////////////////////////////////////
   /////////  PENNSIEVE METADATA BUTTON HANDLERS   /////////
   /////////////////////////////////////////////////////////
-
-  $(".guided-change-dataset-subtitle").on("click", async function () {
-    const { value: datasetSubtitle } = await Swal.fire({
-      title: "Input new dataset subtitle",
-      input: "text",
-      inputPlaceholder: "Enter your new dataset subtitle here",
-    });
-
-    if (datasetSubtitle) {
-      $(".guidedDatasetSubtitle").text(datasetSubtitle);
-    }
-  });
-
-  $(".guided--text-data-description").on("keyup", function () {
-    validateGuidedDatasetDescriptionInputs();
-  });
 
   $("#guided-dataset-subtitle-input").on("keyup", () => {
     const guidedDatasetSubtitleCharCount = document.getElementById(
