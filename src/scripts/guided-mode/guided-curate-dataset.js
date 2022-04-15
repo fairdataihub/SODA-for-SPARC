@@ -4696,22 +4696,19 @@ $(document).ready(() => {
       if (pageBeingLeftID === "guided-designate-permissions-tab") {
       }
       if (pageBeingLeftID === "guided-add-description-tab") {
-        let studyPurpose = $("#guided-ds-description-study-purpose")
-          .val()
-          .trim();
-        let dataCollection = $("#guided-ds-description-data-collection")
-          .val()
-          .trim();
-        let primaryConclusion = $("#guided-ds-description-primary-conclusion")
-          .val()
-          .trim();
+        let studyPurpose = document
+          .getElementById("guided-ds-description-study-purpose")
+          .value.trim();
+        let dataCollection = document
+          .getElementById("#guided-ds-description-data-collection")
+          .value.trim();
+        let primaryConclusion = document
+          .getElementById("#guided-ds-description-primary-conclusion")
+          .value.trim();
         sodaJSONObj["digital-metadata"]["study-purpose"] = studyPurpose;
         sodaJSONObj["digital-metadata"]["data-collection"] = dataCollection;
         sodaJSONObj["digital-metadata"]["primary-conclusion"] =
           primaryConclusion;
-        $("#guided-textarea-create-readme").text(
-          buildReadMeString(studyPurpose, dataCollection, primaryConclusion)
-        );
       }
       if (pageBeingLeftID === "guided-add-tags-tab") {
         let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
