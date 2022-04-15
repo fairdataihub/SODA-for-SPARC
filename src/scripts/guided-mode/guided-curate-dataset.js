@@ -324,6 +324,7 @@ const guidedPrepareHomeScreen = async () => {
 
 const traverseToTab = (targetPageID) => {
   try {
+    //refresh selectPickers if page has them
     if (
       targetPageID === "guided-designate-pi-owner-tab" ||
       "guided-designate-permissions-tab"
@@ -2008,6 +2009,7 @@ $("#guided-button-has-source-data").on("click", () => {
   $("#structure-subjects-folder").appendTo($("#guided-user-has-source-data"));
   updateFolderStructureUI(highLevelFolderPageData.source);
 });
+
 $("#guided-button-no-source-data").on("click", () => {
   //ask user to confirm they would like to delete source folder if it exists
   if (datasetStructureJSONObj["folders"]["source"] != undefined) {
@@ -2470,6 +2472,7 @@ $(document).ready(() => {
       }
     });
   });
+
   $("#guided-button-samples-not-same").on("click", () => {
     $("#guided-button-generate-subjects-table").show();
   });
