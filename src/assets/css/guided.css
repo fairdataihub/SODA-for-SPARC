@@ -372,16 +372,17 @@
 
 .guided--text-sub-step {
   display: block;
-  font-size: 17px;
+  font-size: 18px;
   color: rgba(0, 0, 0, 0.87);
   text-align: center;
   font-weight: 600;
   margin-top: 10px !important;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 h1.guided--text-sub-step {
   font-size: 25px;
+  margin-bottom: 15px;
 }
 
 .guided--text-info {

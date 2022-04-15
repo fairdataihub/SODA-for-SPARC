@@ -1529,6 +1529,27 @@
               <h1 class="guided--text-sub-step">
                 Create your dataset submission metadata
               </h1>
+              <p class="guided--help-text text-center">
+                <b>Optional</b> folder containing unaltered, raw files from an
+                experiment, if they are included in the data. For example, this
+                folder may include the “truly” raw k-space data for a Magnetic
+                Resonance (MR) image that has not yet been reconstructed.
+              </p>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-has-source-data"
+                  data-next-question="guided-user-has-source-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-source-data"
+                >
+                  No
+                </button>
+              </div>
               <div class="ui styled fluid accordion guided--accordion">
                 <div class="title active">
                   <i class="dropdown icon active"></i>Award and milestone

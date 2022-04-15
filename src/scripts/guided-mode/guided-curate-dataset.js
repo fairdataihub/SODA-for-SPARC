@@ -4700,10 +4700,10 @@ $(document).ready(() => {
           .getElementById("guided-ds-description-study-purpose")
           .value.trim();
         let dataCollection = document
-          .getElementById("#guided-ds-description-data-collection")
+          .getElementById("guided-ds-description-data-collection")
           .value.trim();
         let primaryConclusion = document
-          .getElementById("#guided-ds-description-primary-conclusion")
+          .getElementById("guided-ds-description-primary-conclusion")
           .value.trim();
         sodaJSONObj["digital-metadata"]["study-purpose"] = studyPurpose;
         sodaJSONObj["digital-metadata"]["data-collection"] = dataCollection;
