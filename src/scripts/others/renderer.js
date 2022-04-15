@@ -5814,20 +5814,6 @@ $(document).ready(function () {
     placement: "top",
     theme: "light",
   });
-  document
-    .getElementById("direct-to-feedback")
-    .addEventListener("click", function () {
-      if (
-        !document
-          .getElementById("feedback-wrapper")
-          .classList.contains("is-open")
-      ) {
-        document.getElementById("feedback-btn").click();
-      }
-      document.querySelector("#feedback-btn").scrollIntoView({
-        behavior: "smooth",
-      });
-    });
 });
 
 // Trigger action when the contexmenu is about to be shown
