@@ -1,64 +1,22 @@
-<label class="guided--form-label centered mt-md">
-  Would you like to add more permissions to your dataset?
-</label>
-<div class="guided--radio-button-container mb-sm">
-  <button
-    class="ui positive basic button guided--radio-button"
-    id="guided-button-add-permissions"
-    data-next-question="guided-add-permissions"
-  >
-    Myself
-  </button>
-  <button
-    class="ui negative basic button guided--radio-button"
-    id="guided-button-no-permissions"
-    data-next-question="guided-no-permissions"
-  >
-    Someone else
-  </button>
-</div>
-<div class="guided--panel hidden" id="guided-add-permissions"></div>
-<div class="guided--panel hidden" id="guided-no-permissions">
-  <label class="guided--text-sub-step"
-    >Designate another user as PI Owner:
+<div class="guided--section">
+  <label class="guided--form-label centered"
+    >Is your dataset already organized according to SPARC'S dataset structure?
   </label>
-  <div class="guided--container-permissions">
-    <div style="flex-grow: 1">
-      <div
-        class="field"
-        style="
-          display: flex;
-          width: 100%;
-          justify-content: center;
-          align-items: center;
-          flex-direction: column;
-        "
-      >
-        <div
-          id="guided_permissions_select_div"
-          style="
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            width: 100%;
-          "
-        >
-          <select
-            class="selectpicker"
-            data-live-search="true"
-            style="
-              padding: 8px 12px;
-              margin-right: 30px;
-              height: 38px;
-              border-radius: 5px;
-              border: 1px solid black;
-            "
-            id="guided_bf_list_users_pi"
-          >
-            <option>Select individuals or teams</option>
-          </select>
-        </div>
-      </div>
-    </div>
+
+  <div class="guided--radio-button-container">
+    <button
+      class="ui positive basic button guided--radio-button"
+      id="guided-dataset-already-structured"
+      data-next-question="guided-structure-new-dataset"
+    >
+      Yes
+    </button>
+    <button
+      class="ui negative basic button guided--radio-button"
+      id="guided-dataset-not-structured"
+    >
+      No
+    </button>
   </div>
 </div>
+<div class="guided--panel hidden" id="guided-structure-new-dataset"></div>

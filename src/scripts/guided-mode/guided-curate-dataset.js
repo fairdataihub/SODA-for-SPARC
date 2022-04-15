@@ -133,6 +133,10 @@ const getProgressFileData = async (progressFile) => {
   return readFileAsync(progressFilePath);
 };
 const renderProgressCards = (progressFileJSONdata) => {
+  //sort progressFileJSONdata by date to place newest cards on top
+  progressFileJSONdata.sort((a, b) => {
+    return new Date(b["last-modified"]) - new Date(a["last-modified"]);
+  });
   let cardContainer = document.getElementById("resume-curation-container");
   const progressCards = progressFileJSONdata.map((progressFile) => {
     console.log(progressFile);
@@ -2181,10 +2185,15 @@ $(document).ready(() => {
     $("#guided-button-start-new-curate").hide();
     $("#continue-curating-existing").hide();
   });
-  $("#guided-create-new-dataset").on("click", async () => {
+  $("#guided-button-cancel-create-new-dataset").on("click", () => {
+    document.getElementById("guided-new-dataset-info").classList.add("hidden");
+    $("#guided-button-start-new-curate").show();
+    $("#continue-curating-existing").show();
+  });
+  $("#guided-create-new-dataset").on("click", async function () {
     let errorArray = [];
     try {
-      $("#guided-create-new-dataset").addClass("loading");
+      $(this).addClass("loading");
       let datasetName = document
         .getElementById("guided-dataset-name-input")
         .value.trim();
@@ -2192,6 +2201,22 @@ $(document).ready(() => {
         .getElementById("guided-dataset-subtitle-input")
         .value.trim();
       if (datasetName != "" && datasetSubtitle != "") {
+        //get names of existing progress saves
+        const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
+        //Remove '.json' from each element in existingProgressNames
+        existingProgressNames.forEach((element, index) => {
+          existingProgressNames[index] = element.replace(".json", "");
+        });
+        //check if dataset name is already in use
+        if (existingProgressNames.includes(datasetName)) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "An existing progress file already exists with that name. Please choose a different name.",
+          });
+          throw errorArray;
+        }
+        console.log(existingProgressNames);
         //If sodaJSONObj is empty, populate initial object properties
         guidedCreateSodaJSONObj();
         sodaJSONObj["starting-point"]["type"] = "new";
@@ -2225,10 +2250,10 @@ $(document).ready(() => {
             message: "Please enter a dataset subtitle",
           });
         }
-        $("#guided-create-new-dataset").removeClass("loading");
+        $(this).removeClass("loading");
         throw errorArray;
       }
-      $("#guided-create-new-dataset").removeClass("loading");
+      $(this).removeClass("loading");
     } catch (error) {
       errorArray.map((error) => {
         if (error.type === "notyf") {
@@ -2240,6 +2265,7 @@ $(document).ready(() => {
         }
         errorArray = [];
       });
+      $(this).removeClass("loading");
     }
   });
   $("#guided-structure-new-dataset").on("click", () => {

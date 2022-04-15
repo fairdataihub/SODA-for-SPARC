@@ -163,13 +163,26 @@
                     onkeyup="validateInput($(this))"
                   ></textarea>
                 </div>
-                <button
-                  class="ui primary button"
-                  id="guided-create-new-dataset"
-                  style="background-color: var(--color-light-green) !important"
-                >
-                  Start curating dataset
-                </button>
+                <div class="space-between">
+                  <button
+                    class="ui secondary basic button guided--button-footer"
+                    id="guided-button-cancel-create-new-dataset"
+                    style="width: 180px !important"
+                  >
+                    <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                    >Back
+                  </button>
+                  <button
+                    class="ui primary button"
+                    id="guided-create-new-dataset"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      width: 180px;
+                    "
+                  >
+                    Start curating dataset
+                  </button>
+                </div>
               </div>
             </div>
             <div
@@ -1329,22 +1342,7 @@
               <p class="guided--help-text text-left">
                 The dataset description is a brief summary of the dataset which
                 allows users to gain better insights into your work and enhance
-                your dataset's findability. A SPARC description is broken into
-                three main parts:
-              </p>
-              <p class="guided--help-text text-left">
-                <b>Study purpose:</b> Text that indicates the purpose of the
-                study. The study purpose helps give viewers a sense of what the
-                study is about.
-              </p>
-              <p class="guided--help-text text-left">
-                <b>Data collection:</b> Description of the study data collection
-                process for this dataset. Used to generate the structured
-                abstract.
-              </p>
-              <p class="guided--help-text text-left">
-                <b>Primary conclusion:</b> A description of the primary
-                conclusion drawn from the study for the structured abstract.
+                your dataset's findability.
               </p>
               <div class="guided--input-container mt-sm">
                 <label class="guided--form-label">Study purpose:</label>
