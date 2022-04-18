@@ -5199,25 +5199,9 @@ $(document).ready(() => {
             .children()
             .last();
           $option.prop("selected", true);
-          validateCreateSubmissionMetadata();
         }
       });
     }
-  });
-  const validateCreateSubmissionMetadata = () => {
-    if (
-      $("#guided-submission-sparc-award").val().trim().length === 0 ||
-      guidedSubmissionTagsTagify.getTagElms().length === 0 ||
-      $("#guided-submission-completion-date").children().length <= 2
-    ) {
-      disableProgressButton();
-    } else {
-      enableProgressButton();
-    }
-  };
-
-  $(".guided-award-and-milestone-information").change(function () {
-    validateCreateSubmissionMetadata();
   });
 });
 

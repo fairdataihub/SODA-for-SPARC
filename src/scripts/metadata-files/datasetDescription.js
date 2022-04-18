@@ -196,7 +196,7 @@ function checkAirtableStatus(keyword) {
               var resultArray = [...awardSet];
               airtableRes = [true, airKeyName];
               if (keyword === "dd") {
-                helpSPARCAward("dd");
+                helpSPARCAward("dd", "free-form");
               }
               return airtableRes;
             }
@@ -1115,11 +1115,13 @@ function addAdditionalLinktoTableDD(
     rowModificationIcons);
 }
 
-async function helpSPARCAward(filetype) {
+async function helpSPARCAward(filetype, curationMode) {
   var award = "";
   if (filetype === "dd") {
     var res = airtableRes;
-    $("#select-sparc-award-dd-spinner").css("display", "block");
+    if (curationMode === "free-form") {
+      $("#select-sparc-award-dd-spinner").css("display", "block");
+    }
     if (res[0]) {
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
@@ -1136,7 +1138,7 @@ async function helpSPARCAward(filetype) {
           $("#select-sparc-award-dd-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj, "select-SPARC-award");
           $("#select-SPARC-award").selectpicker();
-          $("#bf_list_users_pi").selectpicker("refresh");
+          $("#select-SPARC-award").selectpicker("refresh");
         },
         preConfirm: () => {
           if ($("#select-SPARC-award").val() === "Select") {
@@ -1148,25 +1150,30 @@ async function helpSPARCAward(filetype) {
         },
       });
       if (awardVal) {
-        if (contributorArray.length !== 0) {
-          Swal.fire({
-            title:
-              "Are you sure you want to delete all of the previous contributor information?",
-            showCancelButton: true,
-            reverseButtons: reverseSwalButtons,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            cancelButtonText: `No!`,
-            cancelButtonColor: "#f44336",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "Yes",
-          }).then((boolean) => {
-            if (boolean.isConfirmed) {
-              changeAward(award);
-            }
-          });
-        } else {
-          changeAward(award);
+        if (curationMode === "free-form") {
+          if (contributorArray.length !== 0) {
+            Swal.fire({
+              title:
+                "Are you sure you want to delete all of the previous contributor information?",
+              showCancelButton: true,
+              reverseButtons: reverseSwalButtons,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              cancelButtonText: `No!`,
+              cancelButtonColor: "#f44336",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "Yes",
+            }).then((boolean) => {
+              if (boolean.isConfirmed) {
+                changeAward(award, "free-form");
+              }
+            });
+          } else {
+            changeAward(award, "free-form");
+          }
+        }
+        if (curationMode === "guided") {
+          changeAward(award, "guided");
         }
       }
     } else {
@@ -1189,9 +1196,19 @@ async function helpSPARCAward(filetype) {
       });
       $("#select-sparc-award-dd-spinner").css("display", "none");
     }
-  } else {
+  }
+  if (filetype === "submission") {
     var res = airtableRes;
-    $("#select-sparc-award-submission-spinner").css("display", "block");
+    let currentMilestonesInTextArea = null;
+    if (curationMode == "free-form") {
+      $("#select-sparc-award-submission-spinner").css("display", "block");
+      currentMilestonesInTextArea = $("#selected-milestone-1");
+    }
+    if (curationMode === "guided") {
+      currentMilestonesInTextArea = $(
+        "#guided-tagify-submission-milestone-tags"
+      );
+    }
     if (res[0]) {
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
@@ -1204,10 +1221,12 @@ async function helpSPARCAward(filetype) {
         showCancelButton: true,
         confirmButtonText: "Confirm",
         didOpen: () => {
-          $("#select-sparc-award-submission-spinner").css("display", "none");
+          if (curationMode === "free-form") {
+            $("#select-sparc-award-submission-spinner").css("display", "none");
+          }
           populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
           $("#select-SPARC-award-submission").selectpicker();
-          $("#bf_list_users_pi").selectpicker("refresh");
+          $("#select-SPARC-award-submission").selectpicker("refresh");
         },
         preConfirm: () => {
           if ($("#select-SPARC-award-submission").val() === "Select") {
@@ -1218,7 +1237,7 @@ async function helpSPARCAward(filetype) {
         },
       });
       if (awardVal) {
-        if ($("#selected-milestone-1").val() !== "") {
+        if (currentMilestonesInTextArea.val() !== "") {
           Swal.fire({
             title:
               "Are you sure you want to delete all of the previous milestone information?",
@@ -1231,19 +1250,43 @@ async function helpSPARCAward(filetype) {
             confirmButtonText: "Yes",
           }).then((boolean) => {
             if (boolean.isConfirmed) {
-              milestoneTagify1.removeAllTags();
-              $("#submission-sparc-award").val(award);
-              $("#ds-description-award-input").val(award);
-              document.getElementById("submission-completion-date").value = "";
-              loadContributorInfofromAirtable(award);
+              if (curationMode === "free-form") {
+                milestoneTagify1.removeAllTags();
+                $("#submission-sparc-award").val(award);
+                $("#ds-description-award-input").val(award);
+                document.getElementById("submission-completion-date").value =
+                  "";
+                loadContributorInfofromAirtable(award);
+              }
+
+              if (curationMode === "guided") {
+                guidedSubmissionTagsTagify.removeAllTags();
+                $("#guided-submission-sparc-award").val(award);
+                $("#guided-ds-description-award-input").val(award);
+                document.getElementById(
+                  "guided-submission-completion-date"
+                ).value = "";
+                loadContributorInfofromAirtable(award);
+              }
             }
           });
         } else {
-          milestoneTagify1.removeAllTags();
-          $("#submission-sparc-award").val(award);
-          $("#ds-description-award-input").val(award);
-          document.getElementById("submission-completion-date").value = "";
-          loadContributorInfofromAirtable(award);
+          if (curationMode === "free-form") {
+            milestoneTagify1.removeAllTags();
+            $("#submission-sparc-award").val(award);
+            $("#ds-description-award-input").val(award);
+            document.getElementById("submission-completion-date").value = "";
+            loadContributorInfofromAirtable(award);
+          }
+
+          if (curationMode === "guided") {
+            guidedSubmissionTagsTagify.removeAllTags();
+            $("#guided-submission-sparc-award").val(award);
+            $("#guided-ds-description-award-input").val(award);
+            document.getElementById("guided-submission-completion-date").value =
+              "";
+            loadContributorInfofromAirtable(award);
+          }
         }
       }
     } else {
@@ -1281,7 +1324,7 @@ function populateSelectSPARCAward(object, id) {
   }
 }
 
-function changeAward(award) {
+function changeAward(award, curationMode) {
   Swal.fire({
     title: "Loading your award and contributor information.",
     html: "Please wait...",
@@ -1295,8 +1338,15 @@ function changeAward(award) {
       Swal.showLoading();
     },
   }).then((result) => {});
-  $("#ds-description-award-input").val(award);
-  $("#submission-sparc-award").val(award);
+  if (curationMode === "free-form") {
+    $("#ds-description-award-input").val(award);
+    $("#submission-sparc-award").val(award);
+  }
+  console.log(award);
+  if (curationMode === "guided") {
+    $("#guided-ds-description-award-input").val(award);
+    $("#guided-submission-sparc-award").val(award);
+  }
   loadContributorInfofromAirtable(award);
 }
 
@@ -2233,9 +2283,8 @@ function addAirtableAccountInsideSweetalert(keyword) {
                 Swal.showLoading();
               },
             }).then((result) => {
-              helpSPARCAward("submission");
+              helpSPARCAward("submission", "free-form");
             });
-            // helpSPARCAward("submission")
             ipcRenderer.send(
               "track-event",
               "Success",
@@ -2496,7 +2545,7 @@ function loadDDFileToUI(object, file_type) {
       // populate awards
       globalSPARCAward = arr[1];
       $("#ds-description-award-input").val(arr[1]);
-      changeAward(globalSPARCAward);
+      changeAward(globalSPARCAward, "free-form");
       populateTagifyDD(otherFundingTagify, arr.splice(2));
     }
   }
