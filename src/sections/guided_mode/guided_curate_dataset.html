@@ -261,6 +261,177 @@
           </div>
 
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                Create your dataset submission metadata
+              </h1>
+              <p class="guided--help-text text-center">
+                <b>Optional</b> folder containing unaltered, raw files from an
+                experiment, if they are included in the data. For example, this
+                folder may include the “truly” raw k-space data for a Magnetic
+                Resonance (MR) image that has not yet been reconstructed.
+              </p>
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">
+                Would you like to import your award information from Airtable?
+              </h2>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-import-SPARC-award-from-airtable"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-question="guided-manual-SPARC-award"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-import-SPARC-award-from-airtable"
+            >
+              <button
+                class="ui primary button"
+                id="guided-create-new-dataset"
+                style="background-color: var(--color-light-green) !important"
+              >
+                Start curating dataset
+              </button>
+            </div>
+            <div class="guided--section hidden" id="guided-manual-SPARC-award">
+              <h2 class="guided--text-sub-step">
+                Do you have a data deliverables document you would like to
+                import award information from?
+              </h2>
+              <p class="guided--help-text text-center">
+                <b>Optional</b> folder containing unaltered, raw files from an
+                experiment, if they are included in the data. For example, this
+                folder may include the “truly” raw k-space data for a Magnetic
+                Resonance (MR) image that has not yet been reconstructed.
+              </p>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-import-data-deliverables-document"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-question="guided-manual-submission-creation"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-import-data-deliverables-document"
+            ></div>
+            <div
+              class="guided--panel hidden"
+              id="guided-manual-submission-creation"
+            ></div>
+            <div class="guided--panel">
+              <div class="ui styled fluid accordion guided--accordion">
+                <div class="title active">
+                  <i class="dropdown icon active"></i>Award and milestone
+                  information
+                </div>
+                <div class="content active">
+                  <div class="guided--accordion-field-container">
+                    <div class="guided--accordion-field">
+                      <label class="guided--label-accordion-field"
+                        >SPARC Award number
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="SPARC award associated with the dataset."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i
+                      ></label>
+                      <div class="ui input modified">
+                        <input
+                          class="guided-award-and-milestone-information"
+                          type="text"
+                          id="guided-submission-sparc-award"
+                          placeholder="Type here..."
+                        />
+                      </div>
+                    </div>
+                    <div class="guided--accordion-field">
+                      <label class="guided--label-accordion-field"
+                        >Enter the milestone(s):
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+                                  <br/><br/>
+                                  Hit 'Enter' to register it."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </label>
+                      <input
+                        class="guided-award-and-milestone-information"
+                        id="guided-tagify-submission-milestone-tags"
+                        name="milestone-tags"
+                        placeholder="Tye here and hit 'Enter' after each keyword."
+                        value=""
+                        autofocus
+                      />
+                    </div>
+                    <div class="guided--accordion-field">
+                      <label class="guided--label-accordion-field"
+                        >Completion date:
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Enter the completion date for your milestone(s) specified above."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </label>
+                      <div class="demo-controls-body" style="width: 90%">
+                        <div class="ui input modified">
+                          <select
+                            class="guided-award-and-milestone-information"
+                            id="guided-submission-completion-date"
+                          >
+                            <option disabled selected hidden>
+                              Select an option
+                            </option>
+                            <option
+                              id="guided-date-entry-pseudo-parent"
+                              value="Enter my own date"
+                            >
+                              Enter my own date
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+                id="guided-generate-submission-file"
+                class="btn_animated"
+                style="width: 200px; border: none !important"
+              >
+                Save submission metadata
+              </button>
+            </div>
+            <!--
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">SPARC dataset structure</h1>
               <p class="guided--help-text">
@@ -383,7 +554,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div>-->
           </div>
           <div
             id="guided-subjects-folder-tab"
@@ -1525,124 +1696,7 @@
             id="guided-create-submission-metadata-tab"
             class="guided--panel hidden"
           >
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Create your dataset submission metadata
-              </h1>
-              <p class="guided--help-text text-center">
-                <b>Optional</b> folder containing unaltered, raw files from an
-                experiment, if they are included in the data. For example, this
-                folder may include the “truly” raw k-space data for a Magnetic
-                Resonance (MR) image that has not yet been reconstructed.
-              </p>
-              <div class="guided--radio-button-container">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-has-source-data"
-                  data-next-question="guided-user-has-source-data"
-                >
-                  Yes
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-no-source-data"
-                >
-                  No
-                </button>
-              </div>
-              <div class="ui styled fluid accordion guided--accordion">
-                <div class="title active">
-                  <i class="dropdown icon active"></i>Award and milestone
-                  information
-                </div>
-                <div class="content active">
-                  <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >SPARC Award number
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="SPARC award associated with the dataset."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i
-                      ></label>
-                      <div class="ui input modified">
-                        <input
-                          class="guided-award-and-milestone-information"
-                          type="text"
-                          id="guided-submission-sparc-award"
-                          placeholder="Type here..."
-                        />
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Enter the milestone(s):
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
-                                  <br/><br/>
-                                  Hit 'Enter' to register it."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </label>
-                      <input
-                        class="guided-award-and-milestone-information"
-                        id="guided-tagify-submission-milestone-tags"
-                        name="milestone-tags"
-                        placeholder="Tye here and hit 'Enter' after each keyword."
-                        value=""
-                        autofocus
-                      />
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Completion date:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Enter the completion date for your milestone(s) specified above."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 90%">
-                        <div class="ui input modified">
-                          <select
-                            class="guided-award-and-milestone-information"
-                            id="guided-submission-completion-date"
-                          >
-                            <option disabled selected hidden>
-                              Select an option
-                            </option>
-                            <option
-                              id="guided-date-entry-pseudo-parent"
-                              value="Enter my own date"
-                            >
-                              Enter my own date
-                            </option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <button
-                id="guided-generate-submission-file"
-                class="btn_animated"
-                style="width: 200px; border: none !important"
-              >
-                Save submission metadata
-              </button>
-            </div>
+            <!--asdf-->
           </div>
           <div
             id="guided-create-description-metadata-tab"

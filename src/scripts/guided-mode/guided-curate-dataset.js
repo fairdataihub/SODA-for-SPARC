@@ -2455,6 +2455,7 @@ $(document).ready(() => {
     }
     //Hide all child containers of non-selected buttons
     notSelectedButton.each(function () {
+      console.log($(this));
       if ($(this).data("next-question")) {
         nextQuestionID = $(this).data("next-question");
         $(`#${nextQuestionID}`).hide();

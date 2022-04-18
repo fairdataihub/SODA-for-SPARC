@@ -1,22 +1,28 @@
 <div class="guided--section">
-  <label class="guided--form-label centered"
-    >Is your dataset already organized according to SPARC'S dataset structure?
-  </label>
-
+  <h2 class="guided--text-sub-step">Does your dataset contain docs data?</h2>
+  <p class="guided--help-text text-center">
+    <b>Optional</b> folder that contains all the supporting documents for the
+    dataset, including but not limited to, a representative image for the
+    dataset. Unlike the readme file, which is necessarily a text document, docs
+    can contain documents in multiple formats, including images.
+  </p>
   <div class="guided--radio-button-container">
     <button
       class="ui positive basic button guided--radio-button"
-      id="guided-dataset-already-structured"
-      data-next-question="guided-structure-new-dataset"
+      data-next-question="guided-import-SPARC-award-from-airtable"
     >
       Yes
     </button>
     <button
       class="ui negative basic button guided--radio-button"
-      id="guided-dataset-not-structured"
+      data-next-question="guided-manual-SPARC-award"
     >
       No
     </button>
   </div>
 </div>
-<div class="guided--panel hidden" id="guided-structure-new-dataset"></div>
+<div
+  class="guided--panel hidden"
+  id="guided-import-SPARC-award-from-airtable"
+></div>
+<div class="guided--panel hidden" id="guided-manual-SPARC-award"></div>
