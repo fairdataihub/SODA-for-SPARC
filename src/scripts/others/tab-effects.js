@@ -3563,7 +3563,7 @@ const hideNextDivs = (currentDiv) => {
 
 // save progress up until step 5 for now
 const updateJSONObjectProgress = () => {
-  updateJSONStructureGettingStarted();
+  // updateJSONStructureGettingStarted();
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   updateJSONStructureDSstructure();
