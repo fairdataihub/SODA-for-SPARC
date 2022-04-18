@@ -67,7 +67,12 @@ const validateLocalDataset = async () => {
       "hidden";
 
     // display message to user
-    return handleAxiosValidationErrors(err);
+    handleAxiosValidationErrors(err);
+
+    // reset the input field to 'Browse Here'
+    let datasetLocationInput = document.querySelector("#validate-local-dataset-path")
+
+    datasetLocationInput.value = ""
   }
 
   let errors = validationResponse.data;
