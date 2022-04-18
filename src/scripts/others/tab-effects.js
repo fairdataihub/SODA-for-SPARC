@@ -574,6 +574,16 @@ const nextPrev = (n) => {
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
+  if (x[currentTab].id === "high-level-folders-tab") {
+    $("#items").empty();
+    $("#items").append(already_created_elem);
+    getInFolder(
+      ".single-item",
+      "#items",
+      dataset_path,
+      datasetStructureJSONObj
+    );
+  }
   if (
     x[currentTab].id === "high-level-folders-tab" ||
     x[currentTab].id === "metadata-files-tab"
@@ -2447,7 +2457,12 @@ async function switchMetadataSubmissionQuestion() {
 
 // 5. manifest
 async function switchMetadataManifestQuestion() {
-  if ($("#Question-prepare-manifest-2").hasClass("show")) {
+  var userpath1 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+  var userpath2 = path.join(homeDirectory, "SODA", "manifest_files");
+  if (
+    $("#Question-prepare-manifest-2").hasClass("show") ||
+    $("#Question-prepare-manifest-3").hasClass("show")
+  ) {
     var { value: continueProgressManifest } = await Swal.fire({
       title:
         "This will reset your progress so far with the manifest.xlsx file. Are you sure you want to continue?",
@@ -2459,15 +2474,40 @@ async function switchMetadataManifestQuestion() {
       reverseButtons: reverseSwalButtons,
     });
     if (continueProgressManifest) {
-      $("#input-manifest-local-folder-dataset").val("");
-      $("#input-manifest-local-folder-dataset").attr(
-        "placeholder",
-        "Browse here"
+      // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
+      client.invoke(
+        "api_delete_manifest_dummy_folders",
+        [userpath1, userpath2],
+        (error, res) => {
+          if (error) {
+            return true;
+          } else {
+            sodaJSONObj = {
+              "starting-point": { type: "" },
+              "dataset-structure": {},
+              "metadata-files": {},
+            };
+            datasetStructureJSONObj = {
+              folders: {},
+              files: {},
+              type: "",
+            };
+            $("#bf_dataset_create_manifest").text("None");
+            defaultBfDataset = "Select dataset";
+            $("#input-manifest-local-folder-dataset").val("");
+            $("#input-manifest-local-folder-dataset").attr(
+              "placeholder",
+              "Browse here"
+            );
+            $("#div-confirm-manifest-local-folder-dataset").css(
+              "display",
+              "none"
+            );
+          }
+        }
       );
-      // $($("#div-confirm-manifest-local-folder-dataset").children()[0]).show();
-      $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
+      return continueProgressManifest;
     }
-    return continueProgressManifest;
   } else {
     return true;
   }
@@ -2919,6 +2959,7 @@ const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
       "</div></div>";
     $("#items").html(appendString);
 
+    //dont know here
     listItems(currentLocation, "#items");
     getInFolder(
       ".single-item",
@@ -3327,6 +3368,7 @@ const updateOverallJSONStructure = (id) => {
     }
     // 3rd
     datasetStructureJSONObj = newDatasetStructureJSONObj;
+    //dont know here
     listItems(datasetStructureJSONObj, "#items");
     getInFolder(
       ".single-item",

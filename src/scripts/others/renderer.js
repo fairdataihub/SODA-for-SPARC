@@ -6,7 +6,7 @@ const zerorpc = require("zerorpc");
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, BrowserWindow } = require("electron");
 const Editor = require("@toast-ui/editor");
 const remote = require("electron").remote;
 const { Notyf } = require("notyf");
@@ -3078,6 +3078,7 @@ const Cropper = require("cropperjs");
 const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
+const { background } = require("jimp");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4164,7 +4165,7 @@ var highLevelFolderToolTip = {
     "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
-listItems(datasetStructureJSONObj, "#items");
+listItems(datasetStructureJSONObj, "#items", 500);
 getInFolder(
   ".single-item",
   "#items",
@@ -4190,15 +4191,14 @@ organizeDSbackButton.addEventListener("click", function () {
       myPath = myPath["folders"][item];
     }
     // construct UI with files and folders
-    var appendString = loadFileFolder(myPath);
-
-    /// empty the div
     $("#items").empty();
-    $("#items").html(appendString);
-
+    already_created_elem = [];
+    let items = loadFileFolder(myPath); //array -
+    let total_item_count = items[1].length + items[0].length;
+    //we have some items to display
+    listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
     // reconstruct div with new elements
-    listItems(myPath, "#items");
     getInFolder(
       ".single-item",
       "#items",
@@ -4280,13 +4280,13 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               determineDatasetLocation()
             );
           } else {
-            var appendString = "";
-            appendString =
-              appendString +
-              '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-              newFolderName +
-              "</div></div>";
-            $(appendString).appendTo("#items");
+            // var appendString = "";
+            // appendString =
+            //   appendString +
+            //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+            //   newFolderName +
+            //   "</div></div>";
+            // $(appendString).appendTo("#items");
 
             /// update datasetStructureJSONObj
             var currentPath = organizeDSglobalPath.value;
@@ -4305,7 +4305,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               action: ["new"],
             };
 
-            listItems(myPath, "#items");
+            listItems(myPath, "#items", 500, (reset = true));
             getInFolder(
               ".single-item",
               "#items",
@@ -4727,7 +4727,7 @@ organizeDSaddFiles.addEventListener("click", function () {
   ipcRenderer.send("open-files-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
+ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let hidden_files_present = false;
@@ -4754,66 +4754,236 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
       },
     });
   }
-  addFilesfunction(
-    path,
-    myPath,
-    organizeDSglobalPath,
-    "#items",
-    ".single-item",
-    datasetStructureJSONObj
-  );
+  if (path.length > 0) {
+    if (path.length < 500) {
+      await addFilesfunction(
+        path,
+        myPath,
+        organizeDSglobalPath,
+        "#items",
+        ".single-item",
+        datasetStructureJSONObj
+      );
+    } else {
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        await addFilesfunction(
+          path,
+          myPath,
+          organizeDSglobalPath,
+          "#items",
+          ".single-item",
+          datasetStructureJSONObj
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    }
+  }
 });
 
 organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
-  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  irregularFolderArray = [];
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  for (var ele of pathElement) {
-    detectIrregularFolders(path.basename(ele), ele);
-  }
-  if (irregularFolderArray.length > 0) {
-    Swal.fire({
-      title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
-      didOpen: () => {
-        $(".swal-popover").popover();
-      },
-      footer: footer,
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        addFoldersfunction(
-          "replace",
-          irregularFolderArray,
-          pathElement,
-          myPath
-        );
-      } else if (result.isDenied) {
-        addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-      }
-    });
-  } else {
-    addFoldersfunction("", irregularFolderArray, pathElement, myPath);
-  }
-});
+ipcRenderer.on(
+  "selected-folders-organize-datasets",
+  async (event, pathElement) => {
+    var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+    irregularFolderArray = [];
+    var filtered = getGlobalPath(organizeDSglobalPath);
+    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+    for (var ele of pathElement) {
+      detectIrregularFolders(path.basename(ele), ele);
+    }
+    if (irregularFolderArray.length > 0) {
+      Swal.fire({
+        title:
+          "The following folders contain non-allowed characters in their names. How should we handle them?",
+        html:
+          "<div style='max-height:300px; overflow-y:auto'>" +
+          irregularFolderArray.join("</br>") +
+          "</div>",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Replace characters with (-)",
+        denyButtonText: "Remove characters",
+        cancelButtonText: "Cancel",
+        didOpen: () => {
+          $(".swal-popover").popover();
+        },
+        footer: footer,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          if (pathElement.length > 500) {
+            let load_spinner_promise = new Promise(async (resolved) => {
+              let background = document.createElement("div");
+              let spinner_container = document.createElement("div");
+              let spinner_icon = document.createElement("div");
+              spinner_container.setAttribute("id", "items_loading_container");
+              spinner_icon.setAttribute("id", "item_load");
+              spinner_icon.setAttribute(
+                "class",
+                "ui large active inline loader icon-wrapper"
+              );
+              background.setAttribute("class", "loading-items-background");
+              background.setAttribute("id", "loading-items-background-overlay");
 
-function addFoldersfunction(
+              spinner_container.append(spinner_icon);
+              document.body.prepend(background);
+              document.body.prepend(spinner_container);
+              let loading_items_spinner = document.getElementById(
+                "items_loading_container"
+              );
+              loading_items_spinner.style.display = "block";
+              if (loading_items_spinner.style.display === "block") {
+                setTimeout(() => {
+                  resolved();
+                }, 100);
+              }
+            }).then(async () => {
+              await addFoldersfunction(
+                "replace",
+                irregularFolderArray,
+                pathElement,
+                myPath
+              );
+              document
+                .getElementById("loading-items-background-overlay")
+                .remove();
+              document.getElementById("items_loading_container").remove();
+            });
+          } else {
+            await addFoldersfunction(
+              "replace",
+              irregularFolderArray,
+              pathElement,
+              myPath
+            );
+          }
+        } else if (result.isDenied) {
+          if (pathElement.length > 500) {
+            let load_spinner_promise = new Promise(async (resolved) => {
+              let background = document.createElement("div");
+              let spinner_container = document.createElement("div");
+              let spinner_icon = document.createElement("div");
+              spinner_container.setAttribute("id", "items_loading_container");
+              spinner_icon.setAttribute("id", "item_load");
+              spinner_icon.setAttribute(
+                "class",
+                "ui large active inline loader icon-wrapper"
+              );
+              background.setAttribute("class", "loading-items-background");
+              background.setAttribute("id", "loading-items-background-overlay");
+
+              spinner_container.append(spinner_icon);
+              document.body.prepend(background);
+              document.body.prepend(spinner_container);
+              let loading_items_spinner = document.getElementById(
+                "items_loading_container"
+              );
+              loading_items_spinner.style.display = "block";
+              if (loading_items_spinner.style.display === "block") {
+                setTimeout(() => {
+                  resolved();
+                }, 100);
+              }
+            }).then(async () => {
+              await addFoldersfunction(
+                "remove",
+                irregularFolderArray,
+                pathElement,
+                myPath
+              );
+              document
+                .getElementById("loading-items-background-overlay")
+                .remove();
+              document.getElementById("items_loading_container").remove();
+            });
+          } else {
+            await addFoldersfunction(
+              "remove",
+              irregularFolderArray,
+              pathElement,
+              myPath
+            );
+          }
+        }
+      });
+    } else {
+      if (pathElement.length > 500) {
+        let load_spinner_promise = new Promise(async (resolved) => {
+          let background = document.createElement("div");
+          let spinner_container = document.createElement("div");
+          let spinner_icon = document.createElement("div");
+          spinner_container.setAttribute("id", "items_loading_container");
+          spinner_icon.setAttribute("id", "item_load");
+          spinner_icon.setAttribute(
+            "class",
+            "ui large active inline loader icon-wrapper"
+          );
+          background.setAttribute("class", "loading-items-background");
+          background.setAttribute("id", "loading-items-background-overlay");
+
+          spinner_container.append(spinner_icon);
+          document.body.prepend(background);
+          document.body.prepend(spinner_container);
+          let loading_items_spinner = document.getElementById(
+            "items_loading_container"
+          );
+          loading_items_spinner.style.display = "block";
+          if (loading_items_spinner.style.display === "block") {
+            setTimeout(() => {
+              resolved();
+            }, 100);
+          }
+        }).then(async () => {
+          await addFoldersfunction(
+            "",
+            irregularFolderArray,
+            pathElement,
+            myPath
+          );
+          document.getElementById("loading-items-background-overlay").remove();
+          document.getElementById("items_loading_container").remove();
+        });
+      } else {
+        await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+      }
+    }
+  }
+);
+
+async function addFoldersfunction(
   action,
   nonallowedFolderArray,
   folderArray,
@@ -4909,7 +5079,7 @@ function addFoldersfunction(
               `
             <div class="caption">
               <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-            </div>  
+            </div>
             <div class="swal-button-container">
               <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
               list +
@@ -4941,26 +5111,18 @@ function addFoldersfunction(
         if (element !== importedFolders[element]["original-basename"]) {
           currentLocation["folders"][element]["action"].push("renamed");
         }
-        var appendString =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-          element +
-          "</div></div>";
-        $("#items").html(appendString);
-        listItems(currentLocation, "#items");
-        getInFolder(
-          ".single-item",
-          "#items",
-          organizeDSglobalPath,
-          datasetStructureJSONObj
-        );
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-        hideMenu(
-          "high-level-folder",
-          menuFolder,
-          menuHighLevelFolders,
-          menuFile
-        );
       }
+      // $("#items").empty();
+      listItems(currentLocation, "#items", 500, (reset = true));
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
+      beginScrollListen();
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
 
       // log the success
       logCurationForAnalytics(
@@ -4981,8 +5143,12 @@ function allowDrop(ev) {
 
 var filesElement;
 var targetElement;
-
-function drop(ev) {
+async function drop(ev) {
+  irregularFolderArray = [];
+  var action = "";
+  filesElement = ev.dataTransfer.files;
+  targetElement = ev.target;
+  // get global path
   var currentPath = organizeDSglobalPath.value;
   console.log(currentPath);
   var jsonPathArray = currentPath.split("/");
@@ -5038,7 +5204,7 @@ function drop(ev) {
       didOpen: () => {
         $(".swal-popover").popover();
       },
-    }).then((result) => {
+    }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         action = "replace";
@@ -5047,10 +5213,112 @@ function drop(ev) {
       } else {
         return;
       }
+      if (ev.dataTranser.files.length > 500) {
+        let load_spinner_promise = new Promise(async (resolved) => {
+          let background = document.createElement("div");
+          let spinner_container = document.createElement("div");
+          let spinner_icon = document.createElement("div");
+          spinner_container.setAttribute("id", "items_loading_container");
+          spinner_icon.setAttribute("id", "item_load");
+          spinner_icon.setAttribute(
+            "class",
+            "ui large active inline loader icon-wrapper"
+          );
+          background.setAttribute("class", "loading-items-background");
+          background.setAttribute("id", "loading-items-background-overlay");
+
+          spinner_container.append(spinner_icon);
+          document.body.prepend(background);
+          document.body.prepend(spinner_container);
+          let loading_items_spinner = document.getElementById(
+            "items_loading_container"
+          );
+          loading_items_spinner.style.display = "block";
+          if (loading_items_spinner.style.display === "block") {
+            setTimeout(() => {
+              resolved();
+            }, 100);
+          }
+        }).then(async () => {
+          dropHelper(
+            filesElement,
+            targetElement,
+            action,
+            myPath,
+            importedFiles,
+            importedFolders,
+            nonAllowedDuplicateFiles,
+            uiFiles,
+            uiFolders
+          );
+          // Swal.close();
+          document.getElementById("loading-items-background-overlay").remove();
+          document.getElementById("items_loading_container").remove();
+          // background.remove();
+        });
+      } else {
+        dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+      }
+    });
+  } else {
+    if (ev.dataTransfer.files.length > 500) {
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    } else {
       dropHelper(
         filesElement,
         targetElement,
-        action,
+        "",
         myPath,
         importedFiles,
         importedFolders,
@@ -5058,20 +5326,7 @@ function drop(ev) {
         uiFiles,
         uiFolders
       );
-    });
-  } else {
-    console.log("no irregular folders");
-    dropHelper(
-      filesElement,
-      targetElement,
-      "",
-      myPath,
-      importedFiles,
-      importedFolders,
-      nonAllowedDuplicateFiles,
-      uiFiles,
-      uiFolders
-    );
+    }
   }
 }
 
@@ -5248,7 +5503,7 @@ function dropHelper(
         `
       <div class="caption">
         <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-      </div>  
+      </div>
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
@@ -5293,7 +5548,7 @@ function dropHelper(
         `
       <div class="caption">
         <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-      </div>  
+      </div>
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
@@ -5328,16 +5583,16 @@ function dropHelper(
         importedFiles[element]["basename"] +
         "</div></div>";
       $(appendString).appendTo(ev2);
-      listItems(myPath, "#items");
-      getInFolder(
-        ".single-item",
-        "#items",
-        organizeDSglobalPath,
-        datasetStructureJSONObj
-      );
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
+    listItems(myPath, "#items", 500, (reset = true));
+    // getInFolder(
+    //   ".single-item",
+    //   "#items",
+    //   organizeDSglobalPath,
+    //   datasetStructureJSONObj
+    // );
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   if (Object.keys(importedFolders).length > 0) {
     for (var element in importedFolders) {
@@ -5356,7 +5611,7 @@ function dropHelper(
         "... </div></div>";
       $(placeholderString).appendTo(ev2);
       // await listItems(myPath, "#items");
-      listItems(myPath, "#items");
+      //listItems(myPath, "#items");
       if (element !== originalName) {
         myPath["folders"][element]["action"].push("renamed");
       }
@@ -5371,16 +5626,16 @@ function dropHelper(
         "</div></div>";
       $("#placeholder_element").remove();
       $(appendString).appendTo(ev2);
-      listItems(myPath, "#items");
-      getInFolder(
-        ".single-item",
-        "#items",
-        organizeDSglobalPath,
-        datasetStructureJSONObj
-      );
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
+    listItems(myPath, "#items", 500, (reset = true));
+    getInFolder(
+      ".single-item",
+      "#items",
+      organizeDSglobalPath,
+      datasetStructureJSONObj
+    );
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   $("body").removeClass("waiting");
 }
@@ -5828,211 +6083,272 @@ function sortObjByKeys(object) {
   return orderedObject;
 }
 
-function listItems(jsonObj, uiItem) {
+async function listItems(jsonObj, uiItem, amount_req, reset) {
+  //allow amount to choose how many elements to create
+  //break elements into sets of 100
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
-
-  for (var item in sortedObj["folders"]) {
-    var emptyFolder = "";
-    if (!highLevelFolders.includes(item)) {
-      if (
-        JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-        JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-      ) {
-        emptyFolder = " empty";
-      }
-    }
-
-    cloud_item = "";
-    deleted_folder = false;
-
-    if ("action" in sortedObj["folders"][item]) {
-      if (
-        sortedObj["folders"][item]["action"].includes("deleted") ||
-        sortedObj["folders"][item]["action"].includes("recursive_deleted")
-      ) {
-        emptyFolder += " deleted_folder";
-        deleted_folder = true;
+  let file_elements = [],
+    folder_elements = [];
+  let count = 0;
+  if (Object.keys(sortedObj["folders"]).length > 0) {
+    for (var item in sortedObj["folders"]) {
+      count += 1;
+      var emptyFolder = "";
+      if (!highLevelFolders.includes(item)) {
         if (
+          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+        ) {
+          emptyFolder = " empty";
+        }
+      }
+
+      cloud_item = "";
+      deleted_folder = false;
+
+      if ("action" in sortedObj["folders"][item]) {
+        if (
+          sortedObj["folders"][item]["action"].includes("deleted") ||
           sortedObj["folders"][item]["action"].includes("recursive_deleted")
         ) {
-          emptyFolder += " recursive_deleted_file";
+          emptyFolder += " deleted_folder";
+          deleted_folder = true;
+          if (
+            sortedObj["folders"][item]["action"].includes("recursive_deleted")
+          ) {
+            emptyFolder += " recursive_deleted_file";
+          }
+        }
+      }
+
+      if (sortedObj["folders"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_folder";
+        if (deleted_folder) {
+          cloud_item = " pennsieve_folder_deleted";
+        }
+      }
+
+      if (
+        sortedObj["folders"][item]["type"] == "local" &&
+        sortedObj["folders"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_folder";
+        if (deleted_folder) {
+          cloud_item = " local_folder_deleted";
+        }
+      }
+
+      if (sortedObj["folders"][item]["action"].includes("updated")) {
+        cloud_item = " update-file";
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        // folder_elements.push(elem_creation);
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        // folder_elements.push(element_creation);
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
         }
       }
     }
-
-    if (sortedObj["folders"][item]["type"] == "bf") {
-      cloud_item = " pennsieve_folder";
-      if (deleted_folder) {
-        cloud_item = " pennsieve_folder_deleted";
+    if (count < 100) {
+      if (!folder_elements.includes(appendString) && appendString != "") {
+        folder_elements.push(appendString);
+        count = 0;
       }
-    }
-
-    if (
-      sortedObj["folders"][item]["type"] == "local" &&
-      sortedObj["folders"][item]["action"].includes("existing")
-    ) {
-      cloud_item = " local_folder";
-      if (deleted_folder) {
-        cloud_item = " local_folder_deleted";
-      }
-    }
-
-    if (sortedObj["folders"][item]["action"].includes("updated")) {
-      console.log("jupdated");
-      cloud_item = " update-file";
-      appendString =
-        appendString +
-        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-        emptyFolder +
-        '"></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
-    } else {
-      console.log("jnotupdated");
-      appendString =
-        appendString +
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-        emptyFolder +
-        '"></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
     }
   }
-  for (var item in sortedObj["files"]) {
-    // not the auto-generated manifest
-    if (sortedObj["files"][item].length !== 1) {
-      if ("path" in sortedObj["files"][item]) {
-        var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
-      } else {
-        var extension = "other";
-      }
-      if (sortedObj["files"][item]["type"] == "bf") {
-        if (sortedObj["files"][item]["action"].includes("deleted")) {
-          original_file_name = item.substring(0, item.lastIndexOf("-"));
-          extension = original_file_name.split(".").pop();
+  //reset count and string for file elements
+  count = 0;
+  appendString = "";
+  if (Object.keys(sortedObj["files"]).length > 0) {
+    for (var item in sortedObj["files"]) {
+      count += 1;
+      // not the auto-generated manifest
+      if (sortedObj["files"][item].length !== 1) {
+        if ("path" in sortedObj["files"][item]) {
+          var extension = path
+            .extname(sortedObj["files"][item]["path"])
+            .slice(1);
         } else {
-          extension = item.split(".").pop();
+          var extension = "other";
         }
-      }
-      if (
-        ![
-          "docx",
-          "doc",
-          "pdf",
-          "txt",
-          "jpg",
-          "JPG",
-          "jpeg",
-          "JPEG",
-          "xlsx",
-          "xls",
-          "csv",
-          "png",
-          "PNG",
-        ].includes(extension)
-      ) {
+        if (sortedObj["files"][item]["type"] == "bf") {
+          if (sortedObj["files"][item]["action"].includes("deleted")) {
+            original_file_name = item.substring(0, item.lastIndexOf("-"));
+            extension = original_file_name.split(".").pop();
+          } else {
+            extension = item.split(".").pop();
+          }
+        }
+        if (
+          ![
+            "docx",
+            "doc",
+            "pdf",
+            "txt",
+            "jpg",
+            "JPG",
+            "jpeg",
+            "JPEG",
+            "xlsx",
+            "xls",
+            "csv",
+            "png",
+            "PNG",
+          ].includes(extension)
+        ) {
+          extension = "other";
+        }
+      } else {
         extension = "other";
       }
-    } else {
-      extension = "other";
-    }
 
-    cloud_item = "";
-    deleted_file = false;
+      cloud_item = "";
+      deleted_file = false;
 
-    if ("action" in sortedObj["files"][item]) {
+      if ("action" in sortedObj["files"][item]) {
+        if (
+          sortedObj["files"][item]["action"].includes("deleted") ||
+          sortedObj["files"][item]["action"].includes("recursive_deleted")
+        ) {
+          extension += " deleted_file";
+          deleted_file = true;
+          if (
+            sortedObj["files"][item]["action"].includes("recursive_deleted")
+          ) {
+            extension += " recursive_deleted_file";
+          }
+        }
+      }
+
+      if (sortedObj["files"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_file";
+        if (deleted_file) {
+          cloud_item = " pennsieve_file_deleted";
+        }
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+      }
+
       if (
-        sortedObj["files"][item]["action"].includes("deleted") ||
-        sortedObj["files"][item]["action"].includes("recursive_deleted")
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("existing")
       ) {
-        extension += " deleted_file";
-        deleted_file = true;
-        if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
-          extension += " recursive_deleted_file";
+        cloud_item = " local_file";
+        if (deleted_file) {
+          cloud_item = " local_file_deleted";
+        }
+      }
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("updated")
+      ) {
+        cloud_item = " update-file";
+        if (deleted_file) {
+          cloud_item = "pennsieve_file_deleted";
+        }
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
         }
       }
     }
-
-    if (sortedObj["files"][item]["type"] == "bf") {
-      cloud_item = " pennsieve_file";
-      if (deleted_file) {
-        cloud_item = " pennsieve_file_deleted";
+    if (count < 100) {
+      if (!file_elements.includes(appendString) && appendString != "") {
+        file_elements.push(appendString);
+        count = 0;
       }
-    }
-
-    if (
-      sortedObj["files"][item]["type"] == "local" &&
-      sortedObj["files"][item]["action"].includes("existing")
-    ) {
-      cloud_item = " local_file";
-      if (deleted_file) {
-        cloud_item = " local_file_deleted";
-      }
-    }
-    if (
-      sortedObj["files"][item]["type"] == "local" &&
-      sortedObj["files"][item]["action"].includes("updated")
-    ) {
-      cloud_item = " update-file";
-      if (deleted_file) {
-        cloud_item = "pennsieve_file_deleted";
-      }
-      appendString =
-        appendString +
-        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-        extension +
-        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
-    } else {
-      appendString =
-        appendString +
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-        extension +
-        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
+      // continue;
     }
   }
-  $(uiItem).empty();
-  if (appendString != "") {
-    $(uiItem).html(appendString);
+  if (folder_elements[0] === "") {
+    folder_elements.splice(0, 1);
+  }
+  if (file_elements[0] === "") {
+    file_elements.splice(0, 1);
+  }
+  let items = [folder_elements, file_elements];
+  if (amount_req != undefined) {
+    //add items using a different function
+    //want the initial files to be imported
+    let itemDisplay = new Promise(async (resolved) => {
+      if (reset != undefined) {
+        await add_items_to_view(items, amount_req, reset);
+        resolved();
+      } else {
+        await add_items_to_view(items, amount_req);
+        resolved();
+      }
+    });
   } else {
-    //Fired when no folders are to be appended to the folder structure element.
-    //Gets the name of the current folder from organizeDSglobalPath and instructs the user
-    //on what to do in the empty folder.
-    let currentFolder = "";
-    if (organizeDSglobalPath.value == undefined) {
-      currentFolder = "My_dataset_folder";
-    } else {
-      currentFolder = organizeDSglobalPath.value.split("/").reverse()[1];
-    }
-    $(uiItem).append(
-      `<div class="drag-drop-container-instructions">
-        <div id="dragDropInscturctions" style="height: 100px; width: 100px;"></div>
-        <p class="text-center large">
-          Drop folders and files to be included in the <b>${currentFolder}</b> folder.
-        </p>
-        <p class="text-center">
-          You may also <b>add</b> or <b>import</b> a new folder using the buttons in the upper right corner.
-        </p>
-      </div>`
-    );
-    lottie.loadAnimation({
-      container: document.querySelector("#dragDropInscturctions"),
-      animationData: dragDrop,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
+    //load everything in place
+    let itemDisplay = new Promise(async (resolved) => {
+      // $(uiItem).empty();
+      await add_items_to_view(items, 500);
+      resolved();
     });
   }
 
@@ -6054,11 +6370,13 @@ function listItems(jsonObj, uiItem) {
   drag_event_fired = false;
 }
 
-function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
-  $(singleUIItem).dblclick(function () {
+async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
+  $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
+      start = 0;
+      listed_count = 0;
+      amount = 0;
       var folderName = this.innerText;
-      var appendString = "";
       currentLocation.value = currentLocation.value + folderName + "/";
 
       var currentPath = currentLocation.value;
@@ -6067,15 +6385,19 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
         return el.trim() != "";
       });
       var myPath = getRecursivePath(filtered, globalObj);
-      var appendString = loadFileFolder(myPath);
-
-      $(uiItem).empty();
-      $(uiItem).html(appendString);
+      if (myPath.length === 2) {
+        filtered = myPath[1];
+        document.getElementById("input-global-path").value =
+          "My_dataset_folder/" + filtered.join("/") + "/";
+      }
+      $("#items").empty();
+      already_created_elem = [];
+      let items = loadFileFolder(myPath);
+      //we have some items to display
+      listItems(myPath, "#items", 500, (reset = true));
       organizeLandingUIEffect();
-
       // reconstruct folders and files (child elements after emptying the Div)
-      listItems(myPath, uiItem);
-      getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
+      // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
     }
   });
 }
@@ -6845,7 +7167,8 @@ async function initiate_generate() {
   };
 
   //document.body.appendChild(statusBarClone);
-
+  let sparc_container = document.getElementById("sparc-logo-container");
+  sparc_container.style.display = "none";
   navContainer.appendChild(statusBarClone);
   let navbar = document.getElementById("main-nav");
   if (navbar.classList.contains("active")) {
@@ -6870,14 +7193,14 @@ async function initiate_generate() {
   let foldersUploaded = 0;
   let previousUploadedFileSize = 0;
   let increaseInFileSize = 0;
+  let generated_dataset_id = undefined;
 
   // determine where the dataset will be generated/uploaded
   let nameDestinationPair = determineDatasetDestination();
-  dataset_destination = nameDestinationPair[1];
   dataset_name = nameDestinationPair[0];
+  dataset_destination = nameDestinationPair[1];
 
   if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
-    console.log("Starting session");
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
@@ -6900,6 +7223,7 @@ async function initiate_generate() {
         html: "Please return to progress page to see full error",
       }).then((result) => {
         statusBarClone.remove();
+        sparc_container.style.display = "inline";
         if (result.isConfirmed) {
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
@@ -7121,6 +7445,7 @@ async function initiate_generate() {
       if (countDone > 1) {
         log.info("Done curate track");
         statusBarClone.remove();
+        sparc_container.style.display = "inline";
         if (successful === true) {
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
@@ -7140,6 +7465,10 @@ async function initiate_generate() {
       }
     }
   }
+
+  // when generating a new dataset we need to add its ID to the ID -> Name mapping
+  // we need to do this only once
+  let loggedDatasetNameToIdMapping = false;
 
   // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
   // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
@@ -7188,6 +7517,24 @@ async function initiate_generate() {
             increaseInFileSize
           );
         }
+      }
+
+      generated_dataset_id = res[3];
+      // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
+      if (
+        !loggedDatasetNameToIdMapping &&
+        generated_dataset_id !== null &&
+        generated_dataset_id !== undefined
+      ) {
+        ipcRenderer.send(
+          "track-event",
+          "Dataset ID to Dataset Name Map",
+          generated_dataset_id,
+          dataset_name
+        );
+
+        // don't log this again for the current upload session
+        loggedDatasetNameToIdMapping = true;
       }
     });
 
@@ -7251,23 +7598,38 @@ const get_num_files_and_folders = (dataset_folders) => {
 };
 
 function determineDatasetDestination() {
-  console.log(sodaJSONObj);
   if (sodaJSONObj["generate-dataset"]) {
     if (sodaJSONObj["generate-dataset"]["destination"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
-
       if (destination === "bf" || destination === "Pennsieve") {
-        console.log("Going to return pennsieve");
-        return [
-          sodaJSONObj["bf-dataset-selected"]["dataset-name"],
-          "Pennsieve",
-        ];
+        // updating an existing dataset on Pennsieve
+        if (sodaJSONObj["bf-dataset-selected"]) {
+          return [
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+            "Pennsieve",
+          ];
+        } else {
+          return [
+            // get dataset name,
+            document.querySelector("#inputNewNameDataset").value,
+            "Pennsieve",
+          ];
+        }
       } else {
-        return "local";
+        // replacing files in an existing local dataset
+        if (sodaJSONObj["generate-dataset"]["dataset-name"]) {
+          return [sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
+        } else {
+          // creating a new dataset from an existing local dataset
+          return [
+            document.querySelector("#inputNewNameDataset").value,
+            "Local",
+          ];
+        }
       }
     }
   } else {
-    return "local";
+    return [document.querySelector("#inputNewNameDataset").value, "Local"];
   }
 }
 
@@ -9451,16 +9813,3 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
-
-document
-  .getElementById("direct-to-feedback")
-  .addEventListener("click", function () {
-    if (
-      !document.getElementById("feedback-wrapper").classList.contains("is-open")
-    ) {
-      document.getElementById("feedback-btn").click();
-    }
-    document.querySelector("#feedback-btn").scrollIntoView({
-      behavior: "smooth",
-    });
-  });

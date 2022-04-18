@@ -72,6 +72,7 @@ from prepare_metadata import (
     import_bf_metadata_file,
     import_bf_RC,
     upload_RC_file,
+    delete_manifest_dummy_folders,
 )
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
@@ -80,7 +81,7 @@ import sys
 import zerorpc
 
 
-MIN_SODA_VERSION = "5.3.2"
+MIN_SODA_VERSION = "5.3.3"
 
 
 class SodaApi(object):
@@ -241,6 +242,12 @@ class SodaApi(object):
             return create_high_level_manifest_files_existing_local_starting_point(
                 dataset_path
             )
+        except Exception as e:
+            raise e
+
+    def api_delete_manifest_dummy_folders(self, userpath):
+        try:
+            return delete_manifest_dummy_folders(userpath)
         except Exception as e:
             raise e
 

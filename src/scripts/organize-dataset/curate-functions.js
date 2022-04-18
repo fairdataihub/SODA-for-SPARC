@@ -2016,6 +2016,7 @@ async function moveItems(ev, category) {
                 itemType = "folders";
               }
               moveItemsHelper(itemToMove, selectedPath, itemType);
+              ev.parentElement.remove();
             });
           // only 1 file/folder
         } else {
@@ -2027,6 +2028,7 @@ async function moveItems(ev, category) {
             itemType = "folders";
           }
           moveItemsHelper(itemToMove, selectedPath, itemType);
+          ev.parentElement.remove();
         }
       }
     });

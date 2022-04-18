@@ -79,6 +79,8 @@ curated_dataset_size = 0
 start_time = 0
 uploaded_folder_counter = 0
 current_size_of_uploaded_files = 0
+generated_dataset_id = None
+
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -1721,6 +1723,7 @@ def generate_dataset_locally(soda_json_structure):
 
     main_curation_uploaded_files = 0
 
+    # def generate(soda_json_structure):
     try:
 
         def recursive_dataset_scan(
@@ -1853,6 +1856,16 @@ def generate_dataset_locally(soda_json_structure):
 
     except Exception as e:
         raise e
+
+    # gev = []
+    # gev.append(gevent.spawn(generate, soda_json_structure))
+    # gevent.sleep(0)
+    # gevent.joinall(gev)
+
+    # try:
+    #     return gev[0].get()
+    # except Exception as e:
+    #      raise e
 
 
 def mymovefile_with_metadata(src, dst):
@@ -2440,7 +2453,7 @@ def create_high_level_manifest_files_existing_bf(
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
     soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
-    # # create local folder to save manifest files temporarly (delete any existing one first)
+    # # create local folder to save manifest files temporarily (delete any existing one first)
     # shutil.rmtree(soda_manifest_folder_path) if isdir(soda_manifest_folder_path) else 0
     # makedirs(soda_manifest_folder_path)
 
@@ -3468,6 +3481,7 @@ def main_curate_function(soda_json_structure):
 
     global bf
     global myds
+    global generated_dataset_id
 
     start_generate = 0
     generate_start_time = time.time()
@@ -3478,6 +3492,7 @@ def main_curate_function(soda_json_structure):
     main_generated_dataset_size = 0
     main_curation_uploaded_files = 0
     uploaded_folder_counter = 0
+    generated_dataset_id = None
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
@@ -3630,6 +3645,7 @@ def main_curate_function(soda_json_structure):
                             "dataset-name"
                         ]
                         myds = bf_create_new_dataset(dataset_name, bf)
+                        generated_dataset_id = myds.id
                     bf_generate_new_dataset(soda_json_structure, bf, myds)
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
@@ -3698,11 +3714,14 @@ def main_curate_function_upload_details():
     global main_generated_dataset_size
     global uploaded_folder_counter
     global current_size_of_uploaded_files
+    # when the user creates a new Pennsieve dataset return back their new dataset id
+    global generated_dataset_id
 
     return (
         main_curation_uploaded_files,
         current_size_of_uploaded_files,
         uploaded_folder_counter,
+        generated_dataset_id,
     )
 
 

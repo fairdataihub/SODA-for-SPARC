@@ -14,7 +14,7 @@ function determineDatasetLocation() {
         // bf === blackfynn the old name for Pennsieve; bf means dataset was imported from Pennsieve
         if (location === "bf") {
           return Destinations.PENNSIEVE;
-        } else if (location === "local") {
+        } else if (location === "local" || location === "Local") {
           // imported from the user's machine
           return Destinations.LOCAL;
         } else {
