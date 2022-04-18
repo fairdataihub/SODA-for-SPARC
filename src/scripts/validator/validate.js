@@ -73,6 +73,8 @@ const validateLocalDataset = async () => {
     let datasetLocationInput = document.querySelector("#validate-local-dataset-path")
 
     datasetLocationInput.value = ""
+
+    return
   }
 
   let errors = validationResponse.data;

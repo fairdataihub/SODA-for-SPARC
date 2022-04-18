@@ -68,11 +68,11 @@ def api_validate_dataset_pipeline():
     # get the dataset relative path
     ds_path = request.args.get("dataset-path")
 
-
     validation_errors = None 
     try:
         # validate and get dictionary back
         validation_errors = val_dataset_local_pipeline(ds_path)
+        
     except Exception as e:
         print(type(e).__name__)
         if type(e).__name__ == "OSError":
