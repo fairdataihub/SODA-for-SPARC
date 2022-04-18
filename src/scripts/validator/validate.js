@@ -70,11 +70,13 @@ const validateLocalDataset = async () => {
     handleAxiosValidationErrors(err);
 
     // reset the input field to 'Browse Here'
-    let datasetLocationInput = document.querySelector("#validate-local-dataset-path")
+    let datasetLocationInput = document.querySelector(
+      "#validate-local-dataset-path"
+    );
 
-    datasetLocationInput.value = ""
+    datasetLocationInput.value = "";
 
-    return
+    return;
   }
 
   let errors = validationResponse.data;
