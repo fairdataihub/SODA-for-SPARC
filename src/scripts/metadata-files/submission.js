@@ -280,7 +280,11 @@ const guidedHelpMilestoneSubmission = () => {
             completionDate
           );
         }
-        $("#guided-div-data-deliverables-form").css("display", "flex");
+        const guidedDataDeliverablesForm = document.getElementById(
+          "guided-div-data-deliverables-form"
+        );
+        guidedDataDeliverablesForm.style.display = "flex";
+        guidedDataDeliverablesForm.scrollIntoView({ behavior: "smooth" });
       }
     });
   });
