@@ -5807,28 +5807,28 @@ function fileContextMenu(event) {
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 }
 
-$(document).ready(function () {
-  tippy("[data-tippy-content]", {
-    allowHTML: true,
-    interactive: true,
-    placement: "top",
-    theme: "light",
-  });
-  document
-    .getElementById("direct-to-feedback")
-    .addEventListener("click", function () {
-      if (
-        !document
-          .getElementById("feedback-wrapper")
-          .classList.contains("is-open")
-      ) {
-        document.getElementById("feedback-btn").click();
-      }
-      document.querySelector("#feedback-btn").scrollIntoView({
-        behavior: "smooth",
-      });
-    });
-});
+// $(document).ready(function () {
+//   tippy("[data-tippy-content]", {
+//     allowHTML: true,
+//     interactive: true,
+//     placement: "top",
+//     theme: "light",
+//   });
+//   document
+//     .getElementById("direct-to-feedback")
+//     .addEventListener("click", function () {
+//       if (
+//         !document
+//           .getElementById("feedback-wrapper")
+//           .classList.contains("is-open")
+//       ) {
+//         document.getElementById("feedback-btn").click();
+//       }
+//       document.querySelector("#feedback-btn").scrollIntoView({
+//         behavior: "smooth",
+//       });
+//     });
+// });
 
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
@@ -6494,6 +6494,8 @@ ipcRenderer.on(
                 },
                 footer: footer,
               }).then((result) => {
+                console.log(typeof irregularFolderArray);
+                console.log(irregularFolderArray);
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                   action = "replace";
@@ -6511,7 +6513,28 @@ ipcRenderer.on(
                 let root_folder_path = $(
                   "#input-destination-getting-started-locally"
                 ).attr("placeholder");
-                create_json_object(action, sodaJSONObj, root_folder_path);
+                //PASS IRREGULAR FOLDER ARRAY AS WELL
+                console.log("before invoking");
+                console.log(root_folder_path)
+                console.log(irregularFolderArray);
+                let uhh = performance.now();
+                client.invoke(
+                  "api_create_json_object_backend",
+                  sodaJSONObj,
+                  root_folder_path,
+                  irregularFolderArray,
+                  (error, res) => {
+                    if (error) {
+                      console.log(error);
+                    } else {
+                      console.log("should be successful here");
+                      console.log(res);
+                      sodaJSONObj = res;
+                      let uhhh_end = performance.now();
+                      console.log(`Duration of python side: ${uhhh_end - uhh} milliseconds`);
+                    }
+                });
+                //create_json_object(action, sodaJSONObj, root_folder_path);
                 datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
                 populate_existing_folders(datasetStructureJSONObj);
                 populate_existing_metadata(sodaJSONObj);
@@ -6534,7 +6557,32 @@ ipcRenderer.on(
               let root_folder_path = $(
                 "#input-destination-getting-started-locally"
               ).attr("placeholder");
-              create_json_object(action, sodaJSONObj, root_folder_path);
+              console.log("before invoking");
+              console.log(root_folder_path)
+              console.log(irregularFolderArray);
+              let time_start = performance.now();
+              client.invoke(
+                "api_create_json_object_backend",
+                sodaJSONObj,
+                root_folder_path,
+                irregularFolderArray,
+                (error, res) => {
+                  if (error) {
+                    console.log(error);
+                    console.log("UHHHHH");
+                  } else {
+                    console.log("should be successfull here");
+                    console.log(res);
+                    sodaJSONObj = res;
+                    let end_time = performance.now()
+                    console.log(`Duration of python side: ${end_time - time_start} milliseconds`);
+                  }
+              });
+              // console.log(sodaJSONObj);
+              // let new_start = performance.now()
+              // // create_json_object(action, sodaJSONObj, root_folder_path);
+              // let end_start = performance.now();
+              // console.log(`Duration of js side: ${end_start - new_start} milliseconds`);
               datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
               populate_existing_folders(datasetStructureJSONObj);
               populate_existing_metadata(sodaJSONObj);

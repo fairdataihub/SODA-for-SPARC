@@ -1222,6 +1222,14 @@ async function transitionSubQuestions(
 
 // Create the dataset structure for sodaJSONObj
 const create_json_object = (action, sodaJSONObj, root_folder_path) => {
+  high_level_sparc_folders = [
+    "code",
+    "derivative",
+    "docs",
+    "primary",
+    "protocol",
+    "source",
+  ]
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -1438,13 +1446,18 @@ const recursive_structure_create = (
         );
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace("\\", "/");
+          // console.log(temp_current_file_path);
           relative_path = temp_current_file_path.replace(
             root_folder_path + "/",
             ""
           );
+          // console.log(relative_path);
+          // console.log(temp_current_file_path);
           for (item in sodaJSONObj["starting-point"][high_level_folder][
             "manifest"
           ]) {
+            // console.log("item in startingpoint manifest"+item);
+            // console.log(sodaJSONObj["starting-point"][high_level_folder]);
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
                 item
@@ -1485,6 +1498,8 @@ const recursive_structure_create = (
           for (item in sodaJSONObj["starting-point"][high_level_folder][
             "manifest"
           ]) {
+            // console.log(item);
+            // console.log(sodaJSONObj["starting-point"][high_level_folder]);
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
                 item
@@ -1567,6 +1582,9 @@ const recursive_structure_create = (
     }
   });
   for (folder in dataset_folder["folders"]) {
+    // console.log(dataset_folder["folders"][folder]);
+    // console.log(high_level_folder);
+    // console.log(root_folder_path);
     recursive_structure_create(
       action,
       dataset_folder["folders"][folder],
