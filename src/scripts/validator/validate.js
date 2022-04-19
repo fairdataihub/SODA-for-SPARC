@@ -95,10 +95,22 @@ const validateLocalDataset = async () => {
     datasetLocationInput.value = "";
 
     // track that a local validation failed
-    ipcRenderer.send("track-event", "Error", "Prepare Datasets - Validate your dataset - Local", "Local Validation", 1)
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Prepare Datasets - Validate your dataset - Local",
+      "Local Validation",
+      1
+    );
 
     // track that a validation (local or pennsieve) failed to help with aggregating total dataset validation failures
-    ipcRenderer.send("track-event", "Error", "Prepare Datasets - Validate your dataset", "Dataset Validation", 1)
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Prepare Datasets - Validate your dataset",
+      "Dataset Validation",
+      1
+    );
 
     return;
   }
