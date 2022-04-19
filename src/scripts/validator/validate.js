@@ -192,7 +192,6 @@ const validatePennsieveDataset = async () => {
       "Dataset Validation",
       1
     );
-
   } catch (err) {
     // hide the validation errors table
     document.querySelector("#validation-errors-container").style.visiility =
