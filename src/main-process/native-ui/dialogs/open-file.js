@@ -668,3 +668,19 @@ ipcMain.on("open-file-dialog-local-dataset-manifest-purpose", (event) => {
     }
   );
 });
+
+// Prepare Datasets
+ipcMain.on("open-folder-dialog-validate-local-dataset", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      title: "Select a local dataset",
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-validate-local-dataset", files);
+      }
+    }
+  );
+});
