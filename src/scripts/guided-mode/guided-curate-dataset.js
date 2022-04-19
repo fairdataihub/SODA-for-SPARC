@@ -2440,8 +2440,8 @@ $(document).ready(() => {
     const notSelectedButton = $(this).siblings(".guided--radio-button");
 
     notSelectedButton.removeClass("selected");
-    notSelectedButton.addClass("not-selected");
-    selectedButton.removeClass("not-selected");
+    notSelectedButton.addClass("not-selected basic");
+    selectedButton.removeClass("not-selected basic");
     selectedButton.addClass("selected");
 
     //Display selected element container if data-next-question exists
@@ -2461,6 +2461,14 @@ $(document).ready(() => {
         $(`#${nextQuestionID}`).hide();
       }
     });
+  });
+  $("#guided-manual-SPARC-award").on("click", () => {
+    const sparcAwardInput = document.getElementById(
+      "guided-submission-sparc-award"
+    );
+    sparcAwardInput.value = "";
+    sparcAwardInput.disabled = false;
+    sparcAwardInput.focus();
   });
 
   $("#guided-button-samples-not-same").on("click", () => {

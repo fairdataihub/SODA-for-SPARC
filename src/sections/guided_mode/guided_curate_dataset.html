@@ -283,16 +283,13 @@
                 >
                   Yes
                 </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-manual-SPARC-award"
-                >
+                <button class="ui negative basic button guided--radio-button">
                   No
                 </button>
               </div>
             </div>
             <div
-              class="guided--panel hidden"
+              class="guided--section hidden"
               id="guided-import-SPARC-award-from-airtable"
             >
               <button
@@ -303,7 +300,29 @@
                 Import award information from Airtable
               </button>
             </div>
-            <div class="guided--section hidden" id="guided-manual-SPARC-award">
+            <div
+              class="guided--section hidden"
+              id="guided-SPARC-award-confirmation"
+            >
+              <h2
+                class="guided--text-sub-step"
+                id="SPARC-award-instructional-text"
+              >
+                Your imported SPARC Award number:
+              </h2>
+              <label class="guided--label-accordion-field w-100"
+                >SPARC Award number</label
+              >
+              <div class="ui input modified">
+                <input
+                  class="guided-award-and-milestone-information"
+                  type="text"
+                  id="guided-submission-sparc-award"
+                  placeholder="Type here..."
+                />
+              </div>
+            </div>
+            <div class="guided--section">
               <h2 class="guided--text-sub-step">
                 Do you have a data deliverables document you would like to
                 import award information from?
@@ -332,9 +351,17 @@
             <div
               class="guided--section hidden"
               id="guided-import-data-deliverables-document"
-            ></div>
+            >
+              <button
+                class="ui primary button"
+                style="background-color: var(--color-light-green) !important"
+                onclick="helpSPARCAward('submission', 'guided')"
+              >
+                Import award information from Airtable
+              </button>
+            </div>
             <div
-              class="guided--panel hidden"
+              class="guided--section hidden"
               id="guided-manual-submission-creation"
             ></div>
             <div class="guided--panel">
@@ -345,27 +372,10 @@
                 </div>
                 <div class="content active">
                   <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >SPARC Award number
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="SPARC award associated with the dataset."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i
-                      ></label>
-                      <div class="ui input modified">
-                        <input
-                          class="guided-award-and-milestone-information"
-                          type="text"
-                          id="guided-submission-sparc-award"
-                          placeholder="Type here..."
-                        />
-                      </div>
-                    </div>
+                    <div
+                      class="guided--accordion-field"
+                      id="SPARC-award-container"
+                    ></div>
                     <div class="guided--accordion-field">
                       <label class="guided--label-accordion-field"
                         >Enter the milestone(s):
