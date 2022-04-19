@@ -285,7 +285,7 @@
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-manual-SPARC-award"
+                  data-next-question="guided-div-SPARC-award"
                   id="guided-button-add-SPARC-award-manually"
                 >
                   No
@@ -304,7 +304,7 @@
                 Import award information from Airtable
               </button>
             </div>
-            <div class="guided--section hidden" id="guided-manual-SPARC-award">
+            <div class="guided--section hidden" id="guided-div-SPARC-award">
               <h2
                 class="guided--text-sub-step"
                 id="SPARC-award-instructional-text"
@@ -323,7 +323,10 @@
                 />
               </div>
             </div>
-            <div class="guided--section">
+            <div
+              class="guided--section hidden"
+              id="guided-div-data-deliverables"
+            >
               <h2 class="guided--text-sub-step">
                 Do you have a data deliverables document you would like to
                 import award information from?
@@ -358,7 +361,7 @@
                 style="background-color: var(--color-light-green) !important"
                 onclick="helpSPARCAward('submission', 'guided')"
               >
-                Import award information from Airtable
+                Import data deliverables
               </button>
             </div>
             <div

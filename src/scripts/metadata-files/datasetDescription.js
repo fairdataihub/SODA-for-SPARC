@@ -1115,6 +1115,21 @@ function addAdditionalLinktoTableDD(
     rowModificationIcons);
 }
 
+guidedSetAndDisableSPARCAward = (awardString) => {
+  guidedSubmissionTagsTagify.removeAllTags();
+  $("#guided-submission-sparc-award").val(awardString);
+  $("#guided-ds-description-award-input").val(awardString);
+  document.getElementById("guided-submission-completion-date").value = "";
+  document.getElementById("guided-submission-sparc-award").disabled = true;
+  document.getElementById("SPARC-award-instructional-text").innerHTML =
+    "Your imported SPARC award:";
+  $("#guided-div-SPARC-award").css("display", "flex");
+  //show the data deliverables div after SPARC award importation
+  document
+    .getElementById("guided-div-data-deliverables")
+    .classList.remove("hidden");
+};
+
 async function helpSPARCAward(filetype, curationMode) {
   var award = "";
   if (filetype === "dd") {
@@ -1260,21 +1275,8 @@ async function helpSPARCAward(filetype, curationMode) {
               }
 
               if (curationMode === "guided") {
-                guidedSubmissionTagsTagify.removeAllTags();
-                $("#guided-submission-sparc-award").val(award);
-                $("#guided-ds-description-award-input").val(award);
-                document.getElementById(
-                  "guided-submission-completion-date"
-                ).value = "";
-                document
-                  .getElementById("guided-SPARC-award-confirmation")
-                  .classList.remove("hidden");
-                document.getElementById(
-                  "guided-submission-sparc-award"
-                ).disabled = true;
-                document.getElementById(
-                  "SPARC-award-instructional-text"
-                ).innerHTML = "Your imported SPARC award:";
+                guidedSetAndDisableSPARCAward(award);
+
                 loadContributorInfofromAirtable(award);
               }
             }
@@ -1289,20 +1291,7 @@ async function helpSPARCAward(filetype, curationMode) {
           }
 
           if (curationMode === "guided") {
-            guidedSubmissionTagsTagify.removeAllTags();
-            $("#guided-submission-sparc-award").val(award);
-            $("#guided-ds-description-award-input").val(award);
-            document.getElementById("guided-submission-completion-date").value =
-              "";
-            document
-              .getElementById("guided-SPARC-award-confirmation")
-              .classList.remove("hidden");
-            document.getElementById(
-              "guided-submission-sparc-award"
-            ).disabled = true;
-            document.getElementById(
-              "SPARC-award-instructional-text"
-            ).innerHTML = "Your imported SPARC award:";
+            guidedSetAndDisableSPARCAward(award);
             loadContributorInfofromAirtable(award);
           }
         }
@@ -1364,9 +1353,6 @@ function changeAward(award, curationMode) {
   if (curationMode === "guided") {
     $("#guided-ds-description-award-input").val(award);
     $("#guided-submission-sparc-award").val(award);
-    document
-      .getElementById("guided-SPARC-award-confirmation")
-      .classList.remove("hidden");
   }
   loadContributorInfofromAirtable(award);
 }

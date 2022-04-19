@@ -2444,7 +2444,7 @@ $(document).ready(() => {
     selectedButton.removeClass("not-selected basic");
     selectedButton.addClass("selected");
 
-    //Display selected element container if data-next-question exists
+    //Display and scroll to selected element container if data-next-question exists
     if (selectedButton.data("next-question")) {
       nextQuestionID = selectedButton.data("next-question");
       nextQuestionElement = $(`#${nextQuestionID}`);
