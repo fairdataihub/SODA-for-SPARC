@@ -182,6 +182,110 @@ function helpMilestoneSubmission() {
   });
 }
 
+guidedSetAndDisableMilestoneData = () => {
+  guidedSubmissionTagsTagify.removeAllTags();
+  $("#guided-submission-sparc-award").val(awardString);
+  $("#guided-ds-description-award-input").val(awardString);
+  document.getElementById("guided-submission-completion-date").value = "";
+  document.getElementById("guided-submission-sparc-award").disabled = true;
+  document.getElementById("SPARC-award-instructional-text").innerHTML =
+    "Your imported SPARC award:";
+  $("#guided-div-SPARC-award").css("display", "flex");
+  //show the data deliverables div after SPARC award importation
+  document
+    .getElementById("guided-div-data-deliverables")
+    .classList.remove("hidden");
+};
+const guidedHelpMilestoneSubmission = () => {
+  var filepath = "";
+  var informationJson = {};
+
+  Swal.fire({
+    title:
+      "Select the file location of the data deliverables you would like to extract milestone information from",
+    html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    preConfirm: () => {
+      if ($("#input-milestone-select").attr("placeholder") === "Browse here") {
+        Swal.showValidationMessage("Please select a file");
+      } else {
+        filepath = $("#input-milestone-select").attr("placeholder");
+        return {
+          filepath: filepath,
+        };
+      }
+    },
+  }).then((result) => {
+    Swal.close();
+
+    const filepath = result.value.filepath;
+    var award = $("#guided-submission-sparc-award").val().trim();
+    client.invoke("api_extract_milestone_info", filepath, (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: `${emessage}`,
+        });
+      } else {
+        milestoneObj = res;
+        let informationJson = {};
+        informationJson = parseJson(milestonePath);
+        informationJson[award] = milestoneObj;
+        console.log(informationJson);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: "success",
+          text: `Successfully loaded your DataDeliverables.docx document`,
+        });
+        removeOptions(
+          document.getElementById("guided-submission-completion-date")
+        );
+        guidedSubmissionTagsTagify.removeAllTags();
+        guidedSubmissionTagsTagify.settings.whitelist = [];
+
+        var completionDateArray = [];
+        var milestoneValueArray = [];
+        completionDateArray.push("Enter my own date");
+        //changeAward()
+
+        if (award in informationJson) {
+          const milestoneObj = informationJson[award];
+          const milestoneTasks = Object.keys(milestoneObj);
+          milestoneTasks.forEach((task) => {
+            milestoneValueArray.push(task);
+            milestoneObj[task].forEach((milestone) => {
+              completionDateArray.push(
+                milestone["Expected date of completion"]
+              );
+            });
+          });
+        }
+        guidedSubmissionTagsTagify.settings.whitelist = milestoneValueArray;
+        const guidedSubmissionCompletionDateDropdown = document.getElementById(
+          "guided-submission-completion-date"
+        );
+        for (completionDate of completionDateArray) {
+          addOption(
+            guidedSubmissionCompletionDateDropdown,
+            completionDate,
+            completionDate
+          );
+        }
+        $("#guided-div-data-deliverables-form").css("display", "flex");
+      }
+    });
+  });
+};
+
 function openDDDimport() {
   const dialog = require("electron").remote.dialog;
   const BrowserWindow = require("electron").remote.BrowserWindow;

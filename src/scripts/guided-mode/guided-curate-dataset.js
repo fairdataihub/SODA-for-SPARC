@@ -2466,10 +2466,16 @@ $(document).ready(() => {
     const sparcAwardInput = document.getElementById(
       "guided-submission-sparc-award"
     );
+    document.getElementById("SPARC-award-instructional-text").innerHTML =
+      "Enter your SPARC award below";
     sparcAwardInput.value = "";
     sparcAwardInput.disabled = false;
     sparcAwardInput.focus();
   });
+  $("#guided-button-add-data-deliverables-award-manually").on(
+    "click",
+    () => {}
+  );
 
   $("#guided-button-samples-not-same").on("click", () => {
     $("#guided-button-generate-subjects-table").show();
@@ -4920,12 +4926,7 @@ $(document).ready(() => {
       enabled: 0,
       closeOnSelect: true,
     },
-  }); /*
-  const guidedDatasetKeywordsInput =
-    document.getElementById("guided-ds-keywords");
-  const guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeywordsInput, {
-    duplicates: false,
-  });*/
+  });
   const guidedOtherFundingSourcesInput = document.getElementById(
     "guided-ds-other-funding"
   );

@@ -340,13 +340,14 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-import-data-deliverables-document"
+                  data-next-question="guided-div-import-data-deliverables"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-manual-submission-creation"
+                  id="guided-button-add-data-deliverables-award-manually"
+                  data-next-question="guided-div-data-deliverables-form"
                 >
                   No
                 </button>
@@ -354,21 +355,64 @@
             </div>
             <div
               class="guided--section hidden"
-              id="guided-import-data-deliverables-document"
+              id="guided-div-import-data-deliverables"
             >
               <button
                 class="ui primary button"
                 style="background-color: var(--color-light-green) !important"
-                onclick="helpSPARCAward('submission', 'guided')"
+                onclick="guidedHelpMilestoneSubmission()"
               >
                 Import data deliverables
               </button>
             </div>
             <div
               class="guided--section hidden"
-              id="guided-manual-submission-creation"
-            ></div>
-            <div class="guided--panel">
+              id="guided-div-data-deliverables-form"
+            >
+              <h2
+                class="guided--text-sub-step"
+                id="milestones-instructional-text"
+              >
+                Enter the milestones(s) for your award:
+              </h2>
+              <label class="guided--label-accordion-field"
+                >Enter the milestone(s):
+              </label>
+              <input
+                class="guided-award-and-milestone-information"
+                id="guided-tagify-submission-milestone-tags"
+                name="milestone-tags"
+                placeholder="Type here and hit 'Enter' after each keyword."
+                value=""
+                autofocus
+              />
+              <h2
+                class="guided--text-sub-step"
+                id="completion-date-instructional-text"
+              >
+                Select the completion date for your award:
+              </h2>
+              <label class="guided--label-accordion-field"
+                >Completion date:
+              </label>
+              <div class="demo-controls-body" style="width: 90%">
+                <div class="ui input modified">
+                  <select
+                    class="guided-award-and-milestone-information"
+                    id="guided-submission-completion-date"
+                  >
+                    <option disabled selected hidden>Select an option</option>
+                    <option
+                      id="guided-date-entry-pseudo-parent"
+                      value="Enter my own date"
+                    >
+                      Enter my own date
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="guided--panel hidden">
               <div class="ui styled fluid accordion guided--accordion">
                 <div class="title active">
                   <i class="dropdown icon active"></i>Award and milestone
@@ -380,60 +424,8 @@
                       class="guided--accordion-field"
                       id="SPARC-award-container"
                     ></div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Enter the milestone(s):
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
-                                  <br/><br/>
-                                  Hit 'Enter' to register it."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </label>
-                      <input
-                        class="guided-award-and-milestone-information"
-                        id="guided-tagify-submission-milestone-tags"
-                        name="milestone-tags"
-                        placeholder="Tye here and hit 'Enter' after each keyword."
-                        value=""
-                        autofocus
-                      />
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Completion date:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Enter the completion date for your milestone(s) specified above."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 90%">
-                        <div class="ui input modified">
-                          <select
-                            class="guided-award-and-milestone-information"
-                            id="guided-submission-completion-date"
-                          >
-                            <option disabled selected hidden>
-                              Select an option
-                            </option>
-                            <option
-                              id="guided-date-entry-pseudo-parent"
-                              value="Enter my own date"
-                            >
-                              Enter my own date
-                            </option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
+                    <div class="guided--accordion-field"></div>
+                    <div class="guided--accordion-field"></div>
                   </div>
                 </div>
               </div>
