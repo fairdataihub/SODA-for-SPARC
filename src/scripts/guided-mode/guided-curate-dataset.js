@@ -2462,7 +2462,7 @@ $(document).ready(() => {
       }
     });
   });
-  $("#guided-manual-SPARC-award").on("click", () => {
+  $("#guided-button-add-SPARC-award-manually").on("click", () => {
     const sparcAwardInput = document.getElementById(
       "guided-submission-sparc-award"
     );

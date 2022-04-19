@@ -283,7 +283,11 @@
                 >
                   Yes
                 </button>
-                <button class="ui negative basic button guided--radio-button">
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-question="guided-manual-SPARC-award"
+                  id="guided-button-add-SPARC-award-manually"
+                >
                   No
                 </button>
               </div>
@@ -300,10 +304,7 @@
                 Import award information from Airtable
               </button>
             </div>
-            <div
-              class="guided--section hidden"
-              id="guided-SPARC-award-confirmation"
-            >
+            <div class="guided--section hidden" id="guided-manual-SPARC-award">
               <h2
                 class="guided--text-sub-step"
                 id="SPARC-award-instructional-text"
