@@ -6515,7 +6515,7 @@ ipcRenderer.on(
                 ).attr("placeholder");
                 //PASS IRREGULAR FOLDER ARRAY AS WELL
                 console.log("before invoking");
-                console.log(root_folder_path)
+                console.log(root_folder_path);
                 console.log(irregularFolderArray);
                 let uhh = performance.now();
                 client.invoke(
@@ -6531,9 +6531,14 @@ ipcRenderer.on(
                       console.log(res);
                       sodaJSONObj = res;
                       let uhhh_end = performance.now();
-                      console.log(`Duration of python side: ${uhhh_end - uhh} milliseconds`);
+                      console.log(
+                        `Duration of python side: ${
+                          uhhh_end - uhh
+                        } milliseconds`
+                      );
                     }
-                });
+                  }
+                );
                 //create_json_object(action, sodaJSONObj, root_folder_path);
                 datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
                 populate_existing_folders(datasetStructureJSONObj);
@@ -6558,7 +6563,7 @@ ipcRenderer.on(
                 "#input-destination-getting-started-locally"
               ).attr("placeholder");
               console.log("before invoking");
-              console.log(root_folder_path)
+              console.log(root_folder_path);
               console.log(irregularFolderArray);
               let time_start = performance.now();
               client.invoke(
@@ -6574,10 +6579,15 @@ ipcRenderer.on(
                     console.log("should be successfull here");
                     console.log(res);
                     sodaJSONObj = res;
-                    let end_time = performance.now()
-                    console.log(`Duration of python side: ${end_time - time_start} milliseconds`);
+                    let end_time = performance.now();
+                    console.log(
+                      `Duration of python side: ${
+                        end_time - time_start
+                      } milliseconds`
+                    );
                   }
-              });
+                }
+              );
               // console.log(sodaJSONObj);
               // let new_start = performance.now()
               // // create_json_object(action, sodaJSONObj, root_folder_path);

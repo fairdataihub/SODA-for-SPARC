@@ -1229,7 +1229,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
     "primary",
     "protocol",
     "source",
-  ]
+  ];
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
