@@ -76,7 +76,11 @@ from prepare_metadata import (
     delete_manifest_dummy_folders,
 )
 
-from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders, create_json_object_backend
+from organize_datasets import (
+    generate_dataset_locally,
+    bf_get_dataset_files_folders,
+    create_json_object_backend,
+)
 
 import sys
 import zerorpc
@@ -566,12 +570,15 @@ class SodaApi(object):
         return text
 
     ### Creates json structure for local datasets
-    def api_create_json_object_backend(self, soda_json_structure, root_folder_path, irregularFolders):
+    def api_create_json_object_backend(
+        self, soda_json_structure, root_folder_path, irregularFolders
+    ):
         try:
-            return create_json_object_backend(soda_json_structure, root_folder_path, irregularFolders)
+            return create_json_object_backend(
+                soda_json_structure, root_folder_path, irregularFolders
+            )
         except Exception as e:
             raise e
-
 
 
 ### Connect to Electron-Python
