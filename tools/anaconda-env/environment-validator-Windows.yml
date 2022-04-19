@@ -1,4 +1,4 @@
-name: env-validator
+name: env-validator-electron-python
 channels:
 - defaults
 - conda-forge
