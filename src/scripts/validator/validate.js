@@ -61,11 +61,11 @@ const validateLocalDataset = async () => {
     validationResponse = await axiosValidatorClient(
       `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
     );
-    
+
     // track that a local validation succeeded
     ipcRenderer.send("track-event", "Success", "Prepare Datasets - Validate your dataset - Local", "Local Validation", 1)
 
-    // track that a validation (local or pennsieve) succeeded
+    // track that a validation (local or pennsieve) succeeded to help with tracking total dataset validation successes
     ipcRenderer.send("track-event", "Success", "Prepare Datasets - Validate your dataset", "Dataset Validation", 1)
 
   } catch (err) {
@@ -82,6 +82,12 @@ const validateLocalDataset = async () => {
     );
 
     datasetLocationInput.value = "";
+
+    // track that a local validation failed
+    ipcRenderer.send("track-event", "Error", "Prepare Datasets - Validate your dataset - Local", "Local Validation", 1)
+
+    // track that a validation (local or pennsieve) failed to help with aggregating total dataset validation failures
+    ipcRenderer.send("track-event", "Error", "Prepare Datasets - Validate your dataset", "Dataset Validation", 1)
 
     return;
   }
