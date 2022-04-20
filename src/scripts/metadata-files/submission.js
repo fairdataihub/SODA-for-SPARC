@@ -182,6 +182,9 @@ function helpMilestoneSubmission() {
   });
 }
 
+let guidedCompletionDateArray = [];
+let guidedMilestoneValueArray = [];
+
 const guidedHelpMilestoneSubmission = () => {
   var filepath = "";
   var informationJson = {};
@@ -238,28 +241,27 @@ const guidedHelpMilestoneSubmission = () => {
         guidedSubmissionTagsTagify.removeAllTags();
         guidedSubmissionTagsTagify.settings.whitelist = [];
 
-        var completionDateArray = [];
-        var milestoneValueArray = [];
-        completionDateArray.push("Enter my own date");
+        guidedCompletionDateArray.push("Enter my own date");
         //changeAward()
 
         if (award in informationJson) {
           const milestoneObj = informationJson[award];
           const milestoneTasks = Object.keys(milestoneObj);
           milestoneTasks.forEach((task) => {
-            milestoneValueArray.push(task);
+            guidedMilestoneValueArray.push(task);
             milestoneObj[task].forEach((milestone) => {
-              completionDateArray.push(
+              guidedCompletionDateArray.push(
                 milestone["Expected date of completion"]
               );
             });
           });
         }
-        guidedSubmissionTagsTagify.settings.whitelist = milestoneValueArray;
+        guidedSubmissionTagsTagify.settings.whitelist =
+          guidedMilestoneValueArray;
         const guidedSubmissionCompletionDateDropdown = document.getElementById(
           "guided-submission-completion-date"
         );
-        for (completionDate of completionDateArray) {
+        for (completionDate of guidedCompletionDateArray) {
           addOption(
             guidedSubmissionCompletionDateDropdown,
             completionDate,
@@ -267,7 +269,7 @@ const guidedHelpMilestoneSubmission = () => {
           );
         }
         const guidedDataDeliverablesForm = document.getElementById(
-          "guided-div-imported-data-deliverables-import"
+          "guided-div-data-deliverables-import"
         );
         guidedDataDeliverablesForm.classList.remove("hidden");
         guidedDataDeliverablesForm.scrollIntoView({ behavior: "smooth" });

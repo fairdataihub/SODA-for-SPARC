@@ -1116,18 +1116,9 @@ function addAdditionalLinktoTableDD(
 }
 
 guidedSetImportedSPARCAward = (awardString) => {
-  guidedSubmissionTagsTagify.removeAllTags();
   $("#guided-input-submission-sparc-award-import").val(awardString);
   $("#guided-submission-sparc-award").val(awardString);
   $("#guided-ds-description-award-input").val(awardString);
-  document.getElementById("guided-submission-completion-date").value = "";
-  const dataDeliverablesElement = document.getElementById(
-    "guided-section-div-data-deliverables"
-  );
-  dataDeliverablesElement.classList.remove("hidden");
-  dataDeliverablesElement.scrollIntoView({
-    behavior: "smooth",
-  });
   document
     .getElementById("guided-div-imported-SPARC-award")
     .classList.remove("hidden");
@@ -1222,11 +1213,12 @@ async function helpSPARCAward(filetype, curationMode) {
       $("#select-sparc-award-submission-spinner").css("display", "block");
       currentMilestonesInTextArea = $("#selected-milestone-1");
     }
-    if (curationMode === "guided") {
+    currentMilestonesInTextArea = $("#selected-milestone-1");
+    /*if (curationMode === "guided") {
       currentMilestonesInTextArea = $(
         "#guided-tagify-submission-milestone-tags"
       );
-    }
+    }*/
     if (res[0]) {
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div

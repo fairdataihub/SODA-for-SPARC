@@ -219,8 +219,10 @@ const renderProgressCards = (progressFileJSONdata) => {
 };
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
-  let targetCapsuleID = targetPageID.replace("tab", "capsule");
+  let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
+  console.log(targetCapsuleID);
   let targetCapsule = $(`#${targetCapsuleID}`);
+  console.log(targetCapsule);
   targetCapsule.addClass("active");
 };
 setActiveProgressionTab = (targetPageID) => {
@@ -4903,7 +4905,7 @@ $(document).ready(() => {
   var guidedSubmissionTagsInput = document.getElementById(
     "guided-tagify-submission-milestone-tags"
   );
-  guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
+  const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
     duplicates: false,
     delimiters: null,
     dropdown: {

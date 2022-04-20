@@ -261,263 +261,6 @@
           </div>
 
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
-            <div class="guided--section mb-md">
-              <h1 class="guided--text-sub-step">
-                Create your dataset submission metadata
-              </h1>
-              <p class="guided--help-text">
-                The submission file is a <b>required</b> file containing
-                information relevant to internal SPARC bookkeeping, relating
-                milestones negotiated wih the NIH to the contents of your
-                dataset.
-              </p>
-              <p class="guided--help-text">
-                The submission file is <b>for internal use only</b> and will not
-                be submitted when your dataset is published.
-              </p>
-            </div>
-            <div class="guided--section">
-              <h2 class="guided--text-sub-step">
-                Do you have an Airtable account you would like to import award
-                information from?
-              </h2>
-              <p class="guided--help-text small" style="margin-bottom: 2px">
-                Importing your award information from Airtable is recommended as
-                it ensures the Award number entered into your submission
-                metadata is correct.
-              </p>
-              <div class="guided--radio-button-container">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-div-SPARC-award-import"
-                >
-                  Yes
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-section-div-data-deliverables"
-                >
-                  No
-                </button>
-              </div>
-            </div>
-            <div
-              class="guided--section hidden"
-              id="guided-div-SPARC-award-import"
-            >
-              <button
-                class="ui primary button"
-                style="background-color: var(--color-light-green) !important"
-                onclick="helpSPARCAward('submission', 'guided')"
-              >
-                Import award information from Airtable
-              </button>
-              <div
-                class="guided--panel hidden"
-                id="guided-div-imported-SPARC-award"
-              >
-                <label class="guided--label-accordion-field w-100"
-                  >Imported SPARC Award number</label
-                >
-                <div class="ui input modified">
-                  <input
-                    type="text"
-                    id="guided-input-submission-sparc-award-import"
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="guided--section hidden"
-              id="guided-section-div-data-deliverables"
-            >
-              <h2 class="guided--text-sub-step">
-                Do you have a data deliverables document you would like to
-                import award information from?
-              </h2>
-              <p class="guided--help-text small" style="margin-bottom: 2px">
-                <b>recommended if available</b> A data deliverables document is
-                a file that contains data pertaining to your project's
-                milestones.
-              </p>
-              <div class="guided--radio-button-container">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-div-import-data-deliverables"
-                >
-                  Yes
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-div-submission-accordion"
-                >
-                  No
-                </button>
-              </div>
-            </div>
-            <div
-              class="guided--section hidden"
-              id="guided-div-import-data-deliverables"
-            >
-              <button
-                class="ui primary button"
-                style="background-color: var(--color-light-green) !important"
-                onclick="guidedHelpMilestoneSubmission()"
-              >
-                Import data deliverables
-              </button>
-              <div
-                class="guided--panel hidden"
-                id="guided-div-imported-data-deliverables"
-              >
-                <h2 class="guided--text-sub-step">
-                  Select the data deliverables
-                </h2>
-                <div class="space-between w-100">
-                  <div class="ui form">
-                    <div class="grouped fields">
-                      <label class="guided--form-label med text-left"
-                        >Milestones</label
-                      >
-                      <div class="field">
-                        <div class="ui radio checkbox">
-                          <input
-                            type="radio"
-                            name="example2"
-                            checked="checked"
-                          />
-                          <label>Once a week</label>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <div class="ui radio checkbox">
-                          <input type="radio" name="example2" />
-                          <label>2-3 times a week</label>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <div class="ui radio checkbox">
-                          <input type="radio" name="example2" />
-                          <label>Once a day</label>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <div class="ui radio checkbox">
-                          <input type="radio" name="example2" />
-                          <label>Twice a day</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui form">
-                    <div class="grouped fields">
-                      <label class="guided--form-label med text-left"
-                        >Dates</label
-                      >
-                      <div class="field">
-                        <div class="ui radio checkbox">
-                          <input
-                            type="radio"
-                            name="example2"
-                            checked="checked"
-                          />
-                          <label>Once a week</label>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <div class="ui radio checkbox">
-                          <input type="radio" name="example2" />
-                          <label>2-3 times a week</label>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <div class="ui radio checkbox">
-                          <input type="radio" name="example2" />
-                          <label>Once a day</label>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <div class="ui radio checkbox">
-                          <input type="radio" name="example2" />
-                          <label>Twice a day</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="guided--section hidden"
-              id="guided-div-data-deliverables"
-            >
-              <h2 class="guided--text-sub-step">
-                Enter the milestones(s) for your award:
-              </h2>
-              <label class="guided--label-accordion-field"
-                >Enter the milestone(s):
-              </label>
-              <input
-                id="guided-tagify-submission-milestone-tags"
-                name="milestone-tags"
-                placeholder="Type here and hit 'Enter' after each keyword."
-                value=""
-                autofocus
-              />
-              <h2
-                class="guided--text-sub-step"
-                id="completion-date-instructional-text"
-              >
-                Select the completion date for your award:
-              </h2>
-              <label class="guided--label-accordion-field"
-                >Completion date:
-              </label>
-              <div class="demo-controls-body" style="width: 90%">
-                <div class="ui input modified">
-                  <select id="guided-submission-completion-date">
-                    <option disabled selected hidden>Select an option</option>
-                    <option
-                      id="guided-date-entry-pseudo-parent"
-                      value="Enter my own date"
-                    >
-                      Enter my own date
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div
-              class="guided--panel hidden"
-              id="guided-div-submission-accordion"
-            >
-              <div class="ui styled fluid accordion guided--accordion">
-                <div class="title active">
-                  <i class="dropdown icon active"></i>Award and milestone
-                  information
-                </div>
-                <div class="content active">
-                  <div class="guided--accordion-field-container">
-                    <div
-                      class="guided--accordion-field"
-                      id="SPARC-award-container"
-                    ></div>
-                    <div class="guided--accordion-field"></div>
-                    <div class="guided--accordion-field"></div>
-                  </div>
-                </div>
-              </div>
-              <button
-                id="guided-generate-submission-file"
-                class="btn_animated"
-                style="width: 200px; border: none !important"
-              >
-                Save submission metadata
-              </button>
-            </div>
-            <!--
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">SPARC dataset structure</h1>
               <p class="guided--help-text">
@@ -640,7 +383,7 @@
                   </div>
                 </div>
               </div>
-            </div>-->
+            </div>
           </div>
           <div
             id="guided-subjects-folder-tab"
@@ -1704,15 +1447,19 @@
           <div class="guided--capsule-container">
             <div
               class="guided--capsule"
+              id="guided-airtable-award-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-create-submission-metadata-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
               id="guided-create-subjects-metadata-capsule"
             ></div>
             <div
               class="guided--capsule"
               id="guided-create-samples-metadata-capsule"
-            ></div>
-            <div
-              class="guided--capsule"
-              id="guided-create-submission-metadata-capsule"
             ></div>
             <div
               class="guided--capsule"
@@ -1726,6 +1473,191 @@
               class="guided--capsule"
               id="guided-create-changes-metadata-capsule"
             ></div>
+          </div>
+          <div class="guided--panel hidden" id="guided-airtable-award-tab">
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">
+                Do you have an Airtable account you would like to import award
+                information from?
+              </h2>
+              <p class="guided--help-text small" style="margin-bottom: 2px">
+                Importing your award information from Airtable is recommended as
+                it ensures the Award number entered into your submission
+                metadata is correct.
+              </p>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-div-SPARC-award-import"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-question="guided-section-div-data-deliverables"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-div-SPARC-award-import"
+            >
+              <button
+                class="ui primary button"
+                style="background-color: var(--color-light-green) !important"
+                onclick="helpSPARCAward('submission', 'guided')"
+              >
+                Import award information from Airtable
+              </button>
+              <div
+                class="guided--panel hidden mt-md"
+                id="guided-div-imported-SPARC-award"
+              >
+                <label class="guided--label-accordion-field w-100"
+                  >Imported SPARC Award number</label
+                >
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="guided-input-submission-sparc-award-import"
+                    disabled
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="guided--panel hidden"
+            id="guided-create-submission-metadata-tab"
+          >
+            <div
+              class="guided--section"
+              id="guided-section-div-data-deliverables"
+            >
+              <h2 class="guided--text-sub-step">
+                Do you have a data deliverables document you would like to
+                import award information from?
+              </h2>
+              <p class="guided--help-text small" style="margin-bottom: 2px">
+                <b>recommended if available</b> A data deliverables document is
+                a file that contains data pertaining to your project's
+                milestones.
+              </p>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-div-import-data-deliverables"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-question="guided-div-submission-accordion"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-div-import-data-deliverables"
+            >
+              <button
+                class="ui primary button"
+                style="background-color: var(--color-light-green) !important"
+                onclick="guidedHelpMilestoneSubmission()"
+              >
+                Import data deliverables
+              </button>
+              <div
+                class="guided--panel hidden"
+                id="guided-div-data-deliverables-import"
+              >
+                <h2 class="guided--text-sub-step">
+                  Select the data deliverables
+                </h2>
+                <div class="space-between w-100">
+                  <div class="ui form">
+                    <div
+                      class="grouped fields"
+                      id="guided-milestone-checkbox-container"
+                    >
+                      <label class="guided--form-label med text-left"
+                        >Milestones</label
+                      >
+                      <div class="field">
+                        <div class="ui checkbox">
+                          <input
+                            type="checkbox"
+                            name="milestone"
+                            onclick="logic($(this))"
+                          />
+                          <label>Once a week</label>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="ui checkbox">
+                          <input type="checkbox" name="milestone" />
+                          <label>2-3 times a week</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ui form">
+                    <div
+                      class="grouped fields"
+                      id="guided-completion-date-checkbox-container"
+                    >
+                      <label class="guided--form-label med text-left"
+                        >Dates</label
+                      >
+                      <div class="field">
+                        <div class="ui checkbox">
+                          <input type="checkbox" name="completion-date" />
+                          <label>Once a week</label>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="ui checkbox">
+                          <input type="checkbox" name="completion-date" />
+                          <label>2-3 times a week</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-div-submission-accordion"
+            >
+              <div class="ui styled fluid accordion guided--accordion">
+                <div class="title active">
+                  <i class="dropdown icon active"></i>Award and milestone
+                  information
+                </div>
+                <div class="content active">
+                  <div class="guided--accordion-field-container">
+                    <div
+                      class="guided--accordion-field"
+                      id="SPARC-award-container"
+                    ></div>
+                    <div class="guided--accordion-field"></div>
+                    <div class="guided--accordion-field"></div>
+                  </div>
+                </div>
+              </div>
+              <button
+                id="guided-generate-submission-file"
+                class="btn_animated"
+                style="width: 200px; border: none !important"
+              >
+                Save submission metadata
+              </button>
+            </div>
           </div>
           <div
             id="guided-create-subjects-metadata-tab"
@@ -1778,12 +1710,7 @@
           >
             <div id="sample-metadata-tables-container"></div>
           </div>
-          <div
-            id="guided-create-submission-metadata-tab"
-            class="guided--panel hidden"
-          >
-            <!--asdf-->
-          </div>
+
           <div
             id="guided-create-description-metadata-tab"
             class="guided--panel hidden"
