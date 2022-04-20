@@ -1122,6 +1122,9 @@ guidedSetImportedSPARCAward = (awardString) => {
   document
     .getElementById("guided-div-imported-SPARC-award")
     .classList.remove("hidden");
+  //change the button text of guided-button-import-airtable-award
+  document.getElementById("guided-button-import-airtable-award").innerHTML =
+    "Edit award information from Airtable";
 };
 
 async function helpSPARCAward(filetype, curationMode) {

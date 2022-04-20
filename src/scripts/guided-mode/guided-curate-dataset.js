@@ -4902,19 +4902,7 @@ $(document).ready(() => {
   });
 
   //tagify initializations
-  var guidedSubmissionTagsInput = document.getElementById(
-    "guided-tagify-submission-milestone-tags"
-  );
-  const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
-    duplicates: false,
-    delimiters: null,
-    dropdown: {
-      classname: "color-blue",
-      maxItems: Infinity,
-      enabled: 0,
-      closeOnSelect: true,
-    },
-  });
+
   const guidedOtherFundingSourcesInput = document.getElementById(
     "guided-ds-other-funding"
   );

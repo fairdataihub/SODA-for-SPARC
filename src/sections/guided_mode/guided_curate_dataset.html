@@ -1492,10 +1492,7 @@
                 >
                   Yes
                 </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-section-div-data-deliverables"
-                >
+                <button class="ui negative basic button guided--radio-button">
                   No
                 </button>
               </div>
@@ -1506,6 +1503,7 @@
             >
               <button
                 class="ui primary button"
+                id="guided-button-import-airtable-award"
                 style="background-color: var(--color-light-green) !important"
                 onclick="helpSPARCAward('submission', 'guided')"
               >
@@ -1641,12 +1639,81 @@
                 </div>
                 <div class="content active">
                   <div class="guided--accordion-field-container">
-                    <div
-                      class="guided--accordion-field"
-                      id="SPARC-award-container"
-                    ></div>
-                    <div class="guided--accordion-field"></div>
-                    <div class="guided--accordion-field"></div>
+                    <div class="guided--accordion-field">
+                      <label class="guided--label-accordion-field"
+                        >SPARC Award number
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="SPARC award associated with the dataset."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i
+                      ></label>
+                      <div class="ui input modified">
+                        <input
+                          class="guided-award-and-milestone-information"
+                          type="text"
+                          id="guided-submission-sparc-award"
+                          placeholder="Type here..."
+                        />
+                      </div>
+                    </div>
+                    <div class="guided--accordion-field">
+                      <label class="guided--label-accordion-field"
+                        >Enter the milestone(s):
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+                                  <br/><br/>
+                                  Hit 'Enter' to register it."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </label>
+                      <input
+                        class="guided-award-and-milestone-information"
+                        id="guided-tagify-submission-milestone-tags"
+                        name="milestone-tags"
+                        placeholder="Tye here and hit 'Enter' after each keyword."
+                        value=""
+                        autofocus
+                      />
+                    </div>
+                    <div class="guided--accordion-field">
+                      <label class="guided--label-accordion-field"
+                        >Completion date:
+                        <i
+                          class="fas fa-info-circle popover-tooltip"
+                          data-content="Enter the completion date for your milestone(s) specified above."
+                          rel="popover"
+                          data-placement="right"
+                          data-html="true"
+                          data-trigger="hover"
+                        ></i>
+                      </label>
+                      <div class="demo-controls-body" style="width: 90%">
+                        <div class="ui input modified">
+                          <select
+                            class="guided-award-and-milestone-information"
+                            id="guided-submission-completion-date"
+                          >
+                            <option disabled selected hidden>
+                              Select an option
+                            </option>
+                            <option
+                              id="guided-date-entry-pseudo-parent"
+                              value="Enter my own date"
+                            >
+                              Enter my own date
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

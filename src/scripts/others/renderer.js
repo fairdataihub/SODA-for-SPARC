@@ -922,6 +922,21 @@ var guidedProgressFilePath = path.join(
 );
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 
+//initialize Tagify input field for guided submission milestones
+const guidedSubmissionTagsInput = document.getElementById(
+  "guided-tagify-submission-milestone-tags"
+);
+const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
+  duplicates: false,
+  delimiters: null,
+  dropdown: {
+    classname: "color-blue",
+    maxItems: Infinity,
+    enabled: 0,
+    closeOnSelect: true,
+  },
+});
+
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
