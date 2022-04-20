@@ -63,11 +63,22 @@ const validateLocalDataset = async () => {
     );
 
     // track that a local validation succeeded
-    ipcRenderer.send("track-event", "Success", "Prepare Datasets - Validate your dataset - Local", "Local Validation", 1)
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Validate your dataset - Local",
+      "Local Validation",
+      1
+    );
 
-    // track that a validation (local or pennsieve) succeeded to help with tracking total dataset validation successes
-    ipcRenderer.send("track-event", "Success", "Prepare Datasets - Validate your dataset", "Dataset Validation", 1)
-
+    // track that a validation (local or pennsieve) succeeded
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Validate your dataset",
+      "Dataset Validation",
+      1
+    );
   } catch (err) {
     // hide the validation errors table
     document.querySelector("#validation-errors-container").style.visiility =
