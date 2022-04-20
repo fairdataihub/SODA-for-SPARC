@@ -6500,19 +6500,23 @@ ipcRenderer.on(
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                   action = "replace";
-                  if(irregularFolderArray.length > 0) {
-                    for(let i = 0; i < irregularFolderArray.length; i++) {
-                      renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-                      replaced.push(renamedFolderName)
+                  if (irregularFolderArray.length > 0) {
+                    for (let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = replaceIrregularFolders(
+                        irregularFolderArray[i]
+                      );
+                      replaced.push(renamedFolderName);
                     }
                     console.log(replaced);
                   }
                 } else if (result.isDenied) {
                   action = "remove";
-                  if(irregularFolderArray.length > 0) {
-                    for(let i = 0; i < irregularFolderArray.length; i++) {
-                      renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-                      replaced.push(renamedFolderName)
+                  if (irregularFolderArray.length > 0) {
+                    for (let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = removeIrregularFolders(
+                        irregularFolderArray[i]
+                      );
+                      replaced.push(renamedFolderName);
                     }
                     console.log(replaced);
                   }
@@ -6530,7 +6534,7 @@ ipcRenderer.on(
                 ).attr("placeholder");
                 //PASS IRREGULAR FOLDER ARRAY AS WELL
                 // console.log("before invoking");
-                console.log(root_folder_path)
+                console.log(root_folder_path);
                 // console.log(irregularFolderArray);
                 let uhh = performance.now();
                 client.invoke(
@@ -6542,15 +6546,24 @@ ipcRenderer.on(
                   (error, res) => {
                     if (error) {
                       let uhhh_end = performance.now();
-                      console.log(`Duration of python side: ${uhhh_end - uhh} milliseconds`);
+                      console.log(
+                        `Duration of python side: ${
+                          uhhh_end - uhh
+                        } milliseconds`
+                      );
                       console.log(error);
                     } else {
                       let uhhh_end = performance.now();
-                      console.log(`Duration of python side: ${uhhh_end - uhh} milliseconds`);
+                      console.log(
+                        `Duration of python side: ${
+                          uhhh_end - uhh
+                        } milliseconds`
+                      );
                       console.log("should be successful here");
                       console.log(res);
                       sodaJSONObj = res;
-                      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                      datasetStructureJSONObj =
+                        sodaJSONObj["dataset-structure"];
                       populate_existing_folders(datasetStructureJSONObj);
                       populate_existing_metadata(sodaJSONObj);
                       $("#para-continue-location-dataset-getting-started").text(
@@ -6566,13 +6579,15 @@ ipcRenderer.on(
                         Destinations.LOCAL
                       );
                     }
-                });
+                  }
+                );
                 //create setInterval variable that will keep track of the iterated items
                 let local_progress = setInterval(progressReport, 1000);
                 function progressReport() {
                   client.invoke(
-                    "api_monitor_local_json_progress", (error, res) => {
-                      if(error) {
+                    "api_monitor_local_json_progress",
+                    (error, res) => {
+                      if (error) {
                         console.log(error);
                       } else {
                         console.log(res);
@@ -6584,7 +6599,7 @@ ipcRenderer.on(
                     }
                   );
                   console.log(finished);
-                  if(finished === 1) {
+                  if (finished === 1) {
                     console.log("DONE" + finished);
                     clearInterval(local_progress);
                   }
@@ -6609,12 +6624,20 @@ ipcRenderer.on(
                 (error, res) => {
                   if (error) {
                     let uhhh_end = performance.now();
-                    console.log(`Duration of python side: ${uhhh_end - time_start} milliseconds`);
+                    console.log(
+                      `Duration of python side: ${
+                        uhhh_end - time_start
+                      } milliseconds`
+                    );
                     console.log(error);
                     console.log("UHHHHH");
                   } else {
-                    let end_time = performance.now()
-                    console.log(`Duration of python side: ${end_time - time_start} milliseconds`);
+                    let end_time = performance.now();
+                    console.log(
+                      `Duration of python side: ${
+                        end_time - time_start
+                      } milliseconds`
+                    );
                     console.log("should be successfull here");
                     console.log(res);
                     sodaJSONObj = res;
@@ -6634,23 +6657,25 @@ ipcRenderer.on(
                       Destinations.LOCAL
                     );
                   }
-              });
+                }
+              );
 
               let percentage_amount = 0;
               let local_progress = setInterval(progressReport, 1000);
               function progressReport() {
                 client.invoke(
-                  "api_monitor_local_json_progress", (error, res) => {
-                    if(error) {
+                  "api_monitor_local_json_progress",
+                  (error, res) => {
+                    if (error) {
                       console.log(error);
                     } else {
                       // local_json_progress, total_amount_of_items, progress_percentage, completed_progress
                       console.log(res);
-                      console.log(res[0]);  //amount of items processed
-                      console.log(res[1]);  //total items
-                      console.log(res[2]);  //progress percetage
+                      console.log(res[0]); //amount of items processed
+                      console.log(res[1]); //total items
+                      console.log(res[2]); //progress percetage
                       percentage_amount = res[2].toFixed(2);
-                      finished = res[3]
+                      finished = res[3];
                       // console.log(res[3]);  //completed progress (1 if done, 0 if not)
                     }
                   }
@@ -6658,7 +6683,7 @@ ipcRenderer.on(
                 UI_show = document.getElementById("progress_percentage");
                 UI_show.innerText = percentage_amount + "%";
                 console.log(finished);
-                if(finished === 1) {
+                if (finished === 1) {
                   console.log("DONE!" + finished);
                   clearInterval(local_progress);
                 }
