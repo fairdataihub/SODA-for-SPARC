@@ -2462,20 +2462,12 @@ $(document).ready(() => {
       }
     });
   });
+
   $("#guided-button-add-SPARC-award-manually").on("click", () => {
-    const sparcAwardInput = document.getElementById(
-      "guided-submission-sparc-award"
-    );
-    document.getElementById("SPARC-award-instructional-text").innerHTML =
-      "Enter your SPARC award below";
-    sparcAwardInput.value = "";
-    sparcAwardInput.disabled = false;
-    sparcAwardInput.focus();
+    document
+      .getElementById("guided-div-data-deliverables")
+      .classList.remove("hidden");
   });
-  $("#guided-button-add-data-deliverables-award-manually").on(
-    "click",
-    () => {}
-  );
 
   $("#guided-button-samples-not-same").on("click", () => {
     $("#guided-button-generate-subjects-table").show();

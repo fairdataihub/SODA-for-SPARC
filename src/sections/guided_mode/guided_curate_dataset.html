@@ -273,7 +273,7 @@
               </p>
               <p class="guided--help-text">
                 The submission file is <b>for internal use only</b> and will not
-                be submitted when your dataset i8s published.
+                be submitted when your dataset is published.
               </p>
             </div>
             <div class="guided--section">
@@ -289,13 +289,13 @@
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-import-SPARC-award-from-airtable"
+                  data-next-question="guided-div-SPARC-award-import"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-div-SPARC-award"
+                  data-next-question="guided-div-SPARC-award-manual"
                   id="guided-button-add-SPARC-award-manually"
                 >
                   No
@@ -304,7 +304,7 @@
             </div>
             <div
               class="guided--section hidden"
-              id="guided-import-SPARC-award-from-airtable"
+              id="guided-div-SPARC-award-import"
             >
               <button
                 class="ui primary button"
@@ -313,29 +313,45 @@
               >
                 Import award information from Airtable
               </button>
-            </div>
-            <div class="guided--section hidden" id="guided-div-SPARC-award">
-              <h2
-                class="guided--text-sub-step"
-                id="SPARC-award-instructional-text"
+              <div
+                class="guided--panel hidden"
+                id="guided-div-imported-SPARC-award"
               >
-                Your imported SPARC Award number:
-              </h2>
-              <label class="guided--label-accordion-field w-100"
-                >SPARC Award number</label
-              >
-              <div class="ui input modified">
-                <input
-                  class="guided-award-and-milestone-information"
-                  type="text"
-                  id="guided-submission-sparc-award"
-                  placeholder="Type here..."
-                />
+                <label class="guided--label-accordion-field w-100"
+                  >Imported SPARC Award number</label
+                >
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="guided-input-submission-sparc-award-import"
+                    disabled
+                  />
+                </div>
               </div>
             </div>
             <div
               class="guided--section hidden"
-              id="guided-div-data-deliverables"
+              id="guided-div-SPARC-award-manual"
+            >
+              <h2 class="guided--text-sub-step">
+                Enter your SPARC Award number below
+              </h2>
+              <div class="ui input modified">
+                <input
+                  type="text"
+                  id="guided-submission-sparc-award-manual"
+                  placeholder="Enter SPARC Award number here..."
+                />
+              </div>
+              <p class="guided--text-input-instructions">
+                Enter a paragraph that explains the primary conclusion of your
+                study. We will enter the title for this section to your readme
+                for you.<br />Refrain from using markdown.
+              </p>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-section-div-data-deliverables"
             >
               <h2 class="guided--text-sub-step">
                 Do you have a data deliverables document you would like to
@@ -356,7 +372,7 @@
                 <button
                   class="ui negative basic button guided--radio-button"
                   id="guided-button-add-data-deliverables-award-manually"
-                  data-next-question="guided-div-data-deliverables-form"
+                  data-next-question="guided-div-data-deliverables"
                 >
                   No
                 </button>
@@ -373,22 +389,98 @@
               >
                 Import data deliverables
               </button>
+              <div
+                class="guided--panel hidden"
+                id="guided-div-imported-data-deliverables"
+              >
+                <h2 class="guided--text-sub-step">
+                  Select the data deliverables
+                </h2>
+                <div class="space-between w-100">
+                  <div class="ui form">
+                    <div class="grouped fields">
+                      <label class="guided--form-label med text-left"
+                        >Milestones</label
+                      >
+                      <div class="field">
+                        <div class="ui radio checkbox">
+                          <input
+                            type="radio"
+                            name="example2"
+                            checked="checked"
+                          />
+                          <label>Once a week</label>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="ui radio checkbox">
+                          <input type="radio" name="example2" />
+                          <label>2-3 times a week</label>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="ui radio checkbox">
+                          <input type="radio" name="example2" />
+                          <label>Once a day</label>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="ui radio checkbox">
+                          <input type="radio" name="example2" />
+                          <label>Twice a day</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ui form">
+                    <div class="grouped fields">
+                      <label class="guided--form-label med text-left"
+                        >Dates</label
+                      >
+                      <div class="field">
+                        <div class="ui radio checkbox">
+                          <input
+                            type="radio"
+                            name="example2"
+                            checked="checked"
+                          />
+                          <label>Once a week</label>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="ui radio checkbox">
+                          <input type="radio" name="example2" />
+                          <label>2-3 times a week</label>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="ui radio checkbox">
+                          <input type="radio" name="example2" />
+                          <label>Once a day</label>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="ui radio checkbox">
+                          <input type="radio" name="example2" />
+                          <label>Twice a day</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div
               class="guided--section hidden"
-              id="guided-div-data-deliverables-form"
+              id="guided-div-data-deliverables"
             >
-              <h2
-                class="guided--text-sub-step"
-                id="milestones-instructional-text"
-              >
+              <h2 class="guided--text-sub-step">
                 Enter the milestones(s) for your award:
               </h2>
               <label class="guided--label-accordion-field"
                 >Enter the milestone(s):
               </label>
               <input
-                class="guided-award-and-milestone-information"
                 id="guided-tagify-submission-milestone-tags"
                 name="milestone-tags"
                 placeholder="Type here and hit 'Enter' after each keyword."
@@ -406,10 +498,7 @@
               </label>
               <div class="demo-controls-body" style="width: 90%">
                 <div class="ui input modified">
-                  <select
-                    class="guided-award-and-milestone-information"
-                    id="guided-submission-completion-date"
-                  >
+                  <select id="guided-submission-completion-date">
                     <option disabled selected hidden>Select an option</option>
                     <option
                       id="guided-date-entry-pseudo-parent"

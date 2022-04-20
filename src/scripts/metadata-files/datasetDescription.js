@@ -1115,18 +1115,21 @@ function addAdditionalLinktoTableDD(
     rowModificationIcons);
 }
 
-guidedSetAndDisableSPARCAward = (awardString) => {
+guidedSetImportedSPARCAward = (awardString) => {
   guidedSubmissionTagsTagify.removeAllTags();
+  $("#guided-input-submission-sparc-award-import").val(awardString);
   $("#guided-submission-sparc-award").val(awardString);
   $("#guided-ds-description-award-input").val(awardString);
   document.getElementById("guided-submission-completion-date").value = "";
-  document.getElementById("guided-submission-sparc-award").disabled = true;
-  document.getElementById("SPARC-award-instructional-text").innerHTML =
-    "Your imported SPARC award:";
-  $("#guided-div-SPARC-award").css("display", "flex");
-  //show the data deliverables div after SPARC award importation
+  const dataDeliverablesElement = document.getElementById(
+    "guided-section-div-data-deliverables"
+  );
+  dataDeliverablesElement.classList.remove("hidden");
+  dataDeliverablesElement.scrollIntoView({
+    behavior: "smooth",
+  });
   document
-    .getElementById("guided-div-data-deliverables")
+    .getElementById("guided-div-imported-SPARC-award")
     .classList.remove("hidden");
 };
 
@@ -1275,7 +1278,7 @@ async function helpSPARCAward(filetype, curationMode) {
               }
 
               if (curationMode === "guided") {
-                guidedSetAndDisableSPARCAward(award);
+                guidedSetImportedSPARCAward(award);
 
                 loadContributorInfofromAirtable(award);
               }
@@ -1291,7 +1294,7 @@ async function helpSPARCAward(filetype, curationMode) {
           }
 
           if (curationMode === "guided") {
-            guidedSetAndDisableSPARCAward(award);
+            guidedSetImportedSPARCAward(award);
             loadContributorInfofromAirtable(award);
           }
         }
@@ -1349,10 +1352,8 @@ function changeAward(award, curationMode) {
     $("#ds-description-award-input").val(award);
     $("#submission-sparc-award").val(award);
   }
-  console.log(award);
   if (curationMode === "guided") {
-    $("#guided-ds-description-award-input").val(award);
-    $("#guided-submission-sparc-award").val(award);
+    alert("changing award");
   }
   loadContributorInfofromAirtable(award);
 }

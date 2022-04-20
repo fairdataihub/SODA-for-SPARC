@@ -186,12 +186,6 @@ guidedSetAndDisableMilestoneData = () => {
   guidedSubmissionTagsTagify.removeAllTags();
   $("#guided-submission-sparc-award").val(awardString);
   $("#guided-ds-description-award-input").val(awardString);
-  document.getElementById("guided-submission-completion-date").value = "";
-  document.getElementById("guided-submission-sparc-award").disabled = true;
-  document.getElementById("SPARC-award-instructional-text").innerHTML =
-    "Your imported SPARC award:";
-  $("#guided-div-SPARC-award").css("display", "flex");
-  //show the data deliverables div after SPARC award importation
   document
     .getElementById("guided-div-data-deliverables")
     .classList.remove("hidden");
@@ -220,7 +214,7 @@ const guidedHelpMilestoneSubmission = () => {
     Swal.close();
 
     const filepath = result.value.filepath;
-    var award = $("#guided-submission-sparc-award").val().trim();
+    var award = $("#guided-submission-sparc-award");
     client.invoke("api_extract_milestone_info", filepath, (error, res) => {
       if (error) {
         var emessage = userError(error);
@@ -281,9 +275,9 @@ const guidedHelpMilestoneSubmission = () => {
           );
         }
         const guidedDataDeliverablesForm = document.getElementById(
-          "guided-div-data-deliverables-form"
+          "guided-div-imported-data-deliverables"
         );
-        guidedDataDeliverablesForm.style.display = "flex";
+        guidedDataDeliverablesForm.classList.remove("hidden");
         guidedDataDeliverablesForm.scrollIntoView({ behavior: "smooth" });
       }
     });
