@@ -76,15 +76,7 @@ from prepare_metadata import (
     delete_manifest_dummy_folders,
 )
 
-<<<<<<< HEAD
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders, create_json_object_backend, monitor_local_json_progress
-=======
-from organize_datasets import (
-    generate_dataset_locally,
-    bf_get_dataset_files_folders,
-    create_json_object_backend,
-)
->>>>>>> a5f7420c423e6c0c4907dd1bd4a4b8099e3d8cc4
 
 import sys
 import zerorpc
@@ -574,7 +566,6 @@ class SodaApi(object):
         return text
 
     ### Creates json structure for local datasets
-<<<<<<< HEAD
     def api_create_json_object_backend(self, soda_json_structure, root_folder_path, irregularFolders, replaced):
         try:
             return create_json_object_backend(soda_json_structure, root_folder_path, irregularFolders, replaced)
@@ -584,15 +575,6 @@ class SodaApi(object):
     def api_monitor_local_json_progress(self):
         try:
             return monitor_local_json_progress()
-=======
-    def api_create_json_object_backend(
-        self, soda_json_structure, root_folder_path, irregularFolders
-    ):
-        try:
-            return create_json_object_backend(
-                soda_json_structure, root_folder_path, irregularFolders
-            )
->>>>>>> a5f7420c423e6c0c4907dd1bd4a4b8099e3d8cc4
         except Exception as e:
             raise e
 
