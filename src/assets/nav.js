@@ -28,7 +28,9 @@ function handleSectionTrigger(event) {
   event.target.classList.add("is-selected");
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
+
   // Render guided mode resume progress cards if guided mode section is chosen
+  // and move the folder structuring elements to guided mode
   if (sectionId === "guided_mode-section") {
     guidedPrepareHomeScreen();
     organizeDSglobalPath = document.getElementById("guided-input-global-path");
@@ -36,6 +38,8 @@ function handleSectionTrigger(event) {
       $("#guided-folder-structure-container")
     );
   }
+  // move the folder structuring elements back to free-form mode if they were borrowed
+  // for guided mode
   if (sectionId === "main_tabs-section") {
     organizeDSglobalPath = document.getElementById("input-global-path");
     $(".shared-folder-structure-element").appendTo(

@@ -295,8 +295,7 @@
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-question="guided-div-SPARC-award-manual"
-                  id="guided-button-add-SPARC-award-manually"
+                  data-next-question="guided-section-div-data-deliverables"
                 >
                   No
                 </button>
@@ -329,26 +328,7 @@
                 </div>
               </div>
             </div>
-            <div
-              class="guided--section hidden"
-              id="guided-div-SPARC-award-manual"
-            >
-              <h2 class="guided--text-sub-step">
-                Enter your SPARC Award number below
-              </h2>
-              <div class="ui input modified">
-                <input
-                  type="text"
-                  id="guided-submission-sparc-award-manual"
-                  placeholder="Enter SPARC Award number here..."
-                />
-              </div>
-              <p class="guided--text-input-instructions">
-                Enter a paragraph that explains the primary conclusion of your
-                study. We will enter the title for this section to your readme
-                for you.<br />Refrain from using markdown.
-              </p>
-            </div>
+
             <div
               class="guided--section hidden"
               id="guided-section-div-data-deliverables"
@@ -371,8 +351,7 @@
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  id="guided-button-add-data-deliverables-award-manually"
-                  data-next-question="guided-div-data-deliverables"
+                  data-next-question="guided-div-submission-accordion"
                 >
                   No
                 </button>
@@ -510,7 +489,10 @@
                 </div>
               </div>
             </div>
-            <div class="guided--panel hidden">
+            <div
+              class="guided--panel hidden"
+              id="guided-div-submission-accordion"
+            >
               <div class="ui styled fluid accordion guided--accordion">
                 <div class="title active">
                   <i class="dropdown icon active"></i>Award and milestone

@@ -182,14 +182,6 @@ function helpMilestoneSubmission() {
   });
 }
 
-guidedSetAndDisableMilestoneData = () => {
-  guidedSubmissionTagsTagify.removeAllTags();
-  $("#guided-submission-sparc-award").val(awardString);
-  $("#guided-ds-description-award-input").val(awardString);
-  document
-    .getElementById("guided-div-data-deliverables")
-    .classList.remove("hidden");
-};
 const guidedHelpMilestoneSubmission = () => {
   var filepath = "";
   var informationJson = {};
@@ -275,7 +267,7 @@ const guidedHelpMilestoneSubmission = () => {
           );
         }
         const guidedDataDeliverablesForm = document.getElementById(
-          "guided-div-imported-data-deliverables"
+          "guided-div-imported-data-deliverables-import"
         );
         guidedDataDeliverablesForm.classList.remove("hidden");
         guidedDataDeliverablesForm.scrollIntoView({ behavior: "smooth" });

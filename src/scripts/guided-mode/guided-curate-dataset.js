@@ -2448,7 +2448,7 @@ $(document).ready(() => {
     if (selectedButton.data("next-question")) {
       nextQuestionID = selectedButton.data("next-question");
       nextQuestionElement = $(`#${nextQuestionID}`);
-      nextQuestionElement.css("display", "flex");
+      nextQuestionElement.removeClass("hidden");
       nextQuestionElement[0].scrollIntoView({
         behavior: "smooth",
       });
@@ -2458,15 +2458,9 @@ $(document).ready(() => {
       console.log($(this));
       if ($(this).data("next-question")) {
         nextQuestionID = $(this).data("next-question");
-        $(`#${nextQuestionID}`).hide();
+        $(`#${nextQuestionID}`).addClass("hidden");
       }
     });
-  });
-
-  $("#guided-button-add-SPARC-award-manually").on("click", () => {
-    document
-      .getElementById("guided-div-data-deliverables")
-      .classList.remove("hidden");
   });
 
   $("#guided-button-samples-not-same").on("click", () => {
