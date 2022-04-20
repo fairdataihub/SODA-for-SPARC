@@ -6472,6 +6472,8 @@ ipcRenderer.on(
           if (valid_dataset == true) {
             var action = "";
             irregularFolderArray = [];
+            var replaced = [];
+            let finished = 0;
             detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
             var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
             if (irregularFolderArray.length > 0) {
@@ -6494,13 +6496,26 @@ ipcRenderer.on(
                 },
                 footer: footer,
               }).then((result) => {
-                console.log(typeof irregularFolderArray);
-                console.log(irregularFolderArray);
+                // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                   action = "replace";
+                  if(irregularFolderArray.length > 0) {
+                    for(let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
+                      replaced.push(renamedFolderName)
+                    }
+                    console.log(replaced);
+                  }
                 } else if (result.isDenied) {
                   action = "remove";
+                  if(irregularFolderArray.length > 0) {
+                    for(let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
+                      replaced.push(renamedFolderName)
+                    }
+                    console.log(replaced);
+                  }
                 } else {
                   document.getElementById(
                     "input-destination-getting-started-locally"
@@ -6514,42 +6529,66 @@ ipcRenderer.on(
                   "#input-destination-getting-started-locally"
                 ).attr("placeholder");
                 //PASS IRREGULAR FOLDER ARRAY AS WELL
-                console.log("before invoking");
+                // console.log("before invoking");
                 console.log(root_folder_path)
-                console.log(irregularFolderArray);
+                // console.log(irregularFolderArray);
                 let uhh = performance.now();
                 client.invoke(
                   "api_create_json_object_backend",
                   sodaJSONObj,
                   root_folder_path,
                   irregularFolderArray,
+                  replaced,
                   (error, res) => {
                     if (error) {
+                      let uhhh_end = performance.now();
+                      console.log(`Duration of python side: ${uhhh_end - uhh} milliseconds`);
                       console.log(error);
                     } else {
+                      let uhhh_end = performance.now();
+                      console.log(`Duration of python side: ${uhhh_end - uhh} milliseconds`);
                       console.log("should be successful here");
                       console.log(res);
                       sodaJSONObj = res;
-                      let uhhh_end = performance.now();
-                      console.log(`Duration of python side: ${uhhh_end - uhh} milliseconds`);
+                      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                      populate_existing_folders(datasetStructureJSONObj);
+                      populate_existing_metadata(sodaJSONObj);
+                      $("#para-continue-location-dataset-getting-started").text(
+                        "Please continue below."
+                      );
+                      $("#nextBtn").prop("disabled", false);
+                      // log the success to analytics
+                      logMetadataForAnalytics(
+                        "Success",
+                        PrepareDatasetsAnalyticsPrefix.CURATE,
+                        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                        Actions.EXISTING,
+                        Destinations.LOCAL
+                      );
                     }
                 });
-                //create_json_object(action, sodaJSONObj, root_folder_path);
-                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-                populate_existing_folders(datasetStructureJSONObj);
-                populate_existing_metadata(sodaJSONObj);
-                $("#para-continue-location-dataset-getting-started").text(
-                  "Please continue below."
-                );
-                $("#nextBtn").prop("disabled", false);
-                // log the success to analytics
-                logMetadataForAnalytics(
-                  "Success",
-                  PrepareDatasetsAnalyticsPrefix.CURATE,
-                  AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                  Actions.EXISTING,
-                  Destinations.LOCAL
-                );
+                //create setInterval variable that will keep track of the iterated items
+                let local_progress = setInterval(progressReport, 1000);
+                function progressReport() {
+                  client.invoke(
+                    "api_monitor_local_json_progress", (error, res) => {
+                      if(error) {
+                        console.log(error);
+                      } else {
+                        console.log(res);
+                        console.log(res[0]);
+                        console.log(res[1]);
+                        console.log(res[2]);
+                        finished = res[3];
+                      }
+                    }
+                  );
+                  console.log(finished);
+                  if(finished === 1) {
+                    console.log("DONE" + finished);
+                    clearInterval(local_progress);
+                  }
+                }
               });
             } else {
               action = "";
@@ -6558,7 +6597,7 @@ ipcRenderer.on(
                 "#input-destination-getting-started-locally"
               ).attr("placeholder");
               console.log("before invoking");
-              console.log(root_folder_path)
+              console.log(root_folder_path);
               console.log(irregularFolderArray);
               let time_start = performance.now();
               client.invoke(
@@ -6566,38 +6605,64 @@ ipcRenderer.on(
                 sodaJSONObj,
                 root_folder_path,
                 irregularFolderArray,
+                replaced,
                 (error, res) => {
                   if (error) {
+                    let uhhh_end = performance.now();
+                    console.log(`Duration of python side: ${uhhh_end - time_start} milliseconds`);
                     console.log(error);
                     console.log("UHHHHH");
                   } else {
+                    let end_time = performance.now()
+                    console.log(`Duration of python side: ${end_time - time_start} milliseconds`);
                     console.log("should be successfull here");
                     console.log(res);
                     sodaJSONObj = res;
-                    let end_time = performance.now()
-                    console.log(`Duration of python side: ${end_time - time_start} milliseconds`);
+                    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                    populate_existing_folders(datasetStructureJSONObj);
+                    populate_existing_metadata(sodaJSONObj);
+                    $("#para-continue-location-dataset-getting-started").text(
+                      "Please continue below."
+                    );
+                    $("#nextBtn").prop("disabled", false);
+                    // log the success to analytics
+                    logMetadataForAnalytics(
+                      "Success",
+                      PrepareDatasetsAnalyticsPrefix.CURATE,
+                      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                      Actions.EXISTING,
+                      Destinations.LOCAL
+                    );
                   }
               });
-              // console.log(sodaJSONObj);
-              // let new_start = performance.now()
-              // // create_json_object(action, sodaJSONObj, root_folder_path);
-              // let end_start = performance.now();
-              // console.log(`Duration of js side: ${end_start - new_start} milliseconds`);
-              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-              populate_existing_folders(datasetStructureJSONObj);
-              populate_existing_metadata(sodaJSONObj);
-              $("#para-continue-location-dataset-getting-started").text(
-                "Please continue below."
-              );
-              $("#nextBtn").prop("disabled", false);
-              // log the success to analytics
-              logMetadataForAnalytics(
-                "Success",
-                PrepareDatasetsAnalyticsPrefix.CURATE,
-                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                Actions.EXISTING,
-                Destinations.LOCAL
-              );
+
+              let percentage_amount = 0;
+              let local_progress = setInterval(progressReport, 1000);
+              function progressReport() {
+                client.invoke(
+                  "api_monitor_local_json_progress", (error, res) => {
+                    if(error) {
+                      console.log(error);
+                    } else {
+                      // local_json_progress, total_amount_of_items, progress_percentage, completed_progress
+                      console.log(res);
+                      console.log(res[0]);  //amount of items processed
+                      console.log(res[1]);  //total items
+                      console.log(res[2]);  //progress percetage
+                      percentage_amount = res[2].toFixed(2);
+                      finished = res[3]
+                      // console.log(res[3]);  //completed progress (1 if done, 0 if not)
+                    }
+                  }
+                );
+                UI_show = document.getElementById("progress_percentage");
+                UI_show.innerText = percentage_amount + "%";
+                console.log(finished);
+                if(finished === 1) {
+                  console.log("DONE!" + finished);
+                  clearInterval(local_progress);
+                }
+              }
             }
           } else {
             Swal.fire({
