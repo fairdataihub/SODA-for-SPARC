@@ -6529,9 +6529,15 @@ ipcRenderer.on(
                   "#input-destination-getting-started-locally"
                 ).attr("placeholder");
                 //PASS IRREGULAR FOLDER ARRAY AS WELL
+<<<<<<< HEAD
                 // console.log("before invoking");
                 console.log(root_folder_path)
                 // console.log(irregularFolderArray);
+=======
+                console.log("before invoking");
+                console.log(root_folder_path);
+                console.log(irregularFolderArray);
+>>>>>>> a5f7420c423e6c0c4907dd1bd4a4b8099e3d8cc4
                 let uhh = performance.now();
                 client.invoke(
                   "api_create_json_object_backend",
@@ -6550,6 +6556,7 @@ ipcRenderer.on(
                       console.log("should be successful here");
                       console.log(res);
                       sodaJSONObj = res;
+<<<<<<< HEAD
                       datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
                       populate_existing_folders(datasetStructureJSONObj);
                       populate_existing_metadata(sodaJSONObj);
@@ -6589,6 +6596,33 @@ ipcRenderer.on(
                     clearInterval(local_progress);
                   }
                 }
+=======
+                      let uhhh_end = performance.now();
+                      console.log(
+                        `Duration of python side: ${
+                          uhhh_end - uhh
+                        } milliseconds`
+                      );
+                    }
+                  }
+                );
+                //create_json_object(action, sodaJSONObj, root_folder_path);
+                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                populate_existing_folders(datasetStructureJSONObj);
+                populate_existing_metadata(sodaJSONObj);
+                $("#para-continue-location-dataset-getting-started").text(
+                  "Please continue below."
+                );
+                $("#nextBtn").prop("disabled", false);
+                // log the success to analytics
+                logMetadataForAnalytics(
+                  "Success",
+                  PrepareDatasetsAnalyticsPrefix.CURATE,
+                  AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                  Actions.EXISTING,
+                  Destinations.LOCAL
+                );
+>>>>>>> a5f7420c423e6c0c4907dd1bd4a4b8099e3d8cc4
               });
             } else {
               action = "";
@@ -6618,6 +6652,7 @@ ipcRenderer.on(
                     console.log("should be successfull here");
                     console.log(res);
                     sodaJSONObj = res;
+<<<<<<< HEAD
                     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
                     populate_existing_folders(datasetStructureJSONObj);
                     populate_existing_metadata(sodaJSONObj);
@@ -6663,6 +6698,37 @@ ipcRenderer.on(
                   clearInterval(local_progress);
                 }
               }
+=======
+                    let end_time = performance.now();
+                    console.log(
+                      `Duration of python side: ${
+                        end_time - time_start
+                      } milliseconds`
+                    );
+                  }
+                }
+              );
+              // console.log(sodaJSONObj);
+              // let new_start = performance.now()
+              // // create_json_object(action, sodaJSONObj, root_folder_path);
+              // let end_start = performance.now();
+              // console.log(`Duration of js side: ${end_start - new_start} milliseconds`);
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              populate_existing_folders(datasetStructureJSONObj);
+              populate_existing_metadata(sodaJSONObj);
+              $("#para-continue-location-dataset-getting-started").text(
+                "Please continue below."
+              );
+              $("#nextBtn").prop("disabled", false);
+              // log the success to analytics
+              logMetadataForAnalytics(
+                "Success",
+                PrepareDatasetsAnalyticsPrefix.CURATE,
+                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                Actions.EXISTING,
+                Destinations.LOCAL
+              );
+>>>>>>> a5f7420c423e6c0c4907dd1bd4a4b8099e3d8cc4
             }
           } else {
             Swal.fire({

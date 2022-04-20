@@ -606,7 +606,7 @@ def create_json_object_backend(soda_json_structure, root_folder_path, irregularF
         "source",
     ]
 
-    dataset_folder = soda_json_structure["dataset-structure"] = { "folders": {}}
+    dataset_folder = soda_json_structure["dataset-structure"] = {"folders": {}}
 
     def recursive_structure_create(dataset_structure, folder_path):
         global local_json_progress
@@ -620,7 +620,7 @@ def create_json_object_backend(soda_json_structure, root_folder_path, irregularF
             "description": "",
             "additional-metadata": "",
         }
-        #finds the last / in the path and that is the folder name
+        # finds the last / in the path and that is the folder name
         lastSlash = folder_path.rfind("/") + 1
         folder_name = folder_path[lastSlash:]
         entries = os.listdir(folder_path)
@@ -702,7 +702,7 @@ def create_json_object_backend(soda_json_structure, root_folder_path, irregularF
                         "files": {},
                         "path": check_path,
                         "type": "local",
-                        "action": ["existing"]
+                        "action": ["existing"],
                     }
                     #print(entry)
                     #print(dataset_structure["folders"])
