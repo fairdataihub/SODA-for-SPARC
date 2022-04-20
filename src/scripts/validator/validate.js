@@ -61,6 +61,24 @@ const validateLocalDataset = async () => {
     validationResponse = await axiosValidatorClient(
       `api_validate_dataset_pipeline?dataset-path=${datasetPath}`
     );
+
+    // track that a local validation succeeded
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Validate your dataset - Local",
+      "Local Validation",
+      1
+    );
+
+    // track that a validation (local or pennsieve) succeeded
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Validate your dataset",
+      "Dataset Validation",
+      1
+    );
   } catch (err) {
     // hide the validation errors table
     document.querySelector("#validation-errors-container").style.visiility =
@@ -75,6 +93,24 @@ const validateLocalDataset = async () => {
     );
 
     datasetLocationInput.value = "";
+
+    // track that a local validation failed
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Prepare Datasets - Validate your dataset - Local",
+      "Local Validation",
+      1
+    );
+
+    // track that a validation (local or pennsieve) failed to help with aggregating total dataset validation failures
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Prepare Datasets - Validate your dataset",
+      "Dataset Validation",
+      1
+    );
 
     return;
   }
@@ -138,10 +174,46 @@ const validatePennsieveDataset = async () => {
     validationResponse = await axiosValidatorClient(
       `/api_validate_pennsieve_dataset?dataset-name=${datasetName}`
     );
+
+    // track that a local validation succeeded
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Validate your dataset - Pennsieve",
+      "Pennsieve Validation",
+      1
+    );
+
+    // track that a validation (local or pennsieve) succeeded
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Validate your dataset",
+      "Dataset Validation",
+      1
+    );
   } catch (err) {
     // hide the validation errors table
     document.querySelector("#validation-errors-container").style.visiility =
       "hidden";
+
+    // track that a local validation succeeded
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Prepare Datasets - Validate your dataset - Pennsieve",
+      "Pennsieve Validation",
+      1
+    );
+
+    // track that a validation (local or pennsieve) succeeded
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Prepare Datasets - Validate your dataset",
+      "Dataset Validation",
+      1
+    );
 
     // display error message to user
     return handleAxiosValidationErrors(err);
