@@ -103,17 +103,7 @@
                   </h1>
                 </div>
                 <div class="guided--section">
-                  <label class="guided--form-label"
-                    >Dataset name:
-                    <i
-                      class="fas fa-info-circle popover-tooltip"
-                      data-content="Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative."
-                      rel="popover"
-                      data-html="true"
-                      data-placement="right"
-                      data-trigger="hover"
-                    ></i
-                  ></label>
+                  <label class="guided--form-label">Dataset name: </label>
                   <input
                     class="guided--input"
                     id="guided-dataset-name-input"
@@ -1513,11 +1503,12 @@
                 class="guided--panel hidden mt-md"
                 id="guided-div-imported-SPARC-award"
               >
-                <label class="guided--label-accordion-field w-100"
+                <label class="guided--label-accordion-field w-100 text-center"
                   >Imported SPARC Award number</label
                 >
-                <div class="ui input modified">
+                <div class="ui input modified" style="width: 50%">
                   <input
+                    class="text-center"
                     type="text"
                     id="guided-input-submission-sparc-award-import"
                     disabled
@@ -1570,7 +1561,7 @@
                 Import data deliverables
               </button>
               <div
-                class="guided--panel hidden"
+                class="guided--panel hidden mt-md"
                 id="guided-div-data-deliverables-import"
               >
                 <h2 class="guided--text-sub-step">
@@ -1578,52 +1569,18 @@
                 </h2>
                 <div class="space-between w-100">
                   <div class="ui form">
+                    <label class="guided--form-label">Milestones: </label>
                     <div
                       class="grouped fields"
                       id="guided-milestone-checkbox-container"
-                    >
-                      <label class="guided--form-label med text-left"
-                        >Milestones</label
-                      >
-                      <div class="field">
-                        <div class="ui checkbox">
-                          <input
-                            type="checkbox"
-                            name="milestone"
-                            onclick="logic($(this))"
-                          />
-                          <label>Once a week</label>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <div class="ui checkbox">
-                          <input type="checkbox" name="milestone" />
-                          <label>2-3 times a week</label>
-                        </div>
-                      </div>
-                    </div>
+                    ></div>
                   </div>
                   <div class="ui form">
+                    <label class="guided--form-label">Completion dates: </label>
                     <div
                       class="grouped fields"
                       id="guided-completion-date-checkbox-container"
-                    >
-                      <label class="guided--form-label med text-left"
-                        >Dates</label
-                      >
-                      <div class="field">
-                        <div class="ui checkbox">
-                          <input type="checkbox" name="completion-date" />
-                          <label>Once a week</label>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <div class="ui checkbox">
-                          <input type="checkbox" name="completion-date" />
-                          <label>2-3 times a week</label>
-                        </div>
-                      </div>
-                    </div>
+                    ></div>
                   </div>
                 </div>
               </div>

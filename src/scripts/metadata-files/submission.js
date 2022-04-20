@@ -2,6 +2,8 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 
+const { check } = require("prettier");
+
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
 
@@ -182,8 +184,86 @@ function helpMilestoneSubmission() {
   });
 }
 
-let guidedCompletionDateArray = [];
-let guidedMilestoneValueArray = [];
+let guidedMilestoneData = {};
+
+const createMilestoneCheckBoxElement = (name, label) => {
+  return `
+    <div class="field">
+      <div class="ui checkbox">
+        <input type="checkbox" name='${name}' onclick='handleMilestoneClick()' value='${label}'>
+        <label>${label}</label>
+      </div>
+    </div>  
+  `;
+};
+
+const createCompletionDateRadioElement = (name, label) => {
+  return `
+    <div class="field">
+      <div class="ui radio checkbox">
+        <input type="radio" name='${name}' value='${label}'>
+        <label>${label}</label>
+      </div>
+    </div>
+  `;
+};
+
+const handleMilestoneClick = () => {
+  //get all checked checkboxes with name "milestone" vanilla js
+  const checkedMilestones = document.querySelectorAll(
+    "input[name='milestone']:checked"
+  );
+  //convert checkMilestones to array of checkMilestones values
+  const checkedMilestonesArray = Array.from(checkedMilestones);
+  //get the values of checkedMilestonesArray
+  const checkedMilestonesValues = checkedMilestonesArray.map(
+    (checkMilestone) => checkMilestone.value
+  );
+  const completionDatesToCheck = [];
+  for (const milestone of checkedMilestonesValues) {
+    console.log(milestone);
+    for (const task of guidedMilestoneData[milestone]) {
+      completionDatesToCheck.push(task["Expected date of completion"]);
+    }
+  }
+  console.log(completionDatesToCheck);
+  //create a CompletionDateRadioElement for each completiondatesToCheck
+  const completionDatesToCheckArray = Array.from(
+    new Set(completionDatesToCheck)
+  );
+  console.log(completionDatesToCheckArray);
+  const completionDateRadioElements = completionDatesToCheckArray
+    .map((completionDate) =>
+      createCompletionDateRadioElement("completion-date", completionDate)
+    )
+    .join("\n");
+  //replace the current completion-date-radio-elements with the new ones
+  const completionDateRadioElementContainer = document.getElementById(
+    "guided-completion-date-checkbox-container"
+  );
+  completionDateRadioElementContainer.innerHTML = completionDateRadioElements;
+
+  /*//uncheck inputs with name "completion-date"
+  const completionDates = document.querySelectorAll(
+    "input[name='completion-date']"
+  );
+  const completionDatesArray = Array.from(completionDates);
+  completionDatesArray.forEach((completionDate) => {
+    completionDate.checked = false;
+  });
+
+  for (completionDate of completionDatesToCheck) {
+    //check the input with the name completion-date and the value of completionDate
+    const completionDateInput = document.querySelector(
+      `input[name='completion-date'][value='${completionDate}']`
+    );
+
+    //if the input is not checked, check it
+    if (!completionDateInput.checked) {
+      completionDateInput.checked = true;
+    }
+  }*/
+};
 
 const guidedHelpMilestoneSubmission = () => {
   var filepath = "";
@@ -209,7 +289,7 @@ const guidedHelpMilestoneSubmission = () => {
     Swal.close();
 
     const filepath = result.value.filepath;
-    var award = $("#guided-submission-sparc-award");
+    let award = $("#guided-submission-sparc-award").val();
     client.invoke("api_extract_milestone_info", filepath, (error, res) => {
       if (error) {
         var emessage = userError(error);
@@ -222,11 +302,48 @@ const guidedHelpMilestoneSubmission = () => {
           text: `${emessage}`,
         });
       } else {
-        milestoneObj = res;
-        let informationJson = {};
-        informationJson = parseJson(milestonePath);
-        informationJson[award] = milestoneObj;
-        console.log(informationJson);
+        guidedMilestoneData = res;
+        console.log(guidedMilestoneData);
+        // loop through the milestones in the milestone obj
+        const milestoneCheckBoxes = Object.keys(guidedMilestoneData)
+          .map((milestone) => {
+            return createMilestoneCheckBoxElement("milestone", milestone);
+          })
+          .join("\n");
+        document.getElementById(
+          "guided-milestone-checkbox-container"
+        ).innerHTML = milestoneCheckBoxes;
+
+        //get the description of data from each item in array for each key in guidedMilestoneData
+        const completionDateCheckBoxElementArray = [];
+
+        /*Object.keys(guidedMilestoneData).forEach((milestone) => {
+          guidedMilestoneData[milestone].forEach((task) => {
+            console.log(task);
+            completionDateCheckBoxElementArray.push(
+              createMilestoneCheckBoxElement(
+                "completion-date",
+                task["Expected date of completion"]
+              )
+            );
+          });
+        });
+
+        document.getElementById(
+          "guided-completion-date-checkbox-container"
+        ).innerHTML = completionDateCheckBoxElementArray.join("\n");*/
+
+        removeOptions(
+          document.getElementById("guided-submission-completion-date")
+        );
+        guidedSubmissionTagsTagify.removeAllTags();
+        guidedSubmissionTagsTagify.settings.whitelist = [];
+
+        const guidedDataDeliverablesForm = document.getElementById(
+          "guided-div-data-deliverables-import"
+        );
+        guidedDataDeliverablesForm.classList.remove("hidden");
+        guidedDataDeliverablesForm.scrollIntoView({ behavior: "smooth" });
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -235,44 +352,6 @@ const guidedHelpMilestoneSubmission = () => {
           icon: "success",
           text: `Successfully loaded your DataDeliverables.docx document`,
         });
-        removeOptions(
-          document.getElementById("guided-submission-completion-date")
-        );
-        guidedSubmissionTagsTagify.removeAllTags();
-        guidedSubmissionTagsTagify.settings.whitelist = [];
-
-        guidedCompletionDateArray.push("Enter my own date");
-        //changeAward()
-
-        if (award in informationJson) {
-          const milestoneObj = informationJson[award];
-          const milestoneTasks = Object.keys(milestoneObj);
-          milestoneTasks.forEach((task) => {
-            guidedMilestoneValueArray.push(task);
-            milestoneObj[task].forEach((milestone) => {
-              guidedCompletionDateArray.push(
-                milestone["Expected date of completion"]
-              );
-            });
-          });
-        }
-        guidedSubmissionTagsTagify.settings.whitelist =
-          guidedMilestoneValueArray;
-        const guidedSubmissionCompletionDateDropdown = document.getElementById(
-          "guided-submission-completion-date"
-        );
-        for (completionDate of guidedCompletionDateArray) {
-          addOption(
-            guidedSubmissionCompletionDateDropdown,
-            completionDate,
-            completionDate
-          );
-        }
-        const guidedDataDeliverablesForm = document.getElementById(
-          "guided-div-data-deliverables-import"
-        );
-        guidedDataDeliverablesForm.classList.remove("hidden");
-        guidedDataDeliverablesForm.scrollIntoView({ behavior: "smooth" });
       }
     });
   });
