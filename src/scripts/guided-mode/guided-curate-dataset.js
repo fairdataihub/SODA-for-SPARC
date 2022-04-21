@@ -2266,6 +2266,15 @@ $(document).ready(() => {
       .classList.remove("hidden");
     $("#guided-button-start-new-curate").hide();
     $("#continue-curating-existing").hide();
+    //temp bypass stuff
+    $("#guided-dataset-name-input").val(makeid(10));
+    $("#guided-dataset-subtitle-input").val(makeid(10));
+    $("#guided-create-new-dataset").click();
+    //show the next button after 3 seconds
+    setTimeout(() => {
+      $("#guided-next-button").show();
+      traverseToTab("guided-airtable-award-tab");
+    }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
     //remove text from dataset name and subtitle inputs
