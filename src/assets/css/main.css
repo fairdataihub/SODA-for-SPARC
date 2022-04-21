@@ -1530,7 +1530,7 @@ button[data-id="bf_list_users_pi"] {
 }
 .circle .left .progress {
   z-index: 1;
-  transition: transform 500ms ease-in-out
+  transition: transform 500ms ease-in-out;
 }
 
 .circle .right {
@@ -1539,7 +1539,7 @@ button[data-id="bf_list_users_pi"] {
   z-index: 3;
 }
 .circle .right .progress {
-  transition: transform 500ms ease-in-out
+  transition: transform 500ms ease-in-out;
 }
 
 #Question-getting-started-locally-destination {

@@ -6569,10 +6569,10 @@ ipcRenderer.on(
                             percentage_amount * 0.01 * 360
                           }deg)`;
                         } else {
-                          console.log(progressBar_rightSide.transition)
+                          console.log(progressBar_rightSide.transition);
                           progressBar_rightSide.style.transition = "";
-                          console.log(progressBar_rightSide.transition)
-                          progressBar_rightSide.classList.add('notransition')
+                          console.log(progressBar_rightSide.transition);
+                          progressBar_rightSide.classList.add("notransition");
                           progressBar_rightSide.style.transform = `rotate(180deg)`;
                           progressBar_leftSide.style.transform = `rotate(${
                             percentage_amount * 0.01 * 180
@@ -6583,7 +6583,9 @@ ipcRenderer.on(
                           progressBar_leftSide.style.transform = `rotate(180deg)`;
                           numb.innerText = "100%";
                           clearInterval(local_progress);
-                          progressBar_rightSide.classList.remove('notransition')
+                          progressBar_rightSide.classList.remove(
+                            "notransition"
+                          );
                           populate_existing_folders(datasetStructureJSONObj);
                           populate_existing_metadata(sodaJSONObj);
                           $(
@@ -6672,10 +6674,10 @@ ipcRenderer.on(
                           percentage_amount * 0.01 * 360
                         }deg)`;
                       } else {
-                        console.log(progressBar_rightSide.transition)
+                        console.log(progressBar_rightSide.transition);
                         progressBar_rightSide.style.transition = "";
-                        console.log(progressBar_rightSide.transition)
-                        progressBar_rightSide.classList.add('notransition')
+                        console.log(progressBar_rightSide.transition);
+                        progressBar_rightSide.classList.add("notransition");
                         progressBar_rightSide.style.transform = `rotate(180deg)`;
                         progressBar_leftSide.style.transform = `rotate(${
                           percentage_amount * 0.01 * 180
@@ -6686,7 +6688,7 @@ ipcRenderer.on(
                         numb.innerText = "100%";
 
                         clearInterval(local_progress);
-                        progressBar_rightSide.classList.remove('notransition')
+                        progressBar_rightSide.classList.remove("notransition");
                         populate_existing_folders(datasetStructureJSONObj);
                         populate_existing_metadata(sodaJSONObj);
                         $(
