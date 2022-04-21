@@ -1568,14 +1568,14 @@
                   Select the data deliverables
                 </h2>
                 <div class="space-between w-100 mt-lg">
-                  <div class="ui form">
+                  <div class="ui form" style="align-items: center !important">
                     <label class="guided--form-label">Milestones: </label>
                     <div
                       class="grouped fields"
                       id="guided-milestone-checkbox-container"
                     ></div>
                   </div>
-                  <div class="ui form">
+                  <div class="ui form" style="align-items: center !important">
                     <label class="guided--form-label">Completion dates: </label>
                     <div
                       class="grouped fields"
@@ -1646,7 +1646,6 @@
                         class="guided-award-and-milestone-information"
                         id="guided-tagify-submission-milestone-tags"
                         name="milestone-tags"
-                        placeholder="Tye here and hit 'Enter' after each keyword."
                         value=""
                         autofocus
                       />
@@ -1663,23 +1662,13 @@
                           data-trigger="hover"
                         ></i>
                       </label>
-                      <div class="demo-controls-body" style="width: 90%">
-                        <div class="ui input modified">
-                          <select
-                            class="guided-award-and-milestone-information"
-                            id="guided-submission-completion-date"
-                          >
-                            <option disabled selected hidden>
-                              Select an option
-                            </option>
-                            <option
-                              id="guided-date-entry-pseudo-parent"
-                              value="Enter my own date"
-                            >
-                              Enter my own date
-                            </option>
-                          </select>
-                        </div>
+                      <div class="ui input modified">
+                        <input
+                          class="guided-award-and-milestone-information"
+                          type="text"
+                          id="guided-submission-completion-date"
+                          placeholder="Type here..."
+                        />
                       </div>
                     </div>
                   </div>

@@ -1134,7 +1134,7 @@ const openCopySampleMetadataPopup = async (clickedSampleCopyMetadataButton) => {
           selectedCopyToSamples.push($(this).val());
         });
 
-        let copyFromSampleData = []; //["input1","input2"]
+        let copyFromSampleData = []; //["input1","input"]
         //Add the data from the selected copy fro sample to cpoyFromSampleData array
         for (var i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
@@ -3914,8 +3914,6 @@ $(document).ready(() => {
     $("#guided-add-subject-div").show();
   });
 
-  //dataset metadata functions
-
   //submission
   $("#guided-button-save-data-deliverables").on("click", () => {
     const checkedMilestones = document.querySelectorAll(
@@ -3928,11 +3926,24 @@ $(document).ready(() => {
       (checkMilestone) => checkMilestone.value
     );
     console.log(checkedMilestonesValues);
+    //clear milestone tags in accordion and add new ones
+    guidedSubmissionTagsTagify.removeAllTags();
     checkedMilestones.forEach((checkedMilestone) =>
       guidedSubmissionTagsTagify.addTags([
-        { value: checkedMilestone, readonly: true },
+        { value: checkedMilestone.value, readonly: true },
       ])
     );
+    //get the value of the selected completion-date radio button
+    const selectedCompletionDate = document.querySelector(
+      "input[name='completion-date']:checked"
+    ).value;
+
+    //set and disable completion date in accordion
+    guidedCompletionDateInput = document.getElementById(
+      "guided-submission-completion-date"
+    );
+    guidedCompletionDateInput.value = selectedCompletionDate;
+    guidedCompletionDateInput.disabled = true;
 
     document
       .getElementById("guided-div-submission-accordion")
@@ -5158,7 +5169,7 @@ $(document).ready(() => {
   $("#guided-import-folder").on("click", () => {
     ipcRenderer.send("open-folders-organize-datasets-dialog");
   });
-  $("#guided-submission-completion-date").change(function () {
+  /*$("#guided-submission-completion-date").change(function () {
     const text = $("#guided-submission-completion-date").val();
     if (text == "Enter my own date") {
       Swal.fire({
@@ -5196,7 +5207,7 @@ $(document).ready(() => {
           const input_date = result.value.date;
           $("#guided-submission-completion-date").append(
             $("<option>", {
-              value: input_date,
+              value: input_date,  
               text: input_date,
             })
           );
@@ -5207,7 +5218,7 @@ $(document).ready(() => {
         }
       });
     }
-  });
+  });*/
 });
 
 const guided_generate = async () => {

@@ -1118,6 +1118,7 @@ function addAdditionalLinktoTableDD(
 guidedSetImportedSPARCAward = (awardString) => {
   $("#guided-input-submission-sparc-award-import").val(awardString);
   $("#guided-submission-sparc-award").val(awardString);
+  $("#guided-submission-sparc-award").prop("disabled", true);
   $("#guided-ds-description-award-input").val(awardString);
   document
     .getElementById("guided-div-imported-SPARC-award")

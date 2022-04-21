@@ -227,7 +227,7 @@ const handleMilestoneClick = () => {
     }
   }
   console.log(completionDatesToCheck);
-  //create a CompletionDateRadioElement for each completiondatesToCheck
+
   const completionDatesToCheckArray = Array.from(
     new Set(completionDatesToCheck)
   );
@@ -242,27 +242,6 @@ const handleMilestoneClick = () => {
     "guided-completion-date-checkbox-container"
   );
   completionDateRadioElementContainer.innerHTML = completionDateRadioElements;
-
-  /*//uncheck inputs with name "completion-date"
-  const completionDates = document.querySelectorAll(
-    "input[name='completion-date']"
-  );
-  const completionDatesArray = Array.from(completionDates);
-  completionDatesArray.forEach((completionDate) => {
-    completionDate.checked = false;
-  });
-
-  for (completionDate of completionDatesToCheck) {
-    //check the input with the name completion-date and the value of completionDate
-    const completionDateInput = document.querySelector(
-      `input[name='completion-date'][value='${completionDate}']`
-    );
-
-    //if the input is not checked, check it
-    if (!completionDateInput.checked) {
-      completionDateInput.checked = true;
-    }
-  }*/
 };
 
 const guidedHelpMilestoneSubmission = () => {
@@ -333,9 +312,6 @@ const guidedHelpMilestoneSubmission = () => {
           "guided-completion-date-checkbox-container"
         ).innerHTML = completionDateCheckBoxElementArray.join("\n");*/
 
-        removeOptions(
-          document.getElementById("guided-submission-completion-date")
-        );
         guidedSubmissionTagsTagify.removeAllTags();
         guidedSubmissionTagsTagify.settings.whitelist = [];
 
