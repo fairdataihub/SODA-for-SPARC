@@ -1530,18 +1530,25 @@ button[data-id="bf_list_users_pi"] {
 }
 .circle .left .progress {
   z-index: 1;
-  animation: left 4s linear both;
+  transition: transform 500ms ease-in-out
 }
 
 .circle .right {
   transform: rotate(180deg);
+  transition: linear;
   z-index: 3;
 }
 .circle .right .progress {
-  animation: right 4s linear both;
-  animation-delay: 4s;
+  transition: transform 500ms ease-in-out
 }
 
 #Question-getting-started-locally-destination {
   text-align: -webkit-center;
+}
+
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }

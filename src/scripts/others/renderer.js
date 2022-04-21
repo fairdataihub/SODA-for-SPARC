@@ -6529,6 +6529,14 @@ ipcRenderer.on(
 
                 var numb = document.querySelector(".number");
                 numb.innerText = "0%";
+                progressBar_rightSide = document.getElementById(
+                  "left-side_less_than_50"
+                );
+                progressBar_leftSide = document.getElementById(
+                  "right-side_greater_than_50"
+                );
+                progressBar_rightSide.style.transform = `rotate(0deg)`;
+                progressBar_leftSide.style.transform = `rotate(0deg)`;
                 document.getElementById("loading_local_dataset").style.display =
                   "block";
                 sodaJSONObj["starting-point"]["local-path"] = filepath[0];
@@ -6537,7 +6545,7 @@ ipcRenderer.on(
                   "#input-destination-getting-started-locally"
                 ).attr("placeholder");
 
-                let local_progress = setInterval(progressReport, 1500);
+                let local_progress = setInterval(progressReport, 500);
                 function progressReport() {
                   client.invoke(
                     "api_monitor_local_json_progress",
@@ -6561,6 +6569,10 @@ ipcRenderer.on(
                             percentage_amount * 0.01 * 360
                           }deg)`;
                         } else {
+                          console.log(progressBar_rightSide.transition)
+                          progressBar_rightSide.style.transition = "";
+                          console.log(progressBar_rightSide.transition)
+                          progressBar_rightSide.classList.add('notransition')
                           progressBar_rightSide.style.transform = `rotate(180deg)`;
                           progressBar_leftSide.style.transform = `rotate(${
                             percentage_amount * 0.01 * 180
@@ -6571,6 +6583,7 @@ ipcRenderer.on(
                           progressBar_leftSide.style.transform = `rotate(180deg)`;
                           numb.innerText = "100%";
                           clearInterval(local_progress);
+                          progressBar_rightSide.classList.remove('notransition')
                           populate_existing_folders(datasetStructureJSONObj);
                           populate_existing_metadata(sodaJSONObj);
                           $(
@@ -6635,7 +6648,7 @@ ipcRenderer.on(
               ).attr("placeholder");
 
               let percentage_amount = 0;
-              let local_progress = setInterval(progressReport, 1000);
+              let local_progress = setInterval(progressReport, 500);
               function progressReport() {
                 client.invoke(
                   "api_monitor_local_json_progress",
@@ -6659,6 +6672,10 @@ ipcRenderer.on(
                           percentage_amount * 0.01 * 360
                         }deg)`;
                       } else {
+                        console.log(progressBar_rightSide.transition)
+                        progressBar_rightSide.style.transition = "";
+                        console.log(progressBar_rightSide.transition)
+                        progressBar_rightSide.classList.add('notransition')
                         progressBar_rightSide.style.transform = `rotate(180deg)`;
                         progressBar_leftSide.style.transform = `rotate(${
                           percentage_amount * 0.01 * 180
@@ -6667,8 +6684,9 @@ ipcRenderer.on(
                       if (finished === 1) {
                         progressBar_leftSide.style.transform = `rotate(180deg)`;
                         numb.innerText = "100%";
-                        console.log("DONE!" + finished);
+
                         clearInterval(local_progress);
+                        progressBar_rightSide.classList.remove('notransition')
                         populate_existing_folders(datasetStructureJSONObj);
                         populate_existing_metadata(sodaJSONObj);
                         $(
