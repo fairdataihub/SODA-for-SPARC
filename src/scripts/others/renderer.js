@@ -6500,18 +6500,22 @@ ipcRenderer.on(
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                   action = "replace";
-                  if(irregularFolderArray.length > 0) {
-                    for(let i = 0; i < irregularFolderArray.length; i++) {
-                      renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-                      replaced.push(renamedFolderName)
+                  if (irregularFolderArray.length > 0) {
+                    for (let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = replaceIrregularFolders(
+                        irregularFolderArray[i]
+                      );
+                      replaced.push(renamedFolderName);
                     }
                   }
                 } else if (result.isDenied) {
                   action = "remove";
-                  if(irregularFolderArray.length > 0) {
-                    for(let i = 0; i < irregularFolderArray.length; i++) {
-                      renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-                      replaced.push(renamedFolderName)
+                  if (irregularFolderArray.length > 0) {
+                    for (let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = removeIrregularFolders(
+                        irregularFolderArray[i]
+                      );
+                      replaced.push(renamedFolderName);
                     }
                   }
                 } else {
@@ -6591,7 +6595,8 @@ ipcRenderer.on(
                       sodaJSONObj = res;
                       datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
                     }
-                });
+                  }
+                );
                 //create setInterval variable that will keep track of the iterated items
               });
             } else {
@@ -6613,8 +6618,9 @@ ipcRenderer.on(
               let local_progress = setInterval(progressReport, 1000);
               function progressReport() {
                 client.invoke(
-                  "api_monitor_local_json_progress", (error, res) => {
-                    if(error) {
+                  "api_monitor_local_json_progress",
+                  (error, res) => {
+                    if (error) {
                       console.log(error);
                       clearInterval(local_progress);
                     } else {
@@ -6655,7 +6661,6 @@ ipcRenderer.on(
                   }
                 );
               }
-              let time_start = performance.now();
               client.invoke(
                 "api_create_json_object_backend",
                 sodaJSONObj,
