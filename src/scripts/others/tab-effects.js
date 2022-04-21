@@ -1778,7 +1778,7 @@ const verify_sparc_folder = (root_folder_path) => {
     "primary",
     "protocol",
     "source",
-  ]
+  ];
   possible_metadata_files = [
     "submission",
     "dataset_description",
@@ -1792,8 +1792,8 @@ const verify_sparc_folder = (root_folder_path) => {
     if (highLevelFolders.includes(file)) {
       valid_dataset = true;
     } else {
-      valid_dataset = false
-      return valid_dataset
+      valid_dataset = false;
+      return valid_dataset;
     }
     for (item in possible_metadata_files) {
       if (item.indexOf(file) != -1) {

@@ -6528,44 +6528,54 @@ ipcRenderer.on(
                 }
 
                 var numb = document.querySelector(".number");
-                numb.innerText = "0%"
-                document.getElementById("loading_local_dataset").style.display = "block";
+                numb.innerText = "0%";
+                document.getElementById("loading_local_dataset").style.display =
+                  "block";
                 sodaJSONObj["starting-point"]["local-path"] = filepath[0];
 
                 let root_folder_path = $(
                   "#input-destination-getting-started-locally"
                 ).attr("placeholder");
-                
+
                 let local_progress = setInterval(progressReport, 1500);
                 function progressReport() {
                   client.invoke(
-                    "api_monitor_local_json_progress", (error, res) => {
-                      if(error) {
+                    "api_monitor_local_json_progress",
+                    (error, res) => {
+                      if (error) {
                         console.log(error);
                       } else {
                         percentage_amount = res[2].toFixed(2);
-                        finished = res[3]
+                        finished = res[3];
 
-                        progressBar_rightSide = document.getElementById("left-side_less_than_50");
-                        progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+                        progressBar_rightSide = document.getElementById(
+                          "left-side_less_than_50"
+                        );
+                        progressBar_leftSide = document.getElementById(
+                          "right-side_greater_than_50"
+                        );
 
                         numb.innerText = percentage_amount + "%";
-                        if(percentage_amount <= 50) {
-                          progressBar_rightSide.style.transform = `rotate(${(percentage_amount * .01) * 360}deg)`
+                        if (percentage_amount <= 50) {
+                          progressBar_rightSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 360
+                          }deg)`;
                         } else {
-                          progressBar_rightSide.style.transform = `rotate(180deg)`
-                          progressBar_leftSide.style.transform = `rotate(${(percentage_amount * .01) * 180}deg)`
+                          progressBar_rightSide.style.transform = `rotate(180deg)`;
+                          progressBar_leftSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 180
+                          }deg)`;
                         }
 
-                        if(finished === 1) {
-                          progressBar_leftSide.style.transform = `rotate(180deg)`
+                        if (finished === 1) {
+                          progressBar_leftSide.style.transform = `rotate(180deg)`;
                           numb.innerText = "100%";
                           clearInterval(local_progress);
                           populate_existing_folders(datasetStructureJSONObj);
                           populate_existing_metadata(sodaJSONObj);
-                          $("#para-continue-location-dataset-getting-started").text(
-                            "Please continue below."
-                          );
+                          $(
+                            "#para-continue-location-dataset-getting-started"
+                          ).text("Please continue below.");
                           $("#nextBtn").prop("disabled", false);
                           // log the success to analytics
                           logMetadataForAnalytics(
@@ -6575,7 +6585,11 @@ ipcRenderer.on(
                             Actions.EXISTING,
                             Destinations.LOCAL
                           );
-                          setTimeout(() => {document.getElementById("loading_local_dataset").style.display = "none";}, 1000)
+                          setTimeout(() => {
+                            document.getElementById(
+                              "loading_local_dataset"
+                            ).style.display = "none";
+                          }, 1000);
                         }
                       }
                     }
@@ -6593,20 +6607,26 @@ ipcRenderer.on(
                       clearInterval(local_progress);
                     } else {
                       sodaJSONObj = res;
-                      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                      datasetStructureJSONObj =
+                        sodaJSONObj["dataset-structure"];
                     }
                   }
                 );
                 //create setInterval variable that will keep track of the iterated items
               });
             } else {
-              document.getElementById("loading_local_dataset").style.display = "block";
-              progressBar_rightSide = document.getElementById("left-side_less_than_50");
-              progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+              document.getElementById("loading_local_dataset").style.display =
+                "block";
+              progressBar_rightSide = document.getElementById(
+                "left-side_less_than_50"
+              );
+              progressBar_leftSide = document.getElementById(
+                "right-side_greater_than_50"
+              );
               progressBar_leftSide.style.transform = `rotate(0deg)`;
               progressBar_rightSide.style.transform = `rotate(0deg)`;
               let numb = document.querySelector(".number");
-              numb.innerText = "0%"
+              numb.innerText = "0%";
 
               action = "";
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
@@ -6625,27 +6645,35 @@ ipcRenderer.on(
                       clearInterval(local_progress);
                     } else {
                       percentage_amount = res[2].toFixed(2);
-                      finished = res[3]
-                      progressBar_rightSide = document.getElementById("left-side_less_than_50");
-                      progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+                      finished = res[3];
+                      progressBar_rightSide = document.getElementById(
+                        "left-side_less_than_50"
+                      );
+                      progressBar_leftSide = document.getElementById(
+                        "right-side_greater_than_50"
+                      );
 
                       numb.innerText = percentage_amount + "%";
-                      if(percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${(percentage_amount * .01) * 360}deg)`
+                      if (percentage_amount <= 50) {
+                        progressBar_rightSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 360
+                        }deg)`;
                       } else {
-                        progressBar_rightSide.style.transform = `rotate(180deg)`
-                        progressBar_leftSide.style.transform = `rotate(${(percentage_amount * .01) * 180}deg)`
+                        progressBar_rightSide.style.transform = `rotate(180deg)`;
+                        progressBar_leftSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 180
+                        }deg)`;
                       }
-                      if(finished === 1) {
-                        progressBar_leftSide.style.transform = `rotate(180deg)`
+                      if (finished === 1) {
+                        progressBar_leftSide.style.transform = `rotate(180deg)`;
                         numb.innerText = "100%";
                         console.log("DONE!" + finished);
                         clearInterval(local_progress);
                         populate_existing_folders(datasetStructureJSONObj);
                         populate_existing_metadata(sodaJSONObj);
-                        $("#para-continue-location-dataset-getting-started").text(
-                          "Please continue below."
-                        );
+                        $(
+                          "#para-continue-location-dataset-getting-started"
+                        ).text("Please continue below.");
                         $("#nextBtn").prop("disabled", false);
                         // log the success to analytics
                         logMetadataForAnalytics(
@@ -6655,7 +6683,11 @@ ipcRenderer.on(
                           Actions.EXISTING,
                           Destinations.LOCAL
                         );
-                        setTimeout(() => {document.getElementById("loading_local_dataset").style.display = "none";}, 1000)
+                        setTimeout(() => {
+                          document.getElementById(
+                            "loading_local_dataset"
+                          ).style.display = "none";
+                        }, 1000);
                       }
                     }
                   }
@@ -6675,7 +6707,8 @@ ipcRenderer.on(
                     sodaJSONObj = res;
                     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
                   }
-              });
+                }
+              );
             }
           } else {
             Swal.fire({
