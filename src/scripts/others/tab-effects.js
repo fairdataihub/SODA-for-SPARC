@@ -551,6 +551,7 @@ const checkHighLevelFoldersInput = () => {
 // function associated with the Back/Continue buttons
 const nextPrev = (n) => {
   var x = document.getElementsByClassName("parent-tabs");
+  console.log(x);
 
   if (n == -1 && x[currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
@@ -1770,6 +1771,14 @@ const recursive_structure_create_include_manifest = (
 // If no high level folders or any possible metadata files
 // are found the folder is marked as invalid
 const verify_sparc_folder = (root_folder_path) => {
+  high_level_sparc_folders = [
+    "code",
+    "derivative",
+    "docs",
+    "primary",
+    "protocol",
+    "source",
+  ]
   possible_metadata_files = [
     "submission",
     "dataset_description",
@@ -1782,6 +1791,9 @@ const verify_sparc_folder = (root_folder_path) => {
   fs.readdirSync(root_folder_path).forEach((file) => {
     if (highLevelFolders.includes(file)) {
       valid_dataset = true;
+    } else {
+      valid_dataset = false
+      return valid_dataset
     }
     for (item in possible_metadata_files) {
       if (item.indexOf(file) != -1) {

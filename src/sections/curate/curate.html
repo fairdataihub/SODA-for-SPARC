@@ -301,8 +301,9 @@
               <div
                 class="individual-question getting-started show"
                 id="Question-getting-started-1"
+                style="text-align: -webkit-center;"
               >
-                <div class="ui form" style="width: 100%">
+                <div class="ui form" style="width: 100%; text-align: -webkit-center;">
                   <div class="grouped fields">
                     <label
                       style="
@@ -515,10 +516,17 @@
                       />
                     </div>
                   </div>
-                  <div style="display: flex; justify-content: center">
-                    <p id="progress_percentage" style="font-size: xx-large">
-                      0%
-                    </p>
+                  <div id="loading_local_dataset" class="circular" style="display:none">
+                    <div class="inner"></div>
+                    <div class="number">0%</div>
+                    <div class="circle">
+                      <div class="bar left">
+                        <div id="left-side_less_than_50" class="progress"></div>
+                      </div>
+                      <div class="bar right">
+                        <div id="right-side_greater_than_50" class="progress"></div>
+                      </div>
+                    </div>
                   </div>
                   <br />
                   <p

@@ -563,6 +563,7 @@ function populateMetadataProgress(
 let missing_dataset_files = [];
 let missing_metadata_files = [];
 function loadProgressFile(ev) {
+  let start_time = performance.now();
   let return_option = "";
   missing_dataset_files = [];
   missing_metadata_files = [];
@@ -626,6 +627,8 @@ function loadProgressFile(ev) {
       }
     }, 500);
   }
+  let end_time = performance.now();
+  console.log(`Duration of saved json: ${end_time - start_time} milliseconds`);
 }
 
 const verify_missing_files = (mode) => {
