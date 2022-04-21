@@ -3924,6 +3924,71 @@ $(document).ready(() => {
   });
 
   //submission
+  $("#guided-button-save-checked-milestones").on("click", () => {
+    const checkedMilestoneData = getCheckedMilestones();
+    console.log(checkedMilestoneData);
+    //if checkedMilestoneData is empty, create notyf
+    if (checkedMilestoneData.length === 0) {
+      notyf.error("Please select at least one milestone");
+      return;
+    }
+    const submissionAccordion = document.getElementById(
+      "guided-div-submission-accordion"
+    );
+    const guidedCompletionDateInput = document.getElementById(
+      "guided-submission-completion-date"
+    );
+
+    //If only one milestone is selected, auto set completion date and milestones
+    if (checkedMilestoneData.length === 1) {
+      console.log(checkedMilestoneData);
+      guidedCompletionDateInput.value =
+        checkedMilestoneData[0]["completionDate"];
+      guidedCompletionDateInput.disabled = true;
+      submissionAccordion.classList.remove("hidden");
+    }
+
+    if (checkedMilestoneData.length > 1) {
+      console.log(checkedMilestoneData);
+      //get all completionDates from checkedMilestoneData
+      const completionDates = [];
+      for (milestone of checkedMilestoneData) {
+        console.log(milestone);
+        completionDates.push(milestone["completionDate"]);
+      }
+      //create an array of unique completionDates
+      const uniqueCompletionDates = Array.from(new Set(completionDates));
+      //create a radio button for each unique date
+      const completionDateCheckMarks = uniqueCompletionDates
+        .map((completionDate) => {
+          return createCompletionDateRadioElement(
+            "completion-date",
+            completionDate
+          );
+        })
+        .join("\n");
+      document.getElementById("guided-completion-date-container").innerHTML =
+        completionDateCheckMarks;
+      unHideAndScrollToElement("guided-div-completion-date-selection");
+    }
+  });
+
+  $("#guided-button-save-checked-completion-date").on("click", () => {
+    const selectedCompletionDate = document.querySelector(
+      "input[name='completion-date']:checked"
+    );
+    if (selectedCompletionDate) {
+      const guidedCompletionDateInput = document.getElementById(
+        "guided-submission-completion-date"
+      );
+      guidedCompletionDateInput.value = selectedCompletionDate.value;
+      guidedCompletionDateInput.disabled = true;
+      unHideAndScrollToElement("guided-div-submission-accordion");
+    } else {
+      notyf.error("Please select a completion date");
+    }
+  });
+
   $("#guided-button-save-data-deliverables").on("click", () => {
     const checkedMilestones = document.querySelectorAll(
       "input[name='milestone']:checked"
@@ -3942,13 +4007,14 @@ $(document).ready(() => {
         { value: checkedMilestone.value, readonly: true },
       ])
     );
+
     //get the value of the selected completion-date radio button
     const selectedCompletionDate = document.querySelector(
       "input[name='completion-date']:checked"
     ).value;
 
     //set and disable completion date in accordion
-    guidedCompletionDateInput = document.getElementById(
+    const guidedCompletionDateInput = document.getElementById(
       "guided-submission-completion-date"
     );
     guidedCompletionDateInput.value = selectedCompletionDate;
@@ -3956,7 +4022,7 @@ $(document).ready(() => {
 
     document
       .getElementById("guided-div-submission-accordion")
-      .classList.remove("hidden");
+      .classList.remove("guided-div-completion-date-selection");
   });
   const guidedSaveSubmissionFile = () => {
     let award = $("#guided-submission-sparc-award").val();

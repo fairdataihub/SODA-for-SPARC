@@ -186,20 +186,9 @@ function helpMilestoneSubmission() {
 
 let guidedMilestoneData = {};
 
-const createMilestoneCheckBoxElement = (name, label) => {
-  return `
-    <div class="field">
-      <div class="ui checkbox">
-        <input type="checkbox" name='${name}' onclick='handleMilestoneClick()' value='${label}'>
-        <label>${label}</label>
-      </div>
-    </div>  
-  `;
-};
-
 const createCompletionDateRadioElement = (name, label) => {
   return `
-    <div class="field">
+    <div class="field" style="width: auto !important">
       <div class="ui radio checkbox">
         <input type="radio" name='${name}' value='${label}'>
         <label>${label}</label>
@@ -207,6 +196,15 @@ const createCompletionDateRadioElement = (name, label) => {
     </div>
   `;
 };
+
+// function that removes hidden class from js element by id and smooth scrolls to it
+function unHideAndScrollToElement(id) {
+  elementToUnhideAndScrollTo = document.getElementById(id);
+  elementToUnhideAndScrollTo.classList.remove("hidden");
+  elementToUnhideAndScrollTo.scrollIntoView({
+    behavior: "smooth",
+  });
+}
 
 const handleMilestoneClick = () => {
   //get all checked checkboxes with name "milestone" vanilla js
@@ -253,7 +251,7 @@ const generateMilestoneRowElement = (
     <tr>
       <td class="middle aligned collapsing text-center">
         <div class="ui fitted checkbox">
-          <input type="checkbox">
+          <input type="checkbox" name="milestone">
           <label></label>
         </div>
       </td>
@@ -269,6 +267,30 @@ const generateMilestoneRowElement = (
     </tr>
   `;
 };
+
+//create an array of values for checked checkboxes with the name "milestone"
+const getCheckedMilestones = () => {
+  const checkedMilestones = document.querySelectorAll(
+    "input[name='milestone']:checked"
+  );
+  const checkedMilestonesArray = Array.from(checkedMilestones);
+  console.log(checkedMilestonesArray);
+  //get first tr parent for each checkedMilestonesArray element
+  const checkedMilestoneData = checkedMilestonesArray.map((checkMilestone) => {
+    const tableRow = checkMilestone.parentElement.parentElement.parentElement;
+    const description = tableRow.children[1].innerHTML.trim();
+    const milestone = tableRow.children[2].innerHTML.trim();
+    const completionDate = tableRow.children[3].innerHTML.trim();
+
+    return {
+      description: description,
+      milestone: milestone,
+      completionDate: completionDate,
+    };
+  });
+  return checkedMilestoneData;
+};
+//check if xxxx/xx/xx date string is before today's date
 
 const guidedHelpMilestoneSubmission = () => {
   var filepath = "";
@@ -339,11 +361,7 @@ const guidedHelpMilestoneSubmission = () => {
         guidedSubmissionTagsTagify.removeAllTags();
         guidedSubmissionTagsTagify.settings.whitelist = [];
 
-        const guidedDataDeliverablesForm = document.getElementById(
-          "guided-div-data-deliverables-import"
-        );
-        guidedDataDeliverablesForm.classList.remove("hidden");
-        guidedDataDeliverablesForm.scrollIntoView({ behavior: "smooth" });
+        unHideAndScrollToElement("guided-div-data-deliverables-import");
       }
     });
   });
