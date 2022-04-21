@@ -3928,6 +3928,11 @@ $(document).ready(() => {
       (checkMilestone) => checkMilestone.value
     );
     console.log(checkedMilestonesValues);
+    checkedMilestones.forEach((checkedMilestone) =>
+      guidedSubmissionTagsTagify.addTags([
+        { value: checkedMilestone, readonly: true },
+      ])
+    );
 
     document
       .getElementById("guided-div-submission-accordion")
