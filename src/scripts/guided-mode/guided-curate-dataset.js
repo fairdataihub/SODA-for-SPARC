@@ -2192,9 +2192,6 @@ $("#guided-button-no-docs-data").on("click", () => {
   }
 });
 
-$("#guided-dataset-name-input").val("test " + makeid(5));
-$("#guided-dataset-subtitle-input").val("test " + makeid(5));
-
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
@@ -3918,6 +3915,24 @@ $(document).ready(() => {
   });
 
   //dataset metadata functions
+
+  //submission
+  $("#guided-button-save-data-deliverables").on("click", () => {
+    const checkedMilestones = document.querySelectorAll(
+      "input[name='milestone']:checked"
+    );
+    //convert checkMilestones NodeList to array of checkMilestones values
+    const checkedMilestonesArray = Array.from(checkedMilestones);
+    //get the values of checkedMilestonesArray
+    const checkedMilestonesValues = checkedMilestonesArray.map(
+      (checkMilestone) => checkMilestone.value
+    );
+    console.log(checkedMilestonesValues);
+
+    document
+      .getElementById("guided-div-submission-accordion")
+      .classList.remove("hidden");
+  });
   const guidedSaveSubmissionFile = () => {
     let award = $("#guided-submission-sparc-award").val();
     let date = $("#guided-submission-completion-date").val();
