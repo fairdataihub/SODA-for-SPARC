@@ -1567,33 +1567,20 @@
                 <h2 class="guided--text-sub-step">
                   Select the data deliverables
                 </h2>
-                <div class="space-between w-100 mt-lg">
-                  <div class="ui form" style="align-items: center !important">
-                    <label class="guided--form-label">Milestones: </label>
-                    <div
-                      class="grouped fields"
-                      id="guided-milestone-checkbox-container"
-                    ></div>
-                  </div>
-                  <div class="ui form" style="align-items: center !important">
-                    <label class="guided--form-label">Completion dates: </label>
-                    <div
-                      class="grouped fields"
-                      id="guided-completion-date-checkbox-container"
-                    ></div>
-                  </div>
-                  <div class="guided--section mt-md">
-                    <button
-                      class="ui primary button"
-                      id="guided-button-save-data-deliverables"
-                      style="
-                        background-color: var(--color-light-green) !important;
-                      "
-                    >
-                      Save data deliverables
-                    </button>
-                  </div>
-                </div>
+                <table
+                  class="ui celled striped table"
+                  style="margin-bottom: 25px; width: 900px"
+                >
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Description</th>
+                      <th>Milestone</th>
+                      <th class="center aligned">Completion date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="milestones-table-container"></tbody>
+                </table>
               </div>
             </div>
             <div

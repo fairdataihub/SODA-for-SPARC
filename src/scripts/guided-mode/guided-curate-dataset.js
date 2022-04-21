@@ -1425,7 +1425,7 @@ const updateGuidedTableIndices = (tableIndexClass) => {
     indexElement.innerHTML = newIndex;
   });
 };
-generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
+const generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
   return `
     <tr>
       <td class="middle aligned collapsing text-center">

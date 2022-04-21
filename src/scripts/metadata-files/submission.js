@@ -244,6 +244,32 @@ const handleMilestoneClick = () => {
   completionDateRadioElementContainer.innerHTML = completionDateRadioElements;
 };
 
+const generateMilestoneRowElement = (
+  dataDescription,
+  milestoneString,
+  dateString
+) => {
+  return `
+    <tr>
+      <td class="middle aligned collapsing text-center">
+        <div class="ui fitted checkbox">
+          <input type="checkbox">
+          <label></label>
+        </div>
+      </td>
+      <td class="middle aligned">
+        ${dataDescription}
+      </td>
+      <td class="middle aligned">
+        ${milestoneString}
+      </td>
+      <td class="middle aligned collapsing"> 
+        ${dateString}
+      </td>
+    </tr>
+  `;
+};
+
 const guidedHelpMilestoneSubmission = () => {
   var filepath = "";
   var informationJson = {};
@@ -283,34 +309,32 @@ const guidedHelpMilestoneSubmission = () => {
       } else {
         guidedMilestoneData = res;
         console.log(guidedMilestoneData);
-        // loop through the milestones in the milestone obj
-        const milestoneCheckBoxes = Object.keys(guidedMilestoneData)
-          .map((milestone) => {
-            return createMilestoneCheckBoxElement("milestone", milestone);
+        //create a table row element for each description array element for each milestone key in guidedMilestoneData
+        const milestoneTableRows = Object.keys(guidedMilestoneData)
+          .map((milestoneKey) => {
+            const milestoneDescriptionArray = guidedMilestoneData[milestoneKey];
+            const milestoneDescriptionTableRows = milestoneDescriptionArray.map(
+              (milestoneDescription) => {
+                console.log(milestoneDescription);
+                const descriptionString =
+                  milestoneDescription["Description of data"];
+                const milestoneString = milestoneKey;
+                const completionDateString =
+                  milestoneDescription["Expected date of completion"];
+                return generateMilestoneRowElement(
+                  descriptionString,
+                  milestoneString,
+                  completionDateString
+                );
+              }
+            );
+            return milestoneDescriptionTableRows.join("");
           })
           .join("\n");
-        document.getElementById(
-          "guided-milestone-checkbox-container"
-        ).innerHTML = milestoneCheckBoxes;
-
-        //get the description of data from each item in array for each key in guidedMilestoneData
-        const completionDateCheckBoxElementArray = [];
-
-        /*Object.keys(guidedMilestoneData).forEach((milestone) => {
-          guidedMilestoneData[milestone].forEach((task) => {
-            console.log(task);
-            completionDateCheckBoxElementArray.push(
-              createMilestoneCheckBoxElement(
-                "completion-date",
-                task["Expected date of completion"]
-              )
-            );
-          });
-        });
-
-        document.getElementById(
-          "guided-completion-date-checkbox-container"
-        ).innerHTML = completionDateCheckBoxElementArray.join("\n");*/
+        const milestonesTableContainer = document.getElementById(
+          "milestones-table-container"
+        );
+        milestonesTableContainer.innerHTML = milestoneTableRows;
 
         guidedSubmissionTagsTagify.removeAllTags();
         guidedSubmissionTagsTagify.settings.whitelist = [];
@@ -320,14 +344,6 @@ const guidedHelpMilestoneSubmission = () => {
         );
         guidedDataDeliverablesForm.classList.remove("hidden");
         guidedDataDeliverablesForm.scrollIntoView({ behavior: "smooth" });
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          timer: 3000,
-          timerProgressBar: true,
-          icon: "success",
-          text: `Successfully loaded your DataDeliverables.docx document`,
-        });
       }
     });
   });
