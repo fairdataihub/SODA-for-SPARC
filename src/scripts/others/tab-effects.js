@@ -2061,6 +2061,8 @@ async function transitionFreeFormMode(
 
   let continueProgressGenerateManifest = true;
 
+  let continueProgressValidateDataset = true;
+
   const dataCurrent = $(ev).attr("data-current");
 
   switch (dataCurrent) {
@@ -2131,6 +2133,13 @@ async function transitionFreeFormMode(
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
       break;
+    case "validate_dataset-question-2":
+      continueProgressValidateDataset =
+        await transitionToValidateQuestionThree();
+      break;
+    case "validate_dataset-question-1":
+      continueProgressValidateDataset = await transitionToValidateQuestionTwo();
+      break;
   }
 
   if (!continueProgressRC) {
@@ -2156,6 +2165,13 @@ async function transitionFreeFormMode(
   if (!continueProgressGenerateManifest) {
     return;
   }
+
+  if (!continueProgressValidateDataset) {
+    console.log("Not going to continue with this");
+    return;
+  }
+
+  console.log("Continuing with transition");
   // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);

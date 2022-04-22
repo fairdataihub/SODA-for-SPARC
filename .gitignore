@@ -5,6 +5,7 @@
 node_modules
 build/api
 pysodadist
+pyflaskdist
 dist
 src/Users
 semantic
