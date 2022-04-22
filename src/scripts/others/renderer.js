@@ -8672,30 +8672,30 @@ let pennsive_confirm_button = document.getElementById("button-confirm-bf-dataset
 pennsive_confirm_button.addEventListener("click", async function () {
   //current function
   console.log("clicked");
-  const axiosInstance = axios.create({
-    baseURL: "http://127.0.0.1:5000/",
-    timeout: 0,
-  })
-
-  let selectedBfAccount = defaultBfAccount;
-  let selectedBfDataset = defaultBfDataset;
-  console.log(selectedBfAccount);
-  console.log(selectedBfDataset);
-
-  temp_object = {
-    "bf-account-selected": {
-      "account-name": selectedBfAccount,
-    },
-    "bf-dataset-selected": {
-      "dataset-name": selectedBfDataset
-    }
-  }
-
-  //python function??
-  let datasetResponse = await axiosInstance()
-
   //request access token
   let jwt = await get_access_token();
+  const axiosInstance = axios.create({
+    baseURL: `https://api.pennsieve.io/packages/download-manifest?api_key=${jwt}`,
+    timeout: 0,
+    method: "POST",
+    // payload: {
+    //   "nodesIds": [""]
+    // },
+    headers: {
+      "Accept": "*/*",
+      "Content-Type": "application/json"
+    }
+  });
+
+  //normally url, json=payload, headers=headers
+
+
+
+  //python function??
+  let datasetResponse = await axiosInstance();
+
+  console.log(datasetResponse);
+
   let datasetName = document.getElementById("current-bf-dataset").innerText;
 
   // fetch the tags for their dataset using the Pennsieve API
