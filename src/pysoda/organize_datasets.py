@@ -595,9 +595,9 @@ def create_soda_json_object_backend(
     """
     Function for importing files from local machine into json structure
     """
-    global create_soda_json_progress        # amount of items counted during recursion
-    global create_soda_json_total_items     # counts the total items in folder
-    global create_soda_json_completed       #completed progress is either 0 or 1
+    global create_soda_json_progress  # amount of items counted during recursion
+    global create_soda_json_total_items  # counts the total items in folder
+    global create_soda_json_completed  # completed progress is either 0 or 1
 
     high_level_sparc_folders = [
         "code",
@@ -776,7 +776,7 @@ def create_soda_json_object_backend(
                 create_soda_json_total_items += 1
         for fileName in filenames:
             if fileName[0:1] != ".":
-                create_soda_json_total_items  += 1
+                create_soda_json_total_items += 1
 
     # reading high level folders
     create_soda_json_completed = 0
@@ -853,9 +853,11 @@ def monitor_local_json_progress():
     Used for progress bar
     """
     global create_soda_json_completed
-    global create_soda_json_total_items 
+    global create_soda_json_total_items
     global create_soda_json_progress
-    progress_percentage = (create_soda_json_progress / create_soda_json_total_items) * 100
+    progress_percentage = (
+        create_soda_json_progress / create_soda_json_total_items
+    ) * 100
 
     res = [
         create_soda_json_progress,
