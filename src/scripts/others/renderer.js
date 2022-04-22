@@ -8628,7 +8628,9 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
 
   // grab the dataset's id
   const id = dataset["content"]["id"];
-
+  console.log(id);
+  console.log(dataset);
+  console.log(jwt);
   // setup the request options
   let options = {
     method: "PUT",
@@ -8665,6 +8667,101 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
   }
 };
 
+let pennsive_confirm_button = document.getElementById("button-confirm-bf-dataset-getting-started");
+
+pennsive_confirm_button.addEventListener("click", async function () {
+  //current function
+  console.log("clicked");
+  //request access token
+  let jwt = await get_access_token();
+  let datasetName = document.getElementById("current-bf-dataset").innerText;
+
+  // fetch the tags for their dataset using the Pennsieve API
+  let dataset = await get_dataset_by_name_id(datasetName, jwt);
+
+  // grab the dataset's id
+  const id = dataset["content"]["id"];
+
+  console.log(id);
+  console.log(dataset);
+  console.log(jwt);
+
+  //first lets get the latest version of ID
+  let version_options = {
+    method: "GET",
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    }
+  }
+
+  let version_response = await fetch(
+    `https://api.pennsieve.io/discover/datasets/${id}/versions`,
+    version_options
+  )
+
+  let version_status = version_response.status;
+  if (version_status === 404) {
+    throw new Error(
+      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
+    );
+  } else if (version_status === 401) {
+    throw new Error(
+      `${statusCode} - You cannot request a dataset while unauthenticated. Please reauthenticate then try again.`
+    );
+  } else if (version_status === 403) {
+    throw new Error(`${statusCode} - You do not have access to this dataset.`);
+  } else if (version_status !== 200) {
+    // something unexpected happened
+    let statusText = await updateResponse.json().statusText;
+    throw new Error(`${version_status} - ${statusText}`);
+  }
+
+  console.log(version_response);
+
+  // setup the request options
+  let options = {
+    method: "POST",
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+    },
+    // body: JSON.stringify({ tags: tags }),
+  };
+
+  // request a manifest file of all items in a dataset
+  //figure out version id
+  let updateResponse = await fetch(
+    `https://api.pennsieve.io/discover/datasets/${id}/versions/1/files/download-manifest`,
+    options
+  );
+
+  // Check status codes and respond accordingly
+  let statusCode = updateResponse.status;
+  if (statusCode === 404) {
+    throw new Error(
+      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
+    );
+  } else if (statusCode === 401) {
+    throw new Error(
+      `${statusCode} - You cannot request a dataset while unauthenticated. Please reauthenticate then try again.`
+    );
+  } else if (statusCode === 403) {
+    throw new Error(`${statusCode} - You do not have access to this dataset.`);
+  } else if (statusCode !== 200) {
+    // something unexpected happened
+    let statusText = await updateResponse.json().statusText;
+    throw new Error(`${statusCode} - ${statusText}`);
+  }
+
+  console.log(updateResponse);
+  console.log("above is request");
+
+}, false)
+
+
 /*
 ******************************************************
 ******************************************************
@@ -8689,7 +8786,9 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   // pull out the id from the result
   const id = dataset["content"]["id"];
-
+  console.log(id);
+  console.log(dataset);
+  console.log(jwt);
   // fetch the readme file from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let readmeResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/readme`,
@@ -8731,6 +8830,8 @@ const getDatasetReadme = async (datasetIdOrName) => {
 
   // grab the readme out of the response
   let { readme } = await readmeResponse.json();
+  console.log(readmeResponse);
+  console.log(readme);
 
   return readme;
 };
@@ -8761,7 +8862,8 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
+  console.log(id)
+  console.log(dataset);
   // put the new readme data in the readme on Pennsieve
   options = {
     method: "PUT",
@@ -8950,7 +9052,8 @@ const submitDatasetForPublication = async (
     `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
     options
   );
-
+  console.log(dataset);
+  console.log(id);
   // get the status code out of the response
   let statusCode = publicationResponse.status;
 
@@ -9034,12 +9137,13 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     // add the required publication type
     queryString = `?publicationType=publication`;
   }
-
+  console.log(dataset);
+  console.log(id)
   let withdrawResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
     options
   );
-
+  console.log(withdrawResponse);
   // get the status code out of the response
   let statusCode = withdrawResponse.status;
 
@@ -9116,7 +9220,8 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   let { id } = dataset["content"];
-
+  console.log(id);
+  console.log(dataset);
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let bannerResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/banner`,
@@ -9128,7 +9233,7 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
       },
     }
   );
-
+  console.log(bannerResponse);
   // get the status code out of the response
   let statusCode = bannerResponse.status;
 
@@ -9186,13 +9291,14 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-
+  console.log(dataset.content)
   // get the user's permissions
   let permissionsResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/role`,
     { headers: { Authorization: `Bearer ${jwt}` } }
   );
-
+  console.log(permissionsResponse);
+  console.log(id);
   // get the status code out of the response
   let statusCode = permissionsResponse.status;
 
@@ -9393,7 +9499,8 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
+  console.log(excludedFilesResponse);
+  console.log(id);
   // get the status code
   let statusCode = excludedFilesResponse.status;
 
@@ -9459,7 +9566,8 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     `https://api.pennsieve.io/datasets/${id}/ignore-files`,
     options
   );
-
+  console.log(excludeFilesResponse);
+  console.log(id);
   // check the status code
   let { status } = excludeFilesResponse;
   switch (status) {
@@ -9514,7 +9622,8 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-
+  console.log(datasetWithChildrenResponse);
+  console.log(id);
   // check the status code
   let { status } = datasetWithChildrenResponse;
   switch (status) {
