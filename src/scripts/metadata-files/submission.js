@@ -343,7 +343,7 @@ const guidedHelpMilestoneSubmission = () => {
           {
             "Description of data":
               "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-            "Expected date of completion": todayString,
+            "Expected date of completion": "NA",
           },
         ];
         console.log(guidedMilestoneData);
