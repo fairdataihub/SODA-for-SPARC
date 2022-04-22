@@ -3971,7 +3971,7 @@ $(document).ready(() => {
       const uniqueCompletionDate = uniqueCompletionDates[0];
 
       guidedSubmissionTagsTagify.addTags([
-        { value: checkedMilestoneData[0]["milestone"], disabled: true },
+        { value: checkedMilestoneData[0]["milestone"], readonly: true },
       ]);
 
       document
@@ -3985,7 +3985,7 @@ $(document).ready(() => {
     if (checkedMilestoneData.length > 1) {
       for (milestone of checkedMilestoneData) {
         guidedSubmissionTagsTagify.addTags([
-          { value: milestone["milestone"], disabled: true },
+          { value: milestone["milestone"], readonly: true },
         ]);
       }
       //filter value 'NA' from uniqueCompletionDates
@@ -4049,6 +4049,12 @@ $(document).ready(() => {
     document.getElementById(
       "guided-button-save-checked-milestones"
     ).style.display = "flex";
+    document.getElementById(
+      "guided-button-edit-checked-completion-date"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-save-checked-completion-date"
+    ).style.display = "flex";
   });
 
   $("#guided-button-save-checked-completion-date").on("click", () => {
@@ -4090,6 +4096,7 @@ $(document).ready(() => {
       unHideAndScrollToElement("guided-div-submission-accordion");
     } else {
       notyf.error("Please select a completion date");
+      return;
     }
     disableElementById("guided-completion-date-container");
     //switch button from save to edit
@@ -4103,6 +4110,9 @@ $(document).ready(() => {
   $("#guided-button-edit-checked-completion-date").on("click", () => {
     //re-enable disabled elements and hide completion date selection div
     enableElementById("guided-completion-date-container");
+    document
+      .getElementById("guided-div-submission-accordion")
+      .classList.add("hidden");
 
     //switch button from edit to save
     document.getElementById(
@@ -4112,64 +4122,6 @@ $(document).ready(() => {
       "guided-button-save-checked-completion-date"
     ).style.display = "flex";
   });
-
-  const guidedSaveSubmissionFile = () => {
-    let award = $("#guided-submission-sparc-award").val();
-    let date = $("#guided-submission-completion-date").val();
-    let milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
-    if (award === "" || date === null || milestones.length == 0) {
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please fill in all of the required fields.",
-        title: "Incomplete information",
-      });
-    } else {
-      var json_arr = [];
-      json_arr.push({
-        award: award,
-        date: date,
-        milestone: milestones[0],
-      });
-      if (milestones.length > 0) {
-        for (var index = 1; index < milestones.length; index++) {
-          json_arr.push({
-            award: "",
-            date: "",
-            milestone: milestones[index],
-          });
-        }
-      }
-      json_str = JSON.stringify(json_arr);
-      sodaJSONObj["dataset-metadata"]["submission-metadata"] = json_str;
-
-      /*client.invoke(
-        "api_save_submission_file",
-        false,
-        "None",
-        "None",
-        path.join($("#guided-dataset-path").text().trim(), "submission.xlsx"),
-        json_str,
-        (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              icon: "error",
-              html: emessage,
-              title: "Failed to generate the submission file",
-            });
-          } else {
-            $("#guided-generate-submission-file").text("Edit submission file");
-          }
-        }
-      );*/
-    }
-  };
 
   function guidedGenerateRCFilesHelper(type) {
     var textValue = $(`#guided-textarea-create-${type}`).val().trim();
@@ -4961,6 +4913,49 @@ $(document).ready(() => {
         $("#guided-next-button").css("visibility", "hidden");
       }
       if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
+        let award = $("#guided-submission-sparc-award").val();
+        let date = $("#guided-submission-completion-date").val();
+        let milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
+        if (award === "") {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please add a SPARC award number to your submission metadata",
+          });
+        }
+        if (date === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "please add a completion date to your submission metadata",
+          });
+        }
+        if (milestones.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please add at least one milestone to your submission metadata",
+          });
+        }
+        if (errorArray.length > 0) {
+          throw errorArray;
+        }
+        // submission data validated, add to JSON
+        var json_arr = [];
+        json_arr.push({
+          award: award,
+          date: date,
+          milestone: milestones[0],
+        });
+        for (milestone of milestones) {
+          json_arr.push({
+            award: "",
+            date: "",
+            milestone: milestone,
+          });
+        }
+        json_str = JSON.stringify(json_arr);
+        sodaJSONObj["dataset-metadata"]["submission-metadata"] = json_str;
+        console.log(sodaJSONObj["dataset-metadata"]["submission-metadata"]);
       }
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
       }
@@ -5591,3 +5586,13 @@ const guided_generate = async () => {
   var countDone = 0;
   var timerProgress = setInterval(main_progressfunction, 1000);
 };
+
+//add a disabled tagify element to guidedSubmissionTagsTagify with the name cat
+function add_disabled_tagify(cat) {
+  var tagify = document.getElementById("guidedSubmissionTagsTagify");
+  var tagify_disabled = document.createElement("input");
+  tagify_disabled.setAttribute("type", "hidden");
+  tagify_disabled.setAttribute("name", "tagify_disabled");
+  tagify_disabled.setAttribute("value", cat);
+  tagify.appendChild(tagify_disabled);
+}
