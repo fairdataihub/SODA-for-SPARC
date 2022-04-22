@@ -2010,7 +2010,7 @@ async function moveItems(ev, category) {
               Swal.hideLoading();
             },
           });
-        })
+        });
         // action to move and delete here
         // multiple files/folders
         if ($("div.single-item.selected-item").toArray().length > 1) {
@@ -2039,7 +2039,8 @@ async function moveItems(ev, category) {
           moveItemsHelper(itemToMove, selectedPath, itemType);
           ev.parentElement.remove();
         }
-        document.getElementById("input-global-path").value = "My_dataset_folder/";
+        document.getElementById("input-global-path").value =
+          "My_dataset_folder/";
         listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
         organizeLandingUIEffect();
         // reconstruct div with new elements
