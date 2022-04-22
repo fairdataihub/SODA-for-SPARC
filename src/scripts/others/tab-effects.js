@@ -1787,11 +1787,8 @@ const verify_sparc_folder = (root_folder_path) => {
   valid_dataset = false;
   fs.readdirSync(root_folder_path).forEach((file) => {
     if (highLevelFolders.includes(file) || possible_metadata_files.includes(path.parse(file).name)) {
-      console.log(file)
       valid_dataset = true;
     } else {
-      console.log("not included")
-      console.log(file)
       valid_dataset = false;
       return valid_dataset;
     }
