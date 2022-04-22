@@ -330,7 +330,24 @@ const guidedHelpMilestoneSubmission = () => {
         });
       } else {
         guidedMilestoneData = res;
+        //create a string with today's date in the format xxxx/xx/xx
+        const today = new Date();
+        const todayString = `
+          ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
+        `;
+        //add a custom milestone row for when the user wants to add a custom milestone
+        //not included in the dataset deliverables document
+        guidedMilestoneData[
+          "Not included in the Dataset Deliverables document"
+        ] = [
+          {
+            "Description of data":
+              "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+            "Expected date of completion": todayString,
+          },
+        ];
         console.log(guidedMilestoneData);
+
         //create a table row element for each description array element for each milestone key in guidedMilestoneData
         const milestoneTableRows = Object.keys(guidedMilestoneData)
           .map((milestoneKey) => {

@@ -605,6 +605,9 @@ h1.guided--text-sub-step {
 .mt-lg {
   margin-top: 20px !important;
 }
+.mt-xl {
+  margin-top: 35px !important;
+}
 .mb-sm {
   margin-bottom: 7px !important;
 }

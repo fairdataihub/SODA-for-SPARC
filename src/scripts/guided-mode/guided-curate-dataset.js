@@ -3940,15 +3940,8 @@ $(document).ready(() => {
     );
 
     //If only one milestone is selected, auto set completion date and milestones
-    if (checkedMilestoneData.length === 1) {
-      console.log(checkedMilestoneData);
-      guidedCompletionDateInput.value =
-        checkedMilestoneData[0]["completionDate"];
-      guidedCompletionDateInput.disabled = true;
-      submissionAccordion.classList.remove("hidden");
-    }
 
-    if (checkedMilestoneData.length > 1) {
+    if (checkedMilestoneData.length > 0) {
       console.log(checkedMilestoneData);
       //get all completionDates from checkedMilestoneData
       const completionDates = [];
@@ -3974,16 +3967,33 @@ $(document).ready(() => {
   });
 
   $("#guided-button-save-checked-completion-date").on("click", () => {
+    const isDateBeforeToday = (date) => {
+      const today = new Date();
+      console.log(today);
+      const dateToCheck = new Date(date);
+      console.log(dateToCheck);
+      //set dateToCheck time to right before midnight
+      today.setHours(23, 59, 59, 999);
+      console.log(dateToCheck);
+      return dateToCheck < today;
+    };
+
     const selectedCompletionDate = document.querySelector(
       "input[name='completion-date']:checked"
     );
     if (selectedCompletionDate) {
-      const guidedCompletionDateInput = document.getElementById(
-        "guided-submission-completion-date"
-      );
-      guidedCompletionDateInput.value = selectedCompletionDate.value;
-      guidedCompletionDateInput.disabled = true;
-      unHideAndScrollToElement("guided-div-submission-accordion");
+      const completionDate = selectedCompletionDate.value;
+      if (isDateBeforeToday(selectedCompletionDate.value)) {
+        notyf.error("Please select a date after today");
+        return;
+      } else {
+        const guidedCompletionDateInput = document.getElementById(
+          "guided-submission-completion-date"
+        );
+        guidedCompletionDateInput.value = selectedCompletionDate.value;
+        guidedCompletionDateInput.disabled = true;
+        unHideAndScrollToElement("guided-div-submission-accordion");
+      }
     } else {
       notyf.error("Please select a completion date");
     }
