@@ -1223,7 +1223,6 @@ async function transitionSubQuestions(
 
 // Create the dataset structure for sodaJSONObj
 const create_json_object = (action, sodaJSONObj, root_folder_path) => {
-  let json_start = performance.now();
   high_level_sparc_folders = [
     "code",
     "derivative",
@@ -1307,8 +1306,6 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
       path.join(root_folder_path, folder)
     );
   }
-  let json_end = performance.now();
-  console.log(`Duration on json side: ${json_end - json_start}`);
 };
 
 // Create the dataset structure for sodaJSONObj (similar to create_json_object but includes manifest files in json structure)

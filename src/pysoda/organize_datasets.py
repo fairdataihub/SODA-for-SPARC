@@ -58,9 +58,9 @@ from pysoda import bf_get_current_user_permission
 
 
 ### Global variables
-completed_progress = 0
-local_json_progress = 0
-total_amount_of_items = 0
+create_soda_json_progress = 0
+create_soda_json_total_items = 0
+create_soda_json_completed = 0
 curateprogress = " "
 curatestatus = " "
 curateprintstatus = " "
@@ -589,16 +589,15 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
                 mycopyfile_with_metadata(srcfile, distfile)
 
 
-def create_json_object_backend(
+def create_soda_json_object_backend(
     soda_json_structure, root_folder_path, irregularFolders, replaced
 ):
     """
     Function for importing files from local machine into json structure
     """
-
-    global completed_progress
-    global local_json_progress
-    global total_amount_of_items
+    global create_soda_json_progress        # amount of items counted during recursion
+    global create_soda_json_total_items     # counts the total items in folder
+    global create_soda_json_completed       #completed progress is either 0 or 1
 
     high_level_sparc_folders = [
         "code",
@@ -612,11 +611,9 @@ def create_json_object_backend(
     dataset_folder = soda_json_structure["dataset-structure"] = {"folders": {}}
 
     def recursive_structure_create(dataset_structure, folder_path):
-        global local_json_progress
+        global create_soda_json_progress
         # going within high level folders
         # add manifest details if manifest exists
-        # print("inside recursive")
-        print(folder_path)
         manifest_object = {
             "filename": "",
             "timestamp": "",
@@ -637,16 +634,13 @@ def create_json_object_backend(
             modified_name = replaced[index_check]
             folder_path = irregularFolders[index_check]
         entries = os.listdir(folder_path)
-        # print("currently in" + folder_path)
         for entry in entries:
             gevent.sleep(0)
-            # going through the files
             check_path = folder_path + "/" + entry
             if os.path.isfile(check_path) is True:
-                # local_json_progress += 1
                 # check manifest to add metadata
                 if entry[0:1] != ".":
-                    local_json_progress += 1
+                    create_soda_json_progress += 1
                 if entry[0:1] != "." and entry[0:8] != "manifest":
                     # no hidden files or manifest files included
                     if folder_name in soda_json_structure["starting-point"]:
@@ -734,8 +728,7 @@ def create_json_object_backend(
                         "additional-metadata": manifest_object["additional-metadata"],
                     }
             elif os.path.isdir(check_path) is True:
-                local_json_progress += 1
-                print(entry + " is a folder")
+                create_soda_json_progress += 1
                 if check_path in irregularFolders:
                     index_check = irregularFolders.index(check_path)
                     modified_name = replaced[index_check]
@@ -776,18 +769,18 @@ def create_json_object_backend(
     # BEGIN
 
     # count the amount of items in folder
-    total_amount_of_items = 0
+    create_soda_json_total_items = 0
     for root, dirs, filenames in os.walk(root_folder_path):
         for Dir in dirs:
             if Dir[0:1] != "." and Dir[0:8] != "manifest":
-                total_amount_of_items += 1
+                create_soda_json_total_items += 1
         for fileName in filenames:
             if fileName[0:1] != ".":
-                total_amount_of_items += 1
+                create_soda_json_total_items  += 1
 
     # reading high level folders
-    completed_progress = 0
-    local_json_progress = 0
+    create_soda_json_completed = 0
+    create_soda_json_progress = 0
     entries = os.listdir(root_folder_path)
 
     for entry in entries:
@@ -795,7 +788,7 @@ def create_json_object_backend(
         item_path = root_folder_path + "/" + entry
         if os.path.isfile(item_path) is True:
             if entry[0:1] != ".":
-                local_json_progress += 1
+                create_soda_json_progress += 1
                 soda_json_structure["metadata-files"][entry] = {
                     "path": item_path,
                     "type": "local",
@@ -803,7 +796,7 @@ def create_json_object_backend(
                 }
             # do file work here
         elif os.path.isdir(item_path) is True:
-            local_json_progress += 1
+            create_soda_json_progress += 1
             # add item to soda
             if item_path in irregularFolders:
                 index_check = irregularFolders.index(item_path)
@@ -850,7 +843,7 @@ def create_json_object_backend(
             soda_json_structure["starting-point"][folder]["manifest"] = json_format
         recursive_structure_create(dataset_folder["folders"][folder], high_lvl_path)
 
-    completed_progress = 1
+    create_soda_json_completed = 1
     return soda_json_structure
 
 
@@ -859,16 +852,16 @@ def monitor_local_json_progress():
     Function for monitoring progress of json_object_creation
     Used for progress bar
     """
-    global total_amount_of_items
-    global completed_progress
-    global local_json_progress
-    progress_percentage = (local_json_progress / total_amount_of_items) * 100
+    global create_soda_json_completed
+    global create_soda_json_total_items 
+    global create_soda_json_progress
+    progress_percentage = (create_soda_json_progress / create_soda_json_total_items) * 100
 
     res = [
-        local_json_progress,
-        total_amount_of_items,
+        create_soda_json_progress,
+        create_soda_json_total_items,
         progress_percentage,
-        completed_progress,
+        create_soda_json_completed,
     ]
     return res
 

@@ -6569,9 +6569,7 @@ ipcRenderer.on(
                             percentage_amount * 0.01 * 360
                           }deg)`;
                         } else {
-                          console.log(progressBar_rightSide.transition);
                           progressBar_rightSide.style.transition = "";
-                          console.log(progressBar_rightSide.transition);
                           progressBar_rightSide.classList.add("notransition");
                           progressBar_rightSide.style.transform = `rotate(180deg)`;
                           progressBar_leftSide.style.transform = `rotate(${
@@ -6611,7 +6609,7 @@ ipcRenderer.on(
                   );
                 }
                 client.invoke(
-                  "api_create_json_object_backend",
+                  "api_create_soda_json_object_backend",
                   sodaJSONObj,
                   root_folder_path,
                   irregularFolderArray,
@@ -6674,9 +6672,7 @@ ipcRenderer.on(
                           percentage_amount * 0.01 * 360
                         }deg)`;
                       } else {
-                        console.log(progressBar_rightSide.transition);
                         progressBar_rightSide.style.transition = "";
-                        console.log(progressBar_rightSide.transition);
                         progressBar_rightSide.classList.add("notransition");
                         progressBar_rightSide.style.transform = `rotate(180deg)`;
                         progressBar_leftSide.style.transform = `rotate(${
@@ -6714,7 +6710,7 @@ ipcRenderer.on(
                 );
               }
               client.invoke(
-                "api_create_json_object_backend",
+                "api_create_soda_json_object_backend",
                 sodaJSONObj,
                 root_folder_path,
                 irregularFolderArray,

@@ -79,7 +79,7 @@ from prepare_metadata import (
 from organize_datasets import (
     generate_dataset_locally,
     bf_get_dataset_files_folders,
-    create_json_object_backend,
+    create_soda_json_object_backend,
     monitor_local_json_progress,
 )
 
@@ -571,11 +571,11 @@ class SodaApi(object):
         return text
 
     ### Creates json structure for local datasets
-    def api_create_json_object_backend(
+    def api_create_soda_json_object_backend(
         self, soda_json_structure, root_folder_path, irregularFolders, replaced
     ):
         try:
-            return create_json_object_backend(
+            return create_soda_json_object_backend(
                 soda_json_structure, root_folder_path, irregularFolders, replaced
             )
         except Exception as e:
