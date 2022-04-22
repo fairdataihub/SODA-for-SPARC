@@ -8672,6 +8672,28 @@ let pennsive_confirm_button = document.getElementById("button-confirm-bf-dataset
 pennsive_confirm_button.addEventListener("click", async function () {
   //current function
   console.log("clicked");
+  const axiosInstance = axios.create({
+    baseURL: "http://127.0.0.1:5000/",
+    timeout: 0,
+  })
+
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
+  console.log(selectedBfAccount);
+  console.log(selectedBfDataset);
+
+  temp_object = {
+    "bf-account-selected": {
+      "account-name": selectedBfAccount,
+    },
+    "bf-dataset-selected": {
+      "dataset-name": selectedBfDataset
+    }
+  }
+
+  //python function??
+  let datasetResponse = await axiosInstance()
+
   //request access token
   let jwt = await get_access_token();
   let datasetName = document.getElementById("current-bf-dataset").innerText;
@@ -8689,6 +8711,7 @@ pennsive_confirm_button.addEventListener("click", async function () {
   //first lets get the latest version of ID
   let version_options = {
     method: "GET",
+    responseType: "json",
     headers: {
       Accept: "*/*",
       Authorization: `Bearer ${jwt}`,
@@ -8704,14 +8727,14 @@ pennsive_confirm_button.addEventListener("click", async function () {
   let version_status = version_response.status;
   if (version_status === 404) {
     throw new Error(
-      `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset.`
+      `${version_status} - The dataset you selected cannot be found. Please select a valid dataset.`
     );
   } else if (version_status === 401) {
     throw new Error(
-      `${statusCode} - You cannot request a dataset while unauthenticated. Please reauthenticate then try again.`
+      `${version_status} - You cannot request a dataset while unauthenticated. Please reauthenticate then try again.`
     );
   } else if (version_status === 403) {
-    throw new Error(`${statusCode} - You do not have access to this dataset.`);
+    throw new Error(`${version_status} - You do not have access to this dataset.`);
   } else if (version_status !== 200) {
     // something unexpected happened
     let statusText = await updateResponse.json().statusText;
