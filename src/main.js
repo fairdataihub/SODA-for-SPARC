@@ -121,12 +121,12 @@ const exitPyProc = (serverConfiguration) => {
 
 app.on("ready", () => {
   createPyProc(PysodaConfiguration);
-  createPyProc(pyFlaskConfiguration);
+  // createPyProc(pyFlaskConfiguration);
 });
 
 app.on("will-quit", () => {
   exitPyProc(PysodaConfiguration);
-  exitPyProc(pyFlaskConfiguration);
+  // exitPyProc(pyFlaskConfiguration);
 });
 
 /*************************************************************
