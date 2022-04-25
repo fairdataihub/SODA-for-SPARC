@@ -2280,7 +2280,7 @@ $(document).ready(() => {
           `${filepath[0]}`
         );
 
-        valid_dataset = verify_sparc_folder(filepath[0]);
+        valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
 
         if (valid_dataset == true) {
           $("#button_upload_local_folder_confirm").click();
