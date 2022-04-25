@@ -551,6 +551,7 @@ const checkHighLevelFoldersInput = () => {
 // function associated with the Back/Continue buttons
 const nextPrev = (n) => {
   var x = document.getElementsByClassName("parent-tabs");
+  console.log(x);
 
   if (n == -1 && x[currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
@@ -1222,6 +1223,14 @@ async function transitionSubQuestions(
 
 // Create the dataset structure for sodaJSONObj
 const create_json_object = (action, sodaJSONObj, root_folder_path) => {
+  high_level_sparc_folders = [
+    "code",
+    "derivative",
+    "docs",
+    "primary",
+    "protocol",
+    "source",
+  ];
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -1438,13 +1447,18 @@ const recursive_structure_create = (
         );
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace("\\", "/");
+          // console.log(temp_current_file_path);
           relative_path = temp_current_file_path.replace(
             root_folder_path + "/",
             ""
           );
+          // console.log(relative_path);
+          // console.log(temp_current_file_path);
           for (item in sodaJSONObj["starting-point"][high_level_folder][
             "manifest"
           ]) {
+            // console.log("item in startingpoint manifest"+item);
+            // console.log(sodaJSONObj["starting-point"][high_level_folder]);
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
                 item
@@ -1485,6 +1499,8 @@ const recursive_structure_create = (
           for (item in sodaJSONObj["starting-point"][high_level_folder][
             "manifest"
           ]) {
+            // console.log(item);
+            // console.log(sodaJSONObj["starting-point"][high_level_folder]);
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][
                 item
@@ -1567,6 +1583,9 @@ const recursive_structure_create = (
     }
   });
   for (folder in dataset_folder["folders"]) {
+    // console.log(dataset_folder["folders"][folder]);
+    // console.log(high_level_folder);
+    // console.log(root_folder_path);
     recursive_structure_create(
       action,
       dataset_folder["folders"][folder],
@@ -1749,6 +1768,14 @@ const recursive_structure_create_include_manifest = (
 // If no high level folders or any possible metadata files
 // are found the folder is marked as invalid
 const verify_sparc_folder = (root_folder_path) => {
+  high_level_sparc_folders = [
+    "code",
+    "derivative",
+    "docs",
+    "primary",
+    "protocol",
+    "source",
+  ];
   possible_metadata_files = [
     "submission",
     "dataset_description",
@@ -1758,16 +1785,21 @@ const verify_sparc_folder = (root_folder_path) => {
     "CHANGES",
   ];
   valid_dataset = false;
-  fs.readdirSync(root_folder_path).forEach((file) => {
-    if (highLevelFolders.includes(file)) {
+  let entries = fs.readdirSync(root_folder_path);
+  console.log(entries);
+  for (let i = 0; i < entries.length; i++) {
+    let item = entries[i];
+    if (
+      highLevelFolders.includes(item) ||
+      possible_metadata_files.includes(path.parse(item).name) ||
+      item.substring(0, 1) != "."
+    ) {
       valid_dataset = true;
+    } else {
+      valid_dataset = false;
+      break;
     }
-    for (item in possible_metadata_files) {
-      if (item.indexOf(file) != -1) {
-        valid_dataset = true;
-      }
-    }
-  });
+  }
   return valid_dataset;
 };
 

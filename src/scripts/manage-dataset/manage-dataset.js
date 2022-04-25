@@ -2295,7 +2295,7 @@ $(document).ready(() => {
         } else {
           Swal.fire({
             icon: "warning",
-            text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+            text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,

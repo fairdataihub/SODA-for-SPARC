@@ -624,8 +624,6 @@ function renameFolder(
 
           /// assign new name to folder or file in the UI
           event1.parentElement.children[1].innerText = returnedName;
-          // event1.parentElement.parentElement.children[1].innerText = returnedName;
-          // console.log(event1.parentElement.parentElement.children[1]);
           /// get location of current file or folder in JSON obj
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
@@ -1697,7 +1695,6 @@ async function addFilesfunction(
   singleUIItem,
   globalPathValue
 ) {
-  let start_time = performance.now();
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
@@ -1854,7 +1851,6 @@ async function addFilesfunction(
         <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
         </div>`,
     });
-    //return console.log("this is when there are duplicates");
   }
 
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
@@ -1884,7 +1880,6 @@ async function addFilesfunction(
     await listItems(currentLocation, uiItem, 500);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
-    let endTime = performance.now();
     // log the successful import
     logCurationForAnalytics(
       "Success",
@@ -2061,7 +2056,6 @@ let listed_count = 0;
 let start = 0;
 let preprended_items = 0;
 async function add_items_to_view(list, amount_req, reset) {
-  let start_time = performance.now();
   uiItems = "#items";
   let elements_req = amount_req / 100; //array stores 100 elements per index
   let element_items = item_box.childElementCount;

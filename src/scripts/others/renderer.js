@@ -6460,6 +6460,8 @@ ipcRenderer.on(
           if (valid_dataset == true) {
             var action = "";
             irregularFolderArray = [];
+            var replaced = [];
+            let finished = 0;
             detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
             var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
             if (irregularFolderArray.length > 0) {
@@ -6482,11 +6484,28 @@ ipcRenderer.on(
                 },
                 footer: footer,
               }).then((result) => {
+                // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                   action = "replace";
+                  if (irregularFolderArray.length > 0) {
+                    for (let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = replaceIrregularFolders(
+                        irregularFolderArray[i]
+                      );
+                      replaced.push(renamedFolderName);
+                    }
+                  }
                 } else if (result.isDenied) {
                   action = "remove";
+                  if (irregularFolderArray.length > 0) {
+                    for (let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = removeIrregularFolders(
+                        irregularFolderArray[i]
+                      );
+                      replaced.push(renamedFolderName);
+                    }
+                  }
                 } else {
                   document.getElementById(
                     "input-destination-getting-started-locally"
@@ -6495,56 +6514,213 @@ ipcRenderer.on(
                   $("#para-continue-location-dataset-getting-started").text("");
                   return;
                 }
+
+                var numb = document.querySelector(".number");
+                numb.innerText = "0%";
+                progressBar_rightSide = document.getElementById(
+                  "left-side_less_than_50"
+                );
+                progressBar_leftSide = document.getElementById(
+                  "right-side_greater_than_50"
+                );
+                progressBar_rightSide.style.transform = `rotate(0deg)`;
+                progressBar_leftSide.style.transform = `rotate(0deg)`;
+                document.getElementById("loading_local_dataset").style.display =
+                  "block";
                 sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+
                 let root_folder_path = $(
                   "#input-destination-getting-started-locally"
                 ).attr("placeholder");
-                create_json_object(action, sodaJSONObj, root_folder_path);
-                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-                populate_existing_folders(datasetStructureJSONObj);
-                populate_existing_metadata(sodaJSONObj);
-                $("#para-continue-location-dataset-getting-started").text(
-                  "Please continue below."
+
+                let local_progress = setInterval(progressReport, 500);
+                function progressReport() {
+                  client.invoke(
+                    "api_monitor_local_json_progress",
+                    (error, res) => {
+                      if (error) {
+                        console.log(error);
+                      } else {
+                        percentage_amount = res[2].toFixed(2);
+                        finished = res[3];
+
+                        progressBar_rightSide = document.getElementById(
+                          "left-side_less_than_50"
+                        );
+                        progressBar_leftSide = document.getElementById(
+                          "right-side_greater_than_50"
+                        );
+
+                        numb.innerText = percentage_amount + "%";
+                        if (percentage_amount <= 50) {
+                          progressBar_rightSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 360
+                          }deg)`;
+                        } else {
+                          progressBar_rightSide.style.transition = "";
+                          progressBar_rightSide.classList.add("notransition");
+                          progressBar_rightSide.style.transform = `rotate(180deg)`;
+                          progressBar_leftSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 180
+                          }deg)`;
+                        }
+
+                        if (finished === 1) {
+                          progressBar_leftSide.style.transform = `rotate(180deg)`;
+                          numb.innerText = "100%";
+                          clearInterval(local_progress);
+                          progressBar_rightSide.classList.remove(
+                            "notransition"
+                          );
+                          populate_existing_folders(datasetStructureJSONObj);
+                          populate_existing_metadata(sodaJSONObj);
+                          $(
+                            "#para-continue-location-dataset-getting-started"
+                          ).text("Please continue below.");
+                          $("#nextBtn").prop("disabled", false);
+                          // log the success to analytics
+                          logMetadataForAnalytics(
+                            "Success",
+                            PrepareDatasetsAnalyticsPrefix.CURATE,
+                            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                            Actions.EXISTING,
+                            Destinations.LOCAL
+                          );
+                          setTimeout(() => {
+                            document.getElementById(
+                              "loading_local_dataset"
+                            ).style.display = "none";
+                          }, 1000);
+                        }
+                      }
+                    }
+                  );
+                }
+                client.invoke(
+                  "api_create_soda_json_object_backend",
+                  sodaJSONObj,
+                  root_folder_path,
+                  irregularFolderArray,
+                  replaced,
+                  (error, res) => {
+                    if (error) {
+                      console.log(error);
+                      clearInterval(local_progress);
+                    } else {
+                      sodaJSONObj = res;
+                      datasetStructureJSONObj =
+                        sodaJSONObj["dataset-structure"];
+                    }
+                  }
                 );
-                $("#nextBtn").prop("disabled", false);
-                // log the success to analytics
-                logMetadataForAnalytics(
-                  "Success",
-                  PrepareDatasetsAnalyticsPrefix.CURATE,
-                  AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                  Actions.EXISTING,
-                  Destinations.LOCAL
-                );
+                //create setInterval variable that will keep track of the iterated items
               });
             } else {
+              document.getElementById("loading_local_dataset").style.display =
+                "block";
+              progressBar_rightSide = document.getElementById(
+                "left-side_less_than_50"
+              );
+              progressBar_leftSide = document.getElementById(
+                "right-side_greater_than_50"
+              );
+              progressBar_leftSide.style.transform = `rotate(0deg)`;
+              progressBar_rightSide.style.transform = `rotate(0deg)`;
+              let numb = document.querySelector(".number");
+              numb.innerText = "0%";
+
               action = "";
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               let root_folder_path = $(
                 "#input-destination-getting-started-locally"
               ).attr("placeholder");
-              create_json_object(action, sodaJSONObj, root_folder_path);
-              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-              populate_existing_folders(datasetStructureJSONObj);
-              populate_existing_metadata(sodaJSONObj);
-              $("#para-continue-location-dataset-getting-started").text(
-                "Please continue below."
-              );
-              $("#nextBtn").prop("disabled", false);
-              // log the success to analytics
-              logMetadataForAnalytics(
-                "Success",
-                PrepareDatasetsAnalyticsPrefix.CURATE,
-                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                Actions.EXISTING,
-                Destinations.LOCAL
+
+              let percentage_amount = 0;
+              let local_progress = setInterval(progressReport, 500);
+              function progressReport() {
+                client.invoke(
+                  "api_monitor_local_json_progress",
+                  (error, res) => {
+                    if (error) {
+                      console.log(error);
+                      clearInterval(local_progress);
+                    } else {
+                      percentage_amount = res[2].toFixed(2);
+                      finished = res[3];
+                      progressBar_rightSide = document.getElementById(
+                        "left-side_less_than_50"
+                      );
+                      progressBar_leftSide = document.getElementById(
+                        "right-side_greater_than_50"
+                      );
+
+                      numb.innerText = percentage_amount + "%";
+                      if (percentage_amount <= 50) {
+                        progressBar_rightSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 360
+                        }deg)`;
+                      } else {
+                        progressBar_rightSide.style.transition = "";
+                        progressBar_rightSide.classList.add("notransition");
+                        progressBar_rightSide.style.transform = `rotate(180deg)`;
+                        progressBar_leftSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 180
+                        }deg)`;
+                      }
+                      if (finished === 1) {
+                        progressBar_leftSide.style.transform = `rotate(180deg)`;
+                        numb.innerText = "100%";
+
+                        clearInterval(local_progress);
+                        progressBar_rightSide.classList.remove("notransition");
+                        populate_existing_folders(datasetStructureJSONObj);
+                        populate_existing_metadata(sodaJSONObj);
+                        $(
+                          "#para-continue-location-dataset-getting-started"
+                        ).text("Please continue below.");
+                        $("#nextBtn").prop("disabled", false);
+                        // log the success to analytics
+                        logMetadataForAnalytics(
+                          "Success",
+                          PrepareDatasetsAnalyticsPrefix.CURATE,
+                          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                          Actions.EXISTING,
+                          Destinations.LOCAL
+                        );
+                        setTimeout(() => {
+                          document.getElementById(
+                            "loading_local_dataset"
+                          ).style.display = "none";
+                        }, 1000);
+                      }
+                    }
+                  }
+                );
+              }
+              client.invoke(
+                "api_create_soda_json_object_backend",
+                sodaJSONObj,
+                root_folder_path,
+                irregularFolderArray,
+                replaced,
+                (error, res) => {
+                  if (error) {
+                    console.log(error);
+                    clearInterval(local_progress);
+                  } else {
+                    sodaJSONObj = res;
+                    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                  }
+                }
               );
             }
           } else {
             Swal.fire({
               icon: "warning",
-              html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+              html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
               <br/>
-              If you are trying to create a new dataset folder, select the 'Prepare a new dataset' option.`,
+              See the "Data Organization" section of the SPARC documentation for more
+              <a a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showConfirmButton: false,
