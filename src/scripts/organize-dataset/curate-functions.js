@@ -1982,6 +1982,11 @@ async function moveItems(ev, category) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     }).then((result) => {
+      let numberItems = $("div.single-item.selected-item").toArray().length;
+      let timer = 2000;
+      if (numberItems > 10) {
+        timer = 7000;
+      }
       if (result.isConfirmed) {
         // loading effect
         Swal.fire({
@@ -1989,9 +1994,22 @@ async function moveItems(ev, category) {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           showConfirmButton: false,
-          timer: 1500,
-          timerProgressBar: true,
+          timerProgressBar: false,
+          timer: timer,
           title: "Moving items...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then(() => {
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "success",
+            text: "Successfully moved items!",
+            didOpen: () => {
+              Swal.hideLoading();
+            },
+          });
         });
         // action to move and delete here
         // multiple files/folders
@@ -2021,6 +2039,17 @@ async function moveItems(ev, category) {
           moveItemsHelper(itemToMove, selectedPath, itemType);
           ev.parentElement.remove();
         }
+        document.getElementById("input-global-path").value =
+          "My_dataset_folder/";
+        listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
+        organizeLandingUIEffect();
+        // reconstruct div with new elements
+        getInFolder(
+          ".single-item",
+          "#items",
+          organizeDSglobalPath,
+          datasetStructureJSONObj
+        );
       }
     });
   }

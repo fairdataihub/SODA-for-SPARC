@@ -695,6 +695,11 @@ async function generateDatasetDescription() {
     } else {
       return false;
     }
+  } else {
+    $("#dd-accordion").removeClass("active");
+    $("#dd-accordion").find(".title").removeClass("active");
+    $("#dd-accordion").find(".content").removeClass("active");
+    return true;
   }
 }
 
@@ -1196,6 +1201,7 @@ async function helpSPARCAward(filetype) {
               milestoneTagify1.removeAllTags();
               $("#submission-sparc-award").val(award);
               $("#ds-description-award-input").val(award);
+              document.getElementById("submission-completion-date").value = "";
               loadContributorInfofromAirtable(award);
             }
           });
@@ -1203,6 +1209,7 @@ async function helpSPARCAward(filetype) {
           milestoneTagify1.removeAllTags();
           $("#submission-sparc-award").val(award);
           $("#ds-description-award-input").val(award);
+          document.getElementById("submission-completion-date").value = "";
           loadContributorInfofromAirtable(award);
         }
       }

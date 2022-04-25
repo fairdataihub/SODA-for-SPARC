@@ -47,6 +47,8 @@ const {
   determineDatasetLocation,
 } = require("./scripts/others/analytics/analytics-utils");
 
+const axios = require("axios").default;
+
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
 
@@ -5807,28 +5809,14 @@ function fileContextMenu(event) {
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 }
 
-// $(document).ready(function () {
-//   tippy("[data-tippy-content]", {
-//     allowHTML: true,
-//     interactive: true,
-//     placement: "top",
-//     theme: "light",
-//   });
-//   document
-//     .getElementById("direct-to-feedback")
-//     .addEventListener("click", function () {
-//       if (
-//         !document
-//           .getElementById("feedback-wrapper")
-//           .classList.contains("is-open")
-//       ) {
-//         document.getElementById("feedback-btn").click();
-//       }
-//       document.querySelector("#feedback-btn").scrollIntoView({
-//         behavior: "smooth",
-//       });
-//     });
-// });
+$(document).ready(function () {
+  tippy("[data-tippy-content]", {
+    allowHTML: true,
+    interactive: true,
+    placement: "top",
+    theme: "light",
+  });
+});
 
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
@@ -8679,8 +8667,6 @@ const get_access_token = async () => {
   return cognitoResponse["accessToken"]["jwtToken"];
 };
 
-// get_access_token().then((res) => console.log(res));
-
 /*
 ******************************************************
 ******************************************************
@@ -9769,3 +9755,184 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   // return the metdata files to the client
   return metadataFiles;
 };
+
+// Test calls for the validator
+
+// let validation_report_template = `
+//   <div class="title active">
+//     <i class="dropdown icon"></i>
+//       What is a dog?
+//   </div>
+//   <div class="content active">
+//     <p class="visible" style="display: block !important;">A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.</p>
+//   </div>`;
+
+// const create_validation_report = (error_report) => {
+//   // let accordion_elements = ` <div class="title active"> `;
+//   let accordion_elements = "";
+//   let elements = Object.keys(error_report).length;
+
+//   if ((elements = 0)) {
+//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> No errors found  </div> <div class="content active"> - </div>`;
+//   } else if (elements == 1) {
+//     let key = Object.keys(error_report)[0];
+//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
+//     if ("messages" in error_report[key]) {
+//       for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//         accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//       }
+//     }
+//     accordion_elements += `</div>`;
+//   } else {
+//     let keys = Object.keys(error_report);
+//     for (key_index in keys) {
+//       key = keys[key_index];
+//       if (key == keys[0]) {
+//         accordion_elements += `<div class="title active"> <i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
+//         if ("messages" in error_report[key]) {
+//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//           }
+//         }
+//         accordion_elements += `</div> `;
+//       } else {
+//         accordion_elements += `<div class="title"><i class="dropdown icon"></i> ${key} </div> <div class="content"> `;
+//         if ("messages" in error_report[key]) {
+//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//           }
+//         }
+//         accordion_elements += `</div>`;
+//       }
+//     }
+//     accordion_elements += `</div>`;
+//   }
+//   $("#validation_error_accordion").html(accordion_elements);
+//   // $("#validation_error_accordion").accordion();
+// };
+
+const create_validation_report = (error_report) => {
+  // let accordion_elements = ` <div class="title active"> `;
+  let accordion_elements = "";
+  let elements = Object.keys(error_report).length;
+
+  if ((elements = 0)) {
+    accordion_elements += `<ul> <li>No errors found </li> </ul>`;
+  } else if (elements == 1) {
+    let key = Object.keys(error_report)[0];
+    accordion_elements += `<ul> `;
+    if ("messages" in error_report[key]) {
+      for (let i = 0; i < error_report[key]["messages"].length; i++) {
+        accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </li>`;
+      }
+    }
+    accordion_elements += `</ul>`;
+  } else {
+    let keys = Object.keys(error_report);
+    for (key_index in keys) {
+      key = keys[key_index];
+      if (key == keys[0]) {
+        accordion_elements += `<ul> `;
+        if ("messages" in error_report[key]) {
+          for (let i = 0; i < error_report[key]["messages"].length; i++) {
+            accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </p> </li>`;
+          }
+        }
+        accordion_elements += `</ul> `;
+      } else {
+        accordion_elements += `<ul> `;
+        if ("messages" in error_report[key]) {
+          for (let i = 0; i < error_report[key]["messages"].length; i++) {
+            accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </p></li>`;
+          }
+        }
+        accordion_elements += `</ul>`;
+      }
+    }
+    // accordion_elements += `</div>`;
+  }
+  $("#validation_error_accordion").html(accordion_elements);
+  // $("#validation_error_accordion").accordion();
+};
+
+$("#validate_dataset_bttn").on("click", async () => {
+  const axiosInstance = axios.create({
+    baseURL: "http://127.0.0.1:5000/",
+    timeout: 0,
+  });
+
+  log.info("validating dataset");
+  log.info(bfDatasetSubtitle.value);
+
+  $("#dataset_validator_status").text(
+    "Please wait while we retrieve the dataset..."
+  );
+  $("#dataset_validator_spinner").show();
+
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
+
+  temp_object = {
+    "bf-account-selected": {
+      "account-name": selectedBfAccount,
+    },
+    "bf-dataset-selected": {
+      "dataset-name": selectedBfDataset,
+    },
+  };
+
+  let datasetResponse;
+
+  try {
+    datasetResponse = await axiosInstance("api_ps_retrieve_dataset", {
+      params: {
+        obj: JSON.stringify(temp_object),
+      },
+      responseType: "json",
+      method: "get",
+    });
+  } catch (err) {
+    log.error(error);
+    console.error(error);
+    $("#dataset_validator_spinner").hide();
+    $("#dataset_validator_status").html(
+      `<span style='color: red;'> ${error}</span>`
+    );
+  }
+
+  console.log(res);
+  $("#dataset_validator_status").text(
+    "Please wait while we validate the dataset..."
+  );
+
+  try {
+    datasetResponse = axiosInstance("api_validate_dataset_pipeline", {
+      params: {
+        selectedBfAccount,
+        selectedBfDataset,
+      },
+      responseType: "json",
+      method: "get",
+    });
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    // var emessage = userError(error);
+    $("#dataset_validator_spinner").hide();
+    $("#dataset_validator_status").html(
+      `<span style='color: red;'> ${error}</span>`
+    );
+    // ipcRenderer.send(
+    //   "track-event",
+    //   "Error",
+    //   "Validate Dataset",
+    //   defaultBfDataset
+    // );
+  }
+
+  console.log(datasetResponse);
+
+  create_validation_report(res);
+  $("#dataset_validator_status").html("");
+  $("#dataset_validator_spinner").hide();
+});
