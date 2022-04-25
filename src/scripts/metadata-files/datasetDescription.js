@@ -1881,7 +1881,7 @@ function grabStudyInfoEntries() {
 }
 
 function showAddAirtableAccountSweetalert(keyword) {
-  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" id='airtable-tooltip' rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
   var bootb = Swal.fire({
     title: htmlTitle,
@@ -1895,7 +1895,7 @@ function showAddAirtableAccountSweetalert(keyword) {
     reverseButtons: reverseSwalButtons,
     customClass: "swal-wide",
     footer:
-      "<a href='https://docs.sodaforsparc.io/docs/prepare-metadata/connect-your-airtable-account-with-soda' target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
+      "<a href='https://docs.sodaforsparc.io/docs/prepare-metadata/connect-your-airtable-account-with-soda'  target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
     },
@@ -1904,11 +1904,12 @@ function showAddAirtableAccountSweetalert(keyword) {
     },
     didOpen: () => {
       // $(".swal-popover").popover();
-      tippy("[data-tippy-content]", {
+      tippy("#airtable-tooltip", {
         allowHTML: true,
         interactive: true,
         placement: "right",
         theme: "light",
+        content: "Note that the key will be stored locally on your computer and the SODA Team will not have access to it."
       });
     },
   }).then((result) => {
