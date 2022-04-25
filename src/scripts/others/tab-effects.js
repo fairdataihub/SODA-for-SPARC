@@ -1787,9 +1787,13 @@ const verify_sparc_folder = (root_folder_path) => {
   valid_dataset = false;
   let entries = fs.readdirSync(root_folder_path);
   console.log(entries);
-  for(let i = 0; i < entries.length; i++) {
+  for (let i = 0; i < entries.length; i++) {
     let item = entries[i];
-    if(highLevelFolders.includes(item) || possible_metadata_files.includes(path.parse(item).name) || item.substring(0, 1) != ".") {
+    if (
+      highLevelFolders.includes(item) ||
+      possible_metadata_files.includes(path.parse(item).name) ||
+      item.substring(0, 1) != "."
+    ) {
       valid_dataset = true;
     } else {
       valid_dataset = false;
