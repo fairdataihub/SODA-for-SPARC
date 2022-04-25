@@ -551,7 +551,7 @@ const checkHighLevelFoldersInput = () => {
 // function associated with the Back/Continue buttons
 const nextPrev = (n) => {
   var x = document.getElementsByClassName("parent-tabs");
-  
+
   if (n == -1 && x[currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
       detail: {
