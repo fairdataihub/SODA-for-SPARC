@@ -1349,7 +1349,29 @@ function changeAward(award, curationMode) {
   loadContributorInfofromAirtable(award, curationMode);
 }
 
-function loadContributorInfofromAirtable(award, curationMode) {
+const generateContributorRowElement = (
+  contributorLastName,
+  contributorFirstName
+) => {
+  return `
+    <tr>
+      <td class="middle aligned collapsing text-center">
+        <div class="ui fitted checkbox">
+          <input type="checkbox" name="contributor">
+          <label></label>
+        </div>
+      </td>
+      <td class="middle aligned">
+        ${contributorLastName}
+      </td>
+      <td class="middle aligned">
+        ${contributorFirstName}
+      </td>
+    </tr>
+  `;
+};
+
+const loadContributorInfofromAirtable = async (award, curationMode) => {
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();
@@ -1363,7 +1385,7 @@ function loadContributorInfofromAirtable(award, curationMode) {
       apiKey: airKeyInput,
     });
     var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    base("sparc_members")
+    await base("sparc_members")
       .select({
         filterByFormula: `({SPARC_Award_#} = "${award}")`,
       })
@@ -1371,8 +1393,7 @@ function loadContributorInfofromAirtable(award, curationMode) {
         records.forEach(function (record) {
           var firstName = record.get("First_name");
           var lastName = record.get("Last_name");
-          console.log(lastName);
-          console.log(firstName);
+
           if (firstName !== undefined && lastName !== undefined) {
             globalContributorNameObject[lastName] = firstName;
             currentContributorsLastNames.push(lastName);
@@ -1389,9 +1410,22 @@ function loadContributorInfofromAirtable(award, curationMode) {
       }
     }
   }
-  console.log(globalContributorNameObject);
-  console.log(currentContributorsLastNames);
-}
+  if (curationMode === "guided") {
+    // render the contributors table on the contributors page
+    const contributorTableRows = Object.keys(globalContributorNameObject)
+      .map((contributor) => {
+        const contributorLast = globalContributorNameObject[contributor];
+        const contributorFirst = contributor;
+        return generateContributorRowElement(contributorLast, contributorFirst);
+      })
+      .join("\n");
+    const contributorsTableContainer = document.getElementById(
+      "contributors-table-container"
+    );
+    contributorsTableContainer.innerHTML = contributorTableRows;
+    console.log(currentContributorsLastNames);
+  }
+};
 
 function addContributortoTableDD(name, contactStatus, curationMode) {
   let contable;

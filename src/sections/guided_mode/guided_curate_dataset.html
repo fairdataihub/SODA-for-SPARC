@@ -1725,11 +1725,36 @@
           </div>
           <div id="guided-contributors-tab" class="guided--panel hidden">
             <div class="guided--section">
+              <h2 class="guided--text-sub-step">Contributors table</h2>
+              <table
+                class="ui celled striped table"
+                id="contributors-table"
+                style="margin-bottom: 25px; width: 500px"
+              >
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Last name</th>
+                    <th>First name</th>
+                  </tr>
+                </thead>
+                <tbody id="contributors-table-container"></tbody>
+              </table>
+              <button
+                class="ui primary button"
+                id="guided-button-save-checked-contributors"
+                style="background-color: var(--color-light-green) !important"
+              >
+                Continue
+              </button>
+            </div>
+            <div class="guided--section">
               <h2 class="guided--text-sub-step">
                 Would you like to add contributors?
               </h2>
             </div>
           </div>
+
           <div id="guided-protocols-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h2 class="guided--text-sub-step">Would you like to protocols</h2>

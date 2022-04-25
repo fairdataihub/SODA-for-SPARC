@@ -397,8 +397,8 @@ const traverseToTab = (targetPageID) => {
         airTableKeyData["key-name"] !== "" &&
         airTableKeyData["api-key"] !== ""
       ) {
-        const sparcAward =
-          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+        const sparcAward = "OT2OD023854";
+        /*sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]; add this back in*/
         console.log(sparcAward);
         if (sparcAward) {
           loadContributorInfofromAirtable(sparcAward, "guided");
@@ -2303,7 +2303,7 @@ $(document).ready(() => {
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-protocols-tab");
+      traverseToTab("guided-contributors-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
@@ -4142,6 +4142,8 @@ $(document).ready(() => {
       "guided-button-save-checked-completion-date"
     ).style.display = "flex";
   });
+  //description
+  $("#guided-button-save-contributors").on("click", () => {});
 
   function guidedGenerateRCFilesHelper(type) {
     var textValue = $(`#guided-textarea-create-${type}`).val().trim();
