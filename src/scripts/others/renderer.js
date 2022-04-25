@@ -4438,7 +4438,7 @@ var bfAddAccountBootboxMessage = `<form>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-tippy-content="See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover"  id="add-bf-account-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 retrieveBFAccounts();
 
@@ -8123,11 +8123,12 @@ function showBFAddAccountSweetalert() {
     heightAuto: false,
     allowOutsideClick: false,
     didOpen: () => {
-      tippy("[data-tippy-content]", {
+      tippy("#add-bf-account-tooltip", {
         allowHTML: true,
         interactive: true,
         placement: "right",
         theme: "light",
+        content: "See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA."
       });
     },
     showClass: {
