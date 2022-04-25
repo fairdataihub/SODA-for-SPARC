@@ -8128,7 +8128,8 @@ function showBFAddAccountSweetalert() {
         interactive: true,
         placement: "right",
         theme: "light",
-        content: "See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA."
+        content:
+          "See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA.",
       });
     },
     showClass: {
