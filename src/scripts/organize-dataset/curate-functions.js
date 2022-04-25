@@ -159,6 +159,20 @@ $(".button-individual-metadata.go-back").click(function () {
   }
 });
 
+const metadataFileExtentionObject = {
+  "submission": ['.csv', '.xlsx', '.xls', '.json'],
+  "dataset_description": ['.csv', '.xlsx', '.xls', '.json'],
+  "subjects": ['.csv', '.xlsx', '.xls', '.json'],
+  "samples": ['.csv', '.xlsx', '.xls', '.json'],
+  "README": ['.txt'],
+  "CHANGES": ['.txt'],
+  "code_description": ['.xlsx'],
+  "inputs_metadata": ['.xlsx'],
+  "outputs_metadata": ['.xlsx']
+}
+
+
+
 function dropHandler(ev, paraElement, metadataFile) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
@@ -169,16 +183,24 @@ function dropHandler(ev, paraElement, metadataFile) {
     var file = ev.dataTransfer.items[0];
     // If dropped items aren't files, reject them
     if (ev.dataTransfer.items[0].kind === "file") {
+
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
+      var extension = file.name.slice(file.name.indexOf("."));
+
       if (metadataWithoutExtension === metadataFile) {
-        document.getElementById(paraElement).innerHTML = file.path;
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-confirm")
-          .css("display", "flex");
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-go-back")
-          .css("display", "none");
+        if (metadataFileExtentionObject[metadataFile].includes(extension)) {
+          document.getElementById(paraElement).innerHTML = file.path;
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-confirm")
+            .css("display", "flex");
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-go-back")
+            .css("display", "none");
+        } else {
+          document.getElementById(paraElement).innerHTML =
+            "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
+        }
       } else {
         document.getElementById(paraElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
@@ -1994,6 +2016,8 @@ async function moveItems(ev, category) {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           showConfirmButton: false,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
           timerProgressBar: false,
           timer: timer,
           title: "Moving items...",
