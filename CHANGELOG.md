@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## v.5.3.4 - 2022-04-25
 
+### Feature additions:
+
+- In Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will ease performance when datasets are large (over 500+ items) and can cause issues when rendering on older machines.
+- Importing a local dataset will now be handled on the python end to increase performance. A progress bar is also included to show details about import to user.
+
 ### Bug fixes:
 
 - Fixed bug under Step 3 - Organize datasets when users click Next to get to subsequent steps, and when they go back to this step, they cannot navigate in and out the high-level folders anymore.
