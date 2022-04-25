@@ -6455,7 +6455,7 @@ ipcRenderer.on(
         ) {
           valid_dataset = verify_sparc_folder(
             document.getElementById("input-destination-getting-started-locally")
-              .placeholder
+              .placeholder, "local"
           );
           if (valid_dataset == true) {
             var action = "";
