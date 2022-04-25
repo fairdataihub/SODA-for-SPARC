@@ -1,3 +1,5 @@
+const { parseJSON } = require("jquery");
+
 //Temp variables used for data storage until put into sodaJSONObj on next button press
 let guidedUserPermissions = [];
 let guidedTeamPermissions = [];
@@ -384,6 +386,23 @@ const traverseToTab = (targetPageID) => {
         licenseCheckbox.checked = true;
       } else {
         licenseCheckbox.checked = false;
+      }
+    }
+    if (targetPageID === "guided-contributors-tab") {
+      // check if airtableconfig has non empty api-key and key-name properties
+      const airTableKeyData = parseJson(airtableConfigPath);
+      if (
+        airTableKeyData["api-key"] &&
+        airTableKeyData["key-name"] &&
+        airTableKeyData["key-name"] !== "" &&
+        airTableKeyData["api-key"] !== ""
+      ) {
+        const sparcAward =
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+        console.log(sparcAward);
+        if (sparcAward) {
+          loadContributorInfofromAirtable(sparcAward, "guided");
+        }
       }
     }
     if (targetPageID === "guided-create-subjects-metadata-tab") {
@@ -848,6 +867,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["metadata-files"] = {};
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["subject-sample-structure"] = {};
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
@@ -4956,7 +4976,9 @@ $(document).ready(() => {
         }
         json_str = JSON.stringify(json_arr);
         sodaJSONObj["dataset-metadata"]["submission-metadata"] = json_str;
-        console.log(sodaJSONObj["dataset-metadata"]["submission-metadata"]);
+        // save the award string to JSONObj to be shared with other award inputs
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+          award;
       }
       if (pageBeingLeftID === "guided-create-description-metadata-tab") {
       }

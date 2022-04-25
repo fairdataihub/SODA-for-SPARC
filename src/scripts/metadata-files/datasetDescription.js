@@ -1116,6 +1116,10 @@ function addAdditionalLinktoTableDD(
 }
 
 guidedSetImportedSPARCAward = (awardString) => {
+  // save the award string to JSONObj to be shared with other award inputs
+  sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+    awardString;
+
   $("#guided-input-submission-sparc-award-import").val(awardString);
   $("#guided-submission-sparc-award").val(awardString);
   $("#guided-submission-sparc-award").prop("disabled", true);
@@ -1270,13 +1274,11 @@ async function helpSPARCAward(filetype, curationMode) {
                 $("#ds-description-award-input").val(award);
                 document.getElementById("submission-completion-date").value =
                   "";
-                loadContributorInfofromAirtable(award);
+                loadContributorInfofromAirtable(award, "free-form");
               }
 
               if (curationMode === "guided") {
                 guidedSetImportedSPARCAward(award);
-
-                loadContributorInfofromAirtable(award);
               }
             }
           });
@@ -1286,12 +1288,10 @@ async function helpSPARCAward(filetype, curationMode) {
             $("#submission-sparc-award").val(award);
             $("#ds-description-award-input").val(award);
             document.getElementById("submission-completion-date").value = "";
-            loadContributorInfofromAirtable(award);
           }
 
           if (curationMode === "guided") {
             guidedSetImportedSPARCAward(award);
-            loadContributorInfofromAirtable(award);
           }
         }
       }
@@ -1344,17 +1344,12 @@ function changeAward(award, curationMode) {
       Swal.showLoading();
     },
   }).then((result) => {});
-  if (curationMode === "free-form") {
-    $("#ds-description-award-input").val(award);
-    $("#submission-sparc-award").val(award);
-  }
-  if (curationMode === "guided") {
-    alert("changing award");
-  }
-  loadContributorInfofromAirtable(award);
+  $("#ds-description-award-input").val(award);
+  $("#submission-sparc-award").val(award);
+  loadContributorInfofromAirtable(award, curationMode);
 }
 
-function loadContributorInfofromAirtable(award) {
+function loadContributorInfofromAirtable(award, curationMode) {
   globalContributorNameObject = {};
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();
@@ -1376,6 +1371,8 @@ function loadContributorInfofromAirtable(award) {
         records.forEach(function (record) {
           var firstName = record.get("First_name");
           var lastName = record.get("Last_name");
+          console.log(lastName);
+          console.log(firstName);
           if (firstName !== undefined && lastName !== undefined) {
             globalContributorNameObject[lastName] = firstName;
             currentContributorsLastNames.push(lastName);
@@ -1383,6 +1380,7 @@ function loadContributorInfofromAirtable(award) {
         }),
           fetchNextPage();
       });
+
     function done(err) {
       if (err) {
         log.error(err);
@@ -1391,6 +1389,8 @@ function loadContributorInfofromAirtable(award) {
       }
     }
   }
+  console.log(globalContributorNameObject);
+  console.log(currentContributorsLastNames);
 }
 
 function addContributortoTableDD(name, contactStatus, curationMode) {
