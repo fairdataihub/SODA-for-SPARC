@@ -2153,7 +2153,7 @@ function onchangeFirstNames() {
 }
 
 // Auto populate once a contributor is selected
-function loadContributorInfo(lastName, firstName) {
+const loadContributorInfo = async (lastName, firstName) => {
   // first destroy old tagifies
   $($("#input-con-affiliation").siblings()[0]).remove();
   $($("#input-con-role").siblings()[0]).remove();
@@ -2218,7 +2218,7 @@ function loadContributorInfo(lastName, firstName) {
     apiKey: airKeyInput,
   });
   var base = Airtable.base("appiYd1Tz9Sv857GZ");
-  base("sparc_members")
+  await base("sparc_members")
     .select({
       filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
     })
@@ -2230,20 +2230,21 @@ function loadContributorInfo(lastName, firstName) {
         conInfoObj["Affiliation"] = record.get("Institution");
       }),
         fetchNextPage();
-
-      // if no records found, leave fields empty
-      leaveFieldsEmpty(
-        conInfoObj["ID"],
-        document.getElementById("input-con-ID")
-      );
-      leaveFieldsEmpty(
-        conInfoObj["Role"],
-        document.getElementById("input-con-role")
-      );
-      leaveFieldsEmpty(
-        conInfoObj["Affiliation"],
-        document.getElementById("input-con-affiliation")
-      );
+      if (curationMode === "free-form") {
+        // if no records found, leave fields empty
+        leaveFieldsEmpty(
+          conInfoObj["ID"],
+          document.getElementById("input-con-ID")
+        );
+        leaveFieldsEmpty(
+          conInfoObj["Role"],
+          document.getElementById("input-con-role")
+        );
+        leaveFieldsEmpty(
+          conInfoObj["Affiliation"],
+          document.getElementById("input-con-affiliation")
+        );
+      }
 
       tagifyAffliation.addTags(conInfoObj["Affiliation"]);
       tagifyRole.addTags(conInfoObj["Role"]);
@@ -2257,7 +2258,10 @@ function loadContributorInfo(lastName, firstName) {
     };
   tagifyAffliation.loading(false);
   tagifyRole.loading(false);
-}
+  if (curationMode === "guided") {
+    console.log(conInfoObj);
+  }
+};
 
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {

@@ -4142,8 +4142,118 @@ $(document).ready(() => {
       "guided-button-save-checked-completion-date"
     ).style.display = "flex";
   });
-  //description
-  $("#guided-button-save-contributors").on("click", () => {});
+
+  const getCheckedContributors = () => {
+    const checkedContributors = document.querySelectorAll(
+      "input[name='contributor']:checked"
+    );
+    const checkedContributorsArray = Array.from(checkedContributors);
+    checkedContributorData = checkedContributorsArray.map(
+      (checkedContributor) => {
+        const tableRow =
+          checkedContributor.parentElement.parentElement.parentElement;
+        const contributorLastName = tableRow.children[1].innerHTML.trim();
+        const contributorFirstName = tableRow.children[2].innerHTML.trim();
+        return {
+          contributorFirstName: contributorFirstName,
+          contributorLastName: contributorLastName,
+        };
+      }
+    );
+    return checkedContributorData;
+  };
+
+  //description///////////////////////////////////////
+  $("#guided-button-save-checked-contributors").on("click", async () => {
+    const checkedContributors = getCheckedContributors();
+    console.log(checkedContributors);
+    //if checkedMilestoneData is empty, create notyf
+    if (checkedContributors.length === 0) {
+      notyf.error("Please select at least one contributor");
+      return;
+    }
+
+    var airKeyContent = parseJson(airtableConfigPath);
+    var airKeyInput = airKeyContent["api-key"];
+    var airtableConfig = Airtable.configure({
+      endpointUrl: "https://" + airtableHostname,
+      apiKey: airKeyInput,
+    });
+    var base = Airtable.base("appiYd1Tz9Sv857GZ");
+    let contributorInfoFilterString = "OR(";
+    for (const contributor of checkedContributors) {
+      contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}"),`;
+    }
+    //replace last comma with closing bracket
+    contributorInfoFilterString =
+      contributorInfoFilterString.slice(0, -1) + ")";
+
+    //Select contributors where contributor first name is Jacob and contributor last name is Smith or contributor first name is John and contributor last name is Doe
+    const contributorInfoResult = await base("sparc_members")
+      .select({
+        filterByFormula: contributorInfoFilterString,
+      })
+      .all();
+    console.log(contributorInfoResult);
+    //if contributorInfoResult is empty, create notyf
+    if (contributorInfoResult.length === 0) {
+      notyf.error("No contributors found");
+      return;
+    }
+    //if contributorInfoResult is not empty, create notyf
+    notyf.success("Contributors found");
+
+    //create contributorInfoData array
+
+    contributorInfoData = contributorInfoResult.map((contributorInfo) => {
+      return {
+        contributorFirstName: contributorInfo.fields["First_name"],
+        contributorLastName: contributorInfo.fields["Last_name"],
+        contributorEmail: contributorInfo.fields["Email"],
+      };
+    });
+    console.log(contributorInfoData);
+
+    /*
+    const contributorInforesponse = await base("sparc_members")
+      .select({
+        filterByFormula: contributorInfoFilterString,
+      })
+      .eachPage(function page(records, fetchNextPage) {
+        var conInfoObj = {};
+        records.forEach(function (record) {
+          conInfoObj["ID"] = record.get("ORCID");
+          conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
+          conInfoObj["Affiliation"] = record.get("Institution");
+        }),
+          fetchNextPage();
+        if (curationMode === "free-form") {
+          // if no records found, leave fields empty
+          leaveFieldsEmpty(
+            conInfoObj["ID"],
+            document.getElementById("input-con-ID")
+          );
+          leaveFieldsEmpty(
+            conInfoObj["Role"],
+            document.getElementById("input-con-role")
+          );
+          leaveFieldsEmpty(
+            conInfoObj["Affiliation"],
+            document.getElementById("input-con-affiliation")
+          );
+        }
+
+        tagifyAffliation.addTags(conInfoObj["Affiliation"]);
+        tagifyRole.addTags(conInfoObj["Role"]);
+      });
+    function done(err) {
+      if (err) {
+        log.error(err);
+        console.error(err);
+        return;
+      }
+    }*/
+  });
 
   function guidedGenerateRCFilesHelper(type) {
     var textValue = $(`#guided-textarea-create-${type}`).val().trim();

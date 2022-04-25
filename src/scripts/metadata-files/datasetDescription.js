@@ -1353,6 +1353,8 @@ const generateContributorRowElement = (
   contributorLastName,
   contributorFirstName
 ) => {
+  console.log(contributorLastName);
+  console.log(contributorFirstName);
   return `
     <tr>
       <td class="middle aligned collapsing text-center">
@@ -1391,11 +1393,14 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
       })
       .eachPage(function page(records, fetchNextPage) {
         records.forEach(function (record) {
-          var firstName = record.get("First_name");
-          var lastName = record.get("Last_name");
+          const firstName = record.get("First_name");
+          const lastName = record.get("Last_name");
+          const email = record.get("Email");
 
           if (firstName !== undefined && lastName !== undefined) {
             globalContributorNameObject[lastName] = firstName;
+            if (curationMode === "guided") {
+            }
             currentContributorsLastNames.push(lastName);
           }
         }),
@@ -1410,12 +1415,15 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
       }
     }
   }
+  console.log(globalContributorNameObject);
   if (curationMode === "guided") {
     // render the contributors table on the contributors page
     const contributorTableRows = Object.keys(globalContributorNameObject)
       .map((contributor) => {
-        const contributorLast = globalContributorNameObject[contributor];
-        const contributorFirst = contributor;
+        const contributorLast = contributor;
+        const contributorFirst = globalContributorNameObject[contributor];
+        console.log(contributorLast);
+        console.log(contributorFirst);
         return generateContributorRowElement(contributorLast, contributorFirst);
       })
       .join("\n");
