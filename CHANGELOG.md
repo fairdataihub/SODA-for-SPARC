@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed bug with illegally formatted metadata files being dropped in Step 4: Metadata files.
 
+- Fixed UI bug where tooltips in the Prepare Metadata section receive a top and a right message on hover.
+
 ### Known Issues:
 
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
