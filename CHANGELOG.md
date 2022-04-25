@@ -5,6 +5,24 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.5.3.4 - 2022-04-25
+
+### Bug fixes:
+
+- Fixed bug under Step 3 - Organize datasets when users click Next to get to subsequent steps, and when they go back to this step, they cannot navigate in and out the high-level folders anymore.
+
+- Added a SweetAlert loading popup for when users move a large number of files/folders under Step 3 - Organize datasets.
+
+- Fixed bug related to the false warning of "The dataset does not contain valid SPARC folders" due to wrongly saved local dataset paths.
+
+- Fixed UI bug related to the manifest file generator where the live spreadsheet is auto-opened without being prompted to open.
+
+### Known Issues:
+
+- There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
+- When uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.
+
+
 ## v.5.3.3 - 2022-04-08
 
 ### Bug fixes:
