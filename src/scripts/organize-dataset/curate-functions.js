@@ -160,18 +160,16 @@ $(".button-individual-metadata.go-back").click(function () {
 });
 
 const metadataFileExtentionObject = {
-  "submission": ['.csv', '.xlsx', '.xls', '.json'],
-  "dataset_description": ['.csv', '.xlsx', '.xls', '.json'],
-  "subjects": ['.csv', '.xlsx', '.xls', '.json'],
-  "samples": ['.csv', '.xlsx', '.xls', '.json'],
-  "README": ['.txt'],
-  "CHANGES": ['.txt'],
-  "code_description": ['.xlsx'],
-  "inputs_metadata": ['.xlsx'],
-  "outputs_metadata": ['.xlsx']
-}
-
-
+  submission: [".csv", ".xlsx", ".xls", ".json"],
+  dataset_description: [".csv", ".xlsx", ".xls", ".json"],
+  subjects: [".csv", ".xlsx", ".xls", ".json"],
+  samples: [".csv", ".xlsx", ".xls", ".json"],
+  README: [".txt"],
+  CHANGES: [".txt"],
+  code_description: [".xlsx"],
+  inputs_metadata: [".xlsx"],
+  outputs_metadata: [".xlsx"],
+};
 
 function dropHandler(ev, paraElement, metadataFile) {
   // Prevent default behavior (Prevent file from being opened)
@@ -183,7 +181,6 @@ function dropHandler(ev, paraElement, metadataFile) {
     var file = ev.dataTransfer.items[0];
     // If dropped items aren't files, reject them
     if (ev.dataTransfer.items[0].kind === "file") {
-
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
