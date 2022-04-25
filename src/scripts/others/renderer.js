@@ -4895,6 +4895,24 @@ async function addFoldersfunction(
   folderArray,
   currentLocation
 ) {
+  let importToast = new Notyf({
+    position: { x: "right", y: "bottom" },
+    ripple: true,
+    dismissible: true,
+    ripple: false,
+    types: [
+      {
+        type: "success",
+        background: "#13716D",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+        duration: 2500,
+      },
+    ],
+  });
   var uiFolders = {};
   var importedFolders = {};
   var duplicateFolders = [];
@@ -5023,6 +5041,17 @@ async function addFoldersfunction(
         datasetStructureJSONObj
       );
       beginScrollListen();
+      if(Object.keys(importedFolders).length > 1){
+        importToast.open({
+          type: "success",
+          message: "Successfully Imported Folders",
+        });
+      } else {
+        importToast.open({
+          type: "success",
+          message: "Successfully Imported Folder",
+        });
+      }
       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
 
@@ -5234,6 +5263,24 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
+  let importToast = new Notyf({
+    position: { x: "right", y: "bottom" },
+    ripple: true,
+    dismissible: true,
+    ripple: false,
+    types: [
+      {
+        type: "success",
+        background: "#13716D",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+        duration: 2500,
+      },
+    ],
+  });
   var folderPath = [];
   var duplicateFolders = [];
   for (var i = 0; i < ev1.length; i++) {
@@ -5466,6 +5513,17 @@ function dropHelper(
       $(appendString).appendTo(ev2);
     }
     listItems(myPath, "#items", 500, (reset = true));
+    if(Object.keys(importedFiles).length > 1) {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Files",
+      });
+    } else {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported File",
+      });
+    }
     // getInFolder(
     //   ".single-item",
     //   "#items",
@@ -5515,6 +5573,17 @@ function dropHelper(
       organizeDSglobalPath,
       datasetStructureJSONObj
     );
+    if(Object.keys(importedFolders).length > 1) {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Folders",
+      });
+    } else {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Folder",
+      });
+    }
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }

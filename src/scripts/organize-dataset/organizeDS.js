@@ -7,11 +7,11 @@ function showTooltips(ev) {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
+      popup: "animate__animated animate__fadeInDown animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate_fastest",
-    },
+      popup: "animate__animated animate__fadeOutUp animate_fastest"
+    }
   });
 }
 
@@ -109,11 +109,11 @@ function delFolder(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       });
       return;
     }
@@ -125,11 +125,11 @@ function delFolder(
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       });
       return;
     }
@@ -146,11 +146,11 @@ function delFolder(
       backdrop: "rgba(0,0,0, 0.4)",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+        popup: "animate__animated animate__zoomOut animate__faster"
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         let itemToRestore = itemToDelete;
@@ -171,11 +171,11 @@ function delFolder(
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
+                popup: "animate__animated animate__zoomIn animate__faster"
               },
               hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
+                popup: "animate__animated animate__zoomOut animate__faster"
+              }
             });
             return;
           }
@@ -246,11 +246,11 @@ function delFolder(
         cancelButtonText: "Cancel",
         reverseButtons: reverseSwalButtons,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           var filtered = getGlobalPath(organizeCurrentLocation);
@@ -320,11 +320,11 @@ function delFolder(
         cancelButtonText: "Cancel",
         reverseButtons: reverseSwalButtons,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          popup: "animate__animated animate__zoomOut animate__faster"
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           /// get current location of folders or files
@@ -392,7 +392,7 @@ function checkValidRenameInput(
     ".nii.gz",
     ".mgh.gz",
     ".tar.gz",
-    ".bcl.gz",
+    ".bcl.gz"
   ];
 
   var duplicate = false;
@@ -426,7 +426,7 @@ function checkValidRenameInput(
         icon: "error",
         text: `The file name: ${newName} already exists, please rename to a different name!`,
         backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
+        heightAuto: false
       });
       newName = "";
       // log the error
@@ -456,7 +456,7 @@ function checkValidRenameInput(
         icon: "error",
         text: `The folder name: ${newName} already exists, please rename to a different name!`,
         backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
+        heightAuto: false
       });
       newName = "";
 
@@ -503,7 +503,7 @@ function renameFolder(
     ".nii.gz",
     ".mgh.gz",
     ".tar.gz",
-    ".bcl.gz",
+    ".bcl.gz"
   ];
 
   if (highLevelFolders.includes(currentName)) {
@@ -542,11 +542,11 @@ function renameFolder(
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+        popup: "animate__animated animate__zoomOut animate__faster"
+      }
     });
   } else {
     Swal.fire({
@@ -562,10 +562,10 @@ function renameFolder(
       cancelButtonText: "Cancel",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
+        popup: "animate__animated animate__fadeInDown animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
+        popup: "animate__animated animate__fadeOutUp animate__faster"
       },
       didOpen: () => {
         $(".swal2-input").attr("id", "rename-folder-input");
@@ -587,7 +587,7 @@ function renameFolder(
       didDestroy: () => {
         $(".swal2-confirm").attr("id", "");
         $(".swal2-input").attr("id", "");
-      },
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         var returnedName = checkValidRenameInput(
@@ -606,11 +606,11 @@ function renameFolder(
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showClass: {
-              popup: "animate__animated animate__fadeInDown animate__faster",
+              popup: "animate__animated animate__fadeInDown animate__faster"
             },
             hideClass: {
-              popup: "animate__animated animate__fadeOutUp animate__faster",
-            },
+              popup: "animate__animated animate__fadeOutUp animate__faster"
+            }
           });
 
           // log the success
@@ -729,7 +729,7 @@ function loadFileFolder(myPath) {
           "xls",
           "csv",
           "png",
-          "PNG",
+          "PNG"
         ].includes(extension)
       ) {
         extension = "other";
@@ -871,10 +871,10 @@ function showParentSwal(duplicateArray) {
     showCloseButton: true,
     customClass: "wide-swal-auto",
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
+      popup: "animate__animated animate__zoomIn animate__faster"
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
+      popup: "animate__animated animate__zoomOut animate__faster"
     },
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
@@ -894,7 +894,7 @@ function showParentSwal(duplicateArray) {
       newList +
       `')">Import Duplicates</button>
       <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-      </div>`,
+      </div>`
   });
 }
 
@@ -978,8 +978,8 @@ function handleDuplicateImports(btnId, duplicateArray) {
         icon: {
           className: "fas fa-check-circle",
           tagName: "i",
-          color: "white",
-        },
+          color: "white"
+        }
         //duration: 3000,
       },
       {
@@ -988,10 +988,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
         icon: {
           className: "fas fa-times-circle",
           tagName: "i",
-          color: "white",
-        },
-      },
-    ],
+          color: "white"
+        }
+      }
+    ]
   });
 
   //SKIP OPTION
@@ -1029,10 +1029,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
       focusConfirm: false,
       showCancelButton: true,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate__animated animate__zoomOut animate__faster"
       },
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -1086,7 +1086,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             confirm_button[0].disabled = true;
           }
         });
-      },
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         let container = document.getElementById("container");
@@ -1154,10 +1154,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
           showCloseButton: true,
           customClass: "wide-swal-auto",
           showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
+            popup: "animate__animated animate__zoomIn animate__faster"
           },
           hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
+            popup: "animate__animated animate__zoomOut animate__faster"
           },
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
@@ -1177,7 +1177,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             newList +
             `')">Import Duplicates</button>
             <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-            </div>`,
+            </div>`
         });
       }
     });
@@ -1214,10 +1214,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
         showCancelButton: true,
         backdrop: "rgba(0, 0, 0, 0.4)",
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
+          popup: "animate__animated animate__zoomIn animate__faster"
         },
         hideClass: {
-          popup: "animate_animated animate_zoomout animate__faster",
+          popup: "animate_animated animate_zoomout animate__faster"
         },
         html: container,
         didOpen: () => {
@@ -1385,7 +1385,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   folders: myPath["folders"][tempFile[index]].folders,
                   path: myPath["folders"][tempFile[index]].path,
                   type: "local",
-                  action: ["new", "renamed"],
+                  action: ["new", "renamed"]
                 };
                 listItems(myPath, "#items");
                 getInFolder(
@@ -1420,7 +1420,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                   type: "local",
                   description: "",
                   "additional-metadata": "",
-                  action: ["new", "renamed"],
+                  action: ["new", "renamed"]
                 };
                 var appendString =
                   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
@@ -1438,7 +1438,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
               }
             }
           }
-        },
+        }
       })
       .then((result) => {
         if (result.isConfirmed) {
@@ -1463,7 +1463,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
           }
           toastUpdate.open({
             type: "file_updated",
-            message: "Successfully Imported and Renamed!",
+            message: "Successfully Imported and Renamed!"
           });
         }
         if (!result.isConfirmed) {
@@ -1511,10 +1511,10 @@ function handleDuplicateImports(btnId, duplicateArray) {
       cancelButtonText: "Cancel",
       showCancelButton: true,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate__animated animate__zoomOut animate__faster"
       },
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -1568,7 +1568,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
             confirm_button[0].disabled = true;
           }
         });
-      },
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         container = document.getElementById("container");
@@ -1595,7 +1595,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 folders: myPath["folders"][tempFile[index]].folders,
                 path: temp[index],
                 type: "local",
-                action: ["new", "updated"],
+                action: ["new", "updated"]
               };
               for (let j = 0; j < nodes.length; j++) {
                 if (nodes[j].innerText === fileName) {
@@ -1624,7 +1624,7 @@ function handleDuplicateImports(btnId, duplicateArray) {
                 type: "local",
                 description: "",
                 "additional-metadata": "",
-                action: ["new", "updated"],
+                action: ["new", "updated"]
               };
               for (let j = 0; j < nodes.length; j++) {
                 if (nodes[j].innerText === fileName) {
@@ -1664,18 +1664,18 @@ function handleDuplicateImports(btnId, duplicateArray) {
           if (removeExt === -1) {
             toastUpdate.open({
               type: "file_updated",
-              message: "Updated Folder(s)",
+              message: "Updated Folder(s)"
             });
           } else {
             toastUpdate.open({
               type: "file_updated",
-              message: "Updated File(s)",
+              message: "Updated File(s)"
             });
           }
         } else {
           toastUpdate.open({
             type: "no_selection",
-            message: "No selection was made",
+            message: "No selection was made"
           });
         }
       }
@@ -1695,6 +1695,26 @@ async function addFilesfunction(
   singleUIItem,
   globalPathValue
 ) {
+  //toast alert created with Notyf
+  let importToast = new Notyf({
+    position: { x: "right", y: "bottom" },
+    ripple: true,
+    dismissible: true,
+    ripple: false,
+    types: [
+      {
+        type: "success",
+        background: "#13716D",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+        duration: 2500,
+      },
+    ],
+  });
+
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
@@ -1708,7 +1728,7 @@ async function addFilesfunction(
         icon: "error",
         html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
+        backdrop: "rgba(0,0,0, 0.4)"
       });
       // log the error
       logCurationForAnalytics(
@@ -1727,7 +1747,7 @@ async function addFilesfunction(
         //regular files object key with path, and basename
         regularFiles[path.parse(fileName).base] = {
           path: fileName,
-          basename: path.parse(fileName).base,
+          basename: path.parse(fileName).base
         };
       } else {
         //check file name in key of regular files (search for duplicate)
@@ -1745,7 +1765,7 @@ async function addFilesfunction(
             //not in there or regular files so store?
             regularFiles[path.parse(fileName).base] = {
               path: fileName,
-              basename: path.parse(fileName).base,
+              basename: path.parse(fileName).base
             };
           }
         }
@@ -1777,7 +1797,7 @@ async function addFilesfunction(
                 //store in regular files
                 regularFiles[path.parse(fileName).base] = {
                   path: fileName,
-                  basename: path.parse(fileName).base,
+                  basename: path.parse(fileName).base
                 };
               }
             }
@@ -1830,10 +1850,10 @@ async function addFilesfunction(
       showCloseButton: true,
       customClass: "wide-swal-auto",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: "animate__animated animate__zoomIn animate__faster"
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+        popup: "animate__animated animate__zoomOut animate__faster"
       },
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -1849,7 +1869,7 @@ async function addFilesfunction(
         <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing ${html_word}</button>
         <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
         <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-        </div>`,
+        </div>`
     });
   }
 
@@ -1865,7 +1885,7 @@ async function addFilesfunction(
         type: "local",
         description: "",
         "additional-metadata": "",
-        action: ["new"],
+        action: ["new"]
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(
@@ -1880,6 +1900,17 @@ async function addFilesfunction(
     await listItems(currentLocation, uiItem, 500);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
+    if(Object.keys(regularFiles).length > 1) {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Files"
+      });
+    } else {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported File"
+      });
+    }
     // log the successful import
     logCurationForAnalytics(
       "Success",
@@ -1916,7 +1947,7 @@ function observeElement(element, property, callback, delay = 0) {
           setTimeout(callback.bind(this, oldValue, newValue), delay);
         }
         return newValue;
-      },
+      }
     });
   }
 }
