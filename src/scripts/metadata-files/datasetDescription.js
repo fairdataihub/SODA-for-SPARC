@@ -242,10 +242,10 @@ function populateProtocolLink(ev) {
       for (var key of Object.keys(protocolResearcherList)) {
         $("#select-misc-links").append(
           '<option value="' +
-            protocolResearcherList[key] +
-            '">' +
-            key +
-            "</option>"
+          protocolResearcherList[key] +
+          '">' +
+          key +
+          "</option>"
         );
       }
     }
@@ -347,7 +347,7 @@ function cancelOtherContributors(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td class='grab'><select id='ds-description-contributor-list-last-" +
@@ -371,7 +371,7 @@ function addOtherContributors(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   currentRow.cells[0].outerHTML =
     "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-" +
@@ -448,7 +448,7 @@ function resetDDUI(table) {
   var rowIndex = rowcount - 1;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
 
   $("#SPARC-Award-raw-input-div-dd").css("display", "none");
@@ -750,7 +750,7 @@ async function generateDDFile(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var datasetInfoValueObj = grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -1261,7 +1261,7 @@ function changeAward(award) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
   loadContributorInfofromAirtable(award);
@@ -1332,10 +1332,11 @@ function addContributortoTableDD(name, contactStatus) {
 }
 
 var contributorElement =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
+  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div> ';
 
-var contributorElementRaw =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
+var contributorElementRaw = '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>'
+
+
 
 var contributorArray = [];
 var affiliationSuggestions = [];
@@ -1371,7 +1372,7 @@ function showContributorSweetalert(key) {
     footer: footer,
     didOpen: () => {
       $(".swal-popover").popover();
-      tippy("[data-tippy-content]", {
+      tippy(".tippy-tooltip", {
         allowHTML: true,
         interactive: true,
         placement: "right",
@@ -1566,7 +1567,7 @@ function edit_current_con_id(ev) {
     allowOutsideClick: false,
     didOpen: () => {
       $(".swal-popover").popover();
-      tippy("[data-tippy-content]", {
+      tippy(".tippy-tooltip", {
         allowHTML: true,
         interactive: true,
         placement: "right",
@@ -1928,7 +1929,7 @@ function addNewRow(table) {
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[
-      document.getElementById(table).rows.length - 1
+    document.getElementById(table).rows.length - 1
     ];
   if (table === "doi-table") {
     if (
@@ -2259,7 +2260,7 @@ function importExistingDDFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }
@@ -2279,7 +2280,7 @@ function checkBFImportDD() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   client.invoke(
     "api_import_bf_metadata_file",
     "dataset_description.xlsx",
