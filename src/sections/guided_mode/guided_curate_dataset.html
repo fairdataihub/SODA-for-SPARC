@@ -1443,6 +1443,11 @@
               class="guided--capsule"
               id="guided-create-submission-metadata-capsule"
             ></div>
+            <div class="guided--capsule" id="guided-protocols-capsule"></div>
+            <div
+              class="guided--capsule"
+              id="guided-create-description-metadata-capsule"
+            ></div>
             <div
               class="guided--capsule"
               id="guided-create-subjects-metadata-capsule"
@@ -1450,10 +1455,6 @@
             <div
               class="guided--capsule"
               id="guided-create-samples-metadata-capsule"
-            ></div>
-            <div
-              class="guided--capsule"
-              id="guided-create-description-metadata-capsule"
             ></div>
             <div
               class="guided--capsule"
@@ -1467,8 +1468,8 @@
           <div class="guided--panel hidden" id="guided-airtable-award-tab">
             <div class="guided--section">
               <h2 class="guided--text-sub-step">
-                Do you have an Airtable account you would like to import award
-                information from?
+                Would you like to import your SPARC award information from
+                AirTable?
               </h2>
               <p class="guided--help-text small" style="margin-bottom: 2px">
                 Importing your award information from Airtable is recommended as
@@ -1526,8 +1527,8 @@
               id="guided-section-div-data-deliverables"
             >
               <h2 class="guided--text-sub-step">
-                Do you have a data deliverables document you would like to
-                import award information from?
+                Would you like to import your milestone information from a data
+                derivables document?
               </h2>
               <p class="guided--help-text small" style="margin-bottom: 2px">
                 <b>recommended if available</b> A data deliverables document is
@@ -1721,58 +1722,41 @@
               </div>
             </div>
           </div>
-          <div
-            id="guided-create-subjects-metadata-tab"
-            class="guided--panel hidden"
-          >
-            <table
-              class="ui celled striped table"
-              style="margin-bottom: 25px; width: 900px"
+          <div id="guided-protocols-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">Would you like to protocols</h2>
+              <p
+                class="guided--help-text small text-center"
+                style="margin-bottom: 2px"
+              >
+                info about what protocols.io is and why you should sign in
+              </p>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-div-protocols-import"
+                >
+                  Yes
+                </button>
+                <button class="ui negative basic button guided--radio-button">
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-div-protocols-import"
             >
-              <thead>
-                <tr>
-                  <th
-                    class="center aligned"
-                    style="
-                      z-index: 2;
-                      position: sticky !important;
-                      top: -10px !important;
-                    "
-                  >
-                    Index
-                  </th>
-                  <th
-                    style="
-                      z-index: 2;
-                      position: sticky !important;
-                      top: -10px !important;
-                    "
-                  >
-                    Subject ID
-                  </th>
-
-                  <th
-                    class="center aligned"
-                    style="
-                      z-index: 2;
-                      position: sticky !important;
-                      top: -10px !important;
-                    "
-                  >
-                    Modify metadata
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="subjects-metadata-table-container"></tbody>
-            </table>
+              <button
+                class="ui primary button"
+                id="guided-button-import-protocols"
+                onclick="addExistingProtocol('guided')"
+                style="background-color: var(--color-light-green) !important"
+              >
+                Import protocols
+              </button>
+            </div>
           </div>
-          <div
-            id="guided-create-samples-metadata-tab"
-            class="guided--panel hidden"
-          >
-            <div id="sample-metadata-tables-container"></div>
-          </div>
-
           <div
             id="guided-create-description-metadata-tab"
             class="guided--panel hidden"
@@ -2376,6 +2360,57 @@
                 Generate description file
               </button>
             </div>
+          </div>
+          <div
+            id="guided-create-subjects-metadata-tab"
+            class="guided--panel hidden"
+          >
+            <table
+              class="ui celled striped table"
+              style="margin-bottom: 25px; width: 900px"
+            >
+              <thead>
+                <tr>
+                  <th
+                    class="center aligned"
+                    style="
+                      z-index: 2;
+                      position: sticky !important;
+                      top: -10px !important;
+                    "
+                  >
+                    Index
+                  </th>
+                  <th
+                    style="
+                      z-index: 2;
+                      position: sticky !important;
+                      top: -10px !important;
+                    "
+                  >
+                    Subject ID
+                  </th>
+
+                  <th
+                    class="center aligned"
+                    style="
+                      z-index: 2;
+                      position: sticky !important;
+                      top: -10px !important;
+                    "
+                  >
+                    Modify metadata
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="subjects-metadata-table-container"></tbody>
+            </table>
+          </div>
+          <div
+            id="guided-create-samples-metadata-tab"
+            class="guided--panel hidden"
+          >
+            <div id="sample-metadata-tables-container"></div>
           </div>
           <div
             id="guided-create-readme-metadata-tab"

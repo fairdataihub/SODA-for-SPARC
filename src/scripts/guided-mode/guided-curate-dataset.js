@@ -2283,7 +2283,7 @@ $(document).ready(() => {
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-airtable-award-tab");
+      traverseToTab("guided-protocols-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
@@ -4913,9 +4913,10 @@ $(document).ready(() => {
         $("#guided-next-button").css("visibility", "hidden");
       }
       if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
-        let award = $("#guided-submission-sparc-award").val();
-        let date = $("#guided-submission-completion-date").val();
-        let milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
+        const award = $("#guided-submission-sparc-award").val();
+        const date = $("#guided-submission-completion-date").val();
+        const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
+        //validate submission metadata
         if (award === "") {
           errorArray.push({
             type: "notyf",
@@ -4937,7 +4938,7 @@ $(document).ready(() => {
           });
         }
         if (errorArray.length > 0) {
-          throw errorArray;
+          // throw errorArray;
         }
         // submission data validated, add to JSON
         var json_arr = [];

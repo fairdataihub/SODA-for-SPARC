@@ -1002,11 +1002,11 @@ async function addProtocol(curationMode) {
   }
 }
 
-function addExistingProtocol() {
+function addExistingProtocol(curationMode) {
   var credentials = loadExistingProtocolInfo();
   if (credentials[0]) {
     // show email for protocol account
-    showProtocolCredentials(credentials[1], "DD");
+    showProtocolCredentials(credentials[1], "DD", curationMode);
   } else {
     protocolAccountQuestion("DD", false);
   }
