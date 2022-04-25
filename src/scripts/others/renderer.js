@@ -8672,18 +8672,29 @@ let pennsive_confirm_button = document.getElementById("button-confirm-bf-dataset
 pennsive_confirm_button.addEventListener("click", async function () {
   //current function
   console.log("clicked");
+  let datasetName = document.getElementById("current-bf-dataset").innerText;
+
   //request access token
   let jwt = await get_access_token();
+  // fetch the tags for their dataset using the Pennsieve API
+  let dataset = await get_dataset_by_name_id(datasetName, jwt)  
+  // grab the dataset's id
+  const id = dataset["content"]["id"];
+  //removing : with the %3 as seen on the api docs
+  let url_id = id.replace(/:/g, "%3A");
+  console.log(url_id);
+  console.log("should be modified now");
+
   const axiosInstance = axios.create({
-    baseURL: `https://api.pennsieve.io/packages/download-manifest?api_key=${jwt}`,
+    baseURL: `https://api.pennsieve.io/datasets/${url_id}?api_key=${jwt}`,
     timeout: 0,
-    method: "POST",
+    method: "GET",
     // payload: {
     //   "nodesIds": [""]
     // },
     headers: {
       "Accept": "*/*",
-      "Content-Type": "application/json"
+      // "Content-Type": "application/json"
     }
   });
 
@@ -8695,14 +8706,6 @@ pennsive_confirm_button.addEventListener("click", async function () {
   let datasetResponse = await axiosInstance();
 
   console.log(datasetResponse);
-
-  let datasetName = document.getElementById("current-bf-dataset").innerText;
-
-  // fetch the tags for their dataset using the Pennsieve API
-  let dataset = await get_dataset_by_name_id(datasetName, jwt);
-
-  // grab the dataset's id
-  const id = dataset["content"]["id"];
 
   console.log(id);
   console.log(dataset);
