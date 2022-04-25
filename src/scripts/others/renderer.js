@@ -5041,7 +5041,7 @@ async function addFoldersfunction(
         datasetStructureJSONObj
       );
       beginScrollListen();
-      if(Object.keys(importedFolders).length > 1){
+      if (Object.keys(importedFolders).length > 1) {
         importToast.open({
           type: "success",
           message: "Successfully Imported Folders",
@@ -5513,7 +5513,7 @@ function dropHelper(
       $(appendString).appendTo(ev2);
     }
     listItems(myPath, "#items", 500, (reset = true));
-    if(Object.keys(importedFiles).length > 1) {
+    if (Object.keys(importedFiles).length > 1) {
       importToast.open({
         type: "success",
         message: "Successfully Imported Files",
@@ -5573,7 +5573,7 @@ function dropHelper(
       organizeDSglobalPath,
       datasetStructureJSONObj
     );
-    if(Object.keys(importedFolders).length > 1) {
+    if (Object.keys(importedFolders).length > 1) {
       importToast.open({
         type: "success",
         message: "Successfully Imported Folders",
