@@ -1054,6 +1054,8 @@ const addContributorField = () => {
   newContributorField.classList.add("guided--section");
   newContributorField.classList.add("mt-lg");
   newContributorField.classList.add("neumorphic");
+  newContributorField.style.position = "relative";
+
   newContributorField.innerHTML = `
     <i 
       class="fas fa-times fa-2x"
@@ -1119,10 +1121,10 @@ const addContributorField = () => {
   contributorsContainer.appendChild(newContributorField);
 
   //select the last contributor role input (the one that was just added)
-  const newContributorRoleElement =
-    contributorsContainer.lastChild.querySelector(
-      ".guided-contributor-role-input"
-    );
+  const newlyAddedContributorField = contributorsContainer.lastChild;
+  const newContributorRoleElement = newlyAddedContributorField.querySelector(
+    ".guided-contributor-role-input"
+  );
   //Add a new tagify for the contributor role field for the new contributor field
 
   const tagify = new Tagify(newContributorRoleElement, {
@@ -1154,6 +1156,8 @@ const addContributorField = () => {
       position: "auto",
     },
   });
+  //scroll to the new element
+  smoothScrollToElement(newlyAddedContributorField);
 };
 
 //SUBJECT TABLE FUNCTIONS
@@ -4208,7 +4212,7 @@ $(document).ready(() => {
         .classList.add("hidden");
       guidedCompletionDateInput.value = uniqueCompletionDate;
       guidedCompletionDateInput.disabled = true;
-      unHideAndScrollToElement("guided-div-submission-accordion");
+      unHideAndSmoothScrollToElement("guided-div-submission-accordion");
     }
 
     if (checkedMilestoneData.length > 1) {
@@ -4224,7 +4228,7 @@ $(document).ready(() => {
       if (filteredUniqueCompletionDates.length === 1) {
         guidedCompletionDateInput.value = filteredUniqueCompletionDates[0];
         guidedCompletionDateInput.disabled = true;
-        unHideAndScrollToElement("guided-div-submission-accordion");
+        unHideAndSmoothScrollToElement("guided-div-submission-accordion");
         return;
       } else {
         //set the text of guided-completion-date-instructional-text
@@ -4246,7 +4250,7 @@ $(document).ready(() => {
           .join("\n");
         document.getElementById("guided-completion-date-container").innerHTML =
           completionDateCheckMarks;
-        unHideAndScrollToElement("guided-div-completion-date-selection");
+        unHideAndSmoothScrollToElement("guided-div-completion-date-selection");
       }
     }
     //set opacity and remove pointer events for table and show edit button
@@ -4308,7 +4312,7 @@ $(document).ready(() => {
         removeAlertMessageIfExists($("#guided-input-custom-completion-date"));
         guidedCompletionDateInput.value = customCompletionDateInput.value;
         guidedCompletionDateInput.disabled = true;
-        unHideAndScrollToElement("guided-div-submission-accordion");
+        unHideAndSmoothScrollToElement("guided-div-submission-accordion");
         return;
       } else {
         generateAlertMessage($("#guided-input-custom-completion-date"));
@@ -4322,7 +4326,7 @@ $(document).ready(() => {
       const completionDate = selectedCompletionDate.value;
       guidedCompletionDateInput.value = selectedCompletionDate.value;
       guidedCompletionDateInput.disabled = true;
-      unHideAndScrollToElement("guided-div-submission-accordion");
+      unHideAndSmoothScrollToElement("guided-div-submission-accordion");
     } else {
       notyf.error("Please select a completion date");
       return;
@@ -4429,7 +4433,7 @@ $(document).ready(() => {
     });
 
     //show the contributor fields
-    unHideAndScrollToElement("guided-div-contributor-field-set");
+    unHideAndSmoothScrollToElement("guided-div-contributor-field-set");
   };
 
   $("#guided-button-save-checked-contributors").on("click", async () => {

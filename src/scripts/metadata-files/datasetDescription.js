@@ -1446,22 +1446,6 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
     }
   }
   if (curationMode === "guided") {
-    /*const addContributorButtonRowElement = `
-      <tr id="guided-add-contributor-row">
-        <td class="middle aligned text-center" colspan="3">
-          <button
-            class="ui primary basic button tiny m-0"
-            onclick="addContributorRowElement()"
-          >
-            <i
-              class="fas fa-plus"
-              style="margin-right: 7px"
-            ></i
-            >Add contributor
-          </button>
-        </td>
-      </tr>
-    `;*/
     // render the contributors table on the contributors page
     let contributorTableRows = Object.keys(globalContributorNameObject)
       .map((contributor) => {
@@ -1470,10 +1454,6 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
         return generateContributorRowElement(contributorLast, contributorFirst);
       })
       .join("\n");
-    //add 'Add contributor button' to the end of contributorTableRows string
-    /*
-    contributorTableRows += addContributorButtonRowElement;
-    */
 
     const contributorsTableContainer = document.getElementById(
       "contributors-table-container"
