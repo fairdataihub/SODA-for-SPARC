@@ -946,6 +946,215 @@ const updateFolderStructureUI = (pageDataObj) => {
     datasetStructureJSONObj
   );
 };
+//Description metadata functions
+const generateContributorField = (
+  contributorLastName,
+  contributorFirstName,
+  contributorORCID,
+  contributorAffiliation,
+  contributorRole
+) => {
+  //remove "https://orcid.org/" from contributor ORCID if an ORCID was returned from AirTable
+  if (contributorORCID !== undefined) {
+    contributorORCID = contributorORCID.replace("https://orcid.org/", "");
+  }
+
+  return `
+      <div class="guided--section mt-lg neumorphic" style="position: relative">
+        <i 
+          class="fas fa-times fa-2x"
+          style="
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: black;
+            cursor: pointer;
+          "
+          onclick="removeContributorField(this)"
+        >
+        </i>
+        <h2 class="guided--text-sub-step">
+          Enter 
+          <span class="contributor-first-name">${
+            contributorFirstName ? contributorFirstName : "contributor's"
+          }</span>'s
+          contributor details
+        </h2>
+        <div class="space-between w-100">
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label">Last name: </label>
+            <input
+              class="guided--input ${contributorLastName ? "" : "border-error"}"
+              type="text"
+              placeholder="Enter last name here"
+              onkeyup="validateInput($(this))"
+              value="${contributorLastName ? contributorLastName : ""}"
+              ${contributorFirstName ? "readonly" : ""}
+            />
+          </div>
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label">First name: </label>
+            <input
+              class="guided--input ${
+                contributorFirstName ? "" : "border-error"
+              }"
+              type="text"
+              placeholder="Enter first name here"
+              onkeyup="validateInput($(this))"
+              value="${contributorFirstName ? contributorFirstName : ""}"
+              ${contributorFirstName ? "readonly" : ""}
+            />
+          </div>
+        </div>
+        <div class="space-between w-100 mb-md">
+          <div class="guided--flex-center mt-md" style="width: 45%">
+            <label class="guided--form-label">ORCID: </label>
+            <input
+              class="guided--input ${contributorORCID ? "" : "border-error"}"
+              type="text"
+              placeholder="Enter ORCID here"
+              onkeyup="validateInput($(this))"
+              value="${contributorORCID ? contributorORCID : ""}"
+              ${contributorORCID ? "readonly" : ""}
+            />
+          </div>
+          <div class="guided--flex-center mt-md" style="width: 45%">
+            <label class="guided--form-label">Affiliation: </label>
+            <input
+              class="guided--input ${
+                contributorAffiliation ? "" : "border-error"
+              }"
+              type="text"
+              placeholder="Enter affiliation here"
+              onkeyup="validateInput($(this))"
+              value="${contributorAffiliation ? contributorAffiliation : ""}"
+              ${contributorAffiliation ? "readonly" : ""}
+            />
+          </div>
+        </div>
+        <label class="guided--form-label">Role(s): </label>
+        <input class="guided-contributor-role-input"
+          contenteditable="true"
+          placeholder='Type here to view and add contributor roles'
+        />
+      </div>
+    `;
+};
+const removeContributorField = (contributorDeleteButton) => {
+  const contributorField = contributorDeleteButton.parentElement;
+  contributorField.remove();
+};
+
+const addContributorField = () => {
+  const contributorsContainer = document.getElementById(
+    "contributors-container"
+  );
+  //create a new div to hold contributor fields
+  const newContributorField = document.createElement("div");
+  newContributorField.classList.add("guided--section");
+  newContributorField.classList.add("mt-lg");
+  newContributorField.classList.add("neumorphic");
+  newContributorField.innerHTML = `
+    <i 
+      class="fas fa-times fa-2x"
+      style="
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: black;
+        cursor: pointer;
+      "
+      onclick="removeContributorField(this)"
+    >
+    </i>
+    <h2 class="guided--text-sub-step">
+      Enter contributor details
+    </h2>
+    <div class="space-between w-100">
+      <div class="guided--flex-center mt-sm" style="width: 45%">
+        <label class="guided--form-label">Last name: </label>
+        <input
+          class="guided--input"
+          type="text"
+          placeholder="Enter last name here"
+          onkeyup="validateInput($(this))"
+        />
+      </div>
+      <div class="guided--flex-center mt-sm" style="width: 45%">
+        <label class="guided--form-label">First name: </label>
+        <input
+          class="guided--input"
+          type="text"
+          placeholder="Enter first name here"
+          onkeyup="validateInput($(this))"
+        />
+      </div>
+    </div>
+    <div class="space-between w-100 mb-md">
+      <div class="guided--flex-center mt-md" style="width: 45%">
+        <label class="guided--form-label">ORCID: </label>
+        <input
+          class="guided--input"
+          type="text"
+          placeholder="Enter ORCID here"
+          onkeyup="validateInput($(this))"
+        />
+      </div>
+      <div class="guided--flex-center mt-md" style="width: 45%">
+        <label class="guided--form-label">Affiliation: </label>
+        <input
+          class="guided--input "
+          type="text"
+          placeholder="Enter affiliation here"
+          onkeyup="validateInput($(this))"
+        />
+      </div>
+    </div>
+    <label class="guided--form-label">Role(s): </label>
+    <input class="guided-contributor-role-input"
+      contenteditable="true"
+      placeholder='Type here to view and add contributor roles'
+    />
+  `;
+  contributorsContainer.appendChild(newContributorField);
+
+  //select the last contributor role input (the one that was just added)
+  const newContributorRoleElement =
+    contributorsContainer.lastChild.querySelector(
+      ".guided-contributor-role-input"
+    );
+  //Add a new tagify for the contributor role field for the new contributor field
+
+  const tagify = new Tagify(newContributorRoleElement, {
+    whitelist: [
+      "PrincipleInvestigator",
+      "Creator",
+      "CoInvestigator",
+      "DataCollector",
+      "DataCurator",
+      "DataManager",
+      "Distributor",
+      "Editor",
+      "Producer",
+      "ProjectLeader",
+      "ProjectManager",
+      "ProjectMember",
+      "RelatedPerson",
+      "Researcher",
+      "ResearchGroup",
+      "Sponsor",
+      "Supervisor",
+      "WorkPackageLeader",
+      "Other",
+    ],
+    enforceWhitelist: true,
+    dropdown: {
+      enabled: 1,
+      closeOnSelect: true,
+      position: "auto",
+    },
+  });
+};
 
 //SUBJECT TABLE FUNCTIONS
 const returnToTableFromFolderStructure = (clickedBackButton) => {
@@ -1503,7 +1712,7 @@ const generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
     </tr>
   `;
 };
-const addSubjectFolder = (addSubjectButton) => {
+const addSubjectFolder = () => {
   $("#subjects-table-body").append(generateSubjectRowElement("", ""));
   updateGuidedTableIndices("subject-table-index");
 };
@@ -4163,92 +4372,10 @@ $(document).ready(() => {
     return checkedContributorData;
   };
 
-  const generateContributorField = (
-    contributorLastName,
-    contributorFirstName,
-    contributorORCID,
-    contributorAffiliation,
-    contributorRole
-  ) => {
-    //remove "https://orcid.org/" from contributor ORCID if an ORCID was returned from AirTable
-    if (contributorORCID !== undefined) {
-      contributorORCID = contributorORCID.replace("https://orcid.org/", "");
-    }
-
-    return `
-      <div class="guided--section mt-lg neumorphic">
-        <h2 class="guided--text-sub-step">
-          Enter 
-          <span class="contributor-first-name">${
-            contributorFirstName ? contributorFirstName : "contributor's"
-          }</span>'s
-          contributor details
-        </h2>
-        <div class="space-between w-100">
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label">Last name: </label>
-            <input
-              class="guided--input ${contributorLastName ? "" : "border-error"}"
-              type="text"
-              placeholder="Enter last name here"
-              onkeyup="validateInput($(this))"
-              value="${contributorLastName ? contributorLastName : ""}"
-              ${contributorFirstName ? "readonly" : ""}
-            />
-          </div>
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label">First name: </label>
-            <input
-              class="guided--input ${
-                contributorFirstName ? "" : "border-error"
-              }"
-              type="text"
-              placeholder="Enter first name here"
-              onkeyup="validateInput($(this))"
-              value="${contributorFirstName ? contributorFirstName : ""}"
-              ${contributorFirstName ? "readonly" : ""}
-            />
-          </div>
-        </div>
-        <div class="space-between w-100 mb-md">
-          <div class="guided--flex-center mt-md" style="width: 45%">
-            <label class="guided--form-label">ORCID: </label>
-            <input
-              class="guided--input ${contributorORCID ? "" : "border-error"}"
-              type="text"
-              placeholder="Enter ORCID here"
-              onkeyup="validateInput($(this))"
-              value="${contributorORCID ? contributorORCID : ""}"
-              ${contributorORCID ? "readonly" : ""}
-            />
-          </div>
-          <div class="guided--flex-center mt-md" style="width: 45%">
-            <label class="guided--form-label">affiliation: </label>
-            <input
-              class="guided--input ${
-                contributorAffiliation ? "" : "border-error"
-              }"
-              type="text"
-              placeholder="Enter affiliation here"
-              onkeyup="validateInput($(this))"
-              value="${contributorAffiliation ? contributorAffiliation : ""}"
-              ${contributorAffiliation ? "readonly" : ""}
-            />
-          </div>
-        </div>
-        <label class="guided--form-label">Role(s): </label>
-        <input class="guided-contributor-role-input"
-          contenteditable="true"
-          placeholder='Type here to view and add contributor roles'
-        />
-      </div>
-    `;
-  };
-
   //description///////////////////////////////////////
   const renderContributorFields = (contributionMembersArray) => {
     //loop through curationMembers object
-    const contributionMembersElements = contributionMembersArray
+    let contributionMembersElements = contributionMembersArray
       .map((contributionMember) => {
         return generateContributorField(
           contributionMember["contributorLastName"],
@@ -4259,7 +4386,6 @@ $(document).ready(() => {
         );
       })
       .join("\n");
-    console.log(contributionMembersElements);
 
     const contributorsContainer = document.getElementById(
       "contributors-container"
@@ -4268,7 +4394,6 @@ $(document).ready(() => {
     const contributorRoleInputs = document.querySelectorAll(
       ".guided-contributor-role-input"
     );
-    console.log(contributorRoleInputs);
 
     //create a tagify for each element in contributorRoleElements
     contributorRoleInputs.forEach((contributorRoleElement) => {
@@ -4302,6 +4427,9 @@ $(document).ready(() => {
         },
       });
     });
+
+    //show the contributor fields
+    unHideAndScrollToElement("guided-div-contributor-field-set");
   };
 
   $("#guided-button-save-checked-contributors").on("click", async () => {

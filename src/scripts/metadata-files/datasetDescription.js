@@ -1399,7 +1399,7 @@ const addContributorRowElement = () => {
     </tr>
   `;
   //insert divToAdd before the element with id="guided-add-contributor-row"
-  const divAfter = document.getElementById("guided-add-cFontributor-row");
+  const divAfter = document.getElementById("guided-add-contributor-row");
   divAfter.insertAdjacentHTML("beforebegin", newContributorRowElement);
 };
 
@@ -1445,10 +1445,9 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
       }
     }
   }
-  console.log(globalContributorNameObject);
   if (curationMode === "guided") {
-    const addContributorButtonRowElement = `
-      <tr id="guided-add-contributor-row>
+    /*const addContributorButtonRowElement = `
+      <tr id="guided-add-contributor-row">
         <td class="middle aligned text-center" colspan="3">
           <button
             class="ui primary basic button tiny m-0"
@@ -1462,19 +1461,19 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
           </button>
         </td>
       </tr>
-    `;
+    `;*/
     // render the contributors table on the contributors page
     let contributorTableRows = Object.keys(globalContributorNameObject)
       .map((contributor) => {
         const contributorLast = contributor;
         const contributorFirst = globalContributorNameObject[contributor];
-        console.log(contributorLast);
-        console.log(contributorFirst);
         return generateContributorRowElement(contributorLast, contributorFirst);
       })
       .join("\n");
     //add 'Add contributor button' to the end of contributorTableRows string
+    /*
     contributorTableRows += addContributorButtonRowElement;
+    */
 
     const contributorsTableContainer = document.getElementById(
       "contributors-table-container"
