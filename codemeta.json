@@ -1,1 +1,111 @@
-{"@context": "https://doi.org/10.5063/schema/codemeta-2.0", "@type": "SoftwareSourceCode", "license": "https://spdx.org/licenses/MIT", "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC", "dateCreated": "2022-04-26", "dateModified": "2022-04-26", "downloadUrl": "https://fairdataihub.org/sodaforsparc", "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues", "name": "SODA (Software to Organize Data Automatically) for SPARC", "version": "5.4.0", "identifier": "https://doi.org/10.5281/zenodo.5565455", "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative", "applicationCategory": "Scientific", "releaseNotes": "Feature additions:\nIn Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will ease performance when datasets are large (over 500+ items) and can cause issues when rendering on older machines.\nImporting a local dataset will now be handled on the python end to increase performance. A progress bar is also included to show details about import to user.\nOn success of importing files/folders there will be a toast display on the bottom right to give user a notification.\nBug fixes:\nFixed bug under Step 3 - Organize datasets when users click Next to get to subsequent steps, and when they go back to this step, they cannot navigate in and out the high-level folders anymore.\n\nAdded a SweetAlert loading popup for when users move a large number of files/folders under Step 3 - Organize datasets.\n\nFixed bug related to the false warning of \"The dataset does not contain valid SPARC folders\" due to wrongly saved local dataset paths.\n\nFixed UI bug related to the manifest file generator where the live spreadsheet is auto-opened without being prompted to open.\n\nFixed bug with illegally formatted metadata files being dropped in Step 4: Metadata files.\n\nFixed UI bug where tooltips in the Prepare Metadata section receive a top and a right message on hover.\n\nKnown Issues:\nThere is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.\nWhen uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.\nThe Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.\nWhen using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.", "funding": "OT2OD030213", "developmentStatus": "active", "isPartOf": "https://fairdataihub.org/", "referencePublication": "https://doi.org/10.1101/2021.02.10.430563", "funder": {"@type": "Organization", "@name": "National Institutes of Health (NIH)"}, "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"], "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS", "Jupyter Notebook"], "operatingSystem": ["Windows 10", "Big Sur (macOS 11)", "Catalina (macOS 10.15)", "Windows 11", "Ubuntu"], "relatedLink": ["https://fairdataihub.org/sodaforsparc"], "author": [{"@type": "Person", "givenName": "Bhavesh", "familyName": "Patel", "email": "bpatel@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}, {"@type": "Person", "givenName": "Tram", "familyName": "Ngo", "email": "tno@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}, {"@type": "Person", "givenName": "Sanjay", "familyName": "Soundarajan", "email": "ssoundarajan@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}, {"@type": "Person", "givenName": "Aaron", "familyName": "Marroquin", "email": "cmarroquin@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}, {"@type": "Person", "givenName": "Jacob", "familyName": "Clark", "email": "jclark@calmi2.org", "affiliation": {"@type": "Organization", "name": "California Medical Innovations Institute"}}, {"@type": "Person", "givenName": "Dorian", "familyName": "Portillo", "email": "dportillo@calmi2.org", "affiliation": {"@type": "Organization", "name": "FAIR Data Innovations Hub"}}]}
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
+  "dateCreated": "2022-04-26",
+  "dateModified": "2022-04-26",
+  "downloadUrl": "https://fairdataihub.org/sodaforsparc",
+  "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
+  "name": "SODA (Software to Organize Data Automatically) for SPARC",
+  "version": "5.4.0",
+  "identifier": "https://doi.org/10.5281/zenodo.5565455",
+  "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
+  "applicationCategory": "Scientific",
+  "releaseNotes": "Feature additions:\nIn Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will ease performance when datasets are large (over 500+ items) and can cause issues when rendering on older machines.\nImporting a local dataset will now be handled on the python end to increase performance. A progress bar is also included to show details about import to user.\nOn success of importing files/folders there will be a toast display on the bottom right to give user a notification.\nBug fixes:\nFixed bug under Step 3 - Organize datasets when users click Next to get to subsequent steps, and when they go back to this step, they cannot navigate in and out the high-level folders anymore.\n\nAdded a SweetAlert loading popup for when users move a large number of files/folders under Step 3 - Organize datasets.\n\nFixed bug related to the false warning of \"The dataset does not contain valid SPARC folders\" due to wrongly saved local dataset paths.\n\nFixed UI bug related to the manifest file generator where the live spreadsheet is auto-opened without being prompted to open.\n\nFixed bug with illegally formatted metadata files being dropped in Step 4: Metadata files.\n\nFixed UI bug where tooltips in the Prepare Metadata section receive a top and a right message on hover.\n\nKnown Issues:\nThere is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.\nWhen uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.\nThe Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.\nWhen using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.",
+  "funding": "OT2OD030213",
+  "developmentStatus": "active",
+  "isPartOf": "https://fairdataihub.org/",
+  "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
+  "funder": {
+    "@type": "Organization",
+    "@name": "National Institutes of Health (NIH)"
+  },
+  "keywords": [
+    "SPARC",
+    "FAIR",
+    "data",
+    "curation",
+    "mac",
+    "sparc-dataset",
+    "ubuntu",
+    "windows"
+  ],
+  "programmingLanguage": [
+    "JavaScript",
+    "HTML",
+    "Python",
+    "CSS",
+    "Jupyter Notebook"
+  ],
+  "operatingSystem": [
+    "Windows 10",
+    "Big Sur (macOS 11)",
+    "Catalina (macOS 10.15)",
+    "Windows 11",
+    "Ubuntu"
+  ],
+  "relatedLink": ["https://fairdataihub.org/sodaforsparc"],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Bhavesh",
+      "familyName": "Patel",
+      "email": "bpatel@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Tram",
+      "familyName": "Ngo",
+      "email": "tno@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Sanjay",
+      "familyName": "Soundarajan",
+      "email": "ssoundarajan@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Aaron",
+      "familyName": "Marroquin",
+      "email": "cmarroquin@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Jacob",
+      "familyName": "Clark",
+      "email": "jclark@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "California Medical Innovations Institute"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Dorian",
+      "familyName": "Portillo",
+      "email": "dportillo@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    }
+  ]
+}
