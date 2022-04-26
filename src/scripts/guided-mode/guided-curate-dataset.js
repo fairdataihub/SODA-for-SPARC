@@ -960,7 +960,7 @@ const generateContributorField = (
   }
 
   return `
-      <div class="guided--section mt-lg neumorphic" style="position: relative">
+      <div class="guided--section mt-lg neumorphic guided-contributor-field-container" style="position: relative">
         <i 
           class="fas fa-times fa-2x"
           style="
@@ -984,7 +984,11 @@ const generateContributorField = (
           <div class="guided--flex-center mt-sm" style="width: 45%">
             <label class="guided--form-label">Last name: </label>
             <input
-              class="guided--input ${contributorLastName ? "" : "border-error"}"
+              class="
+                guided--input
+                guided-last-name-input
+                ${contributorLastName ? "" : "border-error"}
+              "
               type="text"
               placeholder="Enter last name here"
               onkeyup="validateInput($(this))"
@@ -995,9 +999,11 @@ const generateContributorField = (
           <div class="guided--flex-center mt-sm" style="width: 45%">
             <label class="guided--form-label">First name: </label>
             <input
-              class="guided--input ${
-                contributorFirstName ? "" : "border-error"
-              }"
+              class="
+                guided--input
+                guided-first-name-input
+                ${contributorFirstName ? "" : "border-error"}
+              "
               type="text"
               placeholder="Enter first name here"
               onkeyup="validateInput($(this))"
@@ -1010,7 +1016,11 @@ const generateContributorField = (
           <div class="guided--flex-center mt-md" style="width: 45%">
             <label class="guided--form-label">ORCID: </label>
             <input
-              class="guided--input ${contributorORCID ? "" : "border-error"}"
+              class="
+                guided--input
+                guided-orcid-input
+                ${contributorORCID ? "" : "border-error"}
+              "
               type="text"
               placeholder="Enter ORCID here"
               onkeyup="validateInput($(this))"
@@ -1021,9 +1031,11 @@ const generateContributorField = (
           <div class="guided--flex-center mt-md" style="width: 45%">
             <label class="guided--form-label">Affiliation: </label>
             <input
-              class="guided--input ${
-                contributorAffiliation ? "" : "border-error"
-              }"
+              class="
+                guided--input
+                guided-affiliation-input
+                ${contributorAffiliation ? "" : "border-error"}
+              "
               type="text"
               placeholder="Enter affiliation here"
               onkeyup="validateInput($(this))"
@@ -1054,6 +1066,7 @@ const addContributorField = () => {
   newContributorField.classList.add("guided--section");
   newContributorField.classList.add("mt-lg");
   newContributorField.classList.add("neumorphic");
+  newContributorField.classList.add("guided-contributor-field-container");
   newContributorField.style.position = "relative";
 
   newContributorField.innerHTML = `
@@ -1076,7 +1089,7 @@ const addContributorField = () => {
       <div class="guided--flex-center mt-sm" style="width: 45%">
         <label class="guided--form-label">Last name: </label>
         <input
-          class="guided--input"
+          class="guided--input guided-last-name-input"
           type="text"
           placeholder="Enter last name here"
           onkeyup="validateInput($(this))"
@@ -1085,7 +1098,7 @@ const addContributorField = () => {
       <div class="guided--flex-center mt-sm" style="width: 45%">
         <label class="guided--form-label">First name: </label>
         <input
-          class="guided--input"
+          class="guided--input guided-first-name-input"
           type="text"
           placeholder="Enter first name here"
           onkeyup="validateInput($(this))"
@@ -1096,7 +1109,7 @@ const addContributorField = () => {
       <div class="guided--flex-center mt-md" style="width: 45%">
         <label class="guided--form-label">ORCID: </label>
         <input
-          class="guided--input"
+          class="guided--input guided-orcid-input"
           type="text"
           placeholder="Enter ORCID here"
           onkeyup="validateInput($(this))"
@@ -1105,7 +1118,7 @@ const addContributorField = () => {
       <div class="guided--flex-center mt-md" style="width: 45%">
         <label class="guided--form-label">Affiliation: </label>
         <input
-          class="guided--input "
+          class="guided--input guided-affiliation-input"
           type="text"
           placeholder="Enter affiliation here"
           onkeyup="validateInput($(this))"
@@ -4479,6 +4492,45 @@ $(document).ready(() => {
     });
 
     renderContributorFields(contributorInfo);
+  });
+
+  $("#guided-button-edit-checked-contributors").on("click", () => {});
+
+  $("#guided-button-save-contributor-fields").on("click", () => {
+    //get all contributor fields
+    const contributorFields = document.querySelectorAll(
+      ".guided-contributor-field-container"
+    );
+
+    //loop through contributor fields and get values
+    const contributorFieldsArray = Array.from(contributorFields);
+    contributorFieldsArray.forEach((contributorField) => {
+      const contributorLastName = contributorField.querySelector(
+        ".guided-last-name-input"
+      );
+      contributorFirstName = contributorField.querySelector(
+        ".guided-first-name-input"
+      );
+      contributorORCID = contributorField.querySelector(".guided-orcid-input");
+      contributorAffiliation = contributorField.querySelector(
+        ".guided-affiliation-input"
+      );
+      //get tags from role tagify
+      contributorRolesTagify = contributorField.querySelector(
+        ".guided-contributor-role-input"
+      );
+      console.log(contributorRolesTagify);
+      getTagsFromTagifyElement(contributorRolesTagify);
+      const contributorInputObj = {
+        contributorLastName: contributorLastName.value,
+        contributorFirstName: contributorFirstName.value,
+        contributorORCID: contributorORCID.value,
+        contributorAffiliation: contributorAffiliation.value,
+      };
+      console.log(contributorInputObj);
+    });
+    //render contributor data
+    renderContributorFields(contributorData);
   });
 
   function guidedGenerateRCFilesHelper(type) {
