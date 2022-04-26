@@ -1334,7 +1334,6 @@ function createManifestLocally(type, editBoolean, originalDataset) {
                   },
                 }).then((result) => {});
               } else {
-                // console.log(res)
                 Swal.fire({
                   title: "Successfully generated!",
                   heightAuto: false,

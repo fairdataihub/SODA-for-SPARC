@@ -5,12 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v.5.3.4 - 2022-04-25
+## v.5.4.0 - 2022-04-25
 
 ### Feature additions:
 
 - In Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will ease performance when datasets are large (over 500+ items) and can cause issues when rendering on older machines.
 - Importing a local dataset will now be handled on the python end to increase performance. A progress bar is also included to show details about import to user.
+- On success of importing files/folders there will be a toast display on the bottom right to give user a notification.
 
 ### Bug fixes:
 
@@ -24,10 +25,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed bug with illegally formatted metadata files being dropped in Step 4: Metadata files.
 
+- Fixed UI bug where tooltips in the Prepare Metadata section receive a top and a right message on hover.
+
 ### Known Issues:
 
 - There is a bug with removing dataset permissions using both SODA and Pennsieve. If you want to remove your own permission from a dataset, another user with either 'Manager' or 'Owner' permissions must remove you from the dataset. This is an issue with Pennsieve's backend system and will be updated soon.
 - When uploading a dataset through Upload Local Dataset or Organize Dataset feature to Pennsieve the upload will sometimes freeze. When this occurs it is best to reset the upload and ensure the Pennsieve Agent has been stopped before attempting to upload again. It is also necessary to verify the integrity of uploaded files up to that point. This can be done by simply ensuring all files from folders that have been uploaded are included in the Pennsieve dataset.
+- The Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.
+- When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.
 
 ## v.5.3.3 - 2022-04-08
 

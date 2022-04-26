@@ -4438,7 +4438,7 @@ var bfAddAccountBootboxMessage = `<form>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-tippy-content="See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover"  id="add-bf-account-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 retrieveBFAccounts();
 
@@ -4895,6 +4895,24 @@ async function addFoldersfunction(
   folderArray,
   currentLocation
 ) {
+  let importToast = new Notyf({
+    position: { x: "right", y: "bottom" },
+    ripple: true,
+    dismissible: true,
+    ripple: false,
+    types: [
+      {
+        type: "success",
+        background: "#13716D",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+        duration: 2500,
+      },
+    ],
+  });
   var uiFolders = {};
   var importedFolders = {};
   var duplicateFolders = [];
@@ -5023,6 +5041,17 @@ async function addFoldersfunction(
         datasetStructureJSONObj
       );
       beginScrollListen();
+      if (Object.keys(importedFolders).length > 1) {
+        importToast.open({
+          type: "success",
+          message: "Successfully Imported Folders",
+        });
+      } else {
+        importToast.open({
+          type: "success",
+          message: "Successfully Imported Folder",
+        });
+      }
       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
 
@@ -5234,6 +5263,24 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
+  let importToast = new Notyf({
+    position: { x: "right", y: "bottom" },
+    ripple: true,
+    dismissible: true,
+    ripple: false,
+    types: [
+      {
+        type: "success",
+        background: "#13716D",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+        duration: 2500,
+      },
+    ],
+  });
   var folderPath = [];
   var duplicateFolders = [];
   for (var i = 0; i < ev1.length; i++) {
@@ -5311,7 +5358,6 @@ function dropHelper(
           }
         }
       }
-      //console.log(nonAllowedDuplicateFiles);
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
@@ -5466,6 +5512,17 @@ function dropHelper(
       $(appendString).appendTo(ev2);
     }
     listItems(myPath, "#items", 500, (reset = true));
+    if (Object.keys(importedFiles).length > 1) {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Files",
+      });
+    } else {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported File",
+      });
+    }
     // getInFolder(
     //   ".single-item",
     //   "#items",
@@ -5515,6 +5572,17 @@ function dropHelper(
       organizeDSglobalPath,
       datasetStructureJSONObj
     );
+    if (Object.keys(importedFolders).length > 1) {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Folders",
+      });
+    } else {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Folder",
+      });
+    }
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
@@ -6455,7 +6523,8 @@ ipcRenderer.on(
         ) {
           valid_dataset = verify_sparc_folder(
             document.getElementById("input-destination-getting-started-locally")
-              .placeholder, "local"
+              .placeholder,
+            "local"
           );
           if (valid_dataset == true) {
             var action = "";
@@ -8053,11 +8122,13 @@ function showBFAddAccountSweetalert() {
     heightAuto: false,
     allowOutsideClick: false,
     didOpen: () => {
-      tippy("[data-tippy-content]", {
+      tippy("#add-bf-account-tooltip", {
         allowHTML: true,
         interactive: true,
         placement: "right",
         theme: "light",
+        content:
+          "See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA.",
       });
     },
     showClass: {
@@ -9900,7 +9971,6 @@ $("#validate_dataset_bttn").on("click", async () => {
     );
   }
 
-  console.log(res);
   $("#dataset_validator_status").text(
     "Please wait while we validate the dataset..."
   );
@@ -9929,8 +9999,6 @@ $("#validate_dataset_bttn").on("click", async () => {
     //   defaultBfDataset
     // );
   }
-
-  console.log(datasetResponse);
 
   create_validation_report(res);
   $("#dataset_validator_status").html("");

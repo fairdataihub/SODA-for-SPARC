@@ -1446,10 +1446,12 @@ const recursive_structure_create = (
         );
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace("\\", "/");
+
           relative_path = temp_current_file_path.replace(
             root_folder_path + "/",
             ""
           );
+
           for (item in sodaJSONObj["starting-point"][high_level_folder][
             "manifest"
           ]) {
@@ -1788,17 +1790,17 @@ const verify_sparc_folder = (root_folder_path, type) => {
         break;
       }
     } else {
-        if (
-          highLevelFolders.includes(item) ||
-          possible_metadata_files.includes(path.parse(item).name) ||
-          item.substring(0, 1) != "."
-        ) {
-          valid_dataset = true;
-        } else {
-          valid_dataset = false;
-          break;
-        }
+      if (
+        highLevelFolders.includes(item) ||
+        possible_metadata_files.includes(path.parse(item).name) ||
+        item.substring(0, 1) != "."
+      ) {
+        valid_dataset = true;
+      } else {
+        valid_dataset = false;
+        break;
       }
+    }
   }
   return valid_dataset;
 };

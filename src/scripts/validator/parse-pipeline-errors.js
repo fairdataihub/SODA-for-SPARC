@@ -27,8 +27,6 @@ const validationErrorPipeline = (path, errorMessage) => {
   // get translated error message
   let translatedErrorMessage = getTranslatedErrorMessage(path, errorMessage);
 
-  console.log("Current translated error message: ", translatedErrorMessage);
-
   return translatedErrorMessage;
 };
 
