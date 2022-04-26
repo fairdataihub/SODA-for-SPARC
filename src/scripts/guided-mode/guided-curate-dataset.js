@@ -1503,7 +1503,7 @@ const generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
     </tr>
   `;
 };
-const addSubjectFolder = (subjectDeleteButton) => {
+const addSubjectFolder = (addSubjectButton) => {
   $("#subjects-table-body").append(generateSubjectRowElement("", ""));
   updateGuidedTableIndices("subject-table-index");
 };
@@ -4170,90 +4170,79 @@ $(document).ready(() => {
     contributorAffiliation,
     contributorRole
   ) => {
-    const lastNameElement =
-      contributorLastName == undefined ? "undef" : contributorLastName;
-    const firstNameElement =
-      contributorFirstName == undefined ? "" : contributorFirstName;
-    const orcidElement = contributorORCID == undefined ? "" : contributorORCID;
-    const affiliationElement =
-      contributorAffiliation == undefined ? "" : contributorAffiliation;
-    const roleElement = contributorRole == undefined ? "" : contributorRole;
+    //remove "https://orcid.org/" from contributor ORCID if an ORCID was returned from AirTable
+    if (contributorORCID !== undefined) {
+      contributorORCID = contributorORCID.replace("https://orcid.org/", "");
+    }
+
     return `
-     <div class="guided--section mt-lg">
-              <div class="space-between w-100">
-                <div class="guided--flex-center mt-sm" style="width: 45%">
-                  <label class="guided--form-label">Last name: </label>
-                  <input
-                    class="guided--input"
-                    id="guided-dataset-name-input"
-                    data-input-set="guided-dataset-starting-point-tab"
-                    data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-                    data-alert-type="danger"
-                    type="text"
-                    name="guided-dataset-name"
-                    placeholder="Enter last name here"
-                    onkeyup="validateInput($(this))"
-                  />
-                </div>
-                <div class="guided--flex-center mt-sm" style="width: 45%">
-                  <label class="guided--form-label">First name: </label>
-                  <input
-                    class="guided--input"
-                    id="guided-dataset-name-input"
-                    data-input-set="guided-dataset-starting-point-tab"
-                    data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-                    data-alert-type="danger"
-                    type="text"
-                    name="guided-dataset-name"
-                    placeholder="Enter first name here"
-                    onkeyup="validateInput($(this))"
-                  />
-                </div>
-              </div>
-              <div class="space-between w-100 mb-md">
-                <div class="guided--flex-center mt-md" style="width: 45%">
-                  <label class="guided--form-label">ORCID: </label>
-                  <input
-                    class="guided--input"
-                    id="guided-dataset-name-input"
-                    data-input-set="guided-dataset-starting-point-tab"
-                    data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-                    data-alert-type="danger"
-                    type="text"
-                    name="guided-dataset-name"
-                    placeholder="Enter ORCID here"
-                    onkeyup="validateInput($(this))"
-                  />
-                </div>
-                <div class="guided--flex-center mt-md" style="width: 45%">
-                  <label class="guided--form-label">affiliation: </label>
-                  <input
-                    class="guided--input"
-                    id="guided-dataset-name-input"
-                    data-input-set="guided-dataset-starting-point-tab"
-                    data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-                    data-alert-type="danger"
-                    type="text"
-                    name="guided-dataset-name"
-                    placeholder="Enter affiliation here"
-                    onkeyup="validateInput($(this))"
-                  />
-                </div>
-              </div>
-              <label class="guided--form-label">Role(s): </label>
-              <input
-                class="guided--input"
-                id="guided-dataset-name-input"
-                data-input-set="guided-dataset-starting-point-tab"
-                data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-                data-alert-type="danger"
-                type="text"
-                name="guided-dataset-name"
-                placeholder="Enter affiliation here"
-                onkeyup="validateInput($(this))"
-              />
-            </div>
-  `;
+      <div class="guided--section mt-lg neumorphic">
+        <h2 class="guided--text-sub-step">
+          Enter 
+          <span class="contributor-first-name">${
+            contributorFirstName ? contributorFirstName : "contributor's"
+          }</span>'s
+          contributor details
+        </h2>
+        <div class="space-between w-100">
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label">Last name: </label>
+            <input
+              class="guided--input ${contributorLastName ? "" : "border-error"}"
+              type="text"
+              placeholder="Enter last name here"
+              onkeyup="validateInput($(this))"
+              value="${contributorLastName ? contributorLastName : ""}"
+              ${contributorFirstName ? "readonly" : ""}
+            />
+          </div>
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label">First name: </label>
+            <input
+              class="guided--input ${
+                contributorFirstName ? "" : "border-error"
+              }"
+              type="text"
+              placeholder="Enter first name here"
+              onkeyup="validateInput($(this))"
+              value="${contributorFirstName ? contributorFirstName : ""}"
+              ${contributorFirstName ? "readonly" : ""}
+            />
+          </div>
+        </div>
+        <div class="space-between w-100 mb-md">
+          <div class="guided--flex-center mt-md" style="width: 45%">
+            <label class="guided--form-label">ORCID: </label>
+            <input
+              class="guided--input ${contributorORCID ? "" : "border-error"}"
+              type="text"
+              placeholder="Enter ORCID here"
+              onkeyup="validateInput($(this))"
+              value="${contributorORCID ? contributorORCID : ""}"
+              ${contributorORCID ? "readonly" : ""}
+            />
+          </div>
+          <div class="guided--flex-center mt-md" style="width: 45%">
+            <label class="guided--form-label">affiliation: </label>
+            <input
+              class="guided--input ${
+                contributorAffiliation ? "" : "border-error"
+              }"
+              type="text"
+              placeholder="Enter affiliation here"
+              onkeyup="validateInput($(this))"
+              value="${contributorAffiliation ? contributorAffiliation : ""}"
+              ${contributorAffiliation ? "readonly" : ""}
+            />
+          </div>
+        </div>
+        <label class="guided--form-label">Role(s): </label>
+        <input class="guided-contributor-role-input"
+          contenteditable="true"
+          placeholder='Type here to view and add contributor roles'
+        />
+      </div>
+    `;
   };
 
   //description///////////////////////////////////////
@@ -4271,10 +4260,48 @@ $(document).ready(() => {
       })
       .join("\n");
     console.log(contributionMembersElements);
+
     const contributorsContainer = document.getElementById(
       "contributors-container"
     );
     contributorsContainer.innerHTML = contributionMembersElements;
+    const contributorRoleInputs = document.querySelectorAll(
+      ".guided-contributor-role-input"
+    );
+    console.log(contributorRoleInputs);
+
+    //create a tagify for each element in contributorRoleElements
+    contributorRoleInputs.forEach((contributorRoleElement) => {
+      const tagify = new Tagify(contributorRoleElement, {
+        whitelist: [
+          "PrincipleInvestigator",
+          "Creator",
+          "CoInvestigator",
+          "DataCollector",
+          "DataCurator",
+          "DataManager",
+          "Distributor",
+          "Editor",
+          "Producer",
+          "ProjectLeader",
+          "ProjectManager",
+          "ProjectMember",
+          "RelatedPerson",
+          "Researcher",
+          "ResearchGroup",
+          "Sponsor",
+          "Supervisor",
+          "WorkPackageLeader",
+          "Other",
+        ],
+        enforceWhitelist: true,
+        dropdown: {
+          enabled: 1,
+          closeOnSelect: true,
+          position: "auto",
+        },
+      });
+    });
   };
 
   $("#guided-button-save-checked-contributors").on("click", async () => {

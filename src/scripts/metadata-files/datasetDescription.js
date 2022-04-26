@@ -1353,8 +1353,6 @@ const generateContributorRowElement = (
   contributorLastName,
   contributorFirstName
 ) => {
-  console.log(contributorLastName);
-  console.log(contributorFirstName);
   return `
     <tr>
       <td class="middle aligned collapsing text-center">
@@ -1371,6 +1369,38 @@ const generateContributorRowElement = (
       </td>
     </tr>
   `;
+};
+
+const addContributorRowElement = () => {
+  const newContributorRowElement = `
+    <tr>
+      <td class="middle aligned collapsing text-center">
+        <div class="ui fitted checkbox">
+          <input type="checkbox" name="contributor" checked>
+          <label></label>
+        </div>
+      </td>
+      <td class="middle aligned">
+        <input
+          class="guided--input"
+          type="text"
+          name="contributor-last-name"
+          placeholder="Enter last name"
+        />
+      </td>
+      <td class="middle aligned">
+        <input
+          class="guided--input"
+          type="text"
+          name="contributor-first-name"
+          placeholder="Enter first name"
+        />
+      </td>
+    </tr>
+  `;
+  //insert divToAdd before the element with id="guided-add-contributor-row"
+  const divAfter = document.getElementById("guided-add-cFontributor-row");
+  divAfter.insertAdjacentHTML("beforebegin", newContributorRowElement);
 };
 
 const loadContributorInfofromAirtable = async (award, curationMode) => {
@@ -1417,8 +1447,24 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
   }
   console.log(globalContributorNameObject);
   if (curationMode === "guided") {
+    const addContributorButtonRowElement = `
+      <tr id="guided-add-contributor-row>
+        <td class="middle aligned text-center" colspan="3">
+          <button
+            class="ui primary basic button tiny m-0"
+            onclick="addContributorRowElement()"
+          >
+            <i
+              class="fas fa-plus"
+              style="margin-right: 7px"
+            ></i
+            >Add contributor
+          </button>
+        </td>
+      </tr>
+    `;
     // render the contributors table on the contributors page
-    const contributorTableRows = Object.keys(globalContributorNameObject)
+    let contributorTableRows = Object.keys(globalContributorNameObject)
       .map((contributor) => {
         const contributorLast = contributor;
         const contributorFirst = globalContributorNameObject[contributor];
@@ -1427,6 +1473,9 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
         return generateContributorRowElement(contributorLast, contributorFirst);
       })
       .join("\n");
+    //add 'Add contributor button' to the end of contributorTableRows string
+    contributorTableRows += addContributorButtonRowElement;
+
     const contributorsTableContainer = document.getElementById(
       "contributors-table-container"
     );
