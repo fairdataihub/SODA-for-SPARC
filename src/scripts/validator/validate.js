@@ -316,8 +316,6 @@ const addValidationErrorToTable = (
 
   // append the row to the table body
   tableBody.appendChild(row);
-
-  // console.log(row);
 };
 
 const validationErrorsOccurred = (errors) =>

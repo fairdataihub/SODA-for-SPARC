@@ -9972,7 +9972,6 @@ $("#validate_dataset_bttn").on("click", async () => {
     );
   }
 
-  console.log(res);
   $("#dataset_validator_status").text(
     "Please wait while we validate the dataset..."
   );
@@ -10001,8 +10000,6 @@ $("#validate_dataset_bttn").on("click", async () => {
     //   defaultBfDataset
     // );
   }
-
-  console.log(datasetResponse);
 
   create_validation_report(res);
   $("#dataset_validator_status").html("");

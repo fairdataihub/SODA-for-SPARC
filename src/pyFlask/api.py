@@ -74,7 +74,6 @@ def api_validate_dataset_pipeline():
         validation_errors = val_dataset_local_pipeline(ds_path)
         
     except Exception as e:
-        print(type(e).__name__)
         if type(e).__name__ == "OSError":
             return str(e), 400
         # currently the validator throws a name error
