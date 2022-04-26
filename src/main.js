@@ -180,7 +180,8 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        exitPyProc();
+        exitPyProc(PysodaConfiguration);
+        // to do: exitPyProc(pyFlaskConfiguration);
         app.exit();
       }
     });
