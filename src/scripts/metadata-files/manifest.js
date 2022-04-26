@@ -378,7 +378,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   // Case 1: Local dataset
   if (type === "local") {
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
@@ -450,7 +450,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -478,7 +478,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -505,7 +505,7 @@ async function generateManifest(action, type, manifestEditBoolean) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -983,7 +983,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1013,7 +1013,7 @@ async function extractBFDatasetForManifestFile(
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1069,7 +1069,7 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then((result) => { });
       return false;
     } else {
       return true;
@@ -1262,7 +1262,7 @@ async function generateManifestFolderLocallyForEdit() {
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       return;
     } else {
       createManifestLocally("local", true, "");
@@ -1306,7 +1306,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
           didOpen: () => {
             Swal.hideLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
         $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1332,9 +1332,8 @@ function createManifestLocally(type, editBoolean, originalDataset) {
                   didOpen: () => {
                     Swal.hideLoading();
                   },
-                }).then((result) => {});
+                }).then((result) => { });
               } else {
-                // console.log(res)
                 Swal.fire({
                   title: "Successfully generated!",
                   heightAuto: false,
@@ -1345,7 +1344,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
                   didOpen: () => {
                     Swal.hideLoading();
                   },
-                }).then((result) => {});
+                }).then((result) => { });
                 $("#preview-manifest-fake-confirm").click();
                 $("#Question-prepare-manifest-4").removeClass("show");
                 $("#Question-prepare-manifest-4").removeClass("prev");
@@ -1364,7 +1363,7 @@ function createManifestLocally(type, editBoolean, originalDataset) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           localDatasetFolderPath = "";
         } else {
           // SODA Manifest Files folder
