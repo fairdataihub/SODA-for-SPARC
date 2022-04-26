@@ -4163,7 +4163,50 @@ $(document).ready(() => {
     return checkedContributorData;
   };
 
+  const generateContributorField = (
+    contributorLastName,
+    contributorFirstName,
+    contributorORCID,
+    contributorAffiliation,
+    contributorRole
+  ) => {
+    const lastNameElement =
+      contributorLastName == undefined ? "undef" : contributorLastName;
+    const firstNameElement =
+      contributorFirstName == undefined ? "" : contributorFirstName;
+    const orcidElement = contributorORCID == undefined ? "" : contributorORCID;
+    const affiliationElement =
+      contributorAffiliation == undefined ? "" : contributorAffiliation;
+    const roleElement = contributorRole == undefined ? "" : contributorRole;
+    return `
+    <div class="guided--section">
+      <div class="space-between">
+      </div>
+    </div>
+  `;
+  };
+
   //description///////////////////////////////////////
+  const renderContributorFields = (contributionMembersArray) => {
+    //loop through curationMembers object
+    const contributionMembersElements = contributionMembersArray
+      .map((contributionMember) => {
+        return generateContributorField(
+          contributionMember["contributorLastName"],
+          contributionMember["contributorFirstName"],
+          contributionMember["contributorORCID"],
+          contributionMember["contributorAffiliation"],
+          contributionMember["contributorRole"]
+        );
+      })
+      .join("\n");
+    console.log(contributionMembersElements);
+    const contributorsContainer = document.getElementById(
+      "contributors-container"
+    );
+    contributorsContainer.innerHTML = contributionMembersElements;
+  };
+
   $("#guided-button-save-checked-contributors").on("click", async () => {
     const checkedContributors = getCheckedContributors();
     console.log(checkedContributors);
@@ -4180,6 +4223,7 @@ $(document).ready(() => {
       apiKey: airKeyInput,
     });
     var base = Airtable.base("appiYd1Tz9Sv857GZ");
+    // Create a filter string to select every entry with first and last names that match the checked contributors
     let contributorInfoFilterString = "OR(";
     for (const contributor of checkedContributors) {
       contributorInfoFilterString += `AND({First_name} = "${contributor["contributorFirstName"]}", {Last_name} = "${contributor["contributorLastName"]}"),`;
@@ -4194,65 +4238,18 @@ $(document).ready(() => {
         filterByFormula: contributorInfoFilterString,
       })
       .all();
-    console.log(contributorInfoResult);
-    //if contributorInfoResult is empty, create notyf
-    if (contributorInfoResult.length === 0) {
-      notyf.error("No contributors found");
-      return;
-    }
-    //if contributorInfoResult is not empty, create notyf
-    notyf.success("Contributors found");
 
-    //create contributorInfoData array
-
-    contributorInfoData = contributorInfoResult.map((contributorInfo) => {
+    const contributorInfo = contributorInfoResult.map((contributor) => {
       return {
-        contributorFirstName: contributorInfo.fields["First_name"],
-        contributorLastName: contributorInfo.fields["Last_name"],
-        contributorEmail: contributorInfo.fields["Email"],
+        contributorFirstName: contributor.fields["First_name"],
+        contributorLastName: contributor.fields["Last_name"],
+        contributorORCID: contributor.fields["ORCID"],
+        contributorAffiliation: contributor.fields["Institution"],
+        contributorRole: contributor.fields["Institution_role"],
       };
     });
-    console.log(contributorInfoData);
 
-    /*
-    const contributorInforesponse = await base("sparc_members")
-      .select({
-        filterByFormula: contributorInfoFilterString,
-      })
-      .eachPage(function page(records, fetchNextPage) {
-        var conInfoObj = {};
-        records.forEach(function (record) {
-          conInfoObj["ID"] = record.get("ORCID");
-          conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
-          conInfoObj["Affiliation"] = record.get("Institution");
-        }),
-          fetchNextPage();
-        if (curationMode === "free-form") {
-          // if no records found, leave fields empty
-          leaveFieldsEmpty(
-            conInfoObj["ID"],
-            document.getElementById("input-con-ID")
-          );
-          leaveFieldsEmpty(
-            conInfoObj["Role"],
-            document.getElementById("input-con-role")
-          );
-          leaveFieldsEmpty(
-            conInfoObj["Affiliation"],
-            document.getElementById("input-con-affiliation")
-          );
-        }
-
-        tagifyAffliation.addTags(conInfoObj["Affiliation"]);
-        tagifyRole.addTags(conInfoObj["Role"]);
-      });
-    function done(err) {
-      if (err) {
-        log.error(err);
-        console.error(err);
-        return;
-      }
-    }*/
+    renderContributorFields(contributorInfo);
   });
 
   function guidedGenerateRCFilesHelper(type) {
