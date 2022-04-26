@@ -3,6 +3,7 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6407403.svg)](https://doi.org/10.5281/zenodo.6407403)
+[![Curated with FAIRshare](https://raw.githubusercontent.com/fairdataihub/FAIRshare/main/badge.svg)](https://fairdataihub.org/fairshare)
 
 [contributors-shield]: https://img.shields.io/github/contributors/fairdataihub/SODA-for-SPARC.svg?style=flat-square
 [contributors-url]: https://github.com/fairdataihub/SODA-for-SPARC/graphs/contributors
