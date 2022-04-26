@@ -47,6 +47,8 @@ const {
   determineDatasetLocation,
 } = require("./scripts/others/analytics/analytics-utils");
 
+const axios = require("axios").default;
+
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
 
@@ -3040,6 +3042,7 @@ const Cropper = require("cropperjs");
 const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
+const { background } = require("jimp");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4075,7 +4078,7 @@ var highLevelFolderToolTip = {
     "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
-listItems(datasetStructureJSONObj, "#items");
+listItems(datasetStructureJSONObj, "#items", 500);
 getInFolder(
   ".single-item",
   "#items",
@@ -4101,15 +4104,14 @@ organizeDSbackButton.addEventListener("click", function () {
       myPath = myPath["folders"][item];
     }
     // construct UI with files and folders
-    var appendString = loadFileFolder(myPath);
-
-    /// empty the div
     $("#items").empty();
-    $("#items").html(appendString);
-
+    already_created_elem = [];
+    let items = loadFileFolder(myPath); //array -
+    let total_item_count = items[1].length + items[0].length;
+    //we have some items to display
+    listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
     // reconstruct div with new elements
-    listItems(myPath, "#items");
     getInFolder(
       ".single-item",
       "#items",
@@ -4191,13 +4193,13 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               determineDatasetLocation()
             );
           } else {
-            var appendString = "";
-            appendString =
-              appendString +
-              '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-              newFolderName +
-              "</div></div>";
-            $(appendString).appendTo("#items");
+            // var appendString = "";
+            // appendString =
+            //   appendString +
+            //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
+            //   newFolderName +
+            //   "</div></div>";
+            // $(appendString).appendTo("#items");
 
             /// update datasetStructureJSONObj
             var currentPath = organizeDSglobalPath.value;
@@ -4216,7 +4218,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               action: ["new"],
             };
 
-            listItems(myPath, "#items");
+            listItems(myPath, "#items", 500, (reset = true));
             getInFolder(
               ".single-item",
               "#items",
@@ -4436,7 +4438,7 @@ var bfAddAccountBootboxMessage = `<form>
     </div>
   </form>`;
 
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover" data-tippy-content="See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover"  id="add-bf-account-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 retrieveBFAccounts();
 
@@ -4631,7 +4633,7 @@ organizeDSaddFiles.addEventListener("click", function () {
   ipcRenderer.send("open-files-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
+ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let hidden_files_present = false;
@@ -4658,71 +4660,259 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
       },
     });
   }
-  addFilesfunction(
-    path,
-    myPath,
-    organizeDSglobalPath,
-    "#items",
-    ".single-item",
-    datasetStructureJSONObj
-  );
+  if (path.length > 0) {
+    if (path.length < 500) {
+      await addFilesfunction(
+        path,
+        myPath,
+        organizeDSglobalPath,
+        "#items",
+        ".single-item",
+        datasetStructureJSONObj
+      );
+    } else {
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        await addFilesfunction(
+          path,
+          myPath,
+          organizeDSglobalPath,
+          "#items",
+          ".single-item",
+          datasetStructureJSONObj
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    }
+  }
 });
 
 organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
-  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  irregularFolderArray = [];
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  for (var ele of pathElement) {
-    detectIrregularFolders(path.basename(ele), ele);
-  }
-  if (irregularFolderArray.length > 0) {
-    Swal.fire({
-      title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
-      didOpen: () => {
-        $(".swal-popover").popover();
-      },
-      footer: footer,
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        addFoldersfunction(
-          "replace",
-          irregularFolderArray,
-          pathElement,
-          myPath
-        );
-      } else if (result.isDenied) {
-        addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-      }
-    });
-  } else {
-    addFoldersfunction("", irregularFolderArray, pathElement, myPath);
-  }
-});
+ipcRenderer.on(
+  "selected-folders-organize-datasets",
+  async (event, pathElement) => {
+    var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+    irregularFolderArray = [];
+    var filtered = getGlobalPath(organizeDSglobalPath);
+    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+    for (var ele of pathElement) {
+      detectIrregularFolders(path.basename(ele), ele);
+    }
+    if (irregularFolderArray.length > 0) {
+      Swal.fire({
+        title:
+          "The following folders contain non-allowed characters in their names. How should we handle them?",
+        html:
+          "<div style='max-height:300px; overflow-y:auto'>" +
+          irregularFolderArray.join("</br>") +
+          "</div>",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Replace characters with (-)",
+        denyButtonText: "Remove characters",
+        cancelButtonText: "Cancel",
+        didOpen: () => {
+          $(".swal-popover").popover();
+        },
+        footer: footer,
+      }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          if (pathElement.length > 500) {
+            let load_spinner_promise = new Promise(async (resolved) => {
+              let background = document.createElement("div");
+              let spinner_container = document.createElement("div");
+              let spinner_icon = document.createElement("div");
+              spinner_container.setAttribute("id", "items_loading_container");
+              spinner_icon.setAttribute("id", "item_load");
+              spinner_icon.setAttribute(
+                "class",
+                "ui large active inline loader icon-wrapper"
+              );
+              background.setAttribute("class", "loading-items-background");
+              background.setAttribute("id", "loading-items-background-overlay");
 
-function addFoldersfunction(
+              spinner_container.append(spinner_icon);
+              document.body.prepend(background);
+              document.body.prepend(spinner_container);
+              let loading_items_spinner = document.getElementById(
+                "items_loading_container"
+              );
+              loading_items_spinner.style.display = "block";
+              if (loading_items_spinner.style.display === "block") {
+                setTimeout(() => {
+                  resolved();
+                }, 100);
+              }
+            }).then(async () => {
+              await addFoldersfunction(
+                "replace",
+                irregularFolderArray,
+                pathElement,
+                myPath
+              );
+              document
+                .getElementById("loading-items-background-overlay")
+                .remove();
+              document.getElementById("items_loading_container").remove();
+            });
+          } else {
+            await addFoldersfunction(
+              "replace",
+              irregularFolderArray,
+              pathElement,
+              myPath
+            );
+          }
+        } else if (result.isDenied) {
+          if (pathElement.length > 500) {
+            let load_spinner_promise = new Promise(async (resolved) => {
+              let background = document.createElement("div");
+              let spinner_container = document.createElement("div");
+              let spinner_icon = document.createElement("div");
+              spinner_container.setAttribute("id", "items_loading_container");
+              spinner_icon.setAttribute("id", "item_load");
+              spinner_icon.setAttribute(
+                "class",
+                "ui large active inline loader icon-wrapper"
+              );
+              background.setAttribute("class", "loading-items-background");
+              background.setAttribute("id", "loading-items-background-overlay");
+
+              spinner_container.append(spinner_icon);
+              document.body.prepend(background);
+              document.body.prepend(spinner_container);
+              let loading_items_spinner = document.getElementById(
+                "items_loading_container"
+              );
+              loading_items_spinner.style.display = "block";
+              if (loading_items_spinner.style.display === "block") {
+                setTimeout(() => {
+                  resolved();
+                }, 100);
+              }
+            }).then(async () => {
+              await addFoldersfunction(
+                "remove",
+                irregularFolderArray,
+                pathElement,
+                myPath
+              );
+              document
+                .getElementById("loading-items-background-overlay")
+                .remove();
+              document.getElementById("items_loading_container").remove();
+            });
+          } else {
+            await addFoldersfunction(
+              "remove",
+              irregularFolderArray,
+              pathElement,
+              myPath
+            );
+          }
+        }
+      });
+    } else {
+      if (pathElement.length > 500) {
+        let load_spinner_promise = new Promise(async (resolved) => {
+          let background = document.createElement("div");
+          let spinner_container = document.createElement("div");
+          let spinner_icon = document.createElement("div");
+          spinner_container.setAttribute("id", "items_loading_container");
+          spinner_icon.setAttribute("id", "item_load");
+          spinner_icon.setAttribute(
+            "class",
+            "ui large active inline loader icon-wrapper"
+          );
+          background.setAttribute("class", "loading-items-background");
+          background.setAttribute("id", "loading-items-background-overlay");
+
+          spinner_container.append(spinner_icon);
+          document.body.prepend(background);
+          document.body.prepend(spinner_container);
+          let loading_items_spinner = document.getElementById(
+            "items_loading_container"
+          );
+          loading_items_spinner.style.display = "block";
+          if (loading_items_spinner.style.display === "block") {
+            setTimeout(() => {
+              resolved();
+            }, 100);
+          }
+        }).then(async () => {
+          await addFoldersfunction(
+            "",
+            irregularFolderArray,
+            pathElement,
+            myPath
+          );
+          document.getElementById("loading-items-background-overlay").remove();
+          document.getElementById("items_loading_container").remove();
+        });
+      } else {
+        await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+      }
+    }
+  }
+);
+
+async function addFoldersfunction(
   action,
   nonallowedFolderArray,
   folderArray,
   currentLocation
 ) {
+  let importToast = new Notyf({
+    position: { x: "right", y: "bottom" },
+    ripple: true,
+    dismissible: true,
+    ripple: false,
+    types: [
+      {
+        type: "success",
+        background: "#13716D",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+        duration: 2500,
+      },
+    ],
+  });
   var uiFolders = {};
   var importedFolders = {};
   var duplicateFolders = [];
@@ -4809,7 +4999,7 @@ function addFoldersfunction(
               `
             <div class="caption">
               <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-            </div>  
+            </div>
             <div class="swal-button-container">
               <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
               list +
@@ -4841,26 +5031,29 @@ function addFoldersfunction(
         if (element !== importedFolders[element]["original-basename"]) {
           currentLocation["folders"][element]["action"].push("renamed");
         }
-        var appendString =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-          element +
-          "</div></div>";
-        $("#items").html(appendString);
-        listItems(currentLocation, "#items");
-        getInFolder(
-          ".single-item",
-          "#items",
-          organizeDSglobalPath,
-          datasetStructureJSONObj
-        );
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-        hideMenu(
-          "high-level-folder",
-          menuFolder,
-          menuHighLevelFolders,
-          menuFile
-        );
       }
+      // $("#items").empty();
+      listItems(currentLocation, "#items", 500, (reset = true));
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
+      beginScrollListen();
+      if (Object.keys(importedFolders).length > 1) {
+        importToast.open({
+          type: "success",
+          message: "Successfully Imported Folders",
+        });
+      } else {
+        importToast.open({
+          type: "success",
+          message: "Successfully Imported Folder",
+        });
+      }
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
 
       // log the success
       logCurationForAnalytics(
@@ -4881,7 +5074,7 @@ function allowDrop(ev) {
 
 var filesElement;
 var targetElement;
-function drop(ev) {
+async function drop(ev) {
   irregularFolderArray = [];
   var action = "";
   filesElement = ev.dataTransfer.files;
@@ -4933,7 +5126,7 @@ function drop(ev) {
       didOpen: () => {
         $(".swal-popover").popover();
       },
-    }).then((result) => {
+    }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         action = "replace";
@@ -4942,10 +5135,112 @@ function drop(ev) {
       } else {
         return;
       }
+      if (ev.dataTranser.files.length > 500) {
+        let load_spinner_promise = new Promise(async (resolved) => {
+          let background = document.createElement("div");
+          let spinner_container = document.createElement("div");
+          let spinner_icon = document.createElement("div");
+          spinner_container.setAttribute("id", "items_loading_container");
+          spinner_icon.setAttribute("id", "item_load");
+          spinner_icon.setAttribute(
+            "class",
+            "ui large active inline loader icon-wrapper"
+          );
+          background.setAttribute("class", "loading-items-background");
+          background.setAttribute("id", "loading-items-background-overlay");
+
+          spinner_container.append(spinner_icon);
+          document.body.prepend(background);
+          document.body.prepend(spinner_container);
+          let loading_items_spinner = document.getElementById(
+            "items_loading_container"
+          );
+          loading_items_spinner.style.display = "block";
+          if (loading_items_spinner.style.display === "block") {
+            setTimeout(() => {
+              resolved();
+            }, 100);
+          }
+        }).then(async () => {
+          dropHelper(
+            filesElement,
+            targetElement,
+            action,
+            myPath,
+            importedFiles,
+            importedFolders,
+            nonAllowedDuplicateFiles,
+            uiFiles,
+            uiFolders
+          );
+          // Swal.close();
+          document.getElementById("loading-items-background-overlay").remove();
+          document.getElementById("items_loading_container").remove();
+          // background.remove();
+        });
+      } else {
+        dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+      }
+    });
+  } else {
+    if (ev.dataTransfer.files.length > 500) {
+      let load_spinner_promise = new Promise(async (resolved) => {
+        let background = document.createElement("div");
+        let spinner_container = document.createElement("div");
+        let spinner_icon = document.createElement("div");
+        spinner_container.setAttribute("id", "items_loading_container");
+        spinner_icon.setAttribute("id", "item_load");
+        spinner_icon.setAttribute(
+          "class",
+          "ui large active inline loader icon-wrapper"
+        );
+        background.setAttribute("class", "loading-items-background");
+        background.setAttribute("id", "loading-items-background-overlay");
+
+        spinner_container.append(spinner_icon);
+        document.body.prepend(background);
+        document.body.prepend(spinner_container);
+        let loading_items_spinner = document.getElementById(
+          "items_loading_container"
+        );
+        loading_items_spinner.style.display = "block";
+        if (loading_items_spinner.style.display === "block") {
+          setTimeout(() => {
+            resolved();
+          }, 100);
+        }
+      }).then(async () => {
+        dropHelper(
+          filesElement,
+          targetElement,
+          action,
+          myPath,
+          importedFiles,
+          importedFolders,
+          nonAllowedDuplicateFiles,
+          uiFiles,
+          uiFolders
+        );
+        // Swal.close();
+        document.getElementById("loading-items-background-overlay").remove();
+        document.getElementById("items_loading_container").remove();
+        // background.remove();
+      });
+    } else {
       dropHelper(
         filesElement,
         targetElement,
-        action,
+        "",
         myPath,
         importedFiles,
         importedFolders,
@@ -4953,19 +5248,7 @@ function drop(ev) {
         uiFiles,
         uiFolders
       );
-    });
-  } else {
-    dropHelper(
-      filesElement,
-      targetElement,
-      "",
-      myPath,
-      importedFiles,
-      importedFolders,
-      nonAllowedDuplicateFiles,
-      uiFiles,
-      uiFolders
-    );
+    }
   }
 }
 
@@ -4980,6 +5263,24 @@ function dropHelper(
   uiFiles,
   uiFolders
 ) {
+  let importToast = new Notyf({
+    position: { x: "right", y: "bottom" },
+    ripple: true,
+    dismissible: true,
+    ripple: false,
+    types: [
+      {
+        type: "success",
+        background: "#13716D",
+        icon: {
+          className: "fas fa-check-circle",
+          tagName: "i",
+          color: "white",
+        },
+        duration: 2500,
+      },
+    ],
+  });
   var folderPath = [];
   var duplicateFolders = [];
   for (var i = 0; i < ev1.length; i++) {
@@ -5057,7 +5358,6 @@ function dropHelper(
           }
         }
       }
-      //console.log(nonAllowedDuplicateFiles);
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
@@ -5130,7 +5430,7 @@ function dropHelper(
         `
       <div class="caption">
         <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-      </div>  
+      </div>
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
@@ -5175,7 +5475,7 @@ function dropHelper(
         `
       <div class="caption">
         <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-      </div>  
+      </div>
       <div class="swal-button-container">
         <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
         list +
@@ -5210,16 +5510,27 @@ function dropHelper(
         importedFiles[element]["basename"] +
         "</div></div>";
       $(appendString).appendTo(ev2);
-      listItems(myPath, "#items");
-      getInFolder(
-        ".single-item",
-        "#items",
-        organizeDSglobalPath,
-        datasetStructureJSONObj
-      );
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
+    listItems(myPath, "#items", 500, (reset = true));
+    if (Object.keys(importedFiles).length > 1) {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Files",
+      });
+    } else {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported File",
+      });
+    }
+    // getInFolder(
+    //   ".single-item",
+    //   "#items",
+    //   organizeDSglobalPath,
+    //   datasetStructureJSONObj
+    // );
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   if (Object.keys(importedFolders).length > 0) {
     for (var element in importedFolders) {
@@ -5238,7 +5549,7 @@ function dropHelper(
         "... </div></div>";
       $(placeholderString).appendTo(ev2);
       // await listItems(myPath, "#items");
-      listItems(myPath, "#items");
+      //listItems(myPath, "#items");
       if (element !== originalName) {
         myPath["folders"][element]["action"].push("renamed");
       }
@@ -5253,16 +5564,27 @@ function dropHelper(
         "</div></div>";
       $("#placeholder_element").remove();
       $(appendString).appendTo(ev2);
-      listItems(myPath, "#items");
-      getInFolder(
-        ".single-item",
-        "#items",
-        organizeDSglobalPath,
-        datasetStructureJSONObj
-      );
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
+    listItems(myPath, "#items", 500, (reset = true));
+    getInFolder(
+      ".single-item",
+      "#items",
+      organizeDSglobalPath,
+      datasetStructureJSONObj
+    );
+    if (Object.keys(importedFolders).length > 1) {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Folders",
+      });
+    } else {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Folder",
+      });
+    }
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   $("body").removeClass("waiting");
 }
@@ -5710,181 +6032,274 @@ function sortObjByKeys(object) {
   return orderedObject;
 }
 
-function listItems(jsonObj, uiItem) {
+async function listItems(jsonObj, uiItem, amount_req, reset) {
+  //allow amount to choose how many elements to create
+  //break elements into sets of 100
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
-
-  for (var item in sortedObj["folders"]) {
-    var emptyFolder = "";
-    if (!highLevelFolders.includes(item)) {
-      if (
-        JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-        JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-      ) {
-        emptyFolder = " empty";
-      }
-    }
-
-    cloud_item = "";
-    deleted_folder = false;
-
-    if ("action" in sortedObj["folders"][item]) {
-      if (
-        sortedObj["folders"][item]["action"].includes("deleted") ||
-        sortedObj["folders"][item]["action"].includes("recursive_deleted")
-      ) {
-        emptyFolder += " deleted_folder";
-        deleted_folder = true;
+  let file_elements = [],
+    folder_elements = [];
+  let count = 0;
+  if (Object.keys(sortedObj["folders"]).length > 0) {
+    for (var item in sortedObj["folders"]) {
+      count += 1;
+      var emptyFolder = "";
+      if (!highLevelFolders.includes(item)) {
         if (
+          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+        ) {
+          emptyFolder = " empty";
+        }
+      }
+
+      cloud_item = "";
+      deleted_folder = false;
+
+      if ("action" in sortedObj["folders"][item]) {
+        if (
+          sortedObj["folders"][item]["action"].includes("deleted") ||
           sortedObj["folders"][item]["action"].includes("recursive_deleted")
         ) {
-          emptyFolder += " recursive_deleted_file";
+          emptyFolder += " deleted_folder";
+          deleted_folder = true;
+          if (
+            sortedObj["folders"][item]["action"].includes("recursive_deleted")
+          ) {
+            emptyFolder += " recursive_deleted_file";
+          }
+        }
+      }
+
+      if (sortedObj["folders"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_folder";
+        if (deleted_folder) {
+          cloud_item = " pennsieve_folder_deleted";
+        }
+      }
+
+      if (
+        sortedObj["folders"][item]["type"] == "local" &&
+        sortedObj["folders"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_folder";
+        if (deleted_folder) {
+          cloud_item = " local_folder_deleted";
+        }
+      }
+
+      if (sortedObj["folders"][item]["action"].includes("updated")) {
+        cloud_item = " update-file";
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        // folder_elements.push(elem_creation);
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        // folder_elements.push(element_creation);
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
         }
       }
     }
-
-    if (sortedObj["folders"][item]["type"] == "bf") {
-      cloud_item = " pennsieve_folder";
-      if (deleted_folder) {
-        cloud_item = " pennsieve_folder_deleted";
+    if (count < 100) {
+      if (!folder_elements.includes(appendString) && appendString != "") {
+        folder_elements.push(appendString);
+        count = 0;
       }
-    }
-
-    if (
-      sortedObj["folders"][item]["type"] == "local" &&
-      sortedObj["folders"][item]["action"].includes("existing")
-    ) {
-      cloud_item = " local_folder";
-      if (deleted_folder) {
-        cloud_item = " local_folder_deleted";
-      }
-    }
-
-    if (sortedObj["folders"][item]["action"].includes("updated")) {
-      cloud_item = " update-file";
-      appendString =
-        appendString +
-        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-        emptyFolder +
-        '"></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
-    } else {
-      appendString =
-        appendString +
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-        emptyFolder +
-        '"></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
     }
   }
-  for (var item in sortedObj["files"]) {
-    // not the auto-generated manifest
-    if (sortedObj["files"][item].length !== 1) {
-      if ("path" in sortedObj["files"][item]) {
-        var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
-      } else {
-        var extension = "other";
-      }
-      if (sortedObj["files"][item]["type"] == "bf") {
-        if (sortedObj["files"][item]["action"].includes("deleted")) {
-          original_file_name = item.substring(0, item.lastIndexOf("-"));
-          extension = original_file_name.split(".").pop();
+  //reset count and string for file elements
+  count = 0;
+  appendString = "";
+  if (Object.keys(sortedObj["files"]).length > 0) {
+    for (var item in sortedObj["files"]) {
+      count += 1;
+      // not the auto-generated manifest
+      if (sortedObj["files"][item].length !== 1) {
+        if ("path" in sortedObj["files"][item]) {
+          var extension = path
+            .extname(sortedObj["files"][item]["path"])
+            .slice(1);
         } else {
-          extension = item.split(".").pop();
+          var extension = "other";
         }
-      }
-      if (
-        ![
-          "docx",
-          "doc",
-          "pdf",
-          "txt",
-          "jpg",
-          "JPG",
-          "jpeg",
-          "JPEG",
-          "xlsx",
-          "xls",
-          "csv",
-          "png",
-          "PNG",
-        ].includes(extension)
-      ) {
+        if (sortedObj["files"][item]["type"] == "bf") {
+          if (sortedObj["files"][item]["action"].includes("deleted")) {
+            original_file_name = item.substring(0, item.lastIndexOf("-"));
+            extension = original_file_name.split(".").pop();
+          } else {
+            extension = item.split(".").pop();
+          }
+        }
+        if (
+          ![
+            "docx",
+            "doc",
+            "pdf",
+            "txt",
+            "jpg",
+            "JPG",
+            "jpeg",
+            "JPEG",
+            "xlsx",
+            "xls",
+            "csv",
+            "png",
+            "PNG",
+          ].includes(extension)
+        ) {
+          extension = "other";
+        }
+      } else {
         extension = "other";
       }
-    } else {
-      extension = "other";
-    }
 
-    cloud_item = "";
-    deleted_file = false;
+      cloud_item = "";
+      deleted_file = false;
 
-    if ("action" in sortedObj["files"][item]) {
+      if ("action" in sortedObj["files"][item]) {
+        if (
+          sortedObj["files"][item]["action"].includes("deleted") ||
+          sortedObj["files"][item]["action"].includes("recursive_deleted")
+        ) {
+          extension += " deleted_file";
+          deleted_file = true;
+          if (
+            sortedObj["files"][item]["action"].includes("recursive_deleted")
+          ) {
+            extension += " recursive_deleted_file";
+          }
+        }
+      }
+
+      if (sortedObj["files"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_file";
+        if (deleted_file) {
+          cloud_item = " pennsieve_file_deleted";
+        }
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+      }
+
       if (
-        sortedObj["files"][item]["action"].includes("deleted") ||
-        sortedObj["files"][item]["action"].includes("recursive_deleted")
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("existing")
       ) {
-        extension += " deleted_file";
-        deleted_file = true;
-        if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
-          extension += " recursive_deleted_file";
+        cloud_item = " local_file";
+        if (deleted_file) {
+          cloud_item = " local_file_deleted";
+        }
+      }
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("updated")
+      ) {
+        cloud_item = " update-file";
+        if (deleted_file) {
+          cloud_item = "pennsieve_file_deleted";
+        }
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
         }
       }
     }
-
-    if (sortedObj["files"][item]["type"] == "bf") {
-      cloud_item = " pennsieve_file";
-      if (deleted_file) {
-        cloud_item = " pennsieve_file_deleted";
+    if (count < 100) {
+      if (!file_elements.includes(appendString) && appendString != "") {
+        file_elements.push(appendString);
+        count = 0;
       }
-    }
-
-    if (
-      sortedObj["files"][item]["type"] == "local" &&
-      sortedObj["files"][item]["action"].includes("existing")
-    ) {
-      cloud_item = " local_file";
-      if (deleted_file) {
-        cloud_item = " local_file_deleted";
-      }
-    }
-    if (
-      sortedObj["files"][item]["type"] == "local" &&
-      sortedObj["files"][item]["action"].includes("updated")
-    ) {
-      cloud_item = " update-file";
-      if (deleted_file) {
-        cloud_item = "pennsieve_file_deleted";
-      }
-      appendString =
-        appendString +
-        '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-        extension +
-        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
-    } else {
-      appendString =
-        appendString +
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-        extension +
-        '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-        cloud_item +
-        '">' +
-        item +
-        "</div></div>";
+      // continue;
     }
   }
-  $(uiItem).empty();
-  $(uiItem).html(appendString);
+  if (folder_elements[0] === "") {
+    folder_elements.splice(0, 1);
+  }
+  if (file_elements[0] === "") {
+    file_elements.splice(0, 1);
+  }
+  let items = [folder_elements, file_elements];
+  if (amount_req != undefined) {
+    //add items using a different function
+    //want the initial files to be imported
+    let itemDisplay = new Promise(async (resolved) => {
+      if (reset != undefined) {
+        await add_items_to_view(items, amount_req, reset);
+        resolved();
+      } else {
+        await add_items_to_view(items, amount_req);
+        resolved();
+      }
+    });
+  } else {
+    //load everything in place
+    let itemDisplay = new Promise(async (resolved) => {
+      // $(uiItem).empty();
+      await add_items_to_view(items, 500);
+      resolved();
+    });
+  }
 
   dragselect_area.stop();
 
@@ -5904,11 +6319,13 @@ function listItems(jsonObj, uiItem) {
   drag_event_fired = false;
 }
 
-function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
-  $(singleUIItem).dblclick(function () {
+async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
+  $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
+      start = 0;
+      listed_count = 0;
+      amount = 0;
       var folderName = this.innerText;
-      var appendString = "";
       currentLocation.value = currentLocation.value + folderName + "/";
 
       var currentPath = currentLocation.value;
@@ -5917,15 +6334,19 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
         return el.trim() != "";
       });
       var myPath = getRecursivePath(filtered, globalObj);
-      var appendString = loadFileFolder(myPath);
-
-      $(uiItem).empty();
-      $(uiItem).html(appendString);
+      if (myPath.length === 2) {
+        filtered = myPath[1];
+        document.getElementById("input-global-path").value =
+          "My_dataset_folder/" + filtered.join("/") + "/";
+      }
+      $("#items").empty();
+      already_created_elem = [];
+      let items = loadFileFolder(myPath);
+      //we have some items to display
+      listItems(myPath, "#items", 500, (reset = true));
       organizeLandingUIEffect();
-
       // reconstruct folders and files (child elements after emptying the Div)
-      listItems(myPath, uiItem);
-      getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
+      // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
     }
   });
 }
@@ -6102,11 +6523,14 @@ ipcRenderer.on(
         ) {
           valid_dataset = verify_sparc_folder(
             document.getElementById("input-destination-getting-started-locally")
-              .placeholder
+              .placeholder,
+            "local"
           );
           if (valid_dataset == true) {
             var action = "";
             irregularFolderArray = [];
+            var replaced = [];
+            let finished = 0;
             detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
             var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
             if (irregularFolderArray.length > 0) {
@@ -6129,11 +6553,28 @@ ipcRenderer.on(
                 },
                 footer: footer,
               }).then((result) => {
+                // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                   action = "replace";
+                  if (irregularFolderArray.length > 0) {
+                    for (let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = replaceIrregularFolders(
+                        irregularFolderArray[i]
+                      );
+                      replaced.push(renamedFolderName);
+                    }
+                  }
                 } else if (result.isDenied) {
                   action = "remove";
+                  if (irregularFolderArray.length > 0) {
+                    for (let i = 0; i < irregularFolderArray.length; i++) {
+                      renamedFolderName = removeIrregularFolders(
+                        irregularFolderArray[i]
+                      );
+                      replaced.push(renamedFolderName);
+                    }
+                  }
                 } else {
                   document.getElementById(
                     "input-destination-getting-started-locally"
@@ -6142,56 +6583,213 @@ ipcRenderer.on(
                   $("#para-continue-location-dataset-getting-started").text("");
                   return;
                 }
+
+                var numb = document.querySelector(".number");
+                numb.innerText = "0%";
+                progressBar_rightSide = document.getElementById(
+                  "left-side_less_than_50"
+                );
+                progressBar_leftSide = document.getElementById(
+                  "right-side_greater_than_50"
+                );
+                progressBar_rightSide.style.transform = `rotate(0deg)`;
+                progressBar_leftSide.style.transform = `rotate(0deg)`;
+                document.getElementById("loading_local_dataset").style.display =
+                  "block";
                 sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+
                 let root_folder_path = $(
                   "#input-destination-getting-started-locally"
                 ).attr("placeholder");
-                create_json_object(action, sodaJSONObj, root_folder_path);
-                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-                populate_existing_folders(datasetStructureJSONObj);
-                populate_existing_metadata(sodaJSONObj);
-                $("#para-continue-location-dataset-getting-started").text(
-                  "Please continue below."
+
+                let local_progress = setInterval(progressReport, 500);
+                function progressReport() {
+                  client.invoke(
+                    "api_monitor_local_json_progress",
+                    (error, res) => {
+                      if (error) {
+                        console.log(error);
+                      } else {
+                        percentage_amount = res[2].toFixed(2);
+                        finished = res[3];
+
+                        progressBar_rightSide = document.getElementById(
+                          "left-side_less_than_50"
+                        );
+                        progressBar_leftSide = document.getElementById(
+                          "right-side_greater_than_50"
+                        );
+
+                        numb.innerText = percentage_amount + "%";
+                        if (percentage_amount <= 50) {
+                          progressBar_rightSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 360
+                          }deg)`;
+                        } else {
+                          progressBar_rightSide.style.transition = "";
+                          progressBar_rightSide.classList.add("notransition");
+                          progressBar_rightSide.style.transform = `rotate(180deg)`;
+                          progressBar_leftSide.style.transform = `rotate(${
+                            percentage_amount * 0.01 * 180
+                          }deg)`;
+                        }
+
+                        if (finished === 1) {
+                          progressBar_leftSide.style.transform = `rotate(180deg)`;
+                          numb.innerText = "100%";
+                          clearInterval(local_progress);
+                          progressBar_rightSide.classList.remove(
+                            "notransition"
+                          );
+                          populate_existing_folders(datasetStructureJSONObj);
+                          populate_existing_metadata(sodaJSONObj);
+                          $(
+                            "#para-continue-location-dataset-getting-started"
+                          ).text("Please continue below.");
+                          $("#nextBtn").prop("disabled", false);
+                          // log the success to analytics
+                          logMetadataForAnalytics(
+                            "Success",
+                            PrepareDatasetsAnalyticsPrefix.CURATE,
+                            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                            Actions.EXISTING,
+                            Destinations.LOCAL
+                          );
+                          setTimeout(() => {
+                            document.getElementById(
+                              "loading_local_dataset"
+                            ).style.display = "none";
+                          }, 1000);
+                        }
+                      }
+                    }
+                  );
+                }
+                client.invoke(
+                  "api_create_soda_json_object_backend",
+                  sodaJSONObj,
+                  root_folder_path,
+                  irregularFolderArray,
+                  replaced,
+                  (error, res) => {
+                    if (error) {
+                      console.log(error);
+                      clearInterval(local_progress);
+                    } else {
+                      sodaJSONObj = res;
+                      datasetStructureJSONObj =
+                        sodaJSONObj["dataset-structure"];
+                    }
+                  }
                 );
-                $("#nextBtn").prop("disabled", false);
-                // log the success to analytics
-                logMetadataForAnalytics(
-                  "Success",
-                  PrepareDatasetsAnalyticsPrefix.CURATE,
-                  AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                  Actions.EXISTING,
-                  Destinations.LOCAL
-                );
+                //create setInterval variable that will keep track of the iterated items
               });
             } else {
+              document.getElementById("loading_local_dataset").style.display =
+                "block";
+              progressBar_rightSide = document.getElementById(
+                "left-side_less_than_50"
+              );
+              progressBar_leftSide = document.getElementById(
+                "right-side_greater_than_50"
+              );
+              progressBar_leftSide.style.transform = `rotate(0deg)`;
+              progressBar_rightSide.style.transform = `rotate(0deg)`;
+              let numb = document.querySelector(".number");
+              numb.innerText = "0%";
+
               action = "";
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               let root_folder_path = $(
                 "#input-destination-getting-started-locally"
               ).attr("placeholder");
-              create_json_object(action, sodaJSONObj, root_folder_path);
-              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-              populate_existing_folders(datasetStructureJSONObj);
-              populate_existing_metadata(sodaJSONObj);
-              $("#para-continue-location-dataset-getting-started").text(
-                "Please continue below."
-              );
-              $("#nextBtn").prop("disabled", false);
-              // log the success to analytics
-              logMetadataForAnalytics(
-                "Success",
-                PrepareDatasetsAnalyticsPrefix.CURATE,
-                AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                Actions.EXISTING,
-                Destinations.LOCAL
+
+              let percentage_amount = 0;
+              let local_progress = setInterval(progressReport, 500);
+              function progressReport() {
+                client.invoke(
+                  "api_monitor_local_json_progress",
+                  (error, res) => {
+                    if (error) {
+                      console.log(error);
+                      clearInterval(local_progress);
+                    } else {
+                      percentage_amount = res[2].toFixed(2);
+                      finished = res[3];
+                      progressBar_rightSide = document.getElementById(
+                        "left-side_less_than_50"
+                      );
+                      progressBar_leftSide = document.getElementById(
+                        "right-side_greater_than_50"
+                      );
+
+                      numb.innerText = percentage_amount + "%";
+                      if (percentage_amount <= 50) {
+                        progressBar_rightSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 360
+                        }deg)`;
+                      } else {
+                        progressBar_rightSide.style.transition = "";
+                        progressBar_rightSide.classList.add("notransition");
+                        progressBar_rightSide.style.transform = `rotate(180deg)`;
+                        progressBar_leftSide.style.transform = `rotate(${
+                          percentage_amount * 0.01 * 180
+                        }deg)`;
+                      }
+                      if (finished === 1) {
+                        progressBar_leftSide.style.transform = `rotate(180deg)`;
+                        numb.innerText = "100%";
+
+                        clearInterval(local_progress);
+                        progressBar_rightSide.classList.remove("notransition");
+                        populate_existing_folders(datasetStructureJSONObj);
+                        populate_existing_metadata(sodaJSONObj);
+                        $(
+                          "#para-continue-location-dataset-getting-started"
+                        ).text("Please continue below.");
+                        $("#nextBtn").prop("disabled", false);
+                        // log the success to analytics
+                        logMetadataForAnalytics(
+                          "Success",
+                          PrepareDatasetsAnalyticsPrefix.CURATE,
+                          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+                          Actions.EXISTING,
+                          Destinations.LOCAL
+                        );
+                        setTimeout(() => {
+                          document.getElementById(
+                            "loading_local_dataset"
+                          ).style.display = "none";
+                        }, 1000);
+                      }
+                    }
+                  }
+                );
+              }
+              client.invoke(
+                "api_create_soda_json_object_backend",
+                sodaJSONObj,
+                root_folder_path,
+                irregularFolderArray,
+                replaced,
+                (error, res) => {
+                  if (error) {
+                    console.log(error);
+                    clearInterval(local_progress);
+                  } else {
+                    sodaJSONObj = res;
+                    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                  }
+                }
               );
             }
           } else {
             Swal.fire({
               icon: "warning",
-              html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+              html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
               <br/>
-              If you are trying to create a new dataset folder, select the 'Prepare a new dataset' option.`,
+              See the "Data Organization" section of the SPARC documentation for more
+              <a a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showConfirmButton: false,
@@ -7524,11 +8122,13 @@ function showBFAddAccountSweetalert() {
     heightAuto: false,
     allowOutsideClick: false,
     didOpen: () => {
-      tippy("[data-tippy-content]", {
+      tippy("#add-bf-account-tooltip", {
         allowHTML: true,
         interactive: true,
         placement: "right",
         theme: "light",
+        content:
+          "See our dedicated <a target='_blank' href='https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA.",
       });
     },
     showClass: {
@@ -8137,8 +8737,6 @@ const get_access_token = async () => {
 
   return cognitoResponse["accessToken"]["jwtToken"];
 };
-
-// get_access_token().then((res) => console.log(res));
 
 /*
 ******************************************************
@@ -9229,23 +9827,180 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   return metadataFiles;
 };
 
-document
-  .getElementById("direct-to-feedback")
-  .addEventListener("click", function () {
-    if (
-      !document.getElementById("feedback-wrapper").classList.contains("is-open")
-    ) {
-      document.getElementById("feedback-btn").click();
+// Test calls for the validator
+
+// let validation_report_template = `
+//   <div class="title active">
+//     <i class="dropdown icon"></i>
+//       What is a dog?
+//   </div>
+//   <div class="content active">
+//     <p class="visible" style="display: block !important;">A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.</p>
+//   </div>`;
+
+// const create_validation_report = (error_report) => {
+//   // let accordion_elements = ` <div class="title active"> `;
+//   let accordion_elements = "";
+//   let elements = Object.keys(error_report).length;
+
+//   if ((elements = 0)) {
+//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> No errors found  </div> <div class="content active"> - </div>`;
+//   } else if (elements == 1) {
+//     let key = Object.keys(error_report)[0];
+//     accordion_elements += `<div class="title active"><i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
+//     if ("messages" in error_report[key]) {
+//       for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//         accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//       }
+//     }
+//     accordion_elements += `</div>`;
+//   } else {
+//     let keys = Object.keys(error_report);
+//     for (key_index in keys) {
+//       key = keys[key_index];
+//       if (key == keys[0]) {
+//         accordion_elements += `<div class="title active"> <i class="dropdown icon"></i> ${key} </div> <div class="content active"> `;
+//         if ("messages" in error_report[key]) {
+//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//           }
+//         }
+//         accordion_elements += `</div> `;
+//       } else {
+//         accordion_elements += `<div class="title"><i class="dropdown icon"></i> ${key} </div> <div class="content"> `;
+//         if ("messages" in error_report[key]) {
+//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
+//             accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+//           }
+//         }
+//         accordion_elements += `</div>`;
+//       }
+//     }
+//     accordion_elements += `</div>`;
+//   }
+//   $("#validation_error_accordion").html(accordion_elements);
+//   // $("#validation_error_accordion").accordion();
+// };
+
+const create_validation_report = (error_report) => {
+  // let accordion_elements = ` <div class="title active"> `;
+  let accordion_elements = "";
+  let elements = Object.keys(error_report).length;
+
+  if ((elements = 0)) {
+    accordion_elements += `<ul> <li>No errors found </li> </ul>`;
+  } else if (elements == 1) {
+    let key = Object.keys(error_report)[0];
+    accordion_elements += `<ul> `;
+    if ("messages" in error_report[key]) {
+      for (let i = 0; i < error_report[key]["messages"].length; i++) {
+        accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </li>`;
+      }
     }
-    document.querySelector("#feedback-btn").scrollIntoView({
-      behavior: "smooth",
-    });
+    accordion_elements += `</ul>`;
+  } else {
+    let keys = Object.keys(error_report);
+    for (key_index in keys) {
+      key = keys[key_index];
+      if (key == keys[0]) {
+        accordion_elements += `<ul> `;
+        if ("messages" in error_report[key]) {
+          for (let i = 0; i < error_report[key]["messages"].length; i++) {
+            accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </p> </li>`;
+          }
+        }
+        accordion_elements += `</ul> `;
+      } else {
+        accordion_elements += `<ul> `;
+        if ("messages" in error_report[key]) {
+          for (let i = 0; i < error_report[key]["messages"].length; i++) {
+            accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </p></li>`;
+          }
+        }
+        accordion_elements += `</ul>`;
+      }
+    }
+    // accordion_elements += `</div>`;
+  }
+  $("#validation_error_accordion").html(accordion_elements);
+  // $("#validation_error_accordion").accordion();
+};
+
+$("#validate_dataset_bttn").on("click", async () => {
+  const axiosInstance = axios.create({
+    baseURL: "http://127.0.0.1:5000/",
+    timeout: 0,
   });
 
-function open_sparc_site() {
-  const BrowserWindow = electron.remote.BrowserWindow;
-  const win = new BrowserWindow({ width: 1000, height: 700 });
+  log.info("validating dataset");
+  log.info(bfDatasetSubtitle.value);
 
-  // Load a remote URL
-  win.loadURL("https://sparc.science/");
-}
+  $("#dataset_validator_status").text(
+    "Please wait while we retrieve the dataset..."
+  );
+  $("#dataset_validator_spinner").show();
+
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
+
+  temp_object = {
+    "bf-account-selected": {
+      "account-name": selectedBfAccount,
+    },
+    "bf-dataset-selected": {
+      "dataset-name": selectedBfDataset,
+    },
+  };
+
+  let datasetResponse;
+
+  try {
+    datasetResponse = await axiosInstance("api_ps_retrieve_dataset", {
+      params: {
+        obj: JSON.stringify(temp_object),
+      },
+      responseType: "json",
+      method: "get",
+    });
+  } catch (err) {
+    log.error(error);
+    console.error(error);
+    $("#dataset_validator_spinner").hide();
+    $("#dataset_validator_status").html(
+      `<span style='color: red;'> ${error}</span>`
+    );
+  }
+
+  $("#dataset_validator_status").text(
+    "Please wait while we validate the dataset..."
+  );
+
+  try {
+    datasetResponse = axiosInstance("api_validate_dataset_pipeline", {
+      params: {
+        selectedBfAccount,
+        selectedBfDataset,
+      },
+      responseType: "json",
+      method: "get",
+    });
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    // var emessage = userError(error);
+    $("#dataset_validator_spinner").hide();
+    $("#dataset_validator_status").html(
+      `<span style='color: red;'> ${error}</span>`
+    );
+    // ipcRenderer.send(
+    //   "track-event",
+    //   "Error",
+    //   "Validate Dataset",
+    //   defaultBfDataset
+    // );
+  }
+
+  create_validation_report(res);
+  $("#dataset_validator_status").html("");
+  $("#dataset_validator_spinner").hide();
+});

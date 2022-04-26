@@ -1071,3 +1071,8 @@ def load_existing_DD_file(import_type, filepath):
     }
 
     return transformedObj
+
+
+def delete_manifest_dummy_folders(userpath_list):
+    for userpath in userpath_list:
+        shutil.rmtree(userpath) if isdir(userpath) else 0

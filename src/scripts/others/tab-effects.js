@@ -574,6 +574,16 @@ const nextPrev = (n) => {
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
+  if (x[currentTab].id === "high-level-folders-tab") {
+    $("#items").empty();
+    $("#items").append(already_created_elem);
+    getInFolder(
+      ".single-item",
+      "#items",
+      dataset_path,
+      datasetStructureJSONObj
+    );
+  }
   if (
     x[currentTab].id === "high-level-folders-tab" ||
     x[currentTab].id === "metadata-files-tab"
@@ -1212,6 +1222,14 @@ async function transitionSubQuestions(
 
 // Create the dataset structure for sodaJSONObj
 const create_json_object = (action, sodaJSONObj, root_folder_path) => {
+  high_level_sparc_folders = [
+    "code",
+    "derivative",
+    "docs",
+    "primary",
+    "protocol",
+    "source",
+  ];
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -1428,10 +1446,12 @@ const recursive_structure_create = (
         );
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace("\\", "/");
+
           relative_path = temp_current_file_path.replace(
             root_folder_path + "/",
             ""
           );
+
           for (item in sodaJSONObj["starting-point"][high_level_folder][
             "manifest"
           ]) {
@@ -1738,7 +1758,15 @@ const recursive_structure_create_include_manifest = (
 // Function to verify if a local folder is a SPARC folder
 // If no high level folders or any possible metadata files
 // are found the folder is marked as invalid
-const verify_sparc_folder = (root_folder_path) => {
+const verify_sparc_folder = (root_folder_path, type) => {
+  high_level_sparc_folders = [
+    "code",
+    "derivative",
+    "docs",
+    "primary",
+    "protocol",
+    "source",
+  ];
   possible_metadata_files = [
     "submission",
     "dataset_description",
@@ -1748,16 +1776,32 @@ const verify_sparc_folder = (root_folder_path) => {
     "CHANGES",
   ];
   valid_dataset = false;
-  fs.readdirSync(root_folder_path).forEach((file) => {
-    if (highLevelFolders.includes(file)) {
-      valid_dataset = true;
-    }
-    for (item in possible_metadata_files) {
-      if (item.indexOf(file) != -1) {
+  let entries = fs.readdirSync(root_folder_path);
+  for (let i = 0; i < entries.length; i++) {
+    let item = entries[i];
+    if (type === "local") {
+      if (
+        highLevelFolders.includes(item) ||
+        possible_metadata_files.includes(path.parse(item).name)
+      ) {
         valid_dataset = true;
+      } else {
+        valid_dataset = false;
+        break;
+      }
+    } else {
+      if (
+        highLevelFolders.includes(item) ||
+        possible_metadata_files.includes(path.parse(item).name) ||
+        item.substring(0, 1) != "."
+      ) {
+        valid_dataset = true;
+      } else {
+        valid_dataset = false;
+        break;
       }
     }
-  });
+  }
   return valid_dataset;
 };
 
@@ -2051,6 +2095,8 @@ async function transitionFreeFormMode(
 
   let continueProgressGenerateManifest = true;
 
+  let continueProgressValidateDataset = true;
+
   const dataCurrent = $(ev).attr("data-current");
 
   switch (dataCurrent) {
@@ -2121,6 +2167,13 @@ async function transitionFreeFormMode(
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
       break;
+    case "validate_dataset-question-2":
+      continueProgressValidateDataset =
+        await transitionToValidateQuestionThree();
+      break;
+    case "validate_dataset-question-1":
+      continueProgressValidateDataset = await transitionToValidateQuestionTwo();
+      break;
   }
 
   if (!continueProgressRC) {
@@ -2146,6 +2199,11 @@ async function transitionFreeFormMode(
   if (!continueProgressGenerateManifest) {
     return;
   }
+
+  if (!continueProgressValidateDataset) {
+    return;
+  }
+
   // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
@@ -2446,7 +2504,12 @@ async function switchMetadataSubmissionQuestion() {
 
 // 5. manifest
 async function switchMetadataManifestQuestion() {
-  if ($("#Question-prepare-manifest-2").hasClass("show")) {
+  var userpath1 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+  var userpath2 = path.join(homeDirectory, "SODA", "manifest_files");
+  if (
+    $("#Question-prepare-manifest-2").hasClass("show") ||
+    $("#Question-prepare-manifest-3").hasClass("show")
+  ) {
     var { value: continueProgressManifest } = await Swal.fire({
       title:
         "This will reset your progress so far with the manifest.xlsx file. Are you sure you want to continue?",
@@ -2458,15 +2521,40 @@ async function switchMetadataManifestQuestion() {
       reverseButtons: reverseSwalButtons,
     });
     if (continueProgressManifest) {
-      $("#input-manifest-local-folder-dataset").val("");
-      $("#input-manifest-local-folder-dataset").attr(
-        "placeholder",
-        "Browse here"
+      // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
+      client.invoke(
+        "api_delete_manifest_dummy_folders",
+        [userpath1, userpath2],
+        (error, res) => {
+          if (error) {
+            return true;
+          } else {
+            sodaJSONObj = {
+              "starting-point": { type: "" },
+              "dataset-structure": {},
+              "metadata-files": {},
+            };
+            datasetStructureJSONObj = {
+              folders: {},
+              files: {},
+              type: "",
+            };
+            $("#bf_dataset_create_manifest").text("None");
+            defaultBfDataset = "Select dataset";
+            $("#input-manifest-local-folder-dataset").val("");
+            $("#input-manifest-local-folder-dataset").attr(
+              "placeholder",
+              "Browse here"
+            );
+            $("#div-confirm-manifest-local-folder-dataset").css(
+              "display",
+              "none"
+            );
+          }
+        }
       );
-      // $($("#div-confirm-manifest-local-folder-dataset").children()[0]).show();
-      $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
+      return continueProgressManifest;
     }
-    return continueProgressManifest;
   } else {
     return true;
   }
@@ -2916,6 +3004,7 @@ const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
       "</div></div>";
     $("#items").html(appendString);
 
+    //dont know here
     listItems(currentLocation, "#items");
     getInFolder(
       ".single-item",
@@ -3324,6 +3413,7 @@ const updateOverallJSONStructure = (id) => {
     }
     // 3rd
     datasetStructureJSONObj = newDatasetStructureJSONObj;
+    //dont know here
     listItems(datasetStructureJSONObj, "#items");
     getInFolder(
       ".single-item",
@@ -3521,7 +3611,7 @@ const hideNextDivs = (currentDiv) => {
 
 // save progress up until step 5 for now
 const updateJSONObjectProgress = () => {
-  updateJSONStructureGettingStarted();
+  // updateJSONStructureGettingStarted();
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   updateJSONStructureDSstructure();

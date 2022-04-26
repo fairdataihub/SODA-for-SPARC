@@ -102,7 +102,6 @@ function resetSubmissionFields() {
   $("#submission-completion-date")
     .empty()
     .append('<option value="Select">Select an option</option>');
-  // actionEnterNewDate("none");
   $("#submission-completion-date").append(
     $("<option>", {
       text: "Enter my own date",
@@ -270,8 +269,7 @@ function generateSubmissionFile() {
 
 function changeAwardInput() {
   var ddBolean;
-  document.getElementById("input-milestone-date").value = "";
-  actionEnterNewDate("none");
+  document.getElementById("submission-completion-date").value = "";
   milestoneTagify1.removeAllTags();
   milestoneTagify1.settings.whitelist = [];
   removeOptions(descriptionDateInput);
@@ -315,16 +313,9 @@ function changeAwardInput() {
   return ddBolean;
 }
 
-function actionEnterNewDate(action) {
-  document.getElementById(
-    "div-submission-enter-different-date-1"
-  ).style.display = action;
-  document.getElementById(
-    "div-submission-enter-different-date-3"
-  ).style.display = action;
-}
-
-const submissionDateInput = document.getElementById("input-milestone-date");
+const submissionDateInput = document.getElementById(
+  "submission-completion-date"
+);
 var submissionDestinationPath = "";
 
 $(document).ready(function () {

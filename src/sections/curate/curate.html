@@ -301,8 +301,12 @@
               <div
                 class="individual-question getting-started show"
                 id="Question-getting-started-1"
+                style="text-align: -webkit-center"
               >
-                <div class="ui form" style="width: 100%">
+                <div
+                  class="ui form"
+                  style="width: 100%; text-align: -webkit-center"
+                >
                   <div class="grouped fields">
                     <label
                       style="
@@ -513,6 +517,25 @@
                         readonly
                         placeholder="Browse here"
                       />
+                    </div>
+                  </div>
+                  <div
+                    id="loading_local_dataset"
+                    class="circular"
+                    style="display: none"
+                  >
+                    <div class="inner"></div>
+                    <div class="number">0%</div>
+                    <div class="circle">
+                      <div class="bar left">
+                        <div id="left-side_less_than_50" class="progress"></div>
+                      </div>
+                      <div class="bar right">
+                        <div
+                          id="right-side_greater_than_50"
+                          class="progress"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                   <br />
@@ -733,17 +756,20 @@
                           style="
                             display: flex;
                             flex-direction: row;
-                            justify-content: space-between;
                             margin-bottom: 15px;
                           "
                         >
-                          <div class="card-container manage-dataset">
-                            <h5
-                              class="card-left"
-                              style="color: #808080; font-size: 15px"
-                            >
-                              Current dataset:
-                            </h5>
+                          <h5
+                            class="card-left"
+                            style="color: #808080; font-size: 15px"
+                          >
+                            Current dataset:
+                          </h5>
+                          <div
+                            class="change-current-account"
+                            onclick="openDropdownPrompt(this, 'dataset', false)"
+                            style="flex: auto"
+                          >
                             <span
                               class="card-right"
                               style="
@@ -755,24 +781,24 @@
                               id="current-bf-dataset"
                               >None</span
                             >
+
+                            <svg
+                              class="svg-change-current-account dataset bi bi-pencil-fill"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="18"
+                              height="18"
+                              fill="#000"
+                              viewBox="0 0 16 16"
+                            >
+                              <path
+                                d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                              />
+                            </svg>
+                            <div
+                              class="ui active green inline loader small"
+                              style="display: none"
+                            ></div>
                           </div>
-                          <svg
-                            class="svg-change-current-account dataset bi bi-pencil-fill"
-                            onclick="openDropdownPrompt(this, 'dataset', false)"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="18"
-                            fill="#000"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                            />
-                          </svg>
-                          <div
-                            class="ui active green inline loader small"
-                            style="display: none"
-                          ></div>
                         </div>
                       </div>
                       <div
@@ -1247,7 +1273,7 @@
                     ></div>
                     <!-- "data" is jstree html element -->
                     <div id="data" style="display: none"></div>
-                    <div class="div-display-details file">
+                    <div id="display-details" class="div-display-details file">
                       <button class="button-display-details">X</button>
                       <div>
                         <label
@@ -3643,38 +3669,42 @@
                                 style="
                                   display: flex;
                                   flex-direction: row;
-                                  justify-content: space-between;
                                   margin-bottom: 15px;
                                 "
                               >
-                                <div>
-                                  <h5 style="color: #808080; font-size: 15px">
-                                    Current account:
-                                    <span
-                                      style="
-                                        color: #000;
-                                        font-weight: 600;
-                                        margin-left: 8px;
-                                        font-size: 15px;
-                                      "
-                                      id="current-bf-account-generate"
-                                      >None</span
-                                    >
-                                  </h5>
-                                </div>
-                                <svg
-                                  class="svg-change-current-account bi bi-pencil-fill"
+                                <h5 style="color: #808080; font-size: 15px">
+                                  Current account:
+                                </h5>
+                                <div
+                                  class="change-current-account"
                                   onclick="openDropdownPrompt(this, 'bf')"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="18"
-                                  height="18"
-                                  fill="#000"
-                                  viewBox="0 0 16 16"
+                                  style="flex: auto"
                                 >
-                                  <path
-                                    d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                                  />
-                                </svg>
+                                  <span
+                                    style="
+                                      color: #000;
+                                      font-weight: 600;
+                                      margin-left: 8px;
+                                      font-size: 15px;
+                                    "
+                                    id="current-bf-account-generate"
+                                    >None</span
+                                  >
+
+                                  <svg
+                                    class="svg-change-current-account bi bi-pencil-fill"
+                                    onclick="openDropdownPrompt(this, 'bf')"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    fill="#000"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path
+                                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                                    />
+                                  </svg>
+                                </div>
                                 <!-- <svg class="svg-change-current-account" onclick="openDropdownPrompt('bf')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-square" viewBox="0 0 16 16">
                       <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                       <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
@@ -3959,38 +3989,43 @@
                                 style="
                                   display: flex;
                                   flex-direction: row;
-                                  justify-content: space-between;
                                   margin-bottom: 15px;
                                 "
                               >
                                 <div>
                                   <h5 style="color: #808080; font-size: 15px">
                                     Current dataset:
-                                    <span
-                                      style="
-                                        color: #000;
-                                        font-weight: 600;
-                                        margin-left: 8px;
-                                        font-size: 15px;
-                                      "
-                                      id="current-bf-dataset-generate"
-                                      >None</span
-                                    >
                                   </h5>
                                 </div>
-                                <svg
-                                  class="svg-change-current-account dataset bi bi-pencil-fill"
+                                <div
+                                  class="change-current-account"
                                   onclick="openDropdownPrompt(this, 'dataset')"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="18"
-                                  height="18"
-                                  fill="#000"
-                                  viewBox="0 0 16 16"
+                                  style="flex: auto"
                                 >
-                                  <path
-                                    d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                                  />
-                                </svg>
+                                  <span
+                                    style="
+                                      color: #000;
+                                      font-weight: 600;
+                                      margin-left: 8px;
+                                      font-size: 15px;
+                                    "
+                                    id="current-bf-dataset-generate"
+                                    >None</span
+                                  >
+
+                                  <svg
+                                    class="svg-change-current-account dataset bi bi-pencil-fill"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    fill="#000"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path
+                                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                                    />
+                                  </svg>
+                                </div>
                                 <div
                                   class="ui active green inline loader small"
                                   style="display: none"

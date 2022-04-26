@@ -2453,7 +2453,7 @@ def create_high_level_manifest_files_existing_bf(
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
     soda_manifest_folder_path = join(userpath, "SODA", "SODA Manifest Files")
-    # # create local folder to save manifest files temporarly (delete any existing one first)
+    # # create local folder to save manifest files temporarily (delete any existing one first)
     # shutil.rmtree(soda_manifest_folder_path) if isdir(soda_manifest_folder_path) else 0
     # makedirs(soda_manifest_folder_path)
 

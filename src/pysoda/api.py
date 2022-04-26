@@ -1,4 +1,5 @@
 from __future__ import print_function
+from logging import root
 from gevent import monkey
 
 monkey.patch_all()
@@ -72,15 +73,21 @@ from prepare_metadata import (
     import_bf_metadata_file,
     import_bf_RC,
     upload_RC_file,
+    delete_manifest_dummy_folders,
 )
 
-from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
+from organize_datasets import (
+    generate_dataset_locally,
+    bf_get_dataset_files_folders,
+    create_soda_json_object_backend,
+    monitor_local_json_progress,
+)
 
 import sys
 import zerorpc
 
 
-MIN_SODA_VERSION = "5.3.3"
+MIN_SODA_VERSION = "5.4.0"
 
 
 class SodaApi(object):
@@ -241,6 +248,12 @@ class SodaApi(object):
             return create_high_level_manifest_files_existing_local_starting_point(
                 dataset_path
             )
+        except Exception as e:
+            raise e
+
+    def api_delete_manifest_dummy_folders(self, userpath):
+        try:
+            return delete_manifest_dummy_folders(userpath)
         except Exception as e:
             raise e
 
@@ -556,6 +569,23 @@ class SodaApi(object):
     def echo(self, text):
         """echo any text"""
         return text
+
+    ### Creates json structure for local datasets
+    def api_create_soda_json_object_backend(
+        self, soda_json_structure, root_folder_path, irregularFolders, replaced
+    ):
+        try:
+            return create_soda_json_object_backend(
+                soda_json_structure, root_folder_path, irregularFolders, replaced
+            )
+        except Exception as e:
+            raise e
+
+    def api_monitor_local_json_progress(self):
+        try:
+            return monitor_local_json_progress()
+        except Exception as e:
+            raise e
 
 
 ### Connect to Electron-Python

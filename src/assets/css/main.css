@@ -1387,7 +1387,7 @@ button[data-id="bf_list_users_pi"] {
   float: right;
   transform: translateX(350px);
   transition: transform 1.4s ease-in-out;
-  display: grid;
+  display: none;
   grid-template-rows: auto;
   text-align: center;
   overflow-wrap: break-word;
@@ -1423,6 +1423,7 @@ button[data-id="bf_list_users_pi"] {
 
 .div-display-details.show {
   transform: translateX(0);
+  display: grid;
 }
 
 .button-display-details {
@@ -1439,7 +1440,6 @@ button[data-id="bf_list_users_pi"] {
   cursor: pointer;
   box-shadow: 0 0 3px 0 var(--color-bg-plum);
 }
-
 #div-manifest-edit {
   margin-top: 20px;
 }
@@ -1451,4 +1451,104 @@ button[data-id="bf_list_users_pi"] {
   width: 146px;
   padding-left: 6px;
   bottom: 0;
+}
+
+#items_container {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+}
+
+#items_loading_container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 9999;
+  margin: 10px;
+  display: none;
+}
+
+#item_load {
+  color: rgb(78, 166, 255);
+}
+
+.loading-items-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background-color: darkgray;
+  opacity: 0.5;
+  display: flex;
+  justify-content: center;
+}
+
+.circular {
+  height: 100px;
+  width: 100px;
+  position: relative;
+  transform: scale(1);
+}
+.circular .inner {
+  position: absolute;
+  z-index: 6;
+  top: 50%;
+  left: 50%;
+  height: 80px;
+  width: 80px;
+  margin: -40px 0 0 -40px;
+  background: #f5f5f5;
+  border-radius: 100%;
+}
+.circular .number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  font-size: 18px;
+  font-weight: 500;
+  color: black;
+}
+.circular .bar {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: #fff;
+  -webkit-border-radius: 100%;
+  clip: rect(0px, 100px, 100px, 50px);
+}
+.circle .bar .progress {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  -webkit-border-radius: 100%;
+  clip: rect(0px, 50px, 100px, 0px);
+  background: var(--color-light-green);
+}
+.circle .left .progress {
+  z-index: 1;
+  transition: transform 500ms ease-in-out;
+}
+
+.circle .right {
+  transform: rotate(180deg);
+  transition: linear;
+  z-index: 3;
+}
+.circle .right .progress {
+  transition: transform 500ms ease-in-out;
+}
+
+#Question-getting-started-locally-destination {
+  text-align: -webkit-center;
+}
+
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }
