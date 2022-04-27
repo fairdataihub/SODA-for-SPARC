@@ -975,11 +975,6 @@ const generateContributorField = (
   contributorAffiliation,
   contributorRole
 ) => {
-  //remove "https://orcid.org/" from contributor ORCID if an ORCID was returned from AirTable
-  if (contributorORCID !== undefined) {
-    contributorORCID = contributorORCID.replace("https://orcid.org/", "");
-  }
-
   return `
       <div class="guided--section mt-lg neumorphic guided-contributor-field-container" style="position: relative">
         <i 
