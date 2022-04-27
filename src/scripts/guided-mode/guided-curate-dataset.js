@@ -4515,22 +4515,29 @@ $(document).ready(() => {
       contributorAffiliation = contributorField.querySelector(
         ".guided-affiliation-input"
       );
-      //get tags from role tagify
-      contributorRolesTagify = contributorField.querySelector(
+      //get the tags inside the tagify element with the class guided-contributor-role-input
+      const contributorRoleTagify = contributorField.querySelector(
         ".guided-contributor-role-input"
       );
-      console.log(contributorRolesTagify);
-      getTagsFromTagifyElement(contributorRolesTagify);
+      console.log(contributorRoleTagify);
+      //get the children of contributorRoleTagify in an array
+      const contributorRoleTagifyChildren = Array.from(
+        contributorRoleTagify.children
+      );
+      console.log(contributorRoleTagifyChildren);
+      contributorRoleTagifyChildren.pop();
+      const contributorRoles = contributorRoleTagifyChildren.map((child) => {
+        return child.title;
+      });
       const contributorInputObj = {
         contributorLastName: contributorLastName.value,
         contributorFirstName: contributorFirstName.value,
         contributorORCID: contributorORCID.value,
         contributorAffiliation: contributorAffiliation.value,
+        contributorRole: contributorRoles,
       };
       console.log(contributorInputObj);
     });
-    //render contributor data
-    renderContributorFields(contributorData);
   });
 
   function guidedGenerateRCFilesHelper(type) {
