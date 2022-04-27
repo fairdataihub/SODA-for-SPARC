@@ -414,12 +414,12 @@ const traverseToTab = (targetPageID) => {
           .getElementById("guided-div-contributors-imported-from-airtable")
           .classList.remove("hidden");
         document
-          .getElementById("guided-div-contributors-airtable-prompt")
+          .getElementById("guided-div-contributor-field-set")
           .classList.add("hidden");
         loadContributorInfofromAirtable(sparcAward, "guided");
       } else {
         document
-          .getElementById("guided-div-contributors-airtable-prompt")
+          .getElementById("guided-div-contributor-field-set")
           .classList.remove("hidden");
         document
           .getElementById("guided-div-contributors-imported-from-airtable")

@@ -1462,13 +1462,6 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
     );
     contributorsTableContainer.innerHTML = contributorTableRows;
     console.log(currentContributorsLastNames);
-    // hide the sparc import prompt if it is shown
-    document
-      .getElementById("guided-div-contributors-airtable-prompt")
-      .classList.add("hidden");
-    document
-      .getElementById("guided-div-contributors-import")
-      .classList.add("hidden");
     // show the table
     document
       .getElementById("guided-div-contributors-imported-from-airtable")
