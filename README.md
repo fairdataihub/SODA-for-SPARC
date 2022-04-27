@@ -108,7 +108,6 @@ SODA uses Google Analytics to track user interactions with the application. Trac
 ## Citing
 
 If you use SODA for SPARC to curate your dataset, please cite the following references:
-
 1. Patel, B., Srivastava, H., Aghasafari, P., & Helmer, K. (2020). SPARC: SODA, an interactive software for curating SPARC datasets. The FASEB Journal, 34(S1), 1-1. [10.1096/fasebj.2020.34.s1.02483](https://doi.org/10.1096/fasebj.2020.34.s1.02483)
-2. Bandrowski, A., Grethe, J. S., Pilko, A., Gillespie, T., Pine, G., Patel, B., Surles-Zeigler, M., & Martone, M. E. (2021). Sparc data structure: Rationale and design of a fair standard for biomedical research data. bioRxiv. [10.1101/2021.02.10.430563](https://doi.org/10.1101/2021.02.10.430563)
+2. Bandrowski, A., Grethe, J. S., Pilko, A., Gillespie, T., Pine, G., Patel, B., Surles-Zeigler, M., & Martone, M. E. (2021). SPARC Data Structure: Rationale and Design of a FAIR Standard for Biomedical Research Data. bioRxiv. [10.1101/2021.02.10.430563](https://doi.org/10.1101/2021.02.10.430563)
 3. Patel, B., Ngo, T., Soundarajan, S., Marroquin, A., Clark, J., & Portillo, D. (2022). SODA (Software to Organize Data Automatically) for SPARC. Zenodo. [10.5281/zenodo.5565455](https://doi.org/10.5281/zenodo.5565455)
