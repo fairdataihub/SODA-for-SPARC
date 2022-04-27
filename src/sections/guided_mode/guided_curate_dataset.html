@@ -1799,7 +1799,10 @@
               <button
                 class="ui primary button hidden"
                 id="guided-button-edit-checked-contributors"
-                style="background-color: var(--color-light-green) !important"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  display: none;
+                "
               >
                 Edit selected contributors
               </button>
@@ -1823,6 +1826,7 @@
               <div class="guided--panel" id="contributors-container"></div>
               <button
                 class="ui primary basic button mt-lg"
+                id="guided-button-add-contributor"
                 onclick="addContributorField()"
               >
                 <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
@@ -1838,7 +1842,10 @@
               <button
                 class="ui primary button mt-md hidden"
                 id="guided-button-edit-contributor-fields"
-                style="background-color: var(--color-light-green) !important"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  display: none;
+                "
               >
                 Edit contributor information
               </button>

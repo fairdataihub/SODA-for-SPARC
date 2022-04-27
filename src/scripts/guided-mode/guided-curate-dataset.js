@@ -4568,6 +4568,17 @@ $(document).ready(() => {
         contributorRoles: contributorRoles,
       };
     });
+    //set opacity and remove pointer events for table and show edit button
+    disableElementById("contributors-container");
+    document.getElementById("guided-button-add-contributor").style.display =
+      "none";
+    //switch button from save to edit
+    document.getElementById(
+      "guided-button-save-contributor-fields"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-edit-contributor-fields"
+    ).style.display = "flex";
     pulseNextButton();
   });
 
