@@ -13,6 +13,9 @@ let CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
 const pulseNextButton = () => {
   $("#guided-next-button").addClass("pulse-blue");
 };
+const unPulseNextButton = () => {
+  $("#guided-next-button").removeClass("pulse-blue");
+};
 const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
 };
@@ -392,8 +395,8 @@ const traverseToTab = (targetPageID) => {
       }
     }
     if (targetPageID === "guided-contributors-tab") {
-      /*const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]*/
-      const sparcAward = "OT2OD023854";
+      const sparcAward =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       // check if airtableconfig has non empty api-key and key-name properties
       const airTableKeyData = parseJson(airtableConfigPath);
       let airTableKeyDataValid = null;
@@ -1012,7 +1015,6 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-last-name-input
-                ${contributorLastName ? "border-success" : ""}
               "
               type="text"
               placeholder="Enter last name here"
@@ -1027,7 +1029,6 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-first-name-input
-                ${contributorFirstName ? "border-success" : ""}
               "
               type="text"
               placeholder="Enter first name here"
@@ -1044,7 +1045,6 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-orcid-input
-                ${contributorORCID ? "border-success" : ""}
               "
               type="text"
               placeholder="Enter ORCID here"
@@ -1059,7 +1059,6 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-affiliation-input
-                ${contributorAffiliation ? "border-success" : ""}
               "
               type="text"
               placeholder="Enter affiliation here"
@@ -4528,7 +4527,28 @@ $(document).ready(() => {
     ).style.display = "flex";
   });
 
-  $("#guided-button-edit-checked-contributors").on("click", () => {});
+  $("#guided-button-edit-checked-contributors").on("click", () => {
+    enableElementById("contributors-table");
+    enableElementById("contributors-container");
+    enableElementById("guided-button-add-contributor");
+    document
+      .getElementById("guided-div-contributor-field-set")
+      .classList.add("hidden");
+
+    //switch button from edit to save
+    document.getElementById(
+      "guided-button-edit-checked-contributors"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-save-checked-contributors"
+    ).style.display = "flex";
+    document.getElementById(
+      "guided-button-edit-contributor-fields"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-save-contributor-fields"
+    ).style.display = "flex";
+  });
 
   $("#guided-button-save-contributor-fields").on("click", () => {
     let allInputsValid = true;
@@ -4536,6 +4556,13 @@ $(document).ready(() => {
     const contributorFields = document.querySelectorAll(
       ".guided-contributor-field-container"
     );
+    //check if contributorFields is empty
+    if (contributorFields.length === 0) {
+      notyf.error("Please add at least one contributor");
+      //Add a contributor field to help the user out a lil
+      addContributorField();
+      return;
+    }
 
     //loop through contributor fields and get values
     const contributorFieldsArray = Array.from(contributorFields);
@@ -4577,6 +4604,12 @@ $(document).ready(() => {
         if (textInput.value === "") {
           textInput.style.setProperty("border-color", "red", "important");
           allInputsValid = false;
+        } else {
+          textInput.style.setProperty(
+            "border-color",
+            "hsl(0, 0%, 88%)",
+            "important"
+          );
         }
       });
       //Check if user added at least one contributor
@@ -4587,6 +4620,13 @@ $(document).ready(() => {
           "important"
         );
         allInputsValid = false;
+      } else {
+        //remove the red border from the contributor role tagify
+        contributorRoleTagify.style.setProperty(
+          "border-color",
+          "hsl(0, 0%, 88%)",
+          "important"
+        );
       }
 
       const contributorInputObj = {
@@ -4605,8 +4645,8 @@ $(document).ready(() => {
 
     //set opacity and remove pointer events for table and show edit button
     disableElementById("contributors-container");
-    document.getElementById("guided-button-add-contributor").style.display =
-      "none";
+    disableElementById("guided-button-add-contributor");
+
     //switch button from save to edit
     document.getElementById(
       "guided-button-save-contributor-fields"
@@ -4615,6 +4655,18 @@ $(document).ready(() => {
       "guided-button-edit-contributor-fields"
     ).style.display = "flex";
     pulseNextButton();
+  });
+  $("#guided-button-edit-contributor-fields").on("click", () => {
+    enableElementById("contributors-container");
+    enableElementById("guided-button-add-contributor");
+    //switch button from edit to save
+    document.getElementById(
+      "guided-button-edit-contributor-fields"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-save-contributor-fields"
+    ).style.display = "flex";
+    unPulseNextButton();
   });
 
   function guidedGenerateRCFilesHelper(type) {
