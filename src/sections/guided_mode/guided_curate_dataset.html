@@ -1562,6 +1562,83 @@
               >
                 Import data deliverables
               </button>
+              <div
+                class="guided--panel hidden mt-xl"
+                id="guided-div-data-deliverables-import"
+              >
+                <h2 class="guided--text-sub-step">
+                  Select the data deliverables
+                </h2>
+                <table
+                  class="ui celled striped table"
+                  id="milestones-table"
+                  style="margin-bottom: 25px; width: 900px"
+                >
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Description</th>
+                      <th>Milestone</th>
+                      <th class="center aligned">Completion date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="milestones-table-container"></tbody>
+                </table>
+                <button
+                  class="ui primary button"
+                  id="guided-button-save-checked-milestones"
+                  style="background-color: var(--color-light-green) !important"
+                >
+                  Continue
+                </button>
+                <button
+                  class="ui primary button hidden"
+                  id="guided-button-edit-checked-milestones"
+                  style="
+                    background-color: var(--color-light-green) !important;
+                    display: none;
+                  "
+                >
+                  Edit milestones
+                </button>
+                <div
+                  class="guided--panel hidden mt-xl"
+                  id="guided-div-completion-date-selection"
+                >
+                  <h2
+                    class="guided--text-sub-step"
+                    id="guided-completion-date-instructional-text"
+                  ></h2>
+                  <div class="justify-center">
+                    <div class="ui form">
+                      <div
+                        class="grouped fields"
+                        id="guided-completion-date-container"
+                        style="align-items: center"
+                      ></div>
+                    </div>
+                  </div>
+                  <button
+                    class="ui primary button mt-md"
+                    id="guided-button-save-checked-completion-date"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                    "
+                  >
+                    Continue
+                  </button>
+                  <button
+                    class="ui primary button mt-md"
+                    id="guided-button-edit-checked-completion-date"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      display: none;
+                    "
+                  >
+                    Edit completion date
+                  </button>
+                </div>
+              </div>
             </div>
             <div
               class="guided--panel hidden"
@@ -1691,7 +1768,13 @@
               class="guided--section hidden"
               id="guided-div-contributors-imported-from-airtable"
             >
-              <h2 class="guided--text-sub-step">Contributors table</h2>
+              <h2 class="guided--text-sub-step">Contributor information</h2>
+              <p class="guided--help-text small" style="margin-bottom: 2px">
+                Select the contributors that contributed to your dataset. These
+                individuals do not have to be authors on any publications
+                describing the data, but should be acknowledged for their role
+                in producing and publishing the dataset.
+              </p>
               <table
                 class="ui celled striped table"
                 id="contributors-table"
@@ -1713,11 +1796,30 @@
               >
                 Continue
               </button>
+              <button
+                class="ui primary button hidden"
+                id="guided-button-edit-checked-contributors"
+                style="background-color: var(--color-light-green) !important"
+              >
+                Edit selected contributors
+              </button>
             </div>
             <div
               class="guided--section hidden"
               id="guided-div-contributor-field-set"
             >
+              <h2 class="guided--text-sub-step">
+                Add information for your dataset's contributors
+              </h2>
+              <p
+                class="guided--help-text small text-center"
+                style="margin-bottom: 2px"
+              >
+                it is <b>mandatory</b> to add at least one affiliation and role
+                for each contributor.<br />
+                To add a new contributor, click on the 'Add a new contributor'
+                button.
+              </p>
               <div class="guided--panel" id="contributors-container"></div>
               <button
                 class="ui primary basic button mt-lg"
@@ -1732,6 +1834,13 @@
                 style="background-color: var(--color-light-green) !important"
               >
                 Continue
+              </button>
+              <button
+                class="ui primary button mt-md hidden"
+                id="guided-button-edit-contributor-fields"
+                style="background-color: var(--color-light-green) !important"
+              >
+                Edit contributor information
               </button>
             </div>
           </div>

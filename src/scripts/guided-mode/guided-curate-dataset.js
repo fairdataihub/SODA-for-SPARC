@@ -10,6 +10,9 @@ let CURRENT_PAGE = $("#guided-dataset-starting-point-tab");
 /////////////////////////////////////////////////////////
 /////////////       Util functions      /////////////////
 /////////////////////////////////////////////////////////
+const pulseNextButton = () => {
+  $("#guided-next-button").addClass("pulse-blue");
+};
 const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
 };
@@ -1005,7 +1008,7 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-last-name-input
-                ${contributorLastName ? "" : "border-error"}
+                ${contributorLastName ? "border-success" : "border-error"}
               "
               type="text"
               placeholder="Enter last name here"
@@ -1020,7 +1023,7 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-first-name-input
-                ${contributorFirstName ? "" : "border-error"}
+                ${contributorFirstName ? "border-success" : "border-error"}
               "
               type="text"
               placeholder="Enter first name here"
@@ -1037,7 +1040,7 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-orcid-input
-                ${contributorORCID ? "" : "border-error"}
+                ${contributorORCID ? "border-success" : "border-error"}
               "
               type="text"
               placeholder="Enter ORCID here"
@@ -1052,7 +1055,7 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-affiliation-input
-                ${contributorAffiliation ? "" : "border-error"}
+                ${contributorAffiliation ? "border-success" : "border-error"}
               "
               type="text"
               placeholder="Enter affiliation here"
@@ -4508,8 +4511,17 @@ $(document).ready(() => {
         contributorRole: contributor.fields["Institution_role"],
       };
     });
-
     renderContributorFields(contributorInfo);
+
+    //set opacity and remove pointer events for table and show edit button
+    disableElementById("contributors-table");
+    //switch button from save to edit
+    document.getElementById(
+      "guided-button-save-checked-contributors"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-edit-checked-contributors"
+    ).style.display = "flex";
   });
 
   $("#guided-button-edit-checked-contributors").on("click", () => {});
@@ -4556,6 +4568,7 @@ $(document).ready(() => {
         contributorRoles: contributorRoles,
       };
     });
+    pulseNextButton();
   });
 
   function guidedGenerateRCFilesHelper(type) {
@@ -5033,11 +5046,13 @@ $(document).ready(() => {
   });
 
   //next button click handler
-  $("#guided-next-button").on("click", async () => {
+  $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.attr("id");
+    //remove blue pulse
+    $(this).removeClass("pulse-blue");
     //add a bootstrap loader to the next button
-    $("#guided-next-button").addClass("loading");
+    $(this).addClass("loading");
     let errorArray = [];
 
     try {
@@ -5054,7 +5069,7 @@ $(document).ready(() => {
           ) {
             sodaJSONObj["starting-point"]["type"] = "local";
           }
-          $("#guided-next-button").show();
+          $(this).show();
         } else {
           errorArray.push({
             type: "notyf",
@@ -5101,12 +5116,12 @@ $(document).ready(() => {
           });
           //If the user indicates they do not have any subjects, skip to source folder
           if (result.isConfirmed) {
-            $("#guided-next-button").removeClass("loading");
+            $(this).removeClass("loading");
             return;
           } else {
             skipSubSamFolderAndMetadataPages();
             traverseToTab("guided-source-folder-tab");
-            $("#guided-next-button").removeClass("loading");
+            $(this).removeClass("loading");
             return;
           }
         } else {
@@ -5151,12 +5166,12 @@ $(document).ready(() => {
           });
           //If the user indicates they do not have any samples, skip to source folder
           if (result.isConfirmed) {
-            $("#guided-next-button").removeClass("loading");
+            $(this).removeClass("loading");
             return;
           } else {
             skipSampleMetadataPages();
             traverseToTab("guided-source-folder-tab");
-            $("#guided-next-button").removeClass("loading");
+            $(this).removeClass("loading");
             return;
           }
         } else {
@@ -5345,7 +5360,7 @@ $(document).ready(() => {
           sodaJSONObj["generate-dataset"]["destination"] = "bf";
         }
 
-        $("#guided-next-button").css("visibility", "hidden");
+        $(this).css("visibility", "hidden");
       }
       if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
         const award = $("#guided-submission-sparc-award").val();
@@ -5470,7 +5485,7 @@ $(document).ready(() => {
         errorArray = [];
       });
     }
-    $("#guided-next-button").removeClass("loading");
+    $(this).removeClass("loading");
   });
 
   //back button click handler

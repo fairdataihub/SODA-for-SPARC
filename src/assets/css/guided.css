@@ -83,6 +83,10 @@
   border-color: red !important;
 }
 
+.border-success {
+  border-color: lime !important;
+}
+
 .guided--input {
   width: 100%;
   height: 38px;
