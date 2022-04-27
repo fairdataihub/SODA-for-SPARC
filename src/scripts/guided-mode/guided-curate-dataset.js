@@ -410,6 +410,7 @@ const traverseToTab = (targetPageID) => {
       //if an AirTable account and sparc award already exist, show the table
       //if not, show the prompt to import award/contributor data
       if (airTableKeyDataValid && sparcAward) {
+        //Show contributor fields and hide contributor information fields
         document
           .getElementById("guided-div-contributors-imported-from-airtable")
           .classList.remove("hidden");
@@ -418,12 +419,20 @@ const traverseToTab = (targetPageID) => {
           .classList.add("hidden");
         loadContributorInfofromAirtable(sparcAward, "guided");
       } else {
-        document
-          .getElementById("guided-div-contributor-field-set")
-          .classList.remove("hidden");
+        //hide AirTable contributor table and show contributor information fields
         document
           .getElementById("guided-div-contributors-imported-from-airtable")
           .classList.add("hidden");
+        document
+          .getElementById("guided-div-contributor-field-set")
+          .classList.remove("hidden");
+        //Add an empty contributor information fieldset if contributors container is empty
+        if (
+          document.getElementById("contributors-container").innerHTML === ""
+        ) {
+          //add an empty contributor information fieldset
+          addContributorField();
+        }
       }
     }
     if (targetPageID === "guided-create-subjects-metadata-tab") {
@@ -1003,7 +1012,7 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-last-name-input
-                ${contributorLastName ? "border-success" : "border-error"}
+                ${contributorLastName ? "border-success" : ""}
               "
               type="text"
               placeholder="Enter last name here"
@@ -1018,7 +1027,7 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-first-name-input
-                ${contributorFirstName ? "border-success" : "border-error"}
+                ${contributorFirstName ? "border-success" : ""}
               "
               type="text"
               placeholder="Enter first name here"
@@ -1035,7 +1044,7 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-orcid-input
-                ${contributorORCID ? "border-success" : "border-error"}
+                ${contributorORCID ? "border-success" : ""}
               "
               type="text"
               placeholder="Enter ORCID here"
@@ -1050,7 +1059,7 @@ const generateContributorField = (
               class="
                 guided--input
                 guided-affiliation-input
-                ${contributorAffiliation ? "border-success" : "border-error"}
+                ${contributorAffiliation ? "border-success" : ""}
               "
               type="text"
               placeholder="Enter affiliation here"
@@ -4522,6 +4531,7 @@ $(document).ready(() => {
   $("#guided-button-edit-checked-contributors").on("click", () => {});
 
   $("#guided-button-save-contributor-fields").on("click", () => {
+    let allInputsValid = true;
     //get all contributor fields
     const contributorFields = document.querySelectorAll(
       ".guided-contributor-field-container"
@@ -4529,6 +4539,7 @@ $(document).ready(() => {
 
     //loop through contributor fields and get values
     const contributorFieldsArray = Array.from(contributorFields);
+    ///////////////////////////////////////////////////////////////////////////////
     contributorFieldsArray.forEach((contributorField) => {
       const contributorLastName = contributorField.querySelector(
         ".guided-last-name-input"
@@ -4544,7 +4555,6 @@ $(document).ready(() => {
       const contributorRoleTagify = contributorField.querySelector(
         ".guided-contributor-role-input"
       );
-      console.log(contributorRoleTagify);
       //get the children of contributorRoleTagify in an array
       const contributorRoleTagifyChildren = Array.from(
         contributorRoleTagify.children
@@ -4555,6 +4565,30 @@ $(document).ready(() => {
       const contributorRoles = contributorRoleTagifyChildren.map((child) => {
         return child.title;
       });
+      //Validate all of the contributor fields
+      const textInputs = [
+        contributorLastName,
+        contributorFirstName,
+        contributorORCID,
+        contributorAffiliation,
+      ];
+      //check if all text inputs are valid
+      textInputs.forEach((textInput) => {
+        if (textInput.value === "") {
+          textInput.style.setProperty("border-color", "red", "important");
+          allInputsValid = false;
+        }
+      });
+      //Check if user added at least one contributor
+      if (contributorRoles.length === 0) {
+        contributorRoleTagify.style.setProperty(
+          "border-color",
+          "red",
+          "important"
+        );
+        allInputsValid = false;
+      }
+
       const contributorInputObj = {
         contributorLastName: contributorLastName.value,
         contributorFirstName: contributorFirstName.value,
@@ -4563,6 +4597,12 @@ $(document).ready(() => {
         contributorRoles: contributorRoles,
       };
     });
+    ///////////////////////////////////////////////////////////////////////////////
+    if (!allInputsValid) {
+      notyf.error("Please fill out all contributor information fields");
+      return;
+    }
+
     //set opacity and remove pointer events for table and show edit button
     disableElementById("contributors-container");
     document.getElementById("guided-button-add-contributor").style.display =
