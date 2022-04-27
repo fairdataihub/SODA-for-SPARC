@@ -1141,7 +1141,7 @@ async function helpSPARCAward(filetype, curationMode) {
     }
     if (res[0]) {
       var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', ${curationMode})" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
         html: htmlEle,
@@ -1208,7 +1208,7 @@ async function helpSPARCAward(filetype, curationMode) {
         confirmButtonText: "Yes",
       }).then((boolean) => {
         if (boolean.isConfirmed) {
-          showAddAirtableAccountSweetalert("dd");
+          showAddAirtableAccountSweetalert("dd", curationMode);
         }
       });
       $("#select-sparc-award-dd-spinner").css("display", "none");
@@ -1229,7 +1229,7 @@ async function helpSPARCAward(filetype, curationMode) {
     }*/
     if (res[0]) {
       var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
+      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', ${curationMode})" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
         class="search-select-box"><select id="select-SPARC-award-submission" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
       const { value: awardVal } = await Swal.fire({
         html: htmlEle,
@@ -1279,6 +1279,7 @@ async function helpSPARCAward(filetype, curationMode) {
 
               if (curationMode === "guided") {
                 guidedSetImportedSPARCAward(award);
+                loadContributorInfofromAirtable(award, "guided");
               }
             }
           });
@@ -1292,6 +1293,7 @@ async function helpSPARCAward(filetype, curationMode) {
 
           if (curationMode === "guided") {
             guidedSetImportedSPARCAward(award);
+            loadContributorInfofromAirtable(award, "guided");
           }
         }
       }
@@ -1309,7 +1311,7 @@ async function helpSPARCAward(filetype, curationMode) {
         confirmButtonText: "Yes",
       }).then((boolean) => {
         if (boolean.isConfirmed) {
-          showAddAirtableAccountSweetalert("submission");
+          showAddAirtableAccountSweetalert("submission", curationMode);
         }
       });
       $("#select-sparc-award-submission-spinner").css("display", "none");
@@ -1460,6 +1462,17 @@ const loadContributorInfofromAirtable = async (award, curationMode) => {
     );
     contributorsTableContainer.innerHTML = contributorTableRows;
     console.log(currentContributorsLastNames);
+    // hide the sparc import prompt if it is shown
+    document
+      .getElementById("guided-div-contributors-airtable-prompt")
+      .classList.add("hidden");
+    document
+      .getElementById("guided-div-contributors-import")
+      .classList.add("hidden");
+    // show the table
+    document
+      .getElementById("guided-div-contributors-imported-from-airtable")
+      .classList.remove("hidden");
   }
 };
 
@@ -2079,7 +2092,7 @@ function grabStudyInfoEntries() {
   };
 }
 
-function showAddAirtableAccountSweetalert(keyword) {
+function showAddAirtableAccountSweetalert(keyword, curationMode) {
   var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
   var bootb = Swal.fire({
@@ -2112,7 +2125,7 @@ function showAddAirtableAccountSweetalert(keyword) {
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      addAirtableAccountInsideSweetalert(keyword);
+      addAirtableAccountInsideSweetalert(keyword, curationMode);
     }
   });
 }
@@ -2282,7 +2295,7 @@ function addNewRow(table) {
   }
 }
 
-function addAirtableAccountInsideSweetalert(keyword) {
+function addAirtableAccountInsideSweetalert(keyword, curationMode) {
   // var name = $("#bootbox-airtable-key-name").val();
   var name = "SODA-Airtable";
   var key = $("#bootbox-airtable-key").val();
@@ -2296,7 +2309,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
       backdrop: "rgba(0,0,0,0.4)",
     }).then((result) => {
       if (result.isConfirmed) {
-        showAddAirtableAccountSweetalert(keyword);
+        showAddAirtableAccountSweetalert(keyword, curationMode);
       }
     });
   } else {
@@ -2357,7 +2370,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
                 Swal.showLoading();
               },
             }).then((result) => {
-              helpSPARCAward("submission", "free-form");
+              helpSPARCAward("submission", curationMode);
             });
             ipcRenderer.send(
               "track-event",
@@ -2375,7 +2388,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
               backdrop: "rgba(0,0,0,0.4)",
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert(keyword);
+                showAddAirtableAccountSweetalert(keyword, curationMode);
               }
             });
           } else {
@@ -2395,7 +2408,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
               backdrop: "rgba(0,0,0,0.4)",
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert(keyword);
+                showAddAirtableAccountSweetalert(keyword, curationMode);
               }
             });
           }
@@ -2416,7 +2429,7 @@ function addAirtableAccountInsideSweetalert(keyword) {
               backdrop: "rgba(0,0,0,0.4)",
             }).then((result) => {
               if (result.isConfirmed) {
-                showAddAirtableAccountSweetalert(keyword);
+                showAddAirtableAccountSweetalert(keyword, curationMode);
               }
             });
           });

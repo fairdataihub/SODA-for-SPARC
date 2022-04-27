@@ -1562,83 +1562,6 @@
               >
                 Import data deliverables
               </button>
-              <div
-                class="guided--panel hidden mt-xl"
-                id="guided-div-data-deliverables-import"
-              >
-                <h2 class="guided--text-sub-step">
-                  Select the data deliverables
-                </h2>
-                <table
-                  class="ui celled striped table"
-                  id="milestones-table"
-                  style="margin-bottom: 25px; width: 900px"
-                >
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Description</th>
-                      <th>Milestone</th>
-                      <th class="center aligned">Completion date</th>
-                    </tr>
-                  </thead>
-                  <tbody id="milestones-table-container"></tbody>
-                </table>
-                <button
-                  class="ui primary button"
-                  id="guided-button-save-checked-milestones"
-                  style="background-color: var(--color-light-green) !important"
-                >
-                  Continue
-                </button>
-                <button
-                  class="ui primary button hidden"
-                  id="guided-button-edit-checked-milestones"
-                  style="
-                    background-color: var(--color-light-green) !important;
-                    display: none;
-                  "
-                >
-                  Edit milestones
-                </button>
-                <div
-                  class="guided--panel hidden mt-xl"
-                  id="guided-div-completion-date-selection"
-                >
-                  <h2
-                    class="guided--text-sub-step"
-                    id="guided-completion-date-instructional-text"
-                  ></h2>
-                  <div class="justify-center">
-                    <div class="ui form">
-                      <div
-                        class="grouped fields"
-                        id="guided-completion-date-container"
-                        style="align-items: center"
-                      ></div>
-                    </div>
-                  </div>
-                  <button
-                    class="ui primary button mt-md"
-                    id="guided-button-save-checked-completion-date"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                    "
-                  >
-                    Continue
-                  </button>
-                  <button
-                    class="ui primary button mt-md"
-                    id="guided-button-edit-checked-completion-date"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      display: none;
-                    "
-                  >
-                    Edit completion date
-                  </button>
-                </div>
-              </div>
             </div>
             <div
               class="guided--panel hidden"
@@ -1725,7 +1648,47 @@
           </div>
           <div id="guided-contributors-tab" class="guided--panel hidden">
             <div
-              class="guided--section"
+              class="guided--section hidden"
+              id="guided-div-contributors-airtable-prompt"
+            >
+              <h2 class="guided--text-sub-step">
+                Would you like to import SPARC contributor data from AirTable?
+              </h2>
+              <p
+                class="guided--help-text small text-center"
+                style="margin-bottom: 2px"
+              >
+                info about why they should do this
+              </p>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-div-contributors-import"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-question=""
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-div-contributors-import"
+            >
+              <button
+                class="ui primary button"
+                style="background-color: var(--color-light-green) !important"
+                onclick="helpSPARCAward('submission', 'guided')"
+              >
+                Import contributor information from Airtable
+              </button>
+            </div>
+            <div
+              class="guided--section hidden"
               id="guided-div-contributors-imported-from-airtable"
             >
               <h2 class="guided--text-sub-step">Contributors table</h2>

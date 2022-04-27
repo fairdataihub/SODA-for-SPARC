@@ -389,20 +389,38 @@ const traverseToTab = (targetPageID) => {
       }
     }
     if (targetPageID === "guided-contributors-tab") {
+      /*const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]*/
+      const sparcAward = "OT2OD023854";
       // check if airtableconfig has non empty api-key and key-name properties
       const airTableKeyData = parseJson(airtableConfigPath);
+      let airTableKeyDataValid = null;
       if (
         airTableKeyData["api-key"] &&
         airTableKeyData["key-name"] &&
         airTableKeyData["key-name"] !== "" &&
         airTableKeyData["api-key"] !== ""
       ) {
-        const sparcAward = "OT2OD023854";
-        /*sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]; add this back in*/
-        console.log(sparcAward);
-        if (sparcAward) {
-          loadContributorInfofromAirtable(sparcAward, "guided");
-        }
+        airTableKeyDataValid = true;
+      } else {
+        airTableKeyDataValid = false;
+      }
+      //if an AirTable account and sparc award already exist, show the table
+      //if not, show the prompt to import award/contributor data
+      if (airTableKeyDataValid && sparcAward) {
+        document
+          .getElementById("guided-div-contributors-imported-from-airtable")
+          .classList.remove("hidden");
+        document
+          .getElementById("guided-div-contributors-airtable-prompt")
+          .classList.add("hidden");
+        loadContributorInfofromAirtable(sparcAward, "guided");
+      } else {
+        document
+          .getElementById("guided-div-contributors-airtable-prompt")
+          .classList.remove("hidden");
+        document
+          .getElementById("guided-div-contributors-imported-from-airtable")
+          .classList.add("hidden");
       }
     }
     if (targetPageID === "guided-create-subjects-metadata-tab") {
@@ -4524,8 +4542,9 @@ $(document).ready(() => {
       const contributorRoleTagifyChildren = Array.from(
         contributorRoleTagify.children
       );
-      console.log(contributorRoleTagifyChildren);
+      //remove the span element from the array so only tag elements are left
       contributorRoleTagifyChildren.pop();
+      //get the titles of the tagify tagsh
       const contributorRoles = contributorRoleTagifyChildren.map((child) => {
         return child.title;
       });
@@ -4534,9 +4553,8 @@ $(document).ready(() => {
         contributorFirstName: contributorFirstName.value,
         contributorORCID: contributorORCID.value,
         contributorAffiliation: contributorAffiliation.value,
-        contributorRole: contributorRoles,
+        contributorRoles: contributorRoles,
       };
-      console.log(contributorInputObj);
     });
   });
 

@@ -97,6 +97,14 @@
   background-color: rgb(255, 255, 255);
 }
 
+.guided--input:read-only {
+  color: dimgray;
+  pointer-events: none;
+}
+.guided--input::placeholder {
+  opacity: 0.5;
+}
+
 .guided--text-area {
   height: 5em;
   resize: none;
