@@ -27,7 +27,8 @@
       "!pysoda/",
       "!build/",
       "!api.spec",
-      "!Users/"
+      "!Users/",
+      "!pyflask/"
     ],
     "win": {
       "target": "nsis",

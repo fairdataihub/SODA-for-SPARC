@@ -642,7 +642,7 @@ async function initiate_generate_manifest_local(
     },
   });
   if (manifestEditBoolean === false) {
-    createManifestLocally(false, originalDataset);
+    createManifestLocally("local", false, originalDataset);
   } else {
     // SODA Manifest Files folder
     let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
