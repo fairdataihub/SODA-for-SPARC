@@ -6584,7 +6584,7 @@ ipcRenderer.on(
                   return;
                 }
 
-                let numb = document.getElementById("local_dataset_number")
+                let numb = document.getElementById("local_dataset_number");
                 numb.innerText = "0%";
                 progressBar_rightSide = document.getElementById(
                   "left-side_less_than_50"
@@ -6639,7 +6639,7 @@ ipcRenderer.on(
                           let numb_change = new Promise((resolve) => {
                             numb.innerText = "100%";
                             resolve();
-                          }).then(() =>{
+                          }).then(() => {
                             clearInterval(local_progress);
                             progressBar_rightSide.classList.remove(
                               "notransition"
@@ -6663,7 +6663,7 @@ ipcRenderer.on(
                                 "loading_local_dataset"
                               ).style.display = "none";
                             }, 1000);
-                          })
+                          });
                         }
                       }
                     }
@@ -7775,10 +7775,16 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   let jwt = await get_access_token();
   console.log(jwt);
-  let progress_container = document.getElementById("loading_pennsieve_dataset")
-  let percentage_text = document.getElementById("pennsieve_loading_dataset_percentage");
-  let left_progress_bar = document.getElementById("pennsieve_left-side_less_than_50");
-  let right_progress_bar = document.getElementById("pennsieve_right-side_greater_than_50");
+  let progress_container = document.getElementById("loading_pennsieve_dataset");
+  let percentage_text = document.getElementById(
+    "pennsieve_loading_dataset_percentage"
+  );
+  let left_progress_bar = document.getElementById(
+    "pennsieve_left-side_less_than_50"
+  );
+  let right_progress_bar = document.getElementById(
+    "pennsieve_right-side_greater_than_50"
+  );
   percentage_text.innerText = "0%";
   progress_container.style.display = "block";
   left_progress_bar.style.transform = `rotate(0deg)`;
@@ -7805,53 +7811,53 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
           }deg)`;
         }
 
-          console.log(percentage_amount + "%");
-          if(finished === 1){
-            percentage_amount.innerText = "100%";
-            left_progress_bar.style.transform = `rotate(180deg)`;
-            right_progress_bar.classList.remove("notransition");
-            clearInterval(pennsieve_progress);
-            setTimeout(() => {
-              progress_container.style.display = "none";
-            }, 2000);
+        console.log(percentage_amount + "%");
+        if (finished === 1) {
+          percentage_amount.innerText = "100%";
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.classList.remove("notransition");
+          clearInterval(pennsieve_progress);
+          setTimeout(() => {
+            progress_container.style.display = "none";
+          }, 2000);
         }
-        
       }
     });
   }
 
   return new Promise((resolve, reject) => {
     let start_time = performance.now();
-    client.invoke(
-      "api_import_pennsieve_dataset",
-      sodaJSONObj,
-      (error, res) => {
-        if (error) {
-          reject(userError(error));
-          log.error(error);
-          console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
-        } else {
-          let end_time = performance.now();
-          console.log(`Duration of new function: ${end_time - start_time} milliseconds`);
-          console.log("resolve should be handled here");
-          console.log(res);
-          if (res[3] == res[4]) {
-            document.getElementById("pennsieve_loading_dataset_percentage").innerText = "100%";
-          }
-          resolve(res);
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Retrieve Dataset - Pennsieve",
-            defaultBfDatasetId
-          );
+    client.invoke("api_import_pennsieve_dataset", sodaJSONObj, (error, res) => {
+      if (error) {
+        reject(userError(error));
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      } else {
+        let end_time = performance.now();
+        console.log(
+          `Duration of new function: ${end_time - start_time} milliseconds`
+        );
+        console.log("resolve should be handled here");
+        console.log(res);
+        if (res[3] == res[4]) {
+          document.getElementById(
+            "pennsieve_loading_dataset_percentage"
+          ).innerText = "100%";
         }
+        resolve(res);
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Retrieve Dataset - Pennsieve",
+          defaultBfDatasetId
+        );
+      }
     });
   });
 };
