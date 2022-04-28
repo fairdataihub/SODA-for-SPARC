@@ -1222,6 +1222,14 @@ async function transitionSubQuestions(
 
 // Create the dataset structure for sodaJSONObj
 const create_json_object = (action, sodaJSONObj, root_folder_path) => {
+  high_level_sparc_folders = [
+    "code",
+    "derivative",
+    "docs",
+    "primary",
+    "protocol",
+    "source",
+  ];
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -1438,10 +1446,12 @@ const recursive_structure_create = (
         );
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace("\\", "/");
+
           relative_path = temp_current_file_path.replace(
             root_folder_path + "/",
             ""
           );
+
           for (item in sodaJSONObj["starting-point"][high_level_folder][
             "manifest"
           ]) {
@@ -1748,7 +1758,15 @@ const recursive_structure_create_include_manifest = (
 // Function to verify if a local folder is a SPARC folder
 // If no high level folders or any possible metadata files
 // are found the folder is marked as invalid
-const verify_sparc_folder = (root_folder_path) => {
+const verify_sparc_folder = (root_folder_path, type) => {
+  high_level_sparc_folders = [
+    "code",
+    "derivative",
+    "docs",
+    "primary",
+    "protocol",
+    "source",
+  ];
   possible_metadata_files = [
     "submission",
     "dataset_description",
@@ -1758,16 +1776,32 @@ const verify_sparc_folder = (root_folder_path) => {
     "CHANGES",
   ];
   valid_dataset = false;
-  fs.readdirSync(root_folder_path).forEach((file) => {
-    if (highLevelFolders.includes(file)) {
-      valid_dataset = true;
-    }
-    for (item in possible_metadata_files) {
-      if (item.indexOf(file) != -1) {
+  let entries = fs.readdirSync(root_folder_path);
+  for (let i = 0; i < entries.length; i++) {
+    let item = entries[i];
+    if (type === "local") {
+      if (
+        highLevelFolders.includes(item) ||
+        possible_metadata_files.includes(path.parse(item).name)
+      ) {
         valid_dataset = true;
+      } else {
+        valid_dataset = false;
+        break;
+      }
+    } else {
+      if (
+        highLevelFolders.includes(item) ||
+        possible_metadata_files.includes(path.parse(item).name) ||
+        item.substring(0, 1) != "."
+      ) {
+        valid_dataset = true;
+      } else {
+        valid_dataset = false;
+        break;
       }
     }
-  });
+  }
   return valid_dataset;
 };
 
@@ -2171,7 +2205,6 @@ async function transitionFreeFormMode(
   }
 
   if (!continueProgressValidateDataset) {
-    console.log("Not going to continue with this");
     return;
   }
 

@@ -159,6 +159,18 @@ $(".button-individual-metadata.go-back").click(function () {
   }
 });
 
+const metadataFileExtentionObject = {
+  submission: [".csv", ".xlsx", ".xls", ".json"],
+  dataset_description: [".csv", ".xlsx", ".xls", ".json"],
+  subjects: [".csv", ".xlsx", ".xls", ".json"],
+  samples: [".csv", ".xlsx", ".xls", ".json"],
+  README: [".txt"],
+  CHANGES: [".txt"],
+  code_description: [".xlsx"],
+  inputs_metadata: [".xlsx"],
+  outputs_metadata: [".xlsx"],
+};
+
 function dropHandler(ev, paraElement, metadataFile) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
@@ -171,14 +183,21 @@ function dropHandler(ev, paraElement, metadataFile) {
     if (ev.dataTransfer.items[0].kind === "file") {
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
+      var extension = file.name.slice(file.name.indexOf("."));
+
       if (metadataWithoutExtension === metadataFile) {
-        document.getElementById(paraElement).innerHTML = file.path;
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-confirm")
-          .css("display", "flex");
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-go-back")
-          .css("display", "none");
+        if (metadataFileExtentionObject[metadataFile].includes(extension)) {
+          document.getElementById(paraElement).innerHTML = file.path;
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-confirm")
+            .css("display", "flex");
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-go-back")
+            .css("display", "none");
+        } else {
+          document.getElementById(paraElement).innerHTML =
+            "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
+        }
       } else {
         document.getElementById(paraElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
@@ -1982,6 +2001,11 @@ async function moveItems(ev, category) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     }).then((result) => {
+      let numberItems = $("div.single-item.selected-item").toArray().length;
+      let timer = 2000;
+      if (numberItems > 10) {
+        timer = 7000;
+      }
       if (result.isConfirmed) {
         // loading effect
         Swal.fire({
@@ -1989,9 +2013,24 @@ async function moveItems(ev, category) {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           showConfirmButton: false,
-          timer: 1500,
-          timerProgressBar: true,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          timerProgressBar: false,
+          timer: timer,
           title: "Moving items...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then(() => {
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "success",
+            text: "Successfully moved items!",
+            didOpen: () => {
+              Swal.hideLoading();
+            },
+          });
         });
         // action to move and delete here
         // multiple files/folders
@@ -2021,6 +2060,17 @@ async function moveItems(ev, category) {
           moveItemsHelper(itemToMove, selectedPath, itemType);
           ev.parentElement.remove();
         }
+        document.getElementById("input-global-path").value =
+          "My_dataset_folder/";
+        listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
+        organizeLandingUIEffect();
+        // reconstruct div with new elements
+        getInFolder(
+          ".single-item",
+          "#items",
+          organizeDSglobalPath,
+          datasetStructureJSONObj
+        );
       }
     });
   }

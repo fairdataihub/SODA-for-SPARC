@@ -351,7 +351,6 @@ $("#button-rename-dataset").click(() => {
                   log.info("Request successful");
                   datasetList = [];
                   datasetList = result;
-                  // console.log("Result is: ", result)
                   refreshDatasetList();
                 }
               }
@@ -2280,7 +2279,7 @@ $(document).ready(() => {
           `${filepath[0]}`
         );
 
-        valid_dataset = verify_sparc_folder(filepath[0]);
+        valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
 
         if (valid_dataset == true) {
           $("#button_upload_local_folder_confirm").click();
@@ -2295,7 +2294,7 @@ $(document).ready(() => {
         } else {
           Swal.fire({
             icon: "warning",
-            text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+            text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,
@@ -2400,7 +2399,6 @@ $("#button-submit-dataset").click(async () => {
   organizeDatasetButton.style = "background-color: #f6f6f6";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
-  //console.log(cloneStatus);
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
@@ -2698,7 +2696,6 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
-            //console.log(res[0]);
             cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
@@ -2770,7 +2767,6 @@ $("#button-submit-dataset").click(async () => {
   const monitorBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_bf_submit_dataset_upload_details", (err, res) => {
-      // console.log("Results: ", res)
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[4] > uploadedFolders) {
         uploadedFiles = res[0];

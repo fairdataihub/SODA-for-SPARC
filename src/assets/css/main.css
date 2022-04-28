@@ -1541,3 +1541,14 @@ button[data-id="bf_list_users_pi"] {
 .circle .right .progress {
   transition: transform 500ms ease-in-out;
 }
+
+#Question-getting-started-locally-destination {
+  text-align: -webkit-center;
+}
+
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
+}

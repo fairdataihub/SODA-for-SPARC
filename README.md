@@ -2,7 +2,17 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5639796.svg)](https://doi.org/10.5281/zenodo.5639796)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5565455.svg)](https://doi.org/10.5281/zenodo.5565455)
+[![Curated with FAIRshare](https://raw.githubusercontent.com/fairdataihub/FAIRshare/main/badge.svg)](https://fairdataihub.org/fairshare)
+
+[contributors-shield]: https://img.shields.io/github/contributors/fairdataihub/SODA-for-SPARC.svg?style=flat-square
+[contributors-url]: https://github.com/fairdataihub/SODA-for-SPARC/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/fairdataihub/SODA-for-SPARC.svg?style=flat-square
+[stars-url]: https://github.com/fairdataihub/SODA-for-SPARC/stargazers
+[issues-shield]: https://img.shields.io/github/issues/fairdataihub/SODA-for-SPARC.svg?style=flat-square
+[issues-url]: https://github.com/fairdataihub/SODA-for-SPARC/issues
+[license-shield]: https://img.shields.io/github/license/fairdataihub/SODA-for-SPARC.svg?style=flat-square
+[license-url]: https://github.com/fairdataihub/SODA-for-SPARC/blob/main/LICENSE
 
 <!-- HEADER -->
 <br />
@@ -18,7 +28,7 @@
    <i> By SPARC investigators, for SPARC investigators </i>
     <br />
     <br />
-    <a href="https://fairdataihub.org/sodaforsparc/docs/getting-started/User-Interface"><strong>Explore our documentation »</strong></a>
+    <a href="https://docs.sodaforsparc.io/"><strong>Explore our documentation »</strong></a>
     <br />
     <br />
     <a href="https://github.com/fairdataihub/SODA-for-SPARC/issues">Report Issue</a>
@@ -33,17 +43,17 @@
 
 - [About](#about)
 - [Downloading SODA](#Downloading-soda)
-- [Using SODA](#Using-SODA)
 - [Full Documentation](#Full-Documentation)
 - [Issues and Feedback](#Issues-and-Feedback)
-- [Using the Source Code](#Using-the-Source-Code)
+- [Contributing](#Contributing)
 - [License](#license)
 - [Privacy Policy](#Privacy-Policy)
 - [Acknowledgements](#acknowledgements)
+- [Citing](#Citing)
 
 ## About
 
-SODA (Software to Organize Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.google.com/presentation/d/1EQPn1FmANpPsFt3CguU-JOQVMMlJsNXluQAK_gb2qVg/edit?usp=sharing) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks.
+SODA (Software to Organize Data Automatically) for SPARC is an open-source and free cross-platform desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators according to the [FAIR SPARC data curation guidelines](https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd#top). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the requirements to submit a SPARC dataset rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks.
 
 <p align="center">
   <img src="https://github.com/fairdataihub/SODA-for-SPARC/blob/main/docs/documentation/Landing-page/UserInterface.PNG" alt="interface" width="600">
@@ -54,42 +64,21 @@ SODA (Software to Organize Data Automatically) for SPARC is a desktop software i
 
 ## Downloading SODA
 
-SODA is distributed as an easy-to-install application for Windows, Mac OS, and Ubuntu. Follow the instructions provided in [our dedicated documentation](https://fairdataihub.org/sodaforsparc/docs/getting-started/Download-Soda) to download the version suitable for your operating system.
+SODA is distributed as an easy-to-install application for Windows, Mac OS, and Ubuntu. Follow the instructions provided in [our dedicated documentation](https://docs.sodaforsparc.io/docs/getting-started/download-soda) to download the version suitable for your operating system.
 
 All our releases are also accessible in the [releases tab](https://github.com/fairdataihub/SODA-for-SPARC/releases/latest).
 
-## Using SODA
+## Documentation
 
-Click on the image below and watch our video to quickly familiarize yourself with the user interface of SODA:
-
-<p align="center">
-<a href="https://www.youtube.com/watch?v=Fyn9R0Tk_pU" target="_blank">
-<img src="https://img.youtube.com/vi/Fyn9R0Tk_pU/0.jpg" />
-</a>
-</p>
-
-Please see our [suggested workflow for preparing and submitting your SPARC dataset](https://fairdataihub.org/sodaforsparc/docs/getting-started/Organize-and-submit-a-new-SPARC-dataset-with-SODA) rapidly and accurately with SODA.
-
-Although we would highly encourage you to use SODA for the entire organization and submission process of your dataset, SODA is designed such that you are not bound to using the software for all of the steps: you can perform desired steps from SODA and others outside.
-
-## Full Documentation
-
-See the [documentation](https://fairdataihub.org/sodaforsparc/docs/getting-started/User-Interface) for our full documentation, including details about each features and how to use them as well as guidance for using and contributing to our source code.
+See the [our dedicated webpage]() for the full documentation, including details about each features and how to use them.
 
 ## Issues and Feedback
 
 To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/fairdataihub/SODA-for-SPARC/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
 
-<p align="center">
-   <img src="https://github.com/fairdataihub/SODA-for-SPARC/blob/main/docs/documentation/Landing-page/feedbackform.PNG" alt="interface" width="600">
-  <br/>
-  <i> A screenshot of our feedback form in the user interface of SODA. </i>
-  </img>
- </p>
+## Contributing
 
-## Using the Source Code
-
-If you want to contribute, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer manual](https://github.com/fairdataihub/SODA-for-SPARC/wiki) of our documentation.
+If you want to contribute, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer section](https://docs.sodaforsparc.io/docs/developer-documentation/project-setup) of our documentation.
 
 ## License
 
@@ -116,19 +105,10 @@ SODA uses Google Analytics to track user interactions with the application. Trac
   - Anna Rietsch (Cleveland Clinic, Cleveland OH)
   - Joseph Sassoon (Integrated Medical Systems Laboratory - New York Institute of Technology)
 
-[contributors-shield]: https://img.shields.io/github/contributors/bvhpatel/SODA.svg?style=flat-square
-[contributors-url]: https://github.com/fairdataihub/SODA-for-SPARC/graphs/contributors
-[stars-shield]: https://img.shields.io/github/stars/bvhpatel/SODA.svg?style=flat-square
-[stars-url]: https://github.com/fairdataihub/SODA-for-SPARC/stargazers
-[issues-shield]: https://img.shields.io/github/issues/bvhpatel/SODA.svg?style=flat-square
-[issues-url]: https://github.com/fairdataihub/SODA-for-SPARC/issues
-[license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
-[license-url]: https://github.com/fairdataihub/SODA-for-SPARC/blob/main/LICENSE
+## Citing
 
-## Developers
+If you use SODA for SPARC to curate your dataset, please cite the following references:
 
-- Bhavesh Patel (California Medical Innovations Institute)
-- Tram Ngo (California Medical Innovations Institute)
-- Sanjay Soundarajan (California Medical Innovations Institute)
-- Parya Aghasafari (UC Davis)
-- Karl Helmer (Harvard Medical School/Massachusetts General Hospital)
+1. Patel, B., Srivastava, H., Aghasafari, P., & Helmer, K. (2020). SPARC: SODA, an interactive software for curating SPARC datasets. The FASEB Journal, 34(S1), 1-1. [10.1096/fasebj.2020.34.s1.02483](https://doi.org/10.1096/fasebj.2020.34.s1.02483)
+2. Bandrowski, A., Grethe, J. S., Pilko, A., Gillespie, T., Pine, G., Patel, B., Surles-Zeigler, M., & Martone, M. E. (2021). SPARC Data Structure: Rationale and Design of a FAIR Standard for Biomedical Research Data. bioRxiv. [10.1101/2021.02.10.430563](https://doi.org/10.1101/2021.02.10.430563)
+3. Patel, B., Ngo, T., Soundarajan, S., Marroquin, A., Clark, J., & Portillo, D. (2022). SODA (Software to Organize Data Automatically) for SPARC. Zenodo. [10.5281/zenodo.5565455](https://doi.org/10.5281/zenodo.5565455)

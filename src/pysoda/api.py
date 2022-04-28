@@ -1,4 +1,5 @@
 from __future__ import print_function
+from logging import root
 from gevent import monkey
 
 monkey.patch_all()
@@ -75,13 +76,20 @@ from prepare_metadata import (
     delete_manifest_dummy_folders,
 )
 
-from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders, import_pennsieve_dataset, monitor_pennsieve_json_progress
+from organize_datasets import (
+    generate_dataset_locally,
+    bf_get_dataset_files_folders,
+    create_soda_json_object_backend,
+    monitor_local_json_progress,
+    monitor_pennsieve_json_progress,
+    import_pennsieve_dataset
+)
 
 import sys
 import zerorpc
 
 
-MIN_SODA_VERSION = "5.3.3"
+MIN_SODA_VERSION = "5.4.0"
 
 
 class SodaApi(object):
@@ -569,6 +577,23 @@ class SodaApi(object):
     def echo(self, text):
         """echo any text"""
         return text
+
+    ### Creates json structure for local datasets
+    def api_create_soda_json_object_backend(
+        self, soda_json_structure, root_folder_path, irregularFolders, replaced
+    ):
+        try:
+            return create_soda_json_object_backend(
+                soda_json_structure, root_folder_path, irregularFolders, replaced
+            )
+        except Exception as e:
+            raise e
+
+    def api_monitor_local_json_progress(self):
+        try:
+            return monitor_local_json_progress()
+        except Exception as e:
+            raise e
 
 
 ### Connect to Electron-Python
