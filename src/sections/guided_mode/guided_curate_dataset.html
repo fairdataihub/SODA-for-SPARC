@@ -1891,6 +1891,109 @@
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Fill out the description information below:
               </h1>
+            </div>
+            <div class="guided--section neumorphic mt-xl">
+              <h2 class="guided--text-sub-step mt-0">Dataset information</h2>
+              <label class="guided--form-label mt-md">Dataset type:</label>
+              <div class="ui form">
+                <div class="grouped fields">
+                  <div class="field">
+                    <div class="ui radio checkbox">
+                      <input type="radio" name="dataset-relation" />
+                      <label>Experimental</label>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <div class="ui radio checkbox">
+                      <input type="radio" name="dataset-relation" />
+                      <label>computational</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--section neumorphic mt-xl">
+              <h2 class="guided--text-sub-step mt-0">Study information</h2>
+              <label class="guided--form-label mt-md"
+                >Study organ system:</label
+              >
+              <div class="demo-controls-body" style="width: 100%">
+                <div class="ui input modified">
+                  <input
+                    class="form-container-input-bf"
+                    type="text"
+                    id="guided-ds-study-organ-system"
+                    name="study organ system"
+                    placeholder="Type here..."
+                    style="font-size: 14px"
+                  />
+                </div>
+              </div>
+              <label class="guided--form-label mt-md">Study approach:</label>
+              <div class="demo-controls-body" style="width: 100%">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    class="form-container-input-bf"
+                    id="guided-ds-study-approach"
+                    name="study approach"
+                    placeholder="Type here..."
+                    style="font-size: 14px"
+                  />
+                </div>
+              </div>
+              <label class="guided--form-label mt-md">Study technique:</label>
+              <div class="demo-controls-body" style="width: 100%">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="guided-ds-study-technique"
+                    class="form-container-input-bf"
+                    name="study technique"
+                    placeholder="Type here..."
+                    style="font-size: 14px"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="guided--section neumorphic mt-xl">
+              <h2 class="guided--text-sub-step mt-0">
+                Additional information:
+              </h2>
+              <label class="guided--form-label mt-md"
+                >Study collection title:</label
+              >
+              <input
+                class="guided--input"
+                type="text"
+                placeholder="Enter study collection title here"
+                onkeyup="validateInput($(this))"
+              />
+              <label class="guided--form-label mt-md"
+                >Other funcing source(s)</label
+              >
+              <div class="demo-controls-body" style="width: 100%">
+                <div class="ui input modified">
+                  <input
+                    id="guided-ds-other-funding"
+                    class="form-container-input-bf"
+                    placeholder="Type here and hit 'Enter' after each funding."
+                  />
+                </div>
+              </div>
+              <label class="guided--form-label mt-md">Acknowledgements:</label>
+              <textarea
+                class="guided--input guided--text-area"
+                type="text"
+                placeholder="Enter acknowledgements here"
+                style="height: 7.5em"
+                onkeyup="validateInput($(this))"
+              ></textarea>
+            </div>
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
+                Fill out the description information below:
+              </h1>
               <div class="ui styled fluid accordion guided--accordion">
                 <div class="title active">
                   <i class="dropdown icon active"></i>Dataset Information
@@ -1992,18 +2095,6 @@
                           style="margin-left: 5px; color: black"
                         ></i
                       ></label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <input
-                            class="form-container-input-bf"
-                            type="text"
-                            id="guided-ds-study-organ-system"
-                            name="study organ system"
-                            placeholder="Type here..."
-                            style="font-size: 14px"
-                          />
-                        </div>
-                      </div>
                     </div>
 
                     <div class="guided--accordion-field">
@@ -2044,18 +2135,6 @@
                           style="margin-left: 5px; color: black"
                         ></i>
                       </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <input
-                            type="text"
-                            id="guided-ds-study-technique"
-                            class="form-container-input-bf"
-                            name="study technique"
-                            placeholder="Type here..."
-                            style="font-size: 14px"
-                          />
-                        </div>
-                      </div>
                     </div>
                     <div class="guided--accordion-field">
                       <label class="guided--label-accordion-field">
@@ -2440,15 +2519,6 @@
                           style="margin-left: 5px; color: black"
                         ></i>
                       </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <input
-                            id="guided-ds-other-funding"
-                            class="form-container-input-bf"
-                            placeholder="Type here and hit 'Enter' after each funding."
-                          />
-                        </div>
-                      </div>
                     </div>
                     <div class="guided--accordion-field">
                       <label class="guided--label-accordion-field">

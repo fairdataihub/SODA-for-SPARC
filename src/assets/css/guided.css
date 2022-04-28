@@ -611,6 +611,9 @@ h1.guided--text-sub-step {
   justify-content: center;
   flex-wrap: wrap;
 }
+.mt-0 {
+  margin-top: 0px !important;
+}
 .mt-sm {
   margin-top: 7px !important;
 }
