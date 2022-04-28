@@ -1819,7 +1819,11 @@ async function transitionSubQuestionsButton(
     $("#bf-dataset-spinner").css("visibility", "visible");
     var result;
     try {
+      console.log(sodaJSONObj);
+      let start_time = performance.now();
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
+      let end_time = performance.now();
+      console.log(`Duration of old function: ${end_time - start_time} milliseconds`);
       result = [true, res];
     } catch (err) {
       result = [false, err];
@@ -2171,7 +2175,6 @@ async function transitionFreeFormMode(
     return;
   }
 
-  console.log("Continuing with transition");
   // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);

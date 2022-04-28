@@ -814,15 +814,20 @@
                           >
                         </p>
                         <div
-                          id="bf-dataset-spinner"
-                          class="spinner"
-                          style="visibility: hidden; margin: 0 auto"
+                          id="loading_pennsieve_dataset"
+                          class="circular"
+                          style="align-self: center;"
                         >
-                          <div class="rect1"></div>
-                          <div class="rect2"></div>
-                          <div class="rect3"></div>
-                          <div class="rect4"></div>
-                          <div class="rect5"></div>
+                          <div class="inner"></div>
+                          <div id="pennsieve_loading_dataset_percentage" class="number">0%</div>
+                          <div class="circle">
+                            <div class="bar left">
+                              <div id="pennsieve_left-side_less_than_50" class="progress"></div>
+                            </div>
+                            <div class="bar right">
+                              <div id="pennsieve_right-side_greater_than_50" class="progress"></div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <p
