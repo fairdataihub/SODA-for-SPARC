@@ -647,6 +647,22 @@ const validateInput = (inputElementToValidate) => {
       $("#guided-button-generate-subjects-table").hide();
     }
   }
+  if (inputID === "guided-number-of-samples-input") {
+    let numSamples = inputElementToValidate.val().trim();
+    if (numSamples !== "") {
+      if (isNumberBetween(numSamples, 1, 1000)) {
+        removeAlertMessageIfExists(inputElementToValidate);
+        $("#guided-button-generate-subjects-table").show();
+
+        inputIsValid = true;
+      } else {
+        generateAlertMessage(inputElementToValidate);
+        $("#guided-button-generate-subjects-table").hide();
+      }
+    } else {
+      $("#guided-button-generate-subjects-table").hide();
+    }
+  }
   return inputIsValid;
 };
 
@@ -1195,6 +1211,66 @@ const addContributorField = () => {
   });
   //scroll to the new element
   smoothScrollToElement(newlyAddedContributorField);
+};
+
+const addProtocolField = () => {
+  const protocolsContainer = document.getElementById("protocols-container");
+  //create a new div to hold contributor fields
+  const newProtocolField = document.createElement("div");
+  newProtocolField.classList.add("guided--section");
+  newProtocolField.classList.add("mt-lg");
+  newProtocolField.classList.add("neumorphic");
+  newProtocolField.classList.add("guided-protocol-field-container");
+  newProtocolField.style.position = "relative";
+
+  newProtocolField.innerHTML = `
+    <i
+      class="fas fa-times fa-2x"
+      style="
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: black;
+        cursor: pointer;
+      "
+      onclick="removeProtocolField(this)"
+    >
+    </i>
+    <h2 class="guided--text-sub-step">Enter protocol details</h2>
+    <label class="guided--form-label mt-md">Protocol title: </label>
+    <input
+      class="guided--input guided-first-name-input"
+      type="text"
+      placeholder="Enter protocol title here"
+      onkeyup="validateInput($(this))"
+    />
+    <label class="guided--form-label mt-md">Protocol URL: </label>
+    <input
+      class="guided--input guided-first-name-input"
+      type="text"
+      placeholder="Enter protocol URL here"
+      onkeyup="validateInput($(this))"
+    />
+    <label class="guided--form-label mt-md"
+      >Protocol description:</label
+    >
+    <textarea
+      class="guided--input guided--text-area"
+      type="text"
+      placeholder="Enter protocol description here"
+      style="height: 7.5em; padding-bottom: 20px"
+      onkeyup="validateInput($(this))"
+    >The protocol used to generate this dataset</textarea>
+  `;
+  protocolsContainer.appendChild(newProtocolField);
+  //select the last protocol field (the one that was just added)
+  const newlyAddedProtocolField = protocolsContainer.lastChild;
+  smoothScrollToElement(newlyAddedProtocolField);
+};
+
+const removeProtocolField = (protocolDeleteButton) => {
+  const protocolField = protocolDeleteButton.parentElement;
+  protocolField.remove();
 };
 
 //SUBJECT TABLE FUNCTIONS

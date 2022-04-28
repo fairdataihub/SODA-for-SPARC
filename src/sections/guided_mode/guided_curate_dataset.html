@@ -175,6 +175,7 @@
                 </div>
               </div>
             </div>
+
             <div
               class="guided--section"
               id="continue-curating-existing"
@@ -1814,7 +1815,9 @@
 
           <div id="guided-protocols-tab" class="guided--panel hidden">
             <div class="guided--section">
-              <h2 class="guided--text-sub-step">Would you like to protocols</h2>
+              <h2 class="guided--text-sub-step">
+                Would you like to import your protocols from Protocols.io?
+              </h2>
               <p
                 class="guided--help-text small text-center"
                 style="margin-bottom: 2px"
@@ -1828,7 +1831,10 @@
                 >
                   Yes
                 </button>
-                <button class="ui negative basic button guided--radio-button">
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-question="guided-div-protocol-container"
+                >
                   No
                 </button>
               </div>
@@ -1844,6 +1850,36 @@
                 style="background-color: var(--color-light-green) !important"
               >
                 Import protocols
+              </button>
+            </div>
+            <div
+              class="guided--section hidden"
+              id="guided-div-protocol-container"
+            >
+              <h2 class="guided--text-sub-step">
+                Add the protocol(s) used to generate the dataset
+              </h2>
+              <p
+                class="guided--help-text small text-center"
+                style="margin-bottom: 2px"
+              >
+                Info text
+              </p>
+              <div class="guided--panel" id="protocols-container"></div>
+              <button
+                class="ui primary basic button mt-lg"
+                id="guided-button-add-protocol"
+                onclick="addProtocolField()"
+              >
+                <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
+                protocol
+              </button>
+              <button
+                class="ui primary button mt-md"
+                id="guided-button-save-protocol-fields"
+                style="background-color: var(--color-light-green) !important"
+              >
+                Continue
               </button>
             </div>
           </div>
@@ -2442,13 +2478,6 @@
                   </div>
                 </div>
               </div>
-              <button
-                id="guided-generate-description-file"
-                class="btn_animated"
-                style="width: 200px; border: none !important"
-              >
-                Generate description file
-              </button>
             </div>
           </div>
           <div
