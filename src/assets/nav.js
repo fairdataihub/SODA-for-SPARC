@@ -29,7 +29,6 @@ function handleSectionTrigger(event) {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
 
-<<<<<<< HEAD
   // Render guided mode resume progress cards if guided mode section is chosen
   // and move the folder structuring elements to guided mode
   if (sectionId === "guided_mode-section") {
@@ -48,8 +47,6 @@ function handleSectionTrigger(event) {
     );
   }
 
-=======
->>>>>>> staging
   document.getElementById(sectionId).classList.add("is-shown");
 
   let showSidebarSections = [
