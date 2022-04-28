@@ -557,9 +557,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_import_pennsieve_dataset(self, soda_json_structure, requested_sparc_only=True):
+    def api_import_pennsieve_dataset(
+        self, soda_json_structure, requested_sparc_only=True
+    ):
         try:
-            return import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True)
+            return import_pennsieve_dataset(
+                soda_json_structure, requested_sparc_only=True
+            )
         except Exception as e:
             raise e
 

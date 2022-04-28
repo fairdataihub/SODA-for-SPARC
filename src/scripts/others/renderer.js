@@ -36,15 +36,15 @@ const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
 // TODO: Test with a build
 const {
-  datasetUploadSession
+  datasetUploadSession,
 } = require("./scripts/others/analytics/upload-session-tracker");
 
 const {
   logCurationErrorsToAnalytics,
-  logCurationSuccessToAnalytics
+  logCurationSuccessToAnalytics,
 } = require("./scripts/others/analytics/curation-analytics");
 const {
-  determineDatasetLocation
+  determineDatasetLocation,
 } = require("./scripts/others/analytics/analytics-utils");
 
 const axios = require("axios").default;
@@ -65,14 +65,14 @@ var reverseSwalButtons = false;
 var datasetStructureJSONObj = {
   folders: {},
   files: {},
-  type: ""
+  type: "",
 };
 
 let introStatus = {
   organizeStep3: true,
   submission: false,
   subjects: false,
-  samples: false
+  samples: false,
 };
 
 //////////////////////////////////
@@ -116,7 +116,7 @@ client.invoke("echo", "server ready", (error, res) => {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Restart now",
       allowOutsideClick: false,
-      allowEscapeKey: false
+      allowEscapeKey: false,
     }).then(async (result) => {
       if (result.isConfirmed) {
         app.relaunch();
@@ -151,7 +151,7 @@ client.invoke("echo", "server ready", (error, res) => {
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Close now",
           allowOutsideClick: false,
-          allowEscapeKey: false
+          allowEscapeKey: false,
         }).then(async (result) => {
           if (result.isConfirmed) {
             app.exit();
@@ -180,9 +180,9 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-wifi",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 10000
+      duration: 10000,
     },
     {
       type: "ps_agent",
@@ -190,9 +190,9 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-cogs",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 5000
+      duration: 5000,
     },
     {
       type: "app_update",
@@ -200,9 +200,9 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-sync-alt",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 0
+      duration: 0,
     },
     {
       type: "api_key_search",
@@ -210,9 +210,9 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-users-cog",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 0
+      duration: 0,
     },
     {
       type: "success",
@@ -220,9 +220,9 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-check-circle",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 800
+      duration: 800,
     },
     {
       type: "final",
@@ -230,9 +230,9 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-check-circle",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 3000
+      duration: 3000,
     },
     {
       type: "warning",
@@ -240,9 +240,9 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-exclamation-triangle",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 3000
+      duration: 3000,
     },
     {
       type: "app_update_warning",
@@ -250,9 +250,9 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-tools",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 0
+      duration: 0,
     },
     {
       type: "error",
@@ -260,11 +260,11 @@ const notyf = new Notyf({
       icon: {
         className: "fas fa-times-circle",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 3000
-    }
-  ]
+      duration: 3000,
+    },
+  ],
 });
 
 let connected_to_internet = false;
@@ -292,7 +292,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "I understand"
+        confirmButtonText: "I understand",
       }).then(async (result) => {
         if (result.isConfirmed) {
           // Do nothing
@@ -320,7 +320,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             showCancelButton: true,
             reverseButtons: reverseSwalButtons,
             confirmButtonText: "Download now",
-            cancelButtonText: "Skip for now"
+            cancelButtonText: "Skip for now",
           }).then(async (result) => {
             if (result.isConfirmed) {
               [browser_download_url, latest_agent_version] =
@@ -348,11 +348,11 @@ const run_pre_flight_checks = async (check_update = true) => {
               cancelButtonText: "Skip for now",
               reverseButtons: reverseSwalButtons,
               showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster"
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster"
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then(async (result) => {
               if (result.isConfirmed) {
                 // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
@@ -371,7 +371,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                 await wait(500);
                 notyf.open({
                   type: "final",
-                  message: "You're all set!"
+                  message: "You're all set!",
                 });
                 resolve(true);
               }
@@ -383,7 +383,7 @@ const run_pre_flight_checks = async (check_update = true) => {
             await wait(500);
             notyf.open({
               type: "final",
-              message: "You're all set!"
+              message: "You're all set!",
             });
             resolve(true);
           }
@@ -403,11 +403,11 @@ const run_pre_flight_checks = async (check_update = true) => {
           reverseButtons: reverseSwalButtons,
           cancelButtonText: "I'll do it later",
           showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster"
+            popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster"
-          }
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then(async (result) => {
           if (result.isConfirmed) {
             await openDropdownPrompt(null, "bf");
@@ -431,7 +431,7 @@ const check_internet_connection = async (show_notification = true) => {
   if (show_notification) {
     notification = notyf.open({
       type: "loading_internet",
-      message: "Checking Internet status..."
+      message: "Checking Internet status...",
     });
   }
   await wait(800);
@@ -444,7 +444,7 @@ const check_internet_connection = async (show_notification = true) => {
         notyf.dismiss(notification);
         notyf.open({
           type: "error",
-          message: "Not connected to internet"
+          message: "Not connected to internet",
         });
       }
       connected_to_internet = false;
@@ -456,7 +456,7 @@ const check_internet_connection = async (show_notification = true) => {
         notyf.dismiss(notification);
         notyf.open({
           type: "success",
-          message: "Connected to the internet"
+          message: "Connected to the internet",
         });
       }
       connected_to_internet = true;
@@ -469,7 +469,7 @@ const check_api_key = async () => {
   let notification = null;
   notification = notyf.open({
     type: "api_key_search",
-    message: "Checking for Pennsieve account..."
+    message: "Checking for Pennsieve account...",
   });
   await wait(800);
   // If no accounts are found, return false.
@@ -479,7 +479,7 @@ const check_api_key = async () => {
         notyf.dismiss(notification);
         notyf.open({
           type: "error",
-          message: "No account was found"
+          message: "No account was found",
         });
         log.error(error);
         console.error(error);
@@ -491,14 +491,14 @@ const check_api_key = async () => {
           notyf.dismiss(notification);
           notyf.open({
             type: "error",
-            message: "No account was found"
+            message: "No account was found",
           });
           resolve(false);
         } else {
           notyf.dismiss(notification);
           notyf.open({
             type: "success",
-            message: "Connected to Pennsieve"
+            message: "Connected to Pennsieve",
           });
           resolve(true);
         }
@@ -511,7 +511,7 @@ const check_agent_installed = async () => {
   let notification = null;
   notification = notyf.open({
     type: "ps_agent",
-    message: "Searching for Pennsieve Agent..."
+    message: "Searching for Pennsieve Agent...",
   });
   await wait(800);
   return new Promise((resolve) => {
@@ -520,7 +520,7 @@ const check_agent_installed = async () => {
         notyf.dismiss(notification);
         notyf.open({
           type: "error",
-          message: "Pennsieve agent not found"
+          message: "Pennsieve agent not found",
         });
         console.log(error);
         log.warn("Pennsieve agent not found");
@@ -530,7 +530,7 @@ const check_agent_installed = async () => {
         notyf.dismiss(notification);
         notyf.open({
           type: "success",
-          message: "Pennsieve agent found"
+          message: "Pennsieve agent found",
         });
         log.info("Pennsieve agent found");
         resolve([true, res]);
@@ -543,7 +543,7 @@ const check_agent_installed_version = async (agent_version) => {
   let notification = null;
   notification = notyf.open({
     type: "ps_agent",
-    message: "Checking Pennsieve Agent version..."
+    message: "Checking Pennsieve Agent version...",
   });
   await wait(800);
   let latest_agent_version = "";
@@ -554,7 +554,7 @@ const check_agent_installed_version = async (agent_version) => {
     notyf.dismiss(notification);
     notyf.open({
       type: "warning",
-      message: "A newer Pennsieve agent was found!"
+      message: "A newer Pennsieve agent was found!",
     });
     log.warn(`Current agent version: ${agent_version}`);
     log.warn(`Latest agent version: ${latest_agent_version}`);
@@ -562,7 +562,7 @@ const check_agent_installed_version = async (agent_version) => {
     notyf.dismiss(notification);
     notyf.open({
       type: "success",
-      message: "You have the latest Pennsieve agent!"
+      message: "You have the latest Pennsieve agent!",
     });
     browser_download_url = "";
     log.info("Up to date agent version found");
@@ -635,7 +635,7 @@ ipcRenderer.on("update_available", () => {
   );
   update_available_notification = notyf.open({
     type: "app_update",
-    message: "A new update is available. Downloading now..."
+    message: "A new update is available. Downloading now...",
   });
 });
 
@@ -653,13 +653,13 @@ ipcRenderer.on("update_downloaded", () => {
     update_downloaded_notification = notyf.open({
       type: "app_update_warning",
       message:
-        "Update downloaded. It will be installed when you close and relaunch the app. Click here to close SODA now."
+        "Update downloaded. It will be installed when you close and relaunch the app. Click here to close SODA now.",
     });
   } else {
     update_downloaded_notification = notyf.open({
       type: "app_update_warning",
       message:
-        "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now."
+        "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
     });
   }
   update_downloaded_notification.on("click", ({ target, event }) => {
@@ -671,7 +671,7 @@ ipcRenderer.on("update_downloaded", () => {
 const restartApp = () => {
   notyf.open({
     type: "app_update_warning",
-    message: "Closing SODA now..."
+    message: "Closing SODA now...",
   });
 
   ipcRenderer.send(
@@ -839,7 +839,7 @@ const sparcFolderNames = [
   "docs",
   "primary",
   "protocol",
-  "source"
+  "source",
 ];
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
@@ -872,7 +872,7 @@ let drag_event_fired = false;
 let dragselect_area = new DragSelect({
   selectables: document.querySelectorAll(".single-item"),
   draggability: false,
-  area: document.getElementById("items")
+  area: document.getElementById("items"),
 });
 
 // Assign the callback event for selecting items
@@ -907,12 +907,12 @@ var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
-    duplicates: false
+    duplicates: false,
   });
 
 var otherFundingInput = document.getElementById("ds-other-funding"),
   otherFundingTagify = new Tagify(otherFundingInput, {
-    duplicates: false
+    duplicates: false,
   });
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
@@ -936,23 +936,23 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
       "spleen",
       "stomach",
       "sympathetic nervous system",
-      "urinary bladder"
+      "urinary bladder",
     ],
     duplicates: false,
     dropdown: {
       enabled: 0,
-      closeOnSelect: true
-    }
+      closeOnSelect: true,
+    },
   });
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
   studyTechniquesTagify = new Tagify(studyTechniquesInput, {
-    duplicates: false
+    duplicates: false,
   });
 
 var studyApproachesInput = document.getElementById("ds-study-approach"),
   studyApproachesTagify = new Tagify(studyApproachesInput, {
-    duplicates: false
+    duplicates: false,
   });
 
 // tagify the input inside of the "Add/edit tags" manage dataset section
@@ -992,7 +992,7 @@ templateArray = [
   "subjects.xlsx",
   "samples.xlsx",
   "manifest.xlsx",
-  "DataDeliverablesDocument-template.docx"
+  "DataDeliverablesDocument-template.docx",
 ];
 
 const downloadTemplates = (templateItem, destinationFolder) => {
@@ -1006,7 +1006,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       title: "Metadata file already exists",
       text: `${emessage}`,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     ipcRenderer.send(
@@ -1024,7 +1024,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       title: "Download successful",
       text: `${emessage}`,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
     ipcRenderer.send(
       "track-event",
@@ -1077,8 +1077,8 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     classname: "color-blue",
     maxItems: Infinity,
     enabled: 0,
-    closeOnSelect: true
-  }
+    closeOnSelect: true,
+  },
 });
 
 // generate subjects file
@@ -1103,7 +1103,7 @@ ipcRenderer.on(
           showConfirmButton: true,
           showCancelButton: true,
           cancelButtonText: "No",
-          confirmButtonText: "Yes"
+          confirmButtonText: "Yes",
         }).then((result) => {
           if (result.isConfirmed) {
             Swal.fire({
@@ -1116,7 +1116,7 @@ ipcRenderer.on(
               timerProgressBar: false,
               didOpen: () => {
                 Swal.showLoading();
-              }
+              },
             }).then((result) => {});
             generateSubjectsFileHelper(false);
           }
@@ -1132,7 +1132,7 @@ ipcRenderer.on(
           timerProgressBar: false,
           didOpen: () => {
             Swal.showLoading();
-          }
+          },
         }).then((result) => {});
         generateSubjectsFileHelper(false);
       }
@@ -1153,7 +1153,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes"
+      confirmButtonText: "Yes",
     });
     if (!continueProgress) {
       return;
@@ -1170,7 +1170,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes"
+      confirmButtonText: "Yes",
     });
     if (!continueProgress) {
       return;
@@ -1186,7 +1186,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   }).then((result) => {});
 
   client.invoke(
@@ -1206,7 +1206,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
           html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error"
+          icon: "error",
         });
 
         // log the error to analytics
@@ -1223,7 +1223,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
             "The subjects.xlsx file has been successfully generated at the specified location.",
           icon: "success",
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
 
         // log the success to Pennsieve
@@ -1265,7 +1265,7 @@ ipcRenderer.on(
           showConfirmButton: true,
           showCancelButton: true,
           cancelButtonText: "No",
-          confirmButtonText: "Yes"
+          confirmButtonText: "Yes",
         }).then((result) => {
           if (result.isConfirmed) {
             Swal.fire({
@@ -1278,7 +1278,7 @@ ipcRenderer.on(
               timerProgressBar: false,
               didOpen: () => {
                 Swal.showLoading();
-              }
+              },
             }).then((result) => {});
             generateSamplesFileHelper(uploadBFBoolean);
           }
@@ -1294,7 +1294,7 @@ ipcRenderer.on(
           timerProgressBar: false,
           didOpen: () => {
             Swal.showLoading();
-          }
+          },
         }).then((result) => {});
         generateSamplesFileHelper(uploadBFBoolean);
       }
@@ -1315,7 +1315,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes"
+      confirmButtonText: "Yes",
     });
     if (!continueProgress) {
       return;
@@ -1332,7 +1332,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
       showConfirmButton: true,
       showCancelButton: true,
       cancelButtonText: "Cancel",
-      confirmButtonText: "Yes"
+      confirmButtonText: "Yes",
     });
     if (!continueProgress) {
       return;
@@ -1348,13 +1348,13 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   }).then((result) => {});
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
     timeout: 300000,
-    heartbeatInterval: 60000
+    heartbeatInterval: 60000,
   });
   clientLongTimeout.connect("tcp://127.0.0.1:4242");
   clientLongTimeout.invoke(
@@ -1374,7 +1374,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
           html: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error"
+          icon: "error",
         });
 
         logMetadataForAnalytics(
@@ -1390,7 +1390,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
             "The samples.xlsx file has been successfully generated at the specified location.",
           icon: "success",
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
 
         logMetadataForAnalytics(
@@ -1483,7 +1483,7 @@ function loadSubjectsFileToDataframe(filePath) {
           html: emessage,
           icon: "error",
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
 
         logMetadataForAnalytics(
@@ -1505,7 +1505,7 @@ function loadSubjectsFileToDataframe(filePath) {
               text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
               icon: "error",
               heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)"
+              backdrop: "rgba(0,0,0, 0.4)",
             });
 
             logMetadataForAnalytics(
@@ -1538,7 +1538,7 @@ function loadSubjectsFileToDataframe(filePath) {
             text: "Please make sure there is at least one subject in the subjects.xlsx file.",
             icon: "error",
             heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)"
+            backdrop: "rgba(0,0,0, 0.4)",
           });
         }
       }
@@ -1569,7 +1569,7 @@ function loadSamplesFileToDataframe(filePath) {
           html: emessage,
           icon: "error",
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
 
         logMetadataForAnalytics(
@@ -1591,7 +1591,7 @@ function loadSamplesFileToDataframe(filePath) {
               text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
               icon: "error",
               heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)"
+              backdrop: "rgba(0,0,0, 0.4)",
             });
 
             logMetadataForAnalytics(
@@ -1626,7 +1626,7 @@ function loadSamplesFileToDataframe(filePath) {
             text: "Please make sure there is at least one sample in the samples.xlsx file.",
             icon: "error",
             heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)"
+            backdrop: "rgba(0,0,0, 0.4)",
           });
         }
       }
@@ -1675,33 +1675,33 @@ const specimenType = [
   "nucleus",
   "nucleic acid",
   "slide",
-  "whole mount"
+  "whole mount",
 ];
 function createSpecimenTypeAutocomplete(id) {
   var autoCompleteJS3 = new autoComplete({
     selector: "#" + id,
     data: {
       cache: true,
-      src: specimenType
+      src: specimenType,
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.value;
       document.querySelector("#" + id).value = selection;
     },
     trigger: {
-      event: ["input", "focus"]
+      event: ["input", "focus"],
       // condition: () => true
     },
     resultItem: {
       destination: "#" + id,
       highlight: {
-        render: true
-      }
+        render: true,
+      },
     },
     resultsList: {
       // id: listID,
-      maxResults: 5
-    }
+      maxResults: 5,
+    },
   });
 }
 
@@ -1721,8 +1721,8 @@ function createSpeciesAutocomplete(id) {
           "Sus scrofa": "pigs, swine, wild boar",
           "Sus scrofa domesticus": "domestic pigs",
           "Homo sapiens": "humans",
-          "Felis catus": "domestic cat"
-        }
+          "Felis catus": "domestic cat",
+        },
       ],
       keys: [
         "Canis lupus familiaris",
@@ -1734,8 +1734,8 @@ function createSpeciesAutocomplete(id) {
         "Homo sapiens",
         "Rattus",
         "Felis catus",
-        "Rattus norvegicus"
-      ]
+        "Rattus norvegicus",
+      ],
     },
     resultItem: {
       element: (item, data) => {
@@ -1750,14 +1750,14 @@ function createSpeciesAutocomplete(id) {
           ${data.key}
         </span>`;
       },
-      highlight: true
+      highlight: true,
     },
     events: {
       input: {
         focus: () => {
           autoCompleteJS2.start();
-        }
-      }
+        },
+      },
     },
     threshold: 0,
     resultsList: {
@@ -1776,8 +1776,8 @@ function createSpeciesAutocomplete(id) {
       },
       noResults: true,
       maxResults: 5,
-      tabSelect: true
-    }
+      tabSelect: true,
+    },
   });
 
   autoCompleteJS2.input.addEventListener("selection", function (event) {
@@ -1801,15 +1801,15 @@ function createStrain(id, type) {
         "C57/B6J",
         "C57 BL/6J",
         "mixed background",
-        "Sprague-Dawley"
-      ]
+        "Sprague-Dawley",
+      ],
     },
     events: {
       input: {
         focus: () => {
           autoCompleteJS4.start();
-        }
-      }
+        },
+      },
     },
     resultItem: {
       element: (item, data) => {
@@ -1821,7 +1821,7 @@ function createStrain(id, type) {
           ${data.match}
         </span>`;
       },
-      highlight: true
+      highlight: true,
     },
     threshold: 0,
     resultsList: {
@@ -1840,8 +1840,8 @@ function createStrain(id, type) {
       },
       noResults: true,
       maxResults: 5,
-      tabSelect: true
-    }
+      tabSelect: true,
+    },
   });
 
   autoCompleteJS4.input.addEventListener("selection", function (event) {
@@ -1866,7 +1866,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   }).then((result) => {});
   await client.invoke(
     "api_load_taxonomy_species",
@@ -1882,7 +1882,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
             text: "Make sure you enter a correct species name.",
             icon: "error",
             heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)"
+            backdrop: "rgba(0,0,0, 0.4)",
           });
           if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
             $("#btn-confirm-species").addClass("confirm-disabled");
@@ -1936,12 +1936,12 @@ function loadAwardData() {
     if (airKeyInput !== "" && airKeyName !== "") {
       Airtable.configure({
         endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput
+        apiKey: airKeyInput,
       });
       var base = Airtable.base("appiYd1Tz9Sv857GZ");
       base("sparc_members")
         .select({
-          view: "All members (ungrouped)"
+          view: "All members (ungrouped)",
         })
         .eachPage(
           function page(records, fetchNextPage) {
@@ -2040,12 +2040,12 @@ function changeAwardInputDsDescription() {
     var airKeyInput = airKeyContent["api-key"];
     Airtable.configure({
       endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput
+      apiKey: airKeyInput,
     });
     var base = Airtable.base("appiYd1Tz9Sv857GZ");
     base("sparc_members")
       .select({
-        filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
+        filterByFormula: `({SPARC_Award_#} = "${awardVal}")`,
       })
       .eachPage(function page(records, fetchNextPage) {
         records.forEach(function (record) {
@@ -2127,15 +2127,15 @@ function loadContributorInfo(lastName, firstName) {
       "Sponsor",
       "Supervisor",
       "WorkPackageLeader",
-      "Other"
+      "Other",
     ],
     enforceWhitelist: true,
     dropdown: {
       classname: "color-blue",
       maxItems: 25,
       enabled: 0,
-      closeOnSelect: true
-    }
+      closeOnSelect: true,
+    },
   });
   var tagifyAffliation = new Tagify(
     document.getElementById("input-con-affiliation"),
@@ -2144,11 +2144,11 @@ function loadContributorInfo(lastName, firstName) {
         classname: "color-blue",
         enabled: 0, // show the dropdown immediately on focus
         maxItems: 25,
-        closeOnSelect: true // keep the dropdown open after selecting a suggestion
+        closeOnSelect: true, // keep the dropdown open after selecting a suggestion
       },
       whitelist: affiliationSuggestions,
       delimiters: null,
-      duplicates: false
+      duplicates: false,
     }
   );
   tagifyRole.removeAllTags();
@@ -2164,12 +2164,12 @@ function loadContributorInfo(lastName, firstName) {
   var airKeyInput = airKeyContent["api-key"];
   var airtableConfig = Airtable.configure({
     endpointUrl: "https://" + airtableHostname,
-    apiKey: airKeyInput
+    apiKey: airKeyInput,
   });
   var base = Airtable.base("appiYd1Tz9Sv857GZ");
   base("sparc_members")
     .select({
-      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`
+      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
     })
     .eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};
@@ -2587,7 +2587,7 @@ function detectEmptyRequiredFields(funding) {
       dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
       conEmptyField.join(", "),
-    "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url"
+    "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
   errorMessage = [];
@@ -3078,7 +3078,7 @@ var cropOptions = {
     }
 
     // formBannerWidth.value = Math.round(data.width)
-  }
+  },
 };
 
 var imageExtension;
@@ -3096,11 +3096,11 @@ const setupPublicationOptionsPopover = () => {
   // initialize the calendar
   const instance = new DatePicker(container, {
     input: {
-      element: target
+      element: target,
     },
     date: new Date(),
     // a user can lift an embargo today or a year from now
-    selectableRanges: [[new Date(), oneYearFromNow]]
+    selectableRanges: [[new Date(), oneYearFromNow]],
   });
 
   // display/hide calendar on toggle
@@ -3121,7 +3121,7 @@ const setupPublicationOptionsPopover = () => {
     setTimeout(() => {
       calendar.scrollIntoView({
         behavior: "smooth",
-        block: "center"
+        block: "center",
       });
     }, 200);
   });
@@ -3140,11 +3140,11 @@ async function submitReviewDatasetCheck(res) {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
   } else if (reviewstatus === "requested") {
     Swal.fire({
@@ -3155,11 +3155,11 @@ async function submitReviewDatasetCheck(res) {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
@@ -3208,10 +3208,10 @@ async function submitReviewDatasetCheck(res) {
               </div>
             `,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
+        popup: "animate__animated animate__zoomOut animate__faster",
       },
       willOpen: () => {
         setupPublicationOptionsPopover();
@@ -3226,7 +3226,7 @@ async function submitReviewDatasetCheck(res) {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
         }
-      }
+      },
     });
 
     // check if the user cancelled
@@ -3248,7 +3248,7 @@ async function submitReviewDatasetCheck(res) {
       timerProgressBar: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
     // submit the dataset for review with the given embargoReleaseDate
     await submitReviewDataset(embargoReleaseDate);
@@ -3299,10 +3299,10 @@ async function submitReviewDatasetCheck(res) {
               </div>
             `,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
+        popup: "animate__animated animate__zoomOut animate__faster",
       },
       willOpen: () => {
         setupPublicationOptionsPopover();
@@ -3317,7 +3317,7 @@ async function submitReviewDatasetCheck(res) {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
         }
-      }
+      },
     });
 
     // check if the user cancelled
@@ -3338,7 +3338,7 @@ async function submitReviewDatasetCheck(res) {
       timerProgressBar: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
 
     // submit the dataset for review with the given embargoReleaseDate
@@ -3390,7 +3390,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
@@ -3424,11 +3424,11 @@ async function submitReviewDataset(embargoReleaseDate) {
         reverseButtons: reverseSwalButtons,
         text: `${emessage}`,
         showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster"
+          popup: "animate__animated animate__zoomIn animate__faster",
         },
         hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster"
-        }
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       });
       // stop publication
       return;
@@ -3463,11 +3463,11 @@ async function submitReviewDataset(embargoReleaseDate) {
       reverseButtons: reverseSwalButtons,
       text: `${emessage}`,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
 
     // stop execution
@@ -3494,11 +3494,11 @@ async function submitReviewDataset(embargoReleaseDate) {
     icon: "success",
     reverseButtons: reverseSwalButtons,
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster"
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster"
-    }
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   });
 
   await transitionFreeFormMode(
@@ -3524,7 +3524,7 @@ function withdrawDatasetSubmission() {
     timerProgressBar: false,
     didOpen: () => {
       Swal.showLoading();
-    }
+    },
   });
 
   // get the publishing status of the currently selected dataset
@@ -3543,11 +3543,11 @@ function withdrawDatasetSubmission() {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Ok",
       showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster"
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster"
-      }
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
     });
 
     // track the error for analysis
@@ -3571,11 +3571,11 @@ async function withdrawDatasetCheck(res) {
       confirmButtonText: "Ok",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
   } else {
     let result = await Swal.fire({
@@ -3589,11 +3589,11 @@ async function withdrawDatasetCheck(res) {
       cancelButtonText: "No",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
 
     if (result.isConfirmed) {
@@ -3608,7 +3608,7 @@ async function withdrawDatasetCheck(res) {
         timerProgressBar: false,
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
       await withdrawReviewDataset();
     }
@@ -3650,11 +3650,11 @@ async function withdrawReviewDataset() {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Ok",
       showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster"
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster"
-      }
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
     });
 
     // reveal the current section (question-3) again using the new publishing status value
@@ -3684,11 +3684,11 @@ async function withdrawReviewDataset() {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Ok",
       showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster"
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster"
-      }
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
     });
 
     // track the error for analysis
@@ -3968,11 +3968,11 @@ function showPublishingStatus(callback) {
               confirmButtonText: "Ok",
               reverseButtons: reverseSwalButtons,
               showClass: {
-                popup: "animate__animated animate__fadeInDown animate__faster"
+                popup: "animate__animated animate__fadeInDown animate__faster",
               },
               hideClass: {
-                popup: "animate__animated animate__fadeOutUp animate__faster"
-              }
+                popup: "animate__animated animate__fadeOutUp animate__faster",
+              },
             });
 
             logGeneralOperationsForAnalytics(
@@ -4045,7 +4045,7 @@ const allowedMedataFiles = [
   "samples.csv",
   "samples.json",
   "README.txt",
-  "CHANGES.txt"
+  "CHANGES.txt",
 ];
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4063,7 +4063,7 @@ var highLevelFolders = [
   "docs",
   "source",
   "primary",
-  "protocol"
+  "protocol",
 ];
 var highLevelFolderToolTip = {
   code: "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
@@ -4075,7 +4075,7 @@ var highLevelFolderToolTip = {
   primary:
     "<b>primary</b>: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
   protocol:
-    "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>."
+    "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
 listItems(datasetStructureJSONObj, "#items", 500);
@@ -4137,10 +4137,10 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       confirmButtonText: "Add folder",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster"
+        popup: "animate__animated animate__fadeInDown animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster"
+        popup: "animate__animated animate__fadeOutUp animate__faster",
       },
       didOpen: () => {
         $(".swal2-input").attr("id", "add-new-folder-input");
@@ -4162,7 +4162,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       didDestroy: () => {
         $(".swal2-confirm").attr("id", "");
         $(".swal2-input").attr("id", "");
-      }
+      },
     }).then((result) => {
       if (result.value) {
         if (result.value !== null && result.value !== "") {
@@ -4182,7 +4182,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               text: "Duplicate folder name: " + newFolderName,
               confirmButtonText: "OK",
               heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)"
+              backdrop: "rgba(0,0,0, 0.4)",
             });
 
             logCurationForAnalytics(
@@ -4215,7 +4215,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               folders: {},
               files: {},
               type: "virtual",
-              action: ["new"]
+              action: ["new"],
             };
 
             listItems(myPath, "#items", 500, (reset = true));
@@ -4254,11 +4254,11 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
   }
 });
@@ -4284,7 +4284,7 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
             folders: {},
             files: {},
             path: addedElement,
-            action: ["new", "renamed"]
+            action: ["new", "renamed"],
           };
           element = renamedFolderName;
         }
@@ -4294,7 +4294,7 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
           folders: {},
           files: {},
           path: addedElement,
-          action: ["new"]
+          action: ["new"],
         };
       }
       populateJSONObjFolder(
@@ -4308,7 +4308,7 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
         description: "",
         "additional-metadata": "",
         type: "local",
-        action: ["new"]
+        action: ["new"],
       };
     }
   });
@@ -4566,11 +4566,11 @@ function generateDataset(button) {
       backdrop: "rgba(0,0,0, 0.4)",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate_fastest"
-      }
+        popup: "animate__animated animate__zoomOut animate_fastest",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         newDSName = result.value.trim();
@@ -4653,11 +4653,11 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster"
-      }
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
   }
   if (path.length > 0) {
@@ -4746,7 +4746,7 @@ ipcRenderer.on(
         didOpen: () => {
           $(".swal-popover").popover();
         },
-        footer: footer
+        footer: footer,
       }).then(async (result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
@@ -4929,7 +4929,7 @@ async function addFoldersfunction(
       icon: "error",
       text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)"
+      backdrop: "rgba(0,0,0, 0.4)",
     });
 
     // log the error
@@ -4960,7 +4960,7 @@ async function addFoldersfunction(
         } else {
           importedFolders[originalFolderName] = {
             path: folderArray[i],
-            "original-basename": originalFolderName
+            "original-basename": originalFolderName,
           };
         }
       }
@@ -4974,7 +4974,7 @@ async function addFoldersfunction(
           }
           importedFolders[renamedFolderName] = {
             path: folderArray[i],
-            "original-basename": originalFolderName
+            "original-basename": originalFolderName,
           };
         }
       } else {
@@ -4990,10 +4990,10 @@ async function addFoldersfunction(
             customClass: "wide-swal-auto",
             backdrop: "rgba(0, 0, 0, 0.4)",
             showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster"
+              popup: "animate__animated animate__zoomIn animate__faster",
             },
             hideClass: {
-              popup: "animate_animated animate_zoomout animate__faster"
+              popup: "animate_animated animate_zoomout animate__faster",
             },
             html:
               `
@@ -5007,7 +5007,7 @@ async function addFoldersfunction(
               <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Folders</button>
               <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
               <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-              </div>`
+              </div>`,
           });
         }
       }
@@ -5020,7 +5020,7 @@ async function addFoldersfunction(
           path: importedFolders[element]["path"],
           folders: {},
           files: {},
-          action: ["new"]
+          action: ["new"],
         };
         populateJSONObjFolder(
           action,
@@ -5125,7 +5125,7 @@ async function drop(ev) {
       footer: footer,
       didOpen: () => {
         $(".swal-popover").popover();
-      }
+      },
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
@@ -5306,7 +5306,7 @@ function dropHelper(
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
         break;
       } else {
@@ -5316,7 +5316,7 @@ function dropHelper(
         ) {
           importedFiles[path.parse(itemPath).base] = {
             path: itemPath,
-            basename: path.parse(itemPath).base
+            basename: path.parse(itemPath).base,
           };
         } else {
           //check if fileName is in to-be-imported object keys
@@ -5334,7 +5334,7 @@ function dropHelper(
               if (Object.keys(myPath["files"]).length === 0) {
                 importedFiles[originalFileName] = {
                   path: itemPath,
-                  basename: originalFileName
+                  basename: originalFileName,
                 };
               }
               for (let objectKey in myPath["files"]) {
@@ -5349,7 +5349,7 @@ function dropHelper(
                     //in neither so write
                     importedFiles[originalFileName] = {
                       path: itemPath,
-                      basename: originalFileName
+                      basename: originalFileName,
                     };
                   }
                 }
@@ -5366,7 +5366,7 @@ function dropHelper(
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
       } else {
         var j = 1;
@@ -5382,7 +5382,7 @@ function dropHelper(
             }
             importedFolders[renamedFolderName] = {
               path: itemPath,
-              "original-basename": originalFolderName
+              "original-basename": originalFolderName,
             };
           }
         } else {
@@ -5401,7 +5401,7 @@ function dropHelper(
               //folder is in neither so write
               importedFolders[originalFolderName] = {
                 path: itemPath,
-                "original-basename": originalFolderName
+                "original-basename": originalFolderName,
               };
             }
           }
@@ -5421,10 +5421,10 @@ function dropHelper(
       customClass: "wide-swal-auto",
       backdrop: "rgba(0, 0, 0, 0.4)",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster"
+        popup: "animate_animated animate_zoomout animate__faster",
       },
       html:
         `
@@ -5438,7 +5438,7 @@ function dropHelper(
         <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Folders</button>
         <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
         <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-        </div>`
+        </div>`,
     });
   }
   let baseName = [];
@@ -5466,10 +5466,10 @@ function dropHelper(
       customClass: "wide-swal-auto",
       backdrop: "rgba(0, 0, 0, 0.4)",
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster"
+        popup: "animate_animated animate_zoomout animate__faster",
       },
       html:
         `
@@ -5483,7 +5483,7 @@ function dropHelper(
         <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}')">Replace Existing Files</button>
         <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}')">Import Duplicates</button>
         <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel')">Cancel</button>
-        </div>`
+        </div>`,
     });
   }
   // // now append to UI files and folders
@@ -5494,7 +5494,7 @@ function dropHelper(
         type: "local",
         description: "",
         "additional-metadata": "",
-        action: ["new"]
+        action: ["new"],
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(
@@ -5539,7 +5539,7 @@ function dropHelper(
         path: importedFolders[element]["path"],
         folders: {},
         files: {},
-        action: ["new"]
+        action: ["new"],
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(myPath["folders"][element]["path"]).name;
@@ -5644,7 +5644,7 @@ function removeIrregularFolders(pathElement) {
 ipcRenderer.on("save-file-organization-dialog", (event) => {
   const options = {
     title: "Save File Organization",
-    filters: [{ name: "JSON", extensions: ["json"] }]
+    filters: [{ name: "JSON", extensions: ["json"] }],
   };
   dialog.showSaveDialog(null, options, (filename) => {
     event.sender.send("selected-saveorganizationfile", filename);
@@ -5882,7 +5882,7 @@ $(document).ready(function () {
     allowHTML: true,
     interactive: true,
     placement: "top",
-    theme: "light"
+    theme: "light",
   });
 });
 
@@ -6027,7 +6027,7 @@ function sortObjByKeys(object) {
   const orderedObject = {
     folders: orderedFolders,
     files: orderedFiles,
-    type: ""
+    type: "",
   };
   return orderedObject;
 }
@@ -6171,7 +6171,7 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
             "xls",
             "csv",
             "png",
-            "PNG"
+            "PNG",
           ].includes(extension)
         ) {
           extension = "other";
@@ -6306,7 +6306,7 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
   dragselect_area = new DragSelect({
     selectables: document.querySelectorAll(".single-item"),
     draggability: false,
-    area: document.getElementById("items")
+    area: document.getElementById("items"),
   });
 
   dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
@@ -6426,11 +6426,11 @@ function addDetailsForFile(ev) {
       confirmButtonText: "Yes",
       reverseButtons: reverseSwalButtons,
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster"
+        popup: "animate__animated animate__zoomIn animate__faster",
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate_fastest"
-      }
+        popup: "animate__animated animate__zoomOut animate_fastest",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         updateFileDetails(ev);
@@ -6551,7 +6551,7 @@ ipcRenderer.on(
                 didOpen: () => {
                   $(".swal-popover").popover();
                 },
-                footer: footer
+                footer: footer,
               }).then((result) => {
                 // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
@@ -6803,11 +6803,11 @@ ipcRenderer.on(
               cancelButtonText: "Okay",
               reverseButtons: reverseSwalButtons,
               showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster"
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster"
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then((result) => {
               if (result.isConfirmed) {
               } else {
@@ -7059,11 +7059,11 @@ document
               reverseButtons: reverseSwalButtons,
               heightAuto: false,
               showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster"
+                popup: "animate__animated animate__zoomIn animate__faster",
               },
               hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster"
-              }
+                popup: "animate__animated animate__zoomOut animate__faster",
+              },
             }).then((result) => {
               if (result.isConfirmed) {
                 initiate_generate();
@@ -7116,11 +7116,11 @@ var uploadComplete = new Notyf({
       icon: {
         className: "fas fa-check-circle",
         tagName: "i",
-        color: "white"
+        color: "white",
       },
-      duration: 4000
-    }
-  ]
+      duration: 4000,
+    },
+  ],
 });
 
 //const remote = require("electron").remote;
@@ -7240,7 +7240,7 @@ async function initiate_generate() {
       Swal.fire({
         icon: "error",
         title: "An error occurred",
-        html: "Please return to progress page to see full error"
+        html: "Please return to progress page to see full error",
       }).then((result) => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
@@ -7353,7 +7353,7 @@ async function initiate_generate() {
         Swal.fire({
           icon: "error",
           title: "An error occurred",
-          html: "An error occurred"
+          html: "An error occurred",
         }).then((result) => {
           //statusBarClone.remove();
           if (result.isConfirmed) {
@@ -7475,7 +7475,7 @@ async function initiate_generate() {
           uploadLocally.style = "background-color: #fff";
           uploadComplete.open({
             type: "success",
-            message: "Dataset created successfully"
+            message: "Dataset created successfully",
           });
         }
         // then show the sidebar again
@@ -7579,16 +7579,16 @@ const show_curation_shortcut = () => {
     showCancelButton: true,
     text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster"
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster"
-    }
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   }).then((result) => {
     //dismissStatus("status-bar-curate-progress");
     uploadComplete.open({
       type: "success",
-      message: "Upload to Pennsieve completed"
+      message: "Upload to Pennsieve completed",
     });
     let statusBarContainer = document.getElementById(
       "status-bar-curate-progress"
@@ -7626,13 +7626,13 @@ function determineDatasetDestination() {
         if (sodaJSONObj["bf-dataset-selected"]) {
           return [
             sodaJSONObj["bf-dataset-selected"]["dataset-name"],
-            "Pennsieve"
+            "Pennsieve",
           ];
         } else {
           return [
             // get dataset name,
             document.querySelector("#inputNewNameDataset").value,
-            "Pennsieve"
+            "Pennsieve",
           ];
         }
       } else {
@@ -7643,7 +7643,7 @@ function determineDatasetDestination() {
           // creating a new dataset from an existing local dataset
           return [
             document.querySelector("#inputNewNameDataset").value,
-            "Local"
+            "Local",
           ];
         }
       }
@@ -7783,28 +7783,27 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   progress_container.style.display = "block";
   left_progress_bar.style.transform = `rotate(0deg)`;
   right_progress_bar.style.transform = `rotate(0deg)`;
-  let pennsieve_progress = setInterval(progressReport, 500)
+  let pennsieve_progress = setInterval(progressReport, 500);
   function progressReport() {
-    client.invoke(
-      "api_monitor_pennsieve_json_progress", (error, res) => {
-        if(error) {
-          console.log(error)
+    client.invoke("api_monitor_pennsieve_json_progress", (error, res) => {
+      if (error) {
+        console.log(error);
+      } else {
+        let percentage_amount = res[2].toFixed(2);
+        finished = res[3];
+        percentage_text.innerText = percentage_amount + "%";
+        if (percentage_amount <= 50) {
+          left_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 360
+          }deg)`;
         } else {
-          let percentage_amount = res[2].toFixed(2);
-          finished = res[3]
-          percentage_text.innerText = percentage_amount + "%";
-          if (percentage_amount <= 50) {
-            left_progress_bar.style.transform = `rotate(${
-              percentage_amount * 0.01 * 360
-            }deg)`;
-          } else {
-            left_progress_bar.style.transition = "";
-            left_progress_bar.classList.add("notransition");
-            left_progress_bar.style.transform = `rotate(180deg)`;
-            right_progress_bar.style.transform = `rotate(${
-              percentage_amount * 0.01 * 180
-            }deg)`;
-          }
+          left_progress_bar.style.transition = "";
+          left_progress_bar.classList.add("notransition");
+          left_progress_bar.style.transform = `rotate(180deg)`;
+          right_progress_bar.style.transform = `rotate(${
+            percentage_amount * 0.01 * 180
+          }deg)`;
+        }
 
           console.log(percentage_amount + "%");
           if(finished === 1){
@@ -7815,10 +7814,10 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
             setTimeout(() => {
               progress_container.style.display = "none";
             }, 2000);
-          }
         }
+        
       }
-    )
+    });
   }
 
   return new Promise((resolve, reject) => {
@@ -7853,8 +7852,7 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
             defaultBfDatasetId
           );
         }
-      }
-    );
+    });
   });
 };
 
@@ -7896,7 +7894,7 @@ const curation_consortium_check = (mode = "") => {
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
         Swal.fire({
           title: "Failed to share with the SPARC Consortium!",
@@ -7904,7 +7902,7 @@ const curation_consortium_check = (mode = "") => {
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)"
+          backdrop: "rgba(0,0,0, 0.4)",
         });
 
         if (mode != "update") {
@@ -8193,11 +8191,11 @@ function showBFAddAccountSweetalert() {
       });
     },
     showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster"
+      popup: "animate__animated animate__fadeInDown animate__faster",
     },
     hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster"
-    }
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       addBFAccountInsideSweetalert(bootb);
@@ -8220,7 +8218,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
           icon: "error",
           html: "<span>" + error + "</span>",
           heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)"
+          backdrop: "rgba(0,0,0,0.4)",
         }).then((result) => {
           if (result.isConfirmed) {
             showBFAddAccountSweetalert();
@@ -8245,7 +8243,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               footer:
-                '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>'
+                '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
             });
             showHideDropdownButtons("account", "hide");
             confirm_click_account_function();
@@ -8275,7 +8273,7 @@ function addBFAccountInsideSweetalert(myBootboxDialog) {
           allowEscapeKey: false,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: false
+          showConfirmButton: false,
         });
       }
     }
@@ -8382,7 +8380,7 @@ async function logMetadataSizeForAnalytics(
     samples: MetadataAnalyticsPrefix.SAMPLES,
     readme: MetadataAnalyticsPrefix.README,
     changes: MetadataAnalyticsPrefix.CHANGES,
-    manifest: MetadataAnalyticsPrefix.MANIFEST
+    manifest: MetadataAnalyticsPrefix.MANIFEST,
   };
 
   // remove the extension from the metadata file's name
@@ -8439,7 +8437,7 @@ const MetadataAnalyticsPrefix = {
   SAMPLES: "Prepare Metadata - samples",
   README: "Prepare Metadata - readme",
   CHANGES: "Prepare Metadata - changes",
-  SUBMISSION: "Prepare Metadata - submission"
+  SUBMISSION: "Prepare Metadata - submission",
 };
 
 const ManageDatasetsAnalyticsPrefix = {
@@ -8456,18 +8454,18 @@ const ManageDatasetsAnalyticsPrefix = {
   MANAGE_DATASETS_ASSIGN_LICENSE: "Manage Datasets - Assign a License",
   MANAGE_DATASETS_UPLOAD_LOCAL_DATASET:
     "Manage Datasets - Upload Local Dataset",
-  MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status"
+  MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
 };
 
 const DisseminateDatasetsAnalyticsPrefix = {
   DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
   DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
   DISSEMINATE_SPARC_CONSORTIUM:
-    "Disseminate Datasets - Share with SPARC Consortium"
+    "Disseminate Datasets - Share with SPARC Consortium",
 };
 
 const PrepareDatasetsAnalyticsPrefix = {
-  CURATE: "Prepare Datasets - Organize dataset"
+  CURATE: "Prepare Datasets - Organize dataset",
 };
 
 const AnalyticsGranularity = {
@@ -8475,20 +8473,20 @@ const AnalyticsGranularity = {
   ACTION: "action",
   ACTION_WITH_DESTINATION: "action with destination",
   ACTION_AND_ACTION_WITH_DESTINATION: "action and action with destination",
-  ALL_LEVELS: "all levels of granularity"
+  ALL_LEVELS: "all levels of granularity",
 };
 
 const Destinations = {
   LOCAL: "Local",
   PENNSIEVE: "Pennsieve",
   SAVED: "Saved",
-  NEW: "New"
+  NEW: "New",
 };
 
 const Actions = {
   GENERATE: "Generate",
   EXISTING: "Existing",
-  NEW: "New"
+  NEW: "New",
 };
 
 function logCurationForAnalytics(
@@ -8730,7 +8728,7 @@ const authenticate_with_cognito = async (
 
   var authParams = {
     Username: `${usernameOrApiKey}`,
-    Password: `${passwordOrSecret}`
+    Password: `${passwordOrSecret}`,
   };
 
   var authenticationDetails = new cognitoClient.AuthenticationDetails(
@@ -8739,14 +8737,14 @@ const authenticate_with_cognito = async (
 
   var poolData = {
     UserPoolId: cognito_pool_id,
-    ClientId: cognito_app_client_id // Your client id here
+    ClientId: cognito_app_client_id, // Your client id here
   };
 
   var userPool = new cognitoClient.CognitoUserPool(poolData);
 
   var userData = {
     Username: `${usernameOrApiKey}`,
-    Pool: userPool
+    Pool: userPool,
   };
 
   var cognitoUser = new cognitoClient.CognitoUser(userData);
@@ -8757,7 +8755,7 @@ const authenticate_with_cognito = async (
   return new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: resolve,
-      onFailure: reject
+      onFailure: reject,
     });
   });
 };
@@ -8836,8 +8834,8 @@ const get_dataset_by_name_id = async (dataset_id_or_Name, jwt = undefined) => {
     datasets_response = await fetch("https://api.pennsieve.io/datasets", {
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${jwt}`
-      }
+        Authorization: `Bearer ${jwt}`,
+      },
     });
   } catch (e) {
     // network error
@@ -8945,9 +8943,9 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
     headers: {
       Accept: "*/*",
       Authorization: `Bearer ${jwt}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tags: tags })
+    body: JSON.stringify({ tags: tags }),
   };
 
   // update the the user's tags
@@ -9006,8 +9004,8 @@ const getDatasetReadme = async (datasetIdOrName) => {
       headers: {
         Accept: "*/*",
         Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     }
   );
 
@@ -9077,9 +9075,9 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`
+      Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ readme: updatedReadme.trim() })
+    body: JSON.stringify({ readme: updatedReadme.trim() }),
   };
 
   let readmeResponse = await fetch(
@@ -9241,8 +9239,8 @@ const submitDatasetForPublication = async (
     headers: {
       Accept: "*/*",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`
-    }
+      Authorization: `Bearer ${jwt}`,
+    },
   };
 
   // construct the appropriate query string
@@ -9328,8 +9326,8 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     headers: {
       Accept: "*/*",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`
-    }
+      Authorization: `Bearer ${jwt}`,
+    },
   };
 
   // construct the appropriate query string
@@ -9437,8 +9435,8 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
       headers: {
         Accept: "*/*",
         Authorization: `Bearer ${jwt}`,
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     }
   );
   console.log(bannerResponse);
@@ -9591,7 +9589,7 @@ const getUserInformation = async () => {
 
   // get the user information
   let userResponse = await fetch("https://api.pennsieve.io/user/", {
-    headers: { Authorization: `Bearer ${jwt}` }
+    headers: { Authorization: `Bearer ${jwt}` },
   });
 
   let statusCode = userResponse.status;
@@ -9645,9 +9643,9 @@ const integrateORCIDWithPennsieve = async (accessCode) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`
+        Authorization: `Bearer ${jwt}`,
       },
-      body: JSON.stringify({ authorizationCode: accessCode })
+      body: JSON.stringify({ authorizationCode: accessCode }),
     }
   );
 
@@ -9704,7 +9702,7 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
   let excludedFilesResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/ignore-files`,
     {
-      headers: { Authorization: `Bearer ${jwt}` }
+      headers: { Authorization: `Bearer ${jwt}` },
     }
   );
   console.log(excludedFilesResponse);
@@ -9764,9 +9762,9 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     headers: {
       Accept: "*/*",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`
+      Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify(files)
+    body: JSON.stringify(files),
   };
 
   // create the request
@@ -9827,7 +9825,7 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
   let datasetWithChildrenResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}`,
     {
-      headers: { Authorization: `Bearer ${jwt}` }
+      headers: { Authorization: `Bearer ${jwt}` },
     }
   );
   console.log(datasetWithChildrenResponse);
@@ -9999,7 +9997,7 @@ const create_validation_report = (error_report) => {
 $("#validate_dataset_bttn").on("click", async () => {
   const axiosInstance = axios.create({
     baseURL: "http://127.0.0.1:5000/",
-    timeout: 0
+    timeout: 0,
   });
 
   log.info("validating dataset");
@@ -10015,11 +10013,11 @@ $("#validate_dataset_bttn").on("click", async () => {
 
   temp_object = {
     "bf-account-selected": {
-      "account-name": selectedBfAccount
+      "account-name": selectedBfAccount,
     },
     "bf-dataset-selected": {
-      "dataset-name": selectedBfDataset
-    }
+      "dataset-name": selectedBfDataset,
+    },
   };
 
   let datasetResponse;
@@ -10027,10 +10025,10 @@ $("#validate_dataset_bttn").on("click", async () => {
   try {
     datasetResponse = await axiosInstance("api_ps_retrieve_dataset", {
       params: {
-        obj: JSON.stringify(temp_object)
+        obj: JSON.stringify(temp_object),
       },
       responseType: "json",
-      method: "get"
+      method: "get",
     });
   } catch (err) {
     log.error(error);
@@ -10049,10 +10047,10 @@ $("#validate_dataset_bttn").on("click", async () => {
     datasetResponse = axiosInstance("api_validate_dataset_pipeline", {
       params: {
         selectedBfAccount,
-        selectedBfDataset
+        selectedBfDataset,
       },
       responseType: "json",
-      method: "get"
+      method: "get",
     });
   } catch (error) {
     log.error(error);
