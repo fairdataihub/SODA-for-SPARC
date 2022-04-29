@@ -83,10 +83,18 @@ const createPyProc = () => {
 };
 
 const exitPyProc = () => {
+  log.info("exitPyProc called; termination not suddenly happening");
   pyProc.kill();
   pyProc = null;
   pyPort = null;
 };
+
+pyProc.on("exit", (code, signal) => {
+  console.log("child process exited with " + code);
+  log.info("child process exited with " + code);
+  pyProc = null;
+  pyPort = null;
+});
 
 app.on("ready", createPyProc);
 app.on("will-quit", exitPyProc);
