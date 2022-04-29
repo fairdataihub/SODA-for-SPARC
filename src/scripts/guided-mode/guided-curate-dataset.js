@@ -300,6 +300,48 @@ const guidedResetProgressVariables = () => {
   samplesTableData = [];
 };
 
+const guidedPrepareHomeScreen = async () => {
+  //Wipe out existing progress if it exists
+  guidedResetProgressVariables();
+  //Check if Guided-Progress folder exists. If not, create it.
+  if (!fs.existsSync(guidedProgressFilePath)) {
+    fs.mkdirSync(guidedProgressFilePath);
+  }
+  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+
+  //Refresh Home page UI
+
+  $("#guided-button-start-new-curate").css("display", "flex");
+  document.getElementById("guided-new-dataset-info").classList.add("hidden");
+  document.getElementById("guided-dataset-name-input").value = "";
+  document.getElementById("guided-dataset-subtitle-input").value = "";
+  $("#continue-curating-existing").css("display", "flex");
+
+  //render progress resumption cards from progress file array on first page of guided mode
+  if (guidedSavedProgressFiles.length != 0) {
+    $("#guided-continue-curation-header").text(
+      "Or continue curating a previously started dataset below."
+    );
+    const progressFileData = await getAllProgressFileData(
+      guidedSavedProgressFiles
+    );
+    renderProgressCards(progressFileData);
+  } else {
+    $("#guided-continue-curation-header").text(
+      "After creating your dataset, your progress will be saved and be resumable below."
+    );
+  }
+  //empty new-dataset-lottie-container div
+  document.getElementById("new-dataset-lottie-container").innerHTML = "";
+  lottie.loadAnimation({
+    container: document.querySelector("#new-dataset-lottie-container"),
+    animationData: newDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+};
+
 const traverseToTab = (targetPageID) => {
   try {
     //refresh selectPickers if page has them
@@ -1195,21 +1237,21 @@ const addProtocolField = () => {
     >
     </i>
     <h2 class="guided--text-sub-step">Enter protocol details</h2>
-    <label class="guided--form-label mt-md">Protocol title: </label>
+    <label class="guided--form-label mt-xl">Protocol title: </label>
     <input
       class="guided--input guided-first-name-input"
       type="text"
       placeholder="Enter protocol title here"
       onkeyup="validateInput($(this))"
     />
-    <label class="guided--form-label mt-md">Protocol URL: </label>
+    <label class="guided--form-label mt-xl">Protocol URL: </label>
     <input
       class="guided--input guided-first-name-input"
       type="text"
       placeholder="Enter protocol URL here"
       onkeyup="validateInput($(this))"
     />
-    <label class="guided--form-label mt-md"
+    <label class="guided--form-label mt-xl"
       >Protocol description:</label
     >
     <textarea
@@ -4507,12 +4549,17 @@ $(document).ready(() => {
     unHideAndSmoothScrollToElement("guided-div-contributor-field-set");
   };
 
-  $("#guided-button-save-checked-contributors").on("click", async () => {
+  $("#guided-button-save-checked-contributors").on("click", async function () {
+    //disable button and set to loading while querying contributor data from AirTable
+    $(this).prop("disabled", true);
+    $(this).addClass("loading");
     const checkedContributors = getCheckedContributors();
     console.log(checkedContributors);
     //if checkedMilestoneData is empty, create notyf
     if (checkedContributors.length === 0) {
       notyf.error("Please select at least one contributor");
+      $(this).prop("disabled", false);
+      $(this).removeClass("loading");
       return;
     }
 
@@ -4559,6 +4606,8 @@ $(document).ready(() => {
     document.getElementById(
       "guided-button-edit-checked-contributors"
     ).style.display = "flex";
+    $(this).prop("disabled", false);
+    $(this).removeClass("loading");
   });
 
   $("#guided-button-edit-checked-contributors").on("click", () => {

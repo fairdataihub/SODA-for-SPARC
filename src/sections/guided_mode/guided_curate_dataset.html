@@ -1645,82 +1645,50 @@
               class="guided--panel hidden"
               id="guided-div-submission-accordion"
             >
-              <h2 class="guided--text-sub-step">
-                Review your submission file below
-              </h2>
-              <div class="ui styled fluid accordion guided--accordion">
-                <div class="title active">
-                  <i class="dropdown icon active"></i>Award and milestone
-                  information
-                </div>
-                <div class="content active">
-                  <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >SPARC Award number
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="SPARC award associated with the dataset."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i
-                      ></label>
-                      <div class="ui input modified">
-                        <input
-                          class="guided-award-and-milestone-information"
-                          type="text"
-                          id="guided-submission-sparc-award"
-                          placeholder="Type here..."
-                        />
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Enter the milestone(s):
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
-                                  <br/><br/>
-                                  Hit 'Enter' to register it."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </label>
-                      <input
-                        class="guided-award-and-milestone-information"
-                        id="guided-tagify-submission-milestone-tags"
-                        name="milestone-tags"
-                        value=""
-                        autofocus
-                      />
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Completion date:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Enter the completion date for your milestone(s) specified above."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </label>
-                      <div class="ui input modified">
-                        <input
-                          class="guided-award-and-milestone-information"
-                          type="text"
-                          id="guided-submission-completion-date"
-                          placeholder="Type here..."
-                        />
-                      </div>
-                    </div>
+              <div class="guided--section neumorphic mt-xl">
+                <h2 class="guided--text-sub-step mt-0">
+                  Award and milestone information
+                </h2>
+                <label class="guided--form-label mt-xl"
+                  >SPARC award number:</label
+                >
+                <input
+                  class="guided--input"
+                  id="guided-submission-sparc-award"
+                  type="text"
+                  placeholder="Enter SPARC award here"
+                  onkeyup="validateInput($(this))"
+                />
+                <p class="guided--text-input-instructions mb-0">
+                  SPARC award associated with the dataset.
+                </p>
+                <label class="guided--form-label mt-xl">Milestone(s):</label>
+                <div class="demo-controls-body" style="width: 100%">
+                  <div class="ui input modified">
+                    <input
+                      class="guided-award-and-milestone-information"
+                      id="guided-tagify-submission-milestone-tags"
+                      name="milestone-tags"
+                      value=""
+                    />
                   </div>
                 </div>
+                <p class="guided--text-input-instructions mb-0">
+                  The major organ systems related to this study, for example,
+                  spinal cord.<br />
+                  <b
+                    >Hit enter after inserting an organ system to save your
+                    input.</b
+                  >
+                </p>
+                <label class="guided--form-label mt-xl">Completion date:</label>
+                <input
+                  class="guided--input"
+                  id="guided-submission-completion-date"
+                  type="text"
+                  placeholder="Enter the completion date for your milestone(s) specified above."
+                  onkeyup="validateInput($(this))"
+                />
               </div>
             </div>
           </div>
@@ -1894,7 +1862,7 @@
             </div>
             <div class="guided--section neumorphic mt-xl">
               <h2 class="guided--text-sub-step mt-0">Dataset information</h2>
-              <label class="guided--form-label mt-md">Dataset type:</label>
+              <label class="guided--form-label mt-xl">Dataset type:</label>
               <div class="ui form">
                 <div class="grouped fields">
                   <div class="field">
@@ -1917,25 +1885,25 @@
                       <label>Computational</label>
                     </div>
                   </div>
-                  <p class="guided--text-input-instructions">
-                    Experimental vs computational helper text
-                  </p>
                 </div>
               </div>
+              <p class="guided--text-input-instructions">
+                Experimental vs computational helper text
+              </p>
             </div>
             <div class="guided--section neumorphic mt-xl">
               <h2 class="guided--text-sub-step mt-0">Study information</h2>
-              <label class="guided--form-label mt-md"
+              <label class="guided--form-label mt-xl required"
                 >Study organ system:</label
               >
               <div class="demo-controls-body" style="width: 100%">
                 <div class="ui input modified">
                   <input
-                    class="form-container-input-bf"
                     type="text"
+                    class="form-container-input-bf"
                     id="guided-ds-study-organ-system"
-                    name="study organ system"
-                    placeholder="Enter study organ system(s) here"
+                    name="organ system"
+                    placeholder="Click here and select an organ system from the dropdown"
                     style="font-size: 14px"
                   />
                 </div>
@@ -1944,11 +1912,11 @@
                 The major organ systems related to this study, for example,
                 spinal cord.<br />
                 <b
-                  >Hit enter after inserting an organ system to save your
-                  input.</b
+                  >Click on the organ system input and select an organ to add an
+                  organ system.</b
                 >
               </p>
-              <label class="guided--form-label mt-md">Study approach:</label>
+              <label class="guided--form-label mt-xl">Study approach:</label>
               <div class="demo-controls-body" style="width: 100%">
                 <div class="ui input modified">
                   <input
@@ -1965,11 +1933,11 @@
                 The experimental approach or approaches taken in this study, for
                 example, electrophysiology.<br />
                 <b
-                  >Hit enter after inserting a study approaches to save your
-                  input.</b
+                  >Hit enter after inserting a study approach to add a study
+                  approach.</b
                 >
               </p>
-              <label class="guided--form-label mt-md">Study technique:</label>
+              <label class="guided--form-label mt-xl">Study technique:</label>
               <div class="demo-controls-body" style="width: 100%">
                 <div class="ui input modified">
                   <input
@@ -1986,8 +1954,8 @@
                 The experimental techniques used in this study, for example,
                 patch clamp. <br />
                 <b
-                  >Hit enter after inserting a study technique to save your
-                  input.</b
+                  >Hit enter after inserting a study technique to add a study
+                  technique.</b
                 >
               </p>
             </div>
@@ -1995,7 +1963,7 @@
               <h2 class="guided--text-sub-step mt-0">
                 Additional information:
               </h2>
-              <label class="guided--form-label mt-md"
+              <label class="guided--form-label mt-xl"
                 >Study collection title:</label
               >
               <input
@@ -2008,7 +1976,7 @@
                 Title of the larger collection of which this dataset belongs.<br />
                 <b>Example:</b> My SPARC research study
               </p>
-              <label class="guided--form-label mt-md"
+              <label class="guided--form-label mt-xl"
                 >Other funcing source(s)</label
               >
               <div class="demo-controls-body" style="width: 100%">
@@ -2023,11 +1991,11 @@
               <p class="guided--text-input-instructions mb-0">
                 Other funding sources, if any.<br />
                 <b
-                  >Hit enter after inserting a funding source to save your
-                  input.</b
+                  >Hit enter after inserting a funding source to add a funding
+                  source.</b
                 >
               </p>
-              <label class="guided--form-label mt-md">Acknowledgements:</label>
+              <label class="guided--form-label mt-xl">Acknowledgements:</label>
               <textarea
                 class="guided--input guided--text-area"
                 type="text"
@@ -2039,565 +2007,6 @@
                 Acknowledgements beyond funding and contributors, if any.<br />
                 <b>Leave empty if blank.</b>
               </p>
-            </div>
-            <div class="guided--section" style="opacity: 0.7">
-              <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
-                Fill out the description information below:
-              </h1>
-              <div class="ui styled fluid accordion guided--accordion">
-                <div class="title active">
-                  <i class="dropdown icon active"></i>Dataset Information
-                  (Mandatory)
-                </div>
-                <div class="content active">
-                  <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Dataset type:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="The type of this dataset, specifically whether it is experimental or computation. The only valid values are experimental or computational. <br><br> If experimental subjects are required, if computational, subjects are not required. Set to experimental by default, if you are submitting a computational study be sure to change it."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <select
-                            id="guided-ds-type"
-                            class="ui selection dropdown"
-                            placeholder="Type here"
-                          >
-                            <option value="experimental">Experiment</option>
-                            <option value="computational">Computational</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="title">
-                  <i class="dropdown icon active"></i>Participant Information
-                  (Mandatory)
-                </div>
-                <div class="content">
-                  <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Number of subjects in your dataset:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Enter the number of unique subjects in this dataset. Should match with the number of rows in the
-                            subjects metadata file. Set to 0 if there are no subjects."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <input id="guided-ds-subjects-no" type="number" />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Number of samples in your dataset:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Enter the number of unique samples in this dataset. Should match the number of rows in the
-                            samples metadata file. Set to 0 if there are no samples."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <input id="guided-ds-samples-no" type="number" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="title">
-                  <i class="dropdown icon active"></i>Study Information
-                  (Mandatory)
-                </div>
-                <div class="content">
-                  <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Study organ system:<i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="The major organ systems related to this study. <br><br> For example: spinal cord."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i
-                      ></label>
-                    </div>
-
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Study approach:<i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="The experimental approach or approaches taken in this study. <br><br> For example: electrophysiology."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <input
-                            type="text"
-                            class="form-container-input-bf"
-                            id="guided-ds-study-approach"
-                            name="study approach"
-                            placeholder="Type here..."
-                            style="font-size: 14px"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Study technique:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="The experimental techniques used in this study. <br><br> For example: patch clamp."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field">
-                        Study purpose:<i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="A description of the study purpose for the structured abstract. <br><br> For example: This study was conducted to demonstrate data wranglers how to fill out dataset templates."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <textarea
-                            type="text"
-                            id="guided-ds-study-purpose"
-                            placeholder="Type here..."
-                            rows="6"
-                            style="font-size: 14px; width: 100%"
-                          ></textarea>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field">
-                        Study data collection:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="A description of the study data collection process for this dataset. Used to generate the structured abstract. <br><br> For example: Using an earlier version of this template we measured how much it confused data wranglers by counting the number of emails we had to exchange with them in order to fill it out."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <textarea
-                            type="text"
-                            id="guided-ds-study-data-collection"
-                            placeholder="Type here..."
-                            rows="6"
-                            style="font-size: 14px; width: 100%"
-                          ></textarea>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field">
-                        Study primary conclusion:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="A description of the primary conclusion drawn from the study for the structured abstract. <br><br> For example: The primary conclusion of this study is that it is hard to make a good dataset template."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <textarea
-                            type="text"
-                            id="guided-ds-study-primary-conclusion"
-                            placeholder="Type here..."
-                            rows="6"
-                            style="font-size: 14px; width: 100%"
-                          ></textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="title">
-                  <i class="dropdown icon active"></i>Award & Contributor
-                  Information (Mandatory)
-                </div>
-                <div class="content">
-                  <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >SPARC award number associated with this dataset:</label
-                      >
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <input
-                            id="guided-ds-description-award-input"
-                            type="text"
-                            placeholder="Type here"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Contributor information:</label
-                      >
-                      <div
-                        id="guided-div-contributor-table-dd"
-                        style="display: none"
-                      >
-                        <table
-                          class="ui celled table"
-                          style="text-align: center"
-                          id="guided-contributor-table-dd"
-                        >
-                          <style>
-                            /* style for grabbed contributor row for moving contributors */
-                            .grab {
-                              cursor: grab;
-                            }
-
-                            .grabbed {
-                              box-shadow: 0 0 6px #000;
-                            }
-
-                            .grabCursor,
-                            .grabCursor * {
-                              cursor: grabbing !important;
-                            }
-                          </style>
-                          <thead class="full-width">
-                            <tr>
-                              <th style="width: 10%">Index</th>
-                              <th style="width: 25%">
-                                Contributor (Last, First)
-                              </th>
-                              <th style="width: 50%">Corresponding author</th>
-                              <th style="width: 15%">
-                                <i
-                                  class="fas fa-info-circle popover-tooltip"
-                                  data-content="Click on the corresponding button to edit/delete a contributor."
-                                  rel="popover"
-                                  data-placement="right"
-                                  data-html="true"
-                                  data-trigger="hover"
-                                ></i>
-                              </th>
-                            </tr>
-                          </thead>
-                        </table>
-                      </div>
-                      <div style="display: flex">
-                        <div
-                          class="ui secondary submit button"
-                          style="margin: 20px 0"
-                          onclick="showContributorSweetalert(false, 'guided')"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            style="vertical-align: middle"
-                            width="18"
-                            height="18"
-                            fill="currentColor"
-                            class="bi bi-plus"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                            />
-                          </svg>
-                          Add a contributor
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="title">
-                  <i class="dropdown icon active"></i>Related Information:
-                  protocol, paper, dataset, etc. (Mandatory)
-                </div>
-                <div class="content">
-                  <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Protocol Information:</label
-                      >
-                      <!--  this is where the table of protocol links will be -->
-                      <div
-                        style="margin: 10px 0; display: none"
-                        id="guided-div-protocol-link-table-dd"
-                      >
-                        <table
-                          class="ui celled table"
-                          style="text-align: center; display: none; width: 100%"
-                          id="guided-protocol-link-table-dd"
-                        >
-                          <style>
-                            /* style for grabbed contributor row for moving contributors */
-                            .grab {
-                              cursor: grab;
-                            }
-
-                            .grabbed {
-                              box-shadow: 0 0 6px #000;
-                            }
-
-                            .grabCursor,
-                            .grabCursor * {
-                              cursor: grabbing !important;
-                            }
-                          </style>
-                          <thead class="full-width">
-                            <tr>
-                              <th style="width: 10%">Index</th>
-                              <th style="width: 25%">Protocol</th>
-                              <th style="width: 15%; display: none">
-                                Identifier type
-                              </th>
-                              <th style="width: 20%">Relation</th>
-                              <th style="width: 15%; display: none">
-                                Description
-                              </th>
-                              <th style="width: 15%">
-                                <i
-                                  class="fas fa-info-circle popover-tooltip"
-                                  data-content="Click on the corresponding button to edit/delete a protocol."
-                                  rel="popover"
-                                  data-placement="right"
-                                  data-html="true"
-                                  data-trigger="hover"
-                                ></i>
-                              </th>
-                            </tr>
-                          </thead>
-                        </table>
-                      </div>
-                      <!--end here-->
-                      <div
-                        class="ui secondary submit button"
-                        style="
-                          margin-bottom: 10px;
-                          margin-top: 15px;
-                          width: 160px;
-                        "
-                        onclick="addProtocol('guided')"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          style="vertical-align: middle"
-                          width="18"
-                          height="18"
-                          fill="currentColor"
-                          class="bi bi-plus"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                          />
-                        </svg>
-                        Add a protocol
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field">
-                        Other Information:</label
-                      >
-                      <!--  this is where the table of protocol links will be -->
-                      <div
-                        style="margin: 10px 0; display: none"
-                        id="guided-div-other-link-table-dd"
-                      >
-                        <table
-                          class="ui celled table"
-                          style="text-align: center; display: none"
-                          id="guided-other-link-table-dd"
-                        >
-                          <style>
-                            /* style for grabbed contributor row for moving contributors */
-                            .grab {
-                              cursor: grab;
-                            }
-
-                            .grabbed {
-                              box-shadow: 0 0 6px #000;
-                            }
-
-                            .grabCursor,
-                            .grabCursor * {
-                              cursor: grabbing !important;
-                            }
-                          </style>
-                          <thead class="full-width">
-                            <tr>
-                              <th style="width: 10%">Index</th>
-                              <th style="width: 25%">Link</th>
-                              <th style="width: 15%; display: none">
-                                Identifier type
-                              </th>
-                              <th style="width: 20%">Relation type</th>
-                              <th style="width: 15%; display: none">
-                                Description
-                              </th>
-                              <th style="width: 15%">
-                                <i
-                                  class="fas fa-info-circle popover-tooltip"
-                                  data-content="Click on the corresponding button to edit/delete a link."
-                                  rel="popover"
-                                  data-placement="right"
-                                  data-html="true"
-                                  data-trigger="hover"
-                                ></i>
-                              </th>
-                            </tr>
-                          </thead>
-                        </table>
-                      </div>
-                      <!-- end here -->
-                      <div
-                        class="ui secondary submit button"
-                        style="
-                          margin-bottom: 10px;
-                          margin-top: 15px;
-                          width: 160px;
-                        "
-                        onclick="addAdditionalLink('guided')"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          style="vertical-align: middle"
-                          width="18"
-                          height="18"
-                          fill="currentColor"
-                          class="bi bi-plus"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                          />
-                        </svg>
-                        Add a URL/DOI
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="title">
-                  <i class="dropdown icon active"></i>Additional Information:
-                  (Optional)
-                </div>
-                <div class="content">
-                  <div class="guided--accordion-field-container">
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Study collection title:
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Title of the larger collection of to which this dataset belongs. <br><br> For example: My SPARC research study."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <input
-                            id="guided-ds-study-collection-title"
-                            class="form-container-input-bf"
-                            placeholder="Type here..."
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field"
-                        >Other funding source(s):
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Other funding sources, if any. Hit 'Enter' on your
-                        keyboard after typing each. Leave empty if none.
-                        "
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                    </div>
-                    <div class="guided--accordion-field">
-                      <label class="guided--label-accordion-field">
-                        Acknowledgments:<i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Acknowledgments beyond funding and contributors, if any.
-                          Leave empty if none."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </label>
-                      <div class="demo-controls-body" style="width: 100%">
-                        <div class="ui input modified">
-                          <textarea
-                            type="text"
-                            id="guided-ds-description-acknowledgments"
-                            placeholder="Type here..."
-                            rows="6"
-                            style="font-size: 14px; width: 100%"
-                          ></textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
           <div
@@ -2711,6 +2120,8 @@
                   id="guided-textarea-create-readme"
                 ></textarea>
                 <p class="guided--text-input-instructions mb-0">
+                  If any changes have been made to your dataset since it's
+                  previous upload, please indicate them.
                   <b>Please refrain from using markdown.</b>
                 </p>
               </div>

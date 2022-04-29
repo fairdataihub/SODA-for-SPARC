@@ -93,7 +93,8 @@
   background-color: rgb(255, 255, 255);
 }
 
-.guided--input:read-only {
+.guided--input:read-only,
+.guided--input:disabled {
   color: dimgray;
   pointer-events: none;
 }
@@ -310,6 +311,7 @@
   border-radius: 10px;
   background: #ffffff;
   box-shadow: 10px 10px 20px #b5b5b5, -10px -10px 20px #ffffff;
+  padding: 20px;
 }
 
 .guided--flex-center {
@@ -411,7 +413,7 @@ h1.guided--text-sub-step {
 }
 .guided--text-input-instructions {
   width: 100%;
-  padding-top: 2px;
+  padding-top: 4px;
   padding-bottom: 5px;
   color: dimgray !important;
 }
@@ -605,6 +607,10 @@ h1.guided--text-sub-step {
 .soda-green {
   background-color: var(--color-light-green) !important;
   color: white !important;
+}
+.required:after {
+  content: " *";
+  color: red;
 }
 .justify-center {
   width: 100%;
