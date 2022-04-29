@@ -27,54 +27,33 @@ const PY_DIST_FOLDER = "pysodadist";
 const PY_FOLDER = "pysoda";
 const PY_MODULE = "api"; // without .py suffix
 
-const PysodaConfiguration = {
-  distributionFolder: PY_DIST_FOLDER,
-  folder: PY_FOLDER,
-  module: PY_MODULE,
-  process: null,
-  port: "4242",
-};
+let pyProc = null;
+let pyPort = null;
 
-// flask setup environment variables
-const PY_FLASK_DIST_FOLDER = "pyflaskdist";
-const PY_FLASK_FOLDER = "pyflask";
-const PY_FLASK_MODULE = "api";
-
-const pyFlaskConfiguration = {
-  distributionFolder: PY_FLASK_DIST_FOLDER,
-  folder: PY_FLASK_FOLDER,
-  module: PY_FLASK_MODULE,
-  process: null,
-  port: "5001",
-};
-
-// check for pydist or pyflaskdist
-const guessPackaged = (pythonDistributableFolder) => {
-  const fullPath = path.join(__dirname, pythonDistributableFolder);
+const guessPackaged = () => {
+  const fullPath = path.join(__dirname, PY_DIST_FOLDER);
   return require("fs").existsSync(fullPath);
 };
 
-// get path for either pysoda or pyflask
-const getScriptPath = (serverConfiguration) => {
-  const { distributionFolder, folder, module } = serverConfiguration;
-
-  if (!guessPackaged(distributionFolder)) {
-    return path.join(__dirname, folder, module + ".py");
+const getScriptPath = () => {
+  if (!guessPackaged()) {
+    return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
   if (process.platform === "win32") {
-    return path.join(__dirname, distributionFolder, module, module + ".exe");
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
   }
 
-  return path.join(__dirname, distributionFolder, module, module);
+  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
 };
 
-// @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
-const createPyProc = (serverConfiguration) => {
-  let script = getScriptPath(serverConfiguration);
+const selectPort = () => {
+  pyPort = 4242;
+  return pyPort;
+};
 
-  console.log("Executing this proc: ", script);
-
-  const { distributionFolder, port } = serverConfiguration;
+const createPyProc = () => {
+  let script = getScriptPath();
+  let port = "" + selectPort();
 
   log.info(script);
   if (require("fs").existsSync(script)) {
@@ -82,29 +61,20 @@ const createPyProc = (serverConfiguration) => {
   } else {
     log.info("file does not exist");
   }
-
-  if (guessPackaged(distributionFolder)) {
+  if (guessPackaged()) {
     log.info("execFile");
-    serverConfiguration.process = require("child_process").execFile(
-      script,
-      [port],
-      {
-        stdio: "ignore",
-      }
-    );
+    pyProc = require("child_process").execFile(script, [port], {
+      stdio: "ignore",
+    });
   } else {
     log.info("spawn");
-    serverConfiguration.process = require("child_process").spawn(
-      "python",
-      [script, port],
-      {
-        stdio: "ignore",
-      }
-    );
+    pyProc = require("child_process").spawn("python", [script, port], {
+      stdio: "ignore",
+    });
   }
 
-  log.info(serverConfiguration.process);
-  if (serverConfiguration.process != null) {
+  log.info(pyProc);
+  if (pyProc != null) {
     console.log("child process success on port " + port);
     log.info("child process success on port " + port);
   } else {
@@ -112,22 +82,14 @@ const createPyProc = (serverConfiguration) => {
   }
 };
 
-// @param {object} serverConfiguration  - Contains Flask or Pysoda server configuration details and references to their child process handler
-const exitPyProc = (serverConfiguration) => {
-  serverConfiguration.process.kill();
-  serverConfiguration.process = null;
-  serverConfiguration.port = null;
+const exitPyProc = () => {
+  pyProc.kill();
+  pyProc = null;
+  pyPort = null;
 };
 
-app.on("ready", () => {
-  createPyProc(PysodaConfiguration);
-  // createPyProc(pyFlaskConfiguration);
-});
-
-app.on("will-quit", () => {
-  exitPyProc(PysodaConfiguration);
-  // exitPyProc(pyFlaskConfiguration);
-});
+app.on("ready", createPyProc);
+app.on("will-quit", exitPyProc);
 
 /*************************************************************
  * Main app window
