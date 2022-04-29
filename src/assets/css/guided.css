@@ -272,7 +272,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .guided--container-permissions {
@@ -411,8 +411,9 @@ h1.guided--text-sub-step {
 }
 .guided--text-input-instructions {
   width: 100%;
-  padding: 2px 5px 5px 5px;
-  color: lightslategray !important;
+  padding-top: 2px;
+  padding-bottom: 5px;
+  color: dimgray !important;
 }
 
 .guided--label-accordion-field {

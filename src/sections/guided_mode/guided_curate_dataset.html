@@ -1899,16 +1899,27 @@
                 <div class="grouped fields">
                   <div class="field">
                     <div class="ui radio checkbox">
-                      <input type="radio" name="dataset-relation" />
+                      <input
+                        type="radio"
+                        name="dataset-relation"
+                        value="Experimental"
+                      />
                       <label>Experimental</label>
                     </div>
                   </div>
-                  <div class="field">
+                  <div class="field mb-0">
                     <div class="ui radio checkbox">
-                      <input type="radio" name="dataset-relation" />
-                      <label>computational</label>
+                      <input
+                        type="radio"
+                        name="dataset-relation"
+                        value="Computational"
+                      />
+                      <label>Computational</label>
                     </div>
                   </div>
+                  <p class="guided--text-input-instructions">
+                    Experimental vs computational helper text
+                  </p>
                 </div>
               </div>
             </div>
@@ -1924,11 +1935,19 @@
                     type="text"
                     id="guided-ds-study-organ-system"
                     name="study organ system"
-                    placeholder="Type here..."
+                    placeholder="Enter study organ system(s) here"
                     style="font-size: 14px"
                   />
                 </div>
               </div>
+              <p class="guided--text-input-instructions mb-0">
+                The major organ systems related to this study, for example,
+                spinal cord.<br />
+                <b
+                  >Hit enter after inserting an organ system to save your
+                  input.</b
+                >
+              </p>
               <label class="guided--form-label mt-md">Study approach:</label>
               <div class="demo-controls-body" style="width: 100%">
                 <div class="ui input modified">
@@ -1937,11 +1956,19 @@
                     class="form-container-input-bf"
                     id="guided-ds-study-approach"
                     name="study approach"
-                    placeholder="Type here..."
+                    placeholder="Enter study approach(es) here"
                     style="font-size: 14px"
                   />
                 </div>
               </div>
+              <p class="guided--text-input-instructions mb-0">
+                The experimental approach or approaches taken in this study, for
+                example, electrophysiology.<br />
+                <b
+                  >Hit enter after inserting a study approaches to save your
+                  input.</b
+                >
+              </p>
               <label class="guided--form-label mt-md">Study technique:</label>
               <div class="demo-controls-body" style="width: 100%">
                 <div class="ui input modified">
@@ -1950,11 +1977,19 @@
                     id="guided-ds-study-technique"
                     class="form-container-input-bf"
                     name="study technique"
-                    placeholder="Type here..."
+                    placeholder="Enter study technique(s) here"
                     style="font-size: 14px"
                   />
                 </div>
               </div>
+              <p class="guided--text-input-instructions mb-0">
+                The experimental techniques used in this study, for example,
+                patch clamp. <br />
+                <b
+                  >Hit enter after inserting a study technique to save your
+                  input.</b
+                >
+              </p>
             </div>
             <div class="guided--section neumorphic mt-xl">
               <h2 class="guided--text-sub-step mt-0">
@@ -1969,6 +2004,10 @@
                 placeholder="Enter study collection title here"
                 onkeyup="validateInput($(this))"
               />
+              <p class="guided--text-input-instructions mb-0">
+                Title of the larger collection of which this dataset belongs.<br />
+                <b>Example:</b> My SPARC research study
+              </p>
               <label class="guided--form-label mt-md"
                 >Other funcing source(s)</label
               >
@@ -1977,10 +2016,17 @@
                   <input
                     id="guided-ds-other-funding"
                     class="form-container-input-bf"
-                    placeholder="Type here and hit 'Enter' after each funding."
+                    placeholder="Enter other funding source(s) here"
                   />
                 </div>
               </div>
+              <p class="guided--text-input-instructions mb-0">
+                Other funding sources, if any.<br />
+                <b
+                  >Hit enter after inserting a funding source to save your
+                  input.</b
+                >
+              </p>
               <label class="guided--form-label mt-md">Acknowledgements:</label>
               <textarea
                 class="guided--input guided--text-area"
@@ -1989,8 +2035,12 @@
                 style="height: 7.5em"
                 onkeyup="validateInput($(this))"
               ></textarea>
+              <p class="guided--text-input-instructions mb-0">
+                Acknowledgements beyond funding and contributors, if any.<br />
+                <b>Leave empty if blank.</b>
+              </p>
             </div>
-            <div class="guided--section">
+            <div class="guided--section" style="opacity: 0.7">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
                 Fill out the description information below:
               </h1>
@@ -2606,17 +2656,52 @@
             class="guided--panel hidden"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
+              <h1 class="guided--text-sub-step">
                 Draft your README file below:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
               </h1>
+              <p class="guided--help-text text-left">
+                The README file is a plain text file provided by investigators
+                that contains neccessary details for the reuse of the data
+                beyond that which is captures in structured metadata.<br />Some
+                information that should be included is:
+              </p>
+              <ul class="w-100">
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  How would a user use the files that are provided? e.g., first
+                  open file X and then look at file Y.
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  What additional details do users need to know? Are some
+                  subjects missing data?
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  Are there warnings about how to use the data or code?
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  Are there appropriate/inappropriate uses for this data?
+                </li>
+                <li
+                  class="guided--help-text text-left mb-2"
+                  style="color: hsl(0, 0%, 22%)"
+                >
+                  Are there other places that users can go for more information?
+                  e.g., did you provide a GitHub repository or are there
+                  additional papers beyond what was provided in the metadata
+                  form?
+                </li>
+              </ul>
               <div class="guided--input-container">
                 <textarea
                   class="guided--input guided--text-area-tall"
@@ -2625,6 +2710,9 @@
                   placeholder="Draft your README here"
                   id="guided-textarea-create-readme"
                 ></textarea>
+                <p class="guided--text-input-instructions mb-0">
+                  <b>Please refrain from using markdown.</b>
+                </p>
               </div>
               <button
                 id="guided-generate-readme-file"
@@ -2640,17 +2728,14 @@
             class="guided--panel hidden"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
+              <h1 class="guided--text-sub-step">
                 Draft your CHANGES file below:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
               </h1>
+              <p class="guided--help-text text-left">
+                The CHANGES file is a plain text file <b>required</b> if a new
+                version of the dataset is uploaded to document any changes from
+                the previous version.
+              </p>
               <div class="guided--input-container">
                 <textarea
                   class="guided--input guided--text-area-tall"
@@ -2659,6 +2744,9 @@
                   placeholder="Draft your CHANGES here"
                   id="guided-textarea-create-changes"
                 ></textarea>
+                <p class="guided--text-input-instructions mb-0">
+                  <b>Please refrain from using markdown.</b>
+                </p>
               </div>
               <button
                 id="guided-generate-changes-file"
