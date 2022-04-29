@@ -113,9 +113,9 @@ function initialize() {
     });
 
     mainWindow.webContents.once("dom-ready", () => {
-      // if (updatechecked == false) {
-      //   autoUpdater.checkForUpdatesAndNotify();
-      // }
+      if (updatechecked == false) {
+        autoUpdater.checkForUpdatesAndNotify();
+      }
     });
 
     mainWindow.on("close", (e) => {
@@ -201,7 +201,7 @@ function initialize() {
           run_pre_flight_checks();
         }
         run_pre_flight_checks();
-        // autoUpdater.checkForUpdatesAndNotify();
+        autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
@@ -312,15 +312,15 @@ ipcMain.on("app_version", (event) => {
   event.sender.send("app_version", { version: app.getVersion() });
 });
 
-// autoUpdater.on("update-available", () => {
-//   log.info("update_available");
-//   mainWindow.webContents.send("update_available");
-// });
+autoUpdater.on("update-available", () => {
+  log.info("update_available");
+  mainWindow.webContents.send("update_available");
+});
 
-// autoUpdater.on("update-downloaded", () => {
-//   log.info("update_downloaded");
-//   mainWindow.webContents.send("update_downloaded");
-// });
+autoUpdater.on("update-downloaded", () => {
+  log.info("update_downloaded");
+  mainWindow.webContents.send("update_downloaded");
+});
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
