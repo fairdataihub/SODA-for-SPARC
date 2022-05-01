@@ -1,15 +1,19 @@
 from __future__ import print_function
-import config
+# import config
 import json
 import logging
 import logging.handlers
 
 from flask import Flask, request
-from flask_cors import CORS
-from flask_restx import Api, Resource, reqparse
+# from flask_cors import CORS
+from apis import api 
 
-
-API_VERSION = "5.4.0"
 
 app = Flask(__name__)
+
+
+
+api.init_app(app)
+
+app.run(debug=True)
 
