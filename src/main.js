@@ -11,8 +11,7 @@ const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
-const util = require("util");
-const execFile = util.promisify(require('child_process').execFile);
+
 
 
 log.transports.console.level = false;
@@ -69,7 +68,7 @@ const createPyProc = async () => {
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc = await execFile(script, [port], {
+    pyProc =  require("child_process").execFile(script, [port], {
       stdio: "ignore",
     });
   } else {
