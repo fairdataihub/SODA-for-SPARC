@@ -1,8 +1,7 @@
-
-API_VERSION = "5.4.0"
+import os
 
 def get_api_version():
     """
     Returns the version of the API
     """
-    return {'version': API_VERSION}
+    return {'version': os.getenv('API_VERSION')}
