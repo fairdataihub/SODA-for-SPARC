@@ -254,7 +254,7 @@
           <div id="guided-dataset-starting-point-tab" class="guided--panel">
             <div class="guided--section w-100">
               <h1 class="guided--text-sub-step">SPARC dataset structure</h1>
-              <p class="guided--help-text">
+              <p class="guided--help-text w-100">
                 SPARC datasets are organized according to the SPARC Data
                 Structure 2.0. More details about the structure are available in
                 the dedicated SPARC help page. Briefly, the each SPARC dataset
@@ -596,7 +596,7 @@
               <label class="guided--form-label centered"
                 >Does your dataset contain source data?
               </label>
-              <p class="guided--help-text text-center">
+              <p class="guided--help-text w-100 text-center">
                 <b>Optional</b> folder containing unaltered, raw files from an
                 experiment, if they are included in the data. For example, this
                 folder may include the “truly” raw k-space data for a Magnetic
@@ -632,7 +632,7 @@
               <label class="guided--form-label centered"
                 >Does your dataset contain derivative data?
               </label>
-              <p class="guided--help-text text-center">
+              <p class="guided--help-text w-100 text-center">
                 <b>Required</b> if derivative data exists. Derived data should
                 be organized into subject and sample folders, using the subject
                 and sample IDs as the folder names, as with the primary data.
@@ -667,7 +667,7 @@
               <label class="guided--form-label centered"
                 >Does your dataset contain code data?
               </label>
-              <p class="guided--help-text text-center">
+              <p class="guided--help-text w-100 text-center">
                 <b>Required</b> if code is used in the generation of the data;
                 the folder contains all the source codes used in the study such
                 as text and source code (e.g., MATLAB, etc.). Any supporting
@@ -703,7 +703,7 @@
               <label class="guided--form-label centered"
                 >Does your dataset contain docs data?
               </label>
-              <p class="guided--help-text text-center">
+              <p class="guided--help-text w-100 text-center">
                 <b>Optional</b> folder that contains all the supporting
                 documents for the dataset, including but not limited to, a
                 representative image for the dataset. Unlike the readme file,
@@ -910,7 +910,7 @@
               <h1 class="guided--text-sub-step" style="margin-bottom: 5px">
                 Pennsieve metadata addition
               </h1>
-              <p class="guided--help-text" style="max-width: 900px">
+              <p class="guided--help-text w-100" style="max-width: 900px">
                 Pennsieve is a free, open source data management platform that
                 provides a scalable, cloud-based solution for managing,
                 analyzing, and sharing datasets. In the following fields, you
@@ -1112,7 +1112,7 @@
           <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Specify owner of dataset</h1>
-              <p class="guided--help-text" style="max-width: 900px">
+              <p class="guided--help-text w-100" style="max-width: 900px">
                 SPARC curation rules require to set the PI of the SPARC award as
                 'owner' of the dataset before it is shared with the Curation
                 Team for review. This is to ensures that the PI is the only
@@ -1198,21 +1198,21 @@
               <h1 class="guided--text-sub-step">
                 Dataset user/team permissions
               </h1>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 Dataset permissions control which users or teams can view, edit,
                 or manage the dataset. Read below for a breakdown of the
                 different types of dataset permissions:
               </p>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 <b>Managers</b> can invite people and teams to a dataset, edit
                 and delete models, records and files, but cannot publish a
                 dataset.
               </p>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 <b>Editors</b> can create, edit, or delete records and files in
                 a dataset.
               </p>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 <b>Viewers</b> can view and browse all information in a dataset,
                 but have no other permissions.
               </p>
@@ -1330,7 +1330,7 @@
           <div id="guided-add-description-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Describe your dataset</h1>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 The dataset description is a brief summary of the dataset which
                 allows users to gain better insights into your work and enhance
                 your dataset's findability.
@@ -1385,7 +1385,7 @@
           <div id="guided-add-tags-tab" class="guided--panel hidden">
             <div class="guided--section">
               <h1 class="guided--text-sub-step">Enter dataset tags below</h1>
-              <p class="guided--help-text text-center mb-lg">
+              <p class="guided--help-text w-100 text-center mb-lg">
                 Dataset tags are keywords that indicate the key elements of your
                 research.
               </p>
@@ -1406,11 +1406,11 @@
               <h1 class="guided--text-sub-step">
                 Assign a license to your datset:
               </h1>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 As per SPARC policy, all datasets must be licensed under a
                 <b>Creative Commons Attribution (CC-BY)</b> license.
               </p>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 The <b>Creative Commons Attribution license</b> allows reusers
                 to distribute, remix, adapt, and build upon the material in any
                 medium or format, so long as attribution is given to the
@@ -1473,7 +1473,10 @@
                 Would you like to import your SPARC award information from
                 AirTable?
               </h2>
-              <p class="guided--help-text small" style="margin-bottom: 2px">
+              <p
+                class="guided--help-text w-100 small"
+                style="margin-bottom: 2px"
+              >
                 Importing your award information from Airtable is recommended as
                 it ensures the Award number entered into your submission
                 metadata is correct.
@@ -1532,7 +1535,10 @@
                 Would you like to import your milestone information from a data
                 derivables document?
               </h2>
-              <p class="guided--help-text small" style="margin-bottom: 2px">
+              <p
+                class="guided--help-text w-100 small"
+                style="margin-bottom: 2px"
+              >
                 <b>recommended if available</b> A data deliverables document is
                 a file that contains data pertaining to your project's
                 milestones.
@@ -1567,8 +1573,8 @@
                 class="guided--panel hidden mt-xl"
                 id="guided-div-data-deliverables-import"
               >
-                <h2 class="guided--text-sub-step">
-                  Select the data deliverables
+                <h2 class="guided--text-sub-step mb-0">
+                  Select the milestones to be supplied to the NIH
                 </h2>
                 <table
                   class="ui celled striped table"
@@ -1698,7 +1704,10 @@
               id="guided-div-contributors-imported-from-airtable"
             >
               <h2 class="guided--text-sub-step">Contributor information</h2>
-              <p class="guided--help-text small" style="margin-bottom: 2px">
+              <p
+                class="guided--help-text w-100 small"
+                style="margin-bottom: 2px"
+              >
                 Select the contributors that contributed to your dataset. These
                 individuals do not have to be authors on any publications
                 describing the data, but should be acknowledged for their role
@@ -1741,10 +1750,10 @@
               id="guided-div-contributor-field-set"
             >
               <h2 class="guided--text-sub-step">
-                Add information for your dataset's contributors
+                Specify your dataset's contributor information
               </h2>
               <p
-                class="guided--help-text small text-center"
+                class="guided--help-text w-100 small text-center"
                 style="margin-bottom: 2px"
               >
                 it is <b>mandatory</b> to add at least one affiliation and role
@@ -1754,7 +1763,7 @@
               </p>
               <div class="guided--panel" id="contributors-container"></div>
               <button
-                class="ui primary basic button mt-lg"
+                class="ui primary basic button mt-sm"
                 id="guided-button-add-contributor"
                 onclick="addContributorField()"
               >
@@ -1787,10 +1796,12 @@
                 Would you like to import your protocols from Protocols.io?
               </h2>
               <p
-                class="guided--help-text small text-center"
+                class="guided--help-text w-100 small text-left"
                 style="margin-bottom: 2px"
               >
-                info about what protocols.io is and why you should sign in
+                Uploading your protocols to protocols.io is
+                <b>recommended</b> by SPARC as it provides a consistent,
+                accessible resource for the scientific community.
               </p>
               <div class="guided--radio-button-container">
                 <button
@@ -1824,18 +1835,13 @@
               class="guided--section hidden"
               id="guided-div-protocol-container"
             >
-              <h2 class="guided--text-sub-step">
+              <h2 class="guided--text-sub-step mb-0">
                 Add the protocol(s) used to generate the dataset
               </h2>
-              <p
-                class="guided--help-text small text-center"
-                style="margin-bottom: 2px"
-              >
-                Info text
-              </p>
+
               <div class="guided--panel" id="protocols-container"></div>
               <button
-                class="ui primary basic button mt-lg"
+                class="ui primary basic button mt-sm"
                 id="guided-button-add-protocol"
                 onclick="addProtocolField()"
               >
@@ -1847,8 +1853,65 @@
                 id="guided-button-save-protocol-fields"
                 style="background-color: var(--color-light-green) !important"
               >
-                Continue
+                Continue</button
+              ><button
+                class="ui primary button mt-md"
+                id="guided-button-edit-protocol-fields"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  display: none;
+                "
+              >
+                Edit protocols
               </button>
+            </div>
+            <div class="guided--panel hidden" id="guided-div-other-links">
+              <div class="guided--section">
+                <h2 class="guided--text-sub-step">
+                  Do you have any other links you would like to add?
+                </h2>
+                <div class="guided--radio-button-container">
+                  <button
+                    class="ui positive basic button guided--radio-button"
+                    data-next-question="guided-div-add-other-links"
+                  >
+                    Yes
+                  </button>
+                  <button class="ui negative basic button guided--radio-button">
+                    No
+                  </button>
+                </div>
+              </div>
+              <div
+                class="guided--section hidden"
+                id="guided-div-add-other-links"
+              >
+                <div class="guided--panel" id="other-links-container"></div>
+                <button
+                  class="ui primary basic button mt-sm"
+                  id="guided-button-add-other-link"
+                  onclick="addOtherLinkField()"
+                >
+                  <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
+                  link
+                </button>
+                <button
+                  class="ui primary button mt-md"
+                  id="guided-button-save-other-link-fields"
+                  style="background-color: var(--color-light-green) !important"
+                >
+                  Continue</button
+                ><button
+                  class="ui primary button mt-md"
+                  id="guided-button-edit-other-link-fields"
+                  style="
+                    background-color: var(--color-light-green) !important;
+                    display: none;
+                  "
+                >
+                  Edit links
+                </button>
+              </div>
             </div>
           </div>
           <div
@@ -1857,7 +1920,7 @@
           >
             <div class="guided--section">
               <h1 class="guided--text-sub-step" style="margin-bottom: 0px">
-                Fill out the description information below:
+                Complete your dataset description below:
               </h1>
             </div>
             <div class="guided--section neumorphic mt-xl">
@@ -2068,7 +2131,7 @@
               <h1 class="guided--text-sub-step">
                 Draft your README file below:
               </h1>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 The README file is a plain text file provided by investigators
                 that contains neccessary details for the reuse of the data
                 beyond that which is captures in structured metadata.<br />Some
@@ -2076,33 +2139,33 @@
               </p>
               <ul class="w-100">
                 <li
-                  class="guided--help-text text-left mb-2"
+                  class="guided--help-text w-100 text-left mb-2"
                   style="color: hsl(0, 0%, 22%)"
                 >
                   How would a user use the files that are provided? e.g., first
                   open file X and then look at file Y.
                 </li>
                 <li
-                  class="guided--help-text text-left mb-2"
+                  class="guided--help-text w-100 text-left mb-2"
                   style="color: hsl(0, 0%, 22%)"
                 >
                   What additional details do users need to know? Are some
                   subjects missing data?
                 </li>
                 <li
-                  class="guided--help-text text-left mb-2"
+                  class="guided--help-text w-100 text-left mb-2"
                   style="color: hsl(0, 0%, 22%)"
                 >
                   Are there warnings about how to use the data or code?
                 </li>
                 <li
-                  class="guided--help-text text-left mb-2"
+                  class="guided--help-text w-100 text-left mb-2"
                   style="color: hsl(0, 0%, 22%)"
                 >
                   Are there appropriate/inappropriate uses for this data?
                 </li>
                 <li
-                  class="guided--help-text text-left mb-2"
+                  class="guided--help-text w-100 text-left mb-2"
                   style="color: hsl(0, 0%, 22%)"
                 >
                   Are there other places that users can go for more information?
@@ -2142,7 +2205,7 @@
               <h1 class="guided--text-sub-step">
                 Draft your CHANGES file below:
               </h1>
-              <p class="guided--help-text text-left">
+              <p class="guided--help-text w-100 text-left">
                 The CHANGES file is a plain text file <b>required</b> if a new
                 version of the dataset is uploaded to document any changes from
                 the previous version.

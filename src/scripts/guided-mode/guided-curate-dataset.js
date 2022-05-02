@@ -1237,25 +1237,18 @@ const addProtocolField = () => {
     >
     </i>
     <h2 class="guided--text-sub-step">Enter protocol details</h2>
-    <label class="guided--form-label mt-xl">Protocol title: </label>
+    <label class="guided--form-label mt-lg">Protocol URL: </label>
     <input
-      class="guided--input guided-first-name-input"
-      type="text"
-      placeholder="Enter protocol title here"
-      onkeyup="validateInput($(this))"
-    />
-    <label class="guided--form-label mt-xl">Protocol URL: </label>
-    <input
-      class="guided--input guided-first-name-input"
+      class="guided--input guided-protocol-url-input"
       type="text"
       placeholder="Enter protocol URL here"
       onkeyup="validateInput($(this))"
     />
-    <label class="guided--form-label mt-xl"
+    <label class="guided--form-label mt-lg"
       >Protocol description:</label
     >
     <textarea
-      class="guided--input guided--text-area"
+      class="guided--input guided--text-area guided-protocol-description-input"
       type="text"
       placeholder="Enter protocol description here"
       style="height: 7.5em; padding-bottom: 20px"
@@ -1271,6 +1264,108 @@ const addProtocolField = () => {
 const removeProtocolField = (protocolDeleteButton) => {
   const protocolField = protocolDeleteButton.parentElement;
   protocolField.remove();
+};
+
+const addOtherLinkField = () => {
+  const otherLinksContainer = document.getElementById("other-links-container");
+  //create a new div to hold other link fields
+  const newOtherLink = document.createElement("div");
+  newOtherLink.classList.add("guided--section");
+  newOtherLink.classList.add("mt-lg");
+  newOtherLink.classList.add("neumorphic");
+  newOtherLink.classList.add("guided-other-links-field-container");
+  newOtherLink.style.position = "relative";
+
+  newOtherLink.innerHTML = `
+    <i
+      class="fas fa-times fa-2x"
+      style="
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: black;
+        cursor: pointer;
+      "
+      onclick="removeOtherLinkField(this)"
+    >
+    </i>
+    <h2 class="guided--text-sub-step">Enter link information</h2>
+    <label class="guided--form-label mt-lg">Link URL: </label>
+    <input
+      class="guided--input guided-other-link-url-input"
+      type="text"
+      placeholder="Enter link URL here"
+      onkeyup="validateInput($(this))"
+    />
+    <label class="guided--form-label mt-lg"
+      >Link description:</label
+    >
+    <textarea
+      class="guided--input guided--text-area guided-other-link-description-input"
+      type="text"
+      placeholder="Enter link description here"
+      style="height: 7.5em; padding-bottom: 20px"
+      onkeyup="validateInput($(this))"
+    ></textarea>
+    <label class="guided--form-label mt-lg"
+      >Dataset relation:</label
+    >
+    <div style="display: flex; width:100%; align-items: center;">
+      <p class="guided--help-text m-0">
+        Text to put here (A)?
+      </p>
+      <div class="form-group mx-2">
+        <select class="form-control guided-other-link-relation-dropdown" style="background-color: white !important">
+          <option value="Select">Select a relation</option>
+          <option value="IsCitedBy">IsCitedBy</option>
+          <option value="Cites">Cites</option>
+          <option value="IsSupplementTo">IsSupplementTo</option>
+          <option value="IsSupplementedBy">IsSupplementedBy</option>
+          <option value="IsContinuedByContinues">IsContinuedByContinues</option>
+          <option value="IsDescribedBy">IsDescribedBy</option>
+          <option value="Describes">Describes</option>
+          <option value="HasMetadata">HasMetadata</option>
+          <option value="IsMetadataFor">IsMetadataFor</option>
+          <option value="HasVersion">HasVersion</option>
+          <option value="IsVersionOf">IsVersionOf</option>
+          <option value="IsNewVersionOf">IsNewVersionOf</option>
+          <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
+          <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
+          <option value="HasPart">HasPart</option>
+          <option value="IsPublishedIn">IsPublishedIn</option>
+          <option value="IsReferencedBy">IsReferencedBy</option>
+          <option value="References">References</option>
+          <option value="IsDocumentedBy">IsDocumentedBy</option>
+          <option value="Documents">Documents</option>
+          <option value="IsCompiledBy">IsCompiledBy</option>
+          <option value="Compiles">Compiles</option>
+          <option value="IsVariantFormOf">IsVariantFormOf</option>
+          <option value="IsOriginalFormOf">IsOriginalFormOf</option>
+          <option value="IsIdenticalTo">IsIdenticalTo</option>
+          <option value="IsReviewedBy">IsReviewedBy</option>
+          <option value="Reviews">Reviews</option>
+          <option value="IsDerivedFrom">IsDerivedFrom</option>
+          <option value="IsSourceOf">IsSourceOf</option>
+          <option value="IsRequiredBy">IsRequiredBy</option>
+          <option value="Requires">Requires</option>
+          <option value="IsObsoletedBy">IsObsoletedBy</option>
+          <option value="Obsoletes">Obsoletes</option>
+        </select>
+      </div>
+          <p class="guided--help-text m-0">
+        Text to put here (B)?
+      </p>
+    </div>
+  `;
+  otherLinksContainer.appendChild(newOtherLink);
+  //select the last protocol field (the one that was just added)
+  const newlyAddedOtherLinkField = otherLinksContainer.lastChild;
+  smoothScrollToElement(newlyAddedOtherLinkField);
+};
+
+const removeOtherLinkField = (otherLinkDeleteButton) => {
+  const otherLinkField = protocolDeleteButton.parentElement;
+  otherLinkField.remove();
 };
 
 //SUBJECT TABLE FUNCTIONS
@@ -2629,7 +2724,7 @@ $(document).ready(() => {
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-contributors-tab");
+      traverseToTab("guided-airtable-award-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
@@ -4748,6 +4843,182 @@ $(document).ready(() => {
     ).style.display = "none";
     document.getElementById(
       "guided-button-save-contributor-fields"
+    ).style.display = "flex";
+    unPulseNextButton();
+  });
+  $("#guided-button-save-protocol-fields").on("click", () => {
+    let allInputsValid = true;
+    //get all contributor fields
+    const protocolFields = document.querySelectorAll(
+      ".guided-protocol-field-container"
+    );
+    //check if contributorFields is empty
+    if (protocolFields.length === 0) {
+      notyf.error("Please add at least one contributor");
+      //Add a contributor field to help the user out a lil
+      //addContributorField();
+      return;
+    }
+
+    //loop through contributor fields and get values
+    const protocolFieldsArray = Array.from(protocolFields);
+    ///////////////////////////////////////////////////////////////////////////////
+    protocolFieldsArray.forEach((protocolField) => {
+      protocolUrl = protocolField.querySelector(".guided-protocol-url-input");
+      protocolDescription = protocolField.querySelector(
+        ".guided-protocol-description-input"
+      );
+
+      const textInputs = [protocolUrl, protocolDescription];
+
+      //check if all text inputs are valid
+      textInputs.forEach((textInput) => {
+        if (textInput.value === "") {
+          textInput.style.setProperty("border-color", "red", "important");
+          allInputsValid = false;
+        } else {
+          textInput.style.setProperty(
+            "border-color",
+            "hsl(0, 0%, 88%)",
+            "important"
+          );
+        }
+      });
+
+      const contributorInputObj = {
+        protocolUrl: protocolUrl.value,
+        protocolDescription: protocolDescription.value,
+      };
+    });
+    ///////////////////////////////////////////////////////////////////////////////
+
+    if (!allInputsValid) {
+      notyf.error("Please fill out all protocol fields");
+      document.getElementById("guided-div-other-links").classList.add("hidden");
+
+      return;
+    }
+
+    //set opacity and remove pointer events for table and show edit button
+    disableElementById("protocols-container");
+    disableElementById("guided-button-add-protocol");
+
+    //switch button from save to edit
+    document.getElementById(
+      "guided-button-save-protocol-fields"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-edit-protocol-fields"
+    ).style.display = "flex";
+
+    unHideAndSmoothScrollToElement("guided-div-other-links");
+  });
+  $("#guided-button-edit-protocol-fields").on("click", () => {
+    enableElementById("protocols-container");
+    enableElementById("guided-button-add-protocol");
+    //switch button from edit to save
+    document.getElementById(
+      "guided-button-edit-protocol-fields"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-save-protocol-fields"
+    ).style.display = "flex";
+    unPulseNextButton();
+    //hide the other links div until the user saves updated protocols
+    document.getElementById("guided-div-other-links").classList.add("hidden");
+  });
+  $("#guided-button-save-other-link-fields").on("click", () => {
+    let allInputsValid = true;
+    //get all contributor fields
+    const otherLinkFields = document.querySelectorAll(
+      ".guided-other-links-field-container"
+    );
+    //check if contributorFields is empty
+    if (otherLinkFields.length === 0) {
+      notyf.error("Please add at least one other link");
+      //Add a contributor field to help the user out a lil
+      //addContributorField();
+      return;
+    }
+
+    //loop through contributor fields and get values
+    const otherLinkFieldsArray = Array.from(otherLinkFields);
+    ///////////////////////////////////////////////////////////////////////////////
+    otherLinkFieldsArray.forEach((otherLinkField) => {
+      console.log(otherLinkField);
+      const linkUrl = otherLinkField.querySelector(
+        ".guided-other-link-url-input"
+      );
+      console.log(linkUrl);
+      const linkDescription = otherLinkField.querySelector(
+        ".guided-other-link-description-input"
+      );
+      console.log(linkDescription);
+      const linkRelation = otherLinkField.querySelector(
+        ".guided-other-link-relation-dropdown"
+      );
+      console.log(linkRelation);
+      console.log(linkRelation.value);
+      const textInputs = [linkUrl, linkDescription];
+
+      //check if all text inputs are valid
+      textInputs.forEach((textInput) => {
+        console.log(textInput);
+        if (textInput.value === "") {
+          textInput.style.setProperty("border-color", "red", "important");
+          allInputsValid = false;
+        } else {
+          textInput.style.setProperty(
+            "border-color",
+            "hsl(0, 0%, 88%)",
+            "important"
+          );
+        }
+      });
+      if (linkRelation.value === "Select") {
+        linkRelation.style.setProperty("border-color", "red", "important");
+        allInputsValid = false;
+      } else {
+        linkRelation.style.setProperty(
+          "border-color",
+          "hsl(0, 0%, 88%)",
+          "important"
+        );
+      }
+      const contributorInputObj = {
+        linkUrl: linkUrl.value,
+        linkDescription: linkDescription.value,
+        linkRelation: linkRelation.value,
+      };
+    });
+    ///////////////////////////////////////////////////////////////////////////////
+    if (!allInputsValid) {
+      notyf.error("Please fill out all link fields");
+      return;
+    }
+
+    //set opacity and remove pointer events for table and show edit button
+    disableElementById("other-links-container");
+    disableElementById("guided-button-add-other-link");
+
+    //switch button from save to edit
+    document.getElementById(
+      "guided-button-save-other-link-fields"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-edit-other-link-fields"
+    ).style.display = "flex";
+    pulseNextButton();
+  });
+  $("#guided-button-edit-other-link-fields").on("click", () => {
+    enableElementById("other-links-container");
+    enableElementById("guided-button-add-other-link");
+    //switch button from edit to save
+    document.getElementById(
+      "guided-button-edit-other-link-fields"
+    ).style.display = "none";
+    document.getElementById(
+      "guided-button-save-other-link-fields"
     ).style.display = "flex";
     unPulseNextButton();
   });

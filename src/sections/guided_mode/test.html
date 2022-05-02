@@ -1,32 +1,36 @@
-<div class="guided--section">
-  <h2 class="guided--text-sub-step">Does your dataset contain docs data?</h2>
-  <p class="guided--help-text text-center">
-    <b>Optional</b> folder that contains all the supporting documents for the
-    dataset, including but not limited to, a representative image for the
-    dataset. Unlike the readme file, which is necessarily a text document, docs
-    can contain documents in multiple formats, including images.
-  </p>
-  <div class="guided--radio-button-container">
-    <button
-      class="ui positive basic button guided--radio-button"
-      data-next-question="guided-import-SPARC-award-from-airtable"
-    >
-      Yes
-    </button>
-    <button
-      class="ui negative basic button guided--radio-button"
-      data-next-question="guided-manual-SPARC-award"
-    >
-      No
-    </button>
-  </div>
-</div>
-<div
-  class="guided--panel hidden"
-  id="guided-import-SPARC-award-from-airtable"
-></div>
-<div class="guided--panel hidden" id="guided-manual-SPARC-award"></div>
-
-<label class="guided--label-accordion-field w-100 text-center"
-  >Add a custom completion date</label
->
+<select id="guided-other-link-relation" class="swal2-input">
+  <option value="Select">Select a relation</option>
+  <option value="IsCitedBy">IsCitedBy</option>
+  <option value="Cites">Cites</option>
+  <option value="IsSupplementTo">IsSupplementTo</option>
+  <option value="IsSupplementedBy">IsSupplementedBy</option>
+  <option value="IsContinuedByContinues">IsContinuedByContinues</option>
+  <option value="IsDescribedBy">IsDescribedBy</option>
+  <option value="Describes">Describes</option>
+  <option value="HasMetadata">HasMetadata</option>
+  <option value="IsMetadataFor">IsMetadataFor</option>
+  <option value="HasVersion">HasVersion</option>
+  <option value="IsVersionOf">IsVersionOf</option>
+  <option value="IsNewVersionOf">IsNewVersionOf</option>
+  <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
+  <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
+  <option value="HasPart">HasPart</option>
+  <option value="IsPublishedIn">IsPublishedIn</option>
+  <option value="IsReferencedBy">IsReferencedBy</option>
+  <option value="References">References</option>
+  <option value="IsDocumentedBy">IsDocumentedBy</option>
+  <option value="Documents">Documents</option>
+  <option value="IsCompiledBy">IsCompiledBy</option>
+  <option value="Compiles">Compiles</option>
+  <option value="IsVariantFormOf">IsVariantFormOf</option>
+  <option value="IsOriginalFormOf">IsOriginalFormOf</option>
+  <option value="IsIdenticalTo">IsIdenticalTo</option>
+  <option value="IsReviewedBy">IsReviewedBy</option>
+  <option value="Reviews">Reviews</option>
+  <option value="IsDerivedFrom">IsDerivedFrom</option>
+  <option value="IsSourceOf">IsSourceOf</option>
+  <option value="IsRequiredBy">IsRequiredBy</option>
+  <option value="Requires">Requires</option>
+  <option value="IsObsoletedBy">IsObsoletedBy</option>
+  <option value="Obsoletes">Obsoletes</option>
+</select>
