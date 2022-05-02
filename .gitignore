@@ -10,6 +10,7 @@ dist
 src/Users
 semantic
 semantic.json
+.env
 
 *.pyc
 src/package-lock.json
