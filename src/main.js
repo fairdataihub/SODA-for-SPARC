@@ -12,8 +12,6 @@ const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
 
-
-
 log.transports.console.level = false;
 log.transports.file.level = "debug";
 autoUpdater.channel = "latest";
@@ -68,7 +66,7 @@ const createPyProc = async () => {
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc =  require("child_process").execFile(script, [port], {
+    pyProc = require("child_process").execFile(script, [port], {
       stdio: "ignore",
     });
   } else {
