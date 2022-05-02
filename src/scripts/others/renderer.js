@@ -3848,7 +3848,7 @@ function loadDefaultAccount() {
       log.error(error);
       console.error(error);
       confirm_click_account_function();
-      console.log("Could not get default account")
+      console.log("Could not get default account");
     } else {
       if (res.length > 0) {
         var myitemselect = res[0];

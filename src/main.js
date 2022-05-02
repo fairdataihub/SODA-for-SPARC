@@ -42,7 +42,7 @@ const getScriptPath = () => {
   if (process.platform === "win32") {
     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
   } else if (process.platform === "darwin") {
-    console.log(path.join(__dirname, PY_DIST_FOLDER, PY_MODULE))
+    console.log(path.join(__dirname, PY_DIST_FOLDER, PY_MODULE));
     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE);
   }
 
@@ -163,11 +163,9 @@ function initialize() {
   };
 
   app.on("ready", async () => {
-
-    console.log("Creating pyProc")
-    await createPyProc()
-    console.log("PyProc created")
-    
+    console.log("Creating pyProc");
+    await createPyProc();
+    console.log("PyProc created");
 
     const windowOptions = {
       minWidth: 1121,
