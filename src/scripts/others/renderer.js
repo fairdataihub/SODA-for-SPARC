@@ -3735,7 +3735,6 @@ function refreshBfUsersList() {
   bfListUsersPI.appendChild(optionUserPI);
 
   if (accountSelected !== "Select") {
-    await wait(5000)
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error) {
         log.error(error);
