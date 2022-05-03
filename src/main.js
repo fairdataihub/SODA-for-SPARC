@@ -43,6 +43,9 @@ const getScriptPath = () => {
   }
   if (process.platform === "win32") {
     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
+  } else if (process.platform === "darwin") {
+    console.log(path.join(__dirname, PY_DIST_FOLDER, PY_MODULE));
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE);
   }
 
   return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
@@ -91,14 +94,7 @@ const exitPyProc = () => {
   pyPort = null;
 };
 
-pyProc.on("exit", (code, signal) => {
-  console.log("child process exited with " + code);
-  log.info("child process exited with " + code);
-  pyProc = null;
-  pyPort = null;
-});
-
-app.on("ready", createPyProc);
+// app.on("ready", createPyProc);
 app.on("will-quit", exitPyProc);
 
 /*************************************************************
@@ -168,7 +164,11 @@ function initialize() {
     }
   };
 
-  app.on("ready", () => {
+  app.on("ready", async () => {
+    console.log("Creating pyProc");
+    await createPyProc();
+    console.log("PyProc created");
+
     const windowOptions = {
       minWidth: 1121,
       minHeight: 735,
@@ -241,11 +241,6 @@ function initialize() {
     // if (process.platform !== 'darwin') {
     app.quit();
     // }
-  });
-
-  app.on("uncaughtException", function (err) {
-    //log the message and stack trace
-    console.log(err);
   });
 }
 
