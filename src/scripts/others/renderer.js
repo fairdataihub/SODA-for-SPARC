@@ -221,8 +221,8 @@ ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
 const serverIsLive = async () => {
   let notification = notyf.open({
     message: "Checking if SODA server is live",
-    type: 'checking_server_is_live'
-  })
+    type: "checking_server_is_live",
+  });
   return new Promise((resolve, reject) => {
     client.invoke("echo", "server ready", async (error, res) => {
       if (error || res !== "server ready") {
