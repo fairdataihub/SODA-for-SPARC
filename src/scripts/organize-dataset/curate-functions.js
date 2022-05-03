@@ -650,8 +650,7 @@ function loadProgressFile(ev) {
 const verify_missing_files = (mode) => {
   let missing_files = missing_metadata_files.concat(missing_dataset_files);
   let message_text = "";
-  message_text =
-    "The following files have been moved or deleted since this progress file was saved. Would you like SODA to ignore these files and continue? <br><br><ul>";
+  message_text = "<ul>";
 
   for (let item in missing_files) {
     message_text += `<li>${missing_files[item]}</li>`;
@@ -662,17 +661,29 @@ const verify_missing_files = (mode) => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
     cancelButtonText: "Cancel",
-    confirmButtonText: "OK",
+    confirmButtonText: "Continue",
     heightAuto: false,
+    title:
+      "The following files have been moved, deleted, or renamed since this progress was saved. If you continue, they will be ignored",
     icon: "warning",
     reverseButtons: reverseSwalButtons,
     showCancelButton: true,
-    text: message_text,
+    html: message_text,
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
+    },
+    didOpen() {
+      document.getElementById("swal2-title").parentNode.parentNode.style.width =
+        "600px";
+      document.getElementById("swal2-content").style.overflowY = "scroll";
+      document.getElementById("swal2-content").style.height = "500px";
+      document.getElementById(
+        "swal2-title"
+      ).parentNode.parentNode.children[1].style.whiteSpace = "nowrap";
+      // document.getElementById("swal2-content").style.
     },
   }).then((result) => {
     if (result.isConfirmed) {
