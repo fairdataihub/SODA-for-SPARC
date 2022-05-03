@@ -679,7 +679,7 @@ const verify_missing_files = (mode) => {
       document.getElementById("swal2-title").parentNode.parentNode.style.width =
         "600px";
       document.getElementById("swal2-content").style.overflowY = "scroll";
-      document.getElementById("swal2-content").style.height = "500px";
+      document.getElementById("swal2-content").style.height = "400px";
       document.getElementById(
         "swal2-title"
       ).parentNode.parentNode.children[1].style.whiteSpace = "nowrap";
@@ -1919,9 +1919,9 @@ async function moveItems(ev, category) {
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
       "manifest.xlsx" in
-        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
+      "manifest.xlsx"
       ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
