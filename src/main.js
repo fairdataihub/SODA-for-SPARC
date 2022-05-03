@@ -11,6 +11,8 @@ const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
+const execFile = util.promisify(require('child_process').execFile);
+
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
@@ -51,7 +53,7 @@ const selectPort = () => {
   return pyPort;
 };
 
-const createPyProc = () => {
+const createPyProc = async () => {
   let script = getScriptPath();
   let port = "" + selectPort();
 
@@ -63,7 +65,7 @@ const createPyProc = () => {
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc = require("child_process").execFile(script, [port], {
+    pyProc = await execFile(script, [port], {
       stdio: "ignore",
     });
   } else {
