@@ -232,7 +232,7 @@ let update_downloaded_notification = "";
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   // notify the user that the application is starting connecting to the server
-  await Swal.fire({
+  Swal.fire({
     icon: "info",
     title: `Connecting to the SODA server`,
     heightAuto: false,
@@ -250,14 +250,17 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // this will give Mac users more time before receiving a backend server error message
   // ( during the wait period the server should start )
   // Bonus:  doesn't stop Windows and Linux users from starting right away
+  // NOTE: backOff is bad at surfacing errors to the console
   try {
-    await backOff(serverIsLiveStartup, {
-      delayFirstAttempt: true,
+    let res = await backOff(serverIsLiveStartup, {
+      delayFirstAttempt: false,
       startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 second max wait time
       timeMultiple: 2,
       numOfAttempts: 5,
       maxDelay: 16000 // 16 seconds max wait time
     })
+
+    console.log("DOne now result is: ", res)
   } catch (e) {
     // SWAL that the server needs to be restarted for the app to work
     await Swal.fire({
@@ -274,6 +277,24 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     app.relaunch()
     app.exit()
   }
+
+  Swal.fire({
+    title: "Connected to the SODA server",
+    icon: "success",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "OK",
+    allowOutsideClick: true,
+    allowEscapeKey: true,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  })
+
+  await wait(1000)
 
   sodaIsConnected = true
   run_pre_flight_checks()
@@ -512,10 +533,10 @@ const serverIsLive = async () => {
 };
 
 const serverIsLiveStartup = () => {
-  return new Promise(resolve, reject => {
-    client.invoke("echo", "server ready", async (error, res) => {
+  return new Promise((resolve, reject) => {
+    client.invoke("echo", "server ready", (error, res) => {
       if (error || res !== "server ready") {
-        console.log("Server error")
+        console.error(error)
         reject(false)
       } else {
         resolve(true)
