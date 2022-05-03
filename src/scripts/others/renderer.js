@@ -52,9 +52,9 @@ const axios = require("axios").default;
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
 
-const { backOff } = require("exponential-backoff")
+const { backOff } = require("exponential-backoff");
 
-console.log(`Back off is:`, backOff)
+console.log(`Back off is:`, backOff);
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
@@ -520,9 +520,9 @@ const serverIsLiveStartup = () => {
       } else {
         resolve(true)
       }
-    })
-  })
-}
+    });
+  });
+};
 
 // Check if the Pysoda server API version and the package.json versions match
 const apiVersionsMatch = async () => {
