@@ -1853,13 +1853,7 @@ async function transitionSubQuestionsButton(
     $("#bf-dataset-spinner").css("visibility", "visible");
     var result;
     try {
-      console.log(sodaJSONObj);
-      let start_time = performance.now();
       var res = await bf_request_and_populate_dataset(sodaJSONObj);
-      let end_time = performance.now();
-      console.log(
-        `Duration of old function: ${end_time - start_time} milliseconds`
-      );
       result = [true, res];
     } catch (err) {
       result = [false, err];

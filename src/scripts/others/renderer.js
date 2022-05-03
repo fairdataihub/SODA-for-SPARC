@@ -6701,7 +6701,6 @@ ipcRenderer.on(
               progressBar_rightSide.style.transform = `rotate(0deg)`;
               let numb = document.getElementById("local_dataset_number");
               numb.innerText = "0%";
-              console.log(numb);
 
               action = "";
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
@@ -7773,8 +7772,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 var bf_request_and_populate_dataset = async (sodaJSONObj) => {
-  let jwt = await get_access_token();
-  console.log(jwt);
   let progress_container = document.getElementById("loading_pennsieve_dataset");
   let percentage_text = document.getElementById(
     "pennsieve_loading_dataset_percentage"
@@ -7811,7 +7808,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
           }deg)`;
         }
 
-        console.log(percentage_amount + "%");
         if (finished === 1) {
           percentage_amount.innerText = "100%";
           left_progress_bar.style.transform = `rotate(180deg)`;
@@ -7826,7 +7822,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
   }
 
   return new Promise((resolve, reject) => {
-    let start_time = performance.now();
     client.invoke("api_import_pennsieve_dataset", sodaJSONObj, (error, res) => {
       if (error) {
         reject(userError(error));
@@ -7839,12 +7834,6 @@ var bf_request_and_populate_dataset = async (sodaJSONObj) => {
           defaultBfDatasetId
         );
       } else {
-        let end_time = performance.now();
-        console.log(
-          `Duration of new function: ${end_time - start_time} milliseconds`
-        );
-        console.log("resolve should be handled here");
-        console.log(res);
         if (res[3] == res[4]) {
           document.getElementById(
             "pennsieve_loading_dataset_percentage"
@@ -8940,9 +8929,6 @@ const update_dataset_tags = async (datasetIdOrName, tags) => {
 
   // grab the dataset's id
   const id = dataset["content"]["id"];
-  console.log(id);
-  console.log(dataset);
-  console.log(jwt);
   // setup the request options
   let options = {
     method: "PUT",
@@ -9074,8 +9060,6 @@ const updateDatasetReadme = async (datasetIdOrName, updatedReadme) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-  console.log(id);
-  console.log(dataset);
   // put the new readme data in the readme on Pennsieve
   options = {
     method: "PUT",
@@ -9264,8 +9248,6 @@ const submitDatasetForPublication = async (
     `https://api.pennsieve.io/datasets/${id}/publication/request` + queryString,
     options
   );
-  console.log(dataset);
-  console.log(id);
   // get the status code out of the response
   let statusCode = publicationResponse.status;
 
@@ -9349,13 +9331,10 @@ const withdrawDatasetReviewSubmission = async (datasetIdOrName) => {
     // add the required publication type
     queryString = `?publicationType=publication`;
   }
-  console.log(dataset);
-  console.log(id);
   let withdrawResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/publication/cancel${queryString}`,
     options
   );
-  console.log(withdrawResponse);
   // get the status code out of the response
   let statusCode = withdrawResponse.status;
 
@@ -9432,8 +9411,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
 
   let { id } = dataset["content"];
-  console.log(id);
-  console.log(dataset);
   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
   let bannerResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/banner`,
@@ -9445,7 +9422,6 @@ const getDatasetBannerImageURL = async (datasetIdOrName) => {
       },
     }
   );
-  console.log(bannerResponse);
   // get the status code out of the response
   let statusCode = bannerResponse.status;
 
@@ -9503,14 +9479,11 @@ const getCurrentUserPermissions = async (datasetIdOrName) => {
 
   // get the id out of the dataset
   let id = dataset.content.id;
-  console.log(dataset.content);
   // get the user's permissions
   let permissionsResponse = await fetch(
     `https://api.pennsieve.io/datasets/${id}/role`,
     { headers: { Authorization: `Bearer ${jwt}` } }
   );
-  console.log(permissionsResponse);
-  console.log(id);
   // get the status code out of the response
   let statusCode = permissionsResponse.status;
 
@@ -9711,8 +9684,6 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-  console.log(excludedFilesResponse);
-  console.log(id);
   // get the status code
   let statusCode = excludedFilesResponse.status;
 
@@ -9778,8 +9749,6 @@ const updateDatasetExcludedFiles = async (datasetIdOrName, files) => {
     `https://api.pennsieve.io/datasets/${id}/ignore-files`,
     options
   );
-  console.log(excludeFilesResponse);
-  console.log(id);
   // check the status code
   let { status } = excludeFilesResponse;
   switch (status) {
@@ -9834,8 +9803,6 @@ const getDatasetMetadataFiles = async (datasetIdOrName) => {
       headers: { Authorization: `Bearer ${jwt}` },
     }
   );
-  console.log(datasetWithChildrenResponse);
-  console.log(id);
   // check the status code
   let { status } = datasetWithChildrenResponse;
   switch (status) {
