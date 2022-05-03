@@ -406,8 +406,8 @@ const wait = async (delay) => {
 const serverIsLive = async () => {
   let notification = notyf.open({
     message: "Checking if SODA server is live",
-    type: 'checking_server_is_live'
-  })
+    type: "checking_server_is_live",
+  });
   return new Promise((resolve, reject) => {
     client.invoke("echo", "server ready", async (error, res) => {
       if (error || res !== "server ready") {
@@ -462,8 +462,8 @@ const apiVersionsMatch = async () => {
   // notyf that tells the user that the server is checking the versions
   let notification = notyf.open({
     message: "Checking API Version",
-    type: 'checking_server_api_version'
-  })
+    type: "checking_server_api_version",
+  });
 
   return new Promise((resolve, reject) => {
     client.invoke("api_version_check", async (error, res) => {
@@ -485,29 +485,29 @@ const apiVersionsMatch = async () => {
           confirmButtonText: "Close now",
           allowOutsideClick: false,
           allowEscapeKey: false,
-        })
+        });
 
         return reject();
       } else {
         ipcRenderer.send("track-event", "Success", "Verifying App Version");
 
-        notyf.dismiss(notification)
+        notyf.dismiss(notification);
 
         // create a success notyf for api version check
         notyf.open({
           message: "API Versions match",
           type: "success",
-        })
+        });
 
         //Load Default/global Pennsieve account if available
         updateBfAccountList();
         checkNewAppVersion(); // Added so that version will be displayed for new users
 
-        return resolve()
+        return resolve();
       }
     });
-  })
-}
+  });
+};
 
 const check_internet_connection = async (show_notification = true) => {
   let notification = null;
@@ -520,33 +520,33 @@ const check_internet_connection = async (show_notification = true) => {
   await wait(800);
 
   return require("dns").resolve("www.google.com", (err) => {
-      if (err) {
-        console.error("No internet connection");
-        log.error("No internet connection");
-        ipcRenderer.send("warning-no-internet-connection");
-        if (show_notification) {
-          notyf.dismiss(notification);
-          notyf.open({
-            type: "error",
-            message: "Not connected to internet",
-          });
-        }
-        connected_to_internet = false;
-        return connected_to_internet
-      } else {
-        console.log("Connected to the internet");
-        log.info("Connected to the internet");
-        if (show_notification) {
-          notyf.dismiss(notification);
-          notyf.open({
-            type: "success",
-            message: "Connected to the internet",
-          });
-        }
-        connected_to_internet = true;
-        return connected_to_internet
+    if (err) {
+      console.error("No internet connection");
+      log.error("No internet connection");
+      ipcRenderer.send("warning-no-internet-connection");
+      if (show_notification) {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "error",
+          message: "Not connected to internet",
+        });
       }
-    }); 
+      connected_to_internet = false;
+      return connected_to_internet;
+    } else {
+      console.log("Connected to the internet");
+      log.info("Connected to the internet");
+      if (show_notification) {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "success",
+          message: "Connected to the internet",
+        });
+      }
+      connected_to_internet = true;
+      return connected_to_internet;
+    }
+  });
 };
 
 const check_api_key = async () => {
