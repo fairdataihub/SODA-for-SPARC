@@ -88,7 +88,7 @@ log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
 const SODA_SPARC_API_KEY = "SODA-Pennsieve";
-let sodaIsConnected = false
+let sodaIsConnected = false;
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
@@ -230,7 +230,6 @@ let update_downloaded_notification = "";
 
 // Check app version on current app and display in the side bar
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
-
   // notify the user that the application is starting connecting to the server
   Swal.fire({
     icon: "info",
@@ -274,8 +273,8 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     });
 
     // Restart the app
-    app.relaunch()
-    app.exit()
+    app.relaunch();
+    app.exit();
   }
 
   Swal.fire({
@@ -539,7 +538,7 @@ const serverIsLiveStartup = () => {
         console.error(error)
         reject(false)
       } else {
-        resolve(true)
+        resolve(true);
       }
     });
   });
@@ -4617,12 +4616,11 @@ var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name
 (async () => {
   // wait until soda is connected to the backend server
   while (!sodaIsConnected) {
-    await wait(1000)
+    await wait(1000);
   }
 
   retrieveBFAccounts();
-})()
-
+})();
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options

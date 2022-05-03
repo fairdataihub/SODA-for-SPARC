@@ -2,8 +2,6 @@ from __future__ import print_function
 from logging import root
 from gevent import monkey
 
-raise Exception("Test Exception")
-
 monkey.patch_all()
 import gevent
 from pysoda import (
