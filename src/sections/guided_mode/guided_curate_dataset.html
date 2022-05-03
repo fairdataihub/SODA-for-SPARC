@@ -2153,9 +2153,7 @@
             class="guided--panel hidden"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Draft your README file below:
-              </h1>
+              <h1 class="guided--text-sub-step">Create a README.txt file</h1>
               <p class="guided--help-text w-100 text-left">
                 The README file is a plain text file provided by investigators
                 that contains neccessary details for the reuse of the data
@@ -2200,6 +2198,13 @@
                 </li>
               </ul>
               <div class="guided--input-container">
+                <h2 class="guided--text-sub-step">
+                  Draft your CHANGES.txt file below:
+                </h2>
+
+                <p class="guided--text-input-instructions mb-0">
+                  <b>Please refrain from using markdown.</b>
+                </p>
                 <textarea
                   class="guided--input guided--text-area-tall"
                   type="text"
@@ -2208,18 +2213,17 @@
                   id="guided-textarea-create-readme"
                 ></textarea>
                 <p class="guided--text-input-instructions mb-0">
-                  If any changes have been made to your dataset since it's
-                  previous upload, please indicate them.
-                  <b>Please refrain from using markdown.</b>
+                  Provide details neccessary for the reuse of the dataset beyond
+                  the dataset's metadata.
                 </p>
               </div>
-              <button
+              <!--<button
                 id="guided-generate-readme-file"
                 class="btn_animated"
                 style="width: 200px; border: none !important"
               >
                 Generate ReadMe file
-              </button>
+              </button>-->
             </div>
           </div>
           <div
@@ -2227,15 +2231,19 @@
             class="guided--panel hidden"
           >
             <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Draft your CHANGES file below:
-              </h1>
+              <h1 class="guided--text-sub-step">Create a CHANGES.txt file</h1>
               <p class="guided--help-text w-100 text-left">
                 The CHANGES file is a plain text file <b>required</b> if a new
                 version of the dataset is uploaded to document any changes from
                 the previous version.
               </p>
               <div class="guided--input-container">
+                <h2 class="guided--text-sub-step">
+                  Draft your CHANGES file below:
+                </h2>
+                <p class="guided--text-input-instructions mb-0">
+                  <b>Please refrain from using markdown.</b>
+                </p>
                 <textarea
                   class="guided--input guided--text-area-tall"
                   type="text"
@@ -2244,16 +2252,17 @@
                   id="guided-textarea-create-changes"
                 ></textarea>
                 <p class="guided--text-input-instructions mb-0">
-                  <b>Please refrain from using markdown.</b>
+                  Please indicate any changes that have been made to your
+                  dataset since its previous upload.
                 </p>
               </div>
-              <button
+              <!--<button
                 id="guided-generate-changes-file"
                 class="btn_animated"
                 style="width: 200px; border: none !important"
               >
                 Generate Changes file
-              </button>
+              </button>-->
             </div>
           </div>
           <div
