@@ -88,6 +88,7 @@ log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
 const SODA_SPARC_API_KEY = "SODA-Pennsieve";
+let sodaIsConnected = false
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
@@ -229,28 +230,35 @@ let update_downloaded_notification = "";
 
 // Check app version on current app and display in the side bar
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
+
+  // notify the user that the application is starting connecting to the server
+  await Swal.fire({
+    icon: "info",
+    title: `Connecting to the SODA server`,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Restart now",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
   // Darwin executable starts slowly
   // use an exponential backoff to wait for the app server to be ready
   // this will give Mac users more time before receiving a backend server error message
   // ( during the wait period the server should start )
   // Bonus:  doesn't stop Windows and Linux users from starting right away
-  let connected;
   try {
-    connected = await backOff(() => serverIsLiveStartup, {
-      delayFirstAttempt: false,
+    await backOff(serverIsLiveStartup, {
+      delayFirstAttempt: true,
       startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 second max wait time
       timeMultiple: 2,
-      numOfAttempts: 5
+      numOfAttempts: 5,
+      maxDelay: 16000 // 16 seconds max wait time
     })
   } catch (e) {
-    console.log("Error:", e)
-  }
-
-  // Check if the app is connected to the internet 
-  // else we reached the max retry attempts
-  if (connected) {
-    run_pre_flight_checks()
-  } else {
     // SWAL that the server needs to be restarted for the app to work
     await Swal.fire({
       icon: "error",
@@ -261,8 +269,14 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
       allowOutsideClick: false,
       allowEscapeKey: false,
     });
+
+    // Restart the app
+    app.relaunch()
+    app.exit()
   }
 
+  sodaIsConnected = true
+  run_pre_flight_checks()
 })
 
 
@@ -442,7 +456,7 @@ const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
-// Check if the Pysoda server is running
+// // Check if the Pysoda server is running
 const serverIsLive = async () => {
   let notification = notyf.open({
     message: "Checking if SODA server is live",
@@ -497,14 +511,14 @@ const serverIsLive = async () => {
   });
 };
 
-const serverIsLiveStartup = async () => {
-  console.log("Server being talked to")
-  return new Promise((resolve, reject) => {
+const serverIsLiveStartup = () => {
+  return new Promise(resolve, reject => {
     client.invoke("echo", "server ready", async (error, res) => {
       if (error || res !== "server ready") {
-        return reject(false);
+        console.log("Server error")
+        reject(false)
       } else {
-        return resolve(true);
+        resolve(true)
       }
     })
   })
@@ -4578,13 +4592,23 @@ var bfAddAccountBootboxMessage = `<form>
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover"  id="add-bf-account-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
-retrieveBFAccounts();
+// once connected to SODA get the user's accounts
+(async () => {
+  // wait until soda is connected to the backend server
+  while (!sodaIsConnected) {
+    await wait(1000)
+  }
+
+  retrieveBFAccounts();
+})()
+
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
-function retrieveBFAccounts() {
+async function retrieveBFAccounts() {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
+
   client.invoke("api_bf_account_list", (error, res) => {
     if (error) {
       log.error(error);
