@@ -7452,6 +7452,8 @@ async function initiate_generate() {
           }
         });
         console.error(error);
+        //Clear the interval to stop the generation of new sweet alerts after intitial error
+        clearInterval(timerProgress);
       } else {
         main_curate_status = res[0];
         var start_generate = res[1];

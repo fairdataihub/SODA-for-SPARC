@@ -2767,6 +2767,11 @@ $("#button-submit-dataset").click(async () => {
   const monitorBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_bf_submit_dataset_upload_details", (err, res) => {
+      if (err) {
+        console.log(err);
+        //Clear the interval to stop the generation of new sweet alerts after intitial error
+        clearInterval(uploadDetailsTimer);
+      }
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[4] > uploadedFolders) {
         uploadedFiles = res[0];
