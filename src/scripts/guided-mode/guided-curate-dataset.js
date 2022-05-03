@@ -462,29 +462,7 @@ const traverseToTab = (targetPageID) => {
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
       renderAdditionalLinksTable();
-      //check for subjects in the sodajsonObj, set number of subjects in description metadata
-      //Table and disable the table
-      const subjects = guidedGetSubjects();
-      if (subjects.length != 0) {
-        const numDatasetSubjects = document.getElementById(
-          "guided-ds-subjects-no"
-        );
-        numDatasetSubjects.value = subjects.length;
-        numDatasetSubjects.disabled = true;
-      }
-      //Check if there's samples in the sodaJSONObj, set number of samples in description metadata
-      //table and disable the table
-      let samplesCount = 0;
-      for (let subject of subjects) {
-        samplesCount += guidedGetSubjectSamples(subject).length;
-      }
-      if (samplesCount != 0) {
-        const numDatasetSamplesInput = document.getElementById(
-          "guided-ds-samples-no"
-        );
-        numDatasetSamplesInput.value = samplesCount;
-        numDatasetSamplesInput.disabled = true;
-      }
+
       //set study purpose, data collection, and primary conclusion from sodajsonObj
       const studyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
       const dataCollection = sodaJSONObj["digital-metadata"]["data-collection"];
@@ -1017,7 +995,6 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
           type="button"
           class="btn btn-primary btn-sm"
           style="
-            background-color: var(--color-light-green) !important;
             margin-right: 5px;
           "
           onclick="editLink($(this))"
@@ -1026,7 +1003,7 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
         </button>
         <button
           type="button"
-          class="btn btn-primary btn-sm"
+          class="btn btn-danger btn-sm"
           onclick="deleteLink($(this))"
         >   
           Delete link
@@ -1035,6 +1012,8 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
     </tr>
   `;
 };
+
+const deleteAdditionalLink = (deleteLinkRowButton) => {};
 const generateContributorField = (
   contributorLastName,
   contributorFirstName,
