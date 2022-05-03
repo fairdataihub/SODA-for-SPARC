@@ -11,6 +11,7 @@ const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
+const util = require("util");
 const execFile = util.promisify(require('child_process').execFile);
 
 
