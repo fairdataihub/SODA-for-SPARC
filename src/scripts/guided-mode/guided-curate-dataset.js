@@ -240,7 +240,11 @@ const setActiveCapsule = (targetPageID) => {
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
   console.log(targetCapsuleID);
   let targetCapsule = $(`#${targetCapsuleID}`);
-  console.log(targetCapsule);
+  //check if targetCapsule parent has the class guided--capsule-container-branch
+  if (targetCapsule.parent().hasClass("guided--capsule-container-branch")) {
+    $(".guided--capsule-container-branch").hide();
+    targetCapsule.parent().css("display", "flex");
+  }
   targetCapsule.addClass("active");
 };
 setActiveProgressionTab = (targetPageID) => {
@@ -2891,7 +2895,7 @@ $(document).ready(() => {
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-create-description-metadata-tab");
+      traverseToTab("guided-add-code-metadata-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
