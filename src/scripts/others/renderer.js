@@ -258,11 +258,9 @@ const run_pre_flight_checks = async (check_update = true) => {
     let account_present = false;
 
     // check if the backend service is working
-    let live = await serverIsLive();
-
-    console.log("Live value is: ", live);
-
-    if (!live) {
+    try {
+      await serverIsLive();
+    } catch (e) {
       app.relaunch();
       app.exit();
     }
