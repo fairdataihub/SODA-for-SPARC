@@ -99,74 +99,6 @@ console.log("Current SODA version:", appVersion);
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
-client.invoke("echo", "server ready", (error, res) => {
-  if (error || res !== "server ready") {
-    log.error(error);
-    console.error(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Establishing Python Connection",
-      error
-    );
-    Swal.fire({
-      icon: "error",
-      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        app.relaunch();
-        app.exit();
-      }
-    });
-  } else {
-    console.log("Connected to Python back-end successfully");
-    log.info("Connected to Python back-end successfully");
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Establishing Python Connection"
-    );
-
-    // verify backend api versions
-    client.invoke("api_version_check", (error, res) => {
-      if (error || res !== appVersion) {
-        log.error(error);
-        console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Verifying App Version",
-          error
-        );
-
-        Swal.fire({
-          icon: "error",
-          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Close now",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            app.exit();
-          }
-        });
-      } else {
-        ipcRenderer.send("track-event", "Success", "Verifying App Version");
-
-        //Load Default/global Pennsieve account if available
-        updateBfAccountList();
-        checkNewAppVersion(); // Added so that version will be displayed for new users
-      }
-    });
-  }
-});
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -174,6 +106,26 @@ const notyf = new Notyf({
   dismissible: true,
   ripple: false,
   types: [
+    {
+      type: "checking_server_is_live",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 1000,
+    },
+    {
+      type: "checking_server_api_version",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 1000,
+    },
     {
       type: "loading_internet",
       background: "grey",
@@ -284,21 +236,45 @@ const run_pre_flight_checks = async (check_update = true) => {
     let agent_version_response = "";
     let account_present = false;
 
+    // check if the backend service is working
+    try {
+      await serverIsLive();
+    } catch (e) {
+      app.relaunch();
+      app.exit();
+    }
+
+    // check if the API versions match
+    try {
+      await apiVersionsMatch();
+    } catch (e) {
+      // api versions do not match
+      app.exit();
+    }
+
     // Check the internet connection and if available check the rest.
     connection_response = await check_internet_connection();
     if (!connection_response) {
-      Swal.fire({
-        icon: "error",
+      await Swal.fire({
+        title: "No Internet Connection",
+        icon: "success",
         text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "I understand",
+        showConfirmButton: true,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then(async (result) => {
         if (result.isConfirmed) {
           // Do nothing
         }
       });
-      resolve(false);
+      return resolve(false);
     } else {
       await wait(500);
 
@@ -426,6 +402,113 @@ const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
+// Check if the Pysoda server is running
+const serverIsLive = async () => {
+  let notification = notyf.open({
+    message: "Checking if SODA server is live",
+    type: "checking_server_is_live",
+  });
+  return new Promise((resolve, reject) => {
+    client.invoke("echo", "server ready", async (error, res) => {
+      if (error || res !== "server ready") {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Establishing Python Connection",
+          error
+        );
+
+        // wait for the user to press the confirm button
+        // don't allow other checks to happen
+        await Swal.fire({
+          icon: "error",
+          html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Restart now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        });
+
+        return reject(false);
+      } else {
+        console.log("Connected to Python back-end successfully");
+        log.info("Connected to Python back-end successfully");
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Establishing Python Connection"
+        );
+
+        // hide the server notification
+        notyf.dismiss(notification);
+
+        // show the success notification
+        notyf.open({
+          message: "Connected to SODA server",
+          type: "success",
+        });
+
+        return resolve(true);
+      }
+    });
+  });
+};
+
+// Check if the Pysoda server API version and the package.json versions match
+const apiVersionsMatch = async () => {
+  // notyf that tells the user that the server is checking the versions
+  let notification = notyf.open({
+    message: "Checking API Version",
+    type: "checking_server_api_version",
+  });
+
+  return new Promise((resolve, reject) => {
+    client.invoke("api_version_check", async (error, res) => {
+      if (error || res !== appVersion) {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Verifying App Version",
+          error
+        );
+
+        await Swal.fire({
+          icon: "error",
+          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Close now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        });
+
+        return reject();
+      } else {
+        ipcRenderer.send("track-event", "Success", "Verifying App Version");
+
+        notyf.dismiss(notification);
+
+        // create a success notyf for api version check
+        notyf.open({
+          message: "API Versions match",
+          type: "success",
+        });
+
+        //Load Default/global Pennsieve account if available
+        updateBfAccountList();
+        checkNewAppVersion(); // Added so that version will be displayed for new users
+
+        return resolve();
+      }
+    });
+  });
+};
+
 const check_internet_connection = async (show_notification = true) => {
   let notification = null;
   if (show_notification) {
@@ -435,6 +518,7 @@ const check_internet_connection = async (show_notification = true) => {
     });
   }
   await wait(800);
+
   return require("dns").resolve("www.google.com", (err) => {
     if (err) {
       console.error("No internet connection");
@@ -3848,6 +3932,7 @@ function loadDefaultAccount() {
       log.error(error);
       console.error(error);
       confirm_click_account_function();
+      console.log("Could not get default account");
     } else {
       if (res.length > 0) {
         var myitemselect = res[0];
