@@ -923,6 +923,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
+    [];
   sodaJSONObj["dataset-metadata"]["readMe-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["changes-metadata"] = {};
   sodaJSONObj["digital-metadata"] = {};
@@ -997,6 +999,42 @@ const updateFolderStructureUI = (pageDataObj) => {
   );
 };
 //Description metadata functions
+const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
+  return `
+    <tr>
+      <td class="middle aligned collapsing">
+        ${link}
+      </td>
+      <td class="middle aligned collapsing">
+        ${linkType}
+      </td>
+      <td class="middle aligned collapsing">
+        ${linkRelation}
+      </td>
+
+      <td class="middle aligned collapsing text-center">
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          style="
+            background-color: var(--color-light-green) !important;
+            margin-right: 5px;
+          "
+          onclick="editLink($(this))"
+        >
+          Edit link
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          onclick="deleteLink($(this))"
+        >   
+          Delete link
+        </button>
+      </td>
+    </tr>
+  `;
+};
 const generateContributorField = (
   contributorLastName,
   contributorFirstName,
@@ -1272,8 +1310,19 @@ const renderAdditionalLinksTable = () => {
     "additional-links-table-body"
   );
   const additionalLinkData =
-    sodaJSONObj["dataset-metadata"]["additional-links"];
-  if (additionalLinkData) {
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
+  if (additionalLinkData.length != 0) {
+    const additionalLinkElements = additionalLinkData
+      .map((link) => {
+        console.log(link);
+        return generateadditionalLinkRowElement(
+          link.link,
+          link.linkType,
+          link.relation
+        );
+      })
+      .join("\n");
+    additionalLinksTableBody.innerHTML = additionalLinkElements;
   } else {
     const emptyRowWarning = generateAlertElement(
       "warning",
@@ -1383,64 +1432,26 @@ const openAddAdditionLinkSwal = async () => {
     },
   });
   if (values) {
-    const generateadditionalLinkRowElement = (
-      link,
-      linkRelation,
-      linkDescription
-    ) => {
-      let linkType = null;
-      //check if link starts with "https://"
-      if (link.startsWith("https://doi.org/")) {
-        linkType = "DOI";
-      } else {
-        linkType = "URL";
-      }
-
-      return `
-    <tr>
-      <td class="middle aligned">
-        ${link}
-      </td>
-      <td class="middle aligned collapsing">
-        ${linkType}
-      </td>
-      <td class="middle aligned collapsing">
-        ${linkRelation}
-      </td>
-
-      <td class="middle aligned collapsing text-center">
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          style="
-            background-color: var(--color-light-green) !important;
-            margin-right: 5px;
-          "
-          onclick="editLink($(this))"
-        >
-          Edit link
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          onclick="deleteLink($(this))"
-        >   
-          Delete link
-        </button>
-      </td>
-    </tr>
-  `;
-    };
-    let additionalRow = generateadditionalLinkRowElement(
-      values[0],
-      values[1],
-      values[2]
-    );
-    const additionalLinksTableBody = document.getElementById(
-      "additional-links-table-body"
-    );
-    //append additionalRow to addtionalLinkRowTable
-    additionalLinksTableBody.innerHTML = additionalRow;
+    const link = values[0];
+    const relation = values[1];
+    let linkType = null;
+    //check if link starts with "https://"
+    if (link.startsWith("https://doi.org/")) {
+      linkType = "DOI";
+    } else {
+      linkType = "URL";
+    }
+    const description = values[2];
+    //add link to jsonObj
+    sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "additional-links"
+    ].push({
+      link: link,
+      relation: relation,
+      description: description,
+      linkType: linkType,
+    });
+    renderAdditionalLinksTable();
   }
 };
 /*const addOtherLinkField = () => {
