@@ -99,76 +99,7 @@ console.log("Current SODA version:", appVersion);
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
-client.invoke("echo", "server ready", async (error, res) => {
-  if (error || res !== "server ready") {
-    log.error(error);
-    console.error(error);
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Establishing Python Connection",
-      error
-    );
 
-    // wait for the user to press the confirm button
-    // don't allow other checks to happen
-    await Swal.fire({
-      icon: "error",
-      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    })
-
-    // relaunch the app
-    app.relaunch()
-    app.exit()
-  } else {
-    console.log("Connected to Python back-end successfully");
-    log.info("Connected to Python back-end successfully");
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Establishing Python Connection"
-    );
-
-    // verify backend api versions
-    client.invoke("api_version_check", (error, res) => {
-      if (error || res !== appVersion) {
-        log.error(error);
-        console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Verifying App Version",
-          error
-        );
-
-        Swal.fire({
-          icon: "error",
-          html: `The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Close now",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            app.exit();
-          }
-        });
-      } else {
-        ipcRenderer.send("track-event", "Success", "Verifying App Version");
-
-        //Load Default/global Pennsieve account if available
-        updateBfAccountList();
-        checkNewAppVersion(); // Added so that version will be displayed for new users
-      }
-    });
-  }
-});
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -278,6 +209,47 @@ ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
   run_pre_flight_checks();
 });
 
+const serverIsLive = async () => {
+  return new Promise((resolve, reject) => {
+    client.invoke("echo", "server ready", async (error, res) => {
+      if (error || res !== "server ready") {
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Establishing Python Connection",
+          error
+        );
+
+        // wait for the user to press the confirm button
+        // don't allow other checks to happen
+        await Swal.fire({
+          icon: "error",
+          html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Restart now",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        })
+
+        return reject(false)
+      } else {
+        console.log("Connected to Python back-end successfully");
+        log.info("Connected to Python back-end successfully");
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Establishing Python Connection"
+        );
+
+        return resolve(true)
+      }
+    });
+  })
+}
+
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   return new Promise(async (resolve) => {
@@ -285,6 +257,17 @@ const run_pre_flight_checks = async (check_update = true) => {
     let agent_installed_response = "";
     let agent_version_response = "";
     let account_present = false;
+
+
+    // check if the backend service is working
+    let live = await serverIsLive()
+
+    console.log("Live value is: ", live)
+
+    if (!live) {
+      app.relaunch()
+      app.exit()
+    }
 
     // Check the internet connection and if available check the rest.
     connection_response = await check_internet_connection();
