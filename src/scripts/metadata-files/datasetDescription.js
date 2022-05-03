@@ -2701,9 +2701,9 @@ function loadRelatedInfoToTable(array) {
     if (arr[2].trim() !== "") {
       var protocolBoolean = protocolCheck(arr);
       if (protocolBoolean) {
-        addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
+        addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0], "free-form");
       } else {
-        addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
+        addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0], "free-form");
       }
     }
   }

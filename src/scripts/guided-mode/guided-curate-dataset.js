@@ -461,6 +461,7 @@ const traverseToTab = (targetPageID) => {
       renderSampleMetadataTables();
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
+      renderAdditionalLinksTable();
       //check for subjects in the sodajsonObj, set number of subjects in description metadata
       //Table and disable the table
       const subjects = guidedGetSubjects();
@@ -1266,7 +1267,183 @@ const removeProtocolField = (protocolDeleteButton) => {
   protocolField.remove();
 };
 
-const addOtherLinkField = () => {
+const renderAdditionalLinksTable = () => {
+  const additionalLinksTableBody = document.getElementById(
+    "additional-links-table-body"
+  );
+  const additionalLinkData =
+    sodaJSONObj["dataset-metadata"]["additional-links"];
+  if (additionalLinkData) {
+  } else {
+    const emptyRowWarning = generateAlertElement(
+      "warning",
+      `You currently have no additional links. To add a link, click the "Add additional link" button below.`
+    );
+    warningRowElement = `<tr><td colspan="5">${emptyRowWarning}</td></tr>`;
+    //add empty rowWarning to additionalLinksTableBody
+    additionalLinksTableBody.innerHTML = warningRowElement;
+  }
+};
+const openAddAdditionLinkSwal = async () => {
+  const { value: values } = await Swal.fire({
+    title: "Add additional link",
+    html: `
+      <label
+        >URL or DOI:
+      </label>
+      <input
+        id="guided-other-link"
+        class="swal2-input"
+        placeholder="Enter a URL"
+      />
+      <label>
+        Relation to the dataset:
+      </label>
+      <select id="guided-other-link-relation" class="swal2-input">
+        <option value="Select">Select a relation</option>
+        <option value="IsCitedBy">IsCitedBy</option>
+        <option value="Cites">Cites</option>
+        <option value="IsSupplementTo">IsSupplementTo</option>
+        <option value="IsSupplementedBy">IsSupplementedBy</option>
+        <option value="IsContinuedByContinues">IsContinuedByContinues</option>
+        <option value="IsDescribedBy">IsDescribedBy</option>
+        <option value="Describes">Describes</option>
+        <option value="HasMetadata">HasMetadata</option>
+        <option value="IsMetadataFor">IsMetadataFor</option>
+        <option value="HasVersion">HasVersion</option>
+        <option value="IsVersionOf">IsVersionOf</option>
+        <option value="IsNewVersionOf">IsNewVersionOf</option>
+        <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
+        <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
+        <option value="HasPart">HasPart</option>
+        <option value="IsPublishedIn">IsPublishedIn</option>
+        <option value="IsReferencedBy">IsReferencedBy</option>
+        <option value="References">References</option>
+        <option value="IsDocumentedBy">IsDocumentedBy</option>
+        <option value="Documents">Documents</option>
+        <option value="IsCompiledBy">IsCompiledBy</option>
+        <option value="Compiles">Compiles</option>
+        <option value="IsVariantFormOf">IsVariantFormOf</option>
+        <option value="IsOriginalFormOf">IsOriginalFormOf</option>
+        <option value="IsIdenticalTo">IsIdenticalTo</option>
+        <option value="IsReviewedBy">IsReviewedBy</option>
+        <option value="Reviews">Reviews</option>
+        <option value="IsDerivedFrom">IsDerivedFrom</option>
+        <option value="IsSourceOf">IsSourceOf</option>
+        <option value="IsRequiredBy">IsRequiredBy</option>
+        <option value="Requires">Requires</option>
+        <option value="IsObsoletedBy">IsObsoletedBy</option>
+        <option value="Obsoletes">Obsoletes</option>
+      </select>
+      <label>
+        Link description:
+      </label>
+      <textarea
+        id="guided-other-description"
+        class="swal2-textarea"
+        placeholder="Enter a description"
+      ></textarea>
+    `,
+    focusConfirm: false,
+    confirmButtonText: "Add",
+    cancelButtonText: "Cancel",
+    customClass: "swal-content-additional-link",
+    showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      $(".swal-popover").popover();
+    },
+    preConfirm: () => {
+      const link = $("#guided-other-link").val();
+      if (link === "") {
+        Swal.showValidationMessage(`Please enter a link.`);
+      }
+      if ($("#guided-other-link-relation").val() === "Select") {
+        Swal.showValidationMessage(`Please select a link relation.`);
+      }
+      if ($("#guided-other-description").val() === "") {
+        Swal.showValidationMessage(`Please enter a short description.`);
+      }
+      var duplicate = checkLinkDuplicate(
+        link,
+        document.getElementById("other-link-table-dd")
+      );
+      if (duplicate) {
+        Swal.showValidationMessage(
+          "Duplicate URL/DOI. The URL/DOI you entered is already added."
+        );
+      }
+      return [
+        $("#guided-other-link").val(),
+        $("#guided-other-link-relation").val(),
+        $("#guided-other-description").val(),
+      ];
+    },
+  });
+  if (values) {
+    const generateadditionalLinkRowElement = (
+      link,
+      linkRelation,
+      linkDescription
+    ) => {
+      let linkType = null;
+      //check if link starts with "https://"
+      if (link.startsWith("https://doi.org/")) {
+        linkType = "DOI";
+      } else {
+        linkType = "URL";
+      }
+
+      return `
+    <tr>
+      <td class="middle aligned">
+        ${link}
+      </td>
+      <td class="middle aligned collapsing">
+        ${linkType}
+      </td>
+      <td class="middle aligned collapsing">
+        ${linkRelation}
+      </td>
+
+      <td class="middle aligned collapsing text-center">
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          style="
+            background-color: var(--color-light-green) !important;
+            margin-right: 5px;
+          "
+          onclick="editLink($(this))"
+        >
+          Edit link
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          onclick="deleteLink($(this))"
+        >   
+          Delete link
+        </button>
+      </td>
+    </tr>
+  `;
+    };
+    let additionalRow = generateadditionalLinkRowElement(
+      values[0],
+      values[1],
+      values[2]
+    );
+    const additionalLinksTableBody = document.getElementById(
+      "additional-links-table-body"
+    );
+    //append additionalRow to addtionalLinkRowTable
+    additionalLinksTableBody.innerHTML = additionalRow;
+  }
+};
+/*const addOtherLinkField = () => {
   const otherLinksContainer = document.getElementById("other-links-container");
   //create a new div to hold other link fields
   const newOtherLink = document.createElement("div");
@@ -1366,7 +1543,7 @@ const addOtherLinkField = () => {
 const removeOtherLinkField = (otherLinkDeleteButton) => {
   const otherLinkField = protocolDeleteButton.parentElement;
   otherLinkField.remove();
-};
+};*/
 
 //SUBJECT TABLE FUNCTIONS
 const returnToTableFromFolderStructure = (clickedBackButton) => {
@@ -2724,7 +2901,7 @@ $(document).ready(() => {
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-airtable-award-tab");
+      traverseToTab("guided-create-description-metadata-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
@@ -5009,6 +5186,9 @@ $(document).ready(() => {
       "guided-button-edit-other-link-fields"
     ).style.display = "flex";
     pulseNextButton();
+  });
+  $("#guided-button-add-additional-link").on("click", async () => {
+    openAddAdditionLinkSwal();
   });
   $("#guided-button-edit-other-link-fields").on("click", () => {
     enableElementById("other-links-container");

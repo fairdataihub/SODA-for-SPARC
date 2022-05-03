@@ -1,4 +1,42 @@
-<select id="guided-other-link-relation" class="swal2-input">
+<label
+  >URL or DOI:
+  <i
+    class="fas fa-info-circle swal-popover"
+    data-content="Specify your actual URL (if resource is public) or DOI (if resource is private). This can be web links to repositories or papers (DOI)."
+    rel="popover"
+    data-placement="right"
+    data-html="true"
+    data-trigger="hover"
+  ></i></label
+><input
+  id="guided-other-link"
+  class="swal2-input"
+  placeholder="Enter a URL"
+/><label
+  >Link Type:
+  <i
+    class="fas fa-info-circle swal-popover"
+    data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier."
+    rel="popover"
+    data-placement="right"
+    data-html="true"
+    data-trigger="hover"
+  ></i></label
+><select id="guided-other-link-type" class="swal2-input">
+  <option value="Select">Select a type</option>
+  <option value="URL">URL</option>
+  <option value="DOI">DOI</option></select
+><label
+  >Relation to the dataset:
+  <i
+    class="fas fa-info-circle swal-popover"
+    data-content="A prespecified list of relations for common URLs or DOIs used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified URL/DOI\'."
+    rel="popover"
+    data-placement="right"
+    data-html="true"
+    data-trigger="hover"
+  ></i></label
+><select id="guided-other-link-relation" class="swal2-input">
   <option value="Select">Select a relation</option>
   <option value="IsCitedBy">IsCitedBy</option>
   <option value="Cites">Cites</option>
@@ -32,5 +70,10 @@
   <option value="IsRequiredBy">IsRequiredBy</option>
   <option value="Requires">Requires</option>
   <option value="IsObsoletedBy">IsObsoletedBy</option>
-  <option value="Obsoletes">Obsoletes</option>
-</select>
+  <option value="Obsoletes">Obsoletes</option></select
+><label>Link description: </label
+><textarea
+  id="guided-other-description"
+  class="swal2-textarea"
+  placeholder="Enter a description"
+></textarea>
