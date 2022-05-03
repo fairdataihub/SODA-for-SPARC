@@ -163,9 +163,7 @@ function initialize() {
   };
 
   app.on("ready", async () => {
-    console.log("Creating pyProc");
     await createPyProc();
-    console.log("PyProc created");
 
     const windowOptions = {
       minWidth: 1121,
