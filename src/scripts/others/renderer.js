@@ -107,6 +107,16 @@ const notyf = new Notyf({
   ripple: false,
   types: [
     {
+      type: "checking_server_is_live",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 1000,
+    },
+    {
       type: "loading_internet",
       background: "grey",
       icon: {
@@ -209,6 +219,10 @@ ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
 });
 
 const serverIsLive = async () => {
+  let notification = notyf.open({
+    message: "Checking if SODA server is live",
+    type: 'checking_server_is_live'
+  })
   return new Promise((resolve, reject) => {
     client.invoke("echo", "server ready", async (error, res) => {
       if (error || res !== "server ready") {
@@ -242,6 +256,15 @@ const serverIsLive = async () => {
           "Success",
           "Establishing Python Connection"
         );
+
+        // hide the server notification
+        notyf.dismiss(notification);
+
+        // show the success notification
+        notyf.open({
+          message: "Connected to SODA server",
+          type: "success",
+        });
 
         return resolve(true);
       }
