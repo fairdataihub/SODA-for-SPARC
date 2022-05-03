@@ -491,6 +491,14 @@ const apiVersionsMatch = async () => {
       } else {
         ipcRenderer.send("track-event", "Success", "Verifying App Version");
 
+        notyf.dismiss(notification)
+
+        // create a success notyf for api version check
+        notyf.open({
+          message: "API Versions match",
+          type: "success",
+        })
+
         //Load Default/global Pennsieve account if available
         updateBfAccountList();
         checkNewAppVersion(); // Added so that version will be displayed for new users
@@ -511,8 +519,7 @@ const check_internet_connection = async (show_notification = true) => {
   }
   await wait(800);
 
-  return new Promise(res => {
-    require("dns").resolve("www.google.com", (err) => {
+  return require("dns").resolve("www.google.com", (err) => {
       if (err) {
         console.error("No internet connection");
         log.error("No internet connection");
@@ -525,7 +532,7 @@ const check_internet_connection = async (show_notification = true) => {
           });
         }
         connected_to_internet = false;
-        return res(connected_to_internet)
+        return connected_to_internet
       } else {
         console.log("Connected to the internet");
         log.info("Connected to the internet");
@@ -537,11 +544,9 @@ const check_internet_connection = async (show_notification = true) => {
           });
         }
         connected_to_internet = true;
-        return res(connected_to_internet)
+        return connected_to_internet
       }
-    });
-  })
- 
+    }); 
 };
 
 const check_api_key = async () => {
