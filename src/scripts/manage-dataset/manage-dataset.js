@@ -2641,8 +2641,16 @@ $("#button-submit-dataset").click(async () => {
         );
         Swal.fire({
           icon: "error",
-          title: "An error occurred",
-          html: "Please return to progress page to see full error",
+          title: "An Error Occurred While Uploading Your Dataset",
+          html: "Check the error text in the Upload Local Dataset's upload page to see what went wrong.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then((result) => {
           progressClone.remove();
           sparc_logo.style.display = "inline";
