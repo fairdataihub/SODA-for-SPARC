@@ -252,12 +252,14 @@ a {
   margin-right: 0px;
   padding: 5px 10px;
 }
+
 .button-grp button:disabled,
 button[disabled] {
   border: 1px solid #999999;
   background-color: #cccccc;
   color: #666666;
 }
+
 .active-btn {
   background-color: #6c6c6c !important;
   border: 1px #6c6c6c solid !important;
@@ -278,7 +280,7 @@ button[data-id="bf_list_users_pi"] {
   border-radius: 7px;
 }
 
-#pi_bootstrap_select_div > .dropdown.bootstrap-select {
+#pi_bootstrap_select_div>.dropdown.bootstrap-select {
   width: 430px;
 }
 
@@ -287,6 +289,7 @@ button[data-id="bf_list_users_pi"] {
 
   height: 100%;
 }
+
 .sidebar_title {
   color: #f3f3f3;
   text-transform: uppercase;
@@ -297,6 +300,7 @@ button[data-id="bf_list_users_pi"] {
   user-select: none;
   -webkit-user-select: none;
 }
+
 .sidebar_links {
   list-style-type: none;
   padding: 0;
@@ -509,9 +513,11 @@ button[data-id="bf_list_users_pi"] {
   0% {
     background-color: #ffffff;
   }
+
   50% {
     background-color: #85ceff;
   }
+
   100% {
     background-color: #ffffff;
   }
@@ -521,9 +527,11 @@ button[data-id="bf_list_users_pi"] {
   0% {
     background-color: #ffffff;
   }
+
   50% {
     background-color: #85ceff;
   }
+
   100% {
     background-color: #ffffff;
   }
@@ -556,7 +564,7 @@ button[data-id="bf_list_users_pi"] {
   -webkit-transition: all 0.15s linear;
 }
 
-.single-item:hover + #myspan {
+.single-item:hover+#myspan {
   display: block;
 }
 
@@ -620,6 +628,8 @@ button[data-id="bf_list_users_pi"] {
   margin-left: 5px;
   color: black;
   pointer-events: none;
+  white-space: pre;
+  /* preserve whitespaces so that renaming files with multiple spaces does not cause any issues */
 }
 
 .blue {
@@ -655,9 +665,11 @@ button[data-id="bf_list_users_pi"] {
 .button-back:hover {
   box-shadow: 0 0 3px 0px #666666;
 }
+
 .button-back:active {
   transform: translateY(-4px);
 }
+
 .button-back:focus {
   outline: none;
 }
@@ -684,8 +696,7 @@ button[data-id="bf_list_users_pi"] {
 }
 
 .myButton:hover {
-  background: var(--color-teal)
-    radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
+  background: var(--color-teal) radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
   color: white;
   box-shadow: 0 0 5px #3b5998;
   transition: all 0.5s ease;
@@ -697,13 +708,13 @@ button[data-id="bf_list_users_pi"] {
   transition: background 0s;
   transform: translateY(-3px);
 }
+
 .myButton:focus {
   outline: none;
 }
 
 .myButton.second:hover {
-  background: var(--color-teal)
-    radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
+  background: var(--color-teal) radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
   color: #fff;
   box-shadow: 0 0 5px #3b5998;
   transition: all 0.5s ease;
@@ -724,8 +735,7 @@ button[data-id="bf_list_users_pi"] {
   height: 35px;
   cursor: pointer;
   border-radius: 5px;
-  background: linear-gradient(to left, #fff 50%, var(--color-light-green) 50%)
-    right;
+  background: linear-gradient(to left, #fff 50%, var(--color-light-green) 50%) right;
   background-size: 200%;
   transition: 0.5s ease-out;
 }
@@ -739,6 +749,7 @@ button[data-id="bf_list_users_pi"] {
   background-size: 100%;
   transform: translateY(-3px);
 }
+
 .confirmButton:focus {
   outline: none;
 }
@@ -951,6 +962,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.doc:before {
   background: url("../img/doc-file.png");
   content: "";
@@ -960,6 +972,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.docx:before {
   background: url("../img/doc-file.png");
   content: "";
@@ -969,6 +982,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.png:before {
   background: url("../img/png-file.png");
   content: "";
@@ -978,6 +992,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.PNG:before {
   background: url("../img/png-file.png");
   content: "";
@@ -987,6 +1002,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.jpg:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -996,6 +1012,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.jpeg:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -1005,6 +1022,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.JPEG:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -1014,6 +1032,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.pdf:before {
   background: url("../img/pdf-file.png");
   content: "";
@@ -1023,6 +1042,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.txt:before {
   background: url("../img/txt-file.png");
   content: "";
@@ -1032,6 +1052,7 @@ button[data-id="bf_list_users_pi"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.xlsx:before {
   background: url("../img/excel-file.png");
   content: "";
@@ -1234,6 +1255,7 @@ button[data-id="bf_list_users_pi"] {
   position: relative;
   /* background: url('http://www.csslab.cl/ejemplos/timelinr/latest/images/dot.gif') 3px top repeat-y; */
 }
+
 #metadata-content {
   max-width: 100%;
   height: auto;
@@ -1440,6 +1462,7 @@ button[data-id="bf_list_users_pi"] {
   cursor: pointer;
   box-shadow: 0 0 3px 0 var(--color-bg-plum);
 }
+
 #div-manifest-edit {
   margin-top: 20px;
 }
@@ -1491,6 +1514,7 @@ button[data-id="bf_list_users_pi"] {
   position: relative;
   transform: scale(1);
 }
+
 .circular .inner {
   position: absolute;
   z-index: 6;
@@ -1502,6 +1526,7 @@ button[data-id="bf_list_users_pi"] {
   background: #f5f5f5;
   border-radius: 100%;
 }
+
 .circular .number {
   position: absolute;
   top: 50%;
@@ -1512,6 +1537,7 @@ button[data-id="bf_list_users_pi"] {
   font-weight: 500;
   color: black;
 }
+
 .circular .bar {
   position: absolute;
   height: 100%;
@@ -1520,6 +1546,7 @@ button[data-id="bf_list_users_pi"] {
   -webkit-border-radius: 100%;
   clip: rect(0px, 100px, 100px, 50px);
 }
+
 .circle .bar .progress {
   position: absolute;
   height: 100%;
@@ -1528,6 +1555,7 @@ button[data-id="bf_list_users_pi"] {
   clip: rect(0px, 50px, 100px, 0px);
   background: var(--color-light-green);
 }
+
 .circle .left .progress {
   z-index: 1;
   transition: transform 500ms ease-in-out;
@@ -1538,6 +1566,7 @@ button[data-id="bf_list_users_pi"] {
   transition: linear;
   z-index: 3;
 }
+
 .circle .right .progress {
   transition: transform 500ms ease-in-out;
 }
