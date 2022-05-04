@@ -478,61 +478,6 @@ const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
-// Check if the Pysoda server is running
-const serverIsLive = async () => {
-  let notification = notyf.open({
-    message: "Checking if SODA server is live",
-    type: "checking_server_is_live",
-  });
-  return new Promise((resolve, reject) => {
-    client.invoke("echo", "server ready", async (error, res) => {
-      if (error || res !== "server ready") {
-        log.error(error);
-        console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Establishing Python Connection",
-          error
-        );
-
-        // wait for the user to press the confirm button
-        // don't allow other checks to happen
-        await Swal.fire({
-          icon: "error",
-          html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Restart now",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        });
-
-        return reject(false);
-      } else {
-        console.log("Connected to Python back-end successfully");
-        log.info("Connected to Python back-end successfully");
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Establishing Python Connection"
-        );
-
-        // hide the server notification
-        notyf.dismiss(notification);
-
-        // show the success notification
-        notyf.open({
-          message: "Connected to SODA server",
-          type: "success",
-        });
-
-        return resolve(true);
-      }
-    });
-  });
-};
-
 // Check if the Pysoda server is live
 const serverIsLiveStartup = () => {
   return new Promise((resolve, reject) => {
