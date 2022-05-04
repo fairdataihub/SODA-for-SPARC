@@ -7378,6 +7378,10 @@ async function initiate_generate() {
 
   client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
     if (error) {
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
       $("#sidebarCollapse").prop("disabled", false);
       var emessage = userError(error);
       document.getElementById(
@@ -7402,10 +7406,6 @@ async function initiate_generate() {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (result.isConfirmed) {
-          organizeDataset_option_buttons.style.display = "flex";
-          organizeDataset.disabled = false;
-          organizeDataset.className = "content-button is-selected";
-          organizeDataset.style = "background-color: #fff";
           organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
