@@ -228,7 +228,9 @@ let connected_to_internet = false;
 let update_available_notification = "";
 let update_downloaded_notification = "";
 
+// Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
+// Also check the core systems to make sure they are all operational
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // notify the user that the application is starting connecting to the server
   Swal.fire({
@@ -251,16 +253,22 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // Bonus:  doesn't stop Windows and Linux users from starting right away
   // NOTE: backOff is bad at surfacing errors to the console
   try {
-    let res = await backOff(serverIsLiveStartup, {
-      delayFirstAttempt: false,
+    await backOff(serverIsLiveStartup, {
+      delayFirstAttempt: true,
       startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 second max wait time
       timeMultiple: 2,
       numOfAttempts: 5,
       maxDelay: 16000, // 16 seconds max wait time
     });
-
-    console.log("DOne now result is: ", res);
   } catch (e) {
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      error
+    );
     // SWAL that the server needs to be restarted for the app to work
     await Swal.fire({
       icon: "error",
@@ -276,6 +284,10 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     app.relaunch();
     app.exit();
   }
+
+  console.log("Connected to Python back-end successfully");
+  log.info("Connected to Python back-end successfully");
+  ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
 
   Swal.fire({
     title: "Connected to the SODA server",
@@ -293,9 +305,10 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     },
   });
 
-  await wait(1000);
-
+  // inform observers that the app is connected to the server
   sodaIsConnected = true;
+
+  // check integrity of all the core systems
   run_pre_flight_checks();
 });
 
@@ -306,14 +319,6 @@ const run_pre_flight_checks = async (check_update = true) => {
     let agent_installed_response = "";
     let agent_version_response = "";
     let account_present = false;
-
-    // check if the backend service is working
-    try {
-      await serverIsLive();
-    } catch (e) {
-      app.relaunch();
-      app.exit();
-    }
 
     // check if the API versions match
     try {
@@ -473,7 +478,7 @@ const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
-// // Check if the Pysoda server is running
+// Check if the Pysoda server is running
 const serverIsLive = async () => {
   let notification = notyf.open({
     message: "Checking if SODA server is live",
@@ -528,6 +533,7 @@ const serverIsLive = async () => {
   });
 };
 
+// Check if the Pysoda server is live
 const serverIsLiveStartup = () => {
   return new Promise((resolve, reject) => {
     client.invoke("echo", "server ready", (error, res) => {
