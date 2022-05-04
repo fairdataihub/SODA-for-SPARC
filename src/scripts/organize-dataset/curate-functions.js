@@ -182,6 +182,7 @@ function dropHandler(ev, paraElement, metadataFile, curationMode) {
             .css("display", "none");
         }
         if (curationMode === "guided") {
+          //Add success checkmark lottie animation inside metadata card
           const dragDropContainer =
             document.getElementById(paraElement).parentElement;
           console.log(dragDropContainer);

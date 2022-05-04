@@ -7667,12 +7667,20 @@ function backend_to_frontend_warning_message(error_array) {
 var metadataIndividualFile = "";
 var metadataAllowedExtensions = [];
 var metadataParaElement = "";
+var metadataCurationMode = "";
 
-function importMetadataFiles(ev, metadataFile, extensionList, paraEle) {
+function importMetadataFiles(
+  ev,
+  metadataFile,
+  extensionList,
+  paraEle,
+  curationMode
+) {
   document.getElementById(paraEle).innerHTML = "";
   metadataIndividualFile = metadataFile;
   metadataAllowedExtensions = extensionList;
   metadataParaElement = paraEle;
+  metadataCurationMode = curationMode;
   ipcRenderer.send("open-file-dialog-metadata-curate");
 }
 
@@ -7717,6 +7725,7 @@ function importPennsieveMetadataFiles(
 }
 
 ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
+  console.log(event);
   if (mypath.length > 0) {
     var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
     if (dotCount === 1) {
@@ -7751,12 +7760,30 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
       if (metadataWithoutExtension === metadataIndividualFile) {
         if (metadataAllowedExtensions.includes(extension)) {
           document.getElementById(metadataParaElement).innerHTML = mypath[0];
-          $($("#" + metadataParaElement).parents()[1])
-            .find(".div-metadata-confirm")
-            .css("display", "flex");
-          $($("#" + metadataParaElement).parents()[1])
-            .find(".div-metadata-go-back")
-            .css("display", "none");
+          if (metadataCurationMode === "free-form") {
+            $($("#" + metadataParaElement).parents()[1])
+              .find(".div-metadata-confirm")
+              .css("display", "flex");
+            $($("#" + metadataParaElement).parents()[1])
+              .find(".div-metadata-go-back")
+              .css("display", "none");
+          }
+          if (metadataCurationMode === "guided") {
+            //Add success checkmark lottie animation inside metadata card
+            const dragDropContainer =
+              document.getElementById(metadataParaElement).parentElement;
+            const lottieContainer = dragDropContainer.querySelector(
+              ".code-metadata-lottie-container"
+            );
+            lottieContainer.innerHTML = "";
+            lottie.loadAnimation({
+              container: lottieContainer,
+              animationData: successCheck,
+              renderer: "svg",
+              loop: false,
+              autoplay: true,
+            });
+          }
         } else {
           document.getElementById(metadataParaElement).innerHTML =
             "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";

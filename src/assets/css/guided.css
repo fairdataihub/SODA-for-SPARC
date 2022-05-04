@@ -22,7 +22,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 295px;
+  flex-grow: 1;
   margin-top: 10px;
 }
 
@@ -33,7 +33,7 @@
   margin-bottom: 10px;
 }
 .guided--file-import {
-  width: 100%;
+  width: 300px;
   min-height: 350px;
   display: flex;
   flex-direction: column;
@@ -300,6 +300,9 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+}
+.grow {
+  flex-grow: 1;
 }
 
 .guided--container-permissions {
