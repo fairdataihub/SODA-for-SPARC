@@ -7291,7 +7291,9 @@ async function initiate_generate() {
 
   let organizeDataset = document.getElementById("organize_dataset_btn");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
-  let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
+  let organizeDataset_option_buttons = document.getElementById(
+    "div-generate-comeback"
+  );
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
   let navContainer = document.getElementById("nav-items");
@@ -7400,7 +7402,7 @@ async function initiate_generate() {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (result.isConfirmed) {
-          organizeDataset_option_buttons.style.display = "flex"
+          organizeDataset_option_buttons.style.display = "flex";
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
           organizeDataset.style = "background-color: #fff";
