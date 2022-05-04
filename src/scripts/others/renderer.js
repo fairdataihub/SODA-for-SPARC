@@ -278,7 +278,7 @@ const startupServerAndApiCheck = async () => {
       "track-event",
       "Error",
       "Establishing Python Connection",
-      error
+      e
     );
     // SWAL that the server needs to be restarted for the app to work
     await Swal.fire({
