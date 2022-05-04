@@ -204,7 +204,7 @@ function initialize() {
           mainWindow.reload();
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
-          run_pre_flight_checks();
+          // run_pre_flight_checks();
         }
         run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();

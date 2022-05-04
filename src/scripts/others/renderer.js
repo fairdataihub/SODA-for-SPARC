@@ -52,6 +52,10 @@ const axios = require("axios").default;
 const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
 
+const { backOff } = require("exponential-backoff");
+
+console.log(`Back off is:`, backOff);
+
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
@@ -84,6 +88,7 @@ log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
 const SODA_SPARC_API_KEY = "SODA-Pennsieve";
+let sodaIsConnected = false;
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
@@ -223,8 +228,87 @@ let connected_to_internet = false;
 let update_available_notification = "";
 let update_downloaded_notification = "";
 
+// Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
-ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
+// Also check the core systems to make sure they are all operational
+ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
+  // notify the user that the application is starting connecting to the server
+  Swal.fire({
+    icon: "info",
+    title: `Connecting to the SODA server`,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Restart now",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  // Darwin executable starts slowly
+  // use an exponential backoff to wait for the app server to be ready
+  // this will give Mac users more time before receiving a backend server error message
+  // ( during the wait period the server should start )
+  // Bonus:  doesn't stop Windows and Linux users from starting right away
+  // NOTE: backOff is bad at surfacing errors to the console
+  try {
+    await backOff(serverIsLiveStartup, {
+      delayFirstAttempt: true,
+      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 second max wait time
+      timeMultiple: 2,
+      numOfAttempts: 5,
+      maxDelay: 16000, // 16 seconds max wait time
+    });
+  } catch (e) {
+    log.error(error);
+    console.error(error);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Establishing Python Connection",
+      error
+    );
+    // SWAL that the server needs to be restarted for the app to work
+    await Swal.fire({
+      icon: "error",
+      html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+
+    // Restart the app
+    app.relaunch();
+    app.exit();
+  }
+
+  console.log("Connected to Python back-end successfully");
+  log.info("Connected to Python back-end successfully");
+  ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+
+  Swal.fire({
+    title: "Connected to the SODA server",
+    icon: "success",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "OK",
+    allowOutsideClick: true,
+    allowEscapeKey: true,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  });
+
+  // inform observers that the app is connected to the server
+  sodaIsConnected = true;
+
+  // check integrity of all the core systems
   run_pre_flight_checks();
 });
 
@@ -235,14 +319,6 @@ const run_pre_flight_checks = async (check_update = true) => {
     let agent_installed_response = "";
     let agent_version_response = "";
     let account_present = false;
-
-    // check if the backend service is working
-    try {
-      await serverIsLive();
-    } catch (e) {
-      app.relaunch();
-      app.exit();
-    }
 
     // check if the API versions match
     try {
@@ -402,56 +478,15 @@ const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
-// Check if the Pysoda server is running
-const serverIsLive = async () => {
-  let notification = notyf.open({
-    message: "Checking if SODA server is live",
-    type: "checking_server_is_live",
-  });
+// Check if the Pysoda server is live
+const serverIsLiveStartup = () => {
   return new Promise((resolve, reject) => {
-    client.invoke("echo", "server ready", async (error, res) => {
+    client.invoke("echo", "server ready", (error, res) => {
       if (error || res !== "server ready") {
-        log.error(error);
         console.error(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Establishing Python Connection",
-          error
-        );
-
-        // wait for the user to press the confirm button
-        // don't allow other checks to happen
-        await Swal.fire({
-          icon: "error",
-          html: `Something went wrong with loading all the backend systems for SODA. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Restart now",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        });
-
-        return reject(false);
+        reject(false);
       } else {
-        console.log("Connected to Python back-end successfully");
-        log.info("Connected to Python back-end successfully");
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Establishing Python Connection"
-        );
-
-        // hide the server notification
-        notyf.dismiss(notification);
-
-        // show the success notification
-        notyf.open({
-          message: "Connected to SODA server",
-          type: "success",
-        });
-
-        return resolve(true);
+        resolve(true);
       }
     });
   });
@@ -4525,13 +4560,22 @@ var bfAddAccountBootboxMessage = `<form>
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover"  id="add-bf-account-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
-retrieveBFAccounts();
+// once connected to SODA get the user's accounts
+(async () => {
+  // wait until soda is connected to the backend server
+  while (!sodaIsConnected) {
+    await wait(1000);
+  }
+
+  retrieveBFAccounts();
+})();
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
-function retrieveBFAccounts() {
+async function retrieveBFAccounts() {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
+
   client.invoke("api_bf_account_list", (error, res) => {
     if (error) {
       log.error(error);
