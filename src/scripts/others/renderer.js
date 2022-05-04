@@ -7291,6 +7291,7 @@ async function initiate_generate() {
 
   let organizeDataset = document.getElementById("organize_dataset_btn");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
+  let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
   let navContainer = document.getElementById("nav-items");
@@ -7399,6 +7400,7 @@ async function initiate_generate() {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (result.isConfirmed) {
+          organizeDataset_option_buttons.style.display = "flex"
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
           organizeDataset.style = "background-color: #fff";
@@ -7498,6 +7500,7 @@ async function initiate_generate() {
           "para-new-curate-progress-bar-error-status"
         ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
         log.error(error);
+        organizeDataset_option_buttons.style.display = "flex";
         organizeDataset.disabled = false;
         organizeDataset.className = "content-button is-selected";
         organizeDataset.style = "background-color: #fff";
@@ -7519,7 +7522,7 @@ async function initiate_generate() {
         }).then((result) => {
           //statusBarClone.remove();
           if (result.isConfirmed) {
-            document.getElementById("organize_dataset_btn").click();
+            organizeDataset.click();
             let button = document.getElementById("button-generate");
             $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
             document.getElementById("prevBtn").style.display = "none";
@@ -7533,6 +7536,13 @@ async function initiate_generate() {
             ).style.display = "flex";
           }
         });
+        organizeDataset_option_buttons.style.display = "flex";
+        organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
         console.error(error);
         //Clear the interval to stop the generation of new sweet alerts after intitial error
         clearInterval(timerProgress);
@@ -7631,6 +7641,7 @@ async function initiate_generate() {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (successful === true) {
+          organizeDataset_option_buttons.style.display = "flex";
           organizeDataset.disabled = false;
           organizeDataset.className = "content-button is-selected";
           organizeDataset.style = "background-color: #fff";
@@ -7641,6 +7652,15 @@ async function initiate_generate() {
             type: "success",
             message: "Dataset created successfully",
           });
+        } else {
+          //enable buttons anyways
+          organizeDataset_option_buttons.style.display = "flex";
+          organizeDataset.disabled = false;
+          organizeDataset.className = "content-button is-selected";
+          organizeDataset.style = "background-color: #fff";
+          uploadLocally.disabled = false;
+          uploadLocally.className = "content-button is-selected";
+          uploadLocally.style = "background-color: #fff";
         }
         // then show the sidebar again
         // forceActionSidebar("show");
