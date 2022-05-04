@@ -676,6 +676,7 @@ h1.guided--text-sub-step {
   justify-content: space-between;
 }
 .space-around {
+  max-width: 1200px;
   display: flex;
   justify-content: space-around;
   width: 100%;

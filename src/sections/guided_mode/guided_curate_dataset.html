@@ -1605,18 +1605,17 @@
             </div>
 
             <div class="space-around">
-              <div class="guided--section grow">
-                <h2 class="guided--text-sub-step">
-                  Import your code_description metadata file
+              <div class="guided--section grow p-4">
+                <h2 class="guided--text-sub-step required">
+                  Import the code_description metadata file
                 </h2>
                 <p
-                  class="guided--help-text w-100 small text-center"
+                  class="guided--help-text w-100 small text-left"
                   style="margin-bottom: 2px"
                 >
-                  it is <b>mandatory</b> to add at least one affiliation and
-                  role for each contributor.<br />
-                  To add a new contributor, click on the 'Add a new contributor'
-                  button.
+                  code_description is a <b>required</b> metadata file that
+                  contains information that describes the code in terms of its
+                  quality.
                 </p>
                 <div
                   class="guided--container-file-import"
@@ -1651,136 +1650,49 @@
                   </div>
                 </div>
               </div>
-              <div class="guided--section grow">
+              <div class="guided--section grow p-4">
                 <h2 class="guided--text-sub-step">
-                  Import your code_description metadata file
+                  Import the code_parameters metadata file
                 </h2>
                 <p
-                  class="guided--help-text w-100 small text-center"
+                  class="guided--help-text w-100 small text-left"
                   style="margin-bottom: 2px"
                 >
-                  it is <b>mandatory</b> to add at least one affiliation and
-                  role for each contributor.<br />
-                  To add a new contributor, click on the 'Add a new contributor'
-                  button.
+                  code_description is an <b>optional</b> metadata file that
+                  contains specific paramets required to run code used in the
+                  creation of the dataset.
                 </p>
                 <div
                   class="guided--container-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
+                  ondrop="dropHandler(event, 'guided-code-parameters-para-text', 'code_parameters', 'guided');"
                   ondragover="return false;"
                 >
                   <div class="guided--file-import">
                     <div
-                      id="code-description-lottie-container"
+                      id="code-parameters-lottie-container"
                       class="code-metadata-lottie-container"
                     ></div>
                     <p class="guided--help-text text-center">
-                      Drag and Drop <br /><b>code_description.xslx</b>
+                      Drag and Drop <br /><b>code_parameters.xslx</b>
                     </p>
                     <p class="guided--help-text text-center mt-md mb-md">OR</p>
                     <button
                       class="ui primary basic button mt-sm"
                       id="guided-button-add-contributor"
-                      onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
+                      onclick="importMetadataFiles(this, 'code_parameters', ['.xlsx'], 'guided-code-parameters-para-text', 'guided')"
                     >
                       <i
                         class="fas fa-file-import"
                         style="margin-right: 7px"
                       ></i
-                      >Import code_description.xslx
+                      >Import code_parameters.xslx
                     </button>
                     <p
                       class="guided--help-text small text-center mt-sm"
-                      id="guided-code-description-para-text"
+                      id="guided-code-parameters-para-text"
                     ></p>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div class="guided--section">
-              <h2 class="guided--text-sub-step">
-                Import your inputs_metadata metadata file
-              </h2>
-              <p
-                class="guided--help-text w-100 small text-center"
-                style="margin-bottom: 2px"
-              >
-                it is <b>mandatory</b> to add at least one affiliation and role
-                for each contributor.<br />
-                To add a new contributor, click on the 'Add a new contributor'
-                button.
-              </p>
-              <div
-                class="guided--container-file-import"
-                droppable="true"
-                ondrop="dropHandler(event, 'guided-inputs-metadata-para-text', 'inputs_metadata', 'guided');"
-                ondragover="return false;"
-              >
-                <div class="guided--file-import">
-                  <div
-                    id="inputs-metadata-lottie-container"
-                    class="code-metadata-lottie-container"
-                  ></div>
-                  <p class="guided--help-text text-center">
-                    Drag and Drop <br /><b>inputs_metadata.xslx</b>
-                  </p>
-                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
-                  <button
-                    class="ui primary basic button mt-sm"
-                    id="guided-button-add-contributor"
-                    onclick="addContributorField()"
-                  >
-                    <i class="fas fa-file-import" style="margin-right: 7px"></i
-                    >Import inputs_metadata.xslx
-                  </button>
-                  <p
-                    class="guided--help-text small text-center mt-sm"
-                    id="guided-inputs-metadata-para-text"
-                  ></p>
-                </div>
-              </div>
-            </div>
-            <div class="guided--section">
-              <h2 class="guided--text-sub-step">
-                Import your outputs_metadata metadata file
-              </h2>
-              <p
-                class="guided--help-text w-100 small text-center"
-                style="margin-bottom: 2px"
-              >
-                it is <b>mandatory</b> to add at least one affiliation and role
-                for each contributor.<br />
-                To add a new contributor, click on the 'Add a new contributor'
-                button.
-              </p>
-              <div
-                class="guided--container-file-import"
-                droppable="true"
-                ondrop="dropHandler(event, 'guided-outputs-metadata-para-text', 'outputs_metadata', 'guided');"
-                ondragover="return false;"
-              >
-                <div class="guided--file-import">
-                  <div
-                    id="outputs-metadata-lottie-container"
-                    class="code-metadata-lottie-container"
-                  ></div>
-                  <p class="guided--help-text text-center">
-                    Drag and Drop <br /><b>outputs_metadata.xslx</b>
-                  </p>
-                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
-                  <button
-                    class="ui primary basic button mt-sm"
-                    id="guided-button-add-contributor"
-                    onclick="importMetadataFiles(this, 'outputs_metadata', ['.xlsx'], 'guided-outputs-metadata-para-text', 'guided')"
-                  >
-                    <i class="fas fa-file-import" style="margin-right: 7px"></i
-                    >Import outputs_metadata.xslx
-                  </button>
-                  <p
-                    class="guided--help-text small text-center mt-sm"
-                    id="guided-outputs-metadata-para-text"
-                  ></p>
                 </div>
               </div>
             </div>

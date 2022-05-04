@@ -476,23 +476,12 @@ const traverseToTab = (targetPageID) => {
         loop: true,
         autoplay: true,
       });
-      const inputsMetadataLottieContainer = document.getElementById(
-        "inputs-metadata-lottie-container"
+      const codeParametersLottieContainer = document.getElementById(
+        "code-parameters-lottie-container"
       );
-      inputsMetadataLottieContainer.innerHTML = "";
+      codeParametersLottieContainer.innerHTML = "";
       lottie.loadAnimation({
-        container: inputsMetadataLottieContainer,
-        animationData: dragDrop,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      const outputsMetadataLottieContainer = document.getElementById(
-        "outputs-metadata-lottie-container"
-      );
-      outputsMetadataLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: outputsMetadataLottieContainer,
+        container: codeParametersLottieContainer,
         animationData: dragDrop,
         renderer: "svg",
         loop: true,
