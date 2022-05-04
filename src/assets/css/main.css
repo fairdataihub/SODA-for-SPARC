@@ -280,7 +280,7 @@ button[data-id="bf_list_users_pi"] {
   border-radius: 7px;
 }
 
-#pi_bootstrap_select_div>.dropdown.bootstrap-select {
+#pi_bootstrap_select_div > .dropdown.bootstrap-select {
   width: 430px;
 }
 
@@ -564,7 +564,7 @@ button[data-id="bf_list_users_pi"] {
   -webkit-transition: all 0.15s linear;
 }
 
-.single-item:hover+#myspan {
+.single-item:hover + #myspan {
   display: block;
 }
 
@@ -696,7 +696,8 @@ button[data-id="bf_list_users_pi"] {
 }
 
 .myButton:hover {
-  background: var(--color-teal) radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
+  background: var(--color-teal)
+    radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
   color: white;
   box-shadow: 0 0 5px #3b5998;
   transition: all 0.5s ease;
@@ -714,7 +715,8 @@ button[data-id="bf_list_users_pi"] {
 }
 
 .myButton.second:hover {
-  background: var(--color-teal) radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
+  background: var(--color-teal)
+    radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
   color: #fff;
   box-shadow: 0 0 5px #3b5998;
   transition: all 0.5s ease;
@@ -735,7 +737,8 @@ button[data-id="bf_list_users_pi"] {
   height: 35px;
   cursor: pointer;
   border-radius: 5px;
-  background: linear-gradient(to left, #fff 50%, var(--color-light-green) 50%) right;
+  background: linear-gradient(to left, #fff 50%, var(--color-light-green) 50%)
+    right;
   background-size: 200%;
   transition: 0.5s ease-out;
 }
