@@ -7363,8 +7363,16 @@ async function initiate_generate() {
       uploadLocally.style = "background-color: #fff";
       Swal.fire({
         icon: "error",
-        title: "An error occurred",
-        html: "Please return to progress page to see full error",
+        title: "An Error Occurred While Uploading Your Dataset",
+        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
       }).then((result) => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
@@ -7476,8 +7484,16 @@ async function initiate_generate() {
         uploadLocally.style = "background-color: #fff";
         Swal.fire({
           icon: "error",
-          title: "An error occurred",
-          html: "An error occurred",
+          title: "An Error Occurred While Uploading Your Dataset",
+          html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then((result) => {
           //statusBarClone.remove();
           if (result.isConfirmed) {
