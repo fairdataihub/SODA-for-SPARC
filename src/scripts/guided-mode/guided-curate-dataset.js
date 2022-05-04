@@ -464,6 +464,19 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-samples-metadata-tab") {
       renderSampleMetadataTables();
     }
+    if (targetPageID === "guided-add-code-metadata-tab") {
+      const codeDescriptionLottieContainer = document.getElementById(
+        "code-description-drag-drop-lottie-container"
+      );
+      codeDescriptionLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: codeDescriptionLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
     if (targetPageID === "guided-create-description-metadata-tab") {
       renderAdditionalLinksTable();
 

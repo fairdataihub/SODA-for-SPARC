@@ -1604,12 +1604,40 @@
             </p>
 
             <div class="space-around">
-              <div class="guided--container-file-import">
+              <div
+                class="guided--container-file-import"
+                droppable="true"
+                ondrop="dropHandler(event, 'test', 'code_description', 'guided');"
+                ondragover="return false;"
+              >
                 <h2 class="guided--text-sub-step mt-0">
                   code_description<br />
                   (must be in .xslx format)
                 </h2>
-                <div class="guided--file-import">asdf</div>
+                <div class="guided--file-import">
+                  <div
+                    id="code-description-drag-drop-lottie-container"
+                    style="height: 130px; width: 130px; margin-bottom: 10px"
+                  ></div>
+                  <p class="guided--help-text text-center">
+                    Drag and Drop the code_description file here
+                  </p>
+                  <p class="guided--help-text text-center">OR</p>
+                  <button
+                    class="ui primary basic button mt-sm"
+                    id="guided-button-add-contributor"
+                    onclick="addContributorField()"
+                  >
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i
+                    >Import code_description.xslx
+                  </button>
+                  <p
+                    class="guided--help-text small text-center mt-sm"
+                    id="test"
+                  >
+                    this text should change
+                  </p>
+                </div>
               </div>
             </div>
           </div>
