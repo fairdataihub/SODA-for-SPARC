@@ -1595,19 +1595,21 @@
             <div id="sample-metadata-tables-container"></div>
           </div>
           <div id="guided-add-code-metadata-tab" class="guided--panel hidden">
-            <h1 class="guided--text-sub-step">Add code metadata</h1>
+            <h1 class="guided--text-sub-step">Code-related metadata</h1>
             <p class="guided--help-text w-100 text-left">
-              The README file is a plain text file provided by investigators
-              that contains neccessary details for the reuse of the data beyond
-              that which is captures in structured metadata.<br />Some
-              information that should be included is:
+              Code-related metadata is information that describes the code in
+              terms of its quality that should be submitted with all
+              computational datasets. Code RRIDs and ontologies are required.
             </p>
+            <h2 class="guided--text-sub-step mt-lg">
+              Import code-related metadata below:
+            </h2>
 
-            <div class="space-around">
+            <div class="space-around mt-md">
               <div
                 class="guided--container-file-import"
                 droppable="true"
-                ondrop="dropHandler(event, 'test', 'code_description', 'guided');"
+                ondrop="dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
                 ondragover="return false;"
               >
                 <h2 class="guided--text-sub-step mt-0">
@@ -1616,8 +1618,8 @@
                 </h2>
                 <div class="guided--file-import">
                   <div
-                    id="code-description-drag-drop-lottie-container"
-                    style="height: 130px; width: 130px; margin-bottom: 10px"
+                    id="code-description-lottie-container"
+                    class="code-metadata-lottie-container"
                   ></div>
                   <p class="guided--help-text text-center">
                     Drag and Drop the code_description file here
@@ -1633,10 +1635,74 @@
                   </button>
                   <p
                     class="guided--help-text small text-center mt-sm"
-                    id="test"
-                  >
-                    this text should change
+                    id="guided-code-description-para-text"
+                  ></p>
+                </div>
+              </div>
+              <div
+                class="guided--container-file-import"
+                droppable="true"
+                ondrop="dropHandler(event, 'guided-inputs-metadata-para-text', 'inputs_metadata', 'guided');"
+                ondragover="return false;"
+              >
+                <h2 class="guided--text-sub-step mt-0">
+                  inputs_metadata<br />
+                  (must be in .xslx format)
+                </h2>
+                <div class="guided--file-import">
+                  <div
+                    id="inputs-metadata-lottie-container"
+                    class="code-metadata-lottie-container"
+                  ></div>
+                  <p class="guided--help-text text-center">
+                    Drag and Drop the inputs_metadata file here
                   </p>
+                  <p class="guided--help-text text-center">OR</p>
+                  <button
+                    class="ui primary basic button mt-sm"
+                    id="guided-button-add-contributor"
+                    onclick="addContributorField()"
+                  >
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i
+                    >Import inputs_metadata.xslx
+                  </button>
+                  <p
+                    class="guided--help-text small text-center mt-sm"
+                    id="guided-inputs-metadata-para-text"
+                  ></p>
+                </div>
+              </div>
+              <div
+                class="guided--container-file-import"
+                droppable="true"
+                ondrop="dropHandler(event, 'guided-outputs-metadata-para-text', 'outputs_metadata', 'guided');"
+                ondragover="return false;"
+              >
+                <h2 class="guided--text-sub-step mt-0">
+                  outputs_metadata<br />
+                  (must be in .xslx format)
+                </h2>
+                <div class="guided--file-import">
+                  <div
+                    id="outputs-metadata-lottie-container"
+                    class="code-metadata-lottie-container"
+                  ></div>
+                  <p class="guided--help-text text-center">
+                    Drag and Drop the outputs_metadata file here
+                  </p>
+                  <p class="guided--help-text text-center">OR</p>
+                  <button
+                    class="ui primary basic button mt-sm"
+                    id="guided-button-add-contributor"
+                    onclick="addContributorField()"
+                  >
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i
+                    >Import outputs_metadata.xslx
+                  </button>
+                  <p
+                    class="guided--help-text small text-center mt-sm"
+                    id="guided-outputs-metadata-para-text"
+                  ></p>
                 </div>
               </div>
             </div>

@@ -184,19 +184,18 @@ function dropHandler(ev, paraElement, metadataFile, curationMode) {
         if (curationMode === "guided") {
           const dragDropContainer =
             document.getElementById(paraElement).parentElement;
-          //find dragDropContainer child element with id code-description-drag-drop-lottie-container
-          const codeDescriptionContainer = dragDropContainer.querySelector(
-            "#code-description-drag-drop-lottie-container"
+          console.log(dragDropContainer);
+          const lottieContainer = dragDropContainer.querySelector(
+            ".code-metadata-lottie-container"
           );
-          codeDescriptionContainer.innerHTML = "";
+          lottieContainer.innerHTML = "";
           lottie.loadAnimation({
-            container: codeDescriptionContainer,
+            container: lottieContainer,
             animationData: successCheck,
             renderer: "svg",
             loop: false,
             autoplay: true,
           });
-          console.log(codeDescriptionContainer);
         }
       } else {
         document.getElementById(paraElement).innerHTML =

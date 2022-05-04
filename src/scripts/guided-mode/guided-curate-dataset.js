@@ -466,11 +466,33 @@ const traverseToTab = (targetPageID) => {
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
       const codeDescriptionLottieContainer = document.getElementById(
-        "code-description-drag-drop-lottie-container"
+        "code-description-lottie-container"
       );
       codeDescriptionLottieContainer.innerHTML = "";
       lottie.loadAnimation({
         container: codeDescriptionLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      const inputsMetadataLottieContainer = document.getElementById(
+        "inputs-metadata-lottie-container"
+      );
+      inputsMetadataLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: inputsMetadataLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      const outputsMetadataLottieContainer = document.getElementById(
+        "outputs-metadata-lottie-container"
+      );
+      outputsMetadataLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: outputsMetadataLottieContainer,
         animationData: dragDrop,
         renderer: "svg",
         loop: true,

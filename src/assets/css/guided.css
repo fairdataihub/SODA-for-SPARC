@@ -25,9 +25,15 @@
   width: 295px;
 }
 
+.code-metadata-lottie-container {
+  height: 130px;
+  opacity: 0.5;
+  width: 130px;
+  margin-bottom: 10px;
+}
 .guided--file-import {
   width: 100%;
-  height: 350px;
+  min-height: 350px;
   display: flex;
   flex-direction: column;
   align-items: center;
