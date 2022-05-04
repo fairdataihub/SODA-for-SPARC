@@ -243,6 +243,9 @@ const startupServerAndApiCheck = async () => {
   // wait for SWAL to be loaded in
   await wait(2000);
 
+  // start a timer
+  let startTime = Date.now();
+
   // notify the user that the application is starting connecting to the server
   Swal.fire({
     icon: "info",
@@ -266,19 +269,19 @@ const startupServerAndApiCheck = async () => {
   try {
     await backOff(serverIsLiveStartup, {
       delayFirstAttempt: true,
-      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second + 16 second max wait time
+      startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second
       timeMultiple: 2,
-      numOfAttempts: 5,
-      maxDelay: 16000, // 16 seconds max wait time
+      numOfAttempts: 2,
+      maxDelay: 8000, // 16 seconds max wait time
     });
   } catch (e) {
-    log.error(error);
-    console.error(error);
+    log.error(e);
+    console.error(e);
     ipcRenderer.send(
       "track-event",
       "Error",
       "Establishing Python Connection",
-      error
+      e
     );
     // SWAL that the server needs to be restarted for the app to work
     await Swal.fire({
@@ -300,21 +303,27 @@ const startupServerAndApiCheck = async () => {
   log.info("Connected to Python back-end successfully");
   ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
 
-  Swal.fire({
-    title: "Connected to the SODA server",
-    icon: "success",
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "OK",
-    allowOutsideClick: true,
-    allowEscapeKey: true,
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  });
+  // check if the startup time is greater than 2 seconds
+  if (Date.now() - startTime > 2000) {
+    Swal.fire({
+      title: "Connected to the SODA server",
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "OK",
+      allowOutsideClick: true,
+      allowEscapeKey: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+  }
+
+  // dismiss the Swal
+  Swal.close();
 
   // inform observers that the app is connected to the server
   sodaIsConnected = true;
