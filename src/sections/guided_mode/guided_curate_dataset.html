@@ -1595,36 +1595,42 @@
             <div id="sample-metadata-tables-container"></div>
           </div>
           <div id="guided-add-code-metadata-tab" class="guided--panel hidden">
-            <h1 class="guided--text-sub-step">Code-related metadata</h1>
-            <p class="guided--help-text w-100 text-left">
-              Code-related metadata is information that describes the code in
-              terms of its quality that should be submitted with all
-              computational datasets. Code RRIDs and ontologies are required.
-            </p>
-            <h2 class="guided--text-sub-step mt-lg">
-              Import code-related metadata below:
-            </h2>
-
-            <div class="space-around mt-md">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Code-related metadata</h1>
+              <p class="guided--help-text w-100 text-left">
+                Code-related metadata is information that describes the code in
+                terms of its quality that should be submitted with all
+                computational datasets. Code RRIDs and ontologies are required.
+              </p>
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">
+                Import your code_description metadata file
+              </h2>
+              <p
+                class="guided--help-text w-100 small text-center"
+                style="margin-bottom: 2px"
+              >
+                it is <b>mandatory</b> to add at least one affiliation and role
+                for each contributor.<br />
+                To add a new contributor, click on the 'Add a new contributor'
+                button.
+              </p>
               <div
                 class="guided--container-file-import"
                 droppable="true"
                 ondrop="dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
                 ondragover="return false;"
               >
-                <h2 class="guided--text-sub-step mt-0">
-                  code_description<br />
-                  (must be in .xslx format)
-                </h2>
                 <div class="guided--file-import">
                   <div
                     id="code-description-lottie-container"
                     class="code-metadata-lottie-container"
                   ></div>
                   <p class="guided--help-text text-center">
-                    Drag and Drop the code_description file here
+                    Drag and Drop <br /><b>code_description.xslx</b>
                   </p>
-                  <p class="guided--help-text text-center">OR</p>
+                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
                   <button
                     class="ui primary basic button mt-sm"
                     id="guided-button-add-contributor"
@@ -1639,25 +1645,35 @@
                   ></p>
                 </div>
               </div>
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">
+                Import your inputs_metadata metadata file
+              </h2>
+              <p
+                class="guided--help-text w-100 small text-center"
+                style="margin-bottom: 2px"
+              >
+                it is <b>mandatory</b> to add at least one affiliation and role
+                for each contributor.<br />
+                To add a new contributor, click on the 'Add a new contributor'
+                button.
+              </p>
               <div
                 class="guided--container-file-import"
                 droppable="true"
                 ondrop="dropHandler(event, 'guided-inputs-metadata-para-text', 'inputs_metadata', 'guided');"
                 ondragover="return false;"
               >
-                <h2 class="guided--text-sub-step mt-0">
-                  inputs_metadata<br />
-                  (must be in .xslx format)
-                </h2>
                 <div class="guided--file-import">
                   <div
                     id="inputs-metadata-lottie-container"
                     class="code-metadata-lottie-container"
                   ></div>
                   <p class="guided--help-text text-center">
-                    Drag and Drop the inputs_metadata file here
+                    Drag and Drop <br /><b>inputs_metadata.xslx</b>
                   </p>
-                  <p class="guided--help-text text-center">OR</p>
+                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
                   <button
                     class="ui primary basic button mt-sm"
                     id="guided-button-add-contributor"
@@ -1672,25 +1688,35 @@
                   ></p>
                 </div>
               </div>
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">
+                Import your outputs_metadata metadata file
+              </h2>
+              <p
+                class="guided--help-text w-100 small text-center"
+                style="margin-bottom: 2px"
+              >
+                it is <b>mandatory</b> to add at least one affiliation and role
+                for each contributor.<br />
+                To add a new contributor, click on the 'Add a new contributor'
+                button.
+              </p>
               <div
                 class="guided--container-file-import"
                 droppable="true"
                 ondrop="dropHandler(event, 'guided-outputs-metadata-para-text', 'outputs_metadata', 'guided');"
                 ondragover="return false;"
               >
-                <h2 class="guided--text-sub-step mt-0">
-                  outputs_metadata<br />
-                  (must be in .xslx format)
-                </h2>
                 <div class="guided--file-import">
                   <div
                     id="outputs-metadata-lottie-container"
                     class="code-metadata-lottie-container"
                   ></div>
                   <p class="guided--help-text text-center">
-                    Drag and Drop the outputs_metadata file here
+                    Drag and Drop <br /><b>outputs_metadata.xslx</b>
                   </p>
-                  <p class="guided--help-text text-center">OR</p>
+                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
                   <button
                     class="ui primary basic button mt-sm"
                     id="guided-button-add-contributor"
