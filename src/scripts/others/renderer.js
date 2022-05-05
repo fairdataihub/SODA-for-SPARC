@@ -245,9 +245,6 @@ const startupServerAndApiCheck = async () => {
   // wait for SWAL to be loaded in
   await wait(2000);
 
-  // start a timer
-  let startTime = Date.now();
-
   // notify the user that the application is starting connecting to the server
   Swal.fire({
     icon: "info",
@@ -305,30 +302,11 @@ const startupServerAndApiCheck = async () => {
   log.info("Connected to Python back-end successfully");
   ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
 
-  // check if the startup time is greater than 2 seconds
-  if (Date.now() - startTime > 2000) {
-    Swal.fire({
-      title: "Connected to the SODA server",
-      icon: "success",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "OK",
-      allowOutsideClick: true,
-      allowEscapeKey: true,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  }
+  // inform observers that the app is connected to the server
+  sodaIsConnected = true;
 
   // dismiss the Swal
   Swal.close();
-
-  // inform observers that the app is connected to the server
-  sodaIsConnected = true;
 
   // check if the API versions match
   try {

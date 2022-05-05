@@ -1,0 +1,21 @@
+name: env-electron-python-37
+channels:
+- defaults
+- conda-forge
+dependencies:
+- python = 3.6
+- PyInstaller = 5.0.1
+- nodejs = 10.13.0
+- git = 2.20.1
+- pip
+- pip:
+  - chardet == 4.0.0
+  - pandas == 0.25.2
+  - openpyxl == 3.0.0
+  - zerorpc == 0.6.3
+  - pennsieve == 6.1.2
+  - configparser == 4.0.2
+  - python-docx == 0.8.10
+  - xlrd == 2.0.1
+  - biopython == 1.79
+  - gevent 21.12.0
