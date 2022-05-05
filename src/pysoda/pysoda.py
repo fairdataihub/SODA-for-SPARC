@@ -805,7 +805,11 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
 
 def clear_queue():
-    command = ["/usr/local/opt/pennsieve/bin/pennsieve", "upload-status", "--cancel-all"]
+    command = [
+        "/usr/local/opt/pennsieve/bin/pennsieve",
+        "upload-status",
+        "--cancel-all",
+    ]
 
     proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
 
