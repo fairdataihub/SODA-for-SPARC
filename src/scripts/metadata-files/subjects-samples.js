@@ -766,6 +766,7 @@ async function edit_current_protocol_id(ev) {
           Swal.showValidationMessage("Please enter a valid link!");
         } else {
           if (link.includes("doi")) {
+            //checks if link is DOI
             protocolLink = "DOI";
           } else {
             protocolLink = "URL";
