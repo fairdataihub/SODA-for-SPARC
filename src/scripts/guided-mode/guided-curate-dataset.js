@@ -2204,6 +2204,46 @@ const addSubjectSpecificationTableRow = () => {
   );
   subjectSpecificationTableBody.innerHTML +=
     generateSubjectSpecificationRowElement();
+
+  //scroll to the last element in the table
+  smoothScrollToElement(
+    subjectSpecificationTableBody.querySelector("tr:last-child")
+  );
+};
+
+const generatePoolSpecificationRowElement = () => {
+  return `
+    <tr>
+      <td class="middle aligned pool-cell">
+        <input
+          class="guided--input"
+          type="text"
+          name="guided-pool-id"
+          placeholder="Enter pool name and press enter"
+          onkeyup="specifyPool(event, $(this))"
+          data-input-set="guided-subjects-folder-tab"
+          data-alert-message="Pool IDs may not contain spaces or special characters"
+          data-alert-type="danger"
+        />
+      </td>
+      <td class="middle aligned collapsing text-center remove-left-border">
+        <i
+          class="far fa-trash-alt"
+          style="color: red; cursor: pointer"
+          onclick="deleteSubjectFolder($(this))"
+        ></i>
+      </td>
+    </tr>
+  `;
+};
+const addPoolTableRow = () => {
+  const poolsTableBody = document.getElementById(
+    "pools-specification-table-body"
+  );
+  poolsTableBody.innerHTML += generatePoolSpecificationRowElement();
+
+  //scroll to the last element in the table
+  smoothScrollToElement(poolsTableBody.querySelector("tr:last-child"));
 };
 
 const generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
