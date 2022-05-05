@@ -985,13 +985,13 @@ async function addProtocol() {
         Swal.showValidationMessage(`Please enter a link!`);
       } else {
         //check if link is valid
-        if(validator.isURL(link) != true) {
-          Swal.showValidationMessage(`Please enter a valid link`)
+        if (validator.isURL(link) != true) {
+          Swal.showValidationMessage(`Please enter a valid link`);
         } else {
-          if(link.includes("doi")) {
-            protocolLink = "DOI"
+          if (link.includes("doi")) {
+            protocolLink = "DOI";
           } else {
-            protocolLink = "URL"
+            protocolLink = "URL";
           }
         }
       }

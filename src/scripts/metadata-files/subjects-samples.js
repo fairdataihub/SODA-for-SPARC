@@ -762,10 +762,10 @@ async function edit_current_protocol_id(ev) {
       if ($("#DD-protocol-link").val() === "") {
         Swal.showValidationMessage(`Please enter a link!`);
       } else {
-        if(validator.isURL(link) != true) {
+        if (validator.isURL(link) != true) {
           Swal.showValidationMessage("Please enter a valid link!");
         } else {
-          if(link.includes("doi")) {
+          if (link.includes("doi")) {
             protocolLink = "DOI";
           } else {
             protocolLink = "URL";
