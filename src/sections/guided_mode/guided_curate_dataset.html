@@ -377,6 +377,15 @@
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
             data-skip-page="true"
           >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                Specify the dataset's data structure
+              </h1>
+              <p class="guided--help-text w-100 text-left">
+                Insert a basic description of what subjects, samples, and pools
+                are?
+              </p>
+            </div>
             <div class="guided--section" id="number-of-subjects-prompt">
               <label class="guided--form-label centered">
                 Does your dataset contain any subjects?
@@ -388,7 +397,7 @@
                 <button
                   class="ui positive basic button guided--radio-button"
                   id="guided-button-has-subjects"
-                  data-next-question="guided-user-has-subjects-form"
+                  data-next-question="guided-add-subjects-table"
                 >
                   Yes
                 </button>
@@ -399,85 +408,31 @@
                   No
                 </button>
               </div>
-              <div
-                class="guided--panel hidden"
-                id="guided-user-has-subjects-form"
-              >
-                <div class="guided--input-container">
-                  <label class="guided--form-label centered"
-                    >How many subjects does your dataset have?
-                  </label>
-                  <input
-                    class="guided--input"
-                    id="guided-number-of-subjects-input"
-                    type="text"
-                    placeholder="Enter number of subjects"
-                    style="width: 400px; text-align: center"
-                    data-input-set="guided-subjects-folder-tab"
-                    data-alert-message="Please enter a number between 1 and 1000."
-                    data-alert-type="danger"
-                    onkeyup="validateInput($(this))"
-                  />
-                </div>
-
-                <div
-                  class="guided--input-container hidden"
-                  id="guided-same-amount-samples-form"
-                  style="margin-top: 25px"
+              <div class="guided--panel hidden" id="guided-add-subjects-table">
+                <table
+                  class="ui celled striped table"
+                  style="margin-bottom: 10px; width: 500px"
                 >
-                  <label class="guided--form-label centered"
-                    >Do all of your subjects have the same amount of samples?
-                  </label>
-                  <div
-                    class="guided--radio-button-container"
-                    id="show-create-subjects-table-div"
-                  >
-                    <button
-                      class="ui positive basic button guided--radio-button"
-                      id="guided-button-samples-same"
-                      data-next-question="guided-sample-count-same"
-                    >
-                      Yes
-                    </button>
-                    <button
-                      class="ui negative basic button guided--radio-button"
-                      id="guided-button-samples-not-same"
-                    >
-                      No
-                    </button>
-                  </div>
-                </div>
-                <div
-                  class="guided--input-container hidden"
-                  id="guided-sample-count-same"
-                >
-                  <label class="guided--form-label centered"
-                    >How many samples does each subject have?
-                  </label>
-                  <input
-                    class="guided--input"
-                    type="text"
-                    name="guided-number-of-samples"
-                    placeholder="Enter number of samples"
-                    id="guided-number-of-samples-input"
-                    style="width: 400px; text-align: center"
-                    data-input-set="guided-subjects-folder-tab"
-                    data-alert-message="Please enter a valid number between 1 and 1000."
-                    data-alert-type="danger"
-                    onkeyup="validateInput($(this))"
-                  />
-                </div>
+                  <thead>
+                    <tr>
+                      <th
+                        class="text-center"
+                        style="min-width: 250px"
+                        colspan="2"
+                      >
+                        Subject IDs
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="subject-specification-table-body"></tbody>
+                </table>
                 <button
-                  id="guided-button-generate-subjects-table"
-                  class="btn_animated hidden"
-                  style="
-                    width: 160px;
-                    min-width: 160px;
-                    border: none !important;
-                    margin: 15px;
-                  "
+                  class="ui primary basic button mt-0"
+                  id="guided-button-add-contributor"
+                  onclick="addSubjectSpecificationTableRow()"
                 >
-                  Create subjects table
+                  <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new
+                  subject
                 </button>
               </div>
               <div
@@ -1751,13 +1706,6 @@
                 </li>
               </ul>
               <div class="guided--input-container">
-<<<<<<< HEAD
-                <h2 class="guided--text-sub-step">
-                  Draft your CHANGES.txt file below:
-                </h2>
-
-=======
->>>>>>> guided
                 <p class="guided--text-input-instructions mb-0">
                   <b>Please refrain from using markdown.</b>
                 </p>
@@ -1769,13 +1717,8 @@
                   id="guided-textarea-create-readme"
                 ></textarea>
                 <p class="guided--text-input-instructions mb-0">
-<<<<<<< HEAD
-                  Provide details neccessary for the reuse of the dataset beyond
-                  the dataset's metadata.
-=======
                   Please indicate any changes that have been made to your
                   dataset since its previous upload.
->>>>>>> guided
                 </p>
               </div>
               <!--<button

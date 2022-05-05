@@ -41,11 +41,13 @@ const switchElementVisibility = (elementIdToHide, elementIdToShow) => {
 
 const guidedGetSubjects = () => {
   return Object.keys(
-    sodaJSONObj["dataset-metadata"]["subject-sample-structure"]
+    sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]
   );
 };
 const guidedGetSubjectSamples = (subject) => {
-  return sodaJSONObj["dataset-metadata"]["subject-sample-structure"][subject];
+  return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+    subject
+  ];
 };
 const guidedGetSamplesSubject = (sample) => {
   for (const subject of guidedGetSubjects()) {
@@ -366,10 +368,6 @@ const traverseToTab = (targetPageID) => {
       //check it subjects exist in sodajsonObj
       if (guidedGetSubjects().length === 0) {
         $("#number-of-subjects-prompt").css("display", "flex");
-        $("#subjects-table").hide();
-      } else {
-        $("#number-of-subjects-prompt").hide();
-        $("#subjects-table").css("display", "flex");
       }
     }
     if (targetPageID === "guided-samples-folder-tab") {
@@ -451,10 +449,12 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
       try {
-        sodaJSONObj["dataset-metadata"]["subject-sample-structure"]["SUB-1"] =
-          [];
-        sodaJSONObj["dataset-metadata"]["subject-sample-structure"]["SUB-2"] =
-          [];
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          "SUB-1"
+        ] = [];
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          "SUB-2"
+        ] = [];
         let subjectsArray = guidedGetSubjects();
         for (let subject of subjectsArray) {
           //check to see if subject already has data in the sodajsonObj
@@ -926,7 +926,58 @@ const guidedAddHighLevelFolderToDatasetStructureObj = (highLevelFolderName) => {
 
 //dataset description (first page) functions
 guidedCreateSodaJSONObj = () => {
-  sodaJSONObj = {};
+  sodaJSONObj = {
+    addSubject: function (subjectName) {
+      //check if name already exists
+      console.log(
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][subjectName]
+      );
+      console.log(
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          subjectName
+        ]
+      );
+      if (
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][subjectName] ||
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          subjectName
+        ]
+      ) {
+        throw new Error("Subject names must be unique.");
+      }
+      sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+        subjectName
+      ] = {};
+    },
+    getAllSubjects: function () {
+      let subjectsInPools = Object.keys(
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ]
+      );
+      let subjectsNotInPools = Object.keys(
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          "subjects"
+        ]
+      );
+      return subjectsInPools.concat(subjectsNotInPools);
+    },
+
+    addPool: function (poolName) {
+      this["dataset-metadata"]["pool-subject-sample-structure"][poolName] = {};
+      //renderPoolTable();
+    },
+    deletePool: function (poolName) {
+      delete this["dataset-metadata"]["pool-subject-sample-structure"][
+        poolName
+      ];
+      //renderPoolTable();
+    },
+  };
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
   sodaJSONObj["manifest-files"] = {};
@@ -934,7 +985,10 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
-  sodaJSONObj["dataset-metadata"]["subject-sample-structure"] = {};
+  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] = {};
+  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"] =
+    {};
+  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"];
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
@@ -1965,6 +2019,44 @@ $("#guided-button-generate-subjects-table").on("click", () => {
   $("#subjects-table").css("display", "flex");
 });
 
+const specifySubject = (event, subjectNameInput) => {
+  if (event.which == 13) {
+    try {
+      const subjectName = subjectNameInput.val().trim();
+      const subjectNameElement = `
+        <div class="space-between">
+          <span class="subject-id">${subjectName}</span>
+          <i
+            class="far fa-edit jump-back"
+            style="cursor: pointer;"
+            onclick="openSubjectRenameInput($(this))"
+          >
+          </i>
+        </div>
+      `;
+      const subjectIdCellToAddNameTo = subjectNameInput.parent();
+
+      if (subjectName.length > 0) {
+        if (!subSamInputIsValid(subjectName)) {
+          generateAlertMessage(subjectNameInput);
+          return;
+        }
+        //case where subject name is valid:
+        removeAlertMessageIfExists(subjectNameInput);
+        //add subject to json pool-sub-sam structure
+        sodaJSONObj.addSubject(subjectName);
+        subjectIdCellToAddNameTo.html(subjectNameElement);
+      }
+    } catch (error) {
+      notyf.open({
+        duration: "3000",
+        type: "error",
+        message: error,
+      });
+    }
+  }
+};
+
 const createSubjectFolder = (event, subjectNameInput) => {
   if (event.which == 13) {
     try {
@@ -2081,6 +2173,39 @@ const updateGuidedTableIndices = (tableIndexClass) => {
     indexElement.innerHTML = newIndex;
   });
 };
+const generateSubjectSpecificationRowElement = () => {
+  return `
+    <tr>
+      <td class="middle aligned subject-id-cell">
+        <input
+          class="guided--input"
+          type="text"
+          name="guided-subject-id"
+          placeholder="Enter subject ID and press enter"
+          onkeyup="specifySubject(event, $(this))"
+          data-input-set="guided-subjects-folder-tab"
+          data-alert-message="Subject IDs may not contain spaces or special characters"
+          data-alert-type="danger"
+        />
+      </td>
+      <td class="middle aligned collapsing text-center remove-left-border">
+        <i
+          class="far fa-trash-alt"
+          style="color: red; cursor: pointer"
+          onclick="deleteSubjectFolder($(this))"
+        ></i>
+      </td>
+    </tr>
+  `;
+};
+const addSubjectSpecificationTableRow = () => {
+  const subjectSpecificationTableBody = document.getElementById(
+    "subject-specification-table-body"
+  );
+  subjectSpecificationTableBody.innerHTML +=
+    generateSubjectSpecificationRowElement();
+};
+
 const generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
   return `
     <tr>
@@ -2142,7 +2267,7 @@ const deleteSubjectFolder = (subjectDeleteButton) => {
   //Update subject table row indices
   updateGuidedTableIndices("subject-table-index");
   //delete the subject folder from sodaJSONobj
-  delete sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+  delete sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
     subjectIdToDelete
   ];
   //delete the subject folder from the dataset structure obj
@@ -2211,7 +2336,7 @@ const createSampleFolder = (event, sampleNameInput) => {
         if (subSamInputIsValid(sampleName)) {
           removeAlertMessageIfExists(sampleNameInput);
           //Add sample to sodaJSONobj
-          sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+          sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
             sampleParentSubjectName
           ].push(sampleName);
 
@@ -2227,11 +2352,11 @@ const createSampleFolder = (event, sampleNameInput) => {
             //get the name of the sample being renamed
             const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
             //Remove old sample in sodaJSONobj
-            sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+            sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
               sampleParentSubjectName
-            ] = sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
-              sampleParentSubjectName
-            ].filter((sample) => {
+            ] = sodaJSONObj["dataset-metadata"][
+              "pool-subject-sample-structure"
+            ][sampleParentSubjectName].filter((sample) => {
               return sample !== sampleFolderToRename;
             });
 
@@ -2429,9 +2554,9 @@ const deleteSampleFolder = (sampleDeleteButton) => {
     .trim();
   const sampleIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
   //delte the sample from sodaJSONobj
-  sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
     samplesParentSubject
-  ] = sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+  ] = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
     samplesParentSubject
   ].filter((sample) => {
     return sample !== sampleIdToDelete;
