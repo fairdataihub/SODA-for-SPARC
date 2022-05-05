@@ -114,6 +114,7 @@
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",
+    "validator": "^13.7.0",
     "zerorpc": "github:megasanjay/zerorpc-node#master"
   },
   "devDependencies": {

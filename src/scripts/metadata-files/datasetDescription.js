@@ -758,6 +758,11 @@ async function generateDDFile(uploadBFBoolean) {
   // grab related information (protocols and additional links)
   var relatedInfoArr = combineLinksSections();
 
+  console.log(datasetInfoValueObj);
+  console.log(studyInfoValueObject);
+  console.log(contributorObj);
+  console.log(relatedInfoArr);
+
   //// process obtained values to pass to an array ///
   ///////////////////////////////////////////////////
 
@@ -788,6 +793,7 @@ async function generateDDFile(uploadBFBoolean) {
   studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
   studyInfoValueObject["study technique"] = studyTechniqueArr;
   studyInfoValueObject["study approach"] = studyApproachesArr;
+  console.log(studyInfoValueObject);
 
   ///////////// stringify JSON objects //////////////////////
   json_str_ds = JSON.stringify(datasetInfoValueObj);
@@ -799,6 +805,10 @@ async function generateDDFile(uploadBFBoolean) {
   var bfaccountname = $("#current-bf-account").text();
 
   /// call python function to save file
+  console.log(uploadBFBoolean);
+  console.log(defaultBfAccount);
+  console.log($("#bf_dataset_load_dd").text().trim());
+  console.log(ddDestinationPath);
   client.invoke(
     "api_save_ds_description_file",
     uploadBFBoolean,
@@ -956,8 +966,6 @@ async function addProtocol() {
     title: "Add a protocol",
     html:
       '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-      '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your link is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier." "rel="popover" data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
       '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
     focusConfirm: false,
     confirmButtonText: "Add",
@@ -972,14 +980,20 @@ async function addProtocol() {
     },
     preConfirm: () => {
       var link = $("#DD-protocol-link").val();
+      let protocolLink = "";
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
-      }
-      if ($("#DD-protocol-link-select").val() === "Select") {
-        Swal.showValidationMessage(`Please choose a link type!`);
-      }
-      if ($("#DD-protocol-link-relation").val() === "Select") {
-        Swal.showValidationMessage(`Please choose a link relation!`);
+      } else {
+        //check if link is valid
+        if(validator.isURL(link) != true) {
+          Swal.showValidationMessage(`Please enter a valid link`)
+        } else {
+          if(link.includes("doi")) {
+            protocolLink = "DOI"
+          } else {
+            protocolLink = "URL"
+          }
+        }
       }
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
@@ -995,13 +1009,14 @@ async function addProtocol() {
       }
       return [
         $("#DD-protocol-link").val(),
-        $("#DD-protocol-link-select").val(),
-        $("#DD-protocol-link-relation").val(),
+        protocolLink,
+        "IsProtocolFor",
         $("#DD-protocol-description").val(),
       ];
     },
   });
   if (values) {
+    console.log(values);
     addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
 }

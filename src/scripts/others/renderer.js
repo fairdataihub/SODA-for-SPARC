@@ -34,6 +34,7 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+const validator = require("validator");
 // TODO: Test with a build
 const {
   datasetUploadSession,
@@ -6480,6 +6481,8 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
 }
 
 async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
+  console.log(currentLocation.value);
+  console.log("get in folder called");
   $(singleUIItem).dblclick(async function () {
     if ($(this).children("h1").hasClass("myFol")) {
       start = 0;
