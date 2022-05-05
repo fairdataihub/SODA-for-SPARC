@@ -451,6 +451,10 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
       try {
+        sodaJSONObj["dataset-metadata"]["subject-sample-structure"]["SUB-1"] =
+          [];
+        sodaJSONObj["dataset-metadata"]["subject-sample-structure"]["SUB-2"] =
+          [];
         let subjectsArray = guidedGetSubjects();
         for (let subject of subjectsArray) {
           //check to see if subject already has data in the sodajsonObj
@@ -2925,7 +2929,7 @@ $(document).ready(() => {
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-add-code-metadata-tab");
+      traverseToTab("guided-dataset-starting-point-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {
