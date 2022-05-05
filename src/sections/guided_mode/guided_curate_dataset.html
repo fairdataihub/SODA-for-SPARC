@@ -22,21 +22,6 @@
                 <h1 class="guided--progression-tab-label-main">
                   Specify data files
                 </h1>
-                <h2 class="guided--progression-tab-label-sub">Not started</h2>
-              </div>
-            </div>
-          </div>
-          <div
-            class="guided--progression-tab guided--progression-tab-triangle"
-            id="prepare-pennsieve-metadata-progression-tab"
-          >
-            <div class="guided--progression-tab-content">
-              <span class="dot">2</span>
-              <div class="guided--progression-tab-labels">
-                <h1 class="guided--progression-tab-label-main">
-                  Pennsieve metadata
-                </h1>
-                <h2 class="guided--progression-tab-label-sub">Not started</h2>
               </div>
             </div>
           </div>
@@ -45,12 +30,24 @@
             id="prepare-dataset-metadata-progression-tab"
           >
             <div class="guided--progression-tab-content">
-              <span class="dot">3</span>
+              <span class="dot">2</span>
               <div class="guided--progression-tab-labels">
                 <h1 class="guided--progression-tab-label-main">
                   Dataset metadata
                 </h1>
-                <h2 class="guided--progression-tab-label-sub">Not started</h2>
+              </div>
+            </div>
+          </div>
+          <div
+            class="guided--progression-tab guided--progression-tab-triangle"
+            id="prepare-pennsieve-metadata-progression-tab"
+          >
+            <div class="guided--progression-tab-content">
+              <span class="dot">3</span>
+              <div class="guided--progression-tab-labels">
+                <h1 class="guided--progression-tab-label-main">
+                  Pennsieve metadata
+                </h1>
               </div>
             </div>
           </div>
@@ -64,7 +61,6 @@
                 <h1 class="guided--progression-tab-label-main">
                   Generate dataset
                 </h1>
-                <h2 class="guided--progression-tab-label-sub">Not started</h2>
               </div>
             </div>
           </div>
@@ -878,560 +874,6 @@
         </div>
 
         <div
-          id="prepare-pennsieve-metadata-parent-tab"
-          class="guided--parent-tab hidden"
-        >
-          <div class="guided--capsule-container">
-            <div
-              class="guided--capsule"
-              id="guided-pennsieve-intro-capsule"
-            ></div>
-            <div class="guided--capsule" id="guided-banner-image-capsule"></div>
-            <div
-              class="guided--capsule"
-              id="guided-designate-pi-owner-capsule"
-            ></div>
-            <div
-              class="guided--capsule"
-              id="guided-designate-permissions-capsule"
-            ></div>
-            <div
-              class="guided--capsule"
-              id="guided-add-description-capsule"
-            ></div>
-            <div class="guided--capsule" id="guided-add-tags-capsule"></div>
-            <div
-              class="guided--capsule"
-              id="guided-assign-license-capsule"
-            ></div>
-          </div>
-          <div id="guided-pennsieve-intro-tab" class="guided--panel hidden">
-            <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step" style="margin-bottom: 5px">
-                Pennsieve metadata addition
-              </h1>
-              <p class="guided--help-text w-100" style="max-width: 900px">
-                Pennsieve is a free, open source data management platform that
-                provides a scalable, cloud-based solution for managing,
-                analyzing, and sharing datasets. In the following fields, you
-                will be prompted to add digital metadata to your dataset such as
-                a banner image, user/team permissions, and license. After
-                uploading your dataset from SODA, your metadata will be added to
-                the Pennsieve platform and appear similar to the examples below.
-              </p>
-              <div class="space-around" style="align-items: flex-start">
-                <img
-                  src="assets/img/pennsieve-overview-example.png"
-                  alt="SPARC dataset structure example"
-                  style="width: 40%; object-fit: contain"
-                />
-                <div class="justify-center" style="width: 40%">
-                  <img
-                    src="assets/img/pennsieve-metadata-example.png"
-                    alt="SPARC dataset structure example"
-                    style="width: 100%; object-fit: contain"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="guided-banner-image-tab" class="guided--panel hidden">
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Add a banner image to your dataset below
-              </h1>
-              <button
-                class="ui primary button"
-                id="guided-button-add-banner-image"
-                style="background-color: var(--color-light-green) !important"
-              >
-                Add banner image
-              </button>
-              <div
-                class="guided--container-data-display-contract hidden"
-                id="guided-banner-image-preview-container"
-              >
-                <div id="guided-banner-image-preview"></div>
-              </div>
-            </div>
-            <div
-              class="modal fade"
-              id="guided-banner-image-modal"
-              tabindex="-1"
-              role="dialog"
-              data-backdrop="false"
-              style="
-                background-color: rgba(0, 0, 0, 0.5);
-                width: 100%;
-                height: 100%;
-              "
-            >
-              <div
-                class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
-                role="document"
-              >
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h4 class="modal-title" id="guided-edit_banner_image_title">
-                      Add a banner image
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
-                  <br/><br/>
-                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
-                        rel="popover"
-                        data-html="true"
-                        data-placement="bottom"
-                        data-trigger="hover"
-                      ></i>
-                    </h4>
-                    <button type="button" class="close" data-dismiss="modal">
-                      <i
-                        style="color: red; font-size: 25px"
-                        class="far fa-window-close"
-                      ></i>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <div
-                      id="guided-div-editbanner-img"
-                      style="display: flex; flex-direction: row"
-                    >
-                      <div
-                        id="guided-div-img-container-holder"
-                        class="img-container"
-                      >
-                        Imported image will be shown here. <br />You will be
-                        able to crop it before uploading.
-                      </div>
-
-                      <div
-                        id="guided-div-img-container"
-                        class="img-container"
-                        style="display: none; flex-direction: column"
-                      >
-                        <img
-                          id="guided-image-banner"
-                          class="banner-img"
-                          width="100%"
-                        />
-                        <p
-                          id="guided-para-path-image"
-                          style="
-                            margin-top: 0.5em;
-                            text-align: center;
-                            display: none;
-                          "
-                        ></p>
-                      </div>
-                    </div>
-                    <p
-                      id="guided-para-dataset-banner-image-status"
-                      style="
-                        text-align: center;
-                        font-weight: 400;
-                        color: var(--color-light-green);
-                        font-size: 15px;
-                      "
-                    ></p>
-                  </div>
-                  <div
-                    class="modal-footer"
-                    style="display: flex; justify-content: space-between"
-                  >
-                    <div
-                      style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: center;
-                      "
-                    >
-                      <div
-                        style="
-                          display: flex;
-                          flex-direction: column;
-                          justify-content: center;
-                          align-items: center;
-                          width: 100%;
-                        "
-                      >
-                        <button
-                          id="guided-button-import-banner-image"
-                          type="button"
-                          class="btn btn-primary"
-                          style="border-radius: 4px"
-                        >
-                          Import image
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="container-cropped-image">
-                      <div
-                        class="banner-image-size"
-                        style="width: 380px; text-align: center"
-                      >
-                        <span class="crop-image-text"
-                          >Cropped dimensions (must be between 512px and
-                          2048px):
-                        </span>
-                      </div>
-                      <input
-                        class="banner-image-size input"
-                        style="
-                          width: 70px;
-                          text-align: center;
-                          pointer-events: none;
-                        "
-                        id="guided-form-banner-height"
-                        type="text"
-                        readonly="readonly"
-                        size="7"
-                      />
-                      <div
-                        class="banner-image-size"
-                        style="width: 30px; text-align: center"
-                      >
-                        <span class="crop-image-text">px</span>
-                      </div>
-                    </div>
-
-                    <button
-                      id="guided-save-banner-image"
-                      type="button"
-                      class="btn btn-primary"
-                      style="border-radius: 4px; visibility: hidden"
-                    >
-                      Save changes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">Specify owner of dataset</h1>
-              <p class="guided--help-text w-100" style="max-width: 900px">
-                SPARC curation rules require to set the PI of the SPARC award as
-                'owner' of the dataset before it is shared with the Curation
-                Team for review. This is to ensures that the PI is the only
-                person who can publish the dataset.
-              </p>
-              <label class="guided--form-label centered mt-md">
-                Who is the PI of the project associated with the dataset?
-              </label>
-              <div
-                class="guided--radio-button-container"
-                style="margin-bottom: 7px"
-              >
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-designate-self-PI"
-                  data-next-question="guided-designate-self-PI"
-                >
-                  Myself
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-designate-other-PI"
-                  data-next-question="guided-designate-other-PI"
-                >
-                  Someone else
-                </button>
-              </div>
-              <div
-                class="guided--panel hidden"
-                id="guided-designate-self-PI"
-              ></div>
-              <div class="guided--panel hidden" id="guided-designate-other-PI">
-                <label class="guided--text-sub-step"
-                  >Designate another user as PI Owner:
-                </label>
-                <div class="guided--container-permissions">
-                  <div style="flex-grow: 1">
-                    <div
-                      class="field"
-                      style="
-                        display: flex;
-                        width: 100%;
-                        justify-content: center;
-                        align-items: center;
-                        flex-direction: column;
-                      "
-                    >
-                      <div
-                        id="guided_pi_bootstrap_select_div"
-                        style="
-                          display: flex;
-                          flex-direction: row;
-                          justify-content: space-around;
-                          width: 100%;
-                        "
-                      >
-                        <select
-                          class="selectpicker"
-                          data-live-search="true"
-                          style="
-                            padding: 8px 12px;
-                            margin-right: 30px;
-                            height: 38px;
-                            border-radius: 5px;
-                            border: 1px solid black;
-                          "
-                          id="guided_bf_list_users_pi"
-                        >
-                          <option>Select PI</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            id="guided-designate-permissions-tab"
-            class="guided--panel hidden"
-          >
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Dataset user/team permissions
-              </h1>
-              <p class="guided--help-text w-100 text-left">
-                Dataset permissions control which users or teams can view, edit,
-                or manage the dataset. Read below for a breakdown of the
-                different types of dataset permissions:
-              </p>
-              <p class="guided--help-text w-100 text-left">
-                <b>Managers</b> can invite people and teams to a dataset, edit
-                and delete models, records and files, but cannot publish a
-                dataset.
-              </p>
-              <p class="guided--help-text w-100 text-left">
-                <b>Editors</b> can create, edit, or delete records and files in
-                a dataset.
-              </p>
-              <p class="guided--help-text w-100 text-left">
-                <b>Viewers</b> can view and browse all information in a dataset,
-                but have no other permissions.
-              </p>
-            </div>
-            <table
-              class="ui celled striped table"
-              style="margin-bottom: 25px; width: 800px"
-            >
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th class="remove-left-border" style="width: 300px">
-                    Permission
-                  </th>
-                  <th
-                    class="center aligned remove-left-border"
-                    style="width: 30px"
-                  >
-                    Delete
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="permissions-table-body"></tbody>
-            </table>
-            <label class="guided--form-label centered mt-md">
-              Would you like to add more permissions to your dataset?
-            </label>
-            <div class="guided--radio-button-container mb-sm">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-add-permissions"
-                data-next-question="guided-add-permissions"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-no-permissions"
-                data-next-question="guided-no-permissions"
-              >
-                No
-              </button>
-            </div>
-            <div class="guided--panel hidden" id="guided-add-permissions">
-              <h1 class="guided--text-sub-step">
-                Designate permissions for users and teams:
-              </h1>
-              <div class="guided--container-permissions">
-                <div style="flex-grow: 1">
-                  <div
-                    class="field"
-                    style="
-                      display: flex;
-                      width: 100%;
-                      justify-content: center;
-                      align-items: center;
-                      flex-direction: column;
-                    "
-                  >
-                    <div
-                      id="guided_permissions_select_div"
-                      style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-around;
-                        width: 100%;
-                      "
-                    >
-                      <select
-                        class="selectpicker"
-                        data-live-search="true"
-                        style="
-                          padding: 8px 12px;
-                          margin-right: 30px;
-                          height: 38px;
-                          border-radius: 5px;
-                          border: 1px solid black;
-                        "
-                        id="guided_bf_list_users_and_teams"
-                      >
-                        <option>Select individuals or teams</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <select
-                  class="my-dropdown"
-                  style="
-                    width: 150px;
-                    margin: 0px 10px;
-                    cursor: pointer;
-                    height: 35px;
-                  "
-                  id="select-permission-list-users-and-teams"
-                >
-                  <option value="Select role">Select role</option>
-                  <option value="viewer">viewer</option>
-                  <option value="manager">manager</option>
-                  <option value="editor">editor</option></select
-                ><button
-                  class="ui primary button"
-                  id="guided-button-add-permission-user-or-team"
-                  style="
-                    height: 35px;
-                    background-color: var(--color-light-green) !important;
-                    padding: 0.7em 1.3em;
-                  "
-                >
-                  Designate permission
-                </button>
-              </div>
-            </div>
-            <div class="guided--panel hidden" id="guided-no-permissions"></div>
-          </div>
-          <div id="guided-add-description-tab" class="guided--panel hidden">
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">Describe your dataset</h1>
-              <p class="guided--help-text w-100 text-left">
-                The dataset description is a brief summary of the dataset which
-                allows users to gain better insights into your work and enhance
-                your dataset's findability.
-              </p>
-              <div class="guided--input-container mt-sm">
-                <label class="guided--form-label">Study purpose:</label>
-                <textarea
-                  class="guided--input guided--text-area"
-                  type="text"
-                  name="guided-study-purpose"
-                  placeholder="Enter your study purpose here"
-                  id="guided-ds-description-study-purpose"
-                ></textarea>
-                <p class="guided--text-input-instructions">
-                  Enter a paragraph that explains the purpose of your study. We
-                  will enter the title for this section to your readme for
-                  you.<br />Refrain from using markdown.
-                </p>
-              </div>
-              <div class="guided--input-container">
-                <label class="guided--form-label">Data collection:</label>
-                <textarea
-                  class="guided--input guided--text-area"
-                  type="text"
-                  name="guided-data-collection"
-                  placeholder="Enter your data collection here"
-                  id="guided-ds-description-data-collection"
-                ></textarea>
-                <p class="guided--text-input-instructions">
-                  Enter a paragraph that explains the method you used for data
-                  collection. We will enter the title for this section to your
-                  readme for you.<br />Refrain from using markdown.
-                </p>
-              </div>
-              <div class="guided--input-container">
-                <label class="guided--form-label">Primary conclusion:</label>
-                <textarea
-                  class="guided--input guided--text-area"
-                  type="text"
-                  name="guided-primary-conclusion"
-                  placeholder="Enter your primary conclusion here"
-                  id="guided-ds-description-primary-conclusion"
-                ></textarea>
-                <p class="guided--text-input-instructions">
-                  Enter a paragraph that explains the primary conclusion of your
-                  study. We will enter the title for this section to your readme
-                  for you.<br />Refrain from using markdown.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div id="guided-add-tags-tab" class="guided--panel hidden">
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">Enter dataset tags below</h1>
-              <p class="guided--help-text w-100 text-center mb-lg">
-                Dataset tags are keywords that indicate the key elements of your
-                research.
-              </p>
-              <input
-                id="guided-tagify-dataset-tags"
-                name="guided-tags"
-                value=""
-                autofocus
-              />
-              <p class="guided--text-input-instructions">
-                Enter a keyword and press enter to add it as a tag. Double click
-                a tag to edit its contents.
-              </p>
-            </div>
-          </div>
-          <div id="guided-assign-license-tab" class="guided--panel hidden">
-            <div class="guided--section">
-              <h1 class="guided--text-sub-step">
-                Assign a license to your datset:
-              </h1>
-              <p class="guided--help-text w-100 text-left">
-                As per SPARC policy, all datasets must be licensed under a
-                <b>Creative Commons Attribution (CC-BY)</b> license.
-              </p>
-              <p class="guided--help-text w-100 text-left">
-                The <b>Creative Commons Attribution license</b> allows reusers
-                to distribute, remix, adapt, and build upon the material in any
-                medium or format, so long as attribution is given to the
-                creator. The license allows for commercial use.
-              </p>
-              <div class="ui checkbox">
-                <input
-                  type="checkbox"
-                  id="guided-license-checkbox"
-                  name="license"
-                />
-                <label
-                  >I agree to apply the Creative Commons Attribution to my
-                  dataset</label
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
           id="prepare-dataset-metadata-parent-tab"
           class="guided--parent-tab hidden"
         >
@@ -1457,6 +899,10 @@
             <div
               class="guided--capsule"
               id="guided-create-samples-metadata-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-add-code-metadata-capsule"
             ></div>
             <div
               class="guided--capsule"
@@ -2148,6 +1594,113 @@
           >
             <div id="sample-metadata-tables-container"></div>
           </div>
+          <div id="guided-add-code-metadata-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Code-related metadata</h1>
+              <p class="guided--help-text w-100 text-left">
+                Code-related metadata is information that describes the code in
+                terms of its quality that should be submitted with all
+                computational datasets. Code RRIDs and ontologies are required.
+              </p>
+            </div>
+
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step required">
+                Import the code_description metadata file
+              </h2>
+              <p
+                class="guided--help-text w-100 small text-left"
+                style="margin-bottom: 2px"
+              >
+                code_description is a <b>required</b> metadata file that
+                contains information that describes the code in terms of its
+                quality.
+              </p>
+              <p class="guided--help-text w-100 small text-center mt-sm">
+                <b
+                  >The code_description file must be in .xlsx format
+                  (code_description.xlsx)</b
+                >
+              </p>
+              <div
+                class="guided--container-file-import"
+                droppable="true"
+                ondrop="dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
+                ondragover="return false;"
+              >
+                <div class="guided--file-import">
+                  <div
+                    id="code-description-lottie-container"
+                    class="code-metadata-lottie-container"
+                  ></div>
+                  <p class="guided--help-text text-center">
+                    Drag and Drop <br /><b>code_description.xslx</b>
+                  </p>
+                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
+                  <button
+                    class="ui primary basic button mt-sm"
+                    id="guided-button-add-contributor"
+                    onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
+                  >
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i
+                    >Import code_description.xslx
+                  </button>
+                  <p
+                    class="guided--help-text small text-center mt-sm"
+                    id="guided-code-description-para-text"
+                  ></p>
+                </div>
+              </div>
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">
+                Import the code_parameters metadata file
+              </h2>
+              <p
+                class="guided--help-text w-100 small text-left"
+                style="margin-bottom: 2px"
+              >
+                code_description is an <b>optional</b> metadata file that
+                contains specific paramets required to run code used in the
+                creation of the dataset.
+              </p>
+              <p class="guided--help-text w-100 small text-center mt-sm">
+                <b
+                  >The code_parameters file must be in .xlsx format
+                  (code_description.xlsx)</b
+                >
+              </p>
+              <div
+                class="guided--container-file-import"
+                droppable="true"
+                ondrop="dropHandler(event, 'guided-code-parameters-para-text', 'code_parameters', 'guided');"
+                ondragover="return false;"
+              >
+                <div class="guided--file-import">
+                  <div
+                    id="code-parameters-lottie-container"
+                    class="code-metadata-lottie-container"
+                  ></div>
+                  <p class="guided--help-text text-center">
+                    Drag and Drop <br /><b>code_parameters.xslx</b>
+                  </p>
+                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
+                  <button
+                    class="ui primary basic button mt-sm"
+                    id="guided-button-add-contributor"
+                    onclick="importMetadataFiles(this, 'code_parameters', ['.xlsx'], 'guided-code-parameters-para-text', 'guided')"
+                  >
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i
+                    >Import code_parameters.xslx
+                  </button>
+                  <p
+                    class="guided--help-text small text-center mt-sm"
+                    id="guided-code-parameters-para-text"
+                  ></p>
+                </div>
+              </div>
+            </div>
+          </div>
           <div
             id="guided-create-readme-metadata-tab"
             class="guided--panel hidden"
@@ -2160,7 +1713,7 @@
                 beyond that which is captures in structured metadata.<br />Some
                 information that should be included is:
               </p>
-              <ul class="w-100">
+              <ul class="guided--help-text w-100">
                 <li
                   class="guided--help-text w-100 text-left mb-2"
                   style="color: hsl(0, 0%, 22%)"
@@ -2198,10 +1751,13 @@
                 </li>
               </ul>
               <div class="guided--input-container">
+<<<<<<< HEAD
                 <h2 class="guided--text-sub-step">
                   Draft your CHANGES.txt file below:
                 </h2>
 
+=======
+>>>>>>> guided
                 <p class="guided--text-input-instructions mb-0">
                   <b>Please refrain from using markdown.</b>
                 </p>
@@ -2213,8 +1769,13 @@
                   id="guided-textarea-create-readme"
                 ></textarea>
                 <p class="guided--text-input-instructions mb-0">
+<<<<<<< HEAD
                   Provide details neccessary for the reuse of the dataset beyond
                   the dataset's metadata.
+=======
+                  Please indicate any changes that have been made to your
+                  dataset since its previous upload.
+>>>>>>> guided
                 </p>
               </div>
               <!--<button
@@ -4107,6 +3668,560 @@
               >
                 Generate sample file
               </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="prepare-pennsieve-metadata-parent-tab"
+          class="guided--parent-tab hidden"
+        >
+          <div class="guided--capsule-container">
+            <div
+              class="guided--capsule"
+              id="guided-pennsieve-intro-capsule"
+            ></div>
+            <div class="guided--capsule" id="guided-banner-image-capsule"></div>
+            <div
+              class="guided--capsule"
+              id="guided-designate-pi-owner-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-designate-permissions-capsule"
+            ></div>
+            <div
+              class="guided--capsule"
+              id="guided-add-description-capsule"
+            ></div>
+            <div class="guided--capsule" id="guided-add-tags-capsule"></div>
+            <div
+              class="guided--capsule"
+              id="guided-assign-license-capsule"
+            ></div>
+          </div>
+          <div id="guided-pennsieve-intro-tab" class="guided--panel hidden">
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step" style="margin-bottom: 5px">
+                Pennsieve metadata addition
+              </h1>
+              <p class="guided--help-text w-100" style="max-width: 900px">
+                Pennsieve is a free, open source data management platform that
+                provides a scalable, cloud-based solution for managing,
+                analyzing, and sharing datasets. In the following fields, you
+                will be prompted to add digital metadata to your dataset such as
+                a banner image, user/team permissions, and license. After
+                uploading your dataset from SODA, your metadata will be added to
+                the Pennsieve platform and appear similar to the examples below.
+              </p>
+              <div class="space-around" style="align-items: flex-start">
+                <img
+                  src="assets/img/pennsieve-overview-example.png"
+                  alt="SPARC dataset structure example"
+                  style="width: 40%; object-fit: contain"
+                />
+                <div class="justify-center" style="width: 40%">
+                  <img
+                    src="assets/img/pennsieve-metadata-example.png"
+                    alt="SPARC dataset structure example"
+                    style="width: 100%; object-fit: contain"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="guided-banner-image-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                Add a banner image to your dataset below
+              </h1>
+              <button
+                class="ui primary button"
+                id="guided-button-add-banner-image"
+                style="background-color: var(--color-light-green) !important"
+              >
+                Add banner image
+              </button>
+              <div
+                class="guided--container-data-display-contract hidden"
+                id="guided-banner-image-preview-container"
+              >
+                <div id="guided-banner-image-preview"></div>
+              </div>
+            </div>
+            <div
+              class="modal fade"
+              id="guided-banner-image-modal"
+              tabindex="-1"
+              role="dialog"
+              data-backdrop="false"
+              style="
+                background-color: rgba(0, 0, 0, 0.5);
+                width: 100%;
+                height: 100%;
+              "
+            >
+              <div
+                class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+                role="document"
+              >
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title" id="guided-edit_banner_image_title">
+                      Add a banner image
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+                  <br/><br/>
+                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
+                        rel="popover"
+                        data-html="true"
+                        data-placement="bottom"
+                        data-trigger="hover"
+                      ></i>
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                      <i
+                        style="color: red; font-size: 25px"
+                        class="far fa-window-close"
+                      ></i>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div
+                      id="guided-div-editbanner-img"
+                      style="display: flex; flex-direction: row"
+                    >
+                      <div
+                        id="guided-div-img-container-holder"
+                        class="img-container"
+                      >
+                        Imported image will be shown here. <br />You will be
+                        able to crop it before uploading.
+                      </div>
+
+                      <div
+                        id="guided-div-img-container"
+                        class="img-container"
+                        style="display: none; flex-direction: column"
+                      >
+                        <img
+                          id="guided-image-banner"
+                          class="banner-img"
+                          width="100%"
+                        />
+                        <p
+                          id="guided-para-path-image"
+                          style="
+                            margin-top: 0.5em;
+                            text-align: center;
+                            display: none;
+                          "
+                        ></p>
+                      </div>
+                    </div>
+                    <p
+                      id="guided-para-dataset-banner-image-status"
+                      style="
+                        text-align: center;
+                        font-weight: 400;
+                        color: var(--color-light-green);
+                        font-size: 15px;
+                      "
+                    ></p>
+                  </div>
+                  <div
+                    class="modal-footer"
+                    style="display: flex; justify-content: space-between"
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+                      "
+                    >
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: column;
+                          justify-content: center;
+                          align-items: center;
+                          width: 100%;
+                        "
+                      >
+                        <button
+                          id="guided-button-import-banner-image"
+                          type="button"
+                          class="btn btn-primary"
+                          style="border-radius: 4px"
+                        >
+                          Import image
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="container-cropped-image">
+                      <div
+                        class="banner-image-size"
+                        style="width: 380px; text-align: center"
+                      >
+                        <span class="crop-image-text"
+                          >Cropped dimensions (must be between 512px and
+                          2048px):
+                        </span>
+                      </div>
+                      <input
+                        class="banner-image-size input"
+                        style="
+                          width: 70px;
+                          text-align: center;
+                          pointer-events: none;
+                        "
+                        id="guided-form-banner-height"
+                        type="text"
+                        readonly="readonly"
+                        size="7"
+                      />
+                      <div
+                        class="banner-image-size"
+                        style="width: 30px; text-align: center"
+                      >
+                        <span class="crop-image-text">px</span>
+                      </div>
+                    </div>
+
+                    <button
+                      id="guided-save-banner-image"
+                      type="button"
+                      class="btn btn-primary"
+                      style="border-radius: 4px; visibility: hidden"
+                    >
+                      Save changes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="guided-designate-pi-owner-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Specify owner of dataset</h1>
+              <p class="guided--help-text w-100" style="max-width: 900px">
+                SPARC curation rules require to set the PI of the SPARC award as
+                'owner' of the dataset before it is shared with the Curation
+                Team for review. This is to ensures that the PI is the only
+                person who can publish the dataset.
+              </p>
+              <label class="guided--form-label centered mt-md">
+                Who is the PI of the project associated with the dataset?
+              </label>
+              <div
+                class="guided--radio-button-container"
+                style="margin-bottom: 7px"
+              >
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-designate-self-PI"
+                  data-next-question="guided-designate-self-PI"
+                >
+                  Myself
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-designate-other-PI"
+                  data-next-question="guided-designate-other-PI"
+                >
+                  Someone else
+                </button>
+              </div>
+              <div
+                class="guided--panel hidden"
+                id="guided-designate-self-PI"
+              ></div>
+              <div class="guided--panel hidden" id="guided-designate-other-PI">
+                <label class="guided--text-sub-step"
+                  >Designate another user as PI Owner:
+                </label>
+                <div class="guided--container-permissions">
+                  <div style="flex-grow: 1">
+                    <div
+                      class="field"
+                      style="
+                        display: flex;
+                        width: 100%;
+                        justify-content: center;
+                        align-items: center;
+                        flex-direction: column;
+                      "
+                    >
+                      <div
+                        id="guided_pi_bootstrap_select_div"
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-around;
+                          width: 100%;
+                        "
+                      >
+                        <select
+                          class="selectpicker"
+                          data-live-search="true"
+                          style="
+                            padding: 8px 12px;
+                            margin-right: 30px;
+                            height: 38px;
+                            border-radius: 5px;
+                            border: 1px solid black;
+                          "
+                          id="guided_bf_list_users_pi"
+                        >
+                          <option>Select PI</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            id="guided-designate-permissions-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                Dataset user/team permissions
+              </h1>
+              <p class="guided--help-text w-100 text-left">
+                Dataset permissions control which users or teams can view, edit,
+                or manage the dataset. Read below for a breakdown of the
+                different types of dataset permissions:
+              </p>
+              <p class="guided--help-text w-100 text-left">
+                <b>Managers</b> can invite people and teams to a dataset, edit
+                and delete models, records and files, but cannot publish a
+                dataset.
+              </p>
+              <p class="guided--help-text w-100 text-left">
+                <b>Editors</b> can create, edit, or delete records and files in
+                a dataset.
+              </p>
+              <p class="guided--help-text w-100 text-left">
+                <b>Viewers</b> can view and browse all information in a dataset,
+                but have no other permissions.
+              </p>
+            </div>
+            <table
+              class="ui celled striped table"
+              style="margin-bottom: 25px; width: 800px"
+            >
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th class="remove-left-border" style="width: 300px">
+                    Permission
+                  </th>
+                  <th
+                    class="center aligned remove-left-border"
+                    style="width: 30px"
+                  >
+                    Delete
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="permissions-table-body"></tbody>
+            </table>
+            <label class="guided--form-label centered mt-md">
+              Would you like to add more permissions to your dataset?
+            </label>
+            <div class="guided--radio-button-container mb-sm">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-add-permissions"
+                data-next-question="guided-add-permissions"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-no-permissions"
+                data-next-question="guided-no-permissions"
+              >
+                No
+              </button>
+            </div>
+            <div class="guided--panel hidden" id="guided-add-permissions">
+              <h1 class="guided--text-sub-step">
+                Designate permissions for users and teams:
+              </h1>
+              <div class="guided--container-permissions">
+                <div style="flex-grow: 1">
+                  <div
+                    class="field"
+                    style="
+                      display: flex;
+                      width: 100%;
+                      justify-content: center;
+                      align-items: center;
+                      flex-direction: column;
+                    "
+                  >
+                    <div
+                      id="guided_permissions_select_div"
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-around;
+                        width: 100%;
+                      "
+                    >
+                      <select
+                        class="selectpicker"
+                        data-live-search="true"
+                        style="
+                          padding: 8px 12px;
+                          margin-right: 30px;
+                          height: 38px;
+                          border-radius: 5px;
+                          border: 1px solid black;
+                        "
+                        id="guided_bf_list_users_and_teams"
+                      >
+                        <option>Select individuals or teams</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <select
+                  class="my-dropdown"
+                  style="
+                    width: 150px;
+                    margin: 0px 10px;
+                    cursor: pointer;
+                    height: 35px;
+                  "
+                  id="select-permission-list-users-and-teams"
+                >
+                  <option value="Select role">Select role</option>
+                  <option value="viewer">viewer</option>
+                  <option value="manager">manager</option>
+                  <option value="editor">editor</option></select
+                ><button
+                  class="ui primary button"
+                  id="guided-button-add-permission-user-or-team"
+                  style="
+                    height: 35px;
+                    background-color: var(--color-light-green) !important;
+                    padding: 0.7em 1.3em;
+                  "
+                >
+                  Designate permission
+                </button>
+              </div>
+            </div>
+            <div class="guided--panel hidden" id="guided-no-permissions"></div>
+          </div>
+          <div id="guided-add-description-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Describe your dataset</h1>
+              <p class="guided--help-text w-100 text-left">
+                The dataset description is a brief summary of the dataset which
+                allows users to gain better insights into your work and enhance
+                your dataset's findability.
+              </p>
+              <div class="guided--input-container mt-sm">
+                <label class="guided--form-label">Study purpose:</label>
+                <textarea
+                  class="guided--input guided--text-area"
+                  type="text"
+                  name="guided-study-purpose"
+                  placeholder="Enter your study purpose here"
+                  id="guided-ds-description-study-purpose"
+                ></textarea>
+                <p class="guided--text-input-instructions">
+                  Enter a paragraph that explains the purpose of your study. We
+                  will enter the title for this section to your readme for
+                  you.<br />Refrain from using markdown.
+                </p>
+              </div>
+              <div class="guided--input-container">
+                <label class="guided--form-label">Data collection:</label>
+                <textarea
+                  class="guided--input guided--text-area"
+                  type="text"
+                  name="guided-data-collection"
+                  placeholder="Enter your data collection here"
+                  id="guided-ds-description-data-collection"
+                ></textarea>
+                <p class="guided--text-input-instructions">
+                  Enter a paragraph that explains the method you used for data
+                  collection. We will enter the title for this section to your
+                  readme for you.<br />Refrain from using markdown.
+                </p>
+              </div>
+              <div class="guided--input-container">
+                <label class="guided--form-label">Primary conclusion:</label>
+                <textarea
+                  class="guided--input guided--text-area"
+                  type="text"
+                  name="guided-primary-conclusion"
+                  placeholder="Enter your primary conclusion here"
+                  id="guided-ds-description-primary-conclusion"
+                ></textarea>
+                <p class="guided--text-input-instructions">
+                  Enter a paragraph that explains the primary conclusion of your
+                  study. We will enter the title for this section to your readme
+                  for you.<br />Refrain from using markdown.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div id="guided-add-tags-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">Enter dataset tags below</h1>
+              <p class="guided--help-text w-100 text-center mb-lg">
+                Dataset tags are keywords that indicate the key elements of your
+                research.
+              </p>
+              <input
+                id="guided-tagify-dataset-tags"
+                name="guided-tags"
+                value=""
+                autofocus
+              />
+              <p class="guided--text-input-instructions">
+                Enter a keyword and press enter to add it as a tag. Double click
+                a tag to edit its contents.
+              </p>
+            </div>
+          </div>
+          <div id="guided-assign-license-tab" class="guided--panel hidden">
+            <div class="guided--section">
+              <h1 class="guided--text-sub-step">
+                Assign a license to your datset:
+              </h1>
+              <p class="guided--help-text w-100 text-left">
+                As per SPARC policy, all datasets must be licensed under a
+                <b>Creative Commons Attribution (CC-BY)</b> license.
+              </p>
+              <p class="guided--help-text w-100 text-left">
+                The <b>Creative Commons Attribution license</b> allows reusers
+                to distribute, remix, adapt, and build upon the material in any
+                medium or format, so long as attribution is given to the
+                creator. The license allows for commercial use.
+              </p>
+              <div class="ui checkbox">
+                <input
+                  type="checkbox"
+                  id="guided-license-checkbox"
+                  name="license"
+                />
+                <label
+                  >I agree to apply the Creative Commons Attribution to my
+                  dataset</label
+                >
+              </div>
             </div>
           </div>
         </div>

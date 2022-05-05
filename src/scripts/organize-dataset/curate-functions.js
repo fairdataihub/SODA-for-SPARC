@@ -159,7 +159,7 @@ $(".button-individual-metadata.go-back").click(function () {
   }
 });
 
-function dropHandler(ev, paraElement, metadataFile) {
+function dropHandler(ev, paraElement, metadataFile, curationMode) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -173,12 +173,31 @@ function dropHandler(ev, paraElement, metadataFile) {
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       if (metadataWithoutExtension === metadataFile) {
         document.getElementById(paraElement).innerHTML = file.path;
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-confirm")
-          .css("display", "flex");
-        $($("#" + paraElement).parents()[1])
-          .find(".div-metadata-go-back")
-          .css("display", "none");
+        if (curationMode === "free-form") {
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-confirm")
+            .css("display", "flex");
+          $($("#" + paraElement).parents()[1])
+            .find(".div-metadata-go-back")
+            .css("display", "none");
+        }
+        if (curationMode === "guided") {
+          //Add success checkmark lottie animation inside metadata card
+          const dragDropContainer =
+            document.getElementById(paraElement).parentElement;
+          console.log(dragDropContainer);
+          const lottieContainer = dragDropContainer.querySelector(
+            ".code-metadata-lottie-container"
+          );
+          lottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: lottieContainer,
+            animationData: successCheck,
+            renderer: "svg",
+            loop: false,
+            autoplay: true,
+          });
+        }
       } else {
         document.getElementById(paraElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";

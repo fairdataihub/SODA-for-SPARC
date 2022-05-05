@@ -32,6 +32,12 @@ const enableElementById = (id) => {
   elementToEnable.style.opacity = "1";
   elementToEnable.style.pointerEvents = "auto";
 };
+const switchElementVisibility = (elementIdToHide, elementIdToShow) => {
+  elementToHide = document.getElementById(elementIdToHide);
+  elementToShow = document.getElementById(elementIdToShow);
+  elementToHide.classList.add("hidden");
+  elementToShow.classList.remove("hidden");
+};
 
 const guidedGetSubjects = () => {
   return Object.keys(
@@ -240,7 +246,11 @@ const setActiveCapsule = (targetPageID) => {
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
   console.log(targetCapsuleID);
   let targetCapsule = $(`#${targetCapsuleID}`);
-  console.log(targetCapsule);
+  //check if targetCapsule parent has the class guided--capsule-container-branch
+  if (targetCapsule.parent().hasClass("guided--capsule-container-branch")) {
+    $(".guided--capsule-container-branch").hide();
+    targetCapsule.parent().css("display", "flex");
+  }
   targetCapsule.addClass("active");
 };
 setActiveProgressionTab = (targetPageID) => {
@@ -441,6 +451,10 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //Create new subjectsArray variable and assign it to all properties in datasetStructureJSONObj.folders.primary.folders if defined
       try {
+        sodaJSONObj["dataset-metadata"]["subject-sample-structure"]["SUB-1"] =
+          [];
+        sodaJSONObj["dataset-metadata"]["subject-sample-structure"]["SUB-2"] =
+          [];
         let subjectsArray = guidedGetSubjects();
         for (let subject of subjectsArray) {
           //check to see if subject already has data in the sodajsonObj
@@ -459,6 +473,30 @@ const traverseToTab = (targetPageID) => {
     }
     if (targetPageID === "guided-create-samples-metadata-tab") {
       renderSampleMetadataTables();
+    }
+    if (targetPageID === "guided-add-code-metadata-tab") {
+      const codeDescriptionLottieContainer = document.getElementById(
+        "code-description-lottie-container"
+      );
+      codeDescriptionLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: codeDescriptionLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      const codeParametersLottieContainer = document.getElementById(
+        "code-parameters-lottie-container"
+      );
+      codeParametersLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: codeParametersLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
       renderAdditionalLinksTable();
@@ -2891,7 +2929,7 @@ $(document).ready(() => {
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-create-description-metadata-tab");
+      traverseToTab("guided-dataset-starting-point-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {

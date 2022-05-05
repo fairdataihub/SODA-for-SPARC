@@ -17,6 +17,32 @@
   transition: visibility 0s 0.12s linear, opacity 0.12s ease-in,
     transform 0.12s ease-in-out;
 }
+.guided--container-file-import {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  margin-top: 10px;
+}
+
+.code-metadata-lottie-container {
+  height: 130px;
+  opacity: 0.5;
+  width: 130px;
+  margin-bottom: 10px;
+}
+.guided--file-import {
+  width: 300px;
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px dashed #258193;
+  padding: 20px;
+  margin: 0px 10px 10px 10px;
+}
 
 .guided--container {
   overflow-y: auto;
@@ -274,6 +300,9 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+}
+.grow {
+  flex-grow: 1;
 }
 
 .guided--container-permissions {
@@ -647,6 +676,7 @@ h1.guided--text-sub-step {
   justify-content: space-between;
 }
 .space-around {
+  max-width: 1200px;
   display: flex;
   justify-content: space-around;
   width: 100%;
