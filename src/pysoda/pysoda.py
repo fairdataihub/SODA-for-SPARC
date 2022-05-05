@@ -1111,7 +1111,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             files_with_destination.append(file_path)
 
                         # clear the pennsieve queue for successive batches
-                        clear_queue()
+                        # clear_queue()
 
                         # upload the current bucket
                         current_folder.upload(*files_with_destination)
@@ -1141,7 +1141,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
-                        clear_queue()
+                        # clear_queue()
 
                         # upload the files
                         current_folder.upload(*files_with_destination)
