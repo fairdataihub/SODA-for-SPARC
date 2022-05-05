@@ -43,7 +43,6 @@ from pennsieve.api.agent import (
     agent_cmd,
     validate_agent_installation,
     agent_env,
-    agent_cmd,
 )
 import semver
 from pennsieve.api.agent import AgentError, check_port, socket_address
@@ -806,11 +805,10 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
 
 def clear_queue():
-
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
     proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
-    return proc
+    return "proc"
 
 
 def agent_running():
