@@ -762,20 +762,37 @@ async function edit_current_protocol_id(ev) {
       if ($("#DD-protocol-link").val() === "") {
         Swal.showValidationMessage(`Please enter a link!`);
       } else {
-        if (validator.isURL(link) != true) {
-          Swal.showValidationMessage("Please enter a valid link!");
+        if(doiRegex.declared({exact: true}).test(link) === true) {
+          //format must begin with doi:
+          //example: doi:10.1000/xyz000
+          protocolLink = "DOI";
         } else {
-          if (link.includes("doi")) {
-            //checks if link is DOI
-            protocolLink = "DOI";
+          //check if link is a valid URL
+          if(validator.isURL(link) != true) {
+            Swal.showValidationMessage("Please enter a valid link");
           } else {
-            protocolLink = "URL";
+            if(link.includes("doi")) {
+              //link is valid url and checks for 'doi' in link
+              protocolLink = "DOI";
+            } else {
+              protocolLink = "URL";
+            }
           }
         }
       }
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
+      let duplicate = checkLinkDuplicate(
+        $("#DD-protocol-link").val(),
+        document.getElementById("protocol-link-table-dd")
+      );
+      if (duplicate) {
+        Swal.showValidationMessage(
+          "Duplicate protocol. The protocol you entered is already added."
+        );
+      }
+      //need to check for duplicates here
       return [
         $("#DD-protocol-link").val(),
         protocolLink,
@@ -785,6 +802,7 @@ async function edit_current_protocol_id(ev) {
     },
   });
   if (values) {
+    console.log(values);
     $(currentRow)[0].cells[1].innerHTML =
       "<a href='" + values[0] + "' target='_blank'>" + values[0] + "</a>";
     $(currentRow)[0].cells[2].innerHTML = values[1];

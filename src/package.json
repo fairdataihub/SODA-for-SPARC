@@ -82,6 +82,7 @@
     "convert-csv-to-json": "^1.3.0",
     "convert-excel-to-json": "^1.7.0",
     "cropperjs": "^1.5.12",
+    "doi-regex": "^0.1.12",
     "dragselect": "2.0.2",
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.3.5",

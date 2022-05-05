@@ -758,11 +758,6 @@ async function generateDDFile(uploadBFBoolean) {
   // grab related information (protocols and additional links)
   var relatedInfoArr = combineLinksSections();
 
-  console.log(datasetInfoValueObj);
-  console.log(studyInfoValueObject);
-  console.log(contributorObj);
-  console.log(relatedInfoArr);
-
   //// process obtained values to pass to an array ///
   ///////////////////////////////////////////////////
 
@@ -793,7 +788,6 @@ async function generateDDFile(uploadBFBoolean) {
   studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
   studyInfoValueObject["study technique"] = studyTechniqueArr;
   studyInfoValueObject["study approach"] = studyApproachesArr;
-  console.log(studyInfoValueObject);
 
   ///////////// stringify JSON objects //////////////////////
   json_str_ds = JSON.stringify(datasetInfoValueObj);
@@ -805,10 +799,6 @@ async function generateDDFile(uploadBFBoolean) {
   var bfaccountname = $("#current-bf-account").text();
 
   /// call python function to save file
-  console.log(uploadBFBoolean);
-  console.log(defaultBfAccount);
-  console.log($("#bf_dataset_load_dd").text().trim());
-  console.log(ddDestinationPath);
   client.invoke(
     "api_save_ds_description_file",
     uploadBFBoolean,
@@ -984,14 +974,19 @@ async function addProtocol() {
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
       } else {
-        //check if link is valid
-        if (validator.isURL(link) != true) {
-          Swal.showValidationMessage(`Please enter a valid link`);
-        } else {
-          if (link.includes("doi")) {
-            protocolLink = "DOI";
+        if(doiRegex.declared({exact: true}).test(link) === true) {
+          protocolLink = "DOI"
+        } else {          
+          //check if link is valid
+          if (validator.isURL(link) != true) {
+            Swal.showValidationMessage(`Please enter a valid link`);
           } else {
-            protocolLink = "URL";
+            //link is valid url and check for 'doi' in link
+            if (link.includes("doi")) {
+              protocolLink = "DOI";
+            } else {
+              protocolLink = "URL";
+            }
           }
         }
       }
