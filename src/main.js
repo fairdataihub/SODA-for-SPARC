@@ -31,22 +31,38 @@ let pyProc = null;
 let pyPort = null;
 
 const guessPackaged = () => {
-  const fullPath = path.join(__dirname, PY_DIST_FOLDER);
-  return require("fs").existsSync(fullPath);
+  const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
+  const unixPath = path.join(process.resourcesPath, PY_MODULE);
+
+  if (process.platform === "darwin" || process.platform === "linux") {
+    if (require("fs").existsSync(unixPath)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  if (process.platform === "win32") {
+    if (require("fs").existsSync(windowsPath)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 };
 
 const getScriptPath = () => {
   if (!guessPackaged()) {
     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
+
   if (process.platform === "win32") {
     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
-  } else if (process.platform === "darwin") {
-    console.log(path.join(__dirname, PY_DIST_FOLDER, PY_MODULE));
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE);
+  } else {
+    return path.join(process.resourcesPath, PY_MODULE);
   }
 
-  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
+  // return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
 };
 
 const selectPort = () => {

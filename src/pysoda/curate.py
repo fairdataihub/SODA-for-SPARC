@@ -38,8 +38,7 @@ import re
 import gevent
 from pennsieve import Pennsieve
 from pennsieve.log import get_logger
-from pennsieve.api.agent import agent_cmd
-from pennsieve.api.agent import AgentError, check_port, socket_address
+from pennsieve.api.agent import AgentError, check_port, socket_address, agent_cmd
 from urllib.request import urlopen
 import json
 import collections
