@@ -1604,95 +1604,99 @@
               </p>
             </div>
 
-            <div class="space-around">
-              <div class="guided--section grow p-4">
-                <h2 class="guided--text-sub-step required">
-                  Import the code_description metadata file
-                </h2>
-                <p
-                  class="guided--help-text w-100 small text-left"
-                  style="margin-bottom: 2px"
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step required">
+                Import the code_description metadata file
+              </h2>
+              <p
+                class="guided--help-text w-100 small text-left"
+                style="margin-bottom: 2px"
+              >
+                code_description is a <b>required</b> metadata file that
+                contains information that describes the code in terms of its
+                quality.
+              </p>
+              <p class="guided--help-text w-100 small text-center mt-sm">
+                <b
+                  >The code_description file must be in .xlsx format
+                  (code_description.xlsx)</b
                 >
-                  code_description is a <b>required</b> metadata file that
-                  contains information that describes the code in terms of its
-                  quality.
-                </p>
-                <div
-                  class="guided--container-file-import"
-                  droppable="true"
-                  ondrop="dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
-                  ondragover="return false;"
-                >
-                  <div class="guided--file-import">
-                    <div
-                      id="code-description-lottie-container"
-                      class="code-metadata-lottie-container"
-                    ></div>
-                    <p class="guided--help-text text-center">
-                      Drag and Drop <br /><b>code_description.xslx</b>
-                    </p>
-                    <p class="guided--help-text text-center mt-md mb-md">OR</p>
-                    <button
-                      class="ui primary basic button mt-sm"
-                      id="guided-button-add-contributor"
-                      onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
-                    >
-                      <i
-                        class="fas fa-file-import"
-                        style="margin-right: 7px"
-                      ></i
-                      >Import code_description.xslx
-                    </button>
-                    <p
-                      class="guided--help-text small text-center mt-sm"
-                      id="guided-code-description-para-text"
-                    ></p>
-                  </div>
+              </p>
+              <div
+                class="guided--container-file-import"
+                droppable="true"
+                ondrop="dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
+                ondragover="return false;"
+              >
+                <div class="guided--file-import">
+                  <div
+                    id="code-description-lottie-container"
+                    class="code-metadata-lottie-container"
+                  ></div>
+                  <p class="guided--help-text text-center">
+                    Drag and Drop <br /><b>code_description.xslx</b>
+                  </p>
+                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
+                  <button
+                    class="ui primary basic button mt-sm"
+                    id="guided-button-add-contributor"
+                    onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
+                  >
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i
+                    >Import code_description.xslx
+                  </button>
+                  <p
+                    class="guided--help-text small text-center mt-sm"
+                    id="guided-code-description-para-text"
+                  ></p>
                 </div>
               </div>
-              <div class="guided--section grow p-4">
-                <h2 class="guided--text-sub-step">
-                  Import the code_parameters metadata file
-                </h2>
-                <p
-                  class="guided--help-text w-100 small text-left"
-                  style="margin-bottom: 2px"
+            </div>
+            <div class="guided--section">
+              <h2 class="guided--text-sub-step">
+                Import the code_parameters metadata file
+              </h2>
+              <p
+                class="guided--help-text w-100 small text-left"
+                style="margin-bottom: 2px"
+              >
+                code_description is an <b>optional</b> metadata file that
+                contains specific paramets required to run code used in the
+                creation of the dataset.
+              </p>
+              <p class="guided--help-text w-100 small text-center mt-sm">
+                <b
+                  >The code_parameters file must be in .xlsx format
+                  (code_description.xlsx)</b
                 >
-                  code_description is an <b>optional</b> metadata file that
-                  contains specific paramets required to run code used in the
-                  creation of the dataset.
-                </p>
-                <div
-                  class="guided--container-file-import"
-                  droppable="true"
-                  ondrop="dropHandler(event, 'guided-code-parameters-para-text', 'code_parameters', 'guided');"
-                  ondragover="return false;"
-                >
-                  <div class="guided--file-import">
-                    <div
-                      id="code-parameters-lottie-container"
-                      class="code-metadata-lottie-container"
-                    ></div>
-                    <p class="guided--help-text text-center">
-                      Drag and Drop <br /><b>code_parameters.xslx</b>
-                    </p>
-                    <p class="guided--help-text text-center mt-md mb-md">OR</p>
-                    <button
-                      class="ui primary basic button mt-sm"
-                      id="guided-button-add-contributor"
-                      onclick="importMetadataFiles(this, 'code_parameters', ['.xlsx'], 'guided-code-parameters-para-text', 'guided')"
-                    >
-                      <i
-                        class="fas fa-file-import"
-                        style="margin-right: 7px"
-                      ></i
-                      >Import code_parameters.xslx
-                    </button>
-                    <p
-                      class="guided--help-text small text-center mt-sm"
-                      id="guided-code-parameters-para-text"
-                    ></p>
-                  </div>
+              </p>
+              <div
+                class="guided--container-file-import"
+                droppable="true"
+                ondrop="dropHandler(event, 'guided-code-parameters-para-text', 'code_parameters', 'guided');"
+                ondragover="return false;"
+              >
+                <div class="guided--file-import">
+                  <div
+                    id="code-parameters-lottie-container"
+                    class="code-metadata-lottie-container"
+                  ></div>
+                  <p class="guided--help-text text-center">
+                    Drag and Drop <br /><b>code_parameters.xslx</b>
+                  </p>
+                  <p class="guided--help-text text-center mt-md mb-md">OR</p>
+                  <button
+                    class="ui primary basic button mt-sm"
+                    id="guided-button-add-contributor"
+                    onclick="importMetadataFiles(this, 'code_parameters', ['.xlsx'], 'guided-code-parameters-para-text', 'guided')"
+                  >
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i
+                    >Import code_parameters.xslx
+                  </button>
+                  <p
+                    class="guided--help-text small text-center mt-sm"
+                    id="guided-code-parameters-para-text"
+                  ></p>
                 </div>
               </div>
             </div>
@@ -1711,7 +1715,7 @@
                 beyond that which is captures in structured metadata.<br />Some
                 information that should be included is:
               </p>
-              <ul class="w-100">
+              <ul class="guided--help-text w-100">
                 <li
                   class="guided--help-text w-100 text-left mb-2"
                   style="color: hsl(0, 0%, 22%)"

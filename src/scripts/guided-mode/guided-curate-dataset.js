@@ -32,6 +32,12 @@ const enableElementById = (id) => {
   elementToEnable.style.opacity = "1";
   elementToEnable.style.pointerEvents = "auto";
 };
+const switchElementVisibility = (elementIdToHide, elementIdToShow) => {
+  elementToHide = document.getElementById(elementIdToHide);
+  elementToShow = document.getElementById(elementIdToShow);
+  elementToHide.classList.add("hidden");
+  elementToShow.classList.remove("hidden");
+};
 
 const guidedGetSubjects = () => {
   return Object.keys(
