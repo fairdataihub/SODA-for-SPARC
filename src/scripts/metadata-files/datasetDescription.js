@@ -974,9 +974,9 @@ async function addProtocol() {
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
       } else {
-        if(doiRegex.declared({exact: true}).test(link) === true) {
-          protocolLink = "DOI"
-        } else {          
+        if (doiRegex.declared({ exact: true }).test(link) === true) {
+          protocolLink = "DOI";
+        } else {
           //check if link is valid
           if (validator.isURL(link) != true) {
             Swal.showValidationMessage(`Please enter a valid link`);

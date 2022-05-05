@@ -762,16 +762,16 @@ async function edit_current_protocol_id(ev) {
       if ($("#DD-protocol-link").val() === "") {
         Swal.showValidationMessage(`Please enter a link!`);
       } else {
-        if(doiRegex.declared({exact: true}).test(link) === true) {
+        if (doiRegex.declared({ exact: true }).test(link) === true) {
           //format must begin with doi:
           //example: doi:10.1000/xyz000
           protocolLink = "DOI";
         } else {
           //check if link is a valid URL
-          if(validator.isURL(link) != true) {
+          if (validator.isURL(link) != true) {
             Swal.showValidationMessage("Please enter a valid link");
           } else {
-            if(link.includes("doi")) {
+            if (link.includes("doi")) {
               //link is valid url and checks for 'doi' in link
               protocolLink = "DOI";
             } else {
