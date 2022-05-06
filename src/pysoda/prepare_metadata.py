@@ -70,12 +70,41 @@ from pysoda import (
 )
 
 userpath = expanduser("~")
+
+# temporary logging file path (dev only)
+logs_path = join(userpath, "temp-soda-logs")
+
+# writes the given text to a txt file on a new line
+def log_text(filepath, text):
+    with open(filepath, "a") as f:
+        f.write(text + "\n")
+
+
+
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
-# once pysoda has been packaged with pyinstaller
-# it becomes nested into the pysodadist/api directory
-PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
+
+log_text(logs_path, f"Dev Template Path: {DEV_TEMPLATE_PATH}")
+
+# check if system is Darwin
+def is_darwin():
+    return platform.system() == "Darwin"
+
+PROD_TEMPLATE_PATH = ""
+if is_darwin():
+    # once pysoda has been packaged with pyinstaller
+    # on Mac it only has one subfolder
+    PROD_TEMPLATE_PATH = join( dirname(__file__), "..", "file_templates")
+else:
+    # on Windows it has two subfolders as it is nested in pysodadist/api
+    PROD_TEMPLATE_PATH +=  join( dirname(__file__), "..", "..",  "file_templates")
+
+
+
+log_text(logs_path, f"Prod Template Path: {PROD_TEMPLATE_PATH}")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
+
+log_text(logs_path, f"Selected Template Path: {TEMPLATE_PATH}")
 
 # custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
