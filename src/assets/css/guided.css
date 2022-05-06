@@ -820,3 +820,9 @@ h1.guided--text-sub-step {
   text-align: center;
   width: 100%;
 }
+
+.customSuggestionsList > div {
+  max-height: 150px;
+  border: 2px solid pink;
+  overflow: auto;
+}

@@ -1030,13 +1030,10 @@ guidedCreateSodaJSONObj = () => {
     },
 
     getAllSubjects: function () {
-      let subjectsInPools = Object.keys(
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-      );
       let subjectsNotInPools = Object.keys(
         this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
       );
-      return subjectsInPools.concat(subjectsNotInPools);
+      return /*subjectsInPools.concat(*/ subjectsNotInPools /*)*/;
     },
 
     addPool: function (poolName) {
@@ -2187,7 +2184,19 @@ const specifyPool = (event, poolNameInput) => {
           </i>
         </div>
       `;
+      const poolSubjectTagifyInput = `
+        <input
+          name="${poolName}-subjects-selection-dropdown"
+          class="some_class_name"
+          placeholder="Select subjects from the dropdown to add to pool"
+          value=""
+        />
+      `;
       const poolIdCellToAddNameTo = poolNameInput.parent();
+      //add collapsable class to poolIdCellToAddNameTo
+      poolIdCellToAddNameTo.addClass("collapsing");
+      const poolSubjectsDropdownCell = poolNameInput.parent().next();
+      poolSubjectsDropdownCell.removeClass("collapsing");
 
       if (poolName.length > 0) {
         if (!subSamInputIsValid(poolName)) {
@@ -2203,6 +2212,21 @@ const specifyPool = (event, poolNameInput) => {
           sodaJSONObj.addPool(poolName);
         }
         poolIdCellToAddNameTo.html(poolNameElement);
+        //Add a tagify dropdown to the pool name cell
+        poolSubjectsDropdownCell.html(poolSubjectTagifyInput);
+        const newPoolSubjectsDropdown = document.querySelector(
+            `input[name="${poolName}-subjects-selection-dropdown"]:last-child`
+          ),
+          // init Tagify script on the above inputs
+          tagify = new Tagify(newPoolSubjectsDropdown, {
+            whitelist: sodaJSONObj.getAllSubjects(),
+            dropdown: {
+              maxItems: 20, // <- mixumum allowed rendered suggestions
+              classname: "tags-look", // <- custom classname for this dropdown, so it could be targeted
+              enabled: 0, // <- show suggestions on focus
+              closeOnSelect: false, // <- do not hide the suggestions dropdown once an item has been selected
+            },
+          });
       }
     } catch (error) {
       notyf.open({
@@ -2390,16 +2414,19 @@ const addSubjectSpecificationTableRow = () => {
     //create a new table row on
     subjectSpecificationTableBody.innerHTML +=
       generateSubjectSpecificationRowElement();
-    smoothScrollToElement(
-      subjectSpecificationTableBody.querySelector("tr:last-child")
-    );
+    const newSubjectRow =
+      subjectSpecificationTableBody.querySelector("tr:last-child");
+    const newSubjetInput = newSubjectRow.querySelector("input");
+
+    smoothScrollToElement(newSubjectRow);
+    newSubjetInput.focus();
   }
 };
 
 const generatePoolSpecificationRowElement = () => {
   return `
     <tr>
-      <td class="middle aligned pool-cell">
+      <td class="middle aligned pool-cell" style="min-width: 200px;">
         <input
           class="guided--input"
           type="text"
@@ -2410,6 +2437,8 @@ const generatePoolSpecificationRowElement = () => {
           data-alert-message="Pool IDs may not contain spaces or special characters"
           data-alert-type="danger"
         />
+      </td>
+      <td class="middle aligned pool-subjects collapsing remove-left-border">
       </td>
       <td class="middle aligned collapsing text-center remove-left-border">
         <i
@@ -6576,7 +6605,6 @@ $(document).ready(() => {
   });
 
   //tagify initializations
-
   const guidedOtherFundingSourcesInput = document.getElementById(
     "guided-ds-other-funding"
   );
