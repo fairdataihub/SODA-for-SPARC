@@ -87,7 +87,7 @@ const clearQueue = () => {
   // darwin pennsieve location
   // "/usr/local/opt/pennsieve/bin/pennsieve"
 
-  // windows location 
+  // windows location
   // "C:/Program Files/Pennsieve/pennsieve.exe"
 
   const child = require("child_process").spawnSync(
