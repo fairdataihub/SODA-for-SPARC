@@ -929,16 +929,6 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {
     addSubject: function (subjectName) {
       //check if name already exists
-      console.log(
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-          "pools"
-        ][subjectName]
-      );
-      console.log(
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-          subjectName
-        ]
-      );
       if (
         sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
           "pools"
@@ -949,9 +939,29 @@ guidedCreateSodaJSONObj = () => {
       ) {
         throw new Error("Subject names must be unique.");
       }
-      sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+      sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
         subjectName
       ] = {};
+    },
+    renameSubject: function (prevSubjectName, newSubjectName) {
+      console.log(
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]
+      );
+      //check to see if subject is inside of a pool
+      if (
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][prevSubjectName]
+      ) {
+        console.log("object in pool");
+      }
+      //check to see if subject is outside of a pool
+      if (
+        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+          prevSubjectName
+        ]
+      ) {
+      }
     },
     getAllSubjects: function () {
       let subjectsInPools = Object.keys(
@@ -1648,9 +1658,11 @@ const returnToSampleMetadataTableFromSampleMetadataForm = () => {
   $("#guided-footer-div").css("display", "flex");
 };
 const renderSubjectsMetadataTable = (subjects) => {
-  let subjectMetadataRows = subjects.sort().map((subject, index) => {
-    let tableIndex = index + 1;
-    return `
+  let subjectMetadataRows = subjects
+    .sort()
+    .map((subject, index) => {
+      let tableIndex = index + 1;
+      return `
       <tr>
         <td class="middle aligned collapsing text-center">
           <span class="subject-metadata-table-index">${tableIndex}</span>
@@ -1677,11 +1689,12 @@ const renderSubjectsMetadataTable = (subjects) => {
         </td>
       </tr>
     `;
-  });
+    })
+    .join("\n");
   let subjectsMetadataContainer = document.getElementById(
     "subjects-metadata-table-container"
   );
-  subjectsMetadataContainer.innerHTML = subjectMetadataRows.join("\n");
+  subjectsMetadataContainer.innerHTML = subjectMetadataRows;
 };
 const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
   //loop through all subjectsTableData elements besides the first one
@@ -2041,10 +2054,14 @@ const specifySubject = (event, subjectNameInput) => {
           generateAlertMessage(subjectNameInput);
           return;
         }
-        //case where subject name is valid:
         removeAlertMessageIfExists(subjectNameInput);
-        //add subject to json pool-sub-sam structure
-        sodaJSONObj.addSubject(subjectName);
+        if (subjectNameInput.attr("data-prev-name")) {
+          const subjectFolderToRename = subjectNameInput.attr("data-prev-name");
+          sodaJSONObj.renameSubject(subjectFolderToRename, subjectName);
+        } else {
+          //case where subject name is valid and not being renamed:
+          sodaJSONObj.addSubject(subjectName);
+        }
         subjectIdCellToAddNameTo.html(subjectNameElement);
       }
     } catch (error) {
@@ -2155,7 +2172,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
       type="text"
       name="guided-subject-id"
       placeholder="Enter new subject ID"
-      onkeyup="createSubjectFolder(event, $(this))"
+      onkeyup="specifySubject(event, $(this))"
       data-input-set="guided-subjects-folder-tab"
       data-alert-message="Subject IDs may not contain spaces or special characters"
       data-alert-type="danger"
