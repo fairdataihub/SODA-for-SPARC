@@ -930,49 +930,63 @@ guidedCreateSodaJSONObj = () => {
     addSubject: function (subjectName) {
       //check if name already exists
       if (
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-          "pools"
-        ][subjectName] ||
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          subjectName
+        ] ||
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
           subjectName
         ]
       ) {
         throw new Error("Subject names must be unique.");
       }
-      sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-        subjectName
-      ] = {};
+      this["dataset-metadata"]["pool-subject-sample-structure"][subjectName] =
+        {};
     },
     renameSubject: function (prevSubjectName, newSubjectName) {
-      console.log(
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]
-      );
+      console.log(this["dataset-metadata"]["pool-subject-sample-structure"]);
       //check to see if subject is inside of a pool
       if (
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-          "pools"
-        ][prevSubjectName]
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          prevSubjectName
+        ]
       ) {
         console.log("object in pool");
       }
       //check to see if subject is outside of a pool
       if (
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
+        this["dataset-metadata"]["pool-subject-sample-structure"][
           prevSubjectName
         ]
       ) {
       }
     },
+    deleteSubject: function (subjectName) {
+      //check to see if subject is inside of a pool
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          subjectName
+        ]
+      ) {
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][subjectName];
+      }
+      //check to see if subject is outside of a pool
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"][subjectName]
+      ) {
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          subjectName
+        ];
+      }
+    },
+
     getAllSubjects: function () {
       let subjectsInPools = Object.keys(
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-          "pools"
-        ]
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
       );
       let subjectsNotInPools = Object.keys(
-        sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-          "subjects"
-        ]
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
       );
       return subjectsInPools.concat(subjectsNotInPools);
     },
@@ -2209,7 +2223,7 @@ const generateSubjectSpecificationRowElement = () => {
         <i
           class="far fa-trash-alt"
           style="color: red; cursor: pointer"
-          onclick="deleteSubjectFolder($(this))"
+          onclick="deleteSubject($(this))"
         ></i>
       </td>
     </tr>
@@ -2219,13 +2233,23 @@ const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById(
     "subject-specification-table-body"
   );
-  subjectSpecificationTableBody.innerHTML +=
-    generateSubjectSpecificationRowElement();
+  //check if subject specification table body has an input with the name guided-subject-id
+  const subjectSpecificationTableInput =
+    subjectSpecificationTableBody.querySelector(
+      "input[name='guided-subject-id']"
+    );
 
-  //scroll to the last element in the table
-  smoothScrollToElement(
-    subjectSpecificationTableBody.querySelector("tr:last-child")
-  );
+  if (subjectSpecificationTableInput) {
+    //focus on the input that already exists
+    subjectSpecificationTableInput.focus();
+  } else {
+    //create a new table row on
+    subjectSpecificationTableBody.innerHTML +=
+      generateSubjectSpecificationRowElement();
+    smoothScrollToElement(
+      subjectSpecificationTableBody.querySelector("tr:last-child")
+    );
+  }
 };
 
 const generatePoolSpecificationRowElement = () => {
@@ -2247,7 +2271,7 @@ const generatePoolSpecificationRowElement = () => {
         <i
           class="far fa-trash-alt"
           style="color: red; cursor: pointer"
-          onclick="deleteSubjectFolder($(this))"
+          onclick="deleteSubject($(this))"
         ></i>
       </td>
     </tr>
@@ -2305,7 +2329,7 @@ const generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
         <i
           class="far fa-trash-alt"
           style="color: red; cursor: pointer"
-          onclick="deleteSubjectFolder($(this))"
+          onclick="deleteSubject($(this))"
         ></i>
       </td>
     </tr>
@@ -2332,8 +2356,14 @@ const deleteSubjectFolder = (subjectDeleteButton) => {
     subjectIdToDelete
   ];
 };
-//Takes the user back to the subject table from subject folder structure page
-
+//deletes subject from jsonObj and UI
+const deleteSubject = (subjectDeleteButton) => {
+  const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
+  const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
+  //delete the table row element in the UI
+  subjectIdCellToDelete.remove();
+  sodaJSONObj.deleteSubject(subjectIdToDelete);
+};
 //SAMPLE TABLE FUNCTIONS
 
 $("#guided-button-generate-samples-table").on("click", () => {
