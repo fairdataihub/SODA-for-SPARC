@@ -84,6 +84,8 @@ document.querySelector("#clear-queue-btn").addEventListener("click", () => {
 
 // launch a subprocess that will clear the Pennsieve queue
 const clearQueue = () => {
+  // darwin pennsieve location
+  // "/usr/local/opt/pennsieve/bin/pennsieve"
   const child = require("child_process").spawnSync(
     "C:/Program Files/Pennsieve/pennsieve.exe", ["upload-status", "--cancel-all"]
   );
