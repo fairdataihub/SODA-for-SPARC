@@ -86,8 +86,12 @@ document.querySelector("#clear-queue-btn").addEventListener("click", () => {
 const clearQueue = () => {
   // darwin pennsieve location
   // "/usr/local/opt/pennsieve/bin/pennsieve"
+
+  // windows location 
+  // "C:/Program Files/Pennsieve/pennsieve.exe"
+
   const child = require("child_process").spawnSync(
-    "C:/Program Files/Pennsieve/pennsieve.exe",
+    "/usr/local/opt/pennsieve/bin/pennsieve",
     ["upload-status", "--cancel-all"]
   );
 
