@@ -290,7 +290,7 @@ const startupServerAndApiCheck = async () => {
       delayFirstAttempt: true,
       startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second
       timeMultiple: 2,
-      numOfAttempts: 2,
+      numOfAttempts: 4,
       maxDelay: 8000, // 16 seconds max wait time
     });
   } catch (e) {
