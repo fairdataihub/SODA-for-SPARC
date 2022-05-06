@@ -554,6 +554,7 @@ const traverseToTab = (targetPageID) => {
     console.log(error);
   }
 };
+
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
   $("#guided-progress-bar-new-curate").attr(
     "value",
@@ -933,31 +934,74 @@ guidedCreateSodaJSONObj = () => {
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
           subjectName
         ] ||
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
           subjectName
         ]
       ) {
         throw new Error("Subject names must be unique.");
       }
-      this["dataset-metadata"]["pool-subject-sample-structure"][subjectName] =
-        {};
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+        subjectName
+      ] = {};
     },
     renameSubject: function (prevSubjectName, newSubjectName) {
-      console.log(this["dataset-metadata"]["pool-subject-sample-structure"]);
+      console.log(prevSubjectName, newSubjectName);
+      //check if name already exists
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          newSubjectName
+        ] ||
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          newSubjectName
+        ]
+      ) {
+        console.log("subject already exists");
+        throw new Error("Subject names must be unique.");
+      }
       //check to see if subject is inside of a pool
       if (
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
           prevSubjectName
         ]
       ) {
-        console.log("object in pool");
+        console.log(
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            prevSubjectName
+          ]
+        );
+        //rename nested prevSubjectName key to newSubjectName
+
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          newSubjectName
+        ] =
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            prevSubjectName
+          ];
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][prevSubjectName];
       }
+
       //check to see if subject is outside of a pool
       if (
-        this["dataset-metadata"]["pool-subject-sample-structure"][
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
           prevSubjectName
         ]
       ) {
+        console.log(
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            prevSubjectName
+          ]
+        );
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          newSubjectName
+        ] =
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            prevSubjectName
+          ];
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "subjects"
+        ][prevSubjectName];
       }
     },
     deleteSubject: function (subjectName) {
@@ -970,14 +1014,18 @@ guidedCreateSodaJSONObj = () => {
         delete this["dataset-metadata"]["pool-subject-sample-structure"][
           "pools"
         ][subjectName];
+        console.log("inside delete");
       }
       //check to see if subject is outside of a pool
       if (
-        this["dataset-metadata"]["pool-subject-sample-structure"][subjectName]
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          subjectName
+        ]
       ) {
         delete this["dataset-metadata"]["pool-subject-sample-structure"][
-          subjectName
-        ];
+          "subjects"
+        ][subjectName];
+        console.log("outside delete");
       }
     },
 
@@ -992,11 +1040,47 @@ guidedCreateSodaJSONObj = () => {
     },
 
     addPool: function (poolName) {
-      this["dataset-metadata"]["pool-subject-sample-structure"][poolName] = {};
-      //renderPoolTable();
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          poolName
+        ]
+      ) {
+        throw new Error("Pool names must be unique.");
+      }
+
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+        poolName
+      ] = {};
+    },
+    renamePool: function (prevPoolName, newPoolName) {
+      console.log(prevPoolName, newPoolName);
+      //check if name already exists
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          newPoolName
+        ]
+      ) {
+        throw new Error("Pool names must be unique.");
+      }
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          prevPoolName
+        ]
+      ) {
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          newPoolName
+        ] =
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            prevPoolName
+          ];
+        delete this["dataset-metadata"]["pool-subject-sample-structure"][
+          "pools"
+        ][prevPoolName];
+      }
     },
     deletePool: function (poolName) {
-      delete this["dataset-metadata"]["pool-subject-sample-structure"][
+      console.log(poolName);
+      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         poolName
       ];
       //renderPoolTable();
@@ -1012,7 +1096,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] = {};
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"] =
     {};
-  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"];
+  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"] =
+    {};
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
@@ -2087,6 +2172,47 @@ const specifySubject = (event, subjectNameInput) => {
     }
   }
 };
+const specifyPool = (event, poolNameInput) => {
+  if (event.which == 13) {
+    try {
+      const poolName = poolNameInput.val().trim();
+      const poolNameElement = `
+        <div class="space-between">
+          <span class="pool-id">${poolName}</span>
+          <i
+            class="far fa-edit jump-back"
+            style="cursor: pointer;"
+            onclick="openPoolRenameInput($(this))"
+          >
+          </i>
+        </div>
+      `;
+      const poolIdCellToAddNameTo = poolNameInput.parent();
+
+      if (poolName.length > 0) {
+        if (!subSamInputIsValid(poolName)) {
+          generateAlertMessage(poolNameInput);
+          return;
+        }
+        removeAlertMessageIfExists(poolNameInput);
+        if (poolNameInput.attr("data-prev-name")) {
+          const poolFolderToRename = poolNameInput.attr("data-prev-name");
+          sodaJSONObj.renamePool(poolFolderToRename, poolName);
+        } else {
+          //case where subject name is valid and not being renamed:
+          sodaJSONObj.addPool(poolName);
+        }
+        poolIdCellToAddNameTo.html(poolNameElement);
+      }
+    } catch (error) {
+      notyf.open({
+        duration: "3000",
+        type: "error",
+        message: error,
+      });
+    }
+  }
+};
 
 const createSubjectFolder = (event, subjectNameInput) => {
   if (event.which == 13) {
@@ -2120,7 +2246,7 @@ const createSubjectFolder = (event, subjectNameInput) => {
         if (subSamInputIsValid(subjectName)) {
           removeAlertMessageIfExists(subjectNameInput);
           //Add subject to subject-sample-structrure
-          sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+          sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
             subjectName
           ] = [];
           subjectIdCellToAddNameTo.html(subjectNameElement);
@@ -2135,18 +2261,18 @@ const createSubjectFolder = (event, subjectNameInput) => {
             //get the name of the subject being renamed
             const subjectFolderToRename =
               subjectNameInput.attr("data-prev-name");
-            //Rename the previous subject name in sodaJSONObj["dataset-metadata"]["subject-sample-structure"] to new subjectName
+            //Rename the previous subject name in sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] to new subjectName
             copiedSubjectToRename =
-              sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+              sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
                 subjectFolderToRename
               ];
-            sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
+            sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
               subjectName
             ] = copiedSubjectToRename;
             //Remove the subject folder from sodajsonObj
-            delete sodaJSONObj["dataset-metadata"]["subject-sample-structure"][
-              subjectFolderToRename
-            ];
+            delete sodaJSONObj["dataset-metadata"][
+              "pool-subject-sample-structure"
+            ][subjectFolderToRename];
             //create a temp copy of the folder to be renamed
             copiedFolderToRename = subjectTargetFolder[subjectFolderToRename];
             //set the copied obj from the prev name to the new obj name
@@ -2194,6 +2320,24 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
     />
   `;
   subjectIdCellToRename.html(subjectRenameElement);
+};
+const openPoolRenameInput = (poolNameEditButton) => {
+  const poolIdCellToRename = poolNameEditButton.closest("td");
+  const prevPoolName = poolIdCellToRename.find(".pool-id").text();
+  const poolRenameElement = `
+    <input
+      class="guided--input"
+      type="text"
+      name="guided-pool-id"
+      placeholder="Enter new pool ID"
+      onkeyup="specifyPool(event, $(this))"
+      data-input-set="guided-pools-folder-tab"
+      data-alert-message="Pool IDs may not contain spaces or special characters"
+      data-alert-type="danger"
+      data-prev-name="${prevPoolName}"
+    />
+  `;
+  poolIdCellToRename.html(poolRenameElement);
 };
 
 //updates the indices for guided tables using class given to spans in index cells
@@ -2260,7 +2404,7 @@ const generatePoolSpecificationRowElement = () => {
           class="guided--input"
           type="text"
           name="guided-pool-id"
-          placeholder="Enter pool name and press enter"
+          placeholder="Enter pool ID and press enter"
           onkeyup="specifyPool(event, $(this))"
           data-input-set="guided-subjects-folder-tab"
           data-alert-message="Pool IDs may not contain spaces or special characters"
@@ -2271,7 +2415,7 @@ const generatePoolSpecificationRowElement = () => {
         <i
           class="far fa-trash-alt"
           style="color: red; cursor: pointer"
-          onclick="deleteSubject($(this))"
+          onclick="deletePool($(this))"
         ></i>
       </td>
     </tr>
@@ -2364,6 +2508,14 @@ const deleteSubject = (subjectDeleteButton) => {
   subjectIdCellToDelete.remove();
   sodaJSONObj.deleteSubject(subjectIdToDelete);
 };
+const deletePool = (poolDeleteButton) => {
+  const poolIdCellToDelete = poolDeleteButton.closest("tr");
+  const poolIdToDelete = poolIdCellToDelete.find(".pool-id").text();
+  //delete the table row element in the UI
+  poolIdCellToDelete.remove();
+  sodaJSONObj.deletePool(poolIdToDelete);
+};
+
 //SAMPLE TABLE FUNCTIONS
 
 $("#guided-button-generate-samples-table").on("click", () => {
