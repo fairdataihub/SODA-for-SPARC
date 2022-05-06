@@ -77,28 +77,26 @@ let introStatus = {
   samples: false,
 };
 
-
 // add event listener to #clear-queue-btn
 document.querySelector("#clear-queue-btn").addEventListener("click", () => {
   clearQueue();
-}
-);
+});
 
-// launch a subprocess that will clear the Pennsieve queue 
+// launch a subprocess that will clear the Pennsieve queue
 const clearQueue = () => {
-  const child = require("child_process").exec("/usr/local/opt/pennsieve/bin/pennsieve upload-status --cancel-all");
+  const child = require("child_process").exec(
+    "/usr/local/opt/pennsieve/bin/pennsieve upload-status --cancel-all"
+  );
 
   let killed = child.kill("SIGTERM");
 
   if (killed) {
     console.log("Queue cleared");
-    return
+    return;
   }
 
   console.log("Queue not cleared");
-
-}
-
+};
 
 //////////////////////////////////
 // App launch actions
