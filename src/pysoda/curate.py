@@ -3246,7 +3246,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     )
 
                     # clear the pennsieve queue for successive batches
-                    clear_queue()
+                    # clear_queue()
 
                     # upload the files
                     bf_folder.upload(*upload_bucket)
@@ -3294,7 +3294,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     start_index = end_index + 1
             else:
                 # clear the pennsieve queue
-                clear_queue()
+                # clear_queue()
 
                 # upload all files at once for the folder
                 main_curate_progress_message = "Uploading files in " + str(
