@@ -804,16 +804,16 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
 
 
-def clear_queue():
-    command = [
-        "/usr/local/opt/pennsieve/bin/pennsieve",
-        "upload-status",
-        "--cancel-all",
-    ]
+# def clear_queue():
+#     command = [
+#         "/usr/local/opt/pennsieve/bin/pennsieve",
+#         "upload-status",
+#         "--cancel-all",
+#     ]
 
-    proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
+#     proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
 
-    return proc
+#     return proc
 
 
 def agent_running():

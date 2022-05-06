@@ -2608,7 +2608,7 @@ def main_curate_function(soda_json_structure):
         # Check that local files/folders exist
         try:
 
-            error = "" # check_local_dataset_files_validity(soda_json_structure)
+            error = check_local_dataset_files_validity(soda_json_structure)
             if error:
                 main_curate_status = 'Done'
                 raise Exception(error)
