@@ -12,9 +12,11 @@ pennsieveAPIKeyAndSecret = api.model('PennsieveAPIKeyAndSecret', {
 
 
 @api.route('')
-class api_get_pennsieve_api_key_secret(Resource):
+class PennsieveAPIKeyAndSecret(Resource):
   @api.marshal_with(pennsieveAPIKeyAndSecret, False, 201)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Username or password are incorrect'})
 
-  # get the 
-  return get_pennsieve_api_key_secret()
+  # get the self, email, password, keyname=SODA_SPARC_API_KEY from the request object 
+  def get(self):
+    
+    return get_pennsieve_api_key_secret()
