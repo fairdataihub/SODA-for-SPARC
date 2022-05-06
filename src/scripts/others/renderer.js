@@ -54,8 +54,6 @@ const excel4node = require("excel4node");
 
 const { backOff } = require("exponential-backoff");
 
-console.log(`Back off is:`, backOff);
-
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
@@ -1245,7 +1243,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1261,7 +1259,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1315,7 +1313,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   client.invoke(
     "api_save_subjects_file",
@@ -1407,7 +1405,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1423,7 +1421,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1477,7 +1475,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -1995,7 +1993,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2712,9 +2710,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -6760,16 +6758,14 @@ ipcRenderer.on(
 
                         numb.innerText = percentage_amount + "%";
                         if (percentage_amount <= 50) {
-                          progressBar_rightSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 360
-                          }deg)`;
+                          progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                            }deg)`;
                         } else {
                           progressBar_rightSide.style.transition = "";
                           progressBar_rightSide.classList.add("notransition");
                           progressBar_rightSide.style.transform = `rotate(180deg)`;
-                          progressBar_leftSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 180
-                          }deg)`;
+                          progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                            }deg)`;
                         }
 
                         if (finished === 1) {
@@ -6863,16 +6859,14 @@ ipcRenderer.on(
 
                       numb.innerText = percentage_amount + "%";
                       if (percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 360
-                        }deg)`;
+                        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                          }deg)`;
                       } else {
                         progressBar_rightSide.style.transition = "";
                         progressBar_rightSide.classList.add("notransition");
                         progressBar_rightSide.style.transform = `rotate(180deg)`;
-                        progressBar_leftSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 180
-                        }deg)`;
+                        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                          }deg)`;
                       }
                       if (finished === 1) {
                         progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -7133,9 +7127,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7695,7 +7689,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -7705,7 +7699,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
             `${datasetUploadSession.id}`,
             increaseInFileSize
           );
