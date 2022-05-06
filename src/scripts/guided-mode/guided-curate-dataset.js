@@ -2193,10 +2193,6 @@ const specifyPool = (event, poolNameInput) => {
         />
       `;
       const poolIdCellToAddNameTo = poolNameInput.parent();
-      //add collapsable class to poolIdCellToAddNameTo
-      poolIdCellToAddNameTo.addClass("collapsing");
-      const poolSubjectsDropdownCell = poolNameInput.parent().next();
-      poolSubjectsDropdownCell.removeClass("collapsing");
 
       if (poolName.length > 0) {
         if (!subSamInputIsValid(poolName)) {
@@ -2208,25 +2204,41 @@ const specifyPool = (event, poolNameInput) => {
           const poolFolderToRename = poolNameInput.attr("data-prev-name");
           sodaJSONObj.renamePool(poolFolderToRename, poolName);
         } else {
+          //add collapsable class to poolIdCellToAddNameTo
+          poolIdCellToAddNameTo.addClass("collapsing");
+          const poolSubjectsDropdownCell = poolNameInput.parent().next();
+          poolSubjectsDropdownCell.removeClass("collapsing");
           //case where subject name is valid and not being renamed:
           sodaJSONObj.addPool(poolName);
+
+          //Add a tagify dropdown to the pool name cell
+          poolSubjectsDropdownCell.html(poolSubjectTagifyInput);
+          const newPoolSubjectsDropdown = document.querySelector(
+              `input[name="${poolName}-subjects-selection-dropdown"]:last-child`
+            ),
+            // init Tagify script on the above inputs
+            newPoolSubjectsDropdownTagify = new Tagify(
+              newPoolSubjectsDropdown,
+              {
+                whitelist: sodaJSONObj.getAllSubjects(),
+                dropdown: {
+                  maxItems: 20,
+                  classname: "pool-subjects",
+                  enabled: 0,
+                  closeOnSelect: false,
+                },
+              }
+            );
+          newPoolSubjectsDropdownTagify.on("remove", function (e) {
+            console.log(poolName);
+            console.log(e.detail.data.value);
+            console.log("removed");
+          });
+          newPoolSubjectsDropdownTagify.on("add", function (e) {
+            console.log(e);
+          });
         }
         poolIdCellToAddNameTo.html(poolNameElement);
-        //Add a tagify dropdown to the pool name cell
-        poolSubjectsDropdownCell.html(poolSubjectTagifyInput);
-        const newPoolSubjectsDropdown = document.querySelector(
-            `input[name="${poolName}-subjects-selection-dropdown"]:last-child`
-          ),
-          // init Tagify script on the above inputs
-          tagify = new Tagify(newPoolSubjectsDropdown, {
-            whitelist: sodaJSONObj.getAllSubjects(),
-            dropdown: {
-              maxItems: 20, // <- mixumum allowed rendered suggestions
-              classname: "tags-look", // <- custom classname for this dropdown, so it could be targeted
-              enabled: 0, // <- show suggestions on focus
-              closeOnSelect: false, // <- do not hide the suggestions dropdown once an item has been selected
-            },
-          });
       }
     } catch (error) {
       notyf.open({
