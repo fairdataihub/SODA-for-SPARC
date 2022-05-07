@@ -1028,14 +1028,23 @@ guidedCreateSodaJSONObj = () => {
         console.log("outside delete");
       }
     },
-
     getAllSubjects: function () {
       let subjectsNotInPools = Object.keys(
         this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
       );
       return /*subjectsInPools.concat(*/ subjectsNotInPools /*)*/;
     },
-
+    moveSubjectIntoPool: function (subjectName, poolName) {
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+        poolName
+      ][subjectName] =
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          subjectName
+        ];
+      delete this["dataset-metadata"]["pool-subject-sample-structure"][
+        "subjects"
+      ][subjectName];
+    },
     addPool: function (poolName) {
       if (
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
@@ -2235,6 +2244,9 @@ const specifyPool = (event, poolNameInput) => {
             console.log("removed");
           });
           newPoolSubjectsDropdownTagify.on("add", function (e) {
+            const newWhitelist = ["asdf", "asdf", "asdf", "asdf", "asdf"];
+            newPoolSubjectsDropdownTagify.settings.whitelist = newWhitelist;
+            console.log(this);
             console.log(e);
           });
         }
@@ -2438,7 +2450,7 @@ const addSubjectSpecificationTableRow = () => {
 const generatePoolSpecificationRowElement = () => {
   return `
     <tr>
-      <td class="middle aligned pool-cell" style="min-width: 200px;">
+      <td class="middle aligned pool-cell" style="width: 250px;">
         <input
           class="guided--input"
           type="text"
@@ -4982,6 +4994,10 @@ $(document).ready(() => {
   $("#guided-add-subject-button").on("click", () => {
     $("#guided-subjects-intro").hide();
     $("#guided-add-subject-div").show();
+  });
+
+  $("#guided-button-save-subject-fields").on("click", () => {
+    unHideAndSmoothScrollToElement("guided-organize-into-pools-prompt");
   });
 
   //submission

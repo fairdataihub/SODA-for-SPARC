@@ -1,16 +1,20 @@
-<div class="guided--panel hidden" id="guided-add-pools-table">
-  <table
-    class="ui celled striped table"
-    style="margin-bottom: 10px; width: 500px"
-  >
-    <thead>
-      <tr>
-        <th class="text-center" style="min-width: 250px" colspan="1">Pools</th>
-      </tr>
-    </thead>
-    <tbody id="pools-specification-table-body"></tbody>
-  </table>
-  <button class="ui primary basic button mt-0" onclick="addPoolTableRow()">
-    <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new pool
-  </button>
+<div class="guided--section hidden" id="organize-into-pools-prompt">
+  <label class="guided--form-label centered">
+    Would you like to organize subjects into pools?
+  </label>
+  <div class="guided--radio-button-container" style="margin-bottom: 7px">
+    <button
+      class="ui positive basic button guided--radio-button"
+      id="guided-button-has-subjects"
+      data-next-question="guided-add-pools-table"
+    >
+      Yes
+    </button>
+    <button
+      class="ui negative basic button guided--radio-button"
+      id="guided-button-no-pools"
+    >
+      No
+    </button>
+  </div>
 </div>
