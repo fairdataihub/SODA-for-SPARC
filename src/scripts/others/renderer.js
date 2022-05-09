@@ -77,11 +77,6 @@ let introStatus = {
   samples: false,
 };
 
-// add event listener to #clear-queue-btn
-document.querySelector("#clear-queue-btn").addEventListener("click", () => {
-  clearQueue();
-});
-
 // launch a subprocess that will clear the Pennsieve queue
 const clearQueue = () => {
   // determine OS
