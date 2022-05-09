@@ -34,6 +34,7 @@ const ini = require("ini");
 const { homedir } = require("os");
 const cognitoClient = require("amazon-cognito-identity-js");
 const diskCheck = require("check-disk-space").default;
+const lottie = require("lottie-web");
 // TODO: Test with a build
 const {
   datasetUploadSession,
