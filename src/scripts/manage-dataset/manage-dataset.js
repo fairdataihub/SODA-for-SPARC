@@ -2446,6 +2446,10 @@ $("#button-submit-dataset").click(async () => {
   if (navbar.classList.contains("active")) {
     document.getElementById("sidebarCollapse").click();
   }
+
+  // clear the queue before uploading
+  clearQueue();
+
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,

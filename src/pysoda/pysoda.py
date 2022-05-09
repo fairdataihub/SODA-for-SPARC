@@ -804,16 +804,16 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         bf._api.datasets._put("/" + str(selected_dataset_id), json=jsonfile)
 
 
-# def clear_queue():
-#     command = [
-#         "/usr/local/opt/pennsieve/bin/pennsieve",
-#         "upload-status",
-#         "--cancel-all",
-#     ]
+def clear_queue():
+    command = [
+        agent_cmd(),
+        "upload-status",
+        "--cancel-all",
+    ]
 
-#     proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
+    proc = subprocess.run(command, check=True)  # env=agent_env(?settings?)
 
-#     return proc
+    return proc
 
 
 def agent_running():
@@ -1114,8 +1114,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
-                        # clear the pennsieve queue for successive batches
-                        # clear_queue()
+                        # get the current OS
+                        current_os = platform.system()
+
+                        # Mac builds not able to spawn subprocess from Python at the moment
+                        if not current_os == "Darwin":
+                            # clear the pennsieve queue
+                            clear_queue()
 
                         # upload the current bucket
                         current_folder.upload(*files_with_destination)
@@ -1145,7 +1150,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                             file_path = join(dirpath, file)
                             files_with_destination.append(file_path)
 
-                        # clear_queue()
+                        # get the current OS
+                        current_os = platform.system()
+
+                        # Mac builds not able to spawn subprocess from Python at the moment
+                        if not current_os == "Darwin":
+                            # clear the pennsieve queue
+                            clear_queue()
 
                         # upload the files
                         current_folder.upload(*files_with_destination)
