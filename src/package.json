@@ -13,8 +13,10 @@
     "deploy-mac": "electron-builder build --mac --publish always",
     "deploy-linux": "electron-builder build --linux --publish always",
     "python-onefile-build": "python -m PyInstaller --onefile --clean ./pysoda/api.py --distpath ./pysodadist",
+    "python-onefile-build-win": "python -m PyInstaller api.spec --clean",
     "postinstall": "electron-builder install-app-deps"
   },
+  "pyzmq-directory": "C:\\Users\\CMarroquin\\anaconda3\\envs\\env-electron-python\\Lib\\site-packages\\pyzmq.libs\\*;pyzmq.libs",
   "repository": {
     "type": "git",
     "url": "https://github.com/fairdataihub/SODA-for-SPARC.git"
