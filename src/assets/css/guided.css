@@ -826,3 +826,9 @@ h1.guided--text-sub-step {
   border: 2px solid pink;
   overflow: auto;
 }
+
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice__remove {
+  height: 100%;
+}
