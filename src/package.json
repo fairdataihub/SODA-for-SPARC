@@ -13,8 +13,7 @@
     "deploy-mac": "electron-builder build --mac --publish always",
     "deploy-linux": "electron-builder build --linux --publish always",
     "python-onefile-build": "python -m PyInstaller --onefile --clean ./pysoda/api.py --distpath ./pysodadist",
-    "postinstall": "electron-builder install-app-deps",
-    "commit": "cz"
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": {
     "type": "git",
