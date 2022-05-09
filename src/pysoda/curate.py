@@ -2991,7 +2991,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         relative_path
                     )
 
-                    
                     # get the current OS
                     current_os = platform.system()
 
