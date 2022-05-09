@@ -13,7 +13,8 @@
     "deploy-mac": "electron-builder build --mac --publish always",
     "deploy-linux": "electron-builder build --linux --publish always",
     "python-onefile-build": "python -m PyInstaller --onefile --clean ./pysoda/api.py --distpath ./pysodadist",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "commit": "cz"
   },
   "repository": {
     "type": "git",
@@ -132,10 +133,17 @@
     "zerorpc": "github:megasanjay/zerorpc-node#master"
   },
   "devDependencies": {
+    "@commitlint/cli": "^16.2.4",
+    "@commitlint/config-conventional": "^16.2.4",
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
+    "devmoji": "^2.3.0",
     "electron": "6.1.9",
     "electron-builder": "22.10.5",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^12.4.1",
     "prettier": "^2.3.2"
   },
   "optionalDependencies": {
