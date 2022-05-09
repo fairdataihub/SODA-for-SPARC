@@ -2183,7 +2183,7 @@ const specifyPool = (event, poolNameInput) => {
     try {
       const poolName = poolNameInput.val().trim();
       const poolNameElement = `
-        <div class="space-between">
+        <div class="space-between" style="width: 250px;">
           <span class="pool-id">${poolName}</span>
           <i
             class="far fa-edit jump-back"
@@ -2243,11 +2243,15 @@ const specifyPool = (event, poolNameInput) => {
             console.log(e.detail.data.value);
             console.log("removed");
           });
-          newPoolSubjectsDropdownTagify.on("add", function (e) {
-            const newWhitelist = ["asdf", "asdf", "asdf", "asdf", "asdf"];
-            newPoolSubjectsDropdownTagify.settings.whitelist = newWhitelist;
-            console.log(this);
+
+          newPoolSubjectsDropdownTagify.on("dropdown:show", function (e) {
             console.log(e);
+            newPoolSubjectsDropdownTagify.settings.whitelist = null;
+            newPoolSubjectsDropdownTagify.whitelist = null;
+            const newWhitelist = sodaJSONObj.getAllSubjects();
+            newPoolSubjectsDropdownTagify.settings.whitelist = newWhitelist;
+            newPoolSubjectsDropdownTagify.whitelist = newWhitelist;
+            console.log(newPoolSubjectsDropdownTagify.whitelist);
           });
         }
         poolIdCellToAddNameTo.html(poolNameElement);
@@ -2383,6 +2387,7 @@ const openPoolRenameInput = (poolNameEditButton) => {
       data-alert-message="Pool IDs may not contain spaces or special characters"
       data-alert-type="danger"
       data-prev-name="${prevPoolName}"
+      style="width: 250px;"
     />
   `;
   poolIdCellToRename.html(poolRenameElement);
@@ -2450,7 +2455,7 @@ const addSubjectSpecificationTableRow = () => {
 const generatePoolSpecificationRowElement = () => {
   return `
     <tr>
-      <td class="middle aligned pool-cell" style="width: 250px;">
+      <td class="middle aligned pool-cell collapsing">
         <input
           class="guided--input"
           type="text"
@@ -2460,9 +2465,10 @@ const generatePoolSpecificationRowElement = () => {
           data-input-set="guided-subjects-folder-tab"
           data-alert-message="Pool IDs may not contain spaces or special characters"
           data-alert-type="danger"
+          style="width: 250px;"
         />
       </td>
-      <td class="middle aligned pool-subjects collapsing remove-left-border">
+      <td class="middle aligned pool-subjects remove-left-border">
       </td>
       <td class="middle aligned collapsing text-center remove-left-border">
         <i
