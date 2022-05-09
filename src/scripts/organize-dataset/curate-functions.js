@@ -1002,8 +1002,13 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             let key_name = SODA_SPARC_API_KEY;
             let response = await get_api_key(login, password, key_name);
             if (response[0] == "failed") {
+              let error_message = response[1]
+              if(response[1]["message"] === "exceptions must derive from BaseException") {
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. Email <a href="mailto:support@pennsieve.net">support@pennsieve.net</a> to get access to the SPARC Consortium organization then try again.</div>`
+              }
               Swal.hideLoading();
-              Swal.showValidationMessage(userError(response[1]));
+              Swal.showValidationMessage(error_message);
+              document.getElementById("swal2-validation-message").style.flexDirection = "column";
             } else if (response[0] == "success") {
               return {
                 key: response[1],
