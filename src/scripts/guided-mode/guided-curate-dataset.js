@@ -1045,6 +1045,17 @@ guidedCreateSodaJSONObj = () => {
         "subjects"
       ][subjectName];
     },
+    moveSubjectOutOfPool: function (subjectName, poolName) {
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+        subjectName
+      ] =
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          poolName
+        ][subjectName];
+      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+        poolName
+      ][subjectName];
+    },
     addPool: function (poolName) {
       if (
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
@@ -2175,6 +2186,7 @@ const specifySubject = (event, subjectNameInput) => {
           sodaJSONObj.addSubject(subjectName);
         }
         subjectIdCellToAddNameTo.html(subjectNameElement);
+        addSubjectSpecificationTableRow();
       }
     } catch (error) {
       notyf.open({
@@ -2267,8 +2279,8 @@ const specifyPool = (event, poolNameInput) => {
             updatePoolDropdown($(e.currentTarget), poolName);
           });
           $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
-            /*const subjectToRemove = e.params.data.id;
-            sodaJSONObj.removeSubjectFromPool(poolName, subjectToRemove);*/
+            const subjectToRemove = e.params.data.id;
+            sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
           });
           $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
             const selectedSubject = e.params.data.id;
@@ -2466,10 +2478,12 @@ const addSubjectSpecificationTableRow = () => {
       generateSubjectSpecificationRowElement();
     const newSubjectRow =
       subjectSpecificationTableBody.querySelector("tr:last-child");
-    const newSubjetInput = newSubjectRow.querySelector("input");
-
+    //get the input element in newSubjectRow
+    const newSubjectInput = newSubjectRow.querySelector(
+      "input[name='guided-subject-id']"
+    );
     smoothScrollToElement(newSubjectRow);
-    newSubjetInput.focus();
+    newSubjectInput.focus();
   }
 };
 
@@ -2510,7 +2524,7 @@ const addPoolTableRow = () => {
   newPoolTableRow.innerHTML = generatePoolSpecificationRowElement();
 
   //scroll to the last element in the table
-  smoothScrollToElement(poolsTableBody.querySelector("tr:last-child"));
+  //smoothScrollToElement(poolsTableBody.querySelector("tr:last-child"));
 };
 
 const generateSubjectRowElement = (subjectIndex, subjectNumSamples) => {
@@ -3372,9 +3386,9 @@ $(document).ready(() => {
     $("#guided-dataset-name-input").val(makeid(10));
     $("#guided-dataset-subtitle-input").val(makeid(10));
     $("#guided-create-new-dataset").click();
-    for (let i = 0; i < 5; i++) {
+    /*for (let i = 0; i < 5; i++) {
       sodaJSONObj.addSubject(makeid(7));
-    }
+    }*/
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();

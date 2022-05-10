@@ -1,4 +1,4 @@
-dragDrop = {
+const dragDrop = {
   v: "5.5.8",
   fr: 30,
   ip: 0,
@@ -949,7 +949,7 @@ dragDrop = {
   markers: [],
 };
 
-successCheck = {
+const successCheck = {
   v: "4.8.0",
   meta: { g: "LottieFiles AE 1.0.0", a: "", k: "", d: "", tc: "" },
   fr: 60,
@@ -1334,7 +1334,7 @@ successCheck = {
   markers: [],
 };
 
-errorMark = {
+const errorMark = {
   v: "5.7.11",
   fr: 30,
   ip: 0,
@@ -2659,7 +2659,7 @@ errorMark = {
   markers: [],
 };
 
-newDataset = {
+const newDataset = {
   v: "5.5.1",
   fr: 60,
   ip: 0,
