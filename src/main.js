@@ -53,16 +53,15 @@ const guessPackaged = () => {
 
 const getScriptPath = () => {
   if (!guessPackaged()) {
+    console.log("Didnt guess packaged");
     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
 
   if (process.platform === "win32") {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE + ".exe");
   } else {
     return path.join(process.resourcesPath, PY_MODULE);
   }
-
-  // return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
 };
 
 const selectPort = () => {
