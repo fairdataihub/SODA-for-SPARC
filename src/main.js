@@ -105,24 +105,24 @@ const exitPyProc = async () => {
   // check if the platform is Windows
   if (process.platform === "win32") {
     await killPythonProcess();
-    pyProc = null
-    pyPort = null
+    pyProc = null;
+    pyPort = null;
   } else {
     // kill signal to pyProc
     pyProc.kill();
     pyProc = null;
     pyPort = null;
   }
-}
+};
 
 function killPythonProcess() {
   return new Promise(function (resolve, reject) {
-    var kill = require('tree-kill');
-    kill(pyProc.pid, (err => {
-      if (!err) reject(err)
-      else resolve()
-    }))
-  })
+    var kill = require("tree-kill");
+    kill(pyProc.pid, (err) => {
+      if (!err) reject(err);
+      else resolve();
+    });
+  });
 }
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
@@ -180,8 +180,8 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        await exitPyProc()
-        app.exit()
+        await exitPyProc();
+        app.exit();
       }
     });
   }
