@@ -101,12 +101,13 @@ const createPyProc = async () => {
 };
 
 const exitPyProc = () => {
-  log.info("exitPyProc called; termination not suddenly happening");
+  log.info("exitPyProc called; termination not  suddenly happening");
   pyProc.kill();
   pyProc = null;
   pyPort = null;
 };
 
+// 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
 app.on("will-quit", exitPyProc);
 
@@ -341,7 +342,7 @@ autoUpdater.on("update-downloaded", () => {
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
   log.info("quitAndInstall");
-  // autoUpdater.quitAndInstall();
+  autoUpdater.quitAndInstall();
 });
 
 const wait = async (delay) => {
