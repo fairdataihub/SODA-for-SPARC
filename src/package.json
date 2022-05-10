@@ -132,12 +132,12 @@
     "spur-template": "^1.1.0",
     "sweetalert2": "^10.16.9",
     "tippy.js": "^6.3.1",
+    "tree-kill": "^1.2.2",
     "tui-date-picker": "^4.3.1",
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",
-    "zerorpc": "github:megasanjay/zerorpc-node#master",
-    "ps-tree": "^1.2.0"
+    "zerorpc": "github:megasanjay/zerorpc-node#master"
   },
   "devDependencies": {
     "electron": "6.1.9",
