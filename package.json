@@ -20,6 +20,5 @@
   "homepage": "https://fairdataihub.org/sodaforsparc",
   "devDependencies": {
     "prettier": "^2.3.2"
-  },
-  "dependencies": {}
+  }
 }
