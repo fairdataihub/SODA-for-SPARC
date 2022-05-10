@@ -11,6 +11,7 @@ const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
+const { resolve } = require("path");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
@@ -100,12 +101,29 @@ const createPyProc = async () => {
   }
 };
 
-const exitPyProc = () => {
-  log.info("exitPyProc called; termination not  suddenly happening");
-  pyProc.kill();
-  pyProc = null;
-  pyPort = null;
-};
+const exitPyProc = async () => {
+  // check if the platform is Windows
+  if (process.platform === "win32") {
+    await killPythonProcess();
+    pyProc = null
+    pyPort = null
+  } else {
+    // kill signal to pyProc
+    pyProc.kill();
+    pyProc = null;
+    pyPort = null;
+  }
+}
+
+function killPythonProcess() {
+  return new Promise(function (resolve, reject) {
+    var kill = require('tree-kill');
+    kill(pyProc.pid, (err => {
+      if (!err) reject(err)
+      else resolve()
+    }))
+  })
+}
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
@@ -138,7 +156,7 @@ function initialize() {
       }
     });
 
-    mainWindow.on("close", (e) => {
+    mainWindow.on("close", async (e) => {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
           e.preventDefault(); // Prevents the window from closing
@@ -162,8 +180,8 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        exitPyProc();
-        app.exit();
+        await exitPyProc()
+        app.exit()
       }
     });
   }
