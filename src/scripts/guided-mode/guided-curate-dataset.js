@@ -829,8 +829,8 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
 //Add  spinner to element
 const guidedUploadStatusIcon = (elementID, status) => {
-  let element = document.querySelector(`#${elementID}`);
-  element.innerHTML = ``;
+  let statusElement = document.getElementById(`${elementID}`);
+  statusElement.innerHTML = ``;
   let spinner = `
     <div class="spinner-border" role="status" style="
       height: 24px;
@@ -838,11 +838,11 @@ const guidedUploadStatusIcon = (elementID, status) => {
     "></div>`;
 
   if (status === "loading") {
-    element.innerHTML = spinner;
+    statusElement.innerHTML = spinner;
   }
   if (status === "success") {
     lottie.loadAnimation({
-      container: element,
+      container: statusElement,
       animationData: successCheck,
       renderer: "svg",
       loop: false,
@@ -851,7 +851,7 @@ const guidedUploadStatusIcon = (elementID, status) => {
   }
   if (status === "error") {
     lottie.loadAnimation({
-      container: element,
+      container: statusElement,
       animationData: errorMark,
       renderer: "svg",
       loop: false,
@@ -1090,6 +1090,13 @@ guidedCreateSodaJSONObj = () => {
         poolName
       ];
       //renderPoolTable();
+    },
+    getPoolSubjects: function (poolName) {
+      return Object.keys(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          poolName
+        ]
+      );
     },
   };
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
@@ -2193,18 +2200,19 @@ const specifyPool = (event, poolNameInput) => {
           </i>
         </div>
       `;
-      const poolSubjectTagifyInput = `
-        <input
+      const poolSubjectSelectElement = `
+        <select
+          class="js-example-basic-multiple"
+          style="width: 100%"
           name="${poolName}-subjects-selection-dropdown"
-          class="some_class_name"
-          placeholder="Select subjects from the dropdown to add to pool"
-          value=""
-        />
+          multiple="multiple"
+        ></select>
       `;
       const poolIdCellToAddNameTo = poolNameInput.parent();
 
       if (poolName.length > 0) {
         if (!subSamInputIsValid(poolName)) {
+          //show alert message below pool name input if input is invalid and abort function
           generateAlertMessage(poolNameInput);
           return;
         }
@@ -2214,44 +2222,77 @@ const specifyPool = (event, poolNameInput) => {
           sodaJSONObj.renamePool(poolFolderToRename, poolName);
         } else {
           //add collapsable class to poolIdCellToAddNameTo
-          poolIdCellToAddNameTo.addClass("collapsing");
           const poolSubjectsDropdownCell = poolNameInput.parent().next();
-          poolSubjectsDropdownCell.removeClass("collapsing");
-          //case where subject name is valid and not being renamed:
+
+          //Add the new pool to sodaJSONObj
           sodaJSONObj.addPool(poolName);
 
-          //Add a tagify dropdown to the pool name cell
-          poolSubjectsDropdownCell.html(poolSubjectTagifyInput);
-          const newPoolSubjectsDropdown = document.querySelector(
-              `input[name="${poolName}-subjects-selection-dropdown"]:last-child`
-            ),
-            // init Tagify script on the above inputs
-            newPoolSubjectsDropdownTagify = new Tagify(
-              newPoolSubjectsDropdown,
-              {
-                whitelist: sodaJSONObj.getAllSubjects(),
-                dropdown: {
-                  maxItems: 20,
-                  classname: "pool-subjects",
-                  enabled: 0,
-                  closeOnSelect: false,
-                },
-              }
-            );
-          newPoolSubjectsDropdownTagify.on("remove", function (e) {
-            console.log(poolName);
-            console.log(e.detail.data.value);
-            console.log("removed");
+          //Add the select2 base element
+          poolSubjectsDropdownCell.html(poolSubjectSelectElement);
+
+          //Get the newly created select2 element
+          const newPoolSubjectsSelectElement = document.querySelector(
+            `select[name="${poolName}-subjects-selection-dropdown"]`
+          );
+
+          const subjectsInSelect2DataFormat = sodaJSONObj
+            .getAllSubjects()
+            .map((subject) => {
+              return {
+                id: subject,
+                text: subject,
+              };
+            });
+
+          //create a select2 dropdown for the pool subjects
+          $(newPoolSubjectsSelectElement).select2({
+            placeholder: "Select subjects",
+            tags: true,
+            width: "100%",
+            data: subjectsInSelect2DataFormat,
           });
 
-          newPoolSubjectsDropdownTagify.on("dropdown:show", function (e) {
-            console.log(e);
-            newPoolSubjectsDropdownTagify.settings.whitelist = null;
-            newPoolSubjectsDropdownTagify.whitelist = null;
-            const newWhitelist = sodaJSONObj.getAllSubjects();
-            newPoolSubjectsDropdownTagify.settings.whitelist = newWhitelist;
-            newPoolSubjectsDropdownTagify.whitelist = newWhitelist;
-            console.log(newPoolSubjectsDropdownTagify.whitelist);
+          $(`select[name="${poolName}-subjects-selection-dropdown"]`).val(null);
+          $(`select[name="${poolName}-subjects-selection-dropdown"]`).trigger(
+            "change"
+          );
+          const updatePoolDropdown = (poolDropDown, poolName) => {
+            poolDropDown.empty().trigger("change");
+            const poolsSubjects = sodaJSONObj.getPoolSubjects(poolName);
+            for (const subject of poolsSubjects) {
+              var newOption = new Option(subject, subject, true, true);
+              poolDropDown.append(newOption).trigger("change");
+            }
+            const subjectsNotInPools = sodaJSONObj
+              .getAllSubjects()
+              .map((subject) => {
+                return {
+                  id: subject,
+                  text: subject,
+                };
+              });
+            for (const subject of subjectsNotInPools) {
+              const newOption = new Option(
+                subject.text,
+                subject.id,
+                false,
+                false
+              );
+              poolDropDown.append(newOption).trigger("change");
+            }
+            poolDropDown.select2("open");
+          };
+          $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+            updatePoolDropdown($(e.currentTarget), poolName);
+          });
+          $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+            /*
+            const subjectToRemove = e.params.data.id;
+            sodaJSONObj.removeSubjectFromPool(poolName, subjectToRemove);*/
+          });
+          $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+            const selectedSubject = e.params.data.id;
+            sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
           });
         }
         poolIdCellToAddNameTo.html(poolNameElement);
@@ -3349,6 +3390,9 @@ $(document).ready(() => {
     $("#guided-dataset-name-input").val(makeid(10));
     $("#guided-dataset-subtitle-input").val(makeid(10));
     $("#guided-create-new-dataset").click();
+    for (let i = 0; i < 20; i++) {
+      sodaJSONObj.addSubject(makeid(7));
+    }
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
