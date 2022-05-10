@@ -2189,6 +2189,7 @@ const specifyPool = (event, poolNameInput) => {
   if (event.which == 13) {
     try {
       const poolName = poolNameInput.val().trim();
+      console.log(poolName);
       const poolNameElement = `
         <div class="space-between" style="width: 250px;">
           <span class="pool-id">${poolName}</span>
@@ -2221,7 +2222,6 @@ const specifyPool = (event, poolNameInput) => {
           const poolFolderToRename = poolNameInput.attr("data-prev-name");
           sodaJSONObj.renamePool(poolFolderToRename, poolName);
         } else {
-          //add collapsable class to poolIdCellToAddNameTo
           const poolSubjectsDropdownCell = poolNameInput.parent().next();
 
           //Add the new pool to sodaJSONObj
@@ -2235,21 +2235,12 @@ const specifyPool = (event, poolNameInput) => {
             `select[name="${poolName}-subjects-selection-dropdown"]`
           );
 
-          const subjectsInSelect2DataFormat = sodaJSONObj
-            .getAllSubjects()
-            .map((subject) => {
-              return {
-                id: subject,
-                text: subject,
-              };
-            });
-
           //create a select2 dropdown for the pool subjects
           $(newPoolSubjectsSelectElement).select2({
             placeholder: "Select subjects",
             tags: true,
             width: "100%",
-            data: subjectsInSelect2DataFormat,
+            closeOnSelect: false,
           });
 
           $(`select[name="${poolName}-subjects-selection-dropdown"]`).val(null);
@@ -2258,36 +2249,25 @@ const specifyPool = (event, poolNameInput) => {
           );
           const updatePoolDropdown = (poolDropDown, poolName) => {
             poolDropDown.empty().trigger("change");
+            //add subjects in pool to dropdown and set as selected
             const poolsSubjects = sodaJSONObj.getPoolSubjects(poolName);
             for (const subject of poolsSubjects) {
               var newOption = new Option(subject, subject, true, true);
               poolDropDown.append(newOption).trigger("change");
             }
-            const subjectsNotInPools = sodaJSONObj
-              .getAllSubjects()
-              .map((subject) => {
-                return {
-                  id: subject,
-                  text: subject,
-                };
-              });
+
+            //add subject options not in pool to dropdown and set as unselected
+            const subjectsNotInPools = sodaJSONObj.getAllSubjects();
             for (const subject of subjectsNotInPools) {
-              const newOption = new Option(
-                subject.text,
-                subject.id,
-                false,
-                false
-              );
+              var newOption = new Option(subject, subject, false, false);
               poolDropDown.append(newOption).trigger("change");
             }
-            poolDropDown.select2("open");
           };
           $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
             updatePoolDropdown($(e.currentTarget), poolName);
           });
           $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
-            /*
-            const subjectToRemove = e.params.data.id;
+            /*const subjectToRemove = e.params.data.id;
             sodaJSONObj.removeSubjectFromPool(poolName, subjectToRemove);*/
           });
           $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
@@ -2495,7 +2475,6 @@ const addSubjectSpecificationTableRow = () => {
 
 const generatePoolSpecificationRowElement = () => {
   return `
-    <tr>
       <td class="middle aligned pool-cell collapsing">
         <input
           class="guided--input"
@@ -2518,14 +2497,17 @@ const generatePoolSpecificationRowElement = () => {
           onclick="deletePool($(this))"
         ></i>
       </td>
-    </tr>
+
   `;
 };
 const addPoolTableRow = () => {
   const poolsTableBody = document.getElementById(
     "pools-specification-table-body"
   );
-  poolsTableBody.innerHTML += generatePoolSpecificationRowElement();
+  //insert a new table row container with js as select2 breaks when adding a new row
+  //via template literals
+  const newPoolTableRow = poolsTableBody.insertRow(-1);
+  newPoolTableRow.innerHTML = generatePoolSpecificationRowElement();
 
   //scroll to the last element in the table
   smoothScrollToElement(poolsTableBody.querySelector("tr:last-child"));
@@ -3390,7 +3372,7 @@ $(document).ready(() => {
     $("#guided-dataset-name-input").val(makeid(10));
     $("#guided-dataset-subtitle-input").val(makeid(10));
     $("#guided-create-new-dataset").click();
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
       sodaJSONObj.addSubject(makeid(7));
     }
     //show the next button after 3 seconds
