@@ -1109,6 +1109,18 @@ guidedCreateSodaJSONObj = () => {
         ]
       );
     },
+    addSample: function (sampleName) {
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["samples"][
+          sampleName
+        ]
+      ) {
+        throw new Error("Sample names must be unique.");
+      } else {
+        this["dataset-metadata"]["pool-subject-sample-structure"]["samples"][
+          sampleName
+        ] = {};
+      }
   };
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
@@ -2387,6 +2399,108 @@ const createSubjectFolder = (event, subjectNameInput) => {
   }
 };
 
+const specifySample = (event, poolNameInput) => {
+  if (event.which == 13) {
+    try {
+      const poolName = poolNameInput.val().trim();
+      console.log(poolName);
+      const poolNameElement = `
+        <div class="space-between" style="width: 250px;">
+          <span class="pool-id">${poolName}</span>
+          <i
+            class="far fa-edit jump-back"
+            style="cursor: pointer;"
+            onclick="openPoolRenameInput($(this))"
+          >
+          </i>
+        </div>
+      `;
+      const poolSubjectSelectElement = `
+        <select
+          class="js-example-basic-multiple"
+          style="width: 100%"
+          name="${poolName}-subjects-selection-dropdown"
+          multiple="multiple"
+        ></select>
+      `;
+      const poolIdCellToAddNameTo = poolNameInput.parent();
+
+      if (poolName.length > 0) {
+        if (!subSamInputIsValid(poolName)) {
+          //show alert message below pool name input if input is invalid and abort function
+          generateAlertMessage(poolNameInput);
+          return;
+        }
+        removeAlertMessageIfExists(poolNameInput);
+        if (poolNameInput.attr("data-prev-name")) {
+          const poolFolderToRename = poolNameInput.attr("data-prev-name");
+          sodaJSONObj.renamePool(poolFolderToRename, poolName);
+        } else {
+          const poolSubjectsDropdownCell = poolNameInput.parent().next();
+
+          //Add the new pool to sodaJSONObj
+          sodaJSONObj.addPool(poolName);
+
+          //Add the select2 base element
+          poolSubjectsDropdownCell.html(poolSubjectSelectElement);
+
+          //Get the newly created select2 element
+          const newPoolSubjectsSelectElement = document.querySelector(
+            `select[name="${poolName}-subjects-selection-dropdown"]`
+          );
+
+          //create a select2 dropdown for the pool subjects
+          $(newPoolSubjectsSelectElement).select2({
+            placeholder: "Select subjects",
+            tags: true,
+            width: "100%",
+            closeOnSelect: false,
+          });
+
+          $(`select[name="${poolName}-subjects-selection-dropdown"]`).val(null);
+          $(`select[name="${poolName}-subjects-selection-dropdown"]`).trigger(
+            "change"
+          );
+          const updatePoolDropdown = (poolDropDown, poolName) => {
+            poolDropDown.empty().trigger("change");
+            //add subjects in pool to dropdown and set as selected
+            const poolsSubjects = sodaJSONObj.getPoolSubjects(poolName);
+            for (const subject of poolsSubjects) {
+              var newOption = new Option(subject, subject, true, true);
+              poolDropDown.append(newOption).trigger("change");
+            }
+
+            //add subject options not in pool to dropdown and set as unselected
+            const subjectsNotInPools = sodaJSONObj.getAllSubjects();
+            for (const subject of subjectsNotInPools) {
+              var newOption = new Option(subject, subject, false, false);
+              poolDropDown.append(newOption).trigger("change");
+            }
+          };
+          $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+            updatePoolDropdown($(e.currentTarget), poolName);
+          });
+          $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+            const subjectToRemove = e.params.data.id;
+            sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
+          });
+          $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+            const selectedSubject = e.params.data.id;
+            sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
+          });
+        }
+        poolIdCellToAddNameTo.html(poolNameElement);
+      }
+    } catch (error) {
+      notyf.open({
+        duration: "3000",
+        type: "error",
+        message: error,
+      });
+    }
+  }
+};
+
 //On edit button click, creates a new subject ID rename input box
 const openSubjectRenameInput = (subjectNameEditButton) => {
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
@@ -2484,6 +2598,58 @@ const addSubjectSpecificationTableRow = () => {
     );
     smoothScrollToElement(newSubjectRow);
     newSubjectInput.focus();
+  }
+};
+const generateNewSampleRowTd = () => {
+  return `
+    <td class="middle aligned sample-id-cell collapsing">
+      <input
+        class="guided--input"
+        type="text"
+        name="guided-sample-id"
+        placeholder="Enter sample ID and press enter"
+        onkeyup="specifyPool(event, $(this))"
+        data-alert-message="Sample IDs may not contain spaces or special characters"
+        data-alert-type="danger"
+        style="width: 250px"
+      />
+    </td>
+    <td
+      class="middle aligned samples-subject-dropdown-cell remove-left-border"
+    ></td>
+    <td class="middle aligned collapsing text-center remove-left-border">
+      <i
+        class="far fa-trash-alt"
+        style="color: red; cursor: pointer"
+        onclick="deleteSample($(this))"
+      ></i>
+    </td>
+  `;
+};
+const addSampleTableRow = () => {
+  const sampleSpecificationTableBody = document.getElementById(
+    "samples-specification-table-body"
+  );
+  //check if sample specification table body has an input with the name guided-sample-id
+  const sampleSpecificationTableInput =
+    sampleSpecificationTableBody.querySelector(
+      "input[name='guided-sample-id']"
+    );
+  if (sampleSpecificationTableInput) {
+    //focus on the input that already exists
+    sampleSpecificationTableInput.focus();
+  } else {
+    //create a new table row on
+    const newSamplesTableRow = sampleSpecificationTableBody.insertRow(-1);
+    newSamplesTableRow.innerHTML = generateNewSampleRowTd();
+    const newSampleRow =
+      sampleSpecificationTableBody.querySelector("tr:last-child");
+    //get the input element in newSampleRow
+    const newSampleInput = newSampleRow.querySelector(
+      "input[name='guided-sample-id']"
+    );
+    smoothScrollToElement(newSampleRow);
+    newSampleInput.focus();
   }
 };
 
@@ -5044,6 +5210,9 @@ $(document).ready(() => {
 
   $("#guided-button-save-subject-fields").on("click", () => {
     unHideAndSmoothScrollToElement("guided-organize-into-pools-prompt");
+  });
+  $("#guided-button-save-pool-fields").on("click", () => {
+    unHideAndSmoothScrollToElement("guided-number-of-samples-prompt");
   });
 
   //submission

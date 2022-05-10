@@ -1,7 +1,22 @@
-<select
-  class="js-example-basic-multiple"
-  style="width: 100%"
-  j
-  name="${poolName}-subjects-selection-dropdown"
-  multiple="multiple"
-></select>
+<td class="middle aligned sample-id-cell collapsing">
+  <input
+    class="guided--input"
+    type="text"
+    name="guided-sample-id"
+    placeholder="Enter sample ID and press enter"
+    onkeyup="specifyPool(event, $(this))"
+    data-alert-message="Sample IDs may not contain spaces or special characters"
+    data-alert-type="danger"
+    style="width: 250px"
+  />
+</td>
+<td
+  class="middle aligned samples-subject-dropdown-cell remove-left-border"
+></td>
+<td class="middle aligned collapsing text-center remove-left-border">
+  <i
+    class="far fa-trash-alt"
+    style="color: red; cursor: pointer"
+    onclick="deleteSample($(this))"
+  ></i>
+</td>
