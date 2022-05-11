@@ -31,57 +31,40 @@ const PY_MODULE = "api"; // without .py suffix
 let pyProc = null;
 let pyPort = null;
 
-// const guessPackaged = () => {
-//   const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
-//   const unixPath = path.join(process.resourcesPath, PY_MODULE);
-
-//   if (process.platform === "darwin" || process.platform === "linux") {
-//     if (require("fs").existsSync(unixPath)) {
-//       return true;
-//     } else {
-//       return false;
-//     }
-//   }
-
-//   if (process.platform === "win32") {
-//     if (require("fs").existsSync(windowsPath)) {
-//       return true;
-//     } else {
-//       return false;
-//     }
-//   }
-// };
-
-// folder build guessPackaged
 const guessPackaged = () => {
-  const fullPath = path.join(__dirname, PY_DIST_FOLDER);
-  return require("fs").existsSync(fullPath);
+  const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
+  const unixPath = path.join(process.resourcesPath, PY_MODULE);
+
+  if (process.platform === "darwin" || process.platform === "linux") {
+    if (require("fs").existsSync(unixPath)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  if (process.platform === "win32") {
+    if (require("fs").existsSync(windowsPath)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 };
 
-// const getScriptPath = () => {
-//   if (!guessPackaged()) {
-//     console.log("Didnt guess packaged");
-//     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
-//   }
-
-//   if (process.platform === "win32") {
-//     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE + ".exe");
-//   } else {
-//     return path.join(process.resourcesPath, PY_MODULE);
-//   }
-// };
-
-// folder based
 const getScriptPath = () => {
   if (!guessPackaged()) {
+    console.log("Didnt guess packaged");
     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
-  if (process.platform === "win32") {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
-  }
 
-  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
+  if (process.platform === "win32") {
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE + ".exe");
+  } else {
+    return path.join(process.resourcesPath, PY_MODULE);
+  }
 };
+
 
 const selectPort = () => {
   pyPort = 4242;
@@ -100,9 +83,9 @@ const createPyProc = async () => {
   }
   if (guessPackaged()) {
     log.info("execFile");
-    // pyProc = require("child_process").execFile(script, [port], {
-    //   stdio: "ignore",
-    // });
+    pyProc = require("child_process").execFile(script, [port], {
+      stdio: "ignore",
+    });
   } else {
     log.info("spawn");
     pyProc = require("child_process").spawn("python", [script, port], {
@@ -144,7 +127,7 @@ function killPythonProcess() {
 }
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
-// app.on("ready", createPyProc);
+app.on("ready", createPyProc);
 // app.on("will-quit", exitPyProc);
 
 /*************************************************************
@@ -198,7 +181,7 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        // await exitPyProc();
+        await exitPyProc();
         app.exit();
       }
     });
