@@ -31,39 +31,59 @@ const PY_MODULE = "api"; // without .py suffix
 let pyProc = null;
 let pyPort = null;
 
+// const guessPackaged = () => {
+//   const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
+//   const unixPath = path.join(process.resourcesPath, PY_MODULE);
+
+//   if (process.platform === "darwin" || process.platform === "linux") {
+//     if (require("fs").existsSync(unixPath)) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   }
+
+//   if (process.platform === "win32") {
+//     if (require("fs").existsSync(windowsPath)) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   }
+// };
+
+// folder build guessPackaged
 const guessPackaged = () => {
-  const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
-  const unixPath = path.join(process.resourcesPath, PY_MODULE);
-
-  if (process.platform === "darwin" || process.platform === "linux") {
-    if (require("fs").existsSync(unixPath)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  if (process.platform === "win32") {
-    if (require("fs").existsSync(windowsPath)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  const fullPath = path.join(__dirname, PY_DIST_FOLDER);
+  return require("fs").existsSync(fullPath);
 };
 
+// const getScriptPath = () => {
+//   if (!guessPackaged()) {
+//     console.log("Didnt guess packaged");
+//     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
+//   }
+
+//   if (process.platform === "win32") {
+//     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE + ".exe");
+//   } else {
+//     return path.join(process.resourcesPath, PY_MODULE);
+//   }
+// };
+
+
+// folder based 
 const getScriptPath = () => {
   if (!guessPackaged()) {
-    console.log("Didnt guess packaged");
     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
-
   if (process.platform === "win32") {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE + ".exe");
-  } else {
-    return path.join(process.resourcesPath, PY_MODULE);
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
   }
+
+  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
 };
+
 
 const selectPort = () => {
   pyPort = 4242;
