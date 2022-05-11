@@ -71,8 +71,7 @@ const guessPackaged = () => {
 //   }
 // };
 
-
-// folder based 
+// folder based
 const getScriptPath = () => {
   if (!guessPackaged()) {
     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
@@ -83,7 +82,6 @@ const getScriptPath = () => {
 
   return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
 };
-
 
 const selectPort = () => {
   pyPort = 4242;
