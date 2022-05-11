@@ -1095,6 +1095,17 @@ guidedCreateSodaJSONObj = () => {
     },
     deletePool: function (poolName) {
       console.log(poolName);
+      //empty the subjects in the pool back into subjects
+      let pool =
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          poolName
+        ];
+      for (let subject in pool) {
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          subject
+        ] = pool[subject];
+      }
+      //delete the pool after copying the subjects back into subjects
       delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         poolName
       ];
