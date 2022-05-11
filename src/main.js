@@ -15,7 +15,7 @@ const { resolve } = require("path");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = "beta";
+autoUpdater.channel = "alpha";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
