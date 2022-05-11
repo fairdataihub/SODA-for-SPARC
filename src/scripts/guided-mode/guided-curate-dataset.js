@@ -584,8 +584,8 @@ const isNumberBetween = (number, minVal, maxVal) => {
   );
 };
 function subSamInputIsValid(subSamInput) {
-  let regex = /^[a-zA-Z0-9-_]+$/;
-  return regex.test(subSamInput);
+  const subSamInputPattern = /^[a-z]+-[0-9A-Za-z-]+$/;
+  return subSamInputPattern.test(subSamInput);
 }
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
@@ -940,6 +940,7 @@ guidedCreateSodaJSONObj = () => {
       ) {
         throw new Error("Subject names must be unique.");
       }
+      //Add "Sub-" to beginning of subject name
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
         subjectName
       ] = {};
@@ -1038,6 +1039,8 @@ guidedCreateSodaJSONObj = () => {
       return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
     },
     moveSubjectIntoPool: function (subjectName, poolName) {
+      console.log(subjectName);
+      console.log(poolName);
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         poolName
       ][subjectName] =
@@ -1125,7 +1128,34 @@ guidedCreateSodaJSONObj = () => {
         ] = {};
       }
     },
+    addSampleToSubject: function (sampleName, subjectName) {
+      console.log(sampleName, subjectName);
+      //check to see if subject exists outside of the pool
+      if (
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          subjectName
+        ]
+      ) {
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          subjectName
+        ][sampleName] = {};
+      } else {
+        //subject to add sample should be inside of a pool. Find the pool and add the
+        //sample to the subject in the pool.
+
+        for (const [poolName, pool] of Object.entries(
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+        )) {
+          if (pool[subjectName]) {
+            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+              poolName
+            ][subjectName][sampleName] = {};
+          }
+        }
+      }
+    },
   };
+
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
   sodaJSONObj["manifest-files"] = {};
@@ -2176,9 +2206,9 @@ $("#guided-button-generate-subjects-table").on("click", () => {
 const specifySubject = (event, subjectNameInput) => {
   if (event.which == 13) {
     try {
-      const subjectName = subjectNameInput.val().trim();
+      const subjectName = `sub-${subjectNameInput.val().trim()}`;
       const subjectNameElement = `
-        <div class="space-between">
+        <div class="space-between w-100">
           <span class="subject-id">${subjectName}</span>
           <i
             class="far fa-edit jump-back"
@@ -2218,7 +2248,7 @@ const specifySubject = (event, subjectNameInput) => {
 const specifyPool = (event, poolNameInput) => {
   if (event.which == 13) {
     try {
-      const poolName = poolNameInput.val().trim();
+      const poolName = `pool-${poolNameInput.val().trim()}`;
       console.log(poolName);
       const poolNameElement = `
         <div class="space-between" style="width: 250px;">
@@ -2240,7 +2270,6 @@ const specifyPool = (event, poolNameInput) => {
         ></select>
       `;
       const poolIdCellToAddNameTo = poolNameInput.parent();
-
       if (poolName.length > 0) {
         if (!subSamInputIsValid(poolName)) {
           //show alert message below pool name input if input is invalid and abort function
@@ -2252,7 +2281,13 @@ const specifyPool = (event, poolNameInput) => {
           const poolFolderToRename = poolNameInput.attr("data-prev-name");
           sodaJSONObj.renamePool(poolFolderToRename, poolName);
         } else {
-          const poolSubjectsDropdownCell = poolNameInput.parent().next();
+          const poolSubjectsDropdownCell = poolNameInput
+            .parent()
+            .parent()
+            .next();
+          console.log(poolSubjectsDropdownCell);
+          //Add left border back to subject dropdown cell to seperate pool name and subject dropdown
+          poolSubjectsDropdownCell.removeClass("remove-left-border");
 
           //Add the new pool to sodaJSONObj
           sodaJSONObj.addPool(poolName);
@@ -2271,6 +2306,9 @@ const specifyPool = (event, poolNameInput) => {
             tags: true,
             width: "100%",
             closeOnSelect: false,
+          });
+          $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+            updatePoolDropdown($(e.currentTarget), poolName);
           });
           $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
             updatePoolDropdown($(e.currentTarget), poolName);
@@ -2404,7 +2442,7 @@ const createSubjectFolder = (event, subjectNameInput) => {
 const specifySample = (event, sampleNameInput) => {
   if (event.which == 13) {
     //try {
-    const sampleName = sampleNameInput.val().trim();
+    const sampleName = `sam-${sampleNameInput.val().trim()}`;
     const sampleNameElement = `
         <div class="space-between" style="width: 250px;">
           <span class="sample-id">${sampleName}</span>
@@ -2437,6 +2475,8 @@ const specifySample = (event, sampleNameInput) => {
       } else {
         const sampleSubjectsDropdownCell = sampleNameInput.parent().next();
 
+        //Add left border back to subject dropdown cell to seperate sample name and subject dropdown
+        sampleSubjectsDropdownCell.removeClass("remove-left-border");
         //Add the new sample to sodaJSONObj
         sodaJSONObj.addSample(sampleName);
 
@@ -2457,7 +2497,12 @@ const specifySample = (event, sampleNameInput) => {
 
         const updateSampleSubjectsDropdown = (sampleSubjectsDropdown) => {
           sampleSubjectsDropdown.empty().trigger("change");
-          ``;
+          const subjectsOutsidePools = sodaJSONObj.getAllSubjects();
+          for (const subject of subjectsOutsidePools) {
+            const newOption = new Option(subject, subject, false, false);
+            console.log(newOption);
+            sampleSubjectsDropdown.append(newOption);
+          }
           const subjectsData = sodaJSONObj.getSubjectsInPools();
           for (const [subject, subjectData] of Object.entries(subjectsData)) {
             const subjectGroup = document.createElement("OPTGROUP");
@@ -2473,13 +2518,9 @@ const specifySample = (event, sampleNameInput) => {
         $(newSampleSubjectsSelectElement).on("select2:open", (e) => {
           updateSampleSubjectsDropdown($(e.currentTarget));
         });
-        $(newSampleSubjectsSelectElement).on("select2:unselect", (e) => {
-          const subjectToRemove = e.params.data.id;
-          sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, sampleName);
-        });
         $(newSampleSubjectsSelectElement).on("select2:select", function (e) {
           const selectedSubject = e.params.data.id;
-          sodaJSONObj.moveSubjectIntoPool(selectedSubject, sampleName);
+          sodaJSONObj.addSampleToSubject(sampleName, selectedSubject);
         });
       }
       sampleIdCellToAddNameTo.html(sampleNameElement);
@@ -2545,16 +2586,19 @@ const generateSubjectSpecificationRowElement = () => {
   return `
     <tr>
       <td class="middle aligned subject-id-cell">
-        <input
-          class="guided--input"
-          type="text"
-          name="guided-subject-id"
-          placeholder="Enter subject ID and press enter"
-          onkeyup="specifySubject(event, $(this))"
-          data-input-set="guided-subjects-folder-tab"
-          data-alert-message="Subject IDs may not contain spaces or special characters"
-          data-alert-type="danger"
-        />
+        <div class="space-between w-100" style="align-items: center">
+          <span style="margin-right: 5px;">sub-</span>
+          <input
+            class="guided--input"
+            type="text"
+            name="guided-subject-id"
+            placeholder="Enter subject ID and press enter"
+            onkeyup="specifySubject(event, $(this))"
+            data-input-set="guided-subjects-folder-tab"
+            data-alert-message="Subject IDs may not contain spaces or special characters"
+            data-alert-type="danger"
+          />
+        </div>
       </td>
       <td class="middle aligned collapsing text-center remove-left-border">
         <i
@@ -2648,7 +2692,9 @@ const addSampleTableRow = () => {
 
 const generatePoolSpecificationRowElement = () => {
   return `
-      <td class="middle aligned pool-cell collapsing">
+    <td class="middle aligned pool-cell collapsing">
+      <div class="space-between" style="align-items: center; width: 250px;">
+        <span style="margin-right: 5px;">pool-</span>
         <input
           class="guided--input"
           type="text"
@@ -2658,19 +2704,19 @@ const generatePoolSpecificationRowElement = () => {
           data-input-set="guided-subjects-folder-tab"
           data-alert-message="Pool IDs may not contain spaces or special characters"
           data-alert-type="danger"
-          style="width: 250px;"
+          style="width: 100%;"
         />
-      </td>
-      <td class="middle aligned pool-subjects remove-left-border">
-      </td>
-      <td class="middle aligned collapsing text-center remove-left-border">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
-          onclick="deletePool($(this))"
-        ></i>
-      </td>
-
+      </div>
+    </td>
+    <td class="middle aligned pool-subjects remove-left-border">
+    </td>
+    <td class="middle aligned collapsing text-center remove-left-border">
+      <i
+        class="far fa-trash-alt"
+        style="color: red; cursor: pointer"
+        onclick="deletePool($(this))"
+      ></i>
+    </td>
   `;
 };
 const addPoolTableRow = () => {
@@ -3546,7 +3592,7 @@ $(document).ready(() => {
     $("#guided-dataset-subtitle-input").val(makeid(10));
     $("#guided-create-new-dataset").click();
     for (let i = 0; i < 5; i++) {
-      sodaJSONObj.addSubject(makeid(7));
+      //sodaJSONObj.addSubject(makeid(7));
     }
     //show the next button after 3 seconds
     setTimeout(() => {
