@@ -1034,6 +1034,9 @@ guidedCreateSodaJSONObj = () => {
       );
       return /*subjectsInPools.concat(*/ subjectsNotInPools /*)*/;
     },
+    getSubjectsInPools: function () {
+      return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+    },
     moveSubjectIntoPool: function (subjectName, poolName) {
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
         poolName
@@ -1121,6 +1124,7 @@ guidedCreateSodaJSONObj = () => {
           sampleName
         ] = {};
       }
+    },
   };
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
@@ -1133,6 +1137,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"] =
     {};
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"] =
+    {};
+  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["samples"] =
     {};
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
@@ -2266,27 +2272,6 @@ const specifyPool = (event, poolNameInput) => {
             width: "100%",
             closeOnSelect: false,
           });
-
-          $(`select[name="${poolName}-subjects-selection-dropdown"]`).val(null);
-          $(`select[name="${poolName}-subjects-selection-dropdown"]`).trigger(
-            "change"
-          );
-          const updatePoolDropdown = (poolDropDown, poolName) => {
-            poolDropDown.empty().trigger("change");
-            //add subjects in pool to dropdown and set as selected
-            const poolsSubjects = sodaJSONObj.getPoolSubjects(poolName);
-            for (const subject of poolsSubjects) {
-              var newOption = new Option(subject, subject, true, true);
-              poolDropDown.append(newOption).trigger("change");
-            }
-
-            //add subject options not in pool to dropdown and set as unselected
-            const subjectsNotInPools = sodaJSONObj.getAllSubjects();
-            for (const subject of subjectsNotInPools) {
-              var newOption = new Option(subject, subject, false, false);
-              poolDropDown.append(newOption).trigger("change");
-            }
-          };
           $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
             updatePoolDropdown($(e.currentTarget), poolName);
           });
@@ -2308,6 +2293,23 @@ const specifyPool = (event, poolNameInput) => {
         message: error,
       });
     }
+  }
+};
+
+const updatePoolDropdown = (poolDropDown, poolName) => {
+  poolDropDown.empty().trigger("change");
+  //add subjects in pool to dropdown and set as selected
+  const poolsSubjects = sodaJSONObj.getPoolSubjects(poolName);
+  for (const subject of poolsSubjects) {
+    var newOption = new Option(subject, subject, true, true);
+    poolDropDown.append(newOption).trigger("change");
+  }
+
+  //add subject options not in pool to dropdown and set as unselected
+  const subjectsNotInPools = sodaJSONObj.getAllSubjects();
+  for (const subject of subjectsNotInPools) {
+    var newOption = new Option(subject, subject, false, false);
+    poolDropDown.append(newOption).trigger("change");
   }
 };
 
@@ -2399,105 +2401,96 @@ const createSubjectFolder = (event, subjectNameInput) => {
   }
 };
 
-const specifySample = (event, poolNameInput) => {
+const specifySample = (event, sampleNameInput) => {
   if (event.which == 13) {
-    try {
-      const poolName = poolNameInput.val().trim();
-      console.log(poolName);
-      const poolNameElement = `
+    //try {
+    const sampleName = sampleNameInput.val().trim();
+    const sampleNameElement = `
         <div class="space-between" style="width: 250px;">
-          <span class="pool-id">${poolName}</span>
+          <span class="sample-id">${sampleName}</span>
           <i
             class="far fa-edit jump-back"
             style="cursor: pointer;"
-            onclick="openPoolRenameInput($(this))"
+            onclick="openSampleRenameInput($(this))"
           >
           </i>
         </div>
       `;
-      const poolSubjectSelectElement = `
-        <select
-          class="js-example-basic-multiple"
-          style="width: 100%"
-          name="${poolName}-subjects-selection-dropdown"
-          multiple="multiple"
+    const sampleSubjectSelectElement = `
+        <select 
+          class="js-example-basic-single"
+          name="${sampleName}-subject-selection-dropdown"
         ></select>
       `;
-      const poolIdCellToAddNameTo = poolNameInput.parent();
+    const sampleIdCellToAddNameTo = sampleNameInput.parent();
 
-      if (poolName.length > 0) {
-        if (!subSamInputIsValid(poolName)) {
-          //show alert message below pool name input if input is invalid and abort function
-          generateAlertMessage(poolNameInput);
-          return;
-        }
-        removeAlertMessageIfExists(poolNameInput);
-        if (poolNameInput.attr("data-prev-name")) {
-          const poolFolderToRename = poolNameInput.attr("data-prev-name");
-          sodaJSONObj.renamePool(poolFolderToRename, poolName);
-        } else {
-          const poolSubjectsDropdownCell = poolNameInput.parent().next();
-
-          //Add the new pool to sodaJSONObj
-          sodaJSONObj.addPool(poolName);
-
-          //Add the select2 base element
-          poolSubjectsDropdownCell.html(poolSubjectSelectElement);
-
-          //Get the newly created select2 element
-          const newPoolSubjectsSelectElement = document.querySelector(
-            `select[name="${poolName}-subjects-selection-dropdown"]`
-          );
-
-          //create a select2 dropdown for the pool subjects
-          $(newPoolSubjectsSelectElement).select2({
-            placeholder: "Select subjects",
-            tags: true,
-            width: "100%",
-            closeOnSelect: false,
-          });
-
-          $(`select[name="${poolName}-subjects-selection-dropdown"]`).val(null);
-          $(`select[name="${poolName}-subjects-selection-dropdown"]`).trigger(
-            "change"
-          );
-          const updatePoolDropdown = (poolDropDown, poolName) => {
-            poolDropDown.empty().trigger("change");
-            //add subjects in pool to dropdown and set as selected
-            const poolsSubjects = sodaJSONObj.getPoolSubjects(poolName);
-            for (const subject of poolsSubjects) {
-              var newOption = new Option(subject, subject, true, true);
-              poolDropDown.append(newOption).trigger("change");
-            }
-
-            //add subject options not in pool to dropdown and set as unselected
-            const subjectsNotInPools = sodaJSONObj.getAllSubjects();
-            for (const subject of subjectsNotInPools) {
-              var newOption = new Option(subject, subject, false, false);
-              poolDropDown.append(newOption).trigger("change");
-            }
-          };
-          $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
-            updatePoolDropdown($(e.currentTarget), poolName);
-          });
-          $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
-            const subjectToRemove = e.params.data.id;
-            sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
-          });
-          $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
-            const selectedSubject = e.params.data.id;
-            sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
-          });
-        }
-        poolIdCellToAddNameTo.html(poolNameElement);
+    if (sampleName.length > 0) {
+      if (!subSamInputIsValid(sampleName)) {
+        //show alert message below pool name input if input is invalid and abort function
+        generateAlertMessage(sampleNameInput);
+        return;
       }
-    } catch (error) {
+      removeAlertMessageIfExists(sampleNameInput);
+      if (sampleNameInput.attr("data-prev-name")) {
+        const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
+        sodaJSONObj.renamePool(sampleFolderToRename, sampleName);
+      } else {
+        const sampleSubjectsDropdownCell = sampleNameInput.parent().next();
+
+        //Add the new sample to sodaJSONObj
+        sodaJSONObj.addSample(sampleName);
+
+        //Add the select2 base element
+        sampleSubjectsDropdownCell.html(sampleSubjectSelectElement);
+
+        //Get the newly created select2 element
+        const newSampleSubjectsSelectElement = document.querySelector(
+          `select[name="${sampleName}-subject-selection-dropdown"]`
+        );
+
+        //create a select2 dropdown for the pool subjects
+        $(newSampleSubjectsSelectElement).select2({
+          placeholder: "Select subject",
+          width: "100%",
+          closeOnSelect: true,
+        });
+
+        const updateSampleSubjectsDropdown = (sampleSubjectsDropdown) => {
+          sampleSubjectsDropdown.empty().trigger("change");
+          ``;
+          const subjectsData = sodaJSONObj.getSubjectsInPools();
+          for (const [subject, subjectData] of Object.entries(subjectsData)) {
+            const subjectGroup = document.createElement("OPTGROUP");
+            subjectGroup.label = subject;
+            sampleSubjectsDropdown.append(subjectGroup);
+            console.log(subjectData);
+            for (const sample of Object.keys(subjectData)) {
+              const newOption = new Option(sample, sample, false, false);
+              subjectGroup.append(newOption);
+            }
+          }
+        };
+        $(newSampleSubjectsSelectElement).on("select2:open", (e) => {
+          updateSampleSubjectsDropdown($(e.currentTarget));
+        });
+        $(newSampleSubjectsSelectElement).on("select2:unselect", (e) => {
+          const subjectToRemove = e.params.data.id;
+          sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, sampleName);
+        });
+        $(newSampleSubjectsSelectElement).on("select2:select", function (e) {
+          const selectedSubject = e.params.data.id;
+          sodaJSONObj.moveSubjectIntoPool(selectedSubject, sampleName);
+        });
+      }
+      sampleIdCellToAddNameTo.html(sampleNameElement);
+    }
+    /*} catch (error) {
       notyf.open({
         duration: "3000",
         type: "error",
         message: error,
       });
-    }
+    }*/
   }
 };
 
@@ -2608,7 +2601,7 @@ const generateNewSampleRowTd = () => {
         type="text"
         name="guided-sample-id"
         placeholder="Enter sample ID and press enter"
-        onkeyup="specifyPool(event, $(this))"
+        onkeyup="specifySample(event, $(this))"
         data-alert-message="Sample IDs may not contain spaces or special characters"
         data-alert-type="danger"
         style="width: 250px"
@@ -3552,9 +3545,9 @@ $(document).ready(() => {
     $("#guided-dataset-name-input").val(makeid(10));
     $("#guided-dataset-subtitle-input").val(makeid(10));
     $("#guided-create-new-dataset").click();
-    /*for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       sodaJSONObj.addSubject(makeid(7));
-    }*/
+    }
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
