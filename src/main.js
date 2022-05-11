@@ -65,7 +65,6 @@ const getScriptPath = () => {
   }
 };
 
-
 const selectPort = () => {
   pyPort = 4242;
   return pyPort;
