@@ -362,7 +362,7 @@ const startupServerAndApiCheck = async () => {
   apiVersionChecked = true;
 };
 
-// startupServerAndApiCheck();
+startupServerAndApiCheck();
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
@@ -370,11 +370,11 @@ const startupServerAndApiCheck = async () => {
 ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
-  // while (!sodaIsConnected || !apiVersionChecked) {
-  //   await wait(1000);
-  // }
+  while (!sodaIsConnected || !apiVersionChecked) {
+    await wait(1000);
+  }
   // check integrity of all the core systems
-  //run_pre_flight_checks();
+  run_pre_flight_checks();
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -4614,14 +4614,14 @@ var bfAddAccountBootboxMessage = `<form>
 var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below: <i class="fas fa-info-circle swal-popover"  id="add-bf-account-tooltip" rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 // once connected to SODA get the user's accounts
-// (async () => {
-//   // wait until soda is connected to the backend server
-//   while (!sodaIsConnected) {
-//     await wait(1000);
-//   }
+(async () => {
+  // wait until soda is connected to the backend server
+  while (!sodaIsConnected) {
+    await wait(1000);
+  }
 
-//   retrieveBFAccounts();
-// })();
+  retrieveBFAccounts();
+})();
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
