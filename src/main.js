@@ -82,9 +82,9 @@ const createPyProc = async () => {
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc = require("child_process").execFile(script, [port], {
-      stdio: "ignore",
-    });
+    // pyProc = require("child_process").execFile(script, [port], {
+    //   stdio: "ignore",
+    // });
   } else {
     log.info("spawn");
     pyProc = require("child_process").spawn("python", [script, port], {
@@ -127,7 +127,7 @@ function killPythonProcess() {
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
-app.on("will-quit", exitPyProc);
+// app.on("will-quit", exitPyProc);
 
 /*************************************************************
  * Main app window
@@ -180,7 +180,7 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        await exitPyProc();
+        // await exitPyProc();
         app.exit();
       }
     });
