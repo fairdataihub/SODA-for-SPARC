@@ -38,6 +38,10 @@ const switchElementVisibility = (elementIdToHide, elementIdToShow) => {
   elementToHide.classList.add("hidden");
   elementToShow.classList.remove("hidden");
 };
+const scrollToBottomOfGuidedBody = () => {
+  const elementToScrollTo = document.querySelector(".guided--body");
+  elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
+};
 
 const guidedGetSubjects = () => {
   return Object.keys(
@@ -3800,11 +3804,9 @@ $(document).ready(() => {
     //Display and scroll to selected element container if data-next-question exists
     if (selectedButton.data("next-question")) {
       nextQuestionID = selectedButton.data("next-question");
+      console.log(nextQuestionID);
       nextQuestionElement = $(`#${nextQuestionID}`);
       nextQuestionElement.removeClass("hidden");
-      nextQuestionElement[0].scrollIntoView({
-        behavior: "smooth",
-      });
     }
     //Hide all child containers of non-selected buttons
     notSelectedButton.each(function () {
@@ -5269,10 +5271,16 @@ $(document).ready(() => {
   });
 
   $("#guided-button-save-subject-fields").on("click", () => {
-    unHideAndSmoothScrollToElement("guided-organize-into-pools-prompt");
+    document
+      .getElementById("guided-organize-into-pools-prompt")
+      .classList.remove("hidden");
+    scrollToBottomOfGuidedBody();
   });
   $("#guided-button-save-pool-fields").on("click", () => {
-    unHideAndSmoothScrollToElement("guided-number-of-samples-prompt");
+    document
+      .getElementById("guided-number-of-samples-prompt")
+      .classList.remove("hidden");
+    scrollToBottomOfGuidedBody();
   });
 
   //submission
