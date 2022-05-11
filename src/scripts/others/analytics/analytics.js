@@ -40,14 +40,15 @@ let beta_app_version = app.getVersion();
 if (beta_app_version.includes("beta")) {
   usr = ua("UA-171625608-3", userId);
   app_status = "beta";
+  dnt = true
 }
 
-// If in the dev environment, send tracking events to the dev branch
-if (process.env.NODE_ENV === "development") {
-  usr = ua("UA-171625608-2", userId);
-  app_status = "dev";
-  dnt = false;
-}
+// // If in the dev environment, send tracking events to the dev branch
+// if (process.env.NODE_ENV === "development") {
+//   usr = ua("UA-171625608-2", userId);
+//   app_status = "dev";
+//   dnt = false;
+// }
 
 if (dnt) {
   console.log("DNT enabled");
