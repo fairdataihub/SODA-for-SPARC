@@ -10183,3 +10183,74 @@ $("#validate_dataset_bttn").on("click", async () => {
   $("#dataset_validator_status").html("");
   $("#dataset_validator_spinner").hide();
 });
+
+let over_view_section = document.getElementById("getting_started-section");
+
+var observer = new MutationObserver(function(mutations) {
+  console.log(mutations);
+  mutations.forEach(function(mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    console.log("Class attribute changed to:", attributeValue);
+    console.log(attributeValue);
+    let column1 = document.getElementById("lottie1");
+    let column2 = document.getElementById("lottie2");
+    let column3 = document.getElementById("lottie3");
+    if(attributeValue === "section js-section u-category-windows is-shown") {
+      //add lotties
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+
+      var column1_lottie = lottie.loadAnimation({
+        container: column1,
+        animationData: column1Lottie, /*(json js variable, (view src/assets/lotties)*/
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      var column2_lottie = lottie.loadAnimation({
+        container: column2,
+        animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+        renderer: "svg",
+        loop: true /*controls looping*/,
+        autoplay: true,
+      });
+      var column3_lottie = lottie.loadAnimation({
+        container: column3,
+        animationData: column3Lottie,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    } else {
+      console.log("clearing and stopping lotties");
+      document.getElementById("demo-video").style.display = "none";
+      column1.innerText = "";
+      column2.innerText = "";
+      column3.innerText = "";
+      lottie.stop(column1_lottie);
+      lottie.stop(column2_lottie);
+      lottie.stop(column3_lottie);
+    }
+
+  });
+});
+
+observer.observe(over_view_section, {
+  attributes: true,
+  attributeFilter: ['class']
+});
+
+function sodaVideo() {
+  console.log("video")
+  console.log(this);
+  document.getElementById("overview-column-1").blur();
+  shell.openExternal("https://docs.sodaforsparc.io/docs/getting-started/user-interface")
+}
+
+function directToDocumentation() {
+  shell.openExternal("https://docs.sodaforsparc.io")
+  console.log(this);
+  document.getElementById("overview-column-2").blur();
+  // window.open('https://docs.sodaforsparc.io', '_blank');
+}
