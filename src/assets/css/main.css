@@ -1585,7 +1585,6 @@ button[data-id="bf_list_users_pi"] {
   transition: none !important;
 }
 
-
 .overview-column {
   display: flex;
   cursor: pointer;
@@ -1600,8 +1599,11 @@ button[data-id="bf_list_users_pi"] {
   flex-direction: column;
   padding: 1.5rem;
   --tw-border-opacity: 1;
-  border-color: rgb(244 244 245/var(--tw-border-opacity));
-  --tw-shadow-color: 0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);
-  --tw-shadow: 0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);
-  box-shadow: var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow); 
+  border-color: rgb(244 244 245 / var(--tw-border-opacity));
+  --tw-shadow-color: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
