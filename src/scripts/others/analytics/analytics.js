@@ -58,7 +58,7 @@ if (dnt) {
   console.log(`App Status: ${app_status}`);
 }
 
-dnt = true
+dnt = true;
 
 // Tracking function for Google Analytics
 // call this from anywhere in the app
