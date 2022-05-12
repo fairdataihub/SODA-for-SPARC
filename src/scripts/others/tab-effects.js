@@ -644,7 +644,7 @@ const nextPrev = (n) => {
     });
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
-    var requiredFiles = ["submission", "dataset_description", "subjects"];
+    var requiredFiles = ["submission", "dataset_description", "subjects", "README"];
     if (
       $(".metadata-button.button-generate-dataset.code-metadata").css(
         "display"
@@ -661,8 +661,9 @@ const nextPrev = (n) => {
         withoutExtMetadataArray.push(path.parse(element).name);
       }
     });
-    var subArrayBoolean = requiredFiles.every((val) =>
+    var subArrayBoolean = requiredFiles.every((val) => {
       withoutExtMetadataArray.includes(val)
+    }
     );
     if (requiredFiles.includes("code_description")) {
       var extraRequiredFile = "<li> code_description</li>";
@@ -670,7 +671,7 @@ const nextPrev = (n) => {
       var extraRequiredFile = "";
     }
     if (!subArrayBoolean) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
+      var notIncludedMessage = `<div style='text-align: left'>You did not include all of the following required metadata files: <br><ol style='text-align: left'><li> submission</li><li> dataset_description</li> <li> subjects</li> <li> README.txt</li> ${extraRequiredFile} </ol>Are you sure you want to continue?</div>`;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
