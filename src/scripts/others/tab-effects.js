@@ -644,7 +644,12 @@ const nextPrev = (n) => {
     });
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
-    var requiredFiles = ["submission", "dataset_description", "subjects", "README"];
+    var requiredFiles = [
+      "submission",
+      "dataset_description",
+      "subjects",
+      "README",
+    ];
     if (
       $(".metadata-button.button-generate-dataset.code-metadata").css(
         "display"
@@ -662,9 +667,8 @@ const nextPrev = (n) => {
       }
     });
     var subArrayBoolean = requiredFiles.every((val) => {
-      withoutExtMetadataArray.includes(val)
-    }
-    );
+      withoutExtMetadataArray.includes(val);
+    });
     if (requiredFiles.includes("code_description")) {
       var extraRequiredFile = "<li> code_description</li>";
     } else {
