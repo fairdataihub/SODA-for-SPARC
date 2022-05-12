@@ -100,7 +100,7 @@ const createPyProc = async () => {
   }
 };
 
-const exitPyProc = async () => {
+const exitPyProc = () => {
   // check if the platform is Windows
   if (process.platform === "win32") {
     killPythonProcess();
