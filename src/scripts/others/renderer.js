@@ -77,6 +77,53 @@ let introStatus = {
   samples: false,
 };
 
+/**
+ * Clear the Pennsieve Agent's upload queue. Should be run after pre_rlight_checks have passed.
+ *
+ */
+const clearQueue = () => {
+  // determine OS
+  const os = require("os");
+  const platform = os.platform();
+  let pennsievePath;
+
+  if (platform === "darwin") {
+    pennsievePath = "/usr/local/opt/pennsieve/bin/pennsieve";
+  } else if (platform === "win32") {
+    pennsievePath = "C:\\Program Files\\PennSieve\\pennsieve.exe";
+  } else {
+    // linux pennsieve path
+    pennsievePath = "/usr/local/bin/pennsieve";
+  }
+
+  //* clear the Pennsieve Queue
+  const child = require("child_process").spawnSync(
+    pennsievePath,
+    ["upload-status", "--cancel-all"],
+    { timeout: 4000 }
+  );
+
+  //* check if there was an error in the subprocess that prevented it from launching
+  if (child.error !== null) {
+    console.error(child.error);
+    log.error(child.error);
+    return;
+  }
+
+  //* if Pennsieve had an error outputed to the console log it for debugging
+  if (child.stderr !== null && child.stderr.length > 0) {
+    console.error(child.stderr.toString("utf8"));
+    log.error(child.stderr.toString("utf8"));
+    return;
+  }
+
+  // check that the queue was cleared
+  let output = child.stdout;
+  var b64encoded = output.toString("utf8");
+
+  console.log(b64encoded);
+};
+
 //////////////////////////////////
 // App launch actions
 //////////////////////////////////
@@ -266,7 +313,7 @@ const startupServerAndApiCheck = async () => {
       delayFirstAttempt: true,
       startingDelay: 1000, // 1 second + 2 second + 4 second + 8 second
       timeMultiple: 2,
-      numOfAttempts: 2,
+      numOfAttempts: 4,
       maxDelay: 8000, // 16 seconds max wait time
     });
   } catch (e) {
@@ -7359,7 +7406,8 @@ async function initiate_generate() {
     datasetUploadSession.startSession();
   }
 
-  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+  // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
+  clearQueue();
 
   client.invoke("api_main_curate_function", sodaJSONObj, async (error, res) => {
     if (error) {

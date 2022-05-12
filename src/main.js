@@ -11,6 +11,7 @@ const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
+const { resolve } = require("path");
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
@@ -53,16 +54,15 @@ const guessPackaged = () => {
 
 const getScriptPath = () => {
   if (!guessPackaged()) {
+    console.log("Didnt guess packaged");
     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
 
   if (process.platform === "win32") {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE + ".exe");
   } else {
     return path.join(process.resourcesPath, PY_MODULE);
   }
-
-  // return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
 };
 
 const selectPort = () => {
@@ -101,15 +101,33 @@ const createPyProc = async () => {
   }
 };
 
-const exitPyProc = () => {
-  log.info("exitPyProc called; termination not suddenly happening");
-  pyProc.kill();
-  pyProc = null;
-  pyPort = null;
+const exitPyProc = async () => {
+  // check if the platform is Windows
+  if (process.platform === "win32") {
+    killPythonProcess();
+    pyProc = null;
+    pyPort = null;
+  } else {
+    // kill signal to pyProc
+    pyProc.kill();
+    pyProc = null;
+    pyPort = null;
+  }
 };
 
+function killPythonProcess() {
+  // kill pyproc with command line
+  const cmd = require("child_process").spawnSync("taskkill", [
+    "/pid",
+    pyProc.pid,
+    "/f",
+    "/t",
+  ]);
+}
+
+// 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
-app.on("will-quit", exitPyProc);
+// 5.4.1 change: We call exitPyreProc when all windows are killed so it has time to kill the process before closing
 
 /*************************************************************
  * Main app window
@@ -254,6 +272,10 @@ function initialize() {
     app.quit();
     // }
   });
+
+  app.on("will-quit", () => {
+    exitPyProc();
+  });
 }
 
 function run_pre_flight_checks() {
@@ -339,10 +361,10 @@ autoUpdater.on("update-downloaded", () => {
   mainWindow.webContents.send("update_downloaded");
 });
 
-ipcMain.on("restart_app", () => {
+ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
   log.info("quitAndInstall");
-  // autoUpdater.quitAndInstall();
+  autoUpdater.quitAndInstall();
 });
 
 const wait = async (delay) => {
