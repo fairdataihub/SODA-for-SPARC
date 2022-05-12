@@ -369,7 +369,7 @@ const traverseToTab = (targetPageID) => {
       $(".selectpicker").selectpicker("refresh");
     }
     if (targetPageID === "guided-subjects-folder-tab") {
-      //check it subjects exist in sodajsonObj
+      //check it subjects exist in sodaJSONObj
       if (guidedGetSubjects().length === 0) {
         $("#number-of-subjects-prompt").css("display", "flex");
       }
@@ -461,7 +461,7 @@ const traverseToTab = (targetPageID) => {
         ] = [];
         let subjectsArray = guidedGetSubjects();
         for (let subject of subjectsArray) {
-          //check to see if subject already has data in the sodajsonObj
+          //check to see if subject already has data in the sodaJSONObj
           if (
             sodaJSONObj["dataset-metadata"]["subject-metadata"][subject] ===
             undefined
@@ -505,7 +505,7 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-create-description-metadata-tab") {
       renderAdditionalLinksTable();
 
-      //set study purpose, data collection, and primary conclusion from sodajsonObj
+      //set study purpose, data collection, and primary conclusion from sodaJSONObj
       const studyPurpose = sodaJSONObj["digital-metadata"]["study-purpose"];
       const dataCollection = sodaJSONObj["digital-metadata"]["data-collection"];
       const primaryConclusion =
@@ -1030,6 +1030,7 @@ guidedCreateSodaJSONObj = () => {
     getSubjectsInPools: function () {
       return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
     },
+
     moveSubjectIntoPool: function (subjectName, poolName) {
       console.log(subjectName);
       console.log(poolName);
@@ -1173,6 +1174,33 @@ guidedCreateSodaJSONObj = () => {
           }
         }
       }
+      //remove the sample that was moved
+      delete this["dataset-metadata"]["pool-subject-sample-structure"][
+        "samples"
+      ][sampleName];
+    },
+    getAllSamplesFromSubjects: function () {
+      let samples = [];
+      //get all the samples in subjects not in pools
+      for (const [subjectName, subjectData] of Object.entries(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+      )) {
+        for (sampleName of Object.keys(subjectData)) {
+          samples.push(sampleName);
+        }
+      }
+
+      //get all the samples in subjects in pools
+      for (const [poolName, poolData] of Object.entries(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+      )) {
+        for (const [subjectName, subjectData] of Object.entries(poolData)) {
+          for (sampleName of Object.keys(subjectData)) {
+            samples.push(sampleName);
+          }
+        }
+      }
+      return samples;
     },
   };
 
@@ -2423,7 +2451,7 @@ const createSubjectFolder = (event, subjectNameInput) => {
             sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
               subjectName
             ] = copiedSubjectToRename;
-            //Remove the subject folder from sodajsonObj
+            //Remove the subject folder from sodaJSONObj
             delete sodaJSONObj["dataset-metadata"][
               "pool-subject-sample-structure"
             ][subjectFolderToRename];
@@ -3616,6 +3644,24 @@ const setGuidedLicense = (newLicense) => {
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
 
+const renderHighLevelFolderAsideItems = (subjectsOrSamples) => {
+  const asideElement = document.getElementById("foo-for-now");
+  asideElement.innerHTML = "";
+  if (subjectsOrSamples == "samples") {
+    const samples = sodaJSONObj.getAllSamplesFromSubjects();
+    console.log(samples);
+    const sampleItems = samples
+      .map((sample) => {
+        return `
+        <a class="selection-aside-item">${sample}</a>
+      `;
+      })
+      .join("\n");
+    asideElement.innerHTML = sampleItems;
+    //add click event to each sample item
+  }
+};
+
 $(document).ready(() => {
   $("#guided-button-start-new-curate").on("click", () => {
     document
@@ -3627,13 +3673,60 @@ $(document).ready(() => {
     $("#guided-dataset-name-input").val(makeid(10));
     $("#guided-dataset-subtitle-input").val(makeid(10));
     $("#guided-create-new-dataset").click();
-    for (let i = 0; i < 5; i++) {
-      //sodaJSONObj.addSubject(makeid(7));
-    }
+    sodaJSONObj.addSubject("sub-1");
+    sodaJSONObj.addSubject("sub-2");
+    sodaJSONObj.addSubject("sub-3");
+    sodaJSONObj.addSubject("sub-4");
+    sodaJSONObj.addSubject("sub-5");
+    sodaJSONObj.addSubject("sub-6");
+    sodaJSONObj.addSubject("sub-7");
+    sodaJSONObj.addPool("pool-1");
+    sodaJSONObj.addPool("pool-2");
+    sodaJSONObj.addPool("pool-3");
+    sodaJSONObj.addPool("pool-4");
+    sodaJSONObj.moveSubjectIntoPool("sub-1", "pool-1");
+    sodaJSONObj.moveSubjectIntoPool("sub-2", "pool-1");
+    sodaJSONObj.moveSubjectIntoPool("sub-3", "pool-2");
+    sodaJSONObj.moveSubjectIntoPool("sub-4", "pool-2");
+    sodaJSONObj.moveSubjectIntoPool("sub-5", "pool-3");
+    sodaJSONObj.moveSubjectIntoPool("sub-6", "pool-3");
+    sodaJSONObj.moveSubjectIntoPool("sub-7", "pool-4");
+    sodaJSONObj.addSample("sam-1");
+    sodaJSONObj.addSample("sam-2");
+    sodaJSONObj.addSample("sam-3");
+    sodaJSONObj.addSample("sam-4");
+    sodaJSONObj.addSample("sam-5");
+    sodaJSONObj.addSample("sam-6");
+    sodaJSONObj.addSample("sam-7");
+    sodaJSONObj.addSample("sam-8");
+    sodaJSONObj.addSample("sam-9");
+    sodaJSONObj.addSample("sam-10");
+    sodaJSONObj.addSample("sam-11");
+    sodaJSONObj.addSample("sam-12");
+    sodaJSONObj.addSample("sam-13");
+    sodaJSONObj.addSample("sam-14");
+    sodaJSONObj.addSample("sam-15");
+
+    sodaJSONObj.addSampleToSubject("sam-1", "sub-1");
+    sodaJSONObj.addSampleToSubject("sam-2", "sub-1");
+    sodaJSONObj.addSampleToSubject("sam-3", "sub-2");
+    sodaJSONObj.addSampleToSubject("sam-4", "sub-2");
+    sodaJSONObj.addSampleToSubject("sam-5", "sub-3");
+    sodaJSONObj.addSampleToSubject("sam-6", "sub-3");
+    sodaJSONObj.addSampleToSubject("sam-7", "sub-4");
+    sodaJSONObj.addSampleToSubject("sam-8", "sub-4");
+    sodaJSONObj.addSampleToSubject("sam-9", "sub-4");
+    sodaJSONObj.addSampleToSubject("sam-10", "sub-4");
+    sodaJSONObj.addSampleToSubject("sam-11", "sub-5");
+    sodaJSONObj.addSampleToSubject("sam-12", "sub-5");
+    sodaJSONObj.addSampleToSubject("sam-13", "sub-5");
+    sodaJSONObj.addSampleToSubject("sam-14", "sub-5");
+    sodaJSONObj.addSampleToSubject("sam-15", "sub-5");
+
     //show the next button after 3 seconds
     setTimeout(() => {
       $("#guided-next-button").show();
-      traverseToTab("guided-dataset-starting-point-tab");
+      traverseToTab("guided-primary-samples-organization-tab");
     }, 3000);
   });
   $("#guided-button-cancel-create-new-dataset").on("click", () => {

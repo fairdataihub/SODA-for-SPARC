@@ -209,6 +209,10 @@
               ></div>
               <div
                 class="guided--capsule"
+                id="guided-primary-samples-organization-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
                 id="guided-samples-folder-capsule"
               ></div>
               <div
@@ -647,10 +651,87 @@
           </div>
           <div
             id="guided-high-level-folder-selection-tab"
-            class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
-            data-skip-page="true"
-          ></div>
-
+            class="guided--panel hidden"
+          >
+            <div class="guided--section neumorphic mt-xl">
+              <h2 class="guided--text-sub-step mt-0">Primary data:</h2>
+              <p class="guided--help-text w-100">
+                SPARC datasets are organized according to the SPARC Data
+                Structure 2.0. More details about the structure are available in
+                the dedicated SPARC help page. Briefly, the each SPARC dataset
+                must contain all or a subset of the following six folders
+                depending on the type of data: primary, ... (list all). A
+                specific organization under subjects and/or samples folder is
+                also expected within the primary folder. A sample structure is
+                presented in the figure below along with a brief description of
+                the content of each folder.
+              </p>
+              <div class="ui checkbox">
+                <input
+                  type="checkbox"
+                  id="guided-license-checkbox"
+                  name="license"
+                />
+                <label>The dataset contains primary data.</label>
+              </div>
+            </div>
+            <div class="guided--section neumorphic mt-xl">
+              <h2 class="guided--text-sub-step mt-0">Source data:</h2>
+              <p class="guided--help-text w-100">
+                SPARC datasets are organized according to the SPARC Data
+                Structure 2.0. More details about the structure are available in
+                the dedicated SPARC help page. Briefly, the each SPARC dataset
+                must contain all or a subset of the following six folders
+                depending on the type of data: primary, ... (list all). A
+                specific organization under subjects and/or samples folder is
+                also expected within the primary folder. A sample structure is
+                presented in the figure below along with a brief description of
+                the content of each folder.
+              </p>
+              <div class="ui checkbox">
+                <input
+                  type="checkbox"
+                  id="guided-license-checkbox"
+                  name="license"
+                />
+                <label>The dataset contains source data.</label>
+              </div>
+            </div>
+            <div class="guided--section neumorphic mt-xl">
+              <h2 class="guided--text-sub-step mt-0">Derivative data:</h2>
+              <p class="guided--help-text w-100">
+                SPARC datasets are organized according to the SPARC Data
+                Structure 2.0. More details about the structure are available in
+                the dedicated SPARC help page. Briefly, the each SPARC dataset
+                must contain all or a subset of the following six folders
+                depending on the type of data: primary, ... (list all). A
+                specific organization under subjects and/or samples folder is
+                also expected within the primary folder. A sample structure is
+                presented in the figure below along with a brief description of
+                the content of each folder.
+              </p>
+              <div class="ui checkbox">
+                <input
+                  type="checkbox"
+                  id="guided-license-checkbox"
+                  name="license"
+                />
+                <label>The dataset contains derivative data.</label>
+              </div>
+            </div>
+          </div>
+          <div
+            id="guided-primary-samples-organization-tab"
+            class="guided--panel guided--folder organization-panel hidden"
+            style="
+              flex-direction: row;
+              justify-content: flex-start;
+              min-height: 100%;
+              align-items: flex-start;
+            "
+          >
+            <aside class="guided--hlf-selection-aside" id="foo-for-now"></aside>
+          </div>
           <div
             id="guided-samples-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
