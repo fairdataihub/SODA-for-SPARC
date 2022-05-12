@@ -266,7 +266,7 @@ class DictValidator:
                     ):  # if in xlsx, csv, or json format
                         subm += 1
                         if getsize(filePath) > 0:
-                            
+
                             if extension in self.metadataFileFormats1[1]:  # if csv
                                 csvf = 1
                                 UTF8status = self.check_csv_utf8(filePath)
@@ -285,7 +285,7 @@ class DictValidator:
                     ):  # if in xlsx, csv, or json format
                         dd += 1
                         if getsize(filePath) > 0:
-                            
+
                             if extension in self.metadataFileFormats1[1]:  # if csv
                                 csvf = 1
                                 UTF8status = self.check_csv_utf8(filePath)
@@ -304,7 +304,7 @@ class DictValidator:
                     ):  # if in xlsx, csv, or json format
                         subj += 1
                         if getsize(filePath) > 0:
-                            
+
                             if extension in self.metadataFileFormats1[1]:  # if csv
                                 csvf = 1
                                 UTF8status = self.check_csv_utf8(filePath)
@@ -323,7 +323,7 @@ class DictValidator:
                     ):  # if in xlsx, csv, or json format
                         sam += 1
                         if getsize(filePath) > 0:
-                            
+
                             if extension in self.metadataFileFormats1[1]:  # if csv
                                 csvf = 1
                                 UTF8status = self.check_csv_utf8(filePath)

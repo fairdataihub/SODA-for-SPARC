@@ -462,6 +462,7 @@ def bf_get_accounts():
                 return account
     return ""
 
+
 def bf_account_list():
     """
     Action:
