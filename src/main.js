@@ -269,7 +269,7 @@ function initialize() {
 
   app.on("window-all-closed", async () => {
     // if (process.platform !== 'darwin') {
-    await exitPyProc()
+    await exitPyProc();
     app.quit();
     // }
   });
