@@ -80,7 +80,7 @@ def set_template_path(soda_base_path):
 
     # once pysoda has been packaged with pyinstaller
     # it creates an archive that slef extracts to an OS-specific temp directory.
-    # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder. 
+    # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder.
     # When running in dev mode this also works
     TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
