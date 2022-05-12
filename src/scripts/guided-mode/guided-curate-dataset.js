@@ -374,6 +374,53 @@ const traverseToTab = (targetPageID) => {
         $("#number-of-subjects-prompt").css("display", "flex");
       }
     }
+    const guidedUpdateFolderStructure = (
+      highLevelFolder,
+      subjectsOrSamples
+    ) => {
+      //add high level folder if it does not exist
+      if (!datasetStructureJSONObj["folders"][highLevelFolder]) {
+        datasetStructureJSONObj["folders"][highLevelFolder] = {
+          folders: {},
+          files: {},
+        };
+      }
+      //Add pools to the datsetStructuresJSONObj
+
+      //update folder structure
+      if (subjectsOrSamples === "samples") {
+        const [samplesInPools, samplesOutsidePools] =
+          sodaJSONObj.getAllSamplesFromSubjects();
+        //for each sample, if the sample is in a subject not in a pool, add it to the datasetStructureJSONObj
+        if (
+          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            sample.subjectName
+          ]["folders"][sample.sampleName]
+        ) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            sample.subjectName
+          ]["folders"][sample.sampleName] = {
+            folders: {},
+            files: {},
+            type: "",
+            action: [],
+          };
+          console.log(
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              sample.subjectName
+            ]["folders"][sample.sampleName]
+          );
+        }
+      }
+    };
+
+    if (targetPageID === "guided-primary-samples-organization-tab") {
+      renderHighLevelFolderAsideItems("samples");
+      guidedUpdateFolderStructure("primary", "samples");
+      $("#structure-subjects-folder").appendTo(
+        $("#guided-primary-samples-organization-tab")
+      );
+    }
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
     }
@@ -1180,15 +1227,8 @@ guidedCreateSodaJSONObj = () => {
       ][sampleName];
     },
     getAllSamplesFromSubjects: function () {
-      let samples = [];
-      //get all the samples in subjects not in pools
-      for (const [subjectName, subjectData] of Object.entries(
-        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-      )) {
-        for (sampleName of Object.keys(subjectData)) {
-          samples.push(sampleName);
-        }
-      }
+      let samplesInPools = [];
+      let samplesOutsidePools = [];
 
       //get all the samples in subjects in pools
       for (const [poolName, poolData] of Object.entries(
@@ -1196,11 +1236,57 @@ guidedCreateSodaJSONObj = () => {
       )) {
         for (const [subjectName, subjectData] of Object.entries(poolData)) {
           for (sampleName of Object.keys(subjectData)) {
-            samples.push(sampleName);
+            samplesInPools.push({
+              sampleName: sampleName,
+              subjectName: subjectName,
+              poolName: poolName,
+            });
           }
         }
       }
-      return samples;
+
+      //get all the samples in subjects not in pools
+      for (const [subjectName, subjectData] of Object.entries(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+      )) {
+        for (sampleName of Object.keys(subjectData)) {
+          samplesOutsidePools.push({
+            sampleName: sampleName,
+            subjectName: subjectName,
+          });
+        }
+      }
+      console.log(samplesInPools, samplesOutsidePools);
+
+      return [samplesInPools, samplesOutsidePools];
+    },
+    updatePrimaryDatasetStructure: function () {
+      //Add pool keys to primary dataset structure
+      for (const pool of Object.keys(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+      )) {
+        if (datasetStructureJSONObj["folders"]["primary"]["folders"][pool]) {
+          datasetStructureJSONObj["folders"]["primary"]["folders"][pool] = {
+            folders: {},
+            files: {},
+            type: "",
+            action: [],
+          };
+        }
+      }
+      //Add sample keys to primary dataset structure
+      for (const sample of Object.keys(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["samples"]
+      )) {
+        if (datasetStructureJSONObj["folders"]["primary"]["folders"][sample]) {
+          datasetStructureJSONObj["folders"]["primary"]["folders"][sample] = {
+            folders: {},
+            files: {},
+            type: "",
+            action: [],
+          };
+        }
+      }
     },
   };
 
@@ -3648,17 +3734,41 @@ const renderHighLevelFolderAsideItems = (subjectsOrSamples) => {
   const asideElement = document.getElementById("foo-for-now");
   asideElement.innerHTML = "";
   if (subjectsOrSamples == "samples") {
-    const samples = sodaJSONObj.getAllSamplesFromSubjects();
-    console.log(samples);
+    const [samplesInPools, samplesOutsidePools] =
+      sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    const samples = [...samplesInPools, ...samplesOutsidePools];
+    //sort the samples alphabetically
     const sampleItems = samples
       .map((sample) => {
         return `
-        <a class="selection-aside-item">${sample}</a>
+        <a class="selection-aside-item">${sample.sampleName}</a>
       `;
       })
       .join("\n");
+    //Add the samples to the DOM
     asideElement.innerHTML = sampleItems;
     //add click event to each sample item
+    const selectionAsideItems = document.querySelectorAll(
+      "a.selection-aside-item"
+    );
+    selectionAsideItems.forEach((item) => {
+      item.addEventListener("click", (e) => {
+        const sampleName = e.target.textContent;
+        const sample = sodaJSONObj.getSampleByName(sampleName);
+        //add sample to the selected samples list
+        selectedSamples.push(sample);
+        //add sample to the selected samples table
+        renderSelectedSamplesTable();
+      });
+      //add hover event that changes the background color to black
+      item.addEventListener("mouseover", (e) => {
+        e.target.style.backgroundColor = "black";
+      });
+      item.addEventListener("mouseout", (e) => {
+        e.target.style.backgroundColor = "";
+      });
+    });
   }
 };
 
