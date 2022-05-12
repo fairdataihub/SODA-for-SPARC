@@ -126,8 +126,8 @@ function killPythonProcess() {
 }
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
-app.on("ready", createPyProc);
-// app.on("will-quit", exitPyProc);
+// app.on("ready", createPyProc);
+app.on("will-quit", exitPyProc);
 
 /*************************************************************
  * Main app window
