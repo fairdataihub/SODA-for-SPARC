@@ -3405,7 +3405,28 @@
                           </svg>
                           Add a protocol
                         </div>
+                        <div
+                        style="
+                        margin: 0 auto;
+                        text-align: center;
+                        font-size: 14px;
+                        margin-top: 10px;
+                        "
+                        >
+                        <a onclick="addExistingProtocol()" target="_blank">
+                          Click here to import my protocol information
+                        </a>
+                        <i
+                        class="fas fa-info-circle popover-tooltip subjects-form"
+                        data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. <br><br>See <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>here</a> for details about creating your protocol on protocols.io."
+                        rel="popover"
+                        data-placement="right"
+                        data-html="true"
+                        data-trigger="hover"
+                        ></i>
                       </div>
+                      </div>
+
                     </div>
                   </div>
 
@@ -3419,6 +3440,7 @@
                           display: flex;
                           flex-direction: column;
                           width: 100%;
+                          margin-bottom: 10px;
                         "
                       >
                         <font style="font-weight: 600; color: #090909">
@@ -3501,27 +3523,6 @@
                     </div>
                   </div>
 
-                  <div
-                    style="
-                      margin: 0 auto;
-                      text-align: center;
-                      margin-bottom: 20px;
-                      font-size: 14px;
-                      margin-top: 10px;
-                    "
-                  >
-                    <a onclick="addExistingProtocol()" target="_blank">
-                      Click here to import my protocol information
-                    </a>
-                    <i
-                      class="fas fa-info-circle popover-tooltip subjects-form"
-                      data-content="Connect SODA with your protocol.io account to auto-fill your protocol information. Information including the protocol titles and links shared with the SPARC group will be extracted for your convenience. A protocol must be shared with the SPARC group on protocols.io to be extracted by SODA. <br><br>See <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>here</a> for details about creating your protocol on protocols.io."
-                      rel="popover"
-                      data-placement="right"
-                      data-html="true"
-                      data-trigger="hover"
-                    ></i>
-                  </div>
                 </div>
               </div>
 
@@ -5248,9 +5249,10 @@
                       class="ui selection dropdown subjects-form-entry"
                       placeholder="Select here..."
                     >
-                      <option value="Select">Select an option</option>
+                      <option disabled value="Select">Select an option</option>
                       <option value="Female">Female</option>
                       <option value="Male">Male</option>
+                      <option value="Unknown">Unknown</option>
                     </select>
                   </div>
                 </div>

@@ -654,6 +654,15 @@ function addTheRestSubjectEntriesToJSON() {
         field.value = field.value;
       }
     }
+    if (field.name === "Sex") {
+      if (
+        $("#bootbox-subject-sex").val() === "Unknown"
+      ) {
+        field.value = "";
+      } else {
+        field.value = field.value;
+      }
+    }
     valuesArr.push(field.value);
   }
   subjectsTableData[0] = headersArrSubjects;
@@ -923,6 +932,10 @@ function populateForms(subjectID, type) {
         } else {
           field.value = "";
         }
+      } else {
+        if (field.name === "Sex" && infoJson[i] === "") {
+          $("#bootbox-subject-sex").val("Unknown");
+        }
       }
     });
   }
@@ -1024,6 +1037,15 @@ function editSubject(ev, subjectID) {
           field.value =
             field.value + " " + $("#bootbox-subject-age-info").val();
         }
+      }
+      if (field.name === "Sex") {
+          if (
+            $("#bootbox-subject-sex").val() === "Unknown"
+          ) {
+            field.value = "";
+          } else {
+            field.value = field.value;
+          }
       }
       subjectsFileData.push(field.value);
     } else {
