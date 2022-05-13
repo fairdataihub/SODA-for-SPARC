@@ -74,6 +74,7 @@ from prepare_metadata import (
     import_bf_RC,
     upload_RC_file,
     delete_manifest_dummy_folders,
+    set_template_path
 )
 
 from organize_datasets import (
@@ -587,6 +588,13 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
+    ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find 
+    ### the templates stored in file_templates direcotory
+    def api_set_template_path(self, soda_base_path):
+        try:
+            return set_template_path(soda_base_path)
+        except Exception as e:
+            raise e
 
 ### Connect to Electron-Python
 def parse_port():
