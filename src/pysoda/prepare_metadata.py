@@ -73,7 +73,7 @@ userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
 
-### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find 
+### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
 ### the templates stored in file_templates direcotory
 def set_template_path(soda_base_path):
     global TEMPLATE_PATH
@@ -83,6 +83,7 @@ def set_template_path(soda_base_path):
     # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder. 
     # When running in dev mode this also works
     TEMPLATE_PATH = join(soda_base_path, "file_templates")
+
 
 # custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
@@ -1083,5 +1084,3 @@ def load_existing_DD_file(import_type, filepath):
 def delete_manifest_dummy_folders(userpath_list):
     for userpath in userpath_list:
         shutil.rmtree(userpath) if isdir(userpath) else 0
-
-
