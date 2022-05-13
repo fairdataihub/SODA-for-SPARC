@@ -127,7 +127,7 @@ function killPythonProcess() {
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
-app.on("will-quit", exitPyProc);
+// 5.4.1 change: We call exitPyreProc when all windows are killed so it has time to kill the process before closing
 
 /*************************************************************
  * Main app window
@@ -267,8 +267,9 @@ function initialize() {
     trackEvent("Success", "App Launched - SODA", app.getVersion());
   });
 
-  app.on("window-all-closed", () => {
+  app.on("window-all-closed", async () => {
     // if (process.platform !== 'darwin') {
+    await exitPyProc()
     app.quit();
     // }
   });
@@ -357,9 +358,10 @@ autoUpdater.on("update-downloaded", () => {
   mainWindow.webContents.send("update_downloaded");
 });
 
-ipcMain.on("restart_app", () => {
+ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
   log.info("quitAndInstall");
+  await exitPyProc();
   autoUpdater.quitAndInstall();
 });
 
