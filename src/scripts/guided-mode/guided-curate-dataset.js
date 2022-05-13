@@ -383,15 +383,82 @@ const traverseToTab = (targetPageID) => {
         datasetStructureJSONObj["folders"][highLevelFolder] = {
           folders: {},
           files: {},
+          type: "",
+          action: [],
         };
       }
-      //Add pools to the datsetStructuresJSONObj
+      //Add pools to the datsetStructuresJSONObj if they don't exist
+      const pools = sodaJSONObj.getPools();
+      for (const pool of pools) {
+        if (
+          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]
+        ) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] =
+            {
+              folders: {},
+              files: {},
+              type: "",
+              action: [],
+            };
+        }
+      }
 
-      //update folder structure
-      if (subjectsOrSamples === "samples") {
-        const [samplesInPools, samplesOutsidePools] =
-          sodaJSONObj.getAllSamplesFromSubjects();
-        //for each sample, if the sample is in a subject not in a pool, add it to the datasetStructureJSONObj
+      //Add subjects datsetStructuresJSONObj if they don't exist
+      const [subjectsInPools, subjectsOutsidePools] =
+        sodaJSONObj.getAllSubjects();
+      for (subject of subjectsInPools) {
+        if (
+          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subject.poolName
+          ]["folders"][subject.subjectName]
+        ) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subject.poolName
+          ]["folders"][subject.subjectName] = {
+            folders: {},
+            files: {},
+            type: "",
+            action: [],
+          };
+        }
+      }
+      for (subject of subjectsOutsidePools) {
+        if (
+          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subject.subjectName
+          ]
+        ) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subject.subjectName
+          ] = {
+            folders: {},
+            files: {},
+            type: "",
+            action: [],
+          };
+        }
+      }
+
+      //Add samples datsetStructuresJSONObj if they don't exist
+      const [samplesInPools, samplesOutsidePools] =
+        sodaJSONObj.getAllSamplesFromSubjects();
+      for (sample of samplesInPools) {
+        if (
+          !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            sample.poolName
+          ]["folders"][sample.subjectName]["folders"][sample.sampleName]
+        ) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            sample.poolName
+          ]["folders"][sample.subjectName]["folders"][sample.sampleName] = {
+            folders: {},
+            files: {},
+            type: "",
+            action: [],
+          };
+        }
+      }
+      for (sample of samplesOutsidePools) {
         if (
           !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
             sample.subjectName
@@ -405,12 +472,11 @@ const traverseToTab = (targetPageID) => {
             type: "",
             action: [],
           };
-          console.log(
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-              sample.subjectName
-            ]["folders"][sample.sampleName]
-          );
         }
+      }
+
+      //update folder structure
+      if (subjectsOrSamples === "samples") {
       }
     };
 
@@ -1077,7 +1143,6 @@ guidedCreateSodaJSONObj = () => {
     getSubjectsInPools: function () {
       return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
     },
-
     moveSubjectIntoPool: function (subjectName, poolName) {
       console.log(subjectName);
       console.log(poolName);
@@ -1159,6 +1224,11 @@ guidedCreateSodaJSONObj = () => {
       ];
       //renderPoolTable();
     },
+    getPools: function () {
+      return Object.keys(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+      );
+    },
     getPoolSubjects: function (poolName) {
       return Object.keys(
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
@@ -1225,6 +1295,28 @@ guidedCreateSodaJSONObj = () => {
       delete this["dataset-metadata"]["pool-subject-sample-structure"][
         "samples"
       ][sampleName];
+    },
+    getAllSubjects: function () {
+      let subjectsInPools = [];
+      let subjectsOutsidePools = [];
+
+      for (const [poolName, pool] of Object.entries(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+      )) {
+        for (const [subjectName, subject] of Object.entries(pool)) {
+          subjectsInPools.push({
+            subjectName: subjectName,
+            poolName: poolName,
+          });
+        }
+      }
+
+      for (const [subjectName, subject] of Object.entries(
+        this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+      )) {
+        subjectsOutsidePools.push({ subjectName: subjectName });
+      }
+      return [subjectsInPools, subjectsOutsidePools];
     },
     getAllSamplesFromSubjects: function () {
       let samplesInPools = [];
