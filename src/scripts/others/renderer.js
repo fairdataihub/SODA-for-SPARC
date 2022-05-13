@@ -5008,9 +5008,7 @@ async function drop(ev) {
         action = "remove";
         if (irregularFolderArray.length > 0) {
           for (let i = 0; i < irregularFolderArray.length; i++) {
-            renamedFolderName = removeIrregularFolders(
-              irregularFolderArray[i]
-            );
+            renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
             console.log(renamedFolderName);
             replaced.push(renamedFolderName);
           }
@@ -5019,23 +5017,10 @@ async function drop(ev) {
         return;
       }
       console.log(replaced);
-        dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-    });
-  } else {
       dropHelper(
         filesElement,
         targetElement,
-        "",
+        action,
         myPath,
         importedFiles,
         importedFolders,
@@ -5043,6 +5028,19 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
+    });
+  } else {
+    dropHelper(
+      filesElement,
+      targetElement,
+      "",
+      myPath,
+      importedFiles,
+      importedFolders,
+      nonAllowedDuplicateFiles,
+      uiFiles,
+      uiFolders
+    );
   }
 }
 
