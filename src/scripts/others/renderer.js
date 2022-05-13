@@ -373,9 +373,10 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   // get apps base path
   const basepath = app.getAppPath();
+  const resourcesPath = process.resourcesPath
 
   // set the templates path
-  client.invoke("api_set_template_path", basepath, (error, res) => {
+  client.invoke("api_set_template_path", basepath, resourcesPath, (error, res) => {
     if (error) {
       console.log(error);
       log.error(error);
