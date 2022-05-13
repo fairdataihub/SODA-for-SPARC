@@ -275,7 +275,7 @@ function initialize() {
 
   app.on("will-quit", () => {
     exitPyProc();
-  })
+  });
 }
 
 function run_pre_flight_checks() {
