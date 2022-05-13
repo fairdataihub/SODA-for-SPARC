@@ -116,12 +116,6 @@ const clearQueue = () => {
     log.error(child.stderr.toString("utf8"));
     return;
   }
-
-  // check that the queue was cleared
-  let output = child.stdout;
-  var b64encoded = output.toString("utf8");
-
-  console.log(b64encoded);
 };
 
 //////////////////////////////////
@@ -379,8 +373,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   // get apps base path
   const basepath = app.getAppPath();
-
-  console.log(basepath);
 
   // set the templates path
   client.invoke("api_set_template_path", basepath, (error, res) => {
@@ -1306,7 +1298,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSubjectsFileHelper(false);
           }
         });
@@ -1322,7 +1314,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSubjectsFileHelper(false);
       }
     }
@@ -1376,7 +1368,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   client.invoke(
     "api_save_subjects_file",
@@ -1468,7 +1460,7 @@ ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             generateSamplesFileHelper(uploadBFBoolean);
           }
         });
@@ -1484,7 +1476,7 @@ ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         generateSamplesFileHelper(uploadBFBoolean);
       }
     }
@@ -1538,7 +1530,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // new client that has a longer timeout
   let clientLongTimeout = new zerorpc.Client({
@@ -2056,7 +2048,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -2773,9 +2765,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -2792,360 +2784,8 @@ function detectEmptyRequiredFields(funding) {
 //////////////////////////End of Ds description section ///////////////////////////////////
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
-// New instance for description editor
-// const tuiInstance = new Editor({
-//   el: document.querySelector("#editorSection"),
-//   initialEditType: "wysiwyg",
-//   previewStyle: "vertical",
-//   height: "400px",
-//   hideModeSwitch: true,
-//   placeholder: "Add a description here: ",
-//   toolbarItems: [
-//     "heading",
-//     "bold",
-//     "italic",
-//     "strike",
-//     "link",
-//     "hr",
-//     "divider",
-//     "ul",
-//     "ol",
-//   ],
-// });
-
 var displaySize = 1000;
 
-//////////////////////////////////
-// Prepare Dataset
-//////////////////////////////////
-
-////////////////// Validate current datasets ////////////////////////////////
-
-// /////// Convert table content into json format for transferring to Python
-// function grabCurrentDSValidator() {
-//   var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-//   var jsonpath = jsonvect[0];
-//   var jsondescription = jsonvect[1];
-//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-//   jsonpath["main"] = jsonpathMetadata["metadata"];
-//   return [jsonpath, jsondescription];
-// }
-
-//// Check for empty JSON object and remove then
-// function checkJSONObj(jsonObj) {
-//   var empty = true;
-//   for (var key of Object.keys(jsonObj)) {
-//     if (jsonObj[key].length !== 0) {
-//       empty = false;
-//     } else {
-//       if (key !== "main") delete jsonObj[key];
-//     }
-//   }
-//   return [empty, jsonObj];
-// }
-
-///////// Clicking on Validate current DS
-// var checkCategory0 = "High-level folder structure";
-// var checkCategory1 = "High-level metadata files";
-// var checkCategory2 = "Sub-level organization";
-// var checkCategory3 = "submission file";
-// var checkCategory4 = "dataset_description file";
-// var checkCategory5 = "subjects file";
-// var checkCategory6 = "samples file";
-// var checkCategories = [
-//   checkCategory0,
-//   checkCategory1,
-//   checkCategory2,
-//   checkCategory3,
-//   checkCategory4,
-//   checkCategory5,
-//   checkCategory6,
-// ];
-//
-// validateCurrentDSBtn.addEventListener("click", function () {
-//   document.getElementById("div-validation-report-current").style.display =
-//     "none";
-//   document.getElementById("para-preview-current-ds").innerHTML = "";
-//   document.getElementById("para-validate-current-ds").innerHTML = "";
-//   document.getElementById("para-generate-report-current-ds").innerHTML = "";
-//   var jsonvect = grabCurrentDSValidator();
-//   var jsonpath = jsonvect[0];
-//   var jsondescription = jsonvect[1];
-//   var outCheck = checkJSONObj(jsonpath);
-//   var empty = outCheck[0];
-//   if (empty === true) {
-//     document.getElementById("para-validate-current-ds").innerHTML =
-//       "<span style='color: red;'>Please add files or folders to your dataset first!</span>";
-//   } else {
-//     validateCurrentDSBtn.disabled = true;
-//     if (manifestStatus.checked) {
-//       validateSODAProgressBar.style.display = "block";
-//       client.invoke(
-//         "api_create_folder_level_manifest",
-//         jsonpath,
-//         jsondescription,
-//         (error, res) => {
-//           if (error) {
-//             console.error(error);
-//             log.error(error);
-//             var emessage = userError(error);
-//             document.getElementById("para-validate-current-ds").innerHTML =
-//               "<span style='color: red;'>" + emessage + "</span>";
-//             validateCurrentDSBtn.disabled = false;
-//             validateSODAProgressBar.style.display = "none";
-//           } else {
-//             var validatorInput = res;
-//             localValidator(validatorInput);
-//           }
-//         }
-//       );
-//     } else {
-//       var validatorInput = jsonpath;
-//       console.log(validatorInput);
-//       localValidator(validatorInput);
-//     }
-//   }
-// });
-//
-// function localValidator(validatorInput) {
-//   var messageDisplay = "";
-//   client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-//     if (error) {
-//       console.error(error);
-//       log.error(error);
-//       var emessage = userError(error);
-//       document.getElementById("para-validate-current-ds").innerHTML =
-//         "<span style='color: red;'>" + emessage + "</span>";
-//       validateCurrentDSBtn.disabled = false;
-//       validateSODAProgressBar.style.display = "none";
-//     } else {
-//       for (var i = 0; i < res.length; i++) {
-//         messageDisplay = errorMessageCategory(
-//           res[i],
-//           checkCategories[i],
-//           messageDisplay
-//         );
-//       }
-//       document.getElementById("div-validation-report-current").style.display =
-//         "block";
-//       document.getElementById("div-report-current").style.display = "block";
-//       document.getElementById("para-validate-current-ds").innerHTML =
-//         "Done, see report below!";
-//       validateCurrentDatasetReport.innerHTML = messageDisplay;
-//       validateCurrentDSBtn.disabled = false;
-//       validateSODAProgressBar.style.display = "none";
-//     }
-//   });
-// }
-//
-
-// Generate pdf validator file
-// currentDatasetReportBtn.addEventListener("click", function () {
-//   document.getElementById("para-generate-report-current-ds").innerHTML = "";
-//   ipcRenderer.send("save-file-dialog-validator-current");
-// });
-// ipcRenderer.on("selected-savedvalidatorcurrent", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-generate-report-current-ds").innerHTML =
-//         "Please wait...";
-//       currentDatasetReportBtn.disabled = true;
-//       // obtain canvas and print to pdf
-//       const domElement = validateCurrentDatasetReport;
-//       // obtain canvas and print to pdf
-//       html2canvas(domElement).then((canvas) => {
-//         const img = canvas.toDataURL("image/png", 1.0);
-//         var data = img.replace(/^data:image\/\w+;base64,/, "");
-//         var buf = new Buffer(data, "base64");
-//
-//         // obtain canvas and print to pdf
-//         pdf = new PDFDocument({ autoFirstPage: false });
-//         var image = pdf.openImage(buf);
-//         pdf.addPage({ size: [image.width + 100, image.height + 25] });
-//         pdf.pipe(fs.createWriteStream(filepath));
-//         pdf.image(image, 25, 25);
-//
-//         pdf.end();
-//
-//         document.getElementById("para-generate-report-current-ds").innerHTML =
-//           "Report saved!";
-//       });
-//     }
-//   }
-//   currentDatasetReportBtn.disabled = false;
-// });
-
-/////////////////////// Validate local datasets //////////////////////////////
-//
-// //// when users click on Import local dataset
-// document
-//   .getElementById("input-local-ds-select")
-//   .addEventListener("click", function () {
-//     document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//     document.getElementById("div-report-local").style.display = "none";
-//     ipcRenderer.send("open-file-dialog-validate-local-ds");
-//   });
-// ipcRenderer.on("selected-validate-local-dataset", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-local-ds-info").innerHTML = "";
-//       document.getElementById("div-validation-report-local").style.display =
-//         "none";
-//       // used to communicate value to button-import-local-ds click eventlistener
-//       document.getElementById("input-local-ds-select").placeholder =
-//         filepath[0];
-//     } else {
-//       document.getElementById("para-local-ds-info").innerHTML =
-//         "<span style='color: red ;'>Please select a valid local dataset!</span>";
-//     }
-//   }
-// });
-//
-// validateLocalDSBtn.addEventListener("click", function () {
-//   document.getElementById("para-local-ds-info").innerHTML = "";
-//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//   var datasetPath = document.getElementById("input-local-ds-select")
-//     .placeholder;
-//   var messageDisplay = "";
-//   if (datasetPath === "Select a folder") {
-//     document.getElementById("para-local-ds-info").innerHTML =
-//       "<span style='color: red ;'>Please select a local dataset first</span>";
-//   } else {
-//     if (datasetPath != null) {
-//       validateLocalProgressBar.style.display = "block";
-//       validateLocalDSBtn.disabled = true;
-//       validatorInput = datasetPath;
-//       client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-//         if (error) {
-//           console.error(error);
-//           log.error(error);
-//           validateLocalProgressBar.style.display = "none";
-//         } else {
-//           for (var i = 0; i < res.length; i++) {
-//             if (res[i] !== "N/A") {
-//               messageDisplay = errorMessageCategory(
-//                 res[i],
-//                 checkCategories[i],
-//                 messageDisplay
-//               );
-//             }
-//           }
-//           document.getElementById("div-validation-report-local").style.display =
-//             "block";
-//           document.getElementById("div-report-local").style.display = "block";
-//           document.getElementById("para-local-ds-info").innerHTML =
-//             "Done, see report below!";
-//           validateLocalDatasetReport.innerHTML = messageDisplay;
-//           validateLocalProgressBar.style.display = "none";
-//         }
-//       });
-//       validateLocalDSBtn.disabled = false;
-//     }
-//   }
-// });
-
-// function validateMessageTransform(inString, classSelection, colorSelection) {
-//   //outString = inString.split("--").join("<br>")
-//   outString = inString.split("--");
-//   var msg =
-//     "<li class=" +
-//     classSelection +
-//     ">" +
-//     "<span style='color:" +
-//     colorSelection +
-//     ";'>";
-//   msg += outString[0];
-//   msg += "</span>" + "</li>";
-//   if (outString.length > 1) {
-//     msg += "<ul style='margin-top:-10px';>";
-//     for (var i = 1; i < outString.length; i++) {
-//       msg +=
-//         "<li>" +
-//         "<span style='color:" +
-//         colorSelection +
-//         ";'>" +
-//         outString[i] +
-//         "</span>" +
-//         "</li>";
-//     }
-//     msg += "</ul>";
-//   }
-//   return msg;
-// }
-
-// function errorMessageGenerator(resitem, category, messageDisplay) {
-//   if (resitem[category]) {
-//     var messageCategory = resitem[category];
-//     if (messageCategory.length > 0) {
-//       if (category === "fatal") {
-//         var colorSelection = "red";
-//         var classSelection = "bulleterror";
-//       } else if (category === "warnings") {
-//         var colorSelection = "#F4B800";
-//         var classSelection = "bulletwarning";
-//       } else if (category === "pass") {
-//         var colorSelection = "green";
-//         var classSelection = "bulletpass";
-//       }
-//       for (var i = 0; i < messageCategory.length; i++) {
-//         var message = validateMessageTransform(
-//           messageCategory[i],
-//           classSelection,
-//           colorSelection
-//         );
-//         messageDisplay += message;
-//       }
-//     }
-//   }
-//   return messageDisplay;
-// }
-
-// function errorMessageCategory(resitem, checkCategory, messageDisplay) {
-//   messageDisplay += "<b>" + checkCategory + "</b>";
-//   messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>";
-//   var category = "fatal";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   category = "warnings";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   category = "pass";
-//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-//   messageDisplay += "</ul>";
-//   return messageDisplay;
-// }
-
-///// Generate pdf report for local validator report
-// localDatasetReportBtn.addEventListener("click", function () {
-//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//   ipcRenderer.send("save-file-dialog-validator-local");
-// });
-// ipcRenderer.on("selected-savedvalidatorlocal", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-generate-report-local-ds").innerHTML =
-//         "Please wait...";
-//       localDatasetReportBtn.disabled = true;
-//       const domElement = validateLocalDatasetReport;
-//       html2canvas(domElement).then((canvas) => {
-//         const img = canvas.toDataURL("image/png", 1.0);
-//         var data = img.replace(/^data:image\/\w+;base64,/, "");
-//         var buf = new Buffer(data, "base64");
-//
-//         // obtain canvas and print to pdf
-//         pdf = new PDFDocument({ autoFirstPage: false });
-//         var image = pdf.openImage(buf);
-//         pdf.addPage({ size: [image.width + 100, image.height + 25] });
-//         pdf.pipe(fs.createWriteStream(filepath));
-//         pdf.image(image, 25, 25);
-//
-//         pdf.end();
-//
-//         document.getElementById("para-generate-report-local-ds").innerHTML =
-//           "Report saved!";
-//       });
-//     }
-//   }
-//   localDatasetReportBtn.disabled = false;
-// });
 
 //////////////////////////////////
 // Manage Dataset
@@ -6821,16 +6461,14 @@ ipcRenderer.on(
 
                         numb.innerText = percentage_amount + "%";
                         if (percentage_amount <= 50) {
-                          progressBar_rightSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 360
-                          }deg)`;
+                          progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                            }deg)`;
                         } else {
                           progressBar_rightSide.style.transition = "";
                           progressBar_rightSide.classList.add("notransition");
                           progressBar_rightSide.style.transform = `rotate(180deg)`;
-                          progressBar_leftSide.style.transform = `rotate(${
-                            percentage_amount * 0.01 * 180
-                          }deg)`;
+                          progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                            }deg)`;
                         }
 
                         if (finished === 1) {
@@ -6924,16 +6562,14 @@ ipcRenderer.on(
 
                       numb.innerText = percentage_amount + "%";
                       if (percentage_amount <= 50) {
-                        progressBar_rightSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 360
-                        }deg)`;
+                        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360
+                          }deg)`;
                       } else {
                         progressBar_rightSide.style.transition = "";
                         progressBar_rightSide.classList.add("notransition");
                         progressBar_rightSide.style.transform = `rotate(180deg)`;
-                        progressBar_leftSide.style.transform = `rotate(${
-                          percentage_amount * 0.01 * 180
-                        }deg)`;
+                        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180
+                          }deg)`;
                       }
                       if (finished === 1) {
                         progressBar_leftSide.style.transform = `rotate(180deg)`;
@@ -7194,9 +6830,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -7757,7 +7393,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Number of Files",
+            " - Step 7 - Generate - Dataset - Number of Files",
             `${datasetUploadSession.id}`,
             uploadedFiles
           );
@@ -7767,7 +7403,7 @@ async function initiate_generate() {
             "track-event",
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE +
-              " - Step 7 - Generate - Dataset - Size",
+            " - Step 7 - Generate - Dataset - Size",
             `${datasetUploadSession.id}`,
             increaseInFileSize
           );
