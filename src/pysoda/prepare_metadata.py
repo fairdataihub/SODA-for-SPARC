@@ -71,28 +71,18 @@ from pysoda import (
 
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
-DEV_TEMPLATE_PATH = "" 
-PROD_TEMPLATE_PATH = "" 
 TEMPLATE_PATH = ""
 
 ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find 
 ### the templates stored in file_templates direcotory
 def set_template_path(soda_base_path):
     global TEMPLATE_PATH
-    global DEV_TEMPLATE_PATH
-    global PROD_TEMPLATE_PATH
 
-
-    DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
-    PROD_TEMPLATE_PATH = join(soda_base_path, "file_templates")
-
-    if exists(DEV_TEMPLATE_PATH):
-        TEMPLATE_PATH = DEV_TEMPLATE_PATH
-    else:
-        # once pysoda has been packaged with pyinstaller
-        # it creates an archive that slef extracts to an OS-specific temp directory.
-        # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder. 
-        TEMPLATE_PATH = PROD_TEMPLATE_PATH
+    # once pysoda has been packaged with pyinstaller
+    # it creates an archive that slef extracts to an OS-specific temp directory.
+    # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder. 
+    # When running in dev mode this also works
+    TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
 # custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
