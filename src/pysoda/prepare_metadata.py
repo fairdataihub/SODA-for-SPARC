@@ -84,6 +84,13 @@ def set_template_path(soda_base_path):
     # When running in dev mode this also works
     TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
+    # check if os is Darwin/Linux
+    if platform.system() == "Darwin" or platform.system() == "Linux":
+        # check if the TEMPLATE_PATH exists 
+        if not exists(TEMPLATE_PATH):
+            # we are in production and we need to use the Resources folder for the file_templates folder
+            TEMPLATE_PATH = join(soda_base_path, "..", "file_templates")
+
 
 # custom Exception class for when a DDD file is in an invalid form
 class InvalidDeliverablesDocument(Exception):
