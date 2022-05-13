@@ -86,7 +86,7 @@ def set_template_path(soda_base_path):
 
     # check if os is Darwin/Linux
     if platform.system() == "Darwin" or platform.system() == "Linux":
-        # check if the TEMPLATE_PATH exists 
+        # check if the TEMPLATE_PATH exists
         if not exists(TEMPLATE_PATH):
             # we are in production and we need to use the Resources folder for the file_templates folder
             TEMPLATE_PATH = join(soda_base_path, "..", "file_templates")
