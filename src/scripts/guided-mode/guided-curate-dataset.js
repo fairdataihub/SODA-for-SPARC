@@ -403,7 +403,7 @@ const traverseToTab = (targetPageID) => {
         }
       }
 
-      //Add subjects datsetStructuresJSONObj if they don't exist
+      //Add subjects to datsetStructuresJSONObj if they don't exist
       const [subjectsInPools, subjectsOutsidePools] =
         sodaJSONObj.getAllSubjects();
       for (subject of subjectsInPools) {
@@ -439,7 +439,7 @@ const traverseToTab = (targetPageID) => {
         }
       }
 
-      //Add samples datsetStructuresJSONObj if they don't exist
+      //Add samples to datsetStructuresJSONObj if they don't exist
       const [samplesInPools, samplesOutsidePools] =
         sodaJSONObj.getAllSamplesFromSubjects();
       for (sample of samplesInPools) {
@@ -1414,6 +1414,14 @@ guidedCreateSodaJSONObj = () => {
 
 /********** Folder structure utility **********/
 const highLevelFolderPageData = {
+  primary: {
+    headerText:
+      "Virtually structure your primary folder in the interface below.",
+    contentsText:
+      "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
+    pathSuffix: "primary/",
+    backPageId: "guided-primary-folder-tab",
+  },
   source: {
     headerText:
       "Virtually structure your source folder in the interface below.",
