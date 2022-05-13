@@ -104,7 +104,7 @@ const createPyProc = async () => {
 const exitPyProc = async () => {
   // check if the platform is Windows
   if (process.platform === "win32") {
-    await killPythonProcess();
+    killPythonProcess();
     pyProc = null;
     pyPort = null;
   } else {
@@ -116,13 +116,13 @@ const exitPyProc = async () => {
 };
 
 function killPythonProcess() {
-  return new Promise(function (resolve, reject) {
-    var kill = require("tree-kill");
-    kill(pyProc.pid, (err) => {
-      if (!err) reject(err);
-      else resolve();
-    });
-  });
+  // kill pyproc with command line
+  const cmd = require("child_process").spawnSync("taskkill", [
+    "/pid",
+    pyProc.pid,
+    "/f",
+    "/t",
+  ]);
 }
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
@@ -156,7 +156,7 @@ function initialize() {
       }
     });
 
-    mainWindow.on("close", async (e) => {
+    mainWindow.on("close", (e) => {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
           e.preventDefault(); // Prevents the window from closing
@@ -180,7 +180,7 @@ function initialize() {
       } else {
         var first_launch = nodeStorage.getItem("firstlaunch");
         nodeStorage.setItem("firstlaunch", true);
-        await exitPyProc();
+        exitPyProc();
         app.exit();
       }
     });
@@ -267,12 +267,15 @@ function initialize() {
     trackEvent("Success", "App Launched - SODA", app.getVersion());
   });
 
-  app.on("window-all-closed", async () => {
+  app.on("window-all-closed", () => {
     // if (process.platform !== 'darwin') {
-    await exitPyProc()
     app.quit();
     // }
   });
+
+  app.on("will-quit", () => {
+    exitPyProc();
+  })
 }
 
 function run_pre_flight_checks() {
@@ -361,7 +364,6 @@ autoUpdater.on("update-downloaded", () => {
 ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
   log.info("quitAndInstall");
-  await exitPyProc();
   autoUpdater.quitAndInstall();
 });
 
