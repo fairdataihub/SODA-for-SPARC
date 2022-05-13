@@ -2877,6 +2877,7 @@ const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");
+const { rename } = require("fs");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4592,6 +4593,7 @@ ipcRenderer.on(
         },
         footer: footer,
       }).then(async (result) => {
+        console.log(result);
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
           if (pathElement.length > 500) {
@@ -4802,10 +4804,24 @@ async function addFoldersfunction(
           folderPath.push(folderArray[i]);
           duplicateFolders.push(originalFolderName);
         } else {
-          importedFolders[originalFolderName] = {
-            path: folderArray[i],
-            "original-basename": originalFolderName,
-          };
+          if (nonallowedFolderArray.includes(folderArray[i])) {
+            if (action !== "ignore" && action !== "") {
+              if (action === "remove") {
+                renamedFolderName = removeIrregularFolders(folderArray[i]);
+              } else if (action === "replace") {
+                renamedFolderName = replaceIrregularFolders(folderArray[i]);
+              }
+              importedFolders[renamedFolderName] = {
+                path: folderArray[i],
+                "original-basename": originalFolderName,
+              };
+            }
+          } else {
+            importedFolders[originalFolderName] = {
+              path: folderArray[i],
+              "original-basename": originalFolderName,
+            };
+          }
         }
       }
 
@@ -4919,7 +4935,10 @@ function allowDrop(ev) {
 var filesElement;
 var targetElement;
 async function drop(ev) {
+  console.log(ev);
   irregularFolderArray = [];
+  let renamedFolderName = "";
+  let replaced = [];
   var action = "";
   filesElement = ev.dataTransfer.files;
   targetElement = ev.target;
@@ -4950,6 +4969,7 @@ async function drop(ev) {
       detectIrregularFolders(path.basename(ele), ele);
     }
   }
+  console.log(irregularFolderArray);
   var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   if (irregularFolderArray.length > 0) {
     Swal.fire({
@@ -4973,56 +4993,32 @@ async function drop(ev) {
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
+        console.log(action);
         action = "replace";
+        if (irregularFolderArray.length > 0) {
+          for (let i = 0; i < irregularFolderArray.length; i++) {
+            renamedFolderName = replaceIrregularFolders(
+              irregularFolderArray[i]
+            );
+            console.log(renamedFolderName);
+            replaced.push(renamedFolderName);
+          }
+        }
       } else if (result.isDenied) {
         action = "remove";
+        if (irregularFolderArray.length > 0) {
+          for (let i = 0; i < irregularFolderArray.length; i++) {
+            renamedFolderName = removeIrregularFolders(
+              irregularFolderArray[i]
+            );
+            console.log(renamedFolderName);
+            replaced.push(renamedFolderName);
+          }
+        }
       } else {
         return;
       }
-      if (ev.dataTranser.files.length > 500) {
-        let load_spinner_promise = new Promise(async (resolved) => {
-          let background = document.createElement("div");
-          let spinner_container = document.createElement("div");
-          let spinner_icon = document.createElement("div");
-          spinner_container.setAttribute("id", "items_loading_container");
-          spinner_icon.setAttribute("id", "item_load");
-          spinner_icon.setAttribute(
-            "class",
-            "ui large active inline loader icon-wrapper"
-          );
-          background.setAttribute("class", "loading-items-background");
-          background.setAttribute("id", "loading-items-background-overlay");
-
-          spinner_container.append(spinner_icon);
-          document.body.prepend(background);
-          document.body.prepend(spinner_container);
-          let loading_items_spinner = document.getElementById(
-            "items_loading_container"
-          );
-          loading_items_spinner.style.display = "block";
-          if (loading_items_spinner.style.display === "block") {
-            setTimeout(() => {
-              resolved();
-            }, 100);
-          }
-        }).then(async () => {
-          dropHelper(
-            filesElement,
-            targetElement,
-            action,
-            myPath,
-            importedFiles,
-            importedFolders,
-            nonAllowedDuplicateFiles,
-            uiFiles,
-            uiFolders
-          );
-          // Swal.close();
-          document.getElementById("loading-items-background-overlay").remove();
-          document.getElementById("items_loading_container").remove();
-          // background.remove();
-        });
-      } else {
+      console.log(replaced);
         dropHelper(
           filesElement,
           targetElement,
@@ -5034,53 +5030,8 @@ async function drop(ev) {
           uiFiles,
           uiFolders
         );
-      }
     });
   } else {
-    if (ev.dataTransfer.files.length > 500) {
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute(
-          "class",
-          "ui large active inline loader icon-wrapper"
-        );
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById(
-          "items_loading_container"
-        );
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-        // Swal.close();
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-        // background.remove();
-      });
-    } else {
       dropHelper(
         filesElement,
         targetElement,
@@ -5092,7 +5043,6 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
-    }
   }
 }
 
@@ -6397,6 +6347,7 @@ ipcRenderer.on(
                 },
                 footer: footer,
               }).then((result) => {
+                console.log(result);
                 // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
