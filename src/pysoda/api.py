@@ -88,7 +88,7 @@ import sys
 import zerorpc
 
 
-MIN_SODA_VERSION = "6.0.0"
+MIN_SODA_VERSION = "5.3.3"
 
 
 class SodaApi(object):
@@ -590,9 +590,9 @@ class SodaApi(object):
 
     ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
     ### the templates stored in file_templates direcotory
-    def api_set_template_path(self, soda_base_path):
+    def api_set_template_path(self, soda_base_path, soda_resources_path):
         try:
-            return set_template_path(soda_base_path)
+            return set_template_path(soda_base_path, soda_resources_path)
         except Exception as e:
             raise e
 
