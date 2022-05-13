@@ -373,18 +373,23 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   // get apps base path
   const basepath = app.getAppPath();
-  const resourcesPath = process.resourcesPath
+  const resourcesPath = process.resourcesPath;
 
   // set the templates path
-  client.invoke("api_set_template_path", basepath, resourcesPath, (error, res) => {
-    if (error) {
-      console.log(error);
-      log.error(error);
-      ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-    } else {
-      ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+  client.invoke(
+    "api_set_template_path",
+    basepath,
+    resourcesPath,
+    (error, res) => {
+      if (error) {
+        console.log(error);
+        log.error(error);
+        ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+      } else {
+        ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+      }
     }
-  });
+  );
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.

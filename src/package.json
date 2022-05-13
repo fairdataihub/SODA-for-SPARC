@@ -58,7 +58,7 @@
       "extraResources": [
         {
           "from": "./pysodadist/api"
-        }, 
+        },
         {
           "from": "./file_templates",
           "to": "./file_templates"
