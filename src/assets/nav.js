@@ -34,6 +34,9 @@ function handleSectionTrigger(event) {
   if (sectionId === "guided_mode-section") {
     guidedPrepareHomeScreen();
     organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    dataset_path = document.getElementById("guided-input-global-path");
+    scroll_box = document.querySelector(".guided--body");
+
     $(".shared-folder-structure-element").appendTo(
       $("#guided-folder-structure-container")
     );

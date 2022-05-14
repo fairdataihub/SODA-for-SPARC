@@ -1453,6 +1453,20 @@ const highLevelFolderPageData = {
     backPageId: "guided-docs-folder-tab",
   },
 };
+const generateHighLevelFolderSubFolderPageData = (
+  sampleOrSubject,
+  highLevelFolderName,
+  pathSuffix
+) => {
+  const customPageData = {
+    headerText: `Virtually structure your ${sampleOrSubject} folder in the interface below.`,
+    contentsText: `Your ${sampleOrSubject} folder should contain lorem ipsum foo bar random instructional text will go here`,
+    pathSuffix: `${highLevelFolderName}/${pathSuffix}`,
+    backPageId: `guided-${sampleOrSubject}-folder-tab`,
+  };
+  return customPageData;
+};
+
 const updateFolderStructureUI = (pageDataObj) => {
   $("#structure-folder-header").text(pageDataObj.headerText);
   $("#structure-folder-contents").text(pageDataObj.contentsText);
@@ -3841,8 +3855,14 @@ const renderHighLevelFolderAsideItems = (subjectsOrSamples) => {
     //sort the samples alphabetically
     const sampleItems = samples
       .map((sample) => {
+        console.log(sample);
         return `
-        <a class="selection-aside-item">${sample.sampleName}</a>
+        <a 
+          class="selection-aside-item"
+          data-path-suffix="${sample.poolName ? sample.poolName + "/" : ""}${
+          sample.subjectName
+        }/${sample.sampleName}"
+        >${sample.sampleName}</a>
       `;
       })
       .join("\n");
@@ -3854,12 +3874,15 @@ const renderHighLevelFolderAsideItems = (subjectsOrSamples) => {
     );
     selectionAsideItems.forEach((item) => {
       item.addEventListener("click", (e) => {
-        const sampleName = e.target.textContent;
-        const sample = sodaJSONObj.getSampleByName(sampleName);
-        //add sample to the selected samples list
-        selectedSamples.push(sample);
-        //add sample to the selected samples table
-        renderSelectedSamplesTable();
+        console.log(e);
+        //get the path prefix from the clicked item
+        const pathSuffix = e.target.dataset.pathSuffix;
+        const samplePageData = generateHighLevelFolderSubFolderPageData(
+          "sample",
+          "primary",
+          pathSuffix
+        );
+        updateFolderStructureUI(samplePageData);
       });
       //add hover event that changes the background color to black
       item.addEventListener("mouseover", (e) => {
