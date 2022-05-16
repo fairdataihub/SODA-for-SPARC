@@ -70,7 +70,7 @@ const determineSwalSuccessMessage = (addEditButton) => {
 // illegal character name warning for new dataset names
 $("#bf-new-dataset-name").on("keyup", () => {
   let newName = $("#bf-new-dataset-name").val().trim();
-  var input_field = document.getElementById('bf-new-dataset-name')
+  var input_field = document.getElementById("bf-new-dataset-name");
   if (newName !== "") {
     if (validateInput($(this)) === true) {
       console.log("should be wrong");
