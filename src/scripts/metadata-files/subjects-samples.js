@@ -563,7 +563,7 @@ function populateRRID(strain, type) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   https.get(rridInfo, (res) => {
     if (res.statusCode === 200) {
       let data = "";
@@ -2289,7 +2289,7 @@ function importExistingSubjectsFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadSubjectsFileToDataframe(filePath), 1000);
     }
   }
@@ -2343,7 +2343,7 @@ function importExistingSamplesFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
@@ -2363,7 +2363,7 @@ function checkBFImportSubjects() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2426,7 +2426,7 @@ function checkBFImportSamples() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
@@ -2651,7 +2651,7 @@ async function connectProtocol(type) {
       "Once you're signed in, grab your <i>private access token</i> and enter it below: ",
     html: '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="lock icon"></i><input type="text" id="protocol-password" class="subjects-form-entry" placeholder="Private access token" style="padding-left:5px"></div>',
     imageUrl:
-      "../docs/documentation/Prepare-metadata/subjects/protocol-info.png",
+      "https://github.com/fairdataihub/SODA-for-SPARC/blob/main/docs/documentation/Prepare-metadata/subjects/protocol-info.png?raw=true",
     imageWidth: 450,
     imageHeight: 200,
     imageAlt: "Custom image",
