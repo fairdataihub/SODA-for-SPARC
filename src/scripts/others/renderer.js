@@ -6094,7 +6094,6 @@ function sortObjByKeys(object) {
 }
 
 async function listItems(jsonObj, uiItem, amount_req, reset) {
-  alert("list items");
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   var appendString = "";

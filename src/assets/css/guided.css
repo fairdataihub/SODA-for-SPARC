@@ -577,6 +577,7 @@ h1.guided--text-sub-step {
   flex-direction: row;
   align-items: center;
   margin-bottom: 5px;
+  height: 35px;
 }
 .guided--folder-organization-buttons-container-sub {
   display: flex;
