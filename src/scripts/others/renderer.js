@@ -4593,7 +4593,6 @@ ipcRenderer.on(
         },
         footer: footer,
       }).then(async (result) => {
-        console.log(result);
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
           if (pathElement.length > 500) {
@@ -4935,7 +4934,6 @@ function allowDrop(ev) {
 var filesElement;
 var targetElement;
 async function drop(ev) {
-  console.log(ev);
   irregularFolderArray = [];
   let renamedFolderName = "";
   let replaced = [];
@@ -4969,7 +4967,6 @@ async function drop(ev) {
       detectIrregularFolders(path.basename(ele), ele);
     }
   }
-  console.log(irregularFolderArray);
   var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   if (irregularFolderArray.length > 0) {
     Swal.fire({
@@ -4993,14 +4990,12 @@ async function drop(ev) {
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        console.log(action);
         action = "replace";
         if (irregularFolderArray.length > 0) {
           for (let i = 0; i < irregularFolderArray.length; i++) {
             renamedFolderName = replaceIrregularFolders(
               irregularFolderArray[i]
             );
-            console.log(renamedFolderName);
             replaced.push(renamedFolderName);
           }
         }
@@ -5009,14 +5004,12 @@ async function drop(ev) {
         if (irregularFolderArray.length > 0) {
           for (let i = 0; i < irregularFolderArray.length; i++) {
             renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-            console.log(renamedFolderName);
             replaced.push(renamedFolderName);
           }
         }
       } else {
         return;
       }
-      console.log(replaced);
       dropHelper(
         filesElement,
         targetElement,
@@ -6345,7 +6338,6 @@ ipcRenderer.on(
                 },
                 footer: footer,
               }).then((result) => {
-                console.log(result);
                 // var replaced = [];
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
