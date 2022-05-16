@@ -78,7 +78,7 @@ TEMPLATE_PATH = ""
 def set_template_path(soda_resources_path):
     global TEMPLATE_PATH
 
-    # check if the dev mode path exists 
+    # check if the dev mode path exists
     TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
     if not exists(TEMPLATE_PATH):
         # we are in production and we need to use the Resources folder for the file_templates folder
