@@ -1,4 +1,4 @@
-var forbidden_characters_bf = '/:*?"<>';
+var forbidden_characters_bf = `/:*?"<>`;
 
 const check_forbidden_characters_bf = (my_string) => {
   // Args:
@@ -9,7 +9,7 @@ const check_forbidden_characters_bf = (my_string) => {
   let check = false;
 
   for (let i = 0; i < forbidden_characters_bf.length; i++) {
-    if (my_string.indexOf(forbidden_characters_bf[i]) > -1) {
+    if (my_string.indexOf(forbidden_characters_bf[i]) > -1 || my_string.includes("\\")) {
       return true;
     }
   }
@@ -74,15 +74,9 @@ $("#bf-new-dataset-name").on("keyup", () => {
   if (newName !== "") {
     if (validateInput($(this)) === true) {
       console.log("should be wrong");
-      //change color to red here as well
-      input_field.style.borderColor = "#832221";
-      input_field.style.borderWidth = "2px";
-
       $("#button-create-bf-new-dataset").hide();
     } else {
       $("#button-create-bf-new-dataset").show();
-      input_field.style.borderColor = "";
-      input_field.style.borderWidth = "";
     }
   } else {
     $("#button-create-bf-new-dataset").hide();

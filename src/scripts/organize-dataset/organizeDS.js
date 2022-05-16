@@ -2248,7 +2248,9 @@ const generateAlertMessage = (elementToWarn) => {
   if (!elementToWarn.next().hasClass("alert")) {
     elementToWarn.after(generateAlertElement(alertType, alertMessage));
   }
-  enableProgressButton();
+  if(elementToWarn.attr("id") === "guided-next-button") {
+    enableProgressButton();
+  }
 };
 const removeAlertMessageIfExists = (elementToCheck) => {
   const alertMessageToRemove = elementToCheck.next();
@@ -2266,11 +2268,16 @@ const validateInput = (inputElementToValidate) => {
   ) {
     let name = inputElementToValidate.val().trim();
     if (name !== "") {
+      let input_field = document.getElementById(inputID)
       if (!check_forbidden_characters_bf(name)) {
         removeAlertMessageIfExists(inputElementToValidate);
+        input_field.style.borderColor = null;
+        input_field.style.borderWidth = null;
         inputIsValid = true;
       } else {
         generateAlertMessage(inputElementToValidate);
+        input_field.style.borderColor = "#fed9d9";
+        input_field.style.borderWidth = "2px";
       }
     }
   }
