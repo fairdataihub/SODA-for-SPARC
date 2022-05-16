@@ -772,6 +772,7 @@
 
               <div
                 id="baz-for-now"
+                class="mt-xl"
                 style="
                   display: flex;
                   flex-direction: row;
@@ -782,7 +783,7 @@
               >
                 <div class="guided--hlf-selection-container">
                   <label class="guided--form-label centered"
-                    >Select a sample below to add primary data to the sample.
+                    >Select a sample below to add its primary data.
                   </label>
                   <aside
                     class="guided--hlf-selection-aside"
@@ -960,37 +961,6 @@
                 style="max-width: 600px"
               ></p>
 
-              <div
-                class="guided--folder-organization-buttons-container"
-                id="folder-structure-button-row-top"
-                style="flex-direction: row-reverse"
-              >
-                <button
-                  class="ui primary basic button small remove-margin-right"
-                  id="guided-imoprt-file"
-                  style="width: 165px"
-                >
-                  <svg
-                    style="margin-right: 7px"
-                    width="1em"
-                    height=".9em"
-                    viewBox="0 0 16 16"
-                    class="bi bi-upload"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-                    />
-                  </svg>
-                  Import new file
-                </button>
-              </div>
               <div class="guided--folder-organization-buttons-container">
                 <div
                   class="guided--folder-organization-buttons-container-sub"
@@ -1013,6 +983,7 @@
                       font-weight: 600;
                       cursor: default;
                       color: #898989;
+                      display: none;
                     "
                     id="guided-input-global-path"
                     value="My_dataset_folder/"
@@ -1031,7 +1002,7 @@
                   <button
                     class="ui primary basic button small remove-margin-right"
                     id="guided-import-folder"
-                    style="width: 165px"
+                    style="width: 165px; margin-right: 7px !important"
                   >
                     <svg
                       style="margin-right: 7px"
@@ -1052,6 +1023,31 @@
                       />
                     </svg>
                     Import new folder
+                  </button>
+                  <button
+                    class="ui primary basic button small remove-margin-right"
+                    id="guided-imoprt-file"
+                    style="width: 165px"
+                  >
+                    <svg
+                      style="margin-right: 7px"
+                      width="1em"
+                      height=".9em"
+                      viewBox="0 0 16 16"
+                      class="bi bi-upload"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
+                      />
+                    </svg>
+                    Import new file
                   </button>
                 </div>
               </div>

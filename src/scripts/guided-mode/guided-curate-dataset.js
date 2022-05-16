@@ -484,7 +484,16 @@ const traverseToTab = (targetPageID) => {
       renderHighLevelFolderAsideItems("samples");
       guidedUpdateFolderStructure("primary", "samples");
       $("#structure-subjects-folder").appendTo($("#baz-for-now"));
+
       updateFolderStructureUI(highLevelFolderPageData.primary);
+      //temp
+      document
+        .getElementById("structure-folder-header")
+        .classList.add("hidden");
+      document
+        .getElementById("structure-folder-contents")
+        .classList.add("hidden");
+      $("#guided-button-back").hide();
     }
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
@@ -1417,7 +1426,7 @@ const highLevelFolderPageData = {
     headerText:
       "Virtually structure your primary folder in the interface below.",
     contentsText:
-      "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
+      "Your primary should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "primary/",
     backPageId: "guided-primary-folder-tab",
   },
@@ -3916,7 +3925,6 @@ const renderHighLevelFolderAsideItems = (subjectsOrSamples) => {
     );
     selectionAsideItems.forEach((item) => {
       item.addEventListener("click", (e) => {
-        console.log(e);
         //add selected class to clicked element
         e.target.classList.add("is-selected");
         //remove selected class from all other elements
@@ -7359,6 +7367,8 @@ $(document).ready(() => {
 
   /// back button Curate
   $("#guided-button-back").on("click", function () {
+    //temp hide this button
+    $("#guided-button-back").hide();
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount !== 1) {
       var filtered = getGlobalPath(organizeDSglobalPath);

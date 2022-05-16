@@ -6348,8 +6348,15 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
   if (file_elements[0] === "") {
     file_elements.splice(0, 1);
   }
+  console.log(folder_elements);
+  console.log(file_elements);
   let items = [folder_elements, file_elements];
+
+  console.log(items);
   if (amount_req != undefined) {
+    console.log(folder_elements);
+    console.log(file_elements);
+
     //add items using a different function
     //want the initial files to be imported
     let itemDisplay = new Promise(async (resolved) => {
@@ -6386,6 +6393,41 @@ async function listItems(jsonObj, uiItem, amount_req, reset) {
     select_items_ctrl(items, event, isDragging);
   });
   drag_event_fired = false;
+
+  //check if folder_elements is an empty object and file_elements is an empty array
+  if (folder_elements.length == 0 && file_elements.length == 0) {
+    //Fired when no folders are to be appended to the folder structure element.
+    //Gets the name of the current folder from organizeDSglobalPath and instructs the user
+    //on what to do in the empty folder.
+    let currentFolder = "";
+    if (organizeDSglobalPath.value == undefined) {
+      currentFolder = "My_dataset_folder";
+    } else {
+      //Get the name of the folder the user is currently in.
+      currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
+    }
+    $(uiItem).html(
+      `<div class="drag-drop-container-instructions">
+        <div id="dragDropInscturctions" style="height: 100px; width: 100px;"></div>
+        <p class="text-center large">
+          Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.
+        </p>
+        <p class="text-center">
+          You may also <b>add</b> or <b>import</b> a new folder using the buttons in the upper right corner.
+        </p>
+      </div>`
+    );
+    document.querySelector("#dragDropInscturctions").innerHTML = "";
+    //load the lottie animation
+    let dragDropAnimation = lottie.loadAnimation({
+      container: document.querySelector("#dragDropInscturctions"),
+      animationData: dragDrop,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+    console.log(dragDropAnimation);
+  }
 }
 
 async function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
