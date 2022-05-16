@@ -70,12 +70,19 @@ const determineSwalSuccessMessage = (addEditButton) => {
 // illegal character name warning for new dataset names
 $("#bf-new-dataset-name").on("keyup", () => {
   let newName = $("#bf-new-dataset-name").val().trim();
-
+  var input_field = document.getElementById('bf-new-dataset-name')
   if (newName !== "") {
-    if (validateInput($(this)) != true) {
+    if (validateInput($(this)) === true) {
+      console.log("should be wrong");
+      //change color to red here as well
+      input_field.style.borderColor = "#832221";
+      input_field.style.borderWidth = "2px";
+
       $("#button-create-bf-new-dataset").hide();
     } else {
       $("#button-create-bf-new-dataset").show();
+      input_field.style.borderColor = "";
+      input_field.style.borderWidth = "";
     }
   } else {
     $("#button-create-bf-new-dataset").hide();
@@ -86,14 +93,8 @@ $("#bf-rename-dataset-name").on("keyup", () => {
   let newName = $("#bf-rename-dataset-name").val().trim();
 
   if (newName !== "") {
-    if (check_forbidden_characters_bf(newName)) {
-      Swal.fire({
-        title:
-          "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-      });
+    if (validateInput(newName) != true) {
+      //change input color to red
 
       $("#button-rename-dataset").hide();
     } else {
