@@ -1904,14 +1904,16 @@ async function addFilesfunction(
 }
 
 //create intersection observ
-const scroll_box = document.querySelector("#organize-dataset-tab");
-const item_box = document.querySelector("#items");
-const dataset_path = document.getElementById("input-global-path");
+let scroll_box = document.querySelector("#organize-dataset-tab");
+let item_box = document.querySelector("#items");
+let dataset_path = document.getElementById("input-global-path");
 
 //will observe if property of element changes to decide of eventListener is needed
 function observeElement(element, property, callback, delay = 0) {
   let elementPrototype = Object.getPrototypeOf(element);
+  console.log(elementPrototype);
   if (elementPrototype.hasOwnProperty(property)) {
+    console.log(property);
     let descriptor = Object.getOwnPropertyDescriptor(
       elementPrototype,
       property
@@ -1939,7 +1941,7 @@ function check_dataset_value() {
     scroll_box.removeEventListener("scroll", lazyLoad, true);
   }
   if (dataset_path.value != "My_dataset_folder/") {
-    var filtered = getGlobalPath(document.getElementById("input-global-path"));
+    var filtered = getGlobalPath(dataset_path);
     var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     amount = 500;
     listItems(myPath, "items", 500);
@@ -1950,6 +1952,7 @@ function check_dataset_value() {
       datasetStructureJSONObj
     );
     beginScrollListen();
+    console.log("scroll listening will begin here");
   }
 }
 observeElement(dataset_path, "value", check_dataset_value);
@@ -1959,11 +1962,13 @@ var amount = 500;
 function beginScrollListen() {
   amount = 500;
   scroll_box.addEventListener("scroll", lazyLoad);
+  console.log("activating event listener");
 }
 
 async function lazyLoad() {
+  console.log("inside lady loading");
   let total_items = already_created_elem.length;
-  let filtered = getGlobalPath(document.getElementById("input-global-path"));
+  let filtered = getGlobalPath(dataset_path);
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
   //item_box height is at 420 when there is no overflow
