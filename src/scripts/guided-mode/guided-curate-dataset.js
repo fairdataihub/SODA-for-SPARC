@@ -493,7 +493,6 @@ const traverseToTab = (targetPageID) => {
       document
         .getElementById("structure-folder-contents")
         .classList.add("hidden");
-      $("#guided-button-back").hide();
     }
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
@@ -7367,8 +7366,6 @@ $(document).ready(() => {
 
   /// back button Curate
   $("#guided-button-back").on("click", function () {
-    //temp hide this button
-    $("#guided-button-back").hide();
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount !== 1) {
       var filtered = getGlobalPath(organizeDSglobalPath);
