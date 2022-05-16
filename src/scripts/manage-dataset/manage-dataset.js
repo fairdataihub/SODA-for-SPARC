@@ -72,14 +72,7 @@ $("#bf-new-dataset-name").on("keyup", () => {
   let newName = $("#bf-new-dataset-name").val().trim();
 
   if (newName !== "") {
-    if (check_forbidden_characters_bf(newName)) {
-      Swal.fire({
-        title:
-          "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
-        icon: "error",
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-      });
+    if (validateInput($(this)) != true) {
 
       $("#button-create-bf-new-dataset").hide();
     } else {

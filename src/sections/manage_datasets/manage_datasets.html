@@ -194,26 +194,26 @@
                   text-align: center;
                 "
                 >What is the name of the new dataset?
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
               </label>
               <div
                 class="field"
-                style="display: flex; justify-content: center; width: 100%"
+                style="display: block; width: 70%; align-self: center;"
               >
                 <input
                   type="text"
                   class="form-control"
-                  style="background: #fff !important; width: 450px"
+                  style="background: #fff !important; width: 100%"
                   id="bf-new-dataset-name"
                   placeholder="Type here"
+                  data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
+                  data-alert-type="danger"
+                  onkeyup="validateInput($(this))"
                 />
+                <div>
+                  <p>
+                    This is the field that will be displayed in public as the title of the dataset. Please ensure that your dataset title is different than your other dataset titles and is relatively informative.
+                  </p>
+                </div>
               </div>
               <p
                 style="

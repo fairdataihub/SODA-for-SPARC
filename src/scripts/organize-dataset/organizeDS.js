@@ -2222,3 +2222,123 @@ function organizeLandingUIEffect() {
     $(".div-organize-dataset-menu").css("visibility", "visible");
   }
 }
+
+const isNumberBetween = (number, minVal, maxVal) => {
+  return (
+    !isNaN(parseFloat(number)) &&
+    isFinite(number) &&
+    number >= minVal &&
+    number <= maxVal
+  );
+};
+function subSamInputIsValid(subSamInput) {
+  let regex = /^[a-zA-Z0-9-_]+$/;
+  return regex.test(subSamInput);
+}
+const generateAlertElement = (alertType, warningMessageText) => {
+  return `
+      <div class="alert alert-${alertType} guided--alert" role="alert">
+        ${warningMessageText}
+      </div>
+    `;
+};
+const generateAlertMessage = (elementToWarn) => {
+  const alertMessage = elementToWarn.data("alert-message");
+  const alertType = elementToWarn.data("alert-type");
+  if (!elementToWarn.next().hasClass("alert")) {
+    elementToWarn.after(generateAlertElement(alertType, alertMessage));
+  }
+  enableProgressButton();
+};
+const removeAlertMessageIfExists = (elementToCheck) => {
+  const alertMessageToRemove = elementToCheck.next();
+  if (alertMessageToRemove.hasClass("alert")) {
+    elementToCheck.next().remove();
+  }
+};
+const validateInput = (inputElementToValidate) => {
+  let inputIsValid = false;
+
+  const inputID = inputElementToValidate.attr("id");
+  if (inputID === "guided-dataset-name-input" || inputID === "bf-new-dataset-name") {
+    let name = inputElementToValidate.val().trim();
+    if (name !== "") {
+      if (!check_forbidden_characters_bf(name)) {
+        removeAlertMessageIfExists(inputElementToValidate);
+        inputIsValid = true;
+      } else {
+        generateAlertMessage(inputElementToValidate);
+      }
+    }
+  }
+  if (inputID === "guided-dataset-subtitle-input") {
+    let subtitle = inputElementToValidate.val().trim();
+    if (subtitle !== "") {
+      if (subtitle.length < 257) {
+        removeAlertMessageIfExists(inputElementToValidate);
+        inputIsValid = true;
+      } else {
+        generateAlertMessage(inputElementToValidate);
+      }
+    }
+  }
+  if (inputID === "guided-number-of-subjects-input") {
+    let numSubjects = inputElementToValidate.val().trim();
+    if (numSubjects !== "") {
+      if (isNumberBetween(numSubjects, 1, 1000)) {
+        removeAlertMessageIfExists(inputElementToValidate);
+        $("#guided-same-amount-samples-form").css("display", "flex");
+        inputIsValid = true;
+      } else {
+        generateAlertMessage(inputElementToValidate);
+        $("#guided-same-amount-samples-form").hide();
+      }
+    } else {
+      $("#guided-same-amount-samples-form").hide();
+    }
+  }
+  if (inputID === "guided-number-of-samples-input") {
+    let numSamples = inputElementToValidate.val().trim();
+    if (numSamples !== "") {
+      if (isNumberBetween(numSamples, 1, 1000)) {
+        removeAlertMessageIfExists(inputElementToValidate);
+        $("#guided-button-generate-subjects-table").show();
+
+        inputIsValid = true;
+      } else {
+        generateAlertMessage(inputElementToValidate);
+        $("#guided-button-generate-subjects-table").hide();
+      }
+    } else {
+      $("#guided-button-generate-subjects-table").hide();
+    }
+  }
+  if (inputID === "guided-number-of-samples-input") {
+    let numSamples = inputElementToValidate.val().trim();
+    if (numSamples !== "") {
+      if (isNumberBetween(numSamples, 1, 1000)) {
+        removeAlertMessageIfExists(inputElementToValidate);
+        $("#guided-button-generate-subjects-table").show();
+
+        inputIsValid = true;
+      } else {
+        generateAlertMessage(inputElementToValidate);
+        $("#guided-button-generate-subjects-table").hide();
+      }
+    } else {
+      $("#guided-button-generate-subjects-table").hide();
+    }
+  }
+  // if (inputID === "bf-new-dataset-name") {
+  //   let name = inputElementToValidate.val().trim();
+  //   if(name !== "") {
+  //     if (!check_forbidden_characters_bf(name)) {
+  //       removeAlertMessageIfExists(inputElementToValidate);
+  //       inputIsValid = true;
+  //     } else {
+  //       generateAlertMessage(inputElementToValidate);
+  //     }
+  //   }
+  // }
+  return inputIsValid;
+};
