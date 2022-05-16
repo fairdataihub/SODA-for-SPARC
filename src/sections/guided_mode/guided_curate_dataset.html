@@ -722,14 +722,75 @@
           </div>
           <div
             id="guided-primary-samples-organization-tab"
-            class="guided--panel guided--panel hidden"
-            style="
-              flex-direction: row;
-              justify-content: flex-start;
-              align-items: flex-start;
-            "
+            class="guided--panel hidden"
           >
-            <aside class="guided--hlf-selection-aside" id="foo-for-now"></aside>
+            <div class="guided--section">
+              <label class="guided--form-label centered"
+                >Does your dataset contain primary data for subjects or samples?
+              </label>
+              <p class="guided--help-text w-100 text-center">
+                <b>Optional</b> folder containing unaltered, raw files from an
+                experiment, if they are included in the data. For example, this
+                folder may include the “truly” raw k-space data for a Magnetic
+                Resonance (MR) image that has not yet been reconstructed.
+              </p>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-user-has-primary-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-source-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div class="guided--panel hidden" id="guided-user-has-primary-data">
+              <div class="guided--section">
+                <h1
+                  class="guided--text-sub-step"
+                  id="subject-sample-structure-folder-header"
+                  style="max-width: 820px"
+                >
+                  Add primary data to your sample folder in the interface below.
+                </h1>
+                <p
+                  class="text-center medium"
+                  id="subject-sample-structure-folder-contents"
+                  style="max-width: 600px"
+                >
+                  Your sample's primary folder should contain all folders and
+                  files pertaining to its experimental data (e.g., time-series
+                  data, tabular data, clinical imaging data, genomic,
+                  metabolomic, or microscopy data).
+                </p>
+              </div>
+
+              <div
+                id="baz-for-now"
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: flex-start;
+                  align-items: flex-start;
+                  width: 100%;
+                "
+              >
+                <div class="guided--hlf-selection-container">
+                  <label class="guided--form-label centered"
+                    >Select a sample below to add primary data to the sample.
+                  </label>
+                  <aside
+                    class="guided--hlf-selection-aside"
+                    id="foo-for-now"
+                  ></aside>
+                </div>
+              </div>
+            </div>
           </div>
           <div
             id="guided-samples-folder-tab"

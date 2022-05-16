@@ -1,22 +1,18 @@
-<td class="middle aligned sample-id-cell collapsing">
-  <input
-    class="guided--input"
-    type="text"
-    name="guided-sample-id"
-    placeholder="Enter sample ID and press enter"
-    onkeyup="specifyPool(event, $(this))"
-    data-alert-message="Sample IDs may not contain spaces or special characters"
-    data-alert-type="danger"
-    style="width: 250px"
-  />
-</td>
-<td
-  class="middle aligned samples-subject-dropdown-cell remove-left-border"
-></td>
-<td class="middle aligned collapsing text-center remove-left-border">
-  <i
-    class="far fa-trash-alt"
-    style="color: red; cursor: pointer"
-    onclick="deleteSample($(this))"
-  ></i>
-</td>
+<div class="guided--section" id="structure-subjects-folder">
+  <h1
+    class="guided--text-sub-step"
+    id="structure-folder-header"
+    style="max-width: 820px"
+  >
+    Add primary data to your sample folder in the interface below.
+  </h1>
+  <p
+    class="text-center medium"
+    id="structure-folder-contents"
+    style="max-width: 600px"
+  >
+    Your sample's primary folder should contain all folders and files pertaining
+    to its experimental data (e.g., time-series data, tabular data, clinical
+    imaging data, genomic, metabolomic, or microscopy data).
+  </p>
+</div>

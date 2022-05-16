@@ -832,17 +832,26 @@ h1.guided--text-sub-step {
   .select2-selection__choice__remove {
   height: 100%;
 }
-
-.guided--hlf-selection-aside {
+.guided--hlf-selection-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 300px;
-  overflow-y: auto;
-  min-height: 250px;
-  max-height: 500px;
-  background-color: #f6f6f6;
+  width: 350px;
+  height: 475px;
   padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  position: sticky;
+  top: 10px;
+}
+
+.guided--hlf-selection-aside {
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow-y: auto;
 }
 
 .guided--folder-organization-panel {
@@ -861,9 +870,9 @@ h1.guided--text-sub-step {
   margin-top: 7px;
   cursor: pointer;
 }
-/*set selection-aside-item with is-selected class background color to salmon*/
 .selection-aside-item.is-selected {
-  background-color: salmon;
+  background-color: #e8f0fe;
+  border: 1px solid black;
 }
 
 /*Scale selection-aside-item by 110%*/

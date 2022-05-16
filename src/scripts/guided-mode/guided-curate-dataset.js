@@ -483,9 +483,8 @@ const traverseToTab = (targetPageID) => {
     if (targetPageID === "guided-primary-samples-organization-tab") {
       renderHighLevelFolderAsideItems("samples");
       guidedUpdateFolderStructure("primary", "samples");
-      $("#structure-subjects-folder").appendTo(
-        $("#guided-primary-samples-organization-tab")
-      );
+      $("#structure-subjects-folder").appendTo($("#baz-for-now"));
+      updateFolderStructureUI(highLevelFolderPageData.primary);
     }
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
@@ -1458,9 +1457,16 @@ const generateHighLevelFolderSubFolderPageData = (
   highLevelFolderName,
   pathSuffix
 ) => {
+  let contentsText = null;
+  if (highLevelFolderName === "primary") {
+    contentsText = `Your ${sampleOrSubject}'s primary folder should contain all folders
+      and files pertaining to its experimental data  (e.g., time-series data, tabular data,
+      clinical imaging data, genomic, metabolomic, or microscopy data).
+      `;
+  }
   const customPageData = {
-    headerText: `Virtually structure your ${sampleOrSubject} folder in the interface below.`,
-    contentsText: `Your ${sampleOrSubject} folder should contain lorem ipsum foo bar random instructional text will go here`,
+    sampleSubjectHeaderText: `Add ${highLevelFolderName} data to your ${sampleOrSubject} folder in the interface below.`,
+    sampleSubjectContentsText: contentsText,
     pathSuffix: `${highLevelFolderName}/${pathSuffix}`,
     backPageId: `guided-${sampleOrSubject}-folder-tab`,
   };
@@ -1468,8 +1474,44 @@ const generateHighLevelFolderSubFolderPageData = (
 };
 
 const updateFolderStructureUI = (pageDataObj) => {
-  $("#structure-folder-header").text(pageDataObj.headerText);
-  $("#structure-folder-contents").text(pageDataObj.contentsText);
+  //If the pageDataObj has header and contents, set element text and hide
+  //If not, remove the elements from the screen
+  console.log(pageDataObj);
+  const structureFolderHeaderElement = document.getElementById(
+    "structure-folder-header"
+  );
+  const structureFolderContentsElement = document.getElementById(
+    "structure-folder-contents"
+  );
+  if (pageDataObj.headerText) {
+    structureFolderHeaderElement.innerHTML = pageDataObj.headerText;
+    structureFolderHeaderElement.classList.remove("hidden");
+  } else {
+    structureFolderHeaderElement.classList.add("hidden");
+  }
+  if (pageDataObj.contentsText) {
+    structureFolderContentsElement.innerHTML = pageDataObj.contentsText;
+    structureFolderContentsElement.classList.remove("hidden");
+  } else {
+    structureFolderContentsElement.classList.add("hidden");
+  }
+
+  //If the pageDataObj has subject/sample structuring text content, update it
+  const subjectSampleStructureFolderHeaderElement = document.getElementById(
+    "subject-sample-structure-folder-header"
+  );
+  const subjectSampleStructureFolderContentsElement = document.getElementById(
+    "subject-sample-structure-folder-contents"
+  );
+  if (pageDataObj.sampleSubjectHeaderText) {
+    subjectSampleStructureFolderHeaderElement.innerHTML =
+      pageDataObj.sampleSubjectHeaderText;
+  }
+  if (pageDataObj.sampleSubjectContentsText) {
+    subjectSampleStructureFolderContentsElement.innerHTML =
+      pageDataObj.sampleSubjectContentsText;
+  }
+
   $("#guided-input-global-path").val(
     `My_dataset_folder/${pageDataObj.pathSuffix}`
   );
@@ -3875,6 +3917,14 @@ const renderHighLevelFolderAsideItems = (subjectsOrSamples) => {
     selectionAsideItems.forEach((item) => {
       item.addEventListener("click", (e) => {
         console.log(e);
+        //add selected class to clicked element
+        e.target.classList.add("is-selected");
+        //remove selected class from all other elements
+        selectionAsideItems.forEach((item) => {
+          if (item != e.target) {
+            item.classList.remove("is-selected");
+          }
+        });
         //get the path prefix from the clicked item
         const pathSuffix = e.target.dataset.pathSuffix;
         const samplePageData = generateHighLevelFolderSubFolderPageData(
@@ -3886,7 +3936,7 @@ const renderHighLevelFolderAsideItems = (subjectsOrSamples) => {
       });
       //add hover event that changes the background color to black
       item.addEventListener("mouseover", (e) => {
-        e.target.style.backgroundColor = "black";
+        e.target.style.backgroundColor = "whitesmoke";
       });
       item.addEventListener("mouseout", (e) => {
         e.target.style.backgroundColor = "";
