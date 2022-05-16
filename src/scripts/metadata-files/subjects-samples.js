@@ -563,7 +563,7 @@ function populateRRID(strain, type) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   https.get(rridInfo, (res) => {
     if (res.statusCode === 200) {
       let data = "";
@@ -2289,7 +2289,7 @@ function importExistingSubjectsFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadSubjectsFileToDataframe(filePath), 1000);
     }
   }
@@ -2343,7 +2343,7 @@ function importExistingSamplesFile() {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
@@ -2363,7 +2363,7 @@ function checkBFImportSubjects() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject")
     .children()
@@ -2426,7 +2426,7 @@ function checkBFImportSamples() {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample")
     .children()
@@ -2644,28 +2644,30 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
   });
 }
 
-
-
 async function connectProtocol(type) {
+  var protocolInfoPath = "";
 
-  var protocolInfoPath = ""
-
-  console.log(process.env.NODE_ENV)
+  console.log(process.env.NODE_ENV);
 
   // check if running in dev mode
   if (process.env.NODE_ENV === "development") {
-    protocolInfoPath = path.join(__dirname, "..",
+    protocolInfoPath = path.join(
+      __dirname,
+      "..",
       "docs",
       "documentation",
       "Prepare-metadata",
       "subjects",
-      "protocol-info.png")
+      "protocol-info.png"
+    );
   } else {
-    protocolInfoPath = path.join(process.resourcesPath,
+    protocolInfoPath = path.join(
+      process.resourcesPath,
       "docs",
       "Prepare-metadata",
       "subjects",
-      "protocol-info.png")
+      "protocol-info.png"
+    );
   }
 
   console.log(protocolInfoPath);
