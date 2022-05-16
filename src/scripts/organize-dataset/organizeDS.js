@@ -2260,7 +2260,10 @@ const validateInput = (inputElementToValidate) => {
   let inputIsValid = false;
 
   const inputID = inputElementToValidate.attr("id");
-  if (inputID === "guided-dataset-name-input" || inputID === "bf-new-dataset-name") {
+  if (
+    inputID === "guided-dataset-name-input" ||
+    inputID === "bf-new-dataset-name"
+  ) {
     let name = inputElementToValidate.val().trim();
     if (name !== "") {
       if (!check_forbidden_characters_bf(name)) {

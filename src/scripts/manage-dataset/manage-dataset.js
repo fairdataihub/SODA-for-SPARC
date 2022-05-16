@@ -73,7 +73,6 @@ $("#bf-new-dataset-name").on("keyup", () => {
 
   if (newName !== "") {
     if (validateInput($(this)) != true) {
-
       $("#button-create-bf-new-dataset").hide();
     } else {
       $("#button-create-bf-new-dataset").show();
