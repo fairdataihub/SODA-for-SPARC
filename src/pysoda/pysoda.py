@@ -462,39 +462,6 @@ def bf_get_accounts():
                 return account
     return ""
 
-    # first_consortium_found = False
-    # consortium_keyname = "agent"
-
-    # config = ConfigParser()
-    # config.read(configpath)
-    # config_sections = config.sections()
-
-    # for section in config_sections:
-    #     print(section)
-    #     if (section != 'agent' and section != 'global'):
-    #         try:
-    #             bf = Pennsieve(section)
-    #             acc_details = bf.context.name
-
-    #             if acc_details.find('SPARC Consortium') != -1:
-    #                 first_consortium_found = True
-    #                 consortium_keyname = section
-
-    #                 if not config.has_section("global"):
-    #                     config.add_section("global")
-
-    #                 default_acc = config["global"]
-    #                 default_acc["default_profile"] = consortium_keyname
-
-    #                 with open(configpath, 'w+') as configfile:
-    #                     config.write(configfile)
-    #         except Exception as e:
-    #             pass
-    #     if first_consortium_found == True:
-    #         break
-
-    # bf_keep_only_account(consortium_keyname)
-
 
 def bf_account_list():
     """

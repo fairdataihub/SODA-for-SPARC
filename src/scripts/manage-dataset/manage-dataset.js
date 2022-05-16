@@ -716,7 +716,7 @@ $("#button-add-permission-team").click(() => {
 // Character count for subtitle //
 function countCharacters(textelement, pelement) {
   var textEntered = textelement.value;
-  var counter = 255 - textEntered.length;
+  var counter = 256 - textEntered.length;
   pelement.innerHTML = counter + " characters remaining";
   return textEntered.length;
 }
@@ -1795,7 +1795,6 @@ $(document).ready(() => {
 
         await Jimp.read(original_image_path)
           .then(async (file) => {
-            console.log("starting tiff conversion");
             if (!fs.existsSync(destination_image_path)) {
               fs.mkdirSync(destination_image_path);
             }
@@ -2728,7 +2727,6 @@ $("#button-submit-dataset").click(async () => {
 
       if (countDone > 1) {
         log.info("Done submit track");
-        console.log("Done submit track");
         if (success_upload === true) {
           organizeDatasetButton.disabled = false;
           organizeDatasetButton.className = "btn_animated generate-btn";

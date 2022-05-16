@@ -54,7 +54,6 @@ const guessPackaged = () => {
 
 const getScriptPath = () => {
   if (!guessPackaged()) {
-    console.log("Didnt guess packaged");
     return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
 
@@ -101,7 +100,7 @@ const createPyProc = async () => {
   }
 };
 
-const exitPyProc = async () => {
+const exitPyProc = () => {
   // check if the platform is Windows
   if (process.platform === "win32") {
     killPythonProcess();

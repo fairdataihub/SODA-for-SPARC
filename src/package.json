@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "5.4.1",
+  "version": "6.0.0",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -58,6 +58,10 @@
       "extraResources": [
         {
           "from": "./pysodadist/api"
+        },
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
         }
       ]
     },
@@ -68,6 +72,10 @@
       "extraResources": [
         {
           "from": "./pysodadist/api"
+        },
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
         }
       ]
     },
