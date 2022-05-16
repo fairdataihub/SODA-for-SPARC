@@ -3914,14 +3914,6 @@ var highLevelFolderToolTip = {
     "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
-listItems(datasetStructureJSONObj, "#items", 500);
-getInFolder(
-  ".single-item",
-  "#items",
-  organizeDSglobalPath,
-  datasetStructureJSONObj
-);
-
 var sodaJSONObj = {};
 
 /// back button Curate
