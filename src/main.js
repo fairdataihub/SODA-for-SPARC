@@ -32,7 +32,7 @@ let pyProc = null;
 let pyPort = null;
 
 const guessPackaged = () => {
-  const apiPath = path.join(process.resourcesPath, PY_MODULE);
+  let apiPath = path.join(process.resourcesPath, PY_MODULE);
 
   // add .exe if on Windows
   if (process.platform === "win32") {
