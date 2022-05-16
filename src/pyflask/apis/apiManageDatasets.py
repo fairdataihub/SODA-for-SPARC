@@ -28,7 +28,6 @@ from manageDatasets import (
     bf_change_dataset_status,
     bf_default_account_load,
     get_username,
-    get_number_of_files_and_folders_locally,
     check_agent_install,
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details
@@ -37,10 +36,10 @@ from manageDatasets import (
 api = Namespace('manage_datasets', description='Routes for handling manage datsets functionality')
 
 pennsieveAPIKeyAndSecret = api.model('PennsieveAPIKeyAndSecret', {
-    "success": fields.string(required=True, description="Success or failure"), 
-    "keys": fields.string(required=True, description="API key from the Pennsieve platform"),
-    "secret": fields.string(required=True, description="Secret from the Pennsieve platform"), 
-    "name": fields.string(required=True, description="Name of the user?"),
+    "success": fields.String(required=True, description="Success or failure"), 
+    "keys": fields.String(required=True, description="API key from the Pennsieve platform"),
+    "secret": fields.String(required=True, description="Secret from the Pennsieve platform"), 
+    "name": fields.String(required=True, description="Name of the user?"),
 })
 
 
@@ -56,9 +55,9 @@ class PennsieveAPIKeyAndSecret(Resource):
 
 
 getNumberOfFilesAndFoldersLocally =  api.model('GetNumberOfFilesAndFoldersLocally', {
-    "success": fields.string(required=True, description="Success or failure"),
-    "totalFiles": fields.integer(required=True, description="Total number of files in the dataset"),
-    "totalDir": fields.integer(required=True, description="Total number of folders in the dataset"),
+    "success": fields.String(required=True, description="Success or failure"),
+    "totalFiles": fields.Integer(required=True, description="Total number of files in the dataset"),
+    "totalDir": fields.Integer(required=True, description="Total number of folders in the dataset"),
 })
 
 @api.route('/get_number_of_files_and_folders_locally')
