@@ -2248,7 +2248,7 @@ const generateAlertMessage = (elementToWarn) => {
   if (!elementToWarn.next().hasClass("alert")) {
     elementToWarn.after(generateAlertElement(alertType, alertMessage));
   }
-  if(elementToWarn.attr("id") === "guided-next-button") {
+  if (elementToWarn.attr("id") === "guided-next-button") {
     enableProgressButton();
   }
 };
@@ -2268,7 +2268,7 @@ const validateInput = (inputElementToValidate) => {
   ) {
     let name = inputElementToValidate.val().trim();
     if (name !== "") {
-      let input_field = document.getElementById(inputID)
+      let input_field = document.getElementById(inputID);
       if (!check_forbidden_characters_bf(name)) {
         removeAlertMessageIfExists(inputElementToValidate);
         input_field.style.borderColor = null;

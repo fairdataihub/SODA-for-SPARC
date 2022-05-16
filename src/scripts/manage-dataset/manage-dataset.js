@@ -9,7 +9,10 @@ const check_forbidden_characters_bf = (my_string) => {
   let check = false;
 
   for (let i = 0; i < forbidden_characters_bf.length; i++) {
-    if (my_string.indexOf(forbidden_characters_bf[i]) > -1 || my_string.includes("\\")) {
+    if (
+      my_string.indexOf(forbidden_characters_bf[i]) > -1 ||
+      my_string.includes("\\")
+    ) {
       return true;
     }
   }
