@@ -32,23 +32,11 @@ let pyProc = null;
 let pyPort = null;
 
 const guessPackaged = () => {
-  const windowsPath = path.join(process.resourcesPath, PY_DIST_FOLDER);
-  const unixPath = path.join(process.resourcesPath, PY_MODULE);
-
-  if (process.platform === "darwin" || process.platform === "linux") {
-    if (require("fs").existsSync(unixPath)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  if (process.platform === "win32") {
-    if (require("fs").existsSync(windowsPath)) {
-      return true;
-    } else {
-      return false;
-    }
+  const apiPath = path.join(process.resourcesPath, PY_MODULE);
+  if (require("fs").existsSync(apiPath)) {
+    return true;
+  } else {
+    return false;
   }
 };
 
@@ -58,7 +46,7 @@ const getScriptPath = () => {
   }
 
   if (process.platform === "win32") {
-    return path.join(process.resourcesPath, PY_DIST_FOLDER, PY_MODULE + ".exe");
+    return path.join(process.resourcesPath, PY_MODULE + ".exe");
   } else {
     return path.join(process.resourcesPath, PY_MODULE);
   }
