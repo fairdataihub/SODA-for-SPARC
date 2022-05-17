@@ -301,8 +301,12 @@
               <div
                 class="individual-question getting-started show"
                 id="Question-getting-started-1"
+                style="text-align: -webkit-center"
               >
-                <div class="ui form" style="width: 100%">
+                <div
+                  class="ui form"
+                  style="width: 100%; text-align: -webkit-center"
+                >
                   <div class="grouped fields">
                     <label
                       style="
@@ -513,6 +517,25 @@
                         readonly
                         placeholder="Browse here"
                       />
+                    </div>
+                  </div>
+                  <div
+                    id="loading_local_dataset"
+                    class="circular"
+                    style="display: none"
+                  >
+                    <div class="inner"></div>
+                    <div class="number">0%</div>
+                    <div class="circle">
+                      <div class="bar left">
+                        <div id="left-side_less_than_50" class="progress"></div>
+                      </div>
+                      <div class="bar right">
+                        <div
+                          id="right-side_greater_than_50"
+                          class="progress"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                   <br />
@@ -1102,7 +1125,10 @@
                     id="free-form-folder-structure-container"
                     style="margin-top: 5px; height: auto; border-radius: 3px"
                   >
-                    <div id="organize-path-and-back-button-div">
+                    <div
+                      id="organize-path-and-back-button-div"
+                      style="display: flex"
+                    >
                       <!-- <div> -->
                       <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
           <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
@@ -1118,6 +1144,7 @@
                         style="
                           float: left;
                           margin-left: 15px;
+                          margin-right: 15px;
                           height: 40px;
                           border: none;
                           font-family: 'Raleway', sans-serif;
@@ -1126,7 +1153,8 @@
                           text-decoration: underline;
                           cursor: default;
                           color: #898989;
-                          width: 300px;
+                          flex-grow: 1;
+                          text-overflow: ellipsis;
                         "
                         id="input-global-path"
                         value="My_dataset_folder/"

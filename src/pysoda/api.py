@@ -1,4 +1,5 @@
 from __future__ import print_function
+from logging import root
 from gevent import monkey
 
 monkey.patch_all()
@@ -73,15 +74,21 @@ from prepare_metadata import (
     import_bf_RC,
     upload_RC_file,
     delete_manifest_dummy_folders,
+    set_template_path,
 )
 
-from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
+from organize_datasets import (
+    generate_dataset_locally,
+    bf_get_dataset_files_folders,
+    create_soda_json_object_backend,
+    monitor_local_json_progress,
+)
 
 import sys
 import zerorpc
 
 
-MIN_SODA_VERSION = "5.3.3"
+MIN_SODA_VERSION = "6.0.0"
 
 
 class SodaApi(object):
@@ -563,6 +570,31 @@ class SodaApi(object):
     def echo(self, text):
         """echo any text"""
         return text
+
+    ### Creates json structure for local datasets
+    def api_create_soda_json_object_backend(
+        self, soda_json_structure, root_folder_path, irregularFolders, replaced
+    ):
+        try:
+            return create_soda_json_object_backend(
+                soda_json_structure, root_folder_path, irregularFolders, replaced
+            )
+        except Exception as e:
+            raise e
+
+    def api_monitor_local_json_progress(self):
+        try:
+            return monitor_local_json_progress()
+        except Exception as e:
+            raise e
+
+    ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
+    ### the templates stored in file_templates direcotory
+    def api_set_template_path(self, soda_base_path, soda_resources_path):
+        try:
+            return set_template_path(soda_base_path, soda_resources_path)
+        except Exception as e:
+            raise e
 
 
 ### Connect to Electron-Python

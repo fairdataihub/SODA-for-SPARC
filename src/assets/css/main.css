@@ -252,12 +252,14 @@ a {
   margin-right: 0px;
   padding: 5px 10px;
 }
+
 .button-grp button:disabled,
 button[disabled] {
   border: 1px solid #999999;
   background-color: #cccccc;
   color: #666666;
 }
+
 .active-btn {
   background-color: #6c6c6c !important;
   border: 1px #6c6c6c solid !important;
@@ -294,6 +296,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   background-color: var(--color-teal);
   height: 100%;
 }
+
 .sidebar_title {
   color: #f3f3f3;
   text-transform: uppercase;
@@ -304,6 +307,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   user-select: none;
   -webkit-user-select: none;
 }
+
 .sidebar_links {
   list-style-type: none;
   padding: 0;
@@ -515,9 +519,11 @@ button[data-id="guided_bf_list_users_and_teams"] {
   0% {
     background-color: #ffffff;
   }
+
   50% {
     background-color: #85ceff;
   }
+
   100% {
     background-color: #ffffff;
   }
@@ -527,9 +533,11 @@ button[data-id="guided_bf_list_users_and_teams"] {
   0% {
     background-color: #ffffff;
   }
+
   50% {
     background-color: #85ceff;
   }
+
   100% {
     background-color: #ffffff;
   }
@@ -626,6 +634,8 @@ button[data-id="guided_bf_list_users_and_teams"] {
   margin-left: 5px;
   color: black;
   pointer-events: none;
+  white-space: pre;
+  /* preserve whitespaces so that renaming files with multiple spaces does not cause any issues */
 }
 
 .blue {
@@ -661,9 +671,11 @@ button[data-id="guided_bf_list_users_and_teams"] {
 .button-back:hover {
   box-shadow: 0 0 3px 0px #666666;
 }
+
 .button-back:active {
   transform: translateY(-4px);
 }
+
 .button-back:focus {
   outline: none;
 }
@@ -703,6 +715,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   transition: background 0s;
   transform: translateY(-3px);
 }
+
 .myButton:focus {
   outline: none;
 }
@@ -745,6 +758,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   background-size: 100%;
   transform: translateY(-3px);
 }
+
 .confirmButton:focus {
   outline: none;
 }
@@ -966,6 +980,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.doc:before {
   background: url("../img/doc-file.png");
   content: "";
@@ -975,6 +990,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.docx:before {
   background: url("../img/doc-file.png");
   content: "";
@@ -984,6 +1000,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.png:before {
   background: url("../img/png-file.png");
   content: "";
@@ -993,6 +1010,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.PNG:before {
   background: url("../img/png-file.png");
   content: "";
@@ -1002,6 +1020,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.jpg:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -1011,6 +1030,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.jpeg:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -1020,6 +1040,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.JPEG:before {
   background: url("../img/jpeg-file.png");
   content: "";
@@ -1029,6 +1050,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.pdf:before {
   background: url("../img/pdf-file.png");
   content: "";
@@ -1038,6 +1060,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.txt:before {
   background: url("../img/txt-file.png");
   content: "";
@@ -1047,6 +1070,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   height: 55px;
   margin-left: 5px;
 }
+
 .myFile.xlsx:before {
   background: url("../img/excel-file.png");
   content: "";
@@ -1249,6 +1273,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   position: relative;
   /* background: url('http://www.csslab.cl/ejemplos/timelinr/latest/images/dot.gif') 3px top repeat-y; */
 }
+
 #metadata-content {
   max-width: 100%;
   height: auto;
@@ -1455,6 +1480,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
   cursor: pointer;
   box-shadow: 0 0 3px 0 var(--color-bg-plum);
 }
+
 #div-manifest-edit {
   margin-top: 20px;
 }
@@ -1498,4 +1524,78 @@ button[data-id="guided_bf_list_users_and_teams"] {
   opacity: 0.5;
   display: flex;
   justify-content: center;
+}
+
+.circular {
+  height: 100px;
+  width: 100px;
+  position: relative;
+  transform: scale(1);
+}
+
+.circular .inner {
+  position: absolute;
+  z-index: 6;
+  top: 50%;
+  left: 50%;
+  height: 80px;
+  width: 80px;
+  margin: -40px 0 0 -40px;
+  background: #f5f5f5;
+  border-radius: 100%;
+}
+
+.circular .number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  font-size: 18px;
+  font-weight: 500;
+  color: black;
+}
+
+.circular .bar {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: #fff;
+  -webkit-border-radius: 100%;
+  clip: rect(0px, 100px, 100px, 50px);
+}
+
+.circle .bar .progress {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  -webkit-border-radius: 100%;
+  clip: rect(0px, 50px, 100px, 0px);
+  background: var(--color-light-green);
+}
+
+.circle .left .progress {
+  z-index: 1;
+  transition: transform 500ms ease-in-out;
+}
+
+.circle .right {
+  transform: rotate(180deg);
+  transition: linear;
+  z-index: 3;
+}
+
+.circle .right .progress {
+  transition: transform 500ms ease-in-out;
+}
+
+#Question-getting-started-locally-destination {
+  text-align: -webkit-center;
+}
+
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }

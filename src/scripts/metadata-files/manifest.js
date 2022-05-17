@@ -735,6 +735,9 @@ function initiate_generate_manifest_bf() {
     }
   }
 
+  // clear the pennsieve queue
+  clearQueue();
+
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
       var emessage = userError(error);
@@ -1046,7 +1049,7 @@ function validateSPARCdataset() {
   localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr(
     "placeholder"
   );
-  valid_dataset = verify_sparc_folder(localDatasetFolderPath);
+  valid_dataset = verify_sparc_folder(localDatasetFolderPath, "local");
   if (valid_dataset == true) {
     let action = "";
     irregularFolderArray = [];
@@ -1334,7 +1337,6 @@ function createManifestLocally(type, editBoolean, originalDataset) {
                   },
                 }).then((result) => {});
               } else {
-                // console.log(res)
                 Swal.fire({
                   title: "Successfully generated!",
                   heightAuto: false,

@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "5.3.3",
+  "version": "6.0.0",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -12,16 +12,19 @@
     "deploy-win": "electron-builder build --win --publish always",
     "deploy-mac": "electron-builder build --mac --publish always",
     "deploy-linux": "electron-builder build --linux --publish always",
+    "python-onefile-build": "python -m PyInstaller --onefile --clean ./pysoda/api.py --distpath ./pysodadist",
+    "python-onefile-build-win": "python -m PyInstaller api.spec --distpath pysodadist --clean",
     "postinstall": "electron-builder install-app-deps"
   },
+  "pyzmq-directory": "C:\\Users\\CMarroquin\\anaconda3\\envs\\env-electron-python\\Lib\\site-packages\\pyzmq.libs\\*;pyzmq.libs",
   "repository": {
     "type": "git",
     "url": "https://github.com/fairdataihub/SODA-for-SPARC.git"
   },
   "build": {
-    "appId": "com.calmi2.soda",
-    "asar": false,
+    "appId": "com.fairdataihub.sodaforsparc",
     "generateUpdatesFilesForAllChannels": true,
+    "afterSign": "./notarize.js",
     "files": [
       "**/*",
       "!pysoda/",
@@ -31,10 +34,17 @@
       "!pyflask/"
     ],
     "win": {
+      "asar": false,
       "target": "nsis",
-      "icon": "assets/app-icon/win/icon.ico"
+      "icon": "assets/app-icon/win/icon.ico",
+      "extraResources": [
+        {
+          "from": "./pysodadist/api"
+        }
+      ]
     },
     "mac": {
+      "asar": true,
       "target": [
         "dmg",
         "zip"
@@ -44,11 +54,30 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "entitlements.mac.inherit.plist",
-      "entitlementsInherit": "entitlements.mac.inherit.plist"
+      "entitlementsInherit": "entitlements.mac.inherit.plist",
+      "extraResources": [
+        {
+          "from": "./pysodadist/api"
+        },
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
+        }
+      ]
     },
     "linux": {
+      "asar": true,
       "target": "AppImage",
-      "icon": "assets/app-icon/png/icon.png"
+      "icon": "assets/app-icon/png/icon.png",
+      "extraResources": [
+        {
+          "from": "./pysodadist/api"
+        },
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
+        }
+      ]
     },
     "nsis": {
       "createDesktopShortcut": "always",
@@ -85,10 +114,12 @@
     "dragselect": "2.0.2",
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.3.5",
+    "electron-notarize": "^1.2.1",
     "electron-settings": "^3.2.0",
     "electron-shortcut-normalizer": "^1.0.0",
     "electron-updater": "4.3.9",
     "excel4node": "^1.7.2",
+    "exponential-backoff": "^3.1.0",
     "fomantic-ui": "^2.8.8",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",

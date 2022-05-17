@@ -352,7 +352,6 @@ $("#button-rename-dataset").click(() => {
                   log.info("Request successful");
                   datasetList = [];
                   datasetList = result;
-                  // console.log("Result is: ", result)
                   refreshDatasetList();
                 }
               }
@@ -717,14 +716,10 @@ $("#button-add-permission-team").click(() => {
 
 // Character count for subtitle //
 function countCharacters(textelement, pelement) {
-  var textEntered = textelement.value.trim();
+  var textEntered = textelement.value;
   var counter = 256 - textEntered.length;
-  if (counter < 0) {
-    pelement.innerHTML = `${Math.abs(counter)} characters over limit`;
-  } else {
-    pelement.innerHTML = counter + " characters remaining";
-    return textEntered.length;
-  }
+  pelement.innerHTML = counter + " characters remaining";
+  return textEntered.length;
 }
 
 $(document).ready(() => {
@@ -1801,7 +1796,6 @@ $(document).ready(() => {
 
         await Jimp.read(original_image_path)
           .then(async (file) => {
-            console.log("starting tiff conversion");
             if (!fs.existsSync(destination_image_path)) {
               fs.mkdirSync(destination_image_path);
             }
@@ -2285,7 +2279,7 @@ $(document).ready(() => {
           `${filepath[0]}`
         );
 
-        valid_dataset = verify_sparc_folder(filepath[0]);
+        valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
 
         if (valid_dataset == true) {
           $("#button_upload_local_folder_confirm").click();
@@ -2300,7 +2294,7 @@ $(document).ready(() => {
         } else {
           Swal.fire({
             icon: "warning",
-            text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+            text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,
@@ -2405,7 +2399,6 @@ $("#button-submit-dataset").click(async () => {
   organizeDatasetButton.style = "background-color: #f6f6f6";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
-  //console.log(cloneStatus);
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;
@@ -2453,6 +2446,10 @@ $("#button-submit-dataset").click(async () => {
   if (navbar.classList.contains("active")) {
     document.getElementById("sidebarCollapse").click();
   }
+
+  // clear the queue before uploading
+  clearQueue();
+
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2648,8 +2645,16 @@ $("#button-submit-dataset").click(async () => {
         );
         Swal.fire({
           icon: "error",
-          title: "An error occurred",
-          html: "Please return to progress page to see full error",
+          title: "An Error Occurred While Uploading Your Dataset",
+          html: "Check the error text in the Upload Local Dataset's upload page to see what went wrong.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
         }).then((result) => {
           progressClone.remove();
           sparc_logo.style.display = "inline";
@@ -2703,7 +2708,6 @@ $("#button-submit-dataset").click(async () => {
             }
 
             $("#para-please-wait-manage-dataset").html("");
-            //console.log(res[0]);
             cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
             $("#para-progress-bar-status").html(
               res[0] +
@@ -2724,7 +2728,6 @@ $("#button-submit-dataset").click(async () => {
 
       if (countDone > 1) {
         log.info("Done submit track");
-        console.log("Done submit track");
         if (success_upload === true) {
           organizeDatasetButton.disabled = false;
           organizeDatasetButton.className = "btn_animated generate-btn";
@@ -2775,7 +2778,11 @@ $("#button-submit-dataset").click(async () => {
   const monitorBucketUpload = () => {
     // ask the server for the amount of files uploaded in the current session
     client.invoke("api_bf_submit_dataset_upload_details", (err, res) => {
-      // console.log("Results: ", res)
+      if (err) {
+        console.log(err);
+        //Clear the interval to stop the generation of new sweet alerts after intitial error
+        clearInterval(uploadDetailsTimer);
+      }
       // check if the amount of successfully uploaded files has increased
       if (res[0] > 0 && res[4] > uploadedFolders) {
         uploadedFiles = res[0];

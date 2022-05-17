@@ -159,6 +159,19 @@ $(".button-individual-metadata.go-back").click(function () {
   }
 });
 
+const metadataFileExtentionObject = {
+  submission: [".csv", ".xlsx", ".xls", ".json"],
+  dataset_description: [".csv", ".xlsx", ".xls", ".json"],
+  subjects: [".csv", ".xlsx", ".xls", ".json"],
+  samples: [".csv", ".xlsx", ".xls", ".json"],
+  README: [".txt"],
+  CHANGES: [".txt"],
+  code_description: [".xlsx"],
+  code_parameters: [".xlsx"],
+  inputs_metadata: [".xlsx"],
+  outputs_metadata: [".xlsx"],
+};
+
 function dropHandler(ev, paraElement, metadataFile, curationMode) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
@@ -171,32 +184,36 @@ function dropHandler(ev, paraElement, metadataFile, curationMode) {
     if (ev.dataTransfer.items[0].kind === "file") {
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
+      var extension = file.name.slice(file.name.indexOf("."));
+
       if (metadataWithoutExtension === metadataFile) {
-        document.getElementById(paraElement).innerHTML = file.path;
-        if (curationMode === "free-form") {
-          $($("#" + paraElement).parents()[1])
-            .find(".div-metadata-confirm")
-            .css("display", "flex");
-          $($("#" + paraElement).parents()[1])
-            .find(".div-metadata-go-back")
-            .css("display", "none");
-        }
-        if (curationMode === "guided") {
-          //Add success checkmark lottie animation inside metadata card
-          const dragDropContainer =
-            document.getElementById(paraElement).parentElement;
-          console.log(dragDropContainer);
-          const lottieContainer = dragDropContainer.querySelector(
-            ".code-metadata-lottie-container"
-          );
-          lottieContainer.innerHTML = "";
-          lottie.loadAnimation({
-            container: lottieContainer,
-            animationData: successCheck,
-            renderer: "svg",
-            loop: false,
-            autoplay: true,
-          });
+        if (metadataFileExtentionObject[metadataFile].includes(extension)) {
+          document.getElementById(paraElement).innerHTML = file.path;
+          if (curationMode === "free-form") {
+            $($("#" + paraElement).parents()[1])
+              .find(".div-metadata-confirm")
+              .css("display", "flex");
+            $($("#" + paraElement).parents()[1])
+              .find(".div-metadata-go-back")
+              .css("display", "none");
+          }
+          if (curationMode === "guided") {
+            //Add success checkmark lottie animation inside metadata card
+            const dragDropContainer =
+              document.getElementById(paraElement).parentElement;
+            console.log(dragDropContainer);
+            const lottieContainer = dragDropContainer.querySelector(
+              ".code-metadata-lottie-container"
+            );
+            lottieContainer.innerHTML = "";
+            lottie.loadAnimation({
+              container: lottieContainer,
+              animationData: successCheck,
+              renderer: "svg",
+              loop: false,
+              autoplay: true,
+            });
+          }
         }
       } else {
         document.getElementById(paraElement).innerHTML =
@@ -651,8 +668,7 @@ function loadProgressFile(ev) {
 const verify_missing_files = (mode) => {
   let missing_files = missing_metadata_files.concat(missing_dataset_files);
   let message_text = "";
-  message_text =
-    "The following files have been moved or deleted since this progress file was saved. Would you like SODA to ignore these files and continue? <br><br><ul>";
+  message_text = "<ul>";
 
   for (let item in missing_files) {
     message_text += `<li>${missing_files[item]}</li>`;
@@ -663,17 +679,29 @@ const verify_missing_files = (mode) => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
     cancelButtonText: "Cancel",
-    confirmButtonText: "OK",
+    confirmButtonText: "Continue",
     heightAuto: false,
+    title:
+      "The following files have been moved, deleted, or renamed since this progress was saved. If you continue, they will be ignored",
     icon: "warning",
     reverseButtons: reverseSwalButtons,
     showCancelButton: true,
-    text: message_text,
+    html: message_text,
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
+    },
+    didOpen() {
+      document.getElementById("swal2-title").parentNode.parentNode.style.width =
+        "600px";
+      document.getElementById("swal2-content").style.overflowY = "scroll";
+      document.getElementById("swal2-content").style.height = "400px";
+      document.getElementById(
+        "swal2-title"
+      ).parentNode.parentNode.children[1].style.whiteSpace = "nowrap";
+      // document.getElementById("swal2-content").style.
     },
   }).then((result) => {
     if (result.isConfirmed) {
@@ -998,8 +1026,18 @@ async function openDropdownPrompt(ev, dropdown, show_timer = true) {
             let key_name = SODA_SPARC_API_KEY;
             let response = await get_api_key(login, password, key_name);
             if (response[0] == "failed") {
+              let error_message = response[1];
+              if (
+                response[1]["message"] ===
+                "exceptions must derive from BaseException"
+              ) {
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. Email <a href="mailto:support@pennsieve.net">support@pennsieve.net</a> to get access to the SPARC Consortium organization then try again.</div>`;
+              }
               Swal.hideLoading();
-              Swal.showValidationMessage(userError(response[1]));
+              Swal.showValidationMessage(error_message);
+              document.getElementById(
+                "swal2-validation-message"
+              ).style.flexDirection = "column";
             } else if (response[0] == "success") {
               return {
                 key: response[1],
@@ -2010,6 +2048,11 @@ async function moveItems(ev, category) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     }).then((result) => {
+      let numberItems = $("div.single-item.selected-item").toArray().length;
+      let timer = 2000;
+      if (numberItems > 10) {
+        timer = 7000;
+      }
       if (result.isConfirmed) {
         // loading effect
         Swal.fire({
@@ -2017,9 +2060,24 @@ async function moveItems(ev, category) {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           showConfirmButton: false,
-          timer: 1500,
-          timerProgressBar: true,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          timerProgressBar: false,
+          timer: timer,
           title: "Moving items...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        }).then(() => {
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            icon: "success",
+            text: "Successfully moved items!",
+            didOpen: () => {
+              Swal.hideLoading();
+            },
+          });
         });
         // action to move and delete here
         // multiple files/folders
@@ -2049,6 +2107,17 @@ async function moveItems(ev, category) {
           moveItemsHelper(itemToMove, selectedPath, itemType);
           ev.parentElement.remove();
         }
+        document.getElementById("input-global-path").value =
+          "My_dataset_folder/";
+        listItems(datasetStructureJSONObj, "#items", 500, (reset = true));
+        organizeLandingUIEffect();
+        // reconstruct div with new elements
+        getInFolder(
+          ".single-item",
+          "#items",
+          organizeDSglobalPath,
+          datasetStructureJSONObj
+        );
       }
     });
   }
