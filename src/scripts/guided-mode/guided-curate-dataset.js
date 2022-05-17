@@ -508,6 +508,63 @@ const traverseToTab = (targetPageID) => {
         .getElementById("structure-folder-contents")
         .classList.add("hidden");
     }
+    if (targetPageID === "guided-source-samples-organization-tab") {
+      renderSamplesHighLevelFolderAsideItems("source");
+      guidedUpdateFolderStructure("source", "samples");
+      $("#structure-subjects-folder").appendTo(
+        $("#guided-source-samples-file-explorer-container")
+      );
+      updateFolderStructureUI(highLevelFolderPageData.source);
+      document
+        .getElementById("structure-folder-header")
+        .classList.add("hidden");
+      document
+        .getElementById("structure-folder-contents")
+        .classList.add("hidden");
+    }
+    if (targetPageID === "guided-source-subjects-organization-tab") {
+      renderSubjectsHighLevelFolderAsideItems("source");
+      guidedUpdateFolderStructure("source", "subjects");
+      $("#structure-subjects-folder").appendTo(
+        $("#guided-source-subjects-file-explorer-container")
+      );
+      updateFolderStructureUI(highLevelFolderPageData.source); //temp
+      document
+        .getElementById("structure-folder-header")
+        .classList.add("hidden");
+      document
+        .getElementById("structure-folder-contents")
+        .classList.add("hidden");
+    }
+    if (targetPageID === "guided-derivative-samples-organization-tab") {
+      renderSamplesHighLevelFolderAsideItems("derivative");
+      guidedUpdateFolderStructure("derivative", "samples");
+      $("#structure-subjects-folder").appendTo(
+        $("#guided-derivative-samples-file-explorer-container")
+      );
+      updateFolderStructureUI(highLevelFolderPageData.derivative);
+      document
+        .getElementById("structure-folder-header")
+        .classList.add("hidden");
+      document
+        .getElementById("structure-folder-contents")
+        .classList.add("hidden");
+    }
+    if (targetPageID === "guided-derivative-subjects-organization-tab") {
+      renderSubjectsHighLevelFolderAsideItems("derivative");
+      guidedUpdateFolderStructure("derivative", "subjects");
+      $("#structure-subjects-folder").appendTo(
+        $("#guided-derivative-subjects-file-explorer-container")
+      );
+      updateFolderStructureUI(highLevelFolderPageData.derivative); //temp
+      document
+        .getElementById("structure-folder-header")
+        .classList.add("hidden");
+      document
+        .getElementById("structure-folder-contents")
+        .classList.add("hidden");
+    }
+
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
     }

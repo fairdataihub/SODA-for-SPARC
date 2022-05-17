@@ -217,6 +217,22 @@
               ></div>
               <div
                 class="guided--capsule"
+                id="guided-source-samples-organization-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
+                id="guided-source-subjects-organization-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
+                id="guided-derivative-samples-organization-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
+                id="guided-derivative-subjects-organization-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
                 id="guided-samples-folder-capsule"
               ></div>
               <div
@@ -751,6 +767,243 @@
               </div>
             </div>
           </div>
+          <div
+            id="guided-source-samples-organization-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">Source data for samples</h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label centered"
+                >Do your dataset's samples have source data?
+              </label>
+
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-add-sample-source-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-source-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-add-sample-source-data"
+            >
+              <div class="guided--section">
+                <h1 class="guided--text-sub-step">
+                  Add source data to your sample folder in the interface below.
+                </h1>
+              </div>
+              <div
+                id="guided-source-samples-file-explorer-container"
+                class="guided--container-folder-explorer-subject-samples mt-md"
+              >
+                <div class="guided--hlf-selection-container">
+                  <label class="guided--form-label centered"
+                    >Select a sample below to add its source data.
+                  </label>
+                  <aside
+                    class="guided--hlf-selection-aside"
+                    id="guided-source-samples-aside"
+                  ></aside>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            id="guided-source-subjects-organization-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">Source data for subjects</h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label centered"
+                >Do your dataset's subjects have source data?
+              </label>
+
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-add-subject-source-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-source-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-add-subject-source-data"
+            >
+              <div class="guided--section">
+                <h1 class="guided--text-sub-step">
+                  Add source data to your subject folder in the interface below.
+                </h1>
+              </div>
+              <div
+                id="guided-source-subjects-file-explorer-container"
+                class="guided--container-folder-explorer-subject-samples mt-md"
+              >
+                <div class="guided--hlf-selection-container">
+                  <label class="guided--form-label centered"
+                    >Select a subject below to add its source data.
+                  </label>
+                  <aside
+                    class="guided--hlf-selection-aside"
+                    id="guided-source-subjects-aside"
+                  ></aside>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            id="guided-derivative-samples-organization-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">derivative data for samples</h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label centered"
+                >Do your dataset's samples have derivative data?
+              </label>
+
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-add-sample-derivative-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-derivative-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-add-sample-derivative-data"
+            >
+              <div class="guided--section">
+                <h1 class="guided--text-sub-step">
+                  Add derivative data to your sample folder in the interface
+                  below.
+                </h1>
+              </div>
+              <div
+                id="guided-derivative-samples-file-explorer-container"
+                class="guided--container-folder-explorer-subject-samples mt-md"
+              >
+                <div class="guided--hlf-selection-container">
+                  <label class="guided--form-label centered"
+                    >Select a sample below to add its derivative data.
+                  </label>
+                  <aside
+                    class="guided--hlf-selection-aside"
+                    id="guided-derivative-samples-aside"
+                  ></aside>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            id="guided-derivative-subjects-organization-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">
+                Derivative data for subjects
+              </h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label centered"
+                >Do your dataset's subjects have derivative data?
+              </label>
+
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-add-subject-derivative-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-derivative-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-add-subject-derivative-data"
+            >
+              <div class="guided--section">
+                <h1 class="guided--text-sub-step">
+                  Add derivative data to your subject folder in the interface
+                  below.
+                </h1>
+              </div>
+              <div
+                id="guided-derivative-subjects-file-explorer-container"
+                class="guided--container-folder-explorer-subject-samples mt-md"
+              >
+                <div class="guided--hlf-selection-container">
+                  <label class="guided--form-label centered"
+                    >Select a subject below to add its derivative data.
+                  </label>
+                  <aside
+                    class="guided--hlf-selection-aside"
+                    id="guided-derivative-subjects-aside"
+                  ></aside>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div
             id="guided-samples-folder-tab"
             class="guided--panel hidden starting-point-branch-page guided-curate-new-dataset-branch-page"
