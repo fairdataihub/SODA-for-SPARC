@@ -4004,7 +4004,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
 
       const samplePageData = generateHighLevelFolderSubFolderPageData(
         "sample",
-        "primary",
+        highLevelFolderName,
         pathSuffix
       );
       updateFolderStructureUI(samplePageData);
