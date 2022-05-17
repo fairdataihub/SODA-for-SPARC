@@ -2276,7 +2276,7 @@ const validateInput = (inputElementToValidate) => {
         inputIsValid = true;
       } else {
         generateAlertMessage(inputElementToValidate);
-        input_field.style.borderColor = "#fed9d9";
+        input_field.style.borderColor = "#f76b69";
         input_field.style.borderWidth = "2px";
       }
     }
