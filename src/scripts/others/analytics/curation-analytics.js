@@ -134,7 +134,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       Math.floor(BUCKET_SIZE / 2)
     );
@@ -147,7 +147,7 @@ const logCurationErrorsToAnalytics = async (
       "track-event",
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE +
-        " - Step 7 - Generate - Dataset - Number of Files",
+      " - Step 7 - Generate - Dataset - Number of Files",
       `${datasetUploadSession.id}`,
       file_counter
     );
@@ -169,7 +169,7 @@ const logCurationErrorsToAnalytics = async (
       "Error",
       "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
       `${datasetUploadSession.id}`,
-      main_total_generate_dataset_size
+      mainTotalGenerateDatasetSize
     );
   }
 };
