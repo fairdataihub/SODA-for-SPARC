@@ -2673,7 +2673,7 @@ async function connectProtocol(type) {
       "Once you're signed in, grab your <i>private access token</i> and enter it below: ",
     html: '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="lock icon"></i><input type="text" id="protocol-password" class="subjects-form-entry" placeholder="Private access token" style="padding-left:5px"></div>',
     imageUrl:
-      "../docs/documentation/Prepare-metadata/subjects/protocol-info.png",
+      "https://github.com/fairdataihub/SODA-for-SPARC/blob/main/docs/documentation/Prepare-metadata/subjects/protocol-info.png?raw=true",
     imageWidth: 450,
     imageHeight: 200,
     imageAlt: "Custom image",

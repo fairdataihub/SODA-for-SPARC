@@ -551,7 +551,6 @@ const serverIsLiveStartup = () => {
   return new Promise((resolve, reject) => {
     client.invoke("echo", "server ready", (error, res) => {
       if (error || res !== "server ready") {
-        console.error(error);
         reject(false);
       } else {
         resolve(true);
@@ -2877,6 +2876,7 @@ const { default: Swal } = require("sweetalert2");
 const { waitForDebugger } = require("inspector");
 const { resolve } = require("path");
 const { background } = require("jimp");
+const { rename } = require("fs");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -3913,14 +3913,6 @@ var highLevelFolderToolTip = {
     "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
-listItems(datasetStructureJSONObj, "#items", 500);
-getInFolder(
-  ".single-item",
-  "#items",
-  organizeDSglobalPath,
-  datasetStructureJSONObj
-);
-
 var sodaJSONObj = {};
 
 /// back button Curate
@@ -4802,10 +4794,24 @@ async function addFoldersfunction(
           folderPath.push(folderArray[i]);
           duplicateFolders.push(originalFolderName);
         } else {
-          importedFolders[originalFolderName] = {
-            path: folderArray[i],
-            "original-basename": originalFolderName,
-          };
+          if (nonallowedFolderArray.includes(folderArray[i])) {
+            if (action !== "ignore" && action !== "") {
+              if (action === "remove") {
+                renamedFolderName = removeIrregularFolders(folderArray[i]);
+              } else if (action === "replace") {
+                renamedFolderName = replaceIrregularFolders(folderArray[i]);
+              }
+              importedFolders[renamedFolderName] = {
+                path: folderArray[i],
+                "original-basename": originalFolderName,
+              };
+            }
+          } else {
+            importedFolders[originalFolderName] = {
+              path: folderArray[i],
+              "original-basename": originalFolderName,
+            };
+          }
         }
       }
 
@@ -4920,6 +4926,8 @@ var filesElement;
 var targetElement;
 async function drop(ev) {
   irregularFolderArray = [];
+  let renamedFolderName = "";
+  let replaced = [];
   var action = "";
   filesElement = ev.dataTransfer.files;
   targetElement = ev.target;
@@ -4974,117 +4982,29 @@ async function drop(ev) {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         action = "replace";
+        if (irregularFolderArray.length > 0) {
+          for (let i = 0; i < irregularFolderArray.length; i++) {
+            renamedFolderName = replaceIrregularFolders(
+              irregularFolderArray[i]
+            );
+            replaced.push(renamedFolderName);
+          }
+        }
       } else if (result.isDenied) {
         action = "remove";
+        if (irregularFolderArray.length > 0) {
+          for (let i = 0; i < irregularFolderArray.length; i++) {
+            renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
+            replaced.push(renamedFolderName);
+          }
+        }
       } else {
         return;
       }
-      if (ev.dataTranser.files.length > 500) {
-        let load_spinner_promise = new Promise(async (resolved) => {
-          let background = document.createElement("div");
-          let spinner_container = document.createElement("div");
-          let spinner_icon = document.createElement("div");
-          spinner_container.setAttribute("id", "items_loading_container");
-          spinner_icon.setAttribute("id", "item_load");
-          spinner_icon.setAttribute(
-            "class",
-            "ui large active inline loader icon-wrapper"
-          );
-          background.setAttribute("class", "loading-items-background");
-          background.setAttribute("id", "loading-items-background-overlay");
-
-          spinner_container.append(spinner_icon);
-          document.body.prepend(background);
-          document.body.prepend(spinner_container);
-          let loading_items_spinner = document.getElementById(
-            "items_loading_container"
-          );
-          loading_items_spinner.style.display = "block";
-          if (loading_items_spinner.style.display === "block") {
-            setTimeout(() => {
-              resolved();
-            }, 100);
-          }
-        }).then(async () => {
-          dropHelper(
-            filesElement,
-            targetElement,
-            action,
-            myPath,
-            importedFiles,
-            importedFolders,
-            nonAllowedDuplicateFiles,
-            uiFiles,
-            uiFolders
-          );
-          // Swal.close();
-          document.getElementById("loading-items-background-overlay").remove();
-          document.getElementById("items_loading_container").remove();
-          // background.remove();
-        });
-      } else {
-        dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-      }
-    });
-  } else {
-    if (ev.dataTransfer.files.length > 500) {
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute(
-          "class",
-          "ui large active inline loader icon-wrapper"
-        );
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById(
-          "items_loading_container"
-        );
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-        // Swal.close();
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-        // background.remove();
-      });
-    } else {
       dropHelper(
         filesElement,
         targetElement,
-        "",
+        action,
         myPath,
         importedFiles,
         importedFolders,
@@ -5092,7 +5012,19 @@ async function drop(ev) {
         uiFiles,
         uiFolders
       );
-    }
+    });
+  } else {
+    dropHelper(
+      filesElement,
+      targetElement,
+      "",
+      myPath,
+      importedFiles,
+      importedFolders,
+      nonAllowedDuplicateFiles,
+      uiFiles,
+      uiFolders
+    );
   }
 }
 
