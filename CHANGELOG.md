@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - In Organize Dataset: Lazy loading is now a feature when viewing all imported items in a dataset. This will ease performance when datasets are large (over 500+ items) and can cause issues when rendering on older machines.
 - Importing a local dataset will now be handled on the python end to increase performance. A progress bar is also included to show details about import to user.
 - In the Organize Datasets section importing files/folders will cause a toast to display on the bottom right to notify the user of a successful import.
+- SODA-for-SPARC now uses onefile builds for all OS!
+- SODA-for-SPARC uses .asar formatting for Mac and Linux builds!
 
 ### Bug fixes:
 
