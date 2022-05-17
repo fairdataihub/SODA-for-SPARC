@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed UI bug where tooltips in the Prepare Metadata section receive a top and a right message on hover.
 - Fixed bug in Organize Datasets Step 3 where dragging and dropping folders with non-allowed characters would prevent further navigation.
 - Fixed bug in Organize Datasets where files and folders would not keep their white space values once inserted into the UI.
+- Fixed issue with drag and dropping folders with non-allowed characters being replaced/removed
 
 ### Known Issues:
 
