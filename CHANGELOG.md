@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - In the Organize Datasets section importing files/folders will cause a toast to display on the bottom right to notify the user of a successful import.
 - SODA-for-SPARC now uses onefile builds for all OS!
 - SODA-for-SPARC uses .asar formatting for Mac and Linux builds!
+- Added the "Unknown" option for the "Sex" field in the subjects file generator.
 
 ### Bug fixes:
 
