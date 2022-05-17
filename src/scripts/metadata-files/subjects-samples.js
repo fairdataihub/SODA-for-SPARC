@@ -655,9 +655,7 @@ function addTheRestSubjectEntriesToJSON() {
       }
     }
     if (field.name === "Sex") {
-      if (
-        $("#bootbox-subject-sex").val() === "Unknown"
-      ) {
+      if ($("#bootbox-subject-sex").val() === "Unknown") {
         field.value = "";
       } else {
         field.value = field.value;
@@ -1039,13 +1037,11 @@ function editSubject(ev, subjectID) {
         }
       }
       if (field.name === "Sex") {
-          if (
-            $("#bootbox-subject-sex").val() === "Unknown"
-          ) {
-            field.value = "";
-          } else {
-            field.value = field.value;
-          }
+        if ($("#bootbox-subject-sex").val() === "Unknown") {
+          field.value = "";
+        } else {
+          field.value = field.value;
+        }
       }
       subjectsFileData.push(field.value);
     } else {
