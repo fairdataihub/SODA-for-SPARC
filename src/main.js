@@ -32,7 +32,7 @@ let pyProc = null;
 let pyPort = null;
 
 const guessPackaged = () => {
-  const windowsPath = path.join(__dirname, PY_DIST_FOLDER);
+  const windowsPath = path.join(process.resourcesPath, PY_DIST_FOLDER);
   const unixPath = path.join(process.resourcesPath, PY_MODULE);
 
   if (process.platform === "darwin" || process.platform === "linux") {
@@ -58,7 +58,7 @@ const getScriptPath = () => {
   }
 
   if (process.platform === "win32") {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE + ".exe");
+    return path.join(process.resourcesPath, PY_DIST_FOLDER, PY_MODULE + ".exe");
   } else {
     return path.join(process.resourcesPath, PY_MODULE);
   }

@@ -34,12 +34,16 @@
       "!pyflask/"
     ],
     "win": {
-      "asar": false,
+      "asar": true,
       "target": "nsis",
       "icon": "assets/app-icon/win/icon.ico",
       "extraResources": [
         {
           "from": "./pysodadist/api"
+        },
+        {
+          "from": "../docs/documentation",
+          "to": "docs"
         }
       ]
     },
@@ -62,6 +66,10 @@
         {
           "from": "./file_templates",
           "to": "./file_templates"
+        },
+        {
+          "from": "../docs/documentation",
+          "to": "docs"
         }
       ]
     },
@@ -76,6 +84,10 @@
         {
           "from": "./file_templates",
           "to": "./file_templates"
+        },
+        {
+          "from": "../docs/documentation",
+          "to": "docs"
         }
       ]
     },
