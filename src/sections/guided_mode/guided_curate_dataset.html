@@ -724,20 +724,24 @@
             id="guided-primary-samples-organization-tab"
             class="guided--panel hidden"
           >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">Primary data for subjects</h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Does your dataset contain primary data for subjects or samples?
+                >Do your dataset's subjects have primary data?
               </label>
-              <p class="guided--help-text w-100 text-center">
-                <b>Optional</b> folder containing unaltered, raw files from an
-                experiment, if they are included in the data. For example, this
-                folder may include the “truly” raw k-space data for a Magnetic
-                Resonance (MR) image that has not yet been reconstructed.
-              </p>
+
               <div class="guided--radio-button-container">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-question="guided-user-has-primary-data"
+                  data-next-question="guided-add-sample-primary-data"
                 >
                   Yes
                 </button>
@@ -749,37 +753,18 @@
                 </button>
               </div>
             </div>
-            <div class="guided--panel hidden" id="guided-user-has-primary-data">
+            <div
+              class="guided--panel hidden"
+              id="guided-add-sample-primary-data"
+            >
               <div class="guided--section">
-                <h1
-                  class="guided--text-sub-step"
-                  id="subject-sample-structure-folder-header"
-                  style="max-width: 820px"
-                >
+                <h1 class="guided--text-sub-step">
                   Add primary data to your sample folder in the interface below.
                 </h1>
-                <p
-                  class="text-center medium"
-                  id="subject-sample-structure-folder-contents"
-                  style="max-width: 600px"
-                >
-                  Your sample's primary folder should contain all folders and
-                  files pertaining to its experimental data (e.g., time-series
-                  data, tabular data, clinical imaging data, genomic,
-                  metabolomic, or microscopy data).
-                </p>
               </div>
-
               <div
-                id="baz-for-now"
-                class="mt-xl"
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: flex-start;
-                  align-items: flex-start;
-                  width: 100%;
-                "
+                id="guided-primary-samples-file-explorer-container"
+                class="guided--container-folder-explorer-subject-samples mt-md"
               >
                 <div class="guided--hlf-selection-container">
                   <label class="guided--form-label centered"
@@ -787,7 +772,7 @@
                   </label>
                   <aside
                     class="guided--hlf-selection-aside"
-                    id="foo-for-now"
+                    id="guided-primary-samples-aside"
                   ></aside>
                 </div>
               </div>

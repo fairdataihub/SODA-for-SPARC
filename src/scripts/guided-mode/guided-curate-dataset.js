@@ -481,9 +481,11 @@ const traverseToTab = (targetPageID) => {
     };
 
     if (targetPageID === "guided-primary-samples-organization-tab") {
-      renderHighLevelFolderAsideItems("samples");
+      renderSamplesHighLevelFolderAsideItems("primary");
       guidedUpdateFolderStructure("primary", "samples");
-      $("#structure-subjects-folder").appendTo($("#baz-for-now"));
+      $("#structure-subjects-folder").appendTo(
+        $("#guided-primary-samples-file-explorer-container")
+      );
 
       updateFolderStructureUI(highLevelFolderPageData.primary);
       //temp
@@ -1502,22 +1504,6 @@ const updateFolderStructureUI = (pageDataObj) => {
     structureFolderContentsElement.classList.remove("hidden");
   } else {
     structureFolderContentsElement.classList.add("hidden");
-  }
-
-  //If the pageDataObj has subject/sample structuring text content, update it
-  const subjectSampleStructureFolderHeaderElement = document.getElementById(
-    "subject-sample-structure-folder-header"
-  );
-  const subjectSampleStructureFolderContentsElement = document.getElementById(
-    "subject-sample-structure-folder-contents"
-  );
-  if (pageDataObj.sampleSubjectHeaderText) {
-    subjectSampleStructureFolderHeaderElement.innerHTML =
-      pageDataObj.sampleSubjectHeaderText;
-  }
-  if (pageDataObj.sampleSubjectContentsText) {
-    subjectSampleStructureFolderContentsElement.innerHTML =
-      pageDataObj.sampleSubjectContentsText;
   }
 
   $("#guided-input-global-path").val(
@@ -3894,62 +3880,144 @@ const setGuidedLicense = (newLicense) => {
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
 
-const renderHighLevelFolderAsideItems = (subjectsOrSamples) => {
-  const asideElement = document.getElementById("foo-for-now");
+const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
+  const asideElement = document.getElementById(
+    `guided-${highLevelFolderName}-samples-aside`
+  );
   asideElement.innerHTML = "";
-  if (subjectsOrSamples == "samples") {
-    const [samplesInPools, samplesOutsidePools] =
-      sodaJSONObj.getAllSamplesFromSubjects();
-    //Combine sample data from samples in and out of pools
-    const samples = [...samplesInPools, ...samplesOutsidePools];
-    //sort the samples alphabetically
-    const sampleItems = samples
-      .map((sample) => {
-        console.log(sample);
-        return `
+  const [samplesInPools, samplesOutsidePools] =
+    sodaJSONObj.getAllSamplesFromSubjects();
+  //Combine sample data from samples in and out of pools
+  let samples = [...samplesInPools, ...samplesOutsidePools];
+
+  //sort samples object by sampleName property alphabetically
+  samples = samples.sort((a, b) => {
+    const sampleNameA = a.sampleName.toLowerCase();
+    const sampleNameB = b.sampleName.toLowerCase();
+    if (sampleNameA < sampleNameB) return -1;
+    if (sampleNameA > sampleNameB) return 1;
+    return 0;
+  });
+
+  //Create the HTML for the samples
+  const sampleItems = samples
+    .map((sample) => {
+      return `
         <a 
-          class="selection-aside-item"
+          class="${highLevelFolderName}-selection-aside-item selection-aside-item"
           data-path-suffix="${sample.poolName ? sample.poolName + "/" : ""}${
-          sample.subjectName
-        }/${sample.sampleName}"
+        sample.subjectName
+      }/${sample.sampleName}"
         >${sample.sampleName}</a>
       `;
-      })
-      .join("\n");
-    //Add the samples to the DOM
-    asideElement.innerHTML = sampleItems;
-    //add click event to each sample item
-    const selectionAsideItems = document.querySelectorAll(
-      "a.selection-aside-item"
-    );
-    selectionAsideItems.forEach((item) => {
-      item.addEventListener("click", (e) => {
-        //add selected class to clicked element
-        e.target.classList.add("is-selected");
-        //remove selected class from all other elements
-        selectionAsideItems.forEach((item) => {
-          if (item != e.target) {
-            item.classList.remove("is-selected");
-          }
-        });
-        //get the path prefix from the clicked item
-        const pathSuffix = e.target.dataset.pathSuffix;
-        const samplePageData = generateHighLevelFolderSubFolderPageData(
-          "sample",
-          "primary",
-          pathSuffix
-        );
-        updateFolderStructureUI(samplePageData);
+    })
+    .join("\n");
+
+  //Add the samples to the DOM
+  asideElement.innerHTML = sampleItems;
+
+  //add click event to each sample item
+  const selectionAsideItems = document.querySelectorAll(
+    `a.${highLevelFolderName}-selection-aside-item`
+  );
+  selectionAsideItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      //add selected class to clicked element
+      e.target.classList.add("is-selected");
+      //remove selected class from all other elements
+      selectionAsideItems.forEach((item) => {
+        if (item != e.target) {
+          item.classList.remove("is-selected");
+        }
       });
-      //add hover event that changes the background color to black
-      item.addEventListener("mouseover", (e) => {
-        e.target.style.backgroundColor = "whitesmoke";
-      });
-      item.addEventListener("mouseout", (e) => {
-        e.target.style.backgroundColor = "";
-      });
+      //get the path prefix from the clicked item
+      const pathSuffix = e.target.dataset.pathSuffix;
+
+      const samplePageData = generateHighLevelFolderSubFolderPageData(
+        "sample",
+        "primary",
+        pathSuffix
+      );
+      updateFolderStructureUI(samplePageData);
     });
-  }
+    //add hover event that changes the background color to black
+    item.addEventListener("mouseover", (e) => {
+      e.target.style.backgroundColor = "whitesmoke";
+    });
+    item.addEventListener("mouseout", (e) => {
+      e.target.style.backgroundColor = "";
+    });
+  });
+};
+
+const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
+  const asideElement = document.getElementById(
+    `guided-${highLevelFolderName}-samples-aside`
+  );
+  asideElement.innerHTML = "";
+  const [samplesInPools, samplesOutsidePools] =
+    sodaJSONObj.getAllSamplesFromSubjects();
+  //Combine sample data from samples in and out of pools
+  let samples = [...samplesInPools, ...samplesOutsidePools];
+
+  //sort samples object by sampleName property alphabetically
+  samples = samples.sort((a, b) => {
+    const sampleNameA = a.sampleName.toLowerCase();
+    const sampleNameB = b.sampleName.toLowerCase();
+    if (sampleNameA < sampleNameB) return -1;
+    if (sampleNameA > sampleNameB) return 1;
+    return 0;
+  });
+
+  //Create the HTML for the samples
+  const sampleItems = samples
+    .map((sample) => {
+      return `
+        <a 
+          class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+          data-path-suffix="${sample.poolName ? sample.poolName + "/" : ""}${
+        sample.subjectName
+      }/${sample.sampleName}"
+        >${sample.sampleName}</a>
+      `;
+    })
+    .join("\n");
+
+  //Add the samples to the DOM
+  asideElement.innerHTML = sampleItems;
+
+  //add click event to each sample item
+  const selectionAsideItems = document.querySelectorAll(
+    `a.${highLevelFolderName}-selection-aside-item`
+  );
+  selectionAsideItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      //add selected class to clicked element
+      e.target.classList.add("is-selected");
+      //remove selected class from all other elements
+      selectionAsideItems.forEach((item) => {
+        if (item != e.target) {
+          item.classList.remove("is-selected");
+        }
+      });
+      //get the path prefix from the clicked item
+      const pathSuffix = e.target.dataset.pathSuffix;
+
+      const samplePageData = generateHighLevelFolderSubFolderPageData(
+        "sample",
+        "primary",
+        pathSuffix
+      );
+      updateFolderStructureUI(samplePageData);
+    });
+    //add hover event that changes the background color to black
+    item.addEventListener("mouseover", (e) => {
+      e.target.style.backgroundColor = "whitesmoke";
+    });
+    item.addEventListener("mouseout", (e) => {
+      e.target.style.backgroundColor = "";
+    });
+  });
 };
 
 $(document).ready(() => {
