@@ -7238,6 +7238,7 @@ $(document).ready(() => {
 
       traverseToTab(targetPageID);
     } catch (error) {
+      console.log(error);
       //check to see if the type of error is array
       errorArray.map((error) => {
         if (error.type === "notyf") {
