@@ -574,6 +574,7 @@ h1.guided--text-sub-step {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  width: 950px;
 }
 .guided--folder-organization-buttons-container {
   width: 100%;

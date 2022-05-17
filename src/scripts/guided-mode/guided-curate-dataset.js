@@ -486,9 +486,21 @@ const traverseToTab = (targetPageID) => {
       $("#structure-subjects-folder").appendTo(
         $("#guided-primary-samples-file-explorer-container")
       );
-
-      updateFolderStructureUI(highLevelFolderPageData.primary);
-      //temp
+      updateFolderStructureUI(highLevelFolderPageData.primary); //temp
+      document
+        .getElementById("structure-folder-header")
+        .classList.add("hidden");
+      document
+        .getElementById("structure-folder-contents")
+        .classList.add("hidden");
+    }
+    if (targetPageID === "guided-primary-subjects-organization-tab") {
+      renderSubjectsHighLevelFolderAsideItems("primary");
+      guidedUpdateFolderStructure("primary", "subjects");
+      $("#structure-subjects-folder").appendTo(
+        $("#guided-primary-subjects-file-explorer-container")
+      );
+      updateFolderStructureUI(highLevelFolderPageData.primary); //temp
       document
         .getElementById("structure-folder-header")
         .classList.add("hidden");
@@ -3952,39 +3964,41 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
 
 const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
   const asideElement = document.getElementById(
-    `guided-${highLevelFolderName}-samples-aside`
+    `guided-${highLevelFolderName}-subjects-aside`
   );
   asideElement.innerHTML = "";
-  const [samplesInPools, samplesOutsidePools] =
-    sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  let samples = [...samplesInPools, ...samplesOutsidePools];
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  //Combine sample data from subjects in and out of pools
+  let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
-  //sort samples object by sampleName property alphabetically
-  samples = samples.sort((a, b) => {
-    const sampleNameA = a.sampleName.toLowerCase();
-    const sampleNameB = b.sampleName.toLowerCase();
-    if (sampleNameA < sampleNameB) return -1;
-    if (sampleNameA > sampleNameB) return 1;
+  //sort subjects object by subjectName property alphabetically
+  subjects = subjects.sort((a, b) => {
+    const subjectNameA = a.subjectName.toLowerCase();
+    const subjectNameB = b.subjectName.toLowerCase();
+    if (subjectNameA < subjectNameB) return -1;
+    if (subjectNameA > subjectNameB) return 1;
     return 0;
   });
 
-  //Create the HTML for the samples
-  const sampleItems = samples
-    .map((sample) => {
+  console.log(subjects);
+
+  //Create the HTML for the subjects
+  const subjectItems = subjects
+    .map((subject) => {
       return `
-        <a 
-          class="${highLevelFolderName}-selection-aside-item selection-aside-item"
-          data-path-suffix="${sample.poolName ? sample.poolName + "/" : ""}${
-        sample.subjectName
-      }/${sample.sampleName}"
-        >${sample.sampleName}</a>
-      `;
+          <a 
+            class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+            data-path-suffix="${
+              subject.poolName ? subject.poolName + "/" : ""
+            }${subject.subjectName}"
+          >${subject.subjectName}</a>
+        `;
     })
     .join("\n");
+  console.log(subjectItems);
 
-  //Add the samples to the DOM
-  asideElement.innerHTML = sampleItems;
+  //Add the subjects to the DOM
+  asideElement.innerHTML = subjectItems;
 
   //add click event to each sample item
   const selectionAsideItems = document.querySelectorAll(
@@ -4002,9 +4016,10 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       });
       //get the path prefix from the clicked item
       const pathSuffix = e.target.dataset.pathSuffix;
+      console.log(pathSuffix);
 
       const samplePageData = generateHighLevelFolderSubFolderPageData(
-        "sample",
+        "subject",
         "primary",
         pathSuffix
       );

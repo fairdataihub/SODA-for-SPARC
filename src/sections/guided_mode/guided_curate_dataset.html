@@ -213,6 +213,10 @@
               ></div>
               <div
                 class="guided--capsule"
+                id="guided-primary-subjects-organization-capsule"
+              ></div>
+              <div
+                class="guided--capsule"
                 id="guided-samples-folder-capsule"
               ></div>
               <div
@@ -558,96 +562,6 @@
                 </div>
               </div>
             </div>
-            <!--<div class="guided--section hidden" id="subjects-table">
-              <table
-                class="ui celled striped table"
-                style="margin-bottom: 25px; min-width: 800px"
-              >
-                <thead>
-                  <tr>
-                    <th
-                      colspan="5"
-                      class="text-center"
-                      style="
-                        z-index: 2;
-                        height: 50px;
-                        position: sticky !important;
-                        top: -10px !important;
-                      "
-                    >
-                      <span> Subjects Table </span>
-                      <button
-                        class="ui primary basic button small"
-                        style="
-                          position: absolute;
-                          right: 20px;
-                          top: 50%;
-                          transform: translateY(-50%);
-                        "
-                        onclick="addSubjectFolder()"
-                      >
-                        <i
-                          class="fas fa-folder-plus"
-                          style="margin-right: 7px"
-                        ></i
-                        >Add subject row
-                      </button>
-                    </th>
-                  </tr>
-                  <tr>
-                    <th
-                      class="center aligned"
-                      style="
-                        z-index: 2;
-                        position: sticky !important;
-                        top: 40px !important;
-                      "
-                    >
-                      Index
-                    </th>
-                    <th
-                      style="
-                        z-index: 2;
-                        position: sticky !important;
-                        top: 40px !important;
-                      "
-                    >
-                      Subject ID
-                    </th>
-                    <th
-                      style="
-                        z-index: 2;
-                        position: sticky !important;
-                        top: 40px !important;
-                      "
-                    >
-                      Number of samples
-                    </th>
-                    <th
-                      class="center aligned"
-                      style="
-                        z-index: 2;
-                        position: sticky !important;
-                        top: 40px !important;
-                      "
-                    >
-                      Specify data files for the subject
-                    </th>
-                    <th
-                      class="center aligned"
-                      style="
-                        z-index: 2;
-                        position: sticky !important;
-                        top: 40px !important;
-                      "
-                    >
-                      Delete
-                    </th>
-                  </tr>
-                </thead>
-                <tbody id="subjects-table-body"></tbody>
-              </table>
-            </div>-->
           </div>
           <div
             id="guided-high-level-folder-selection-tab"
@@ -725,7 +639,7 @@
             class="guided--panel hidden"
           >
             <div class="guided--section w-100">
-              <h1 class="guided--text-sub-step">Primary data for subjects</h1>
+              <h1 class="guided--text-sub-step">Primary data for samples</h1>
               <p class="guided--help-text w-100">
                 Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry. Lorem Ipsum has been the industry's standard dummy
@@ -735,7 +649,7 @@
             </div>
             <div class="guided--section">
               <label class="guided--form-label centered"
-                >Do your dataset's subjects have primary data?
+                >Do your dataset's samples have primary data?
               </label>
 
               <div class="guided--radio-button-container">
@@ -773,6 +687,65 @@
                   <aside
                     class="guided--hlf-selection-aside"
                     id="guided-primary-samples-aside"
+                  ></aside>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            id="guided-primary-subjects-organization-tab"
+            class="guided--panel hidden"
+          >
+            <div class="guided--section w-100">
+              <h1 class="guided--text-sub-step">Primary data for subjects</h1>
+              <p class="guided--help-text w-100">
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </p>
+            </div>
+            <div class="guided--section">
+              <label class="guided--form-label centered"
+                >Do your dataset's subjects have primary data?
+              </label>
+
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-question="guided-add-subject-primary-data"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-source-data"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--panel hidden"
+              id="guided-add-subject-primary-data"
+            >
+              <div class="guided--section">
+                <h1 class="guided--text-sub-step">
+                  Add primary data to your subject folder in the interface
+                  below.
+                </h1>
+              </div>
+              <div
+                id="guided-primary-subjects-file-explorer-container"
+                class="guided--container-folder-explorer-subject-samples mt-md"
+              >
+                <div class="guided--hlf-selection-container">
+                  <label class="guided--form-label centered"
+                    >Select a subject below to add its primary data.
+                  </label>
+                  <aside
+                    class="guided--hlf-selection-aside"
+                    id="guided-primary-subjects-aside"
                   ></aside>
                 </div>
               </div>
