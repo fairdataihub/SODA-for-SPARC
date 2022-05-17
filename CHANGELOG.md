@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed bug with illegally formatted metadata files being dropped in Step 4: Metadata files.
 - Fixed UI bug where tooltips in the Prepare Metadata section receive a top and a right message on hover.
 - Fixed bug in Organize Datasets Step 3 where dragging and dropping folders with non-allowed characters would prevent further navigation.
-- Fixed bug in Organize Datasets where files and folders would not keep their white space values once inserted into the UI. 
+- Fixed bug in Organize Datasets where files and folders would not keep their white space values once inserted into the UI.
 
 ### Known Issues:
 
@@ -31,8 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - The Organize Datasets option to upload duplicate files to Pennsieve uploads some duplicates but does not upload all.
 - When using the Create manifest.xlsx feature any custom columns added to a manifest file stored on Pennsieve will not be imported for editing.
 - The Create manifest.xlsx feature will spawn an error while generating manifest files for a local dataset if there are hidden files in the dataset directory. SODA will not tell the user the cause is the presence of the hidden files.
-- 
-
+-
 
 ## v.5.4.0 - 2022-04-25
 
