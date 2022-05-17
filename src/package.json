@@ -39,7 +39,7 @@
       "icon": "assets/app-icon/win/icon.ico",
       "extraResources": [
         {
-          "from": "./pysodadist/api"
+          "from": "./pysodadist/api.exe"
         },
         {
           "from": "../docs/documentation",
